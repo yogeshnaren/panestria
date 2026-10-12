@@ -105,30 +105,28 @@ def _collect_new_symlinks(worktree: Path, base: str, changed: set[str], unsafe: 
 
 
 def _same_as_base(worktree: Path, base: str, relative: str) -> bool:
-    probe = subprocess.run(
-        ["git", "-C", str(worktree), "cat-file", "-e", f"{base}:{relative}"],
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    if probe.returncode != 0:
+    probe = _git_run(worktree, ["cat-file", "-e", f"{base}:{relative}"])
+    if probe is None or probe.returncode != 0:
         return False
-    diff = subprocess.run(
-        ["git", "-C", str(worktree), "diff", "--raw", "--no-abbrev", base, "--", relative],
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    return diff.returncode == 0 and diff.stdout.strip() == ""
+    diff = _git_run(worktree, ["diff", "--raw", "--no-abbrev", base, "--", relative])
+    return diff is not None and diff.returncode == 0 and diff.stdout.strip() == ""
 
 
 def _git(worktree: Path, args: list[str]) -> str | None:
-    completed = subprocess.run(
-        ["git", "-C", str(worktree), *args],
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    if completed.returncode != 0:
+    completed = _git_run(worktree, args)
+    if completed is None or completed.returncode != 0:
         return None
     return completed.stdout
+
+
+def _git_run(worktree: Path, args: list[str]) -> subprocess.CompletedProcess[str] | None:
+    try:
+        return subprocess.run(
+            ["git", "-C", str(worktree), *args],
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=30,
+        )
+    except subprocess.TimeoutExpired:
+        return None

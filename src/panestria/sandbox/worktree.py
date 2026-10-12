@@ -60,6 +60,7 @@ class WorktreeManager:
             text=True,
             capture_output=True,
             check=False,
+            timeout=30,
         )
         if completed.returncode != 0:
             raise RuntimeError(completed.stderr.strip() or completed.stdout.strip())

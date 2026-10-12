@@ -771,7 +771,7 @@ def _run(argv: list[str], check: bool = True, extra: dict[str, str] | None = Non
     env.update(_GIT)
     if extra:
         env.update(extra)
-    completed = subprocess.run(argv, env=env, text=True, capture_output=True, check=False)
+    completed = subprocess.run(argv, env=env, text=True, capture_output=True, check=False, timeout=30)
     if check and completed.returncode != 0:
         raise RuntimeError(completed.stderr.strip() or completed.stdout.strip())
     return completed

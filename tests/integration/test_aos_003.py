@@ -217,13 +217,22 @@ def test_serialization_attempts_stop(record_property: pytest.RecordProperty) -> 
 def test_recovery_instance_is_stable_for_the_process(record_property: pytest.RecordProperty) -> None:
     _properties(record_property, "AOS-003-TC02")
     assert recovery_instance() == recovery_instance()
-    report = RecoveryReport("wf-audit", "SUCCESS", "", recovery_instance())
+    report = RecoveryReport("wf-audit", "SUCCESS", "", recovery_instance(), 2, 15)
     line = format_recovery_audit(report)
     loaded = json.loads(line)
     assert loaded["recovery_instance"] == recovery_instance()
     assert loaded["workflow_id"] == "wf-audit"
     assert loaded["status"] == "SUCCESS"
+    assert loaded["recovery_attempts"] == 2
+    assert loaded["latency_ms"] == 15
+    pending = json.loads(
+        format_recovery_audit(RecoveryReport("wf-wait", "PENDING", "", recovery_instance(), None, 20000))
+    )
+    assert pending["status"] == "PENDING"
+    assert pending["recovery_attempts"] is None
+    assert pending["latency_ms"] == 20000
     assert "postgresql" not in line
+    assert "postgresql" not in json.dumps(pending)
 
 
 def test_atomic_enqueue_and_duplicate(database_url: str, record_property: pytest.RecordProperty) -> None:

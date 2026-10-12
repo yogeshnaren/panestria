@@ -19,18 +19,33 @@ def recovery_instance() -> str:
     return _RECOVERY_INSTANCE
 
 
+_TERMINAL = frozenset({"SUCCESS", "ERROR", "MAX_RECOVERY_ATTEMPTS_EXCEEDED", "CANCELLED"})
+
+
 class RecoveryReport:
-    def __init__(self, workflow_id: str, status: str, error: str, recovery_instance_id: str) -> None:
+    def __init__(
+        self,
+        workflow_id: str,
+        status: str,
+        error: str,
+        recovery_instance_id: str,
+        recovery_attempts: int | None,
+        latency_ms: int,
+    ) -> None:
         self.workflow_id = workflow_id
         self.status = status
         self.error = error
         self.recovery_instance = recovery_instance_id
+        self.recovery_attempts = recovery_attempts
+        self.latency_ms = latency_ms
 
 
 def format_recovery_audit(report: RecoveryReport) -> str:
-    """One line for the recover command. It names the process and the workflow."""
+    """One line for the recover command. It names the process, the workflow, and the wait."""
     return json.dumps(
         {
+            "latency_ms": report.latency_ms,
+            "recovery_attempts": report.recovery_attempts,
             "recovery_instance": report.recovery_instance,
             "status": report.status,
             "workflow_id": report.workflow_id,
@@ -43,19 +58,29 @@ def format_recovery_audit(report: RecoveryReport) -> str:
 class RecoveryService:
     def recover_pending(self, workflow_id: str, timeout_seconds: float = 20) -> RecoveryReport:
         """Poll after launch. Launch itself resumes an unfinished workflow."""
-        deadline = time.monotonic() + timeout_seconds
+        started = time.monotonic()
+        deadline = started + timeout_seconds
+        attempts: int | None = None
         while time.monotonic() < deadline:
             status = DBOS.get_workflow_status(workflow_id)
-            if status is not None and status.status in {"SUCCESS", "ERROR"}:
+            if status is not None and status.recovery_attempts is not None:
+                attempts = int(status.recovery_attempts)
+            if status is not None and status.status in _TERMINAL:
                 observed = status.error
                 return RecoveryReport(
                     workflow_id,
                     str(status.status),
                     "" if observed is None else str(observed),
                     recovery_instance(),
+                    attempts,
+                    _elapsed_ms(started),
                 )
             time.sleep(0.2)
-        raise TimeoutError(workflow_id)
+        return RecoveryReport(workflow_id, "PENDING", "", recovery_instance(), attempts, _elapsed_ms(started))
+
+
+def _elapsed_ms(started: float) -> int:
+    return max(0, int((time.monotonic() - started) * 1000))
 
 
 def connect_for_admission(database_url: str) -> None:

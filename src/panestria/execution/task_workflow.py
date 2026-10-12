@@ -429,9 +429,9 @@ def main() -> None:
             return
         if mode == "recover":
             report = RecoveryService().recover_pending(workflow_id)
+            sys.stdout.write(format_recovery_audit(report) + "\n")
             if report.status != "SUCCESS":
                 raise SystemExit(2)
-            sys.stdout.write(format_recovery_audit(report) + "\n")
             return
         task_id = os.environ["PANESTRIA_TASK_ID"]
         digest = os.environ["PANESTRIA_CONTRACT_SHA256"]
