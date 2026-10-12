@@ -19,6 +19,7 @@ from panestria.contracts.approval import load_preview
 from panestria.contracts.goal import load_contract
 from panestria.execution.crash_gate import crash_gate
 from panestria.kernel.approvals import ApprovalService
+from panestria.kernel.cancellation import CancellationService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.approvals import request_expired, required_verdicts
@@ -107,11 +108,17 @@ class SyntheticJourney:
             self._confirm(connection, actor, goal_id, sandbox, snapshot)
             return self._snapshot(connection, actor, goal_id)
         if snapshot.task_state == "WAITING_APPROVAL" and snapshot.continuation_kind == "DISPATCH":
+            if self._decision(connection, snapshot) == "DENIED":
+                self._close_denied(connection, actor, goal_id, snapshot)
+                return self._snapshot(connection, actor, goal_id)
             if not self._approved(connection, snapshot, "contract_consent"):
                 return snapshot
             self._dispatch(connection, actor, goal_id, sandbox)
             return self._snapshot(connection, actor, goal_id)
         if snapshot.continuation_kind == "MERGE" and snapshot.task_state == "WAITING_APPROVAL":
+            if self._decision(connection, snapshot) == "DENIED":
+                self._close_denied(connection, actor, goal_id, snapshot)
+                return self._snapshot(connection, actor, goal_id)
             if not self._approved(connection, snapshot, "merge"):
                 return snapshot
             self._finalize(connection, actor, goal_id, sandbox)
@@ -649,6 +656,31 @@ class SyntheticJourney:
             None if artifact is None else str(artifact[0]),
             None if effect is None else str(effect[0]),
         )
+
+    def _decision(self, connection: Conn, snapshot: JourneySnapshot) -> str | None:
+        if snapshot.approval_id is None:
+            return None
+        row = connection.execute(
+            "SELECT state FROM panestria.approval_request WHERE id = %s",
+            (snapshot.approval_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return str(row[0])
+
+    def _close_denied(self, connection: Conn, actor: Actor, goal_id: str, snapshot: JourneySnapshot) -> None:
+        """A denied wait is terminal. It does not start a worker or a Git effect."""
+        if snapshot.expected_version is None:
+            raise KernelDenied("version_conflict")
+        CancellationService().cancel(
+            connection_uow(connection),
+            actor,
+            goal_id,
+            snapshot.expected_version,
+            "approval-denied",
+            correlation_id=str(uuid4()),
+        )
+        connection.commit()
 
     def _approved(self, connection: Conn, snapshot: JourneySnapshot, action: str) -> bool:
         if snapshot.approval_id is None:

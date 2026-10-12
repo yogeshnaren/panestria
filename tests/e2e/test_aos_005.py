@@ -1082,8 +1082,12 @@ def test_wait_restart_continuation(record_property: pytest.RecordProperty, tmp_p
             )
             with psycopg.connect(DATABASE_URL) as connection:
                 denied = journey.resume(connection, actor, str(denied_goal["goal_id"]), tmp_path / "deny-box")
+                again = journey.resume(connection, actor, str(denied_goal["goal_id"]), tmp_path / "deny-box")
             assert denied.attempts == 0
-            assert denied.goal_status != "COMPLETED"
+            assert denied.goal_status == "CANCELLED"
+            assert denied.task_state == "CANCELLED"
+            assert again.goal_status == "CANCELLED"
+            assert again.attempts == 0
     finally:
         subprocess.run([*COMPOSE, "down", "-v"], check=False)
 
