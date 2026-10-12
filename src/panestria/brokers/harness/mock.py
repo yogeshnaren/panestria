@@ -46,7 +46,7 @@ class MockWorkerAdapter:
         relative: str = "allowed.txt",
     ) -> None:
         self.manifest = manifest
-        self.mode = mode
+        self.mode = mode.replace("-", "_")
         self.seed = seed
         self.output_limit = output_limit
         self.relative = relative
@@ -87,7 +87,7 @@ class MockWorkerAdapter:
         kept, truncated = self._capture(process, timeout)
         if process.poll() is not None:
             self._terminated = True
-        artifact = self._artifact_hash()
+        artifact = self._claimed_artifact(kept) if self.mode == "artifact_corrupt" else self._artifact_hash()
         status = self._status(process.returncode)
         if self._escaped():
             status = "REJECTED"
@@ -178,7 +178,7 @@ class MockWorkerAdapter:
             return "CRASHED"
         if self.mode == "success" and returncode == 0 and not self._escaped():
             return "CANDIDATE"
-        if self.mode == "bad_test" and returncode == 0 and not self._escaped():
+        if self.mode in {"bad_test", "artifact_corrupt"} and returncode == 0 and not self._escaped():
             return "CANDIDATE"
         if self.mode == "verbose" and returncode == 0:
             return "CANDIDATE"
@@ -206,6 +206,12 @@ class MockWorkerAdapter:
             return ""
         return hashlib.sha256(path.read_bytes()).hexdigest()
 
+    def _claimed_artifact(self, kept: bytes) -> str:
+        claimed = kept.decode(errors="replace").strip()
+        if len(claimed) == 64 and all(character in "0123456789abcdef" for character in claimed):
+            return claimed
+        return ""
+
 
 def _relative_file(worktree: Path, relative: str) -> Path:
     path = Path(relative)
@@ -218,7 +224,7 @@ def _relative_file(worktree: Path, relative: str) -> Path:
 
 
 def main() -> None:
-    mode = os.environ["PANESTRIA_WORKER_MODE"]
+    mode = os.environ["PANESTRIA_WORKER_MODE"].replace("-", "_")
     seed = os.environ["PANESTRIA_WORKER_SEED"]
     worktree = Path(os.environ["PANESTRIA_WORKTREE"])
     root = Path(os.environ["PANESTRIA_SANDBOX_ROOT"])
@@ -232,6 +238,15 @@ def main() -> None:
         else:
             sys.stdout.write("done\n")
         return
+    if mode == "artifact_corrupt":
+        relative = os.environ.get("PANESTRIA_WORKER_RELATIVE", "allowed.txt")
+        target = _relative_file(worktree, relative)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        original = f"edit:{seed}\n".encode()
+        target.write_bytes(original)
+        sys.stdout.write(hashlib.sha256(original).hexdigest() + "\n")
+        target.write_bytes(b"mutated\n")
+        return
     if mode == "bad_test":
         relative = os.environ.get("PANESTRIA_WORKER_RELATIVE", "allowed.txt")
         target = _relative_file(worktree, relative)
@@ -243,7 +258,7 @@ def main() -> None:
         (root / "outside.txt").write_text("escape\n")
         sys.stdout.write("done\n")
         return
-    if mode == "hung":
+    if mode in {"hung", "timeout"}:
         while True:
             time.sleep(0.2)
     if mode == "false_done":

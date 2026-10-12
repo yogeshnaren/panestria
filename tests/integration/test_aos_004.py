@@ -152,7 +152,7 @@ def test_bad_path_and_tampered_checks(
     assert decide(off_scope, (result,), ("synthetic-required",), True).verdict == "FAIL"
 
     claimed = WorktreeManager().create(tmp_path / "narrative", "attempt-narrative", SEED)
-    narrator = MockWorkerAdapter(claimed, "bad_test", SEED)
+    narrator = MockWorkerAdapter(claimed, "bad-test", SEED)
     narrator.start()
     narrative = narrator.collect()
     assert narrative.status == "CANDIDATE"
@@ -167,8 +167,27 @@ def test_bad_path_and_tampered_checks(
     narrative_diff = inspect_diff(Path(claimed.root), Path(claimed.worktree), ALLOWLIST)
     assert decide(narrative_diff, (failed,), ("synthetic-required",), True).verdict == "FAIL"
 
+    corrupt = WorktreeManager().create(tmp_path / "corrupt", "attempt-corrupt", SEED)
+    liar = MockWorkerAdapter(corrupt, "artifact-corrupt", SEED)
+    liar.start()
+    lied = liar.collect()
+    corrupt_file = Path(corrupt.worktree) / "allowed.txt"
+    actual = hashlib.sha256(corrupt_file.read_bytes()).hexdigest()
+    assert lied.artifact_sha256 == hashlib.sha256(f"edit:{SEED}\n".encode()).hexdigest()
+    assert lied.artifact_sha256 != actual
+    assert lied.status == "CANDIDATE"
+    assert lied.accepted is False
+    assert lied.checks == "NOT_RUN"
+    corrupt_check = TrustedCheckRunner(registry).run("synthetic-required", corrupt_file, 5)
+    assert corrupt_check.verdict == "FAIL"
+    corrupt_store = ArtifactIngress(tmp_path / "corrupt-store", Path(corrupt.worktree))
+    published_corrupt = corrupt_store.finalize(corrupt_file, "synthetic-owner", 1)
+    assert published_corrupt.digest == actual
+    forged = ArtifactRef(lied.artifact_sha256, published_corrupt.path, 1, "synthetic-owner")
+    assert corrupt_store.recheck(forged) is False
+
     escaped = WorktreeManager().create(tmp_path / "escape", "attempt-escape", SEED)
-    outside = MockWorkerAdapter(escaped, "bad_path", SEED)
+    outside = MockWorkerAdapter(escaped, "bad-path", SEED)
     outside.start()
     assert outside.collect().status == "REJECTED"
     escaped_diff = inspect_diff(Path(escaped.root), Path(escaped.worktree), ALLOWLIST)
@@ -232,6 +251,10 @@ def test_hung_process_and_output(record_property: pytest.RecordProperty, tmp_pat
     assert claimed.status == "TIMED_OUT"
     assert claimed.accepted is False
     assert claimed.stdout_sha256 == hashlib.sha256(b"done\n").hexdigest()
+    _timeout_adapter, timed = _watch(tmp_path / "timeout", "attempt-timeout", "timeout", 0.4)
+    assert timed.status == "TIMED_OUT"
+    assert timed.accepted is False
+    assert timed.checks == "NOT_RUN"
     _flood_adapter, flooded = _watch(tmp_path / "flood", "attempt-flood", "flood", 0.5)
     assert flooded.status == "TIMED_OUT"
     assert flooded.accepted is False
