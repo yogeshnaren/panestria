@@ -13,7 +13,7 @@ AOS-001-S1 through AOS-005-S3 and the review corrections are on `r0-kernel`. The
 
 ## Failures and blockers
 
-AOS-001-TC04 has no fresh Ubuntu host. G0 cannot pass while that live case is `NOT_RUN`. No owner review of the corrected candidate has been recorded. The earlier group PASS marks on `af3d431` did not exercise the review counterexamples; those receipts stay historical and are not rewritten. `tests/e2e/test_aos_005.py::test_loopback_submit_scope_and_replay` still has no `gate_case_id`. `make r0-demo` starts the loopback server and the real CLI; it needs a migrated database and does not replace the fresh-host case.
+AOS-001-TC04 has no fresh Ubuntu host. G0 cannot pass while that live case is `NOT_RUN`. No owner review of the corrected candidate has been recorded. The earlier group PASS marks on `af3d431` did not exercise the review counterexamples; those receipts stay historical and are not rewritten. `tests/e2e/test_aos_005.py::test_loopback_submit_scope_and_replay` still has no `gate_case_id`. `make r0-demo` was run on this machine against the disposable database after `fc359b0` and printed one `COMPLETED` goal. That run is not AOS-001-TC04 and does not accept R0.
 
 ## Evidence
 

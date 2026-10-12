@@ -90,7 +90,7 @@ Catalog status for an observed case is `OS_BOUNDARY_OBSERVED_NOT_RELEASE` or `HE
 
 - AOS-001-TC04 needs a separate Ubuntu host. G0 stays incomplete until that live case is actually run and an owner accepts the corrected candidate.
 - The review counterexamples are covered by new regressions on `fc359b0`. Their case-group PASS marks are not a statement that every source clause was asserted. `test_loopback_submit_scope_and_replay` still has no case id.
-- `make r0-demo` is the documented demo. It starts `python -m panestria.api.serve` and the real CLI. It is not a fresh-host result.
+- `make r0-demo` starts `python -m panestria.api.serve` and the real CLI. On 2026-10-12 it completed one synthetic goal on the disposable database at source `fc359b0`. That observation is not AOS-001-TC04.
 - `GET /v1/artifacts/{id}`, `panestria artifact show`, `panestria approvals`, and `panestria goal cancel` are implemented. A corrupted artifact hash and a foreign owner are denied. A prepared effect stays `CANCELLING` and is not merged.
 - The CLI talks to a separate loopback TCP process in `tests/e2e/test_r0_loopback.py`. Older tests still forward urllib through FastAPI TestClient. uvicorn is not installed; the server is the packaged asyncio listener.
 - `/readyz` opens PostgreSQL when `PANESTRIA_DATABASE_URL` is set. The database check is `ready` or `database_unavailable`. The process stays not ready because the executor is not configured. With no URL, the check remains `not_probed`.
