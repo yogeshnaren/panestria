@@ -1,0 +1,12 @@
+[importlinter]
+root_packages =
+    badpkg
+
+[importlinter:contract:domain-not-api]
+name = Domain must not import API
+type = forbidden
+source_modules =
+    badpkg.domain
+forbidden_modules =
+    badpkg.api
+as_packages = False

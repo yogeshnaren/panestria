@@ -27,13 +27,21 @@ set +a
 ## Commands
 
 ```bash
+uv lock --check
+uv sync --frozen --group dev
+uv run --frozen ruff check .
+uv run --frozen mypy src/panestria
+uv run --frozen lint-imports --config .importlinter
+uv run --frozen pytest -m "not live"
+uv run --frozen python tools/secret_scan.py
 uv run --frozen panestria version
 uv run --frozen panestria health
-uv run --frozen pytest tests/integration/test_aos_001.py
 ```
 
 `version` exits 0. `health` exits 1 when the process is not ready and 2 when settings are rejected. In this slice the database check is `not_probed`; there is no live database probe. A timed-out readiness probe is killed, and shutdown is bounded to one second.
 
+Provider credentials are not required for these commands. CI uses the same frozen commands and does not inject provider keys.
+
 ## Scope
 
-S1 installs the `panestria` package, validates the `SYNTHETIC_DEV` profile, and serves typed `/healthz` and `/readyz` routes. Later slices add lint, CI, PostgreSQL, and domain workflows. The license file is the repository MIT license.
+The package, `SYNTHETIC_DEV` settings, and typed `/healthz` and `/readyz` routes are in place. Ruff, Mypy, Import Linter, and provider-free CI are the S2 toolchain. PostgreSQL, domain workflows, and the fresh-host live case are still later work. The license file is the repository MIT license.

@@ -18,7 +18,7 @@
       "aos_id": "AOS-001",
       "release": "R0",
       "lane": "contract",
-      "planned_nodeid": "tests/integration/test_aos_001.py::test_import_and_lock_failures",
+      "planned_nodeid": "tests/contract/test_aos_001_toolchain.py",
       "expected": "A disposable forbidden import, stale lock, failing lint/type/unit each fail its gate; positive installed src imports pass.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,

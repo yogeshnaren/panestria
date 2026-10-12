@@ -1,6 +1,6 @@
 # Panestria — phased implementation plan, MVP through full target
 
-**Date:** 2026-10-11. **Plan revision:** 2. **Source:** AgentOS v0.6.1 planning-fixes-1. **MVP boundary:** R3, explicitly confirmed by the owner. **Repository:** [yogeshnaren/panestria](https://github.com/yogeshnaren/panestria), public, main branch. **Historical baseline:** 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917 contained only README.md and the MIT LICENSE. **Live status:** AOS-001-S1 corrections await acceptance. AOS-001, R0, and MVP acceptance are not complete.
+**Date:** 2026-10-11. **Plan revision:** 2. **Source:** AgentOS v0.6.1 planning-fixes-1. **MVP boundary:** R3, explicitly confirmed by the owner. **Repository:** [yogeshnaren/panestria](https://github.com/yogeshnaren/panestria), public, main branch. **Historical baseline:** 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917 contained only README.md and the MIT LICENSE. **Live status:** R0 is in progress on local branch `r0-kernel`. S1 hermetic TC01 is not a release-gate pass. S2 is the active slice. AOS-001 and MVP acceptance are not complete.
 
 The delivery path is R0 → R1 → R2 → R3 → **owner MVP review and acceptance** → R4 → R5 → R6 → R7. Every original capability remains assigned to a phase or a named evidence-gated candidate. R1 and R2 are useful pilots; the complete MVP is accepted at R3. SOTA implementation requires a separate owner decision after MVP review.
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
@@ -32,7 +33,7 @@ def create_app(settings: Settings | ValidatedSettings, readiness_probe: Readines
     service = HealthService(validated, readiness_probe)
 
     @asynccontextmanager
-    async def lifespan(app: FastAPI):
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         del app
         yield
         service.shutdown()

@@ -12,14 +12,13 @@ import importlib.util
 import inspect
 import json
 import os
-import re
 import socket
 import subprocess
 import sys
 import threading
 import time
 import tomllib
-from collections.abc import Callable, Iterator, Mapping
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -39,7 +38,6 @@ from panestria.api.health import (
     ProbeCheck,
     ProbeObservation,
     Readiness,
-    SecretBearingOutputRejected,
 )
 from panestria.api.main import create_app
 from panestria.cli.main import app as cli_app

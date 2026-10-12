@@ -1,0 +1,31 @@
+[importlinter]
+root_packages =
+    panestria
+
+[importlinter:contract:root-not-presentation]
+name = Package root does not import API or CLI
+type = forbidden
+source_modules =
+    panestria
+forbidden_modules =
+    panestria.api
+    panestria.cli
+as_packages = False
+
+[importlinter:contract:config-not-presentation]
+name = Config does not import API or CLI
+type = forbidden
+source_modules =
+    panestria.config
+forbidden_modules =
+    panestria.api
+    panestria.cli
+as_packages = False
+
+[importlinter:contract:api-not-cli]
+name = API does not import CLI
+type = forbidden
+source_modules =
+    panestria.api
+forbidden_modules =
+    panestria.cli

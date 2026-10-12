@@ -28,6 +28,7 @@ import threading
 import time
 from datetime import datetime, timezone
 from typing import Literal, Protocol
+
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from panestria import package_version
@@ -49,6 +50,18 @@ PublicReason = Literal[
 _UUID = r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
 PROBE_SHUTDOWN_BUDGET_SECONDS = 1.0
 _MAX_RESULT_BYTES = 4096
+_PUBLIC_REASON: dict[str, PublicReason] = {
+    "capacity_unknown": "capacity_unknown",
+    "database_unavailable": "database_unavailable",
+    "deadline_exceeded": "deadline_exceeded",
+    "not_implemented": "not_implemented",
+    "not_probed": "not_probed",
+    "probe_busy": "probe_busy",
+    "probe_failed": "probe_failed",
+    "ready": "ready",
+}
+if set(_PUBLIC_REASON) != PUBLIC_HEALTH_REASONS:
+    raise RuntimeError("public health reason allowlist diverged")
 
 
 class SecretBearingOutputRejected(Exception):
@@ -393,7 +406,7 @@ def _public_database(observation: ProbeObservation) -> DependencyCheck | None:
     if len(databases) != 1:
         return None
     found = databases[0]
-    reason: PublicReason = found.reason if found.reason in PUBLIC_HEALTH_REASONS else "probe_failed"
+    reason = _PUBLIC_REASON.get(found.reason, "probe_failed")
     try:
         return DependencyCheck(name="database", status=found.status, reason=reason)
     except ValidationError:

@@ -2,7 +2,7 @@
 
 **Revision:** 1, 2026-10-11. **Repo:** [yogeshnaren/panestria](https://github.com/yogeshnaren/panestria). **Historical baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917 contained README and MIT LICENSE only. That sentence is the initial inventory, not the current tree. **MVP boundary:** R3.
 
-**Live status:** AOS-001-S1 corrections are awaiting acceptance. Hermetic AOS-001-TC01 evidence is not a release-gate pass. AOS-001, R0, and the R3 MVP remain incomplete. TC02–TC04 are not run.
+**Live status:** AOS-001-S1 hermetic TC01 passed and is not a release-gate pass. AOS-001-S2 toolchain is the active slice on `r0-kernel`. AOS-001-TC03, AOS-001-TC04, AOS-001, R0, and the R3 MVP remain incomplete.
 
 This package provides 31 item plans, 93 bounded coding handoffs, 124 scenario groups and source-clause traceability through the complete MVP. Global architecture, API/state/transaction/security/migration designs resolve interfaces that a coding agent otherwise might invent. Original architecture/specs/skills are preserved. R4–R7 remain visible in the wider coverage roadmap; none of the coding handoffs automatically proceeds to SOTA.
 

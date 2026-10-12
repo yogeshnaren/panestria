@@ -1,7 +1,7 @@
 # Goal progress
 
 **Phase:** R0, contract version 1 approved.  
-**Slice:** AOS-001-S2 is next.  
+**Slice:** AOS-001-S2, implemented and not yet evidenced on a clean commit.  
 **Branch:** `r0-kernel`.  
 **Last verified source commit:** `af6794e112c888fd61b6e6b98a4824acab9c1681`.  
 **Evidence commit:** `48e378ee2f03a98c2e637b1d4f3b6066a5d13eaf`.  
@@ -28,7 +28,7 @@ Contract approval is pending. AOS-001-TC04 has no fresh Ubuntu host. G0 cannot p
 
 ## Next action
 
-Implement AOS-001-S2 on `r0-kernel`.
+Commit AOS-001-S2, rerun the contract lane on that commit, and record evidence that names the tested source commit.
 
 ## Resume
 

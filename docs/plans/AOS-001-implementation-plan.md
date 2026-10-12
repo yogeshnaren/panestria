@@ -1,6 +1,6 @@
 # AOS-001 — Repository scaffold, developer toolchain, CI and local services: implementation plan
 
-**Release:** R0. **Format:** checklist; shared design supplies cross-component detail. **Historical baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917 (README and MIT LICENSE only). **Live status:** S1 corrections are awaiting acceptance; hermetic TC01 is not a release pass. AOS-001 remains incomplete. **Depends on:** none.
+**Release:** R0. **Format:** checklist; shared design supplies cross-component detail. **Historical baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917 (README and MIT LICENSE only). **Live status:** S1 hermetic TC01 is not a release pass. S2 toolchain is the active slice. AOS-001 remains incomplete. **Depends on:** none.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-001.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -55,7 +55,7 @@ These groups are planned obligations, not observed coverage. Actual assertions/p
 | Case | Lane | Planned node | Expected passing behavior |
 |---|---|---|---|
 | AOS-001-TC01 | unit | `tests/integration/test_aos_001.py` | Valid SYNTHETIC_DEV config and unavailable DB produce truthful bounded health; invalid bind/secret-bearing output rejected. Several tests in that module map to this one scenario group. |
-| AOS-001-TC02 | contract | `tests/integration/test_aos_001.py::test_import_and_lock_failures` | A disposable forbidden import, stale lock, failing lint/type/unit each fail its gate; positive installed src imports pass. |
+| AOS-001-TC02 | contract | `tests/contract/test_aos_001_toolchain.py` | A disposable forbidden import, stale lock, failing lint/type/unit each fail its gate; positive installed src imports pass. |
 | AOS-001-TC03 | integration | `tests/integration/test_aos_001.py::test_database_bootstrap_cleanup` | Fresh scoped DB is healthy, empty Alembic scaffold applies, wrong-volume/symlink cleanup denied. |
 | AOS-001-TC04 | live | `tests/integration/test_aos_001.py::test_fresh_host_loopback` | Fresh supported Ubuntu bootstrap, dependency cache and no-egress runtime smoke require no AI credentials; record real sockets/startup/RSS. |
 
