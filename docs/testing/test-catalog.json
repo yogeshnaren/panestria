@@ -173,7 +173,7 @@
       "release": "R0",
       "lane": "chaos",
       "planned_nodeid": "tests/integration/test_aos_004.py::test_artifact_partial_publish",
-      "expected": "Corrupt/partial blob denied; crash after finalize before DB ref leaves only a recoverable orphan, never passed evidence. Expired worktree cleanup records owner, TTL, and disk use, copies regular files into the store before deletion, and does not follow a directory symlink. A journey report is published at the stored lease epoch, and a later epoch publishes nothing.",
+      "expected": "Corrupt/partial blob denied; crash after finalize before DB ref leaves only a recoverable orphan, never passed evidence. Expired worktree cleanup records owner, TTL, and disk use, copies regular files into the store before deletion, and does not follow a directory symlink. A journey report is published at the stored lease epoch, and a later epoch publishes nothing. An older attempt is not reused.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
       "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"

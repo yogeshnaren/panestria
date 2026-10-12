@@ -702,6 +702,58 @@ def test_journey_publication_uses_the_stored_epoch(
         assert before == after
 
 
+def test_stale_attempt_is_not_reused(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+    _properties(record_property, "AOS-004-TC04", "chaos")
+    _database()
+    goal = "00000000-0000-4000-8000-0000000001b0"
+    contract = "00000000-0000-4000-8000-0000000001b1"
+    task = "00000000-0000-4000-8000-0000000001b2"
+    stale = "00000000-0000-4000-8000-0000000001b3"
+    digest = "ef" * 32
+    with psycopg.connect(DATABASE_URL) as connection:
+        connection.execute("INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'owner')", (OWNER,))
+        connection.execute("INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)", (PROJECT, OWNER))
+        connection.execute(
+            "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+            " VALUES (%s, %s, %s, 'synthetic', 'CREATED')",
+            (goal, OWNER, PROJECT),
+        )
+        connection.execute(
+            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+            " VALUES (%s, %s, 1, %s::jsonb, %s)",
+            (contract, goal, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', digest),
+        )
+        connection.execute(
+            "INSERT INTO panestria.task (id, goal_id, contract_id, name, state, lease_epoch)"
+            " VALUES (%s, %s, %s, 'epoch', 'READY', 4)",
+            (task, goal, contract),
+        )
+        connection.execute(
+            "INSERT INTO panestria.task_attempt"
+            " (id, task_id, attempt_number, lease_epoch, status, adapter)"
+            " VALUES (%s, %s, 1, 0, 'SUCCEEDED', 'mock')",
+            (stale, task),
+        )
+        connection.commit()
+        journey = SyntheticJourney()
+        current = journey._attempt(connection, task)
+        assert current != stale
+        again = journey._attempt(connection, task)
+        assert again == current
+        pending = journey._pending_attempt(connection, task, tmp_path)
+        assert pending == current
+        stored = connection.execute(
+            "SELECT attempt_number, lease_epoch, status, external_ref FROM panestria.task_attempt WHERE id = %s",
+            (current,),
+        ).fetchone()
+        assert stored == (2, 4, "RUNNING", None)
+        old = connection.execute(
+            "SELECT attempt_number, lease_epoch, status FROM panestria.task_attempt WHERE id = %s",
+            (stale,),
+        ).fetchone()
+        assert old == (1, 0, "SUCCEEDED")
+
+
 def _assert_event_sequence(
     recorded: tuple[WorkerEvent, ...],
     attempt_id: str,

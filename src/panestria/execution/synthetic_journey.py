@@ -13,6 +13,7 @@ from typing import Any
 from uuid import uuid4
 
 import psycopg
+from psycopg.errors import UniqueViolation
 
 from panestria.brokers.harness.mock import Candidate, MockWorkerAdapter
 from panestria.contracts.approval import load_preview
@@ -161,21 +162,18 @@ class SyntheticJourney:
         return workflow_id
 
     def _pending_attempt(self, connection: Conn, task_id: str, sandbox: Path) -> str:
-        row = connection.execute(
-            "SELECT id::text FROM panestria.task_attempt WHERE task_id = %s",
-            (task_id,),
-        ).fetchone()
-        if row is not None:
-            return str(row[0])
-        attempt_id = str(uuid4())
-        connection.execute(
-            "INSERT INTO panestria.task_attempt"
-            " (id, task_id, attempt_number, lease_epoch, status, adapter, external_ref)"
-            " VALUES (%s, %s, 1, %s, 'PENDING', 'mock', %s)",
-            (attempt_id, task_id, _task_epoch(connection, task_id), str(sandbox.resolve())),
+        epoch = _task_epoch(connection, task_id)
+        found = _matching_attempt(connection, task_id, epoch)
+        if found is not None:
+            return found
+        return _insert_attempt(
+            connection,
+            str(uuid4()),
+            task_id,
+            epoch,
+            "PENDING",
+            str(sandbox.resolve()),
         )
-        connection.commit()
-        return attempt_id
 
     def _linked_workflow(self, connection: Conn, actor: Actor, goal_id: str) -> str | None:
         row = connection.execute(
@@ -602,21 +600,11 @@ class SyntheticJourney:
             self._advance(connection, actor, task_id, target, "worker")
 
     def _attempt(self, connection: Conn, task_id: str) -> str:
-        row = connection.execute(
-            "SELECT id::text FROM panestria.task_attempt WHERE task_id = %s",
-            (task_id,),
-        ).fetchone()
-        if row is not None:
-            return str(row[0])
-        attempt_id = str(uuid4())
-        connection.execute(
-            "INSERT INTO panestria.task_attempt"
-            " (id, task_id, attempt_number, lease_epoch, status, adapter)"
-            " VALUES (%s, %s, 1, %s, 'RUNNING', 'mock')",
-            (attempt_id, task_id, _task_epoch(connection, task_id)),
-        )
-        connection.commit()
-        return attempt_id
+        epoch = _task_epoch(connection, task_id)
+        found = _matching_attempt(connection, task_id, epoch)
+        if found is not None:
+            return found
+        return _insert_attempt(connection, str(uuid4()), task_id, epoch, "RUNNING", None)
 
     def _effect_state(self, connection: Conn, task_id: str, state: str, note: str) -> None:
         connection.execute(
@@ -890,6 +878,49 @@ def snapshot_artifact(connection: Conn, task_id: str) -> str | None:
     if row is None:
         return None
     return str(row[0])
+
+
+def _matching_attempt(connection: Conn, task_id: str, epoch: int) -> str | None:
+    row = connection.execute(
+        "SELECT id::text FROM panestria.task_attempt WHERE task_id = %s AND lease_epoch = %s",
+        (task_id, epoch),
+    ).fetchone()
+    if row is None:
+        return None
+    return str(row[0])
+
+
+def _insert_attempt(
+    connection: Conn,
+    attempt_id: str,
+    task_id: str,
+    epoch: int,
+    status: str,
+    external_ref: str | None,
+) -> str:
+    number = connection.execute(
+        "SELECT COALESCE(MAX(attempt_number), 0) + 1 FROM panestria.task_attempt WHERE task_id = %s",
+        (task_id,),
+    ).fetchone()
+    assert number is not None
+    connection.execute("SAVEPOINT attempt_insert")
+    try:
+        connection.execute(
+            "INSERT INTO panestria.task_attempt"
+            " (id, task_id, attempt_number, lease_epoch, status, adapter, external_ref)"
+            " VALUES (%s, %s, %s, %s, %s, 'mock', %s)",
+            (attempt_id, task_id, int(number[0]), epoch, status, external_ref),
+        )
+        connection.execute("RELEASE SAVEPOINT attempt_insert")
+    except UniqueViolation:
+        connection.execute("ROLLBACK TO SAVEPOINT attempt_insert")
+        found = _matching_attempt(connection, task_id, epoch)
+        if found is None:
+            raise
+        connection.commit()
+        return found
+    connection.commit()
+    return attempt_id
 
 
 def _task_epoch(connection: Conn, task_id: str) -> int:
