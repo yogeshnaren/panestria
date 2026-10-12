@@ -12,11 +12,13 @@ import importlib.util
 import inspect
 import json
 import os
+import socket
 import subprocess
 import sys
 import threading
 import time
 import tomllib
+import urllib.request
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
@@ -626,43 +628,164 @@ def test_cli_reports_safe_configuration_errors(monkeypatch: pytest.MonkeyPatch) 
 
 
 _PROVIDER_KEYS = ("OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GEMINI_API_KEY")
+_SMOKE_PORT = 8767
 
 
-def listen_endpoints(table: str) -> list[tuple[str, int]]:
-    """Parse Linux TCP listen rows. Addresses stay in the table's own order."""
-    found: list[tuple[str, int]] = []
+def _tcp_address(raw: str) -> tuple[str, int]:
+    address, port_hex = raw.split(":")
+    octets = bytes.fromhex(address)
+    return ".".join(str(octet) for octet in octets[::-1]), int(port_hex, 16)
+
+
+def owned_sockets(table: str, fd_targets: list[str]) -> tuple[list[tuple[str, int]], list[str]]:
+    """Listen endpoints and non-loopback peers for sockets this process holds."""
+    inodes = {
+        target.removeprefix("socket:[").removesuffix("]")
+        for target in fd_targets
+        if target.startswith("socket:[") and target.endswith("]")
+    }
+    listens: list[tuple[str, int]] = []
+    egress: list[str] = []
     for line in table.splitlines()[1:]:
         fields = line.split()
-        if len(fields) < 4 or fields[3] != "0A":
+        if len(fields) < 10 or fields[9] not in inodes:
             continue
-        address, port_hex = fields[1].split(":")
-        octets = bytes.fromhex(address)
-        host = ".".join(str(octet) for octet in octets[::-1])
-        found.append((host, int(port_hex, 16)))
+        local_host, local_port = _tcp_address(fields[1])
+        remote_host, _remote_port = _tcp_address(fields[2])
+        if fields[3] == "0A":
+            listens.append((local_host, local_port))
+        elif fields[3] == "01" and remote_host != "127.0.0.1":
+            egress.append(remote_host)
+    return listens, egress
+
+
+def fresh_host_attested(report: object, boot_id: str) -> bool:
+    """Identity only. Listener, startup, and RSS fields in the file are ignored."""
+    if not isinstance(report, dict):
+        return False
+    return report.get("boot_id") == boot_id and report.get("venv_created_this_boot") is True
+
+
+def smoke_denial(
+    listens: list[tuple[str, int]],
+    egress: list[str],
+    rss_kb: str,
+    startup_seconds: float,
+) -> str | None:
+    if listens == [] or any(host != "127.0.0.1" for host, _port in listens):
+        return "fresh_host_listener_not_loopback"
+    if egress:
+        return "fresh_host_egress"
+    if not rss_kb.isdigit() or int(rss_kb) <= 0:
+        return "fresh_host_rss_missing"
+    if startup_seconds <= 0:
+        return "fresh_host_startup_missing"
+    return None
+
+
+def test_owned_listen_ignores_other_processes_and_rejects_egress() -> None:
+    table = (
+        "  sl local_address rem_address st tx_queue:rx_queue tr:tm retrnsmt uid timeout inode\n"
+        "   0: 0100007F:2235 00000000:0000 0A 00000000:00000000 00:00000000 00000000 0 0 111\n"
+        "   1: 00000000:0016 00000000:0000 0A 00000000:00000000 00:00000000 00000000 0 0 222\n"
+        "   2: 0100007F:2236 04030201:01BB 01 00000000:00000000 00:00000000 00000000 0 0 333\n"
+    )
+    listens, egress = owned_sockets(table, ["socket:[111]", "socket:[333]", "pipe:[9]"])
+    assert listens == [("127.0.0.1", 8757)]
+    assert egress == ["1.2.3.4"]
+    assert smoke_denial(listens, egress, "100", 0.2) == "fresh_host_egress"
+    assert smoke_denial([("0.0.0.0", 22)], [], "100", 0.2) == "fresh_host_listener_not_loopback"
+    assert smoke_denial(listens, [], "", 0.2) == "fresh_host_rss_missing"
+    assert smoke_denial(listens, [], "100", 0) == "fresh_host_startup_missing"
+    assert smoke_denial(listens, [], "100", 0.2) is None
+    assert fresh_host_attested({"boot_id": "abc", "listen": ["0.0.0.0:22"], "startup_seconds": 1}, "abc") is False
+    assert fresh_host_attested({"boot_id": "abc", "venv_created_this_boot": True, "rss_kb": "1"}, "abc") is True
+
+
+def test_this_process_listen_socket_is_attributed() -> None:
+    held = socket.socket()
+    held.bind(("127.0.0.1", 0))
+    held.listen(1)
+    try:
+        port = held.getsockname()[1]
+        listens, _egress = owned_sockets(Path("/proc/net/tcp").read_text(encoding="utf-8"), _fd_targets(os.getpid()))
+    finally:
+        held.close()
+    assert ("127.0.0.1", port) in listens
+
+
+def _fd_targets(pid: int) -> list[str]:
+    found: list[str] = []
+    for entry in Path(f"/proc/{pid}/fd").iterdir():
+        try:
+            found.append(os.readlink(entry))
+        except OSError:
+            continue
     return found
 
 
-def test_non_loopback_listen_rows_are_rejected() -> None:
-    table = (
-        "  sl local_address rem_address st\n"
-        "   0: 0100007F:2235 00000000:0000 0A\n"
-        "   1: 00000000:2235 00000000:0000 0A\n"
+def _measure_loopback_smoke() -> tuple[list[tuple[str, int]], list[str], str, float]:
+    database_url = os.environ.get("PANESTRIA_DATABASE_URL", "")
+    if database_url == "":
+        pytest.fail("fresh_host_database_unavailable")
+    env = {key: value for key, value in os.environ.items() if not key.startswith("PANESTRIA_")}
+    for key in _PROVIDER_KEYS:
+        env.pop(key, None)
+    env.update(
+        {
+            "PANESTRIA_DATABASE_URL": database_url,
+            "PANESTRIA_TOKEN": "synthetic-loopback-token",
+            "PANESTRIA_SCHEMA_VERSION": "1",
+            "PANESTRIA_PROFILE": "SYNTHETIC_DEV",
+            "PANESTRIA_BIND_HOST": "127.0.0.1",
+            "PANESTRIA_BIND_PORT": str(_SMOKE_PORT),
+            "PANESTRIA_READINESS_BUDGET_MS": "1000",
+        }
     )
-    endpoints = listen_endpoints(table)
-    assert endpoints == [("127.0.0.1", 8757), ("0.0.0.0", 8757)]
-    assert [host for host, _port in endpoints if host != "127.0.0.1"] == ["0.0.0.0"]
+    started = time.perf_counter()
+    process = subprocess.Popen(
+        [sys.executable, "-m", "panestria.api.serve"],
+        cwd=ROOT,
+        env=env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    try:
+        deadline = time.monotonic() + 20
+        while time.monotonic() < deadline:
+            if process.poll() is not None:
+                pytest.fail("fresh_host_server_exited")
+            try:
+                with urllib.request.urlopen(f"http://127.0.0.1:{_SMOKE_PORT}/healthz", timeout=1) as response:
+                    if response.status == 200:
+                        break
+            except OSError:
+                time.sleep(0.1)
+        else:
+            pytest.fail("fresh_host_startup_missing")
+        startup = time.perf_counter() - started
+        status = Path(f"/proc/{process.pid}/status").read_text(encoding="utf-8").splitlines()
+        rss = next((line.split()[1] for line in status if line.startswith("VmRSS:")), "")
+        listens, egress = owned_sockets(Path("/proc/net/tcp").read_text(encoding="utf-8"), _fd_targets(process.pid))
+        return [item for item in listens if item[1] == _SMOKE_PORT], egress, rss, startup
+    finally:
+        process.terminate()
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
 
 
 @pytest.mark.live
 def test_fresh_host_loopback(record_property: pytest.RecordProperty) -> None:
-    """AOS-001-TC04. This machine's measurements are not a fresh-host pass."""
+    """AOS-001-TC04. A report cannot supply sockets, startup, or RSS."""
     commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False)
     record_property("gate_case_id", "AOS-001-TC04")
     record_property("candidate_commit", commit.stdout.strip())
     record_property("lane", "live")
     record_property("execution_mode", "LIVE")
     record_property("aos_001_tc04", "NOT_RUN")
-    started = time.perf_counter()
     os_release = Path("/etc/os-release").read_text(encoding="utf-8")
     identity = dict(part.split("=", 1) for part in os_release.splitlines() if "=" in part)
     if identity.get("ID", "").strip('"') != "ubuntu":
@@ -670,22 +793,20 @@ def test_fresh_host_loopback(record_property: pytest.RecordProperty) -> None:
     for key in _PROVIDER_KEYS:
         if os.environ.get(key, "") != "":
             pytest.fail("provider_credential_present")
-    status = Path("/proc/self/status").read_text(encoding="utf-8").splitlines()
-    rss = next((line.split()[1] for line in status if line.startswith("VmRSS:")), "")
-    listeners = listen_endpoints(Path("/proc/net/tcp").read_text(encoding="utf-8"))
-    record_property("rss_kb", rss)
-    record_property("startup_seconds", f"{time.perf_counter() - started:.3f}")
-    record_property("loopback_listen_count", str(sum(host == "127.0.0.1" for host, _port in listeners)))
     report_path = os.environ.get("PANESTRIA_FRESH_HOST_REPORT", "")
-    if report_path == "":
-        pytest.fail("fresh_host_not_attested")
-    report_file = Path(report_path)
-    if not report_file.is_file():
-        pytest.fail("fresh_host_not_attested")
-    report = json.loads(report_file.read_text())
+    report: object = None
+    if report_path != "":
+        report_file = Path(report_path)
+        if report_file.is_file():
+            report = json.loads(report_file.read_text(encoding="utf-8"))
     boot_id = Path("/proc/sys/kernel/random/boot_id").read_text(encoding="utf-8").strip()
-    if not isinstance(report, dict) or report.get("boot_id") != boot_id:
+    if not fresh_host_attested(report, boot_id):
         pytest.fail("fresh_host_not_attested")
-    if report.get("venv_created_this_boot") is not True:
-        pytest.fail("fresh_host_not_attested")
+    listens, egress, rss, startup = _measure_loopback_smoke()
+    denial = smoke_denial(listens, egress, rss, startup)
+    if denial is not None:
+        pytest.fail(denial)
+    record_property("rss_kb", rss)
+    record_property("startup_seconds", f"{startup:.3f}")
+    record_property("loopback_listen_count", str(len(listens)))
     record_property("aos_001_tc04", "OBSERVED")
