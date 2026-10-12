@@ -31,12 +31,16 @@ from panestria.execution.recovery import (
 )
 from panestria.execution.task_workflow import (
     SERIALIZATION_ATTEMPT_LIMIT,
+    configure,
+    execute_admitted_attempt,
+    lease_attempt_tx,
     limit_serialization_attempts,
     run_effect_workflow,
     run_failing_workflow,
     run_task_workflow,
     settle_serialization_limit,
     settle_terminal_exception,
+    transition_task_tx,
 )
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -1064,6 +1068,127 @@ def test_unfinished_workflow_names_goal_and_task(database_url: str, record_prope
 
 def _clock_in_the_body() -> str:
     return str(time.time())
+
+
+def test_stale_attempt_epoch_does_not_move_the_task(
+    database_url: str, record_property: pytest.RecordProperty
+) -> None:
+    _properties(record_property, "AOS-003-TC02")
+    goal = "00000000-0000-4000-8000-0000000001a0"
+    contract = "00000000-0000-4000-8000-0000000001a1"
+    ready = "00000000-0000-4000-8000-0000000001a2"
+    created = "00000000-0000-4000-8000-0000000001a5"
+    stale = "00000000-0000-4000-8000-0000000001a3"
+    current = "00000000-0000-4000-8000-0000000001a4"
+    created_attempt = "00000000-0000-4000-8000-0000000001a6"
+    os.environ["PANESTRIA_DATABASE_URL"] = database_url
+    engine = sa.create_engine(sqlalchemy_url(database_url))
+    from panestria.execution import task_workflow
+
+    try:
+        with engine.begin() as connection:
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.principal (id, display_name) VALUES (:owner, 'owner')"
+                    " ON CONFLICT (id) DO NOTHING"
+                ),
+                {"owner": OWNER},
+            )
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.project (id, owner_id) VALUES (:project, :owner)"
+                    " ON CONFLICT (id) DO NOTHING"
+                ),
+                {"project": PROJECT, "owner": OWNER},
+            )
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+                    " VALUES (:goal, :owner, :project, 'epoch', 'CREATED')"
+                ),
+                {"goal": goal, "owner": OWNER, "project": PROJECT},
+            )
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+                    " VALUES (:contract, :goal, 1, " + _CONTRACT_BODY + ", :digest)"
+                ),
+                {"contract": contract, "goal": goal, "digest": DIGEST},
+            )
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.task (id, goal_id, contract_id, name, state, lease_epoch)"
+                    " VALUES (:ready, :goal, :contract, 'ready', 'READY', 2),"
+                    " (:created, :goal, :contract, 'created', 'CREATED', 3)"
+                ),
+                {"ready": ready, "created": created, "goal": goal, "contract": contract},
+            )
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.task_attempt"
+                    " (id, task_id, attempt_number, lease_epoch, status, adapter, external_ref)"
+                    " VALUES (:stale, :ready, 1, 0, 'PENDING', 'mock', '/tmp/panestria-stale'),"
+                    " (:current, :ready, 2, 2, 'PENDING', 'synthetic', NULL),"
+                    " (:created_attempt, :created, 1, 0, 'PENDING', 'synthetic', NULL)"
+                ),
+                {
+                    "stale": stale,
+                    "current": current,
+                    "created_attempt": created_attempt,
+                    "ready": ready,
+                    "created": created,
+                },
+            )
+        configure(database_url)
+        try:
+            assert execute_admitted_attempt(ready, 1) == "skipped"
+            with pytest.raises(KernelDenied) as denied:
+                lease_attempt_tx(ready, DIGEST, 1)
+            assert denied.value.code == "version_conflict"
+            with pytest.raises(KernelDenied) as blocked:
+                transition_task_tx(created, DIGEST, 1)
+            assert blocked.value.code == "version_conflict"
+            with engine.connect() as connection:
+                ready_row = connection.execute(
+                    sa.text("SELECT state, lease_epoch FROM panestria.task WHERE id = :task"),
+                    {"task": ready},
+                ).one()
+                created_row = connection.execute(
+                    sa.text("SELECT state FROM panestria.task WHERE id = :task"),
+                    {"task": created},
+                ).scalar_one()
+                stale_status = connection.execute(
+                    sa.text("SELECT status FROM panestria.task_attempt WHERE id = :attempt"),
+                    {"attempt": stale},
+                ).scalar_one()
+            assert tuple(ready_row) == ("READY", 2)
+            assert created_row == "CREATED"
+            assert stale_status == "PENDING"
+            leased = lease_attempt_tx(ready, DIGEST, 2)
+            assert leased["state"] == "LEASED"
+            with engine.begin() as connection:
+                connection.execute(
+                    sa.text("UPDATE panestria.task_attempt SET lease_epoch = 3 WHERE id = :attempt"),
+                    {"attempt": created_attempt},
+                )
+            moved = transition_task_tx(created, DIGEST, 1)
+            assert moved["state"] == "VALIDATING"
+            with engine.connect() as connection:
+                current_status = connection.execute(
+                    sa.text("SELECT status FROM panestria.task_attempt WHERE id = :attempt"),
+                    {"attempt": current},
+                ).scalar_one()
+                stale_status = connection.execute(
+                    sa.text("SELECT status FROM panestria.task_attempt WHERE id = :attempt"),
+                    {"attempt": stale},
+                ).scalar_one()
+            assert current_status == "RUNNING"
+            assert stale_status == "PENDING"
+            assert execute_admitted_attempt(ready, 1) == "skipped"
+        finally:
+            task_workflow._datasource = None
+    finally:
+        engine.dispose()
 
 
 def test_workflow_body_rejects_a_clock(record_property: pytest.RecordProperty) -> None:

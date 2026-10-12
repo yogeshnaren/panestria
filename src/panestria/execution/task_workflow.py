@@ -8,7 +8,7 @@ import time
 import uuid
 from collections.abc import Callable
 from pathlib import Path
-from typing import NoReturn, TypeVar
+from typing import Any, NoReturn, TypeVar
 
 import sqlalchemy as sa
 from dbos import DBOS, DBOSConfig, SetWorkflowID, SQLAlchemyDatasource
@@ -78,22 +78,31 @@ def _bound_transition(profile: object, previous: str, target: str, cause: str) -
     return transition_payload(previous, target, cause, profile, correlation_id), correlation_id
 
 
-def _transition_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
-    session = get_datasource().sql_session()
+def _locked_current(session: Any, task_id: str, attempt_number: int) -> tuple[Any, ...]:
+    """Lock the task only when the attempt is the current lease epoch."""
     current = session.execute(
         sa.text(
-            "SELECT task.state, task.row_version, task.goal_id::text, contract.sha256,"
+            "SELECT task.state, task.row_version, task.lease_epoch, task.goal_id::text, contract.sha256,"
             " contract.body->>'autonomy_profile_ref'"
             " FROM panestria.task AS task"
             " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
             " JOIN panestria.task_attempt AS attempt"
             " ON attempt.task_id = task.id AND attempt.attempt_number = :attempt"
+            " AND attempt.lease_epoch = task.lease_epoch"
             " WHERE task.id = :task_id"
             " FOR UPDATE OF task"
         ),
         {"task_id": task_id, "attempt": attempt_number},
-    ).one()
-    state, row_version, goal_id, digest, profile = current
+    ).one_or_none()
+    if current is None:
+        raise KernelDenied("version_conflict")
+    row = tuple(current)
+    return row
+
+
+def _transition_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
+    session = get_datasource().sql_session()
+    state, row_version, epoch, goal_id, digest, profile = _locked_current(session, task_id, attempt_number)
     if str(digest).strip() != contract_sha256:
         raise KernelDenied("invalid_contract")
     if str(state) != "CREATED":
@@ -112,9 +121,10 @@ def _transition_body(task_id: str, contract_sha256: str, attempt_number: int) ->
         sa.text(
             "UPDATE panestria.task SET state = :target, row_version = row_version + 1,"
             " updated_at = now() WHERE id = :task_id AND row_version = :version"
+            " AND lease_epoch = :epoch"
             " RETURNING row_version"
         ),
-        {"target": target, "task_id": task_id, "version": int(row_version)},
+        {"target": target, "task_id": task_id, "version": int(row_version), "epoch": int(epoch)},
     ).scalar_one_or_none()
     if updated is None:
         raise KernelDenied("version_conflict")
@@ -188,20 +198,7 @@ def synthetic_effect(task_id: str, contract_sha256: str) -> str:
 
 def _mark_failed_body(task_id: str, contract_sha256: str, attempt_number: int, cause: str) -> dict[str, str]:
     session = get_datasource().sql_session()
-    current = session.execute(
-        sa.text(
-            "SELECT task.state, task.row_version, task.goal_id::text, contract.sha256,"
-            " contract.body->>'autonomy_profile_ref'"
-            " FROM panestria.task AS task"
-            " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
-            " JOIN panestria.task_attempt AS attempt"
-            " ON attempt.task_id = task.id AND attempt.attempt_number = :attempt"
-            " WHERE task.id = :task_id"
-            " FOR UPDATE OF task"
-        ),
-        {"task_id": task_id, "attempt": attempt_number},
-    ).one()
-    state, row_version, goal_id, digest, profile = current
+    state, row_version, epoch, goal_id, digest, profile = _locked_current(session, task_id, attempt_number)
     if str(digest).strip() != contract_sha256:
         raise KernelDenied("invalid_contract")
     if str(state) == "FAILED":
@@ -214,9 +211,10 @@ def _mark_failed_body(task_id: str, contract_sha256: str, attempt_number: int, c
         sa.text(
             "UPDATE panestria.task SET state = :target, row_version = row_version + 1,"
             " updated_at = now() WHERE id = :task_id AND row_version = :version"
+            " AND lease_epoch = :epoch"
             " RETURNING row_version"
         ),
-        {"target": target, "task_id": task_id, "version": int(row_version)},
+        {"target": target, "task_id": task_id, "version": int(row_version), "epoch": int(epoch)},
     ).scalar_one_or_none()
     if updated is None:
         raise KernelDenied("version_conflict")
@@ -299,18 +297,7 @@ _PAST_READY = frozenset({"LEASED", "RUNNING", "VERIFYING", "WAITING_APPROVAL"})
 
 def _lease_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
     session = get_datasource().sql_session()
-    current = session.execute(
-        sa.text(
-            "SELECT task.state, task.row_version, task.goal_id::text, contract.sha256,"
-            " contract.body->>'autonomy_profile_ref'"
-            " FROM panestria.task AS task"
-            " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
-            " WHERE task.id = :task_id"
-            " FOR UPDATE OF task"
-        ),
-        {"task_id": task_id},
-    ).one()
-    state, row_version, goal_id, digest, profile = current
+    state, row_version, epoch, goal_id, digest, profile = _locked_current(session, task_id, attempt_number)
     if str(digest).strip() != contract_sha256:
         raise KernelDenied("invalid_contract")
     if str(state) in _PAST_READY:
@@ -322,9 +309,10 @@ def _lease_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict
         sa.text(
             "UPDATE panestria.task SET state = 'LEASED', row_version = row_version + 1,"
             " updated_at = now() WHERE id = :task_id AND row_version = :version"
+            " AND lease_epoch = :epoch"
             " RETURNING row_version"
         ),
-        {"task_id": task_id, "version": int(row_version)},
+        {"task_id": task_id, "version": int(row_version), "epoch": int(epoch)},
     ).scalar_one_or_none()
     if updated is None:
         raise KernelDenied("version_conflict")
@@ -332,9 +320,10 @@ def _lease_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict
         sa.text(
             "UPDATE panestria.task_attempt SET status = 'RUNNING',"
             " started_at = COALESCE(started_at, now())"
-            " WHERE task_id = :task_id AND attempt_number = :attempt AND status = 'PENDING'"
+            " WHERE task_id = :task_id AND attempt_number = :attempt"
+            " AND lease_epoch = :epoch AND status = 'PENDING'"
         ),
-        {"task_id": task_id, "attempt": attempt_number},
+        {"task_id": task_id, "attempt": attempt_number, "epoch": int(epoch)},
     )
     append_domain_event(
         session.connection(),
@@ -370,6 +359,7 @@ def execute_admitted_attempt(task_id: str, attempt_number: int) -> str:
             " JOIN panestria.goal AS goal ON goal.id = task.goal_id"
             " JOIN panestria.task_attempt AS attempt"
             " ON attempt.task_id = task.id AND attempt.attempt_number = %s"
+            " AND attempt.lease_epoch = task.lease_epoch"
             " WHERE task.id = %s",
             (attempt_number, task_id),
         ).fetchone()
@@ -453,6 +443,7 @@ def _record_exhausted_recovery(workflow_id: str, status: str) -> None:
             " FROM panestria.workflow_link AS link"
             " JOIN panestria.task AS task ON task.id = link.task_id"
             " JOIN panestria.task_attempt AS attempt ON attempt.id = link.attempt_id"
+            " AND attempt.lease_epoch = task.lease_epoch"
             " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
             " WHERE link.dbos_workflow_id = %s",
             (workflow_id,),
