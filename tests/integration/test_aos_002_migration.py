@@ -3,13 +3,18 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import subprocess
 import time
 from pathlib import Path
+from typing import Any
 
 import psycopg
 import pytest
+
+from panestria.kernel.repositories.goals import EVENT_LOOKUP_SQL, GOAL_LOOKUP_SQL
+from panestria.kernel.repositories.tasks import TASKS_BY_GOAL_SQL
 
 ROOT = Path(__file__).resolve().parents[2]
 COMPOSE = ["docker", "compose", "-f", str(ROOT / "compose.yaml"), "-p", "panestria-s3"]
@@ -24,6 +29,8 @@ OTHER_GOAL = "00000000-0000-4000-8000-000000000031"
 CONTRACT = "00000000-0000-4000-8000-000000000040"
 OTHER_CONTRACT = "00000000-0000-4000-8000-000000000041"
 TASK = "00000000-0000-4000-8000-000000000050"
+EVENT = "00000000-0000-4000-8000-000000000080"
+_FOOTPRINT_CEILING = 64 * 1024 * 1024
 DIGEST = "ab" * 32
 FINGERPRINT = ROOT / "migrations" / "schema_fingerprint.txt"
 SCHEMA_SNAPSHOT = ROOT / "docs" / "contracts" / "schema-snapshot.txt"
@@ -165,6 +172,7 @@ def test_kernel_migration_rejects_bad_scope_and_reapplies() -> None:
                 assert _schema_fingerprint(connection) != expected
                 connection.execute("ALTER TABLE panestria.goal DROP COLUMN drift_probe")
             assert _schema_fingerprint(connection) == expected
+            _assert_lookup_plans(connection)
         _alembic("downgrade 0001_scaffold", env)
         with psycopg.connect(DATABASE_URL) as connection:
             gone = connection.execute("SELECT to_regclass('panestria.goal')").fetchone()
@@ -188,6 +196,64 @@ def test_kernel_migration_rejects_bad_scope_and_reapplies() -> None:
             assert _schema_fingerprint(connection) == FINGERPRINT.read_text(encoding="utf-8")
     finally:
         _run([*COMPOSE, "down", "-v"])
+
+
+def _plan_nodes(value: object) -> list[dict[str, Any]]:
+    nodes: list[dict[str, Any]] = []
+    if isinstance(value, dict):
+        nodes.append(value)
+        for child in value.values():
+            nodes.extend(_plan_nodes(child))
+    elif isinstance(value, list):
+        for item in value:
+            nodes.extend(_plan_nodes(item))
+    return nodes
+
+
+def _explain(
+    connection: psycopg.Connection[tuple[object, ...]],
+    sql: str,
+    params: tuple[object, ...],
+) -> list[dict[str, Any]]:
+    with connection.transaction():
+        connection.execute("SET LOCAL enable_seqscan = off")
+        row = connection.execute(f"EXPLAIN (FORMAT JSON) {sql}", params).fetchone()
+    assert row is not None
+    raw = row[0]
+    parsed = json.loads(raw) if isinstance(raw, str) else raw
+    assert isinstance(parsed, list)
+    return _plan_nodes(parsed)
+
+
+def _assert_lookup_plans(connection: psycopg.Connection[tuple[object, ...]]) -> None:
+    connection.execute(
+        "INSERT INTO panestria.task_event (id, goal_id, task_id, kind, actor, payload)"
+        " VALUES (%s, %s, %s, 'goal.created', 'synthetic', '{}'::jsonb)",
+        (EVENT, GOAL, TASK),
+    )
+    connection.execute("ANALYZE panestria.goal, panestria.task, panestria.task_event")
+    lookups = (
+        (GOAL_LOOKUP_SQL, (GOAL, OWNER, PROJECT), {"goal_pkey", "goal_id_project_id_owner_id_key"}),
+        (EVENT_LOOKUP_SQL, (GOAL, 0, 20), {"ix_event_goal_seq"}),
+        (TASKS_BY_GOAL_SQL, (GOAL,), {"ix_task_goal"}),
+    )
+    for sql, params, expected in lookups:
+        nodes = _explain(connection, sql, params)
+        kinds = {node.get("Node Type") for node in nodes}
+        indexes = {node.get("Index Name") for node in nodes}
+        assert "Seq Scan" not in kinds
+        assert indexes & expected
+    footprint = connection.execute(
+        "SELECT COALESCE(sum(pg_total_relation_size(class.oid)), 0)::bigint"
+        " FROM pg_class AS class"
+        " JOIN pg_namespace AS namespace ON namespace.oid = class.relnamespace"
+        " WHERE namespace.nspname = 'panestria' AND class.relkind IN ('r', 'i', 'm', 't')"
+    ).fetchone()
+    database = connection.execute("SELECT pg_database_size(current_database())").fetchone()
+    assert footprint is not None and database is not None
+    size = int(footprint[0])
+    assert 0 < size <= _FOOTPRINT_CEILING
+    assert size < int(database[0])
 
 
 def _schema_fingerprint(connection: psycopg.Connection[tuple[object, ...]]) -> str:

@@ -10,6 +10,7 @@ from panestria.kernel.repositories.events import EVENT_LOCK
 from panestria.kernel.uow import UnitOfWork
 
 _EVENT_LOCK = EVENT_LOCK
+TASKS_BY_GOAL_SQL = "SELECT id::text FROM panestria.task WHERE goal_id = %s ORDER BY id FOR UPDATE"
 
 
 def lock_task(

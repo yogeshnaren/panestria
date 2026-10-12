@@ -63,7 +63,7 @@
       "release": "R0",
       "lane": "migration",
       "planned_nodeid": "tests/integration/test_aos_002_migration.py",
-      "expected": "Migration applies and restore/reapply works; wrong project/owner/task-contract linkage, orphan attempts and invalid states rejected by SQL.",
+      "expected": "Migration applies and restore/reapply works; wrong project/owner/task-contract linkage, orphan attempts and invalid states rejected by SQL. Goal, event, and task lookups use their indexes, and the panestria relation footprint stays within the recorded ceiling.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
       "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"

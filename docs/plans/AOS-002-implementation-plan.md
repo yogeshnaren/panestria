@@ -42,6 +42,7 @@ Repositories use the supplied UnitOfWork/session and never commit independently.
 | AOS-002-AC01 | Roundtrip schema and canonical hash property tests; immutable approved version refuses UPDATE; foreign-owner access returns denial. | AOS-002-S1, AOS-002-S2, AOS-002-S3; owning files/interfaces above | AOS-002-TC01, AOS-002-TC02, AOS-002-TC03, AOS-002-TC04; parameterize every condition in this clause |
 | AOS-002-AC02 | Concurrent updates same expected version: exactly one wins. DAG cycles and malformed verifier nodes fail admission. Missing/UNKNOWN required check blocks completion. | AOS-002-S1, AOS-002-S2, AOS-002-S3; owning files/interfaces above | AOS-002-TC01, AOS-002-TC02, AOS-002-TC03, AOS-002-TC04; parameterize every condition in this clause |
 | AOS-002-AC03 | Migration applies to empty DB, rejects invalid constraints; documented restore drill; error payloads do not leak private root. | AOS-002-S1, AOS-002-S2, AOS-002-S3; owning files/interfaces above | AOS-002-TC01, AOS-002-TC02, AOS-002-TC03, AOS-002-TC04; parameterize every condition in this clause |
+| AOS-002-OP01 | Capture slow-query plans for goal/task lookups; measure baseline DB footprint; keep exported schema snapshot in `docs/contracts`. | AOS-002-S2; `tests/integration/test_aos_002_migration.py` | AOS-002-TC02 explains the goal, event, and task lookups with sequential scans disabled and records the `panestria` relation footprint. |
 
 These groups are planned obligations, not observed coverage. Actual assertions/parameters must map each clause ID; split a broad scenario group when needed. A multi-condition clause cannot pass from only one happy-path assertion.
 
@@ -58,7 +59,7 @@ These groups are planned obligations, not observed coverage. Actual assertions/p
 | Case | Lane | Planned node | Expected passing behavior |
 |---|---|---|---|
 | AOS-002-TC01 | contract | `tests/contract/test_aos_002.py` | Canonical roundtrip hash stable; edited contract creates new version; raw command, legacy discriminator, bool budget and duplicate check IDs rejected. |
-| AOS-002-TC02 | migration | `tests/integration/test_aos_002_migration.py` | Migration applies and restore/reapply works; wrong project/owner/task-contract linkage, orphan attempts and invalid states rejected by SQL. |
+| AOS-002-TC02 | migration | `tests/integration/test_aos_002_migration.py` | Migration applies and restore/reapply works; wrong project/owner/task-contract linkage, orphan attempts and invalid states rejected by SQL. Goal, event, and task lookups use their indexes, and the `panestria` relation footprint stays within the recorded ceiling. |
 | AOS-002-TC03 | integration | `tests/integration/test_aos_002_services.py::test_concurrent_transition_and_cursor` | Two mutations with same row_version produce one winner; global task/goal cursor commit order and rollback gaps are safe. |
 | AOS-002-TC04 | security | `tests/integration/test_aos_002_services.py::test_foreign_scope_and_mass_assignment` | Foreign goal/read/write returns scoped denial; client approved_by/policy booleans and unknown executable fields rejected. |
 

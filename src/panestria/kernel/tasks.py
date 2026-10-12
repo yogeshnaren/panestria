@@ -5,7 +5,7 @@ from __future__ import annotations
 from panestria.contracts.task import ALLOWED_TRANSITIONS
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
-from panestria.kernel.repositories.tasks import append_event, lock_task
+from panestria.kernel.repositories.tasks import TASKS_BY_GOAL_SQL, append_event, lock_task
 from panestria.kernel.uow import UnitOfWork
 
 
@@ -74,10 +74,7 @@ class TaskService:
             elif locked_goal != goal_id:
                 raise KernelDenied("not_found")
         assert goal_id is not None
-        locked = uow.execute(
-            "SELECT id::text FROM panestria.task WHERE goal_id = %s ORDER BY id FOR UPDATE",
-            (goal_id,),
-        ).fetchall()
+        locked = uow.execute(TASKS_BY_GOAL_SQL, (goal_id,)).fetchall()
         nodes = [str(row[0]) for row in locked]
         stored = uow.execute(
             "SELECT dependency.task_id::text, dependency.depends_on::text"

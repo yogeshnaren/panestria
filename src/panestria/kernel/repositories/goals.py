@@ -4,6 +4,15 @@ from __future__ import annotations
 
 from panestria.kernel.uow import UnitOfWork
 
+GOAL_LOOKUP_SQL = (
+    "SELECT id::text, status FROM panestria.goal"
+    " WHERE id = %s AND owner_id = %s AND project_id = %s"
+)
+EVENT_LOOKUP_SQL = (
+    "SELECT seq, kind, payload FROM panestria.task_event"
+    " WHERE goal_id = %s AND seq > %s ORDER BY seq LIMIT %s"
+)
+
 
 def lock_idempotency(
     uow: UnitOfWork,
@@ -59,11 +68,7 @@ def insert_idempotency(
 
 
 def read_goal(uow: UnitOfWork, owner_id: str, project_id: str, goal_id: str) -> tuple[str, str] | None:
-    return uow.execute(
-        "SELECT id::text, status FROM panestria.goal"
-        " WHERE id = %s AND owner_id = %s AND project_id = %s",
-        (goal_id, owner_id, project_id),
-    ).fetchone()
+    return uow.execute(GOAL_LOOKUP_SQL, (goal_id, owner_id, project_id)).fetchone()
 
 
 def read_events(
@@ -76,9 +81,5 @@ def read_events(
 ) -> list[tuple[int, str, dict[str, object]]] | None:
     if read_goal(uow, owner_id, project_id, goal_id) is None:
         return None
-    rows = uow.execute(
-        "SELECT seq, kind, payload FROM panestria.task_event"
-        " WHERE goal_id = %s AND seq > %s ORDER BY seq LIMIT %s",
-        (goal_id, after, limit),
-    ).fetchall()
+    rows = uow.execute(EVENT_LOOKUP_SQL, (goal_id, after, limit)).fetchall()
     return [(int(row[0]), str(row[1]), dict(row[2])) for row in rows]

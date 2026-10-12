@@ -273,6 +273,19 @@
       "status": "NOT_IMPLEMENTED"
     },
     {
+      "id": "AOS-002-OP01",
+      "aos_id": "AOS-002",
+      "source_kind": "OP",
+      "source_clause": "Capture slow-query plans for goal/task lookups; measure baseline DB footprint; keep exported schema snapshot in `docs/contracts`.",
+      "slice_ids": [
+        "AOS-002-S2"
+      ],
+      "case_ids": [
+        "AOS-002-TC02"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
       "id": "AOS-003-F01",
       "aos_id": "AOS-003",
       "source_kind": "F",
