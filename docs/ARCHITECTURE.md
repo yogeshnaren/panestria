@@ -1,12 +1,12 @@
 # Architecture delta
 
-This file records the implementation on `53785d552a94386f54b0176525571a211b3360df`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
+This file records the implementation on `47352ba5b05de2b1ccbcfe9e978ac2984d23140f`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
 
 ## What runs
 
 One Python 3.12 package, `src/panestria`, with a frozen `uv.lock`. PostgreSQL 16 is the only database, published on `127.0.0.1:55432` by Compose project `panestria-s3`. Alembic head is `0004_check_candidate`. The schema diagram is `docs/design/schema-erd.md`.
 
-`python -m panestria.api.serve` listens on loopback, checks the database when `PANESTRIA_DATABASE_URL` is set, and runs the synthetic journey on a daemon thread. `make r0-demo` starts that server and drives submit, approval, evidence, and completion through the CLI. The API is FastAPI mounted by a stdlib asyncio HTTP server. The CLI is Typer and urllib.
+`python -m panestria.api.serve` listens on loopback, checks the database when `PANESTRIA_DATABASE_URL` is set, and runs the synthetic journey on a daemon thread. `make r0-demo` starts that server and drives submit, approval, evidence, and completion through the CLI. The API is FastAPI mounted by a stdlib asyncio HTTP server. The CLI is Typer and urllib, and it accepts a success body only when that body matches the response model published in `docs/api/openapi.json`.
 
 ## Packages present
 
