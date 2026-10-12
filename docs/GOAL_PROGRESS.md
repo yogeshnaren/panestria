@@ -3,13 +3,13 @@
 **Phase:** R0, contract version 1 approved. The 2026-10-12 review did not accept R0. R1 has not started.  
 **Slice:** Corrections through the loopback server are committed. No further phase is authorized.  
 **Branch:** `r0-kernel`.  
-**Last verified source commit:** `5d4606bfcbeb974177a2c3360849f8c5a687b162`.  
+**Last verified source commit:** `f17a3e267e6279be229b252de603b84ae5eefee6`.  
 **Evidence commit:** recorded after that source commit; this file is not part of the tested tree.  
 **Gate:** G0 is `INCOMPLETE`. Nineteen required cases were collected. AOS-001-TC04 is `NOT_RUN`. A collected case id is not a claim that every source clause passed, and it is not owner acceptance.
 
 ## Completed
 
-AOS-001-S1 through AOS-005-S3 and the review corrections are on `r0-kernel`. The non-live suite on `5d4606bfcbeb974177a2c3360849f8c5a687b162` collected 129 tests, 0 failures, and 0 skips in `evidence/R0-corrections.xml`, and deselected the live fresh-host test. Goal, event, and task lookups use their indexes, and the `panestria` relation footprint stays under 64 MiB. Expired worktree cleanup records owner and disk use and does not follow a directory symlink. That run includes the per-node verifier denials, latest-result selection, admitted DBOS restart, Git reconciliation, dispatch-time authorization, artifact epoch checks, stored-graph cycles, goal idempotency, malformed envelopes, body and database bounds, and a separate loopback process driven by the CLI. Items AOS-001 through AOS-005 remain `IN_PROGRESS`.
+AOS-001-S1 through AOS-005-S3 and the review corrections are on `r0-kernel`. The non-live suite on `f17a3e267e6279be229b252de603b84ae5eefee6` collected 130 tests, 0 failures, and 0 skips in `evidence/R0-corrections.xml`, and deselected the live fresh-host test. Goal, event, and task lookups use their indexes, and the `panestria` relation footprint stays under 64 MiB. Expired worktree cleanup records owner and disk use and does not follow a directory symlink. Unfinished workflows are listed with goal, task, and recovery attempts. That run includes the per-node verifier denials, latest-result selection, admitted DBOS restart, Git reconciliation, dispatch-time authorization, artifact epoch checks, stored-graph cycles, goal idempotency, malformed envelopes, body and database bounds, and a separate loopback process driven by the CLI. Items AOS-001 through AOS-005 remain `IN_PROGRESS`.
 
 ## Failures and blockers
 
@@ -17,7 +17,7 @@ AOS-001-TC04 is `tests/integration/test_aos_001.py::test_fresh_host_loopback` in
 
 ## Evidence
 
-`evidence/R0-corrections.xml` and `evidence/G0/evaluation.json` name `5d4606bfcbeb974177a2c3360849f8c5a687b162`. `docs/contracts/` holds the JSON Schemas rendered from the executable models and the database snapshot checked against the live fingerprint. `evidence/R0-demo-transcript.json` records two completed `make r0-demo` runs on the disposable database. `docs/design/schema-erd.md` is the diagram generated from that migrated schema. `evidence/R0-dbos-crash-transcript.txt` is a separate two-test restart run on `53785d5`. `docs/ARCHITECTURE.md` describes that implementation. None of these artifacts is AOS-001-TC04. `docs/SETUP.md` records the local install, database reset, and demo commands. It does not record a fresh-host startup time or idle RSS.  
+`evidence/R0-corrections.xml` and `evidence/G0/evaluation.json` name `f17a3e267e6279be229b252de603b84ae5eefee6`. `docs/contracts/` holds the JSON Schemas rendered from the executable models and the database snapshot checked against the live fingerprint. `evidence/R0-demo-transcript.json` records two completed `make r0-demo` runs on the disposable database. `docs/design/schema-erd.md` is the diagram generated from that migrated schema. `evidence/R0-dbos-crash-transcript.txt` is a separate two-test restart run on `53785d5`. `docs/ARCHITECTURE.md` describes that implementation. None of these artifacts is AOS-001-TC04. `docs/SETUP.md` records the local install, database reset, and demo commands. It does not record a fresh-host startup time or idle RSS.  
 Earlier slice receipts remain under `evidence/AOS-001-S1/` through `evidence/AOS-005-S3/` and name their own source commits.  
 The review package is `docs/reviews/R0-HANDOFF.md`.
 
