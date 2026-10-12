@@ -151,7 +151,7 @@
       "release": "R0",
       "lane": "security",
       "planned_nodeid": "tests/integration/test_aos_004.py::test_bad_path_and_tampered_checks",
-      "expected": "Off-scope path/symlink or altered protected mandatory test bundle fails; new worker tests cannot replace required checks. An executable mode on an otherwise allowed path is denied.",
+      "expected": "Off-scope path/symlink or altered protected mandatory test bundle fails; new worker tests cannot replace required checks. An executable mode on an otherwise allowed path is denied. Git push and a hook path other than `/dev/null` do not start.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
       "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"

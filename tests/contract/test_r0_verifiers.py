@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 
 from panestria.contracts.goal import GoalContract, contract_sha256, load_contract
+from panestria.sandbox.gitcmd import allow_git
 from panestria.sandbox.worktree import WorktreeManager
 from panestria.verification.diff import inspect_diff
 from panestria.verification.nodes import (
@@ -389,3 +390,22 @@ def test_loaded_registry_keeps_the_required_command_separate(
     suite = registry.resolve("synthetic-test-suite")
     required = registry.resolve("synthetic-required")
     assert suite.script_sha256 == required.script_sha256
+
+
+def test_git_commands_reject_push_and_hook_changes(record_property: pytest.RecordProperty) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
+    sha = "a" * 40
+    allow_git(["git", "-C", "/tmp/repo", "-c", "core.hooksPath=/dev/null", "commit", "-m", "synthetic-base"])
+    allow_git(["git", "-C", "/tmp/repo", "config", "core.hooksPath", "/dev/null"])
+    allow_git(["git", "--git-dir", "/tmp/dest.git", "update-ref", "refs/heads/main", sha, sha])
+    refused = (
+        ["git", "push", "origin", "main"],
+        ["git", "config", "--global", "core.hooksPath", "/tmp/hooks"],
+        ["git", "-C", "/tmp/repo", "config", "core.hooksPath", "/tmp/hooks"],
+        ["git", "-c", "core.hooksPath=/tmp/hooks", "commit", "-m", "synthetic-base"],
+        ["git", "commit", "-m", "synthetic-base"],
+        ["git", "-C", "/tmp/../outside", "rev-parse", "HEAD"],
+    )
+    for command in refused:
+        with pytest.raises(ValueError, match="git command"):
+            allow_git(command)

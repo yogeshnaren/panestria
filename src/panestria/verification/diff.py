@@ -8,6 +8,7 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from panestria.sandbox.gitcmd import allow_git
 from panestria.verification.paths import path_permitted
 
 _RESERVED_ROOT = frozenset({"repo", "attempts", "store", "protected"})
@@ -135,9 +136,11 @@ def _git(worktree: Path, args: list[str]) -> str | None:
 
 
 def _git_run(worktree: Path, args: list[str]) -> subprocess.CompletedProcess[str] | None:
+    command = ["git", "-C", str(worktree), *args]
     try:
+        allow_git(command)
         return subprocess.run(
-            ["git", "-C", str(worktree), *args],
+            command,
             text=True,
             capture_output=True,
             check=False,

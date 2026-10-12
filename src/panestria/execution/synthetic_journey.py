@@ -26,6 +26,7 @@ from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.tasks import TaskService
 from panestria.kernel.uow import UnitOfWork
 from panestria.sandbox.artifact_ingress import ArtifactIngress, ArtifactRef
+from panestria.sandbox.gitcmd import allow_git
 from panestria.sandbox.worktree import WorkspaceManifest, WorktreeManager
 from panestria.verification.nodes import NodeReport, evaluate_checks, report_output_consistent, required_passed
 from panestria.verification.policy import decide_action
@@ -774,6 +775,7 @@ def _interpreter() -> str:
 
 
 def _run(argv: list[str], check: bool = True, extra: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
+    allow_git(argv)
     env = os.environ.copy()
     env.update(_GIT)
     if extra:

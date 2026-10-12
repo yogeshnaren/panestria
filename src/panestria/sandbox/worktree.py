@@ -11,6 +11,8 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from panestria.sandbox.gitcmd import allow_git
+
 _ATTEMPT_ID = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 _OWNER = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 _GIT_ENV = {
@@ -158,6 +160,7 @@ class WorktreeManager:
         return report
 
     def _git(self, argv: list[str], env: dict[str, str]) -> str:
+        allow_git(["git", *argv])
         completed = subprocess.run(
             ["git", *argv],
             env=env,
@@ -312,6 +315,7 @@ def _publish(store: Path | None, report: CleanupReport) -> None:
 def _prune(repo: Path) -> None:
     if not repo.is_dir() or repo.is_symlink():
         return
+    allow_git(["git", "-C", str(repo), "worktree", "prune"])
     subprocess.run(
         ["git", "-C", str(repo), "worktree", "prune"],
         text=True,
