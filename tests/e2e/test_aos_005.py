@@ -1021,8 +1021,11 @@ def _openapi_document() -> dict[str, Any]:
         }
     )
     app = create_app(settings, probe)
-    mount_goal_api(app, GoalApi(TOKEN, OWNER, PROJECT, DATABASE_URL))
-    document = app.openapi()
+    try:
+        mount_goal_api(app, GoalApi(TOKEN, OWNER, PROJECT, DATABASE_URL))
+        document = app.openapi()
+    finally:
+        app.state.health.shutdown()
     if not isinstance(document, dict):
         raise AssertionError("openapi document is not an object")
     return document
