@@ -191,6 +191,20 @@ def test_package_install_and_preserved_license() -> None:
     for name in ENV_NAMES:
         assert name in example
     assert "sk-" not in example
+    assert "127.0.0.1:55432" in example
+
+
+@pytest.mark.unit
+def test_contributor_and_security_notes_have_no_secrets() -> None:
+    contributing = (ROOT / "CONTRIBUTING.md").read_text(encoding="utf-8")
+    security = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
+    for text in (contributing, security):
+        assert "R0 is not accepted" in text
+        assert "sk-" not in text
+        assert "AKIA" not in text
+        assert "BEGIN PRIVATE KEY" not in text
+    assert "make test" in contributing
+    assert "127.0.0.1" in security
 
 
 @pytest.mark.unit
