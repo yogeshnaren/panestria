@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import subprocess
@@ -121,6 +122,9 @@ def test_distinct_command_specs_do_not_share_one_result(tmp_path: Path, record_p
     )
     by_id = {item.check_id: item for item in reports}
     assert by_id["pass-zero"].verdict == "PASS"
+    retained = json.loads(by_id["pass-zero"].canonical_bytes())
+    assert base64.b64decode(retained["output_b64"]) == b""
+    assert retained["output_sha256"] == hashlib.sha256(b"").hexdigest()
     assert by_id["want-one"].verdict == "FAIL"
     assert by_id["want-one"].reason == "exit_0"
     assert by_id["unknown"].verdict == "FAIL"
@@ -140,7 +144,8 @@ def test_timeout_and_output_limit_fail_closed(tmp_path: Path, record_property: p
     assert flooded.verdict == "FAIL"
     assert flooded.reason == "output_limit"
     assert flooded.truncated is True
-    assert flooded.output_sha256 == hashlib.sha256(b"x" * OUTPUT_LIMIT).hexdigest()
+    assert flooded.output == b"x" * OUTPUT_LIMIT
+    assert flooded.output_sha256 == hashlib.sha256(flooded.output).hexdigest()
     expected = runner.run("exits-one", candidate, 5, expected_exit_code=1)
     assert expected.verdict == "PASS"
     assert expected.exit_code == 1
@@ -163,6 +168,33 @@ def test_narrower_path_check_rejects_an_otherwise_allowed_edit(
     )
     assert broad.ok is True
     assert broad.changed == ("tests/synthetic.txt",)
+    registry, runner, _candidate = _bundle(tmp_path / "diff-report")
+    reported = evaluate_checks(
+        _contract(
+            [
+                _check(
+                    "paths",
+                    True,
+                    {
+                        "type": "git-diff-path-check",
+                        "allowed_paths": ["tests/**"],
+                        "forbidden_paths": [".env*"],
+                    },
+                )
+            ]
+        ),
+        root=root,
+        worktree=worktree,
+        base_sha=base,
+        registry=registry,
+        runner=runner,
+        attempt_id="attempt-1",
+        candidate_sha256="ab" * 32,
+        candidate_path=target,
+    )
+    stored = json.loads(reported[0].canonical_bytes())
+    assert stored["changed_paths"] == ["tests/synthetic.txt"]
+    assert stored["verdict"] == "PASS"
     narrow = inspect_diff(
         root,
         worktree,

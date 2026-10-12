@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 from dataclasses import dataclass
@@ -47,15 +48,19 @@ class NodeReport:
     output_sha256: str = ""
     denied_paths: tuple[str, ...] = ()
     tree_sha: str = ""
+    changed_paths: tuple[str, ...] = ()
+    output_b64: str = ""
 
     def canonical_bytes(self) -> bytes:
         payload = {
             "attempt_id": self.attempt_id,
             "base_sha": self.base_sha,
             "candidate_sha256": self.candidate_sha256,
+            "changed_paths": list(self.changed_paths),
             "check_id": self.check_id,
             "contract_sha256": self.contract_sha256,
             "denied_paths": list(self.denied_paths),
+            "output_b64": self.output_b64,
             "output_sha256": self.output_sha256,
             "reason": self.reason,
             "required": self.required,
@@ -217,6 +222,7 @@ def _command(
         attempt_id,
         digest,
         result.output_sha256,
+        output=result.output,
     )
 
 
@@ -255,6 +261,7 @@ def _diff(
         hashlib.sha256(report.candidate_tree.encode()).hexdigest() if report.candidate_tree else "",
         report.denied,
         report.candidate_tree,
+        report.changed,
     )
 
 
@@ -324,6 +331,8 @@ def _report(
     output_sha256: str = "",
     denied_paths: tuple[str, ...] = (),
     tree_sha: str = "",
+    changed_paths: tuple[str, ...] = (),
+    output: bytes = b"",
 ) -> NodeReport:
     return NodeReport(
         check_id,
@@ -338,4 +347,6 @@ def _report(
         output_sha256,
         denied_paths,
         tree_sha,
+        changed_paths,
+        base64.b64encode(output).decode("ascii"),
     )

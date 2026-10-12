@@ -24,6 +24,7 @@ class CheckResult:
     exit_code: int | None = None
     output_sha256: str = ""
     truncated: bool = False
+    output: bytes = b""
 
 
 class TrustedCheckRunner:
@@ -61,12 +62,12 @@ class TrustedCheckRunner:
         exit_code, output, failure = _bounded(list(command.argv), self.registry.bundle_root, env, deadline_seconds)
         digest = hashlib.sha256(output).hexdigest()
         if failure == "timeout":
-            return CheckResult(ref, "FAIL", "timeout", exit_code, digest, False)
+            return CheckResult(ref, "FAIL", "timeout", exit_code, digest, False, output)
         if failure == "output_limit":
-            return CheckResult(ref, "FAIL", "output_limit", exit_code, digest, True)
+            return CheckResult(ref, "FAIL", "output_limit", exit_code, digest, True, output)
         if exit_code == expected_exit_code:
-            return CheckResult(ref, "PASS", "ok", exit_code, digest, False)
-        return CheckResult(ref, "FAIL", f"exit_{exit_code}", exit_code, digest, False)
+            return CheckResult(ref, "PASS", "ok", exit_code, digest, False, output)
+        return CheckResult(ref, "FAIL", f"exit_{exit_code}", exit_code, digest, False, output)
 
 
 def _bounded(
