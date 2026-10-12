@@ -8,6 +8,7 @@ license = "MIT"
 authors = [{ name = "Yogesh Naren Bundey" }]
 dependencies = [
   "alembic>=1.20.0",
+  "dbos==3.2.0",
   "fastapi",
   "psycopg[binary]>=3.3.6",
   "pydantic>=2",

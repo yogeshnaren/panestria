@@ -6,9 +6,10 @@ import json
 from typing import Any
 from uuid import uuid4
 
+from panestria.kernel.repositories.events import EVENT_LOCK
 from panestria.kernel.uow import UnitOfWork
 
-_EVENT_LOCK = (106971, 1)
+_EVENT_LOCK = EVENT_LOCK
 
 
 def lock_task(
