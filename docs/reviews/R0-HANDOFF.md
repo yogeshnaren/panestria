@@ -3,11 +3,11 @@
 The 2026-10-12 review did not accept R0. This file keeps that review record and the later correction. It is not an owner acceptance, a G0 pass, or permission to start R1.
 
 **Reviewed source:** `af3d431e775c2f3f23722d272dd00f2863689d5b`. Its report remains `evidence/AOS-005-S3.xml`.  
-**Corrected source:** `d6fb08f96141a8c95e6038c79bd722709e7bfcc4` on `r0-kernel`.  
-**Correction report:** `evidence/R0-corrections.xml`, SHA-256 `afbc136de1ab16b82fb8a4d8432c0f651a06ccd0ab145fe5444047897a2b736c`. 110 tests, 0 failures, 0 errors, 0 skips. The live fresh-host test was deselected.  
+**Corrected source:** `36ccf6b27c09cb0802729e03ad14de5079e30cc3` on `r0-kernel`.  
+**Correction report:** `evidence/R0-corrections.xml`, SHA-256 `045ade23ae3f7fd8a1f5cc571707a4d1a56f75013a266e625cd694b90ad04305`. 111 tests, 0 failures, 0 errors, 0 skips. The live fresh-host test was deselected.  
 **Gate:** `evidence/G0/evaluation.json` records G0 as `INCOMPLETE`. Nineteen of twenty required cases were collected. `AOS-001-TC04` is `NOT_RUN`. A case-group PASS does not prove every source clause and is not owner acceptance.
 
-The original handoff commit recorded `af3d431`. This report's source parent is `d6fb08f96141a8c95e6038c79bd722709e7bfcc4`. Older receipts, including the `fc359b0` report, are not rewritten.
+The original handoff commit recorded `af3d431`. This report's source parent is `36ccf6b27c09cb0802729e03ad14de5079e30cc3`. Older receipts are not rewritten.
 
 ## Ordered commits
 
@@ -15,6 +15,7 @@ Commits are newest first, from the approved contract through the journey. Eviden
 
 | Commit | Reason |
 |---|---|
+| `36ccf6b` | Attribute smoke sockets to the server process and still fail closed here. |
 | `d6fb08f` | Measure fresh-host listeners in the test and still fail closed here. |
 | `fc359b0` | Map the correction regressions onto the cases they exercise. |
 | `6439c42` | Loopback server, artifact read, approval list, cancellation, and `make r0-demo`. |
@@ -89,7 +90,7 @@ Catalog status for an observed case is `OS_BOUNDARY_OBSERVED_NOT_RELEASE` or `HE
 
 ## Known issues
 
-- AOS-001-TC04 is `tests/integration/test_aos_001.py::test_fresh_host_loopback` in `d6fb08f`, marked `live`. It reads RSS and `/proc/net/tcp`, then fails with `fresh_host_not_attested` on this machine. G0 stays incomplete until a fresh Ubuntu host records a pass and an owner accepts the candidate.
+- AOS-001-TC04 is `tests/integration/test_aos_001.py::test_fresh_host_loopback` in `36ccf6b`, marked `live`. It fails with `fresh_host_not_attested` on this machine before starting a server. Sockets, startup, and RSS are read from that process only after attestation. G0 stays incomplete until a fresh Ubuntu host records a pass and an owner accepts the candidate.
 - The review counterexamples are covered by new regressions on `fc359b0`. Their case-group PASS marks are not a statement that every source clause was asserted. `test_loopback_submit_scope_and_replay` still has no case id.
 - `make r0-demo` starts `python -m panestria.api.serve` and the real CLI. On 2026-10-12 it completed one synthetic goal on the disposable database at source `fc359b0`. That observation is not AOS-001-TC04.
 - `GET /v1/artifacts/{id}`, `panestria artifact show`, `panestria approvals`, and `panestria goal cancel` are implemented. A corrupted artifact hash and a foreign owner are denied. A prepared effect stays `CANCELLING` and is not merged.
@@ -134,7 +135,7 @@ Expected integrated result, from a clean tree at the tested source:
 uv run --frozen pytest -m "not live" --junitxml=/tmp/panestria-r0.xml -q
 ```
 
-On `d6fb08f96141a8c95e6038c79bd722709e7bfcc4` the same command collected 110 passed tests, 0 failures, and 0 skips, and deselected the live fresh-host case. The historical `af3d431` report remains 93 passed and is not a result for the corrected tree.
+On `36ccf6b27c09cb0802729e03ad14de5079e30cc3` the same command collected 111 passed tests, 0 failures, and 0 skips, and deselected the live fresh-host case. The historical `af3d431` report remains 93 passed and is not a result for the corrected tree.
 
 Positive journey:
 
