@@ -630,14 +630,13 @@ class SyntheticJourney:
             (task_id,),
         ).fetchone()
         artifact_sha = snapshot_artifact(connection, task_id)
-        effect = connection.execute(
-            "SELECT state FROM panestria.side_effect"
-            " WHERE task_id = %s AND starts_with(effect_key, 'approval:')"
-            " ORDER BY CASE state WHEN 'PREPARED' THEN 0 WHEN 'EXECUTING' THEN 1"
-            " WHEN 'UNKNOWN' THEN 2 WHEN 'RECONCILING' THEN 3 ELSE 4 END"
-            " LIMIT 1",
-            (task_id,),
-        ).fetchone()
+        effect = None
+        if approval is not None:
+            effect = connection.execute(
+                "SELECT state FROM panestria.side_effect"
+                " WHERE task_id = %s AND effect_key = %s",
+                (task_id, f"approval:{approval[0]}"),
+            ).fetchone()
         goal = connection.execute("SELECT status FROM panestria.goal WHERE id = %s", (goal_id,)).fetchone()
         return JourneySnapshot(
             "" if goal is None else str(goal[0]),
