@@ -55,7 +55,7 @@
       "expected": "Canonical roundtrip hash stable; edited contract creates new version; raw command, legacy discriminator, bool budget and duplicate check IDs rejected.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "HERMETIC_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-002-TC02",

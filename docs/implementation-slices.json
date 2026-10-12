@@ -98,12 +98,16 @@
         "src/panestria/kernel/repositories/goals.py",
         "src/panestria/kernel/repositories/tasks.py"
       ],
-      "planned_test_file": "tests/integration/test_aos_002.py",
+      "planned_test_file": "tests/contract/test_aos_002.py",
       "case_ids": [
         "AOS-002-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
+      "status": "HERMETIC_OBSERVED_AWAITING_REVIEW",
+      "evidence_refs": [
+        "evidence/AOS-002-S1.xml",
+        "evidence/AOS-002-S1/case-result.json"
+      ],
       "prompt_ref": "cursor/prompts/AOS-002-S1.md"
     },
     {

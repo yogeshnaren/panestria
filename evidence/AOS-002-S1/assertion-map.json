@@ -1,0 +1,91 @@
+{
+  "slice": "AOS-002-S1",
+  "case_id": "AOS-002-TC01",
+  "nodeids": [
+    "tests/contract/test_aos_002.py::test_canonical_hash_is_stable_across_key_order_and_money_spelling",
+    "tests/contract/test_aos_002.py::test_edited_contract_creates_a_new_version",
+    "tests/contract/test_aos_002.py::test_legacy_raw_command_bool_budget_and_duplicate_ids_are_rejected",
+    "tests/contract/test_aos_002.py::test_r2_runners_are_not_admitted[citation-check]",
+    "tests/contract/test_aos_002.py::test_r2_runners_are_not_admitted[rubric-review]",
+    "tests/contract/test_aos_002.py::test_unknown_approval_field_and_restricted_egress_are_rejected"
+  ],
+  "lane": "contract",
+  "execution_mode": "HERMETIC",
+  "verdict": "PASS",
+  "release_gate": "INCOMPLETE",
+  "release_gate_reason": "TC01 passed on 834ae35db83126e9c96e8e9e320d0514ee39077a. Domain migration TC02, concurrency TC03, and scope TC04 are not run. G0 is not a pass.",
+  "not_run": [
+    {
+      "case_id": "AOS-002-TC02",
+      "reason": "AOS-002-S2"
+    },
+    {
+      "case_id": "AOS-002-TC03",
+      "reason": "AOS-002-S3"
+    },
+    {
+      "case_id": "AOS-002-TC04",
+      "reason": "AOS-002-S3"
+    },
+    {
+      "case_id": "AOS-001-TC04",
+      "reason": "fresh Ubuntu host not available"
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "uv",
+        "lock",
+        "--check",
+        "--offline"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "mypy",
+        "src/panestria"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "lint-imports",
+        "--config",
+        ".importlinter"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-m",
+        "not live",
+        "--junitxml=evidence/AOS-002-S1.xml"
+      ],
+      "exit_code": 0,
+      "passed": 77
+    }
+  ]
+}
