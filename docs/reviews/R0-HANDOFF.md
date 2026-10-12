@@ -1,3 +1,5 @@
+> Current tested candidate and runnable browser review: [R0-DEMO-REVIEW.md](R0-DEMO-REVIEW.md). Older candidate/status text below is preserved history.
+
 # R0 handoff — current technical gate PASS
 
 See [technical completion](R0-TECHNICAL-COMPLETION.md) for the current candidate and evidence. Owner acceptance is pending. The following report is the preserved historical review/correction narrative; its INCOMPLETE/NOT_RUN statements are superseded by the new completion evidence.

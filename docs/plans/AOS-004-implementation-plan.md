@@ -2,7 +2,7 @@
 
 **Release:** R0. **Format:** checklist; shared design supplies cross-component detail. **Implementation:** S1 through S3 observed. **Tests:** TC01 through TC04 on a real worktree, process group, and disposable PostgreSQL; not a release pass. **Depends on:** AOS-003. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
-**Current technical validation:** G0 PASS on `d457242e9e6ee2c54fbd99db99cb35319b1c8783`; all R0 cases observed, including fresh Ubuntu. Owner acceptance remains pending. See [completion](../reviews/R0-TECHNICAL-COMPLETION.md). Earlier status lines below are historical.
+**Current technical validation:** G0 PASS on `f161193ed31918592015ec9e68163d31d77cb0ae`; all R0 cases observed, including fresh Ubuntu. Owner acceptance remains pending. See [completion](../reviews/R0-DEMO-REVIEW.md). Earlier status lines below are historical.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-004.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 

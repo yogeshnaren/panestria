@@ -1,0 +1,11 @@
+docker compose -f compose.yaml -p panestria-s3 down
+ Container panestria-s3-postgres-1  Stopping
+ Container panestria-s3-postgres-1  Stopped
+ Container panestria-s3-postgres-1  Removing
+ Container panestria-s3-postgres-1  Removed
+ Network panestria-s3_default  Removing
+ Network panestria-s3_default  Removed
+docker compose -f compose.yaml -p panestria-s3 down -v
+ Volume panestria_s3_pgdata  Removing
+ Volume panestria_s3_pgdata  Removed
+FRESH_ACCEPTANCE_COMPLETE

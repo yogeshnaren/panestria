@@ -23,7 +23,8 @@
       "evidence_refs": [
         "evidence/AOS-001.xml",
         "evidence/AOS-001-S1/case-result.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-001-S1.md"
     },
@@ -50,7 +51,8 @@
       "evidence_refs": [
         "evidence/AOS-001-S2.xml",
         "evidence/AOS-001-S2/case-result.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-001-S2.md"
     },
@@ -80,7 +82,8 @@
       "evidence_refs": [
         "evidence/AOS-001-S3.xml",
         "evidence/AOS-001-S3/case-result.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-001-S3.md"
     },
@@ -110,7 +113,8 @@
       "evidence_refs": [
         "evidence/AOS-002-S1.xml",
         "evidence/AOS-002-S1/case-result.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-002-S1.md"
     },
@@ -140,7 +144,8 @@
       "evidence_refs": [
         "evidence/AOS-002-S2.xml",
         "evidence/AOS-002-S2/case-result.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-002-S2.md"
     },
@@ -174,7 +179,8 @@
         "evidence/AOS-002-S3.xml",
         "evidence/AOS-002-S3/case-result-TC03.json",
         "evidence/AOS-002-S3/case-result-TC04.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-002-S3.md"
     },
@@ -202,7 +208,8 @@
       "evidence_refs": [
         "evidence/AOS-003-S1.xml",
         "evidence/AOS-003-S1/case-result.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-003-S1.md"
     },
@@ -230,7 +237,8 @@
       "evidence_refs": [
         "evidence/AOS-003-S2.xml",
         "evidence/AOS-003-S2/case-result.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-003-S2.md"
     },
@@ -262,7 +270,8 @@
         "evidence/AOS-003-S3.xml",
         "evidence/AOS-003-S3/case-result-TC03.json",
         "evidence/AOS-003-S3/case-result-TC04.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-003-S3.md"
     },
@@ -291,7 +300,8 @@
       "evidence_refs": [
         "evidence/AOS-004-S1.xml",
         "evidence/AOS-004-S1/case-result.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-004-S1.md"
     },
@@ -320,7 +330,8 @@
       "evidence_refs": [
         "evidence/AOS-004-S2.xml",
         "evidence/AOS-004-S2/case-result.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-004-S2.md"
     },
@@ -353,7 +364,8 @@
         "evidence/AOS-004-S3.xml",
         "evidence/AOS-004-S3/case-result-TC03.json",
         "evidence/AOS-004-S3/case-result-TC04.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-004-S3.md"
     },
@@ -386,7 +398,8 @@
         "evidence/AOS-005-S1.xml",
         "evidence/AOS-005-S1/assertion-map.json",
         "evidence/AOS-005-S1/environment-manifest.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-005-S1.md"
     },
@@ -419,7 +432,8 @@
         "evidence/AOS-005-S2/case-result-TC02.json",
         "evidence/AOS-005-S2/assertion-map.json",
         "evidence/AOS-005-S2/environment-manifest.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-005-S2.md"
     },
@@ -458,7 +472,8 @@
         "evidence/AOS-005-S3/case-result-TC04.json",
         "evidence/AOS-005-S3/assertion-map.json",
         "evidence/AOS-005-S3/environment-manifest.json",
-        "evidence/R0-completion/"
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
       ],
       "prompt_ref": "cursor/prompts/AOS-005-S3.md"
     },

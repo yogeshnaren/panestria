@@ -1,22 +1,22 @@
 {
   "gate": "G0",
   "verdict": "PASS",
-  "candidate_commit": "d457242e9e6ee2c54fbd99db99cb35319b1c8783",
+  "candidate_commit": "f161193ed31918592015ec9e68163d31d77cb0ae",
   "reason": "All required G0 groups observed; fresh-host identity, bootstrap/offline reinstall and live measurements verified. Owner handoff acceptance remains separate.",
   "missing_case_ids": [],
   "failed_case_ids": [],
   "reports": [
     {
       "file": "non-live.xml",
-      "sha256": "4c20ae556dbfeaed5b399391ce8e07e6f0d4c7c759a88755b69e99e9633554f2",
-      "tests": 153,
+      "sha256": "161c2eb6eedf2384e35f9f7adc243b4e08941f6a239bf3c4d2960c1f6204881d",
+      "tests": 160,
       "failures": 0,
       "errors": 0,
       "skipped": 0
     },
     {
       "file": "fresh-host.xml",
-      "sha256": "cb2f9a4df0f7851d13f4afff71e97ad28a7d656969a4398b9df489a4306b0280",
+      "sha256": "e9c4c7a0a38fa340a52a743b86ca3514950d1c217a7bcf7958ba6a3fce921948",
       "tests": 1,
       "failures": 0,
       "errors": 0,
@@ -518,6 +518,48 @@
           "nodeid": "tests.contract.test_aos_001_toolchain::test_dev_api_rejects_a_non_loopback_bind",
           "verdict": "PASS",
           "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_existing_api_requires_health_and_bearer_identity",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_closed_port_is_the_only_reason_to_start_an_api",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_browser_snapshot_is_escaped_and_cannot_write_or_serve_files",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_candidate_summary_requires_a_matching_recorded_hash",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_review_port_validation[0]",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_review_port_validation[-1]",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_review_port_validation[65536]",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
           "report": "non-live.xml"
         }
       ]
@@ -1070,18 +1112,14 @@
     }
   ],
   "owner_acceptance": "PENDING",
-  "observed_at": "2026-10-12T19:14:21.478658+00:00",
+  "observed_at": "2026-10-12T20:40:58.471284+00:00",
   "report_artifact_refs": [
-    "evidence/R0-completion/non-live.xml",
-    "evidence/R0-completion/fresh-host.xml"
+    "evidence/R0-demo-fix/non-live.xml",
+    "evidence/R0-demo-fix/fresh-host.xml"
   ],
   "environment_refs": [
-    "evidence/R0-completion/host-environment.json",
-    "evidence/R0-completion/environment-manifest.json"
+    "evidence/R0-demo-fix/environment-manifest.json",
+    "evidence/R0-demo-fix/native-validation.json"
   ],
-  "hardware_refs": [
-    "evidence/R0-completion/host-hardware.json",
-    "evidence/R0-completion/guest-hardware.json"
-  ],
-  "vm_provenance_ref": "evidence/R0-completion/vm-provenance.json"
+  "vm_provenance_ref": "evidence/R0-demo-fix/vm-provenance.json"
 }

@@ -1,0 +1,200 @@
+{
+  "status": {
+    "goal_id": "f96c9877-7ae3-41c8-99fb-80618c9e36a6",
+    "status": "COMPLETED",
+    "task_version": 11
+  },
+  "artifact": {
+    "artifact_id": "c4dc39fd-1bd1-418d-8cf8-115cec960aba",
+    "kind": "candidate",
+    "sha256": "a807fbf2969b864a1190891df6645bf6988d6d132a3d33a6ebe63e1660d5eb2c",
+    "size_bytes": 42,
+    "verdicts": []
+  },
+  "verification": {
+    "verdict": "PASS",
+    "artifact_id": "c4dc39fd-1bd1-418d-8cf8-115cec960aba",
+    "artifact_sha256": "a807fbf2969b864a1190891df6645bf6988d6d132a3d33a6ebe63e1660d5eb2c"
+  },
+  "approvals": [
+    {
+      "label": "Contract consent",
+      "request": {
+        "approval_id": "58cd3be1-f12e-4956-809d-6bb01939cd8c",
+        "goal_id": "f96c9877-7ae3-41c8-99fb-80618c9e36a6",
+        "effect_digest": "f40de2f9fbce5c95e9fb5a7d2ebc79d3f6a47ed0c7377d2a56425cda0965142e",
+        "action_kind": "contract_consent",
+        "expected_version": 2,
+        "expires_at": "2026-10-12T21:09:41.815841+00:00"
+      },
+      "receipt": {
+        "approval_id": "58cd3be1-f12e-4956-809d-6bb01939cd8c",
+        "state": "APPROVED",
+        "effect_digest": "f40de2f9fbce5c95e9fb5a7d2ebc79d3f6a47ed0c7377d2a56425cda0965142e",
+        "row_version": 3,
+        "replayed": false
+      }
+    },
+    {
+      "label": "Synthetic merge",
+      "request": {
+        "approval_id": "2698aa97-d672-4812-8c70-b52c133c28e4",
+        "goal_id": "f96c9877-7ae3-41c8-99fb-80618c9e36a6",
+        "effect_digest": "87f48d920669ac5a350a795f2325cb9158d98bfbb4acb3101bb706f6fcc98b78",
+        "action_kind": "merge",
+        "expected_version": 8,
+        "expires_at": "2026-10-12T21:09:45.160193+00:00"
+      },
+      "receipt": {
+        "approval_id": "2698aa97-d672-4812-8c70-b52c133c28e4",
+        "state": "APPROVED",
+        "effect_digest": "87f48d920669ac5a350a795f2325cb9158d98bfbb4acb3101bb706f6fcc98b78",
+        "row_version": 9,
+        "replayed": false
+      }
+    }
+  ],
+  "events": {
+    "events": [
+      {
+        "seq": "57",
+        "kind": "goal.submitted",
+        "payload": {
+          "idempotency_key": "r0-demo-f96c9877-7ae3-41c8-99fb-80618c9e36a6"
+        }
+      },
+      {
+        "seq": "58",
+        "kind": "task.transition",
+        "payload": {
+          "to": "VALIDATING",
+          "from": "CREATED",
+          "cause": "admit",
+          "correlation_id": "1d29a80c-257a-47d4-92fa-b35ea632f5de",
+          "policy_version": "synthetic-approve-first-v1"
+        }
+      },
+      {
+        "seq": "59",
+        "kind": "approval.requested",
+        "payload": {
+          "approval_id": "58cd3be1-f12e-4956-809d-6bb01939cd8c",
+          "effect_digest": "f40de2f9fbce5c95e9fb5a7d2ebc79d3f6a47ed0c7377d2a56425cda0965142e",
+          "continuation_kind": "DISPATCH"
+        }
+      },
+      {
+        "seq": "60",
+        "kind": "approval.decided",
+        "payload": {
+          "state": "APPROVED",
+          "approval_id": "58cd3be1-f12e-4956-809d-6bb01939cd8c",
+          "effect_digest": "f40de2f9fbce5c95e9fb5a7d2ebc79d3f6a47ed0c7377d2a56425cda0965142e"
+        }
+      },
+      {
+        "seq": "61",
+        "kind": "approval.continued",
+        "payload": {
+          "to": "READY",
+          "effect_id": null,
+          "approval_id": "58cd3be1-f12e-4956-809d-6bb01939cd8c",
+          "effect_digest": "f40de2f9fbce5c95e9fb5a7d2ebc79d3f6a47ed0c7377d2a56425cda0965142e"
+        }
+      },
+      {
+        "seq": "62",
+        "kind": "task.admitted",
+        "payload": {
+          "workflow_id": "admit-22e3e77d-f6b2-4690-a45b-f2c0d31bfba5"
+        }
+      },
+      {
+        "seq": "63",
+        "kind": "task.transition",
+        "payload": {
+          "to": "LEASED",
+          "from": "READY",
+          "cause": "admitted",
+          "correlation_id": "571c4b50-806b-4682-a81a-aab645d468d5",
+          "policy_version": "synthetic-approve-first-v1"
+        }
+      },
+      {
+        "seq": "64",
+        "kind": "evidence.recorded",
+        "payload": {
+          "verdict": "PASS",
+          "artifact_id": "c4dc39fd-1bd1-418d-8cf8-115cec960aba",
+          "artifact_sha256": "a807fbf2969b864a1190891df6645bf6988d6d132a3d33a6ebe63e1660d5eb2c"
+        }
+      },
+      {
+        "seq": "65",
+        "kind": "task.transition",
+        "payload": {
+          "to": "RUNNING",
+          "from": "LEASED",
+          "cause": "worker",
+          "correlation_id": "14f4c339-4720-4c8f-9693-57937d54a0d9",
+          "policy_version": "synthetic-approve-first-v1"
+        }
+      },
+      {
+        "seq": "66",
+        "kind": "task.transition",
+        "payload": {
+          "to": "VERIFYING",
+          "from": "RUNNING",
+          "cause": "worker",
+          "correlation_id": "409dc654-a258-4dcf-aa27-49f31c7a059f",
+          "policy_version": "synthetic-approve-first-v1"
+        }
+      },
+      {
+        "seq": "67",
+        "kind": "approval.requested",
+        "payload": {
+          "approval_id": "2698aa97-d672-4812-8c70-b52c133c28e4",
+          "effect_digest": "87f48d920669ac5a350a795f2325cb9158d98bfbb4acb3101bb706f6fcc98b78",
+          "continuation_kind": "MERGE"
+        }
+      },
+      {
+        "seq": "68",
+        "kind": "approval.decided",
+        "payload": {
+          "state": "APPROVED",
+          "approval_id": "2698aa97-d672-4812-8c70-b52c133c28e4",
+          "effect_digest": "87f48d920669ac5a350a795f2325cb9158d98bfbb4acb3101bb706f6fcc98b78"
+        }
+      },
+      {
+        "seq": "69",
+        "kind": "approval.continued",
+        "payload": {
+          "to": "VERIFYING",
+          "effect_id": "b274af27-52c6-49f8-8e75-0a6f551ba394",
+          "approval_id": "2698aa97-d672-4812-8c70-b52c133c28e4",
+          "effect_digest": "87f48d920669ac5a350a795f2325cb9158d98bfbb4acb3101bb706f6fcc98b78"
+        }
+      },
+      {
+        "seq": "70",
+        "kind": "task.transition",
+        "payload": {
+          "to": "COMPLETED",
+          "from": "VERIFYING",
+          "cause": "cas-confirmed",
+          "correlation_id": "9752ce11-a8bb-4316-a03b-9f6df60963d8",
+          "policy_version": "synthetic-approve-first-v1"
+        }
+      }
+    ]
+  },
+  "base_url": "http://127.0.0.1:8765",
+  "api_reused": true,
+  "source_commit": "f161193ed31918592015ec9e68163d31d77cb0ae",
+  "source_worktree_dirty": false,
+  "observed_at": "2026-10-12T20:09:49.339227+00:00"
+}

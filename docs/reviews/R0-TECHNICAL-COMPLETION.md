@@ -1,3 +1,5 @@
+> Current candidate and refreshed gate: [demo repair review](R0-DEMO-REVIEW.md). The following is the preserved earlier completion record.
+
 # R0 technical completion — 2026-10-12
 
 **Technical G0: PASS. Owner handoff acceptance: PENDING.**

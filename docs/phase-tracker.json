@@ -138,7 +138,7 @@
           "plan_ref": "plans/AOS-005-implementation-plan.md"
         }
       ],
-      "candidate_commit": "d457242e9e6ee2c54fbd99db99cb35319b1c8783",
+      "candidate_commit": "f161193ed31918592015ec9e68163d31d77cb0ae",
       "gate_manifest": "evidence/G0/evaluation.json"
     },
     {

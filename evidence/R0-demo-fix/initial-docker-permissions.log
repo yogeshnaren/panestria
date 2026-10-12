@@ -1,0 +1,1031 @@
+..........................................FFFFFF..EEE................... [ 45%]
+.....................................F......FFEEE....EEEEEE...FF..FFFFFF [ 90%]
+FFFFFFFFFF.....F                                                         [100%]
+==================================== ERRORS ====================================
+__________ ERROR at setup of test_cli_over_tcp_restarts_and_completes __________
+
+    @pytest.fixture(scope="module")
+    def database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/e2e/test_r0_loopback.py:49: AssertionError
+---------------------------- Captured stderr setup -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+____ ERROR at setup of test_cancel_leaves_prepared_effect_and_git_unchanged ____
+
+    @pytest.fixture(scope="module")
+    def database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/e2e/test_r0_loopback.py:49: AssertionError
+_____ ERROR at setup of test_server_smoke_records_its_own_loopback_socket ______
+
+    @pytest.fixture(scope="module")
+    def database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/e2e/test_r0_loopback.py:49: AssertionError
+___________ ERROR at setup of test_concurrent_transition_and_cursor ____________
+
+    @pytest.fixture(scope="module")
+    def database_url() -> str:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        _run([*COMPOSE, "down", "-v"])
+        up = _run([*COMPOSE, "up", "-d", "--wait"], env=env)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_002_services.py:65: AssertionError
+___________ ERROR at setup of test_foreign_scope_and_mass_assignment ___________
+
+    @pytest.fixture(scope="module")
+    def database_url() -> str:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        _run([*COMPOSE, "down", "-v"])
+        up = _run([*COMPOSE, "up", "-d", "--wait"], env=env)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_002_services.py:65: AssertionError
+________ ERROR at setup of test_transition_binds_policy_and_correlation ________
+
+    @pytest.fixture(scope="module")
+    def database_url() -> str:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        _run([*COMPOSE, "down", "-v"])
+        up = _run([*COMPOSE, "up", "-d", "--wait"], env=env)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_002_services.py:65: AssertionError
+_____________ ERROR at setup of test_atomic_enqueue_and_duplicate ______________
+
+    @pytest.fixture(scope="module")
+    def database_url() -> str:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        _run([*COMPOSE, "down", "-v"])
+        up = _run([*COMPOSE, "up", "-d", "--wait"], env=env)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_003.py:89: AssertionError
+__________________ ERROR at setup of test_before_after_commit __________________
+
+    @pytest.fixture(scope="module")
+    def database_url() -> str:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        _run([*COMPOSE, "down", "-v"])
+        up = _run([*COMPOSE, "up", "-d", "--wait"], env=env)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_003.py:89: AssertionError
+_______________ ERROR at setup of test_uncommitted_external_step _______________
+
+    @pytest.fixture(scope="module")
+    def database_url() -> str:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        _run([*COMPOSE, "down", "-v"])
+        up = _run([*COMPOSE, "up", "-d", "--wait"], env=env)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_003.py:89: AssertionError
+____________ ERROR at setup of test_database_restore_and_reconnect _____________
+
+    @pytest.fixture(scope="module")
+    def database_url() -> str:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        _run([*COMPOSE, "down", "-v"])
+        up = _run([*COMPOSE, "up", "-d", "--wait"], env=env)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_003.py:89: AssertionError
+________ ERROR at setup of test_unfinished_workflow_names_goal_and_task ________
+
+    @pytest.fixture(scope="module")
+    def database_url() -> str:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        _run([*COMPOSE, "down", "-v"])
+        up = _run([*COMPOSE, "up", "-d", "--wait"], env=env)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_003.py:89: AssertionError
+______ ERROR at setup of test_stale_attempt_epoch_does_not_move_the_task _______
+
+    @pytest.fixture(scope="module")
+    def database_url() -> str:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        _run([*COMPOSE, "down", "-v"])
+        up = _run([*COMPOSE, "up", "-d", "--wait"], env=env)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_003.py:89: AssertionError
+=================================== FAILURES ===================================
+____________________ test_loopback_submit_scope_and_replay _____________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdea55f80>
+
+    def test_loopback_submit_scope_and_replay(record_property: pytest.RecordProperty) -> None:
+        _properties(record_property)
+        record_property("gate_case_id", "AOS-005-TC01")
+>       _database()
+
+tests/e2e/test_aos_005.py:118: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/e2e/test_aos_005.py:64: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+______________________ test_approval_digest_actor_expiry _______________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdea2a8e0>
+
+    def test_approval_digest_actor_expiry(record_property: pytest.RecordProperty) -> None:
+        """Wrong actor, project, digest, expiry, or an unknown check cannot dispatch."""
+        commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False)
+        dirty = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT, text=True, capture_output=True, check=False)
+        record_property("gate_case_id", "AOS-005-TC02")
+        record_property("candidate_commit", commit.stdout.strip())
+        record_property("fixture_digest", hashlib.sha256(FIXTURE.read_bytes()).hexdigest())
+        record_property("lane", "security")
+        record_property("execution_mode", "OS_BOUNDARY")
+        record_property("worktree_state", "dirty" if dirty.stdout.strip() else "clean")
+        record_property("aos_005_tc01", "NOT_RUN")
+>       _database()
+
+tests/e2e/test_aos_005.py:415: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/e2e/test_aos_005.py:64: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+___________________________ test_r0_positive_journey ___________________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdea2aca0>
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_r0_positive_journey0')
+
+    def test_r0_positive_journey(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+        """Consent, one mock candidate, independent evidence, and one confirmed effect complete the goal."""
+        _case(record_property, "AOS-005-TC01", "e2e")
+>       _database()
+
+tests/e2e/test_aos_005.py:629: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/e2e/test_aos_005.py:64: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+________________ test_corrupted_check_report_prepares_no_merge _________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdea2b1a0>
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_corrupted_check_report_pr0')
+
+    def test_corrupted_check_report_prepares_no_merge(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+        """A rewritten report file cannot prepare or execute the merge."""
+        _case(record_property, "AOS-005-TC02", "security")
+>       _database()
+
+tests/e2e/test_aos_005.py:703: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/e2e/test_aos_005.py:64: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+________________________ test_decision_race_idempotency ________________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdea2b600>
+
+    def test_decision_race_idempotency(record_property: pytest.RecordProperty) -> None:
+        """One racing decision and one racing consume survive. A changed repeat conflicts."""
+        _case(record_property, "AOS-005-TC03", "integration")
+>       _database()
+
+tests/e2e/test_aos_005.py:797: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/e2e/test_aos_005.py:64: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+________________________ test_wait_restart_continuation ________________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdea2b880>
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_wait_restart_continuation0')
+
+    def test_wait_restart_continuation(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+        """A contract wait does not dispatch, and a merge wait does not launch another worker."""
+        _case(record_property, "AOS-005-TC04", "chaos")
+>       _database()
+
+tests/e2e/test_aos_005.py:944: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/e2e/test_aos_005.py:64: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+___________________ test_interpreter_exits_after_stuck_probe ___________________
+
+    @pytest.mark.unit
+    def test_interpreter_exits_after_stuck_probe() -> None:
+        script = """
+    import time
+    from datetime import datetime, timedelta, timezone
+    from panestria.api.health import HealthService, ProbeCheck, ProbeObservation
+    from panestria.config import Settings
+    
+    def block(deadline):
+        time.sleep(300)
+        return ProbeObservation(checks=[ProbeCheck(name="database", status="ready", reason="ready")])
+    
+    settings = Settings(
+        database_url="postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:5432/panestria_synthetic"
+    ).validate_profile()
+    service = HealthService(settings, block)
+    body = service.readiness(datetime.now(timezone.utc) + timedelta(milliseconds=30))
+    assert body.checks[0].reason == "deadline_exceeded"
+    """
+>       completed = subprocess.run(
+            [sys.executable, "-c", script],
+            cwd=ROOT,
+            check=False,
+            timeout=PROBE_SHUTDOWN_BUDGET_SECONDS + 2,
+            capture_output=True,
+            text=True,
+        )
+
+tests/integration/test_aos_001.py:535: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/subprocess.py:2116: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/home/ubuntu/panestria/.venv/bin/python', '-c...>
+endtime = 699.65196939, orig_timeout = 3.0, stdout_seq = [], stderr_seq = []
+skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/home/ubuntu/panestria/.venv/bin/python', '-c', '\nimport time\nfrom datetime import datetime, timedelta, timezone\nfrom panestria.api.health import HealthService, ProbeCheck, ProbeObservation\nfrom panestria.config import Settings\n\ndef block(deadline):\n    time.sleep(300)\n    return ProbeObservation(checks=[ProbeCheck(name="database", status="ready", reason="ready")])\n\nsettings = Settings(\n    database_url="postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:5432/panestria_synthetic"\n).validate_profile()\nservice = HealthService(settings, block)\nbody = service.readiness(datetime.now(timezone.utc) + timedelta(milliseconds=30))\nassert body.checks[0].reason == "deadline_exceeded"\n']' timed out after 3.0 seconds
+
+../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/subprocess.py:1253: TimeoutExpired
+____________ test_scoped_database_is_healthy_and_scaffold_is_empty _____________
+
+    def test_scoped_database_is_healthy_and_scaffold_is_empty() -> None:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], cwd=ROOT, check=False, capture_output=True, text=True)
+        try:
+            up = subprocess.run(
+                [*COMPOSE, "up", "-d", "--wait"],
+                cwd=ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+>           assert up.returncode == 0, up.stderr
+E           AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_001_postgres.py:91: AssertionError
+____________ test_kernel_migration_rejects_bad_scope_and_reapplies _____________
+
+    def test_kernel_migration_rejects_bad_scope_and_reapplies() -> None:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        _run([*COMPOSE, "down", "-v"])
+        try:
+            up = _run([*COMPOSE, "up", "-d", "--wait"], env=env)
+>           assert up.returncode == 0, up.stderr
+E           AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_002_migration.py:89: AssertionError
+_________________________ test_hung_process_and_output _________________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdeeee7a0>
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_hung_process_and_output0')
+
+    def test_hung_process_and_output(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+        _properties(record_property, "AOS-004-TC03", "chaos")
+        _first_adapter, first = _watch(tmp_path / "silent-a", "attempt-silent-a", "hung", 0.4)
+        _second_adapter, second = _watch(tmp_path / "silent-b", "attempt-silent-b", "hung", 0.4)
+        assert first.status == "TIMED_OUT"
+        assert first.accepted is False
+        assert first.checks == "NOT_RUN"
+        assert first.truncated is False
+        assert (first.status, first.accepted, first.checks, first.stdout_sha256) == (
+            second.status,
+            second.accepted,
+            second.checks,
+            second.stdout_sha256,
+        )
+        _done_adapter, claimed = _watch(tmp_path / "claimed", "attempt-claimed", "false_done", 0.4)
+        assert claimed.status == "TIMED_OUT"
+        assert claimed.accepted is False
+>       assert claimed.stdout_sha256 == hashlib.sha256(b"done\n").hexdigest()
+E       AssertionError: assert 'e3b0c44298fc...5991b7852b855' == 'd117fa006ba9...9bc9111a46dd2'
+E         
+E         - d117fa006ba9208500b2930ce69cbde436c647afa917cb7396a9bc9111a46dd2
+E         + e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+tests/integration/test_aos_004.py:259: AssertionError
+________________________ test_artifact_partial_publish _________________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefbaa20>
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_artifact_partial_publish0')
+
+    def test_artifact_partial_publish(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+        _properties(record_property, "AOS-004-TC04", "chaos")
+>       _database()
+
+tests/integration/test_aos_004.py:385: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run(
+            [*COMPOSE, "up", "-d", "--wait"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_004.py:292: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+________________ test_journey_publication_uses_the_stored_epoch ________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefb9c60>
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_journey_publication_uses_0')
+
+    def test_journey_publication_uses_the_stored_epoch(
+        record_property: pytest.RecordProperty, tmp_path: Path
+    ) -> None:
+        _properties(record_property, "AOS-004-TC04", "chaos")
+>       _database()
+
+tests/integration/test_aos_004.py:630: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run(
+            [*COMPOSE, "up", "-d", "--wait"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_004.py:292: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+_______________________ test_stale_attempt_is_not_reused _______________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefb8f40>
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_stale_attempt_is_not_reus0')
+
+    def test_stale_attempt_is_not_reused(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+        _properties(record_property, "AOS-004-TC04", "chaos")
+>       _database()
+
+tests/integration/test_aos_004.py:708: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run(
+            [*COMPOSE, "up", "-d", "--wait"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_004.py:292: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+_________ test_old_candidate_does_not_stand_in_for_the_current_attempt _________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefbb600>
+
+    def test_old_candidate_does_not_stand_in_for_the_current_attempt(
+        record_property: pytest.RecordProperty,
+    ) -> None:
+        _properties(record_property, "AOS-004-TC04", "chaos")
+>       _database()
+
+tests/integration/test_aos_004.py:762: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run(
+            [*COMPOSE, "up", "-d", "--wait"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_004.py:292: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+______________________ test_latest_approval_request_wins _______________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefbac00>
+
+    def test_latest_approval_request_wins(record_property: pytest.RecordProperty) -> None:
+        _properties(record_property, "AOS-005-TC04", "chaos")
+>       _database()
+
+tests/integration/test_aos_004.py:833: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run(
+            [*COMPOSE, "up", "-d", "--wait"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_004.py:292: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+_______________ test_observation_does_not_hide_a_prepared_effect _______________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefba200>
+
+    def test_observation_does_not_hide_a_prepared_effect(record_property: pytest.RecordProperty) -> None:
+        _properties(record_property, "AOS-005-TC04", "chaos")
+>       _database()
+
+tests/integration/test_aos_004.py:908: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run(
+            [*COMPOSE, "up", "-d", "--wait"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_004.py:292: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+__________ test_old_effect_does_not_stand_in_for_the_current_approval __________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefbbd80>
+
+    def test_old_effect_does_not_stand_in_for_the_current_approval(record_property: pytest.RecordProperty) -> None:
+        _properties(record_property, "AOS-005-TC04", "chaos")
+>       _database()
+
+tests/integration/test_aos_004.py:989: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run(
+            [*COMPOSE, "up", "-d", "--wait"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_004.py:292: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+______________ test_stored_pass_does_not_merge_a_different_commit ______________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefb8400>
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_stored_pass_does_not_merg0')
+
+    def test_stored_pass_does_not_merge_a_different_commit(
+        record_property: pytest.RecordProperty, tmp_path: Path
+    ) -> None:
+        _properties(record_property, "AOS-004-TC02", "security")
+>       _database()
+
+tests/integration/test_aos_004.py:1063: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run(
+            [*COMPOSE, "up", "-d", "--wait"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_004.py:292: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+____________ test_global_scope_denies_a_commit_without_a_path_check ____________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefbbe20>
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_global_scope_denies_a_com0')
+
+    def test_global_scope_denies_a_commit_without_a_path_check(
+        record_property: pytest.RecordProperty, tmp_path: Path
+    ) -> None:
+        _properties(record_property, "AOS-004-TC02", "security")
+>       _database()
+
+tests/integration/test_aos_004.py:1162: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run(
+            [*COMPOSE, "up", "-d", "--wait"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_004.py:292: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+_________ test_journey_contract_follows_the_task_or_the_latest_version _________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefba340>
+
+    def test_journey_contract_follows_the_task_or_the_latest_version(
+        record_property: pytest.RecordProperty,
+    ) -> None:
+        _properties(record_property, "AOS-005-TC04", "chaos")
+>       _database()
+
+tests/integration/test_aos_004.py:1265: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run(
+            [*COMPOSE, "up", "-d", "--wait"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_004.py:292: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+__________ test_stale_snapshot_does_not_complete_a_different_approval __________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdeeefb00>
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_stale_snapshot_does_not_c0')
+
+    def test_stale_snapshot_does_not_complete_a_different_approval(
+        record_property: pytest.RecordProperty,
+        tmp_path: Path,
+    ) -> None:
+        _properties(record_property, "AOS-005-TC04", "chaos")
+>       _database()
+
+tests/integration/test_aos_004.py:1315: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run(
+            [*COMPOSE, "up", "-d", "--wait"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_aos_004.py:292: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+_____ test_admitted_queue_restarts_at_transaction_worker_and_verification ______
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_admitted_queue_restarts_a0')
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefb8400>
+
+    def test_admitted_queue_restarts_at_transaction_worker_and_verification(
+        tmp_path: Path, record_property: pytest.RecordProperty
+    ) -> None:
+        record_property("gate_case_id", "AOS-003-TC02")
+>       _database()
+
+tests/integration/test_r0_admission.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_r0_admission.py:33: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+_______________ test_repeated_recovery_stops_and_fails_the_task ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_repeated_recovery_stops_a0')
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefb9d00>
+
+    def test_repeated_recovery_stops_and_fails_the_task(tmp_path: Path, record_property: pytest.RecordProperty) -> None:
+        record_property("gate_case_id", "AOS-003-TC03")
+>       _database()
+
+tests/integration/test_r0_admission.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_r0_admission.py:33: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+___________ test_newer_failure_and_unbound_evidence_prepare_no_merge ___________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefbb560>
+
+    def test_newer_failure_and_unbound_evidence_prepare_no_merge(record_property: pytest.RecordProperty) -> None:
+        record_property("gate_case_id", "AOS-005-TC02")
+>       _database()
+
+tests/integration/test_r0_checks.py:86: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_r0_checks.py:36: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+____________ test_unknown_command_and_narrow_paths_do_not_complete _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_unknown_command_and_narro0')
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefb85e0>
+
+    def test_unknown_command_and_narrow_paths_do_not_complete(
+        tmp_path: Path, record_property: pytest.RecordProperty
+    ) -> None:
+        record_property("gate_case_id", "AOS-004-TC02")
+>       _database()
+
+tests/integration/test_r0_checks.py:233: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_r0_checks.py:36: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+________________ test_newer_failure_hides_an_older_report_file _________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefb8860>
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_newer_failure_hides_an_ol0')
+
+    def test_newer_failure_hides_an_older_report_file(
+        record_property: pytest.RecordProperty, tmp_path: Path
+    ) -> None:
+        record_property("gate_case_id", "AOS-005-TC02")
+>       _database()
+
+tests/integration/test_r0_checks.py:321: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_r0_checks.py:36: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+__________ test_reconcile_applied_ref_and_refuse_stale_authorization ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-0/test_reconcile_applied_ref_and0')
+record_property = <function record_property.<locals>.append_property at 0x7f3fdefb8cc0>
+
+    def test_reconcile_applied_ref_and_refuse_stale_authorization(
+        tmp_path: Path, record_property: pytest.RecordProperty
+    ) -> None:
+        record_property("gate_case_id", "AOS-005-TC04")
+>       _database()
+
+tests/integration/test_r0_effects.py:168: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_r0_effects.py:47: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+_______________ test_graph_idempotency_and_malformed_acceptance ________________
+
+record_property = <function record_property.<locals>.append_property at 0x7f3fdeff5da0>
+
+    def test_graph_idempotency_and_malformed_acceptance(record_property: pytest.RecordProperty) -> None:
+        record_property("gate_case_id", "AOS-002-TC03")
+        record_property("also_covers", "AOS-002-TC04")
+>       _database()
+
+tests/integration/test_r0_kernel.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _database() -> None:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+        up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+>       assert up.returncode == 0, up.stderr
+E       AssertionError: unable to get image 'postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['docker', 'compose', '-f', '/home/ubuntu/panestria/compose.yaml', '-p', 'panestria-s3', 'up', '...b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d/json": dial unix /var/run/docker.sock: connect: permission denied\n').returncode
+
+tests/integration/test_r0_kernel.py:44: AssertionError
+----------------------------- Captured stderr call -----------------------------
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dpanestria-s3%22%3Atrue%7D%7D": dial unix /var/run/docker.sock: connect: permission denied
+=========================== short test summary info ============================
+FAILED tests/e2e/test_aos_005.py::test_loopback_submit_scope_and_replay - Ass...
+FAILED tests/e2e/test_aos_005.py::test_approval_digest_actor_expiry - Asserti...
+FAILED tests/e2e/test_aos_005.py::test_r0_positive_journey - AssertionError: ...
+FAILED tests/e2e/test_aos_005.py::test_corrupted_check_report_prepares_no_merge
+FAILED tests/e2e/test_aos_005.py::test_decision_race_idempotency - AssertionE...
+FAILED tests/e2e/test_aos_005.py::test_wait_restart_continuation - AssertionE...
+FAILED tests/integration/test_aos_001.py::test_interpreter_exits_after_stuck_probe
+FAILED tests/integration/test_aos_001_postgres.py::test_scoped_database_is_healthy_and_scaffold_is_empty
+FAILED tests/integration/test_aos_002_migration.py::test_kernel_migration_rejects_bad_scope_and_reapplies
+FAILED tests/integration/test_aos_004.py::test_hung_process_and_output - Asse...
+FAILED tests/integration/test_aos_004.py::test_artifact_partial_publish - Ass...
+FAILED tests/integration/test_aos_004.py::test_journey_publication_uses_the_stored_epoch
+FAILED tests/integration/test_aos_004.py::test_stale_attempt_is_not_reused - ...
+FAILED tests/integration/test_aos_004.py::test_old_candidate_does_not_stand_in_for_the_current_attempt
+FAILED tests/integration/test_aos_004.py::test_latest_approval_request_wins
+FAILED tests/integration/test_aos_004.py::test_observation_does_not_hide_a_prepared_effect
+FAILED tests/integration/test_aos_004.py::test_old_effect_does_not_stand_in_for_the_current_approval
+FAILED tests/integration/test_aos_004.py::test_stored_pass_does_not_merge_a_different_commit
+FAILED tests/integration/test_aos_004.py::test_global_scope_denies_a_commit_without_a_path_check
+FAILED tests/integration/test_aos_004.py::test_journey_contract_follows_the_task_or_the_latest_version
+FAILED tests/integration/test_aos_004.py::test_stale_snapshot_does_not_complete_a_different_approval
+FAILED tests/integration/test_r0_admission.py::test_admitted_queue_restarts_at_transaction_worker_and_verification
+FAILED tests/integration/test_r0_admission.py::test_repeated_recovery_stops_and_fails_the_task
+FAILED tests/integration/test_r0_checks.py::test_newer_failure_and_unbound_evidence_prepare_no_merge
+FAILED tests/integration/test_r0_checks.py::test_unknown_command_and_narrow_paths_do_not_complete
+FAILED tests/integration/test_r0_checks.py::test_newer_failure_hides_an_older_report_file
+FAILED tests/integration/test_r0_effects.py::test_reconcile_applied_ref_and_refuse_stale_authorization
+FAILED tests/integration/test_r0_kernel.py::test_graph_idempotency_and_malformed_acceptance
+ERROR tests/e2e/test_r0_loopback.py::test_cli_over_tcp_restarts_and_completes
+ERROR tests/e2e/test_r0_loopback.py::test_cancel_leaves_prepared_effect_and_git_unchanged
+ERROR tests/e2e/test_r0_loopback.py::test_server_smoke_records_its_own_loopback_socket
+ERROR tests/integration/test_aos_002_services.py::test_concurrent_transition_and_cursor
+ERROR tests/integration/test_aos_002_services.py::test_foreign_scope_and_mass_assignment
+ERROR tests/integration/test_aos_002_services.py::test_transition_binds_policy_and_correlation
+ERROR tests/integration/test_aos_003.py::test_atomic_enqueue_and_duplicate - ...
+ERROR tests/integration/test_aos_003.py::test_before_after_commit - Assertion...
+ERROR tests/integration/test_aos_003.py::test_uncommitted_external_step - Ass...
+ERROR tests/integration/test_aos_003.py::test_database_restore_and_reconnect
+ERROR tests/integration/test_aos_003.py::test_unfinished_workflow_names_goal_and_task
+ERROR tests/integration/test_aos_003.py::test_stale_attempt_epoch_does_not_move_the_task
+28 failed, 120 passed, 1 deselected, 12 errors in 353.63s (0:05:53)
