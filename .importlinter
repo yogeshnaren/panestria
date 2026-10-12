@@ -29,3 +29,12 @@ source_modules =
     panestria.api
 forbidden_modules =
     panestria.cli
+
+[importlinter:contract:ops-not-presentation]
+name = Local operations do not import API or CLI
+type = forbidden
+source_modules =
+    panestria.ops
+forbidden_modules =
+    panestria.api
+    panestria.cli

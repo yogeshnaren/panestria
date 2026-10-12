@@ -1,7 +1,7 @@
 # Goal progress
 
 **Phase:** R0, contract version 1 approved.  
-**Slice:** AOS-001-S2 evidenced. Next is AOS-001-S3.  
+**Slice:** AOS-001-S3 implemented, evidence not yet recorded on a clean commit.  
 **Branch:** `r0-kernel`.  
 **Last verified source commit:** `99afb1a319e22fb24e86b7a4cc638a03e2557c0c`.  
 **Evidence commit:** recorded after that source commit; this file is not part of the tested tree.  

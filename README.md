@@ -34,6 +34,7 @@ uv run --frozen mypy src/panestria
 uv run --frozen lint-imports --config .importlinter
 uv run --frozen pytest -m "not live"
 uv run --frozen python tools/secret_scan.py
+docker compose -f compose.yaml -p panestria-s3 up -d --wait
 uv run --frozen panestria version
 uv run --frozen panestria health
 ```
@@ -44,4 +45,4 @@ Provider credentials are not required for these commands. CI uses the same froze
 
 ## Scope
 
-The package, `SYNTHETIC_DEV` settings, and typed `/healthz` and `/readyz` routes are in place. Ruff, Mypy, Import Linter, and provider-free CI are the S2 toolchain. PostgreSQL, domain workflows, and the fresh-host live case are still later work. The license file is the repository MIT license.
+The package, `SYNTHETIC_DEV` settings, and typed `/healthz` and `/readyz` routes are in place. Ruff, Mypy, Import Linter, and provider-free CI are the S2 toolchain. S3 adds a loopback PostgreSQL Compose service and an empty Alembic schema. `/readyz` still does not open the database. Domain tables, the fresh-host live case, and domain workflows remain later work. The license file is the repository MIT license.

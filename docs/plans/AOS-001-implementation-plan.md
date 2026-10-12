@@ -56,7 +56,7 @@ These groups are planned obligations, not observed coverage. Actual assertions/p
 |---|---|---|---|
 | AOS-001-TC01 | unit | `tests/integration/test_aos_001.py` | Valid SYNTHETIC_DEV config and unavailable DB produce truthful bounded health; invalid bind/secret-bearing output rejected. Several tests in that module map to this one scenario group. |
 | AOS-001-TC02 | contract | `tests/contract/test_aos_001_toolchain.py` | A disposable forbidden import, stale lock, failing lint/type/unit each fail its gate; positive installed src imports pass. |
-| AOS-001-TC03 | integration | `tests/integration/test_aos_001.py::test_database_bootstrap_cleanup` | Fresh scoped DB is healthy, empty Alembic scaffold applies, wrong-volume/symlink cleanup denied. |
+| AOS-001-TC03 | integration | `tests/integration/test_aos_001_postgres.py` | Fresh scoped DB is healthy, empty Alembic scaffold applies, wrong-volume/symlink cleanup denied. |
 | AOS-001-TC04 | live | `tests/integration/test_aos_001.py::test_fresh_host_loopback` | Fresh supported Ubuntu bootstrap, dependency cache and no-egress runtime smoke require no AI credentials; record real sockets/startup/RSS. |
 
 After tests exist, baseline command is `uv run --frozen pytest tests/integration/test_aos_001.py --junitxml=evidence/AOS-001.xml`. Register lane markers and gate_case_id in pytest user_properties; default CI excludes live. Release promotion still needs separately observed live cases. Missing future nodes remain pending. Test collection, scenario assertion outcomes and candidate/version consistency must be checked by the gate evaluator, not inferred from exit 0.

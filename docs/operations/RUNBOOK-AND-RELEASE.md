@@ -19,4 +19,23 @@ Implement diagnostics/recovery with their owning slices. Commands are planned co
 
 Record commands/exit/reports/hashes/candidate/environment and mock-vs-live modes. Known non-blockers have owner/priority/follow-up; required safety/integrity/functionality failures cannot be waived into PASS.
 
+## S3 local PostgreSQL scaffold
+
+This section is the current setup for the empty migration scaffold. It is not the later domain schema, backup drill, or fresh-host proof. AOS-001-TC04 stays `NOT_RUN` until a separate Ubuntu host is available.
+
+Requires Docker and the Compose v2 plugin. This machine used Docker 29.1.3 and Compose v5.6.0. The image digest is pinned in `compose.yaml`. The published port is `127.0.0.1:55432` only.
+
+```bash
+docker compose -f compose.yaml -p panestria-s3 up -d --wait
+export PANESTRIA_DATABASE_URL='postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55432/panestria_synthetic'
+uv run --frozen alembic -c migrations/alembic.ini upgrade head
+docker compose -f compose.yaml -p panestria-s3 down -v
+```
+
+`upgrade head` creates the empty `panestria` schema and records revision `0001_scaffold`. It does not create domain tables. `down -v` removes only the Compose project volume `panestria_s3_pgdata`. The reset helper refuses any other volume name and refuses a symlink data directory.
+
+After `uv sync --frozen --group dev` has populated the cache, `UV_OFFLINE=1 uv sync --frozen --group dev` reinstalls without network. That check is not a fresh-machine bootstrap.
+
+## Trial record
+
 Fourteen-day trial records date/candidate/task kind/verified result/human acceptance/corrections/approval burden/resources/egress/refusals/incidents. Scope is explicit; no unapproved employer/private data. Candidate-changing fixes revalidate tests and extend/restart relevant observation. Owner accepts/rejects exact candidate/evidence; separate record authorizes SOTA implementation. Maintain accepted MVP and rollback while deciding advanced work.

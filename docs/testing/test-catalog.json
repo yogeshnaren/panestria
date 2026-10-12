@@ -29,7 +29,7 @@
       "aos_id": "AOS-001",
       "release": "R0",
       "lane": "integration",
-      "planned_nodeid": "tests/integration/test_aos_001.py::test_database_bootstrap_cleanup",
+      "planned_nodeid": "tests/integration/test_aos_001_postgres.py",
       "expected": "Fresh scoped DB is healthy, empty Alembic scaffold applies, wrong-volume/symlink cleanup denied.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
