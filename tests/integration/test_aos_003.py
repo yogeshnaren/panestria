@@ -963,11 +963,11 @@ def test_database_restore_and_reconnect(
 
 def test_unfinished_workflow_names_goal_and_task(database_url: str, record_property: pytest.RecordProperty) -> None:
     _properties(record_property, "AOS-003-TC02")
-    goal = "00000000-0000-4000-8000-0000000000e4"
-    task = "00000000-0000-4000-8000-0000000000e5"
-    attempt = "00000000-0000-4000-8000-0000000000e6"
-    contract = "00000000-0000-4000-8000-0000000000e7"
-    workflow = "00000000-0000-4000-8000-0000000000e8"
+    goal = "00000000-0000-4000-8000-000000000191"
+    task = "00000000-0000-4000-8000-000000000192"
+    attempt = "00000000-0000-4000-8000-000000000193"
+    contract = "00000000-0000-4000-8000-000000000194"
+    workflow = "00000000-0000-4000-8000-000000000195"
     engine, client = open_client(database_url)
     try:
         with engine.connect() as connection:
