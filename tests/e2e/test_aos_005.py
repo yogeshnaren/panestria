@@ -19,7 +19,7 @@ from fastapi.testclient import TestClient
 from typer.testing import CliRunner
 
 from panestria.api.auth import GoalApi
-from panestria.api.main import create_app
+from panestria.api.main import create_app, mount_goal_api
 from panestria.cli.goals import read_events, read_status, submit_contract
 from panestria.cli.main import app as cli_app
 from panestria.config import Settings
@@ -79,11 +79,8 @@ def _app() -> TestClient:
         readiness_budget_ms=500,
         database_url=DATABASE_URL,  # type: ignore[arg-type]
     )
-    application = create_app(
-        settings,
-        lambda _deadline: None,  # type: ignore[arg-type, return-value]
-        GoalApi(TOKEN, OWNER, PROJECT, DATABASE_URL),
-    )
+    application = create_app(settings, lambda _deadline: None)  # type: ignore[arg-type, return-value]
+    mount_goal_api(application, GoalApi(TOKEN, OWNER, PROJECT, DATABASE_URL))
     return TestClient(application, base_url="http://127.0.0.1")
 
 

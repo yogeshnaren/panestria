@@ -26,11 +26,7 @@ from panestria.api.routes.goals import router as goals_router
 from panestria.config import Settings, ValidatedSettings
 
 
-def create_app(
-    settings: Settings | ValidatedSettings,
-    readiness_probe: ReadinessProbe,
-    goal_api: GoalApi | None = None,
-) -> FastAPI:
+def create_app(settings: Settings | ValidatedSettings, readiness_probe: ReadinessProbe) -> FastAPI:
     if isinstance(settings, ValidatedSettings):
         validated = settings
     elif isinstance(settings, Settings):
@@ -55,10 +51,7 @@ def create_app(
     )
     app.state.settings = validated
     app.state.health = service
-    app.state.goal_api = goal_api
-    if goal_api is not None:
-        app.include_router(goals_router)
-        app.include_router(events_router)
+    app.state.goal_api = None
 
     @app.get("/healthz", response_model=Liveness)
     def healthz() -> Liveness:
@@ -80,3 +73,10 @@ def create_app(
         return JSONResponse(status_code=status_code, content=body.model_dump(mode="json"))
 
     return app
+
+
+def mount_goal_api(app: FastAPI, goal_api: GoalApi) -> None:
+    """Attach scoped goal routes. Health-only apps leave them unmounted."""
+    app.state.goal_api = goal_api
+    app.include_router(goals_router)
+    app.include_router(events_router)
