@@ -1,12 +1,13 @@
 # R0 review handoff
 
-This package is ready for review. It is not an owner acceptance, a G0 pass, or permission to start R1.
+The 2026-10-12 review did not accept R0. This file keeps that review record and the later correction. It is not an owner acceptance, a G0 pass, or permission to start R1.
 
-**Tested source:** `af3d431e775c2f3f23722d272dd00f2863689d5b` on `r0-kernel`.  
-**Integrated report:** `evidence/AOS-005-S3.xml`, SHA-256 `bb8c48dd5ef87e2728ea73aaeea0735198ab8f524b88b0a5c028bb11bd9232ce`.  
-**Gate:** `evidence/G0/evaluation.json` records G0 as `INCOMPLETE`. Nineteen of twenty required cases were collected on that source with a clean worktree. `AOS-001-TC04` is absent.
+**Reviewed source:** `af3d431e775c2f3f23722d272dd00f2863689d5b`. Its report remains `evidence/AOS-005-S3.xml`.  
+**Corrected source:** `fc359b02bece73de30d07e7bf60f6e0af3372438` on `r0-kernel`.  
+**Correction report:** `evidence/R0-corrections.xml`, SHA-256 `cea9805ca2a3dca019c1bffd9285ff306c2ff9c6bd98fdadeed3d996bab91d01`. 109 tests, 0 failures, 0 errors, 0 skips.  
+**Gate:** `evidence/G0/evaluation.json` records G0 as `INCOMPLETE`. Nineteen of twenty required cases were collected. `AOS-001-TC04` is `NOT_RUN`. A case-group PASS does not prove every source clause and is not owner acceptance.
 
-The commit that adds this file is evidence. Its parent is the tested source. `git diff af3d431e775c2f3f23722d272dd00f2863689d5b -- src tests pyproject.toml uv.lock .importlinter migrations` is empty.
+The original handoff commit recorded `af3d431`. The correction evidence commit's parent is `fc359b02bece73de30d07e7bf60f6e0af3372438`. `git diff fc359b02bece73de30d07e7bf60f6e0af3372438 -- src tests pyproject.toml uv.lock .importlinter migrations` is empty. Older receipts are not rewritten.
 
 ## Ordered commits
 
@@ -14,6 +15,14 @@ Commits are newest first, from the approved contract through the journey. Eviden
 
 | Commit | Reason |
 |---|---|
+| `fc359b0` | Map the correction regressions onto the cases they exercise. |
+| `6439c42` | Loopback server, artifact read, approval list, cancellation, and `make r0-demo`. |
+| `de42383` | Reject stored dependency cycles, raced goal submits, and bad envelopes. |
+| `001d56f` | Reconcile an applied Git ref and recheck approval before dispatch. |
+| `60b1d15` | Run the admitted task on the DBOS queue consumer. |
+| `db27430` | Reject artifact publication that does not match the current attempt. |
+| `3de385e` | Evaluate each acceptance node and authorize only its latest run. |
+| `6899104` | Historical evidence and handoff for `af3d431`. The review did not accept it. |
 | `af3d431` | Synthetic consent, one mock candidate, independent checks, and one CAS completion. |
 | `68592b6` | Evidence for the locked approval decisions. |
 | `eb5d6c3` | Migration regression follows the Alembic head and denies digest rebinding. |
@@ -79,11 +88,12 @@ Catalog status for an observed case is `OS_BOUNDARY_OBSERVED_NOT_RELEASE` or `HE
 
 ## Known issues
 
-- AOS-001-TC04 needs a separate Ubuntu host. G0 stays incomplete until that live case is actually run.
-- There is no Makefile, so `make r0-demo` does not exist. The reproducible demonstration is `tests/e2e/test_aos_005.py::test_r0_positive_journey`.
-- `GET /v1/artifacts/{id}`, `artifact show`, and `goal cancel` are not implemented. The journey observes the artifact SHA-256 in the `evidence.recorded` event payload.
-- CLI functions build a urllib request. Tests forward that request into FastAPI TestClient. No separate TCP listener ran, and uvicorn is not installed.
-- `/readyz` still reports the database as `not_probed`.
+- AOS-001-TC04 needs a separate Ubuntu host. G0 stays incomplete until that live case is actually run and an owner accepts the corrected candidate.
+- The review counterexamples are covered by new regressions on `fc359b0`. Their case-group PASS marks are not a statement that every source clause was asserted. `test_loopback_submit_scope_and_replay` still has no case id.
+- `make r0-demo` is the documented demo. It starts `python -m panestria.api.serve` and the real CLI. It is not a fresh-host result.
+- `GET /v1/artifacts/{id}`, `panestria artifact show`, `panestria approvals`, and `panestria goal cancel` are implemented. A corrupted artifact hash and a foreign owner are denied. A prepared effect stays `CANCELLING` and is not merged.
+- The CLI talks to a separate loopback TCP process in `tests/e2e/test_r0_loopback.py`. Older tests still forward urllib through FastAPI TestClient. uvicorn is not installed; the server is the packaged asyncio listener.
+- `/readyz` opens PostgreSQL when `PANESTRIA_DATABASE_URL` is set. The database check is `ready` or `database_unavailable`. The process stays not ready because the executor is not configured. With no URL, the check remains `not_probed`.
 - Hardware was not probed. Its verdict is `UNKNOWN`.
 - Contract approval in `contracts/phase/r0-phase.approval.json` authorizes this development phase. It is not this review and it does not authorize a product effect.
 - Two-worker proof, MVP-X01 through X06, and the six fault drills belong to later phases. R4 through R7 and SOTA are out of scope.
@@ -123,7 +133,7 @@ Expected integrated result, from a clean tree at the tested source:
 uv run --frozen pytest -m "not live" --junitxml=/tmp/panestria-r0.xml -q
 ```
 
-Expect `93 passed` and exit 0. The live fresh-host case is not in that command.
+On `fc359b02bece73de30d07e7bf60f6e0af3372438` the same command collected 109 passed tests, 0 failures, and 0 skips. The live fresh-host case is not in that command. The historical `af3d431` report remains 93 passed and is not a result for the corrected tree.
 
 Positive journey:
 

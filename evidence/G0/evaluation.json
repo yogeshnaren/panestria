@@ -1,10 +1,10 @@
 {
   "gate": "G0",
   "verdict": "INCOMPLETE",
-  "reason": "AOS-001-TC04 is absent. A missing required live case keeps the gate incomplete.",
-  "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b",
-  "report_artifact_ref": "evidence/AOS-005-S3.xml",
-  "junit_sha256": "bb8c48dd5ef87e2728ea73aaeea0735198ab8f524b88b0a5c028bb11bd9232ce",
+  "reason": "AOS-001-TC04 is NOT_RUN. The 2026-10-12 review also showed that collecting a case id did not prove every source clause: the earlier group PASS marks on af3d431 did not include the reproduced verifier, approval, admission, Git, artifact, graph, idempotency, and API denials. This report reruns the non-live suite on fc359b0 and attaches those regressions to the case ids they exercise. A collected PASS is still not owner acceptance, and one unmapped submit test remains outside the case-id list. G0 stays incomplete.",
+  "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438",
+  "report_artifact_ref": "evidence/R0-corrections.xml",
+  "junit_sha256": "cea9805ca2a3dca019c1bffd9285ff306c2ff9c6bd98fdadeed3d996bab91d01",
   "command": [
     "uv",
     "run",
@@ -12,16 +12,16 @@
     "pytest",
     "-m",
     "not live",
-    "--junitxml=evidence/AOS-005-S3.xml"
+    "--junitxml=/tmp/panestria-r0-corrections.xml"
   ],
   "exit_code": 0,
   "suite": {
-    "tests": 93,
+    "tests": 109,
     "failures": 0,
     "errors": 0,
     "skipped": 0
   },
-  "observed_at": "2026-10-12T07:12:56.146966Z",
+  "observed_at": "2026-10-12T09:43:26.857452Z",
   "missing_case_ids": [
     "AOS-001-TC04"
   ],
@@ -29,10 +29,10 @@
     {
       "case_id": "AOS-001-TC01",
       "verdict": "PASS",
-      "nodes": 57,
+      "nodes": 59,
       "lane": "unit",
       "execution_mode": "HERMETIC",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-001-TC02",
@@ -40,7 +40,7 @@
       "nodes": 11,
       "lane": "contract",
       "execution_mode": "HERMETIC",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-001-TC03",
@@ -48,13 +48,13 @@
       "nodes": 3,
       "lane": "integration",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-001-TC04",
       "verdict": "NOT_RUN",
       "nodes": 0,
-      "reason": "absent from the non-live report"
+      "reason": "absent from the non-live report; no fresh Ubuntu host"
     },
     {
       "case_id": "AOS-002-TC01",
@@ -62,7 +62,7 @@
       "nodes": 6,
       "lane": "contract",
       "execution_mode": "HERMETIC",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-002-TC02",
@@ -70,15 +70,15 @@
       "nodes": 1,
       "lane": "migration",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-002-TC03",
       "verdict": "PASS",
-      "nodes": 1,
+      "nodes": 2,
       "lane": "integration",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-002-TC04",
@@ -86,7 +86,7 @@
       "nodes": 1,
       "lane": "security",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-003-TC01",
@@ -94,15 +94,15 @@
       "nodes": 1,
       "lane": "integration",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-003-TC02",
       "verdict": "PASS",
-      "nodes": 1,
+      "nodes": 2,
       "lane": "chaos",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-003-TC03",
@@ -110,7 +110,7 @@
       "nodes": 1,
       "lane": "chaos",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-003-TC04",
@@ -118,7 +118,7 @@
       "nodes": 1,
       "lane": "integration",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-004-TC01",
@@ -126,23 +126,23 @@
       "nodes": 1,
       "lane": "integration",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-004-TC02",
       "verdict": "PASS",
-      "nodes": 1,
+      "nodes": 9,
       "lane": "security",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-004-TC03",
       "verdict": "PASS",
-      "nodes": 1,
+      "nodes": 2,
       "lane": "chaos",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-004-TC04",
@@ -150,23 +150,23 @@
       "nodes": 1,
       "lane": "chaos",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-005-TC01",
       "verdict": "PASS",
-      "nodes": 1,
+      "nodes": 2,
       "lane": "e2e",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-005-TC02",
       "verdict": "PASS",
-      "nodes": 1,
+      "nodes": 2,
       "lane": "security",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-005-TC03",
@@ -174,15 +174,15 @@
       "nodes": 1,
       "lane": "integration",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     },
     {
       "case_id": "AOS-005-TC04",
       "verdict": "PASS",
-      "nodes": 1,
+      "nodes": 2,
       "lane": "chaos",
       "execution_mode": "OS_BOUNDARY",
-      "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b"
+      "candidate_commit": "fc359b02bece73de30d07e7bf60f6e0af3372438"
     }
   ]
 }

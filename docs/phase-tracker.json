@@ -41,7 +41,7 @@
             "evidence/AOS-001-S3.xml",
             "evidence/AOS-001-S3/case-result.json"
           ],
-          "plan_status": "S3_SCAFFOLD_TC04_NOT_RUN",
+          "plan_status": "R0_CORRECTIONS_TC04_NOT_RUN",
           "plan_ref": "plans/AOS-001-implementation-plan.md"
         },
         {
@@ -62,7 +62,7 @@
             "evidence/AOS-002-S3/case-result-TC03.json",
             "evidence/AOS-002-S3/case-result-TC04.json"
           ],
-          "plan_status": "S3_SERVICES_AWAITING_REVIEW",
+          "plan_status": "R0_CORRECTIONS_NOT_ACCEPTED",
           "plan_ref": "plans/AOS-002-implementation-plan.md"
         },
         {
@@ -83,7 +83,7 @@
             "evidence/AOS-003-S3/case-result-TC03.json",
             "evidence/AOS-003-S3/case-result-TC04.json"
           ],
-          "plan_status": "S3_RESTORE_AWAITING_REVIEW",
+          "plan_status": "R0_CORRECTIONS_NOT_ACCEPTED",
           "plan_ref": "plans/AOS-003-implementation-plan.md"
         },
         {
@@ -104,7 +104,7 @@
             "evidence/AOS-004-S3/case-result-TC03.json",
             "evidence/AOS-004-S3/case-result-TC04.json"
           ],
-          "plan_status": "S3_WATCHDOG_AWAITING_REVIEW",
+          "plan_status": "R0_CORRECTIONS_NOT_ACCEPTED",
           "plan_ref": "plans/AOS-004-implementation-plan.md"
         },
         {
@@ -126,9 +126,10 @@
             "evidence/AOS-005-S3.xml",
             "evidence/AOS-005-S3/case-result-TC01.json",
             "evidence/AOS-005-S3/case-result-TC04.json",
-            "evidence/G0/evaluation.json"
+            "evidence/G0/evaluation.json",
+            "evidence/R0-corrections.xml"
           ],
-          "plan_status": "S3_JOURNEY_AWAITING_REVIEW",
+          "plan_status": "R0_CORRECTIONS_NOT_ACCEPTED",
           "plan_ref": "plans/AOS-005-implementation-plan.md"
         }
       ]

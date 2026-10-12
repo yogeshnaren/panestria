@@ -1,25 +1,24 @@
 # Goal progress
 
-**Phase:** R0, contract version 1 approved. Review handoff is ready. R1 has not started.  
-**Slice:** AOS-005-S3 evidenced. No further R0 slice is authorized.  
+**Phase:** R0, contract version 1 approved. The 2026-10-12 review did not accept R0. R1 has not started.  
+**Slice:** Corrections through the loopback server are committed. No further phase is authorized.  
 **Branch:** `r0-kernel`.  
-**Last verified source commit:** `af3d431e775c2f3f23722d272dd00f2863689d5b`.  
+**Last verified source commit:** `fc359b02bece73de30d07e7bf60f6e0af3372438`.  
 **Evidence commit:** recorded after that source commit; this file is not part of the tested tree.  
-**Gate:** G0 is `INCOMPLETE`. Nineteen required cases were collected on that commit. AOS-001-TC04 is `NOT_RUN`.
+**Gate:** G0 is `INCOMPLETE`. Nineteen required cases were collected. AOS-001-TC04 is `NOT_RUN`. A collected case id is not a claim that every source clause passed, and it is not owner acceptance.
 
 ## Completed
 
-AOS-001-S1 through AOS-005-S3 are implemented on `r0-kernel` with candidate-bound evidence. The integrated non-live suite on `af3d431e775c2f3f23722d272dd00f2863689d5b` collected 93 tests, 0 failures, and 0 skips. The synthetic journey completed one approved goal with one attempt and one confirmed git effect. Restart, deny, stale compare-and-swap, and the decision race were observed in the same report. Items AOS-001 through AOS-005 remain `IN_PROGRESS` and await review.
+AOS-001-S1 through AOS-005-S3 and the review corrections are on `r0-kernel`. The non-live suite on `fc359b02bece73de30d07e7bf60f6e0af3372438` collected 109 tests, 0 failures, and 0 skips in `evidence/R0-corrections.xml`. That run includes the per-node verifier denials, latest-result selection, admitted DBOS restart, Git reconciliation, dispatch-time authorization, artifact epoch checks, stored-graph cycles, goal idempotency, malformed envelopes, body and database bounds, and a separate loopback process driven by the CLI. Items AOS-001 through AOS-005 remain `IN_PROGRESS`.
 
 ## Failures and blockers
 
-AOS-001-TC04 has no fresh Ubuntu host. G0 cannot pass while that live case is `NOT_RUN`. No owner review of this handoff has been recorded. `make r0-demo` is still the nonzero stub. `/v1/artifacts/{id}`, `artifact show`, and `goal cancel` are not implemented; the journey reads the artifact hash from `evidence.recorded`. The CLI was forwarded through the test client; a separate TCP listener was not proven. `/readyz` does not open PostgreSQL.
+AOS-001-TC04 has no fresh Ubuntu host. G0 cannot pass while that live case is `NOT_RUN`. No owner review of the corrected candidate has been recorded. The earlier group PASS marks on `af3d431` did not exercise the review counterexamples; those receipts stay historical and are not rewritten. `tests/e2e/test_aos_005.py::test_loopback_submit_scope_and_replay` still has no `gate_case_id`. `make r0-demo` starts the loopback server and the real CLI; it needs a migrated database and does not replace the fresh-host case.
 
 ## Evidence
 
-`evidence/AOS-005-S3/` names `af3d431e775c2f3f23722d272dd00f2863689d5b`.  
-`evidence/G0/evaluation.json` derives the incomplete gate from `evidence/AOS-005-S3.xml`.  
-Earlier slice receipts remain under `evidence/AOS-001-S1/` through `evidence/AOS-005-S2/` and name their own source commits.  
+`evidence/R0-corrections.xml` and `evidence/G0/evaluation.json` name `fc359b02bece73de30d07e7bf60f6e0af3372438`.  
+Earlier slice receipts remain under `evidence/AOS-001-S1/` through `evidence/AOS-005-S3/` and name their own source commits.  
 The review package is `docs/reviews/R0-HANDOFF.md`.
 
 ## Approved permissions
@@ -28,7 +27,7 @@ The review package is `docs/reviews/R0-HANDOFF.md`.
 
 ## Next action
 
-Stop for review of `docs/reviews/R0-HANDOFF.md`. Do not start R1, do not mark G0 or any R0 item accepted, and do not invent the owner review.
+Stop for review of the corrected candidate. Do not start R1, do not mark G0 or any R0 item accepted, and do not invent the owner review or a fresh-host result.
 
 ## Resume
 

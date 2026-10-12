@@ -53,7 +53,9 @@ G0 requires all 20 case IDs in `docs/testing/release-gates.json`. Nineteen can r
 
 Schema validation of the contract is not execution proof. The v0.1.0 skill validator is not the checker for this envelope. R0 acceptance uses `trusted-command-ref`, `git-diff-path-check`, `policy-decision`, and `human-review`. `artifact-exists` is an available R0 verifier but this version has no artifact hash to bind, so it is omitted. `citation-check` and `rubric-review` stay unused until their later runners exist.
 
-## Missing prerequisites
+## Initial inventory
+
+This list is the inventory from before implementation. It is not the current status.
 
 - No owner approval record for this contract.
 - Slice status still says S1 corrections await acceptance. The code, source commit, and evidence were checked; this plan does not invent an acceptance signature.
@@ -62,10 +64,14 @@ Schema validation of the contract is not execution proof. The v0.1.0 skill valid
 - DBOS is not installed. AOS-003 must verify the current official transaction and enqueue APIs. If same-session enqueue is unavailable, admission pauses and an ADR records the fail-closed result.
 - Ruff, Mypy, and Import Linter are not yet project-locked commands.
 
+## Current status
+
+The phase contract is approved. DBOS, Ruff, Mypy, and Import Linter are installed and used. Domain tables, admission, and the synthetic journey are on `r0-kernel`. AOS-001-TC04 still has no fresh Ubuntu host. The 2026-10-12 review did not accept R0. G0 stays `INCOMPLETE`.
+
 ## Stopping condition
 
 Stop when the handoff lists ordered commits, the evidence matrix, known issues, setup/start/stop, rollback and backup, and a reproducible synthetic walkthrough with deliberate failures. Stop earlier if a required external setup is missing, after independent R0 work is committed and the gap is listed. Do not open R1.
 
 ## Handoff
 
-The review package is [R0-HANDOFF.md](../reviews/R0-HANDOFF.md). G0 is `INCOMPLETE` because AOS-001-TC04 has no fresh Ubuntu host. This section is not an owner review.
+The review package is [R0-HANDOFF.md](../reviews/R0-HANDOFF.md). G0 is `INCOMPLETE` because AOS-001-TC04 has no fresh Ubuntu host and the corrected candidate has no owner acceptance. This section is not an owner review.

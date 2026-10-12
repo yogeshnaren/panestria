@@ -1,6 +1,6 @@
 # panestria
 
-S1 scaffold for a local, synthetic-first agent operating system. AOS-001, R0, and the R3 MVP are incomplete. This tree is not a release.
+Local synthetic kernel for R0. The scaffold, domain tables, DBOS admission, and loopback goal flow are present. R0 is not accepted, G0 is incomplete, and the R3 MVP has not started. This tree is not a release.
 
 The design guide is [docs/START_HERE.md](docs/START_HERE.md).
 
@@ -14,7 +14,7 @@ Python 3.12 or newer, and [uv](https://docs.astral.sh/uv/). The checked-out inte
 uv sync --frozen --group dev
 ```
 
-Settings come from the process environment, using the names in [.env.example](.env.example). Panestria does not load that file. The password in the example is an accepted synthetic value. Copying it into the environment is enough for `panestria health` to parse settings. Health does not open PostgreSQL, and it must not print the password.
+Settings come from the process environment, using the names in [.env.example](.env.example). Panestria does not load that file. The password in the example is an accepted synthetic value. Copying it into the environment is enough for `panestria health` to parse settings. When `PANESTRIA_DATABASE_URL` is set, `health` opens PostgreSQL inside the readiness budget and does not print the URL or password. With no URL, the database check stays `not_probed`. The process stays not ready because no executor is configured.
 
 ```bash
 set -a
@@ -39,10 +39,12 @@ uv run --frozen panestria version
 uv run --frozen panestria health
 ```
 
-`version` exits 0. `health` exits 1 when the process is not ready and 2 when settings are rejected. In this slice the database check is `not_probed`; there is no live database probe. A timed-out readiness probe is killed, and shutdown is bounded to one second.
+`version` exits 0. `health` exits 1 when the process is not ready and 2 when settings are rejected. A timed-out readiness probe is killed, and shutdown is bounded to one second.
+
+The loopback server is `python -m panestria.api.serve`. It binds `127.0.0.1`, probes PostgreSQL from `/readyz`, and continues an accepted goal on the DBOS queue. `make r0-demo` starts that server and drives submit, approval, evidence, and completion with the `panestria` CLI. It needs the migrated database from the runbook and `PANESTRIA_TOKEN`. It is not the fresh-host case.
 
 Provider credentials are not required for these commands. CI uses the same frozen commands and does not inject provider keys.
 
 ## Scope
 
-The package, `SYNTHETIC_DEV` settings, and typed `/healthz` and `/readyz` routes are in place. Ruff, Mypy, Import Linter, and provider-free CI are the S2 toolchain. S3 adds a loopback PostgreSQL Compose service and an empty Alembic schema. `/readyz` still does not open the database. Domain tables, the fresh-host live case, and domain workflows remain later work. The license file is the repository MIT license.
+The package, `SYNTHETIC_DEV` settings, and typed `/healthz` and `/readyz` routes are in place. Ruff, Mypy, Import Linter, and provider-free CI are the toolchain. Compose publishes disposable PostgreSQL on `127.0.0.1:55432`. Alembic head is `0004_check_candidate`. Goal submit, events, approvals, artifact reads, and cancellation are mounted on the loopback API. The fresh-host live case has not been run. R1 has not started. The license file is the repository MIT license.

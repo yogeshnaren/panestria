@@ -32,7 +32,7 @@ uv run --frozen alembic -c migrations/alembic.ini upgrade head
 docker compose -f compose.yaml -p panestria-s3 down -v
 ```
 
-`upgrade head` now applies `0001_scaffold`, `0002_kernel`, and `0003_approval_preview`. `down -v` removes only the Compose project volume `panestria_s3_pgdata`. The reset helper refuses any other volume name and refuses a symlink data directory.
+`upgrade head` applies `0001_scaffold`, `0002_kernel`, `0003_approval_preview`, and `0004_check_candidate`. `down -v` removes only the Compose project volume `panestria_s3_pgdata`. The reset helper refuses any other volume name and refuses a symlink data directory.
 
 After `uv sync --frozen --group dev` has populated the cache, `UV_OFFLINE=1 uv sync --frozen --group dev` reinstalls without network. That check is not a fresh-machine bootstrap.
 
