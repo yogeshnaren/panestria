@@ -219,7 +219,7 @@ class SyntheticJourney:
             return
         task_id, _version = self._identity(connection, actor, goal_id)
         attempt_id = self._attempt(connection, task_id)
-        manifest = self._workspace(sandbox, attempt_id, goal_id)
+        manifest = self._workspace(sandbox, attempt_id, goal_id, actor.owner_id)
         candidate = self._worker(manifest, goal_id)
         if candidate.status != "CANDIDATE":
             raise KernelDenied("candidate_rejected")
@@ -442,7 +442,7 @@ class SyntheticJourney:
         connection.commit()
         return passed
 
-    def _workspace(self, sandbox: Path, attempt_id: str, seed: str) -> WorkspaceManifest:
+    def _workspace(self, sandbox: Path, attempt_id: str, seed: str, owner: str) -> WorkspaceManifest:
         sandbox.mkdir(parents=True, exist_ok=True)
         worktree = sandbox / "attempts" / attempt_id
         base_file = sandbox / "protected" / "base.txt"
@@ -454,7 +454,7 @@ class SyntheticJourney:
                 base_file.read_text().strip(),
                 attempt_id,
             )
-        manifest = WorktreeManager().create(sandbox, attempt_id, seed)
+        manifest = WorktreeManager().create(sandbox, attempt_id, seed, owner=owner)
         bare = sandbox / "protected" / "dest.git"
         bare.parent.mkdir(parents=True, exist_ok=True)
         _run(["git", "clone", "--bare", manifest.repo, str(bare)])

@@ -538,6 +538,19 @@
       "status": "NOT_IMPLEMENTED"
     },
     {
+      "id": "AOS-004-OP01",
+      "aos_id": "AOS-004",
+      "source_kind": "OP",
+      "source_clause": "Record worktree owner, TTL, cleanup outcome, disk use and orphan detection. Keep failed worktree evidence in protected artifact store when configured; cleanup cannot traverse symlink beyond sandbox root.",
+      "slice_ids": [
+        "AOS-004-S3"
+      ],
+      "case_ids": [
+        "AOS-004-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
       "id": "AOS-005-F01",
       "aos_id": "AOS-005",
       "source_kind": "F",

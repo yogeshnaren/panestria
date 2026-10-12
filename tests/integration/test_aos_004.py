@@ -14,7 +14,7 @@ from psycopg.errors import CheckViolation
 
 from panestria.brokers.harness.mock import OUTPUT_LIMIT, Candidate, MockWorkerAdapter, Observation
 from panestria.sandbox.artifact_ingress import ArtifactIngress, ArtifactRef
-from panestria.sandbox.worktree import WorkspaceManifest, WorktreeManager
+from panestria.sandbox.worktree import CleanupReport, WorkspaceManifest, WorktreeManager
 from panestria.verification.artifacts import decide
 from panestria.verification.diff import inspect_diff
 from panestria.verification.registry import CommandRegistry
@@ -500,3 +500,63 @@ def test_artifact_partial_publish(record_property: pytest.RecordProperty, tmp_pa
         assert ingress.recheck(kept) is False
     finally:
         subprocess.run([*COMPOSE, "down", "-v"], check=False)
+
+
+def test_expired_worktree_cleanup_does_not_follow_symlinks(
+    record_property: pytest.RecordProperty,
+    tmp_path: Path,
+) -> None:
+    _properties(record_property, "AOS-004-TC04", "chaos")
+    manager = WorktreeManager()
+    root = tmp_path / "sandbox"
+    manifest = manager.create(root, "attempt-live", SEED, owner="owner-a", ttl_seconds=10, now=1000)
+    assert manifest.owner == "owner-a"
+    assert manifest.ttl_seconds == 10
+    assert manifest.disk_bytes > 0
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    secret = outside / "secret.txt"
+    secret.write_text("stay\n")
+    worktree = Path(manifest.worktree)
+    (worktree / "escape").symlink_to(outside, target_is_directory=True)
+    retained = manager.cleanup(root, now=1005, live_attempts={"attempt-live"})
+    assert retained == (
+        CleanupReport("attempt-live", "retained", "owner-a", manifest.disk_bytes, "live"),
+    )
+    assert secret.read_text() == "stay\n"
+    store = tmp_path / "store"
+    removed = manager.cleanup(root, now=1010, live_attempts={"attempt-live"}, store=store)
+    assert removed == (
+        CleanupReport("attempt-live", "removed", "owner-a", manifest.disk_bytes, "expired"),
+    )
+    assert not worktree.exists()
+    assert secret.read_text() == "stay\n"
+    evidence = [path for path in store.iterdir() if not path.name.startswith(".")]
+    assert len(evidence) == 1
+    body = evidence[0].read_bytes()
+    assert evidence[0].is_file() and not evidence[0].is_symlink()
+    assert hashlib.sha256(body).hexdigest() == evidence[0].name
+    assert b"owner-a" in body
+    rogue = root / "attempts" / "rogue-attempt"
+    rogue.mkdir(parents=True)
+    (rogue / "note.txt").write_text("orphan\n")
+    linked_outside = tmp_path / "linked-outside"
+    linked_outside.mkdir()
+    kept = linked_outside / "kept.txt"
+    kept.write_text("kept\n")
+    (root / "attempts" / "linked-attempt").symlink_to(linked_outside, target_is_directory=True)
+    live_dir = root / "attempts" / "still-live"
+    live_dir.mkdir()
+    (live_dir / "keep.txt").write_text("keep\n")
+    reports = {
+        item.attempt_id: item
+        for item in manager.cleanup(root, now=2000, live_attempts={"still-live"}, store=store)
+    }
+    assert reports["rogue-attempt"] == CleanupReport("rogue-attempt", "removed", "orphan", 7, "orphan")
+    assert reports["linked-attempt"].reason == "unlinked-symlink"
+    assert reports["still-live"] == CleanupReport("still-live", "denied", "", 5, "unrecorded-live")
+    assert not rogue.exists()
+    assert not (root / "attempts" / "linked-attempt").exists()
+    assert kept.read_text() == "kept\n"
+    assert (live_dir / "keep.txt").read_text() == "keep\n"
+    assert (root / "repo" / "README.txt").read_text() == "base:alpha\n"
