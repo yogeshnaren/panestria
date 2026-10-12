@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import subprocess
 import sys
 from pathlib import Path
 
+import psycopg
 import pytest
+from psycopg.errors import CheckViolation
 
 from panestria.brokers.harness.mock import OUTPUT_LIMIT, Candidate, MockWorkerAdapter, Observation
 from panestria.sandbox.artifact_ingress import ArtifactIngress
@@ -182,3 +185,172 @@ def test_bad_path_and_tampered_checks(
     assert tampered.reason == "bundle_tampered"
     assert not (root / "protected" / "ran.txt").exists()
     assert decide(report, (tampered,), ("synthetic-required",), True).verdict == "FAIL"
+
+
+def _watch(root: Path, attempt: str, mode: str, timeout: float) -> tuple[MockWorkerAdapter, Candidate]:
+    manifest = WorktreeManager().create(root, attempt, SEED)
+    adapter = MockWorkerAdapter(manifest, mode, SEED)
+    adapter.start()
+    result = adapter.collect(timeout)
+    assert adapter._process is not None
+    with pytest.raises(ProcessLookupError):
+        os.killpg(adapter._process.pid, 0)
+    return adapter, result
+
+
+def test_hung_process_and_output(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+    _properties(record_property, "AOS-004-TC03", "chaos")
+    _first_adapter, first = _watch(tmp_path / "silent-a", "attempt-silent-a", "hung", 0.4)
+    _second_adapter, second = _watch(tmp_path / "silent-b", "attempt-silent-b", "hung", 0.4)
+    assert first.status == "TIMED_OUT"
+    assert first.accepted is False
+    assert first.checks == "NOT_RUN"
+    assert first.truncated is False
+    assert (first.status, first.accepted, first.checks, first.stdout_sha256) == (
+        second.status,
+        second.accepted,
+        second.checks,
+        second.stdout_sha256,
+    )
+    _done_adapter, claimed = _watch(tmp_path / "claimed", "attempt-claimed", "false_done", 0.4)
+    assert claimed.status == "TIMED_OUT"
+    assert claimed.accepted is False
+    assert claimed.stdout_sha256 == hashlib.sha256(b"done\n").hexdigest()
+    _flood_adapter, flooded = _watch(tmp_path / "flood", "attempt-flood", "flood", 0.5)
+    assert flooded.status == "TIMED_OUT"
+    assert flooded.accepted is False
+    assert flooded.truncated is True
+    assert flooded.stdout_sha256 == hashlib.sha256(b"x" * OUTPUT_LIMIT).hexdigest()
+
+
+COMPOSE = ["docker", "compose", "-f", str(ROOT / "compose.yaml"), "-p", "panestria-s3"]
+DATABASE_URL = "postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55432/panestria_synthetic"
+OWNER = "00000000-0000-4000-8000-000000000002"
+PROJECT = "00000000-0000-4000-8000-000000000003"
+GOAL = "00000000-0000-4000-8000-000000000001"
+CONTRACT = "00000000-0000-4000-8000-000000000040"
+TASK_STORE = "00000000-0000-4000-8000-0000000000f1"
+ATTEMPT_STORE = "00000000-0000-4000-8000-0000000000f2"
+ARTIFACT = "00000000-0000-4000-8000-0000000000f3"
+CHECK = "00000000-0000-4000-8000-0000000000f4"
+
+
+def _database() -> None:
+    subprocess.run([*COMPOSE, "down", "-v"], check=False)
+    up = subprocess.run(
+        [*COMPOSE, "up", "-d", "--wait"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert up.returncode == 0, up.stderr
+    upgraded = subprocess.run(
+        ["uv", "run", "--frozen", "alembic", "-c", "migrations/alembic.ini", "upgrade", "head"],
+        cwd=ROOT,
+        env={**os.environ, "PANESTRIA_DATABASE_URL": DATABASE_URL},
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert upgraded.returncode == 0, upgraded.stderr
+
+
+def _seed_store_task(connection: psycopg.Connection[object]) -> None:
+    digest = "ab" * 32
+    connection.execute("INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'owner')", (OWNER,))
+    connection.execute("INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)", (PROJECT, OWNER))
+    connection.execute(
+        "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+        " VALUES (%s, %s, %s, 'synthetic', 'CREATED')",
+        (GOAL, OWNER, PROJECT),
+    )
+    connection.execute(
+        "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+        " VALUES (%s, %s, 1, '{}'::jsonb, %s)",
+        (CONTRACT, GOAL, digest),
+    )
+    connection.execute(
+        "INSERT INTO panestria.task (id, goal_id, contract_id, name, state) VALUES (%s, %s, %s, 'store', 'CREATED')",
+        (TASK_STORE, GOAL, CONTRACT),
+    )
+    connection.execute(
+        "INSERT INTO panestria.task_attempt (id, task_id, attempt_number, lease_epoch, status, adapter)"
+        " VALUES (%s, %s, 1, 0, 'PENDING', 'synthetic')",
+        (ATTEMPT_STORE, TASK_STORE),
+    )
+    connection.execute(
+        "INSERT INTO panestria.acceptance_check"
+        " (id, contract_id, check_key, description, verifier_type, verifier_spec)"
+        " VALUES (%s, %s, 'synthetic-required', 'required', 'trusted-command-ref',"
+        " '{\"type\":\"trusted-command-ref\"}'::jsonb)",
+        (CHECK, CONTRACT),
+    )
+
+
+def test_artifact_partial_publish(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+    _properties(record_property, "AOS-004-TC04", "chaos")
+    _database()
+    try:
+        manifest = WorktreeManager().create(tmp_path / "store-case", "attempt-store", SEED)
+        worktree = Path(manifest.worktree)
+        ingress = ArtifactIngress(tmp_path / "blob-store", worktree)
+        partial_source = worktree / "partial.txt"
+        partial_source.write_bytes(b"partial\n")
+        partial = ingress.stage_partial(partial_source)
+        assert partial.name.startswith(".")
+        assert not (ingress.store / hashlib.sha256(b"partial\n").hexdigest()).exists()
+        orphan_source = worktree / "orphan.txt"
+        orphan_source.write_bytes(b"orphan\n")
+        orphan = ingress.finalize(orphan_source, "synthetic-owner", 1)
+        kept_source = worktree / "kept.txt"
+        kept_source.write_bytes(b"kept\n")
+        kept = ingress.finalize(kept_source, "synthetic-owner", 1)
+        with psycopg.connect(DATABASE_URL) as connection:
+            _seed_store_task(connection)
+            ingress.record_ref(
+                connection,
+                kept,
+                artifact_id=ARTIFACT,
+                task_id=TASK_STORE,
+                attempt_id=ATTEMPT_STORE,
+            )
+            connection.commit()
+            kept_path = Path(kept.path)
+            kept_path.write_bytes(b"tampered\n")
+            assert ingress.recheck(kept) is False
+            with pytest.raises(ValueError, match="does not match"):
+                ingress.record_ref(
+                    connection,
+                    kept,
+                    artifact_id="00000000-0000-4000-8000-0000000000f5",
+                    task_id=TASK_STORE,
+                    attempt_id=ATTEMPT_STORE,
+                )
+            with pytest.raises(CheckViolation):
+                connection.execute(
+                    "INSERT INTO panestria.check_run"
+                    " (id, acceptance_check_id, attempt_id, task_id, contract_id, verdict)"
+                    " VALUES (%s, %s, %s, %s, %s, 'PASS')",
+                    ("00000000-0000-4000-8000-0000000000f6", CHECK, ATTEMPT_STORE, TASK_STORE, CONTRACT),
+                )
+            connection.rollback()
+            referenced = {row[0].strip() for row in connection.execute("SELECT sha256 FROM panestria.artifact")}
+            assert referenced == {kept.digest}
+            passes = connection.execute("SELECT count(*) FROM panestria.check_run WHERE verdict = 'PASS'").fetchone()
+            assert passes is not None and passes[0] == 0
+        target = tmp_path / "outside-target.txt"
+        target.write_text("stay\n")
+        link = ingress.store / "linked"
+        link.symlink_to(target)
+        removed = ingress.cleanup_orphans({kept.digest})
+        assert partial.name in removed
+        assert orphan.digest in removed
+        assert not partial.exists()
+        assert not Path(orphan.path).exists()
+        assert kept_path.exists()
+        assert link.is_symlink()
+        assert target.read_text() == "stay\n"
+        assert ingress.recheck(kept) is False
+    finally:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)

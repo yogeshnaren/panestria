@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import selectors
 import signal
 import subprocess
 import sys
@@ -44,6 +45,7 @@ class MockWorkerAdapter:
         self._process: subprocess.Popen[bytes] | None = None
         self._cancellation_requested = False
         self._terminated = False
+        self._timed_out = False
 
     def start(self) -> None:
         env = os.environ.copy()
@@ -71,17 +73,11 @@ class MockWorkerAdapter:
 
     def collect(self, timeout: float = 5) -> Candidate:
         process = self._process
-        if process is None:
+        if process is None or process.stdout is None or process.stderr is None:
             raise RuntimeError("worker has not started")
-        try:
-            stdout, _stderr = process.communicate(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            self.cancel()
-            stdout, _stderr = process.communicate(timeout=2)
-        else:
+        kept, truncated = self._capture(process, timeout)
+        if process.poll() is not None:
             self._terminated = True
-        truncated = len(stdout) > self.output_limit
-        kept = stdout[: self.output_limit]
         artifact = self._artifact_hash()
         status = self._status(process.returncode)
         if self._escaped():
@@ -96,6 +92,54 @@ class MockWorkerAdapter:
             truncated=truncated,
         )
 
+    def _capture(self, process: subprocess.Popen[bytes], timeout: float) -> tuple[bytes, bool]:
+        assert process.stdout is not None and process.stderr is not None
+        stdout_fd = process.stdout.fileno()
+        stderr_fd = process.stderr.fileno()
+        os.set_blocking(stdout_fd, False)
+        os.set_blocking(stderr_fd, False)
+        selector = selectors.DefaultSelector()
+        selector.register(stdout_fd, selectors.EVENT_READ, "out")
+        selector.register(stderr_fd, selectors.EVENT_READ, "err")
+        kept = bytearray()
+        truncated = False
+        deadline = time.monotonic() + timeout
+        try:
+            while process.poll() is None and time.monotonic() < deadline:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    break
+                for key, _mask in selector.select(remaining):
+                    keep = kept if key.data == "out" else None
+                    truncated = self._consume(key.fd, keep) or truncated
+            if process.poll() is None and not self._cancellation_requested:
+                self._timed_out = True
+                self._kill()
+            truncated = self._consume(stdout_fd, kept) or truncated
+            self._consume(stderr_fd, None)
+        finally:
+            selector.close()
+        return bytes(kept), truncated
+
+    def _consume(self, fd: int, kept: bytearray | None) -> bool:
+        truncated = False
+        while True:
+            try:
+                chunk = os.read(fd, 65536)
+            except BlockingIOError:
+                return truncated
+            if not chunk:
+                return truncated
+            if kept is None:
+                continue
+            room = self.output_limit - len(kept)
+            if len(chunk) <= room:
+                kept += chunk
+                continue
+            if room > 0:
+                kept += chunk[:room]
+            truncated = True
+
     def _kill(self) -> None:
         process = self._process
         if process is None or self._terminated:
@@ -104,9 +148,23 @@ class MockWorkerAdapter:
         process.wait(timeout=5)
         self._terminated = True
 
+    def _group_alive(self, pid: int) -> bool:
+        try:
+            os.killpg(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        return True
+
     def _status(self, returncode: int | None) -> str:
         if self._cancellation_requested:
             return "CANCELLED"
+        if self._timed_out:
+            process = self._process
+            if process is not None and self._group_alive(process.pid):
+                return "UNKNOWN"
+            return "TIMED_OUT"
         if returncode is None or returncode < 0:
             return "CRASHED"
         if self.mode == "success" and returncode == 0 and not self._escaped():
@@ -151,6 +209,15 @@ def main() -> None:
     if mode == "hung":
         while True:
             time.sleep(0.2)
+    if mode == "false_done":
+        sys.stdout.write("done\n")
+        sys.stdout.flush()
+        while True:
+            time.sleep(0.2)
+    if mode == "flood":
+        while True:
+            sys.stdout.buffer.write(b"x" * 1024)
+            sys.stdout.buffer.flush()
     if mode == "crash":
         os.kill(os.getpid(), signal.SIGKILL)
     raise SystemExit(2)
