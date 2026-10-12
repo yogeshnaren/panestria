@@ -1,6 +1,6 @@
 # Architecture delta
 
-This file records the implementation on `a9bbc005ee584e80b4858786565f6cab26d536b9`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
+This file records the implementation on `b0f47cf14383b328f70536454c9f851587bea677`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
 
 ## What runs
 
@@ -12,7 +12,7 @@ One Python 3.12 package, `src/panestria`, with a frozen `uv.lock`. PostgreSQL 16
 
 | Package | Role in this tree |
 |---|---|
-| `contracts` | Goal and approval models. `effect_digest` is the only approval fingerprint. |
+| `contracts` | Goal and approval models. `effect_digest` is the only approval fingerprint. `docs/contracts/` is the JSON Schema rendered from those models, plus the database snapshot. |
 | `kernel` | Goal, task, approval, artifact, and cancellation services. Repositories append events under the global sequence lock. |
 | `execution` | Admission enqueues `run_task_workflow` on the DBOS queue `panestria-synthetic`. Crash gates stop a process before commit, worker start, verification, effect dispatch, or effect confirmation. |
 | `verification` | Per-node command, path, policy, artifact, and human-review checks. The diff is between the pinned base and the candidate tree. |
