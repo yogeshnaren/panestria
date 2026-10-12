@@ -132,3 +132,34 @@ def test_ci_does_not_inject_provider_credentials() -> None:
     for name in PROVIDER_NAMES:
         assert name not in workflow
     assert "secrets." not in workflow
+
+
+def test_make_bootstrap_uses_the_frozen_cache() -> None:
+    env = os.environ.copy()
+    env["UV_OFFLINE"] = "1"
+    completed = _run(["make", "bootstrap"], env=env)
+    assert completed.returncode == 0, completed.stderr
+
+
+def test_make_test_excludes_the_live_case() -> None:
+    completed = _run(["make", "-n", "test"])
+    assert completed.returncode == 0, completed.stderr
+    assert 'pytest -m "not live"' in completed.stdout
+
+
+def test_reset_rejects_an_extra_path() -> None:
+    completed = _run(["make", "reset-synthetic-data", "/tmp"])
+    assert completed.returncode != 0
+    assert "unsupported_target" in completed.stderr
+    assert "panestria_s3_pgdata" not in completed.stdout + completed.stderr
+
+
+def test_dev_api_rejects_a_non_loopback_bind() -> None:
+    env = os.environ.copy()
+    env["PANESTRIA_BIND_HOST"] = "0.0.0.0"
+    completed = _run(["make", "dev-api"], env=env)
+    text = completed.stdout + completed.stderr
+    assert completed.returncode == 2
+    assert "invalid_bind" in text
+    assert "placeholder-not-a-secret" not in text
+    assert "55432" not in text
