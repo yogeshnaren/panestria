@@ -211,3 +211,80 @@ def test_admitted_queue_restarts_at_transaction_worker_and_verification(
     finally:
         os.environ.pop("PANESTRIA_DEFER_CONSUME", None)
         subprocess.run([*COMPOSE, "down", "-v"], check=False)
+
+
+def test_repeated_recovery_stops_and_fails_the_task(tmp_path: Path, record_property: pytest.RecordProperty) -> None:
+    record_property("gate_case_id", "AOS-003-TC03")
+    _database()
+    os.environ["PANESTRIA_DEFER_CONSUME"] = "1"
+    journey = SyntheticJourney()
+    approvals = ApprovalService()
+    goals = GoalService()
+    actor = Actor(OWNER, PROJECT)
+    goal_id = "00000000-0000-4000-8000-0000000000e3"
+    try:
+        with psycopg.connect(DATABASE_URL) as connection:
+            connection.execute(
+                "INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'owner')",
+                (OWNER,),
+            )
+            connection.execute(
+                "INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)",
+                (PROJECT, OWNER),
+            )
+            connection.commit()
+            submitted = _submit(connection, goals, goal_id)
+            opened = journey.open_contract_wait(connection, actor, submitted, tmp_path / "limit")
+            assert opened.approval_id is not None
+            approvals.decide(
+                UnitOfWork(connection),
+                actor,
+                opened.approval_id,
+                str(opened.effect_digest),
+                int(opened.expected_version or 0),
+                "approve",
+                "consent-limit",
+            )
+            connection.commit()
+            journey.resume(connection, actor, submitted, tmp_path / "limit")
+            link = connection.execute(
+                "SELECT link.dbos_workflow_id::text FROM panestria.workflow_link AS link"
+                " JOIN panestria.task AS task ON task.id = link.task_id WHERE task.goal_id = %s",
+                (submitted,),
+            ).fetchone()
+        assert link is not None
+        workflow_id = str(link[0])
+        stopped = False
+        for index in range(8):
+            ready = tmp_path / f"limit-{index}.ready"
+            process = _spawn(workflow_id, "before-commit", ready)
+            deadline = time.monotonic() + 40
+            while time.monotonic() < deadline and not ready.exists() and process.poll() is None:
+                time.sleep(0.1)
+            if ready.exists():
+                _kill(process)
+                continue
+            process.wait(timeout=15)
+            stopped = True
+            break
+        assert stopped
+        with psycopg.connect(DATABASE_URL) as connection:
+            row = connection.execute(
+                "SELECT goal.status, task.state, workflow.status, count(attempt.id)"
+                " FROM panestria.goal AS goal"
+                " JOIN panestria.task AS task ON task.goal_id = goal.id"
+                " JOIN panestria.task_attempt AS attempt ON attempt.task_id = task.id"
+                " JOIN panestria.workflow_link AS link ON link.task_id = task.id"
+                " JOIN dbos.workflow_status AS workflow ON workflow.workflow_uuid = link.dbos_workflow_id"
+                " WHERE goal.id = %s"
+                " GROUP BY goal.status, task.state, workflow.status",
+                (submitted,),
+            ).fetchone()
+        assert row is not None
+        assert row[0] != "COMPLETED"
+        assert row[1] == "FAILED"
+        assert row[2] == "MAX_RECOVERY_ATTEMPTS_EXCEEDED"
+        assert int(row[3]) == 1
+    finally:
+        os.environ.pop("PANESTRIA_DEFER_CONSUME", None)
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)

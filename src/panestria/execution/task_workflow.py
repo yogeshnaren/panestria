@@ -28,6 +28,7 @@ from panestria.kernel.repositories.events import append_domain_event
 
 CHECKPOINT_SCHEMA = "panestria_checkpoint"
 SERIALIZATION_ATTEMPT_LIMIT = 5
+WORKFLOW_RECOVERY_LIMIT = 2
 _datasource: SQLAlchemyDatasource | None = None
 _Result = TypeVar("_Result")
 
@@ -365,7 +366,7 @@ def execute_admitted_attempt(task_id: str, attempt_number: int) -> str:
     return "done"
 
 
-@DBOS.workflow(name=WORKFLOW_NAME)
+@DBOS.workflow(name=WORKFLOW_NAME, max_recovery_attempts=WORKFLOW_RECOVERY_LIMIT)
 def run_task_workflow(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
     try:
         result = transition_task_tx(task_id, contract_sha256, attempt_number)
@@ -381,7 +382,7 @@ def run_task_workflow(task_id: str, contract_sha256: str, attempt_number: int) -
         settle_terminal_exception(exc, task_id, contract_sha256, attempt_number)
 
 
-@DBOS.workflow(name="run_effect_workflow")
+@DBOS.workflow(name="run_effect_workflow", max_recovery_attempts=WORKFLOW_RECOVERY_LIMIT)
 def run_effect_workflow(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
     try:
         transition_task_tx(task_id, contract_sha256, attempt_number)
@@ -391,7 +392,7 @@ def run_effect_workflow(task_id: str, contract_sha256: str, attempt_number: int)
     return {"task_id": task_id, "external_ref": ref}
 
 
-@DBOS.workflow(name="run_failing_workflow")
+@DBOS.workflow(name="run_failing_workflow", max_recovery_attempts=WORKFLOW_RECOVERY_LIMIT)
 def run_failing_workflow(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
     mark_failed_tx(task_id, contract_sha256, attempt_number)
     raise RuntimeError("terminal-synthetic-failure")
@@ -416,6 +417,31 @@ def _start(database_url: str, *, listen: bool = False) -> None:
     DBOS.launch()
 
 
+def _record_exhausted_recovery(workflow_id: str, status: str) -> None:
+    """A workflow that will not be started again leaves the task FAILED."""
+    if status != "MAX_RECOVERY_ATTEMPTS_EXCEEDED":
+        return
+    import psycopg
+
+    with psycopg.connect(os.environ["PANESTRIA_DATABASE_URL"]) as connection:
+        row = connection.execute(
+            "SELECT task.id::text, contract.sha256, attempt.attempt_number"
+            " FROM panestria.workflow_link AS link"
+            " JOIN panestria.task AS task ON task.id = link.task_id"
+            " JOIN panestria.task_attempt AS attempt ON attempt.id = link.attempt_id"
+            " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
+            " WHERE link.dbos_workflow_id = %s",
+            (workflow_id,),
+        ).fetchone()
+    if row is None:
+        return
+    try:
+        mark_failed_tx(str(row[0]), str(row[1]).strip(), int(row[2]), "recovery-attempt-limit")
+    except KernelDenied as exc:
+        if exc.code != "illegal_transition":
+            raise
+
+
 def main() -> None:
     database_url = os.environ["PANESTRIA_DATABASE_URL"]
     mode = os.environ.get("PANESTRIA_MODE", "run")
@@ -424,11 +450,13 @@ def main() -> None:
         workflow_id = os.environ["PANESTRIA_WORKFLOW_ID"]
         if mode == "consume":
             report = RecoveryService().recover_pending(workflow_id, timeout_seconds=45)
+            _record_exhausted_recovery(workflow_id, report.status)
             if report.status != "SUCCESS":
                 raise SystemExit(2)
             return
         if mode == "recover":
             report = RecoveryService().recover_pending(workflow_id)
+            _record_exhausted_recovery(workflow_id, report.status)
             sys.stdout.write(format_recovery_audit(report) + "\n")
             if report.status != "SUCCESS":
                 raise SystemExit(2)
