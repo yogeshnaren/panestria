@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pytest
 
+from panestria.brokers.harness.mock import MockWorkerAdapter
 from panestria.contracts.goal import GoalContract, contract_sha256, load_contract
 from panestria.sandbox.gitcmd import allow_git
 from panestria.sandbox.worktree import WorktreeManager
@@ -409,3 +410,58 @@ def test_git_commands_reject_push_and_hook_changes(record_property: pytest.Recor
     for command in refused:
         with pytest.raises(ValueError, match="git command"):
             allow_git(command)
+
+
+def test_false_pass_records_readme_path_and_exit_code(tmp_path: Path, record_property: pytest.RecordProperty) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
+    registry, runner, _candidate = _bundle(tmp_path)
+    manifest = WorktreeManager().create(tmp_path / "readme", "attempt-readme", "alpha")
+    adapter = MockWorkerAdapter(manifest, "false_readme", "alpha")
+    adapter.start()
+    claimed = adapter.collect()
+    assert claimed.accepted is False
+    assert claimed.stdout_sha256 == hashlib.sha256(b"tests pass\n").hexdigest()
+    readme = Path(manifest.worktree) / "README.md"
+    assert readme.read_text(encoding="utf-8") == "tests pass\n"
+    contract = _contract(
+        [
+            _check(
+                "AC-CMD",
+                True,
+                {
+                    "type": "trusted-command-ref",
+                    "command_ref": "exits-one",
+                    "expected_exit_code": 0,
+                    "timeout_seconds": 5,
+                },
+            ),
+            _check(
+                "AC-PATH",
+                True,
+                {
+                    "type": "git-diff-path-check",
+                    "allowed_paths": ["tests/**"],
+                    "forbidden_paths": [".env*"],
+                },
+            ),
+        ]
+    )
+    reports = evaluate_checks(
+        contract,
+        root=Path(manifest.root),
+        worktree=Path(manifest.worktree),
+        base_sha=manifest.base_sha,
+        registry=registry,
+        runner=runner,
+        attempt_id="attempt-readme",
+        candidate_sha256=hashlib.sha256(readme.read_bytes()).hexdigest(),
+        candidate_path=readme,
+    )
+    path_report = next(item for item in reports if item.check_id == "AC-PATH")
+    assert path_report.verdict == "FAIL"
+    assert "README.md" in path_report.denied_paths
+    assert path_report.exit_code == 1
+    stored = json.loads(path_report.canonical_bytes())
+    assert "README.md" in stored["denied_paths"]
+    assert stored["exit_code"] == 1
+    assert required_passed(reports) is False

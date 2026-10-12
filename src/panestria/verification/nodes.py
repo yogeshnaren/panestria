@@ -5,7 +5,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 from panestria.contracts.acceptance import (
@@ -50,6 +50,7 @@ class NodeReport:
     tree_sha: str = ""
     changed_paths: tuple[str, ...] = ()
     output_b64: str = ""
+    exit_code: int | None = None
 
     def canonical_bytes(self) -> bytes:
         payload = {
@@ -60,6 +61,7 @@ class NodeReport:
             "check_id": self.check_id,
             "contract_sha256": self.contract_sha256,
             "denied_paths": list(self.denied_paths),
+            "exit_code": self.exit_code,
             "output_b64": self.output_b64,
             "output_sha256": self.output_sha256,
             "reason": self.reason,
@@ -160,6 +162,12 @@ def evaluate_checks(
                 digest,
             )
         reports.append(report)
+    command_exit = next((item.exit_code for item in reports if item.exit_code is not None), None)
+    if command_exit is not None:
+        reports = [
+            replace(item, exit_code=command_exit) if item.denied_paths and item.exit_code is None else item
+            for item in reports
+        ]
     return tuple(reports)
 
 
@@ -244,6 +252,7 @@ def _command(
         digest,
         result.output_sha256,
         output=result.output,
+        exit_code=result.exit_code,
     )
 
 
@@ -354,6 +363,7 @@ def _report(
     tree_sha: str = "",
     changed_paths: tuple[str, ...] = (),
     output: bytes = b"",
+    exit_code: int | None = None,
 ) -> NodeReport:
     return NodeReport(
         check_id,
@@ -370,4 +380,5 @@ def _report(
         tree_sha,
         changed_paths,
         base64.b64encode(output).decode("ascii"),
+        exit_code,
     )

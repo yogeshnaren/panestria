@@ -26,6 +26,7 @@ _MODES = frozenset(
         "bad_test",
         "crash",
         "false_done",
+        "false_readme",
         "flood",
         "hung",
         "success",
@@ -347,6 +348,10 @@ def main() -> None:
     if mode in {"hung", "timeout"}:
         while True:
             time.sleep(0.2)
+    if mode == "false_readme":
+        (worktree / "README.md").write_text("tests pass\n")
+        sys.stdout.write("tests pass\n")
+        return
     if mode == "false_done":
         sys.stdout.write("done\n")
         sys.stdout.flush()
