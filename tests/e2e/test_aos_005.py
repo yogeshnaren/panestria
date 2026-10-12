@@ -306,8 +306,9 @@ def _seed_approvals() -> None:
             (GOAL, OWNER, PROJECT),
         )
         connection.execute(
-            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256) VALUES (%s, %s, 1, '{}', %s)",
-            (CONTRACT, GOAL, SHA),
+            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+            " VALUES (%s, %s, 1, %s::jsonb, %s)",
+            (CONTRACT, GOAL, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', SHA),
         )
         connection.execute(
             "INSERT INTO panestria.acceptance_check"
@@ -350,8 +351,9 @@ def _seed_approvals() -> None:
             (FOREIGN_GOAL, OTHER, OTHER_PROJECT),
         )
         connection.execute(
-            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256) VALUES (%s, %s, 1, '{}', %s)",
-            (FOREIGN_CONTRACT, FOREIGN_GOAL, SHA),
+            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+            " VALUES (%s, %s, 1, %s::jsonb, %s)",
+            (FOREIGN_CONTRACT, FOREIGN_GOAL, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', SHA),
         )
         connection.execute(
             "INSERT INTO panestria.acceptance_check"

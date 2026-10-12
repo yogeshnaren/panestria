@@ -7,6 +7,7 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.tasks import TaskService
+from panestria.kernel.transition import require_correlation
 from panestria.kernel.uow import UnitOfWork
 
 _OUTSTANDING = frozenset({"PREPARED", "EXECUTING", "UNKNOWN", "RECONCILING"})
@@ -32,7 +33,10 @@ class CancellationService:
         goal_id: str,
         expected_version: int,
         reason: str,
+        *,
+        correlation_id: str,
     ) -> CancelReceipt:
+        correlation = require_correlation(correlation_id)
         if not isinstance(reason, str) or reason.strip() == "" or len(reason) > 200:
             raise KernelDenied("invalid_contract")
         goal = uow.execute(
@@ -67,7 +71,18 @@ class CancellationService:
                 raise KernelDenied("version_conflict")
             if (state, "CANCELLING") not in ALLOWED_TRANSITIONS:
                 raise KernelDenied("illegal_transition")
-            moved = self.tasks.transition(uow, actor, str(task_id), row_version, epoch, "CANCELLING", "owner-cancel")
+            policy = self._policy(uow, str(task_id))
+            moved = self.tasks.transition(
+                uow,
+                actor,
+                str(task_id),
+                row_version,
+                epoch,
+                "CANCELLING",
+                "owner-cancel",
+                policy_version=policy,
+                correlation_id=correlation,
+            )
             row_version = moved.row_version
             state = "CANCELLING"
         elif row_version != expected_version:
@@ -78,9 +93,32 @@ class CancellationService:
         ).fetchall()
         if any(str(item[0]) in _OUTSTANDING for item in outstanding):
             return CancelReceipt(goal_id, "CREATED", "CANCELLING", row_version)
-        finished = self.tasks.transition(uow, actor, str(task_id), row_version, epoch, "CANCELLED", "owner-cancel")
+        policy = self._policy(uow, str(task_id))
+        finished = self.tasks.transition(
+            uow,
+            actor,
+            str(task_id),
+            row_version,
+            epoch,
+            "CANCELLED",
+            "owner-cancel",
+            policy_version=policy,
+            correlation_id=correlation,
+        )
         self._finish_goal(uow, actor, goal_id)
         return CancelReceipt(goal_id, "CANCELLED", "CANCELLED", finished.row_version)
+
+    def _policy(self, uow: UnitOfWork, task_id: str) -> str:
+        row = uow.execute(
+            "SELECT contract.body->>'autonomy_profile_ref'"
+            " FROM panestria.task AS task"
+            " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
+            " WHERE task.id = %s",
+            (task_id,),
+        ).fetchone()
+        if row is None or not isinstance(row[0], str):
+            raise KernelDenied("invalid_policy")
+        return row[0]
 
     def _finish_goal(self, uow: UnitOfWork, actor: Actor, goal_id: str) -> None:
         uow.execute(

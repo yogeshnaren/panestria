@@ -32,6 +32,8 @@ PROJECT = "00000000-0000-4000-8000-000000000003"
 GOAL = "00000000-0000-4000-8000-000000000001"
 TASK_A = "00000000-0000-4000-8000-0000000000a1"
 TASK_B = "00000000-0000-4000-8000-0000000000b2"
+POLICY = "synthetic-approve-first-v1"
+CORRELATION = "00000000-0000-4000-8000-0000000000c1"
 
 
 def _run(argv: list[str], *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
@@ -179,13 +181,33 @@ def test_concurrent_transition_and_cursor(
 
     with _connect(database_url) as connection:
         with pytest.raises(KernelDenied) as illegal:
-            tasks.transition(UnitOfWork(connection), actor, TASK_A, 0, 0, "COMPLETED", "skip")
+            tasks.transition(
+                UnitOfWork(connection),
+                actor,
+                TASK_A,
+                0,
+                0,
+                "COMPLETED",
+                "skip",
+                policy_version=POLICY,
+                correlation_id=CORRELATION,
+            )
         assert illegal.value.code == "illegal_transition"
         connection.rollback()
 
     held = _connect(database_url)
     try:
-        tasks.transition(UnitOfWork(held), actor, TASK_A, 0, 0, "VALIDATING", "local")
+        tasks.transition(
+            UnitOfWork(held),
+            actor,
+            TASK_A,
+            0,
+            0,
+            "VALIDATING",
+            "local",
+            policy_version=POLICY,
+            correlation_id=CORRELATION,
+        )
         with _connect(database_url) as other:
             visible = other.execute("SELECT state FROM panestria.task WHERE id = %s", (TASK_A,)).fetchone()
         assert visible == ("CREATED",)
@@ -203,7 +225,15 @@ def test_concurrent_transition_and_cursor(
             receipt_or_code: object
             try:
                 receipt_or_code = tasks.transition(
-                    UnitOfWork(connection), actor, TASK_A, 0, 0, "VALIDATING", "race"
+                    UnitOfWork(connection),
+                    actor,
+                    TASK_A,
+                    0,
+                    0,
+                    "VALIDATING",
+                    "race",
+                    policy_version=POLICY,
+                    correlation_id=CORRELATION,
                 )
                 connection.commit()
             except KernelDenied as exc:
@@ -383,7 +413,17 @@ def test_foreign_scope_and_mass_assignment(
             goals.get(UnitOfWork(connection), stranger, GOAL)
         assert hidden.value.code == "not_found"
         with pytest.raises(KernelDenied) as foreign_write:
-            tasks.transition(UnitOfWork(connection), stranger, TASK_A, 0, 0, "VALIDATING", "foreign")
+            tasks.transition(
+                UnitOfWork(connection),
+                stranger,
+                TASK_A,
+                0,
+                0,
+                "VALIDATING",
+                "foreign",
+                policy_version=POLICY,
+                correlation_id=CORRELATION,
+            )
         assert foreign_write.value.code == "not_found"
         connection.rollback()
         state = connection.execute(
@@ -415,3 +455,101 @@ def test_foreign_scope_and_mass_assignment(
             "SELECT count(*), count(approved_by) FROM panestria.goal_contract"
         ).fetchone()
     assert rows == (1, 0)
+
+
+def test_transition_binds_policy_and_correlation(
+    database_url: str,
+    record_property: pytest.RecordProperty,
+) -> None:
+    _properties(record_property, "AOS-002-TC04", "security")
+    actor = Actor(OWNER, PROJECT)
+    goals = GoalService()
+    tasks = TaskService()
+    with _connect(database_url) as connection:
+        _seed_scope(connection)
+        goals.submit(UnitOfWork(connection), actor, _contract(), "submit-policy")
+        connection.commit()
+        _seed_tasks(connection)
+        connection.commit()
+        with pytest.raises(KernelDenied) as mismatched:
+            tasks.transition(
+                UnitOfWork(connection),
+                actor,
+                TASK_A,
+                0,
+                0,
+                "VALIDATING",
+                "downgrade",
+                policy_version="other-policy",
+                correlation_id=CORRELATION,
+            )
+        assert mismatched.value.code == "policy_mismatch"
+        connection.rollback()
+        with pytest.raises(KernelDenied) as malformed:
+            tasks.transition(
+                UnitOfWork(connection),
+                actor,
+                TASK_A,
+                0,
+                0,
+                "VALIDATING",
+                "blank",
+                policy_version=POLICY,
+                correlation_id="not-a-correlation",
+            )
+        assert malformed.value.code == "invalid_correlation"
+        connection.rollback()
+        unchanged = connection.execute(
+            "SELECT state, row_version FROM panestria.task WHERE id = %s",
+            (TASK_A,),
+        ).fetchone()
+        denied_events = connection.execute(
+            "SELECT count(*) FROM panestria.task_event WHERE kind = 'task.transition'"
+        ).fetchone()
+        assert unchanged == ("CREATED", 0)
+        assert denied_events == (0,)
+        held = _connect(database_url)
+        try:
+            tasks.transition(
+                UnitOfWork(held),
+                actor,
+                TASK_A,
+                0,
+                0,
+                "VALIDATING",
+                "bound",
+                policy_version=POLICY,
+                correlation_id=CORRELATION,
+            )
+            visible = connection.execute(
+                "SELECT state FROM panestria.task WHERE id = %s",
+                (TASK_A,),
+            ).fetchone()
+            leaked = connection.execute(
+                "SELECT count(*) FROM panestria.task_event WHERE kind = 'task.transition'"
+            ).fetchone()
+            assert visible == ("CREATED",)
+            assert leaked == (0,)
+        finally:
+            held.rollback()
+            held.close()
+        tasks.transition(
+            UnitOfWork(connection),
+            actor,
+            TASK_A,
+            0,
+            0,
+            "VALIDATING",
+            "bound",
+            policy_version=POLICY,
+            correlation_id=CORRELATION,
+        )
+        connection.commit()
+        recorded = connection.execute(
+            "SELECT state, payload->>'policy_version', payload->>'correlation_id', trace_id"
+            " FROM panestria.task AS task"
+            " JOIN panestria.task_event AS event ON event.task_id = task.id"
+            " WHERE task.id = %s AND event.kind = 'task.transition'",
+            (TASK_A,),
+        ).fetchone()
+    assert recorded == ("VALIDATING", POLICY, CORRELATION, CORRELATION)

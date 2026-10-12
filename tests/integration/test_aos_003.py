@@ -56,6 +56,7 @@ ATTEMPT = "00000000-0000-4000-8000-0000000000c1"
 ATTEMPT_B = "00000000-0000-4000-8000-0000000000c2"
 CONTRACT = "00000000-0000-4000-8000-000000000040"
 DIGEST = "ab" * 32
+_CONTRACT_BODY = """'{"autonomy_profile_ref":"synthetic-approve-first-v1"}'::jsonb"""
 WORKFLOW = "00000000-0000-4000-8000-0000000000d1"
 WORKFLOW_B = "00000000-0000-4000-8000-0000000000d2"
 
@@ -122,7 +123,7 @@ def _seed(connection: sa.Connection) -> None:
     connection.execute(
         sa.text(
             "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
-            " VALUES (:contract, :goal, 1, '{}'::jsonb, :digest)"
+            " VALUES (:contract, :goal, 1, " + _CONTRACT_BODY + ", :digest)"
         ),
         {"contract": CONTRACT, "goal": GOAL, "digest": DIGEST},
     )
@@ -507,7 +508,7 @@ def _seed_replay_tasks(engine: sa.Engine) -> None:
         connection.execute(
             sa.text(
                 "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
-                " VALUES (:contract, :goal, 1, '{}'::jsonb, :digest)"
+                " VALUES (:contract, :goal, 1, " + _CONTRACT_BODY + ", :digest)"
                 " ON CONFLICT (id) DO NOTHING"
             ),
             {"contract": CONTRACT, "goal": GOAL, "digest": DIGEST},
@@ -644,6 +645,18 @@ def test_before_after_commit(
         )
         _finish(recovered)
         assert _task_state(engine, TASK_BEFORE) == ("VALIDATING", 1, 1)
+        with engine.connect() as connection:
+            bound = connection.execute(
+                sa.text(
+                    "SELECT payload->>'policy_version', payload->>'correlation_id', trace_id"
+                    " FROM panestria.task_event"
+                    " WHERE task_id = :task AND kind = 'task.transition'"
+                ),
+                {"task": TASK_BEFORE},
+            ).one()
+        assert bound[0] == "synthetic-approve-first-v1"
+        assert bound[1] == bound[2]
+        assert isinstance(bound[1], str) and len(bound[1]) == 36
 
         after_ready = tmp_path / "after"
         after = _spawn(
@@ -718,7 +731,7 @@ def _seed_task(engine: sa.Engine, task_id: str, attempt_id: str, name: str) -> N
         connection.execute(
             sa.text(
                 "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
-                " VALUES (:contract, :goal, 1, '{}'::jsonb, :digest)"
+                " VALUES (:contract, :goal, 1, " + _CONTRACT_BODY + ", :digest)"
                 " ON CONFLICT (id) DO NOTHING"
             ),
             {"contract": CONTRACT, "goal": GOAL, "digest": DIGEST},
@@ -999,7 +1012,7 @@ def test_unfinished_workflow_names_goal_and_task(database_url: str, record_prope
             connection.execute(
                 sa.text(
                     "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
-                    " VALUES (:contract, :goal, 1, '{}'::jsonb, :digest)"
+                    " VALUES (:contract, :goal, 1, " + _CONTRACT_BODY + ", :digest)"
                 ),
                 {"contract": contract, "goal": goal, "digest": DIGEST},
             )

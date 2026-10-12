@@ -299,6 +299,8 @@ class SyntheticJourney:
             0,
             "COMPLETED",
             "cas-confirmed",
+            policy_version=self._policy(connection, task_id),
+            correlation_id=str(uuid4()),
         )
         connection.commit()
 
@@ -558,8 +560,30 @@ class SyntheticJourney:
 
     def _advance(self, connection: Conn, actor: Actor, task_id: str, target: str, cause: str) -> None:
         current = self._version(connection, task_id)
-        self.tasks.transition(connection_uow(connection), actor, task_id, current, 0, target, cause)
+        self.tasks.transition(
+            connection_uow(connection),
+            actor,
+            task_id,
+            current,
+            0,
+            target,
+            cause,
+            policy_version=self._policy(connection, task_id),
+            correlation_id=str(uuid4()),
+        )
         connection.commit()
+
+    def _policy(self, connection: Conn, task_id: str) -> str:
+        row = connection.execute(
+            "SELECT contract.body->>'autonomy_profile_ref'"
+            " FROM panestria.task AS task"
+            " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
+            " WHERE task.id = %s",
+            (task_id,),
+        ).fetchone()
+        if row is None or not isinstance(row[0], str):
+            raise KernelDenied("invalid_policy")
+        return row[0]
 
     def _walk(self, connection: Conn, actor: Actor, task_id: str) -> None:
         order = ("READY", "LEASED", "RUNNING", "VERIFYING")

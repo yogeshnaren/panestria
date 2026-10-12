@@ -41,15 +41,25 @@ def append_event(
     kind: str,
     actor: str,
     payload: dict[str, Any],
+    trace_id: str | None = None,
 ) -> int:
     """Allocate the next global seq and insert one event. Callers must not write afterward."""
     uow.execute("SELECT pg_advisory_xact_lock(%s, %s)", _EVENT_LOCK)
     event_id = str(uuid4())
-    uow.execute(
-        "INSERT INTO panestria.task_event (id, goal_id, task_id, kind, actor, payload)"
-        " VALUES (%s, %s, %s, %s, %s, %s::jsonb)",
-        (event_id, goal_id, task_id, kind, actor, json.dumps(payload, sort_keys=True)),
-    )
+    body = json.dumps(payload, sort_keys=True)
+    if trace_id is None:
+        uow.execute(
+            "INSERT INTO panestria.task_event (id, goal_id, task_id, kind, actor, payload)"
+            " VALUES (%s, %s, %s, %s, %s, %s::jsonb)",
+            (event_id, goal_id, task_id, kind, actor, body),
+        )
+    else:
+        uow.execute(
+            "INSERT INTO panestria.task_event"
+            " (id, goal_id, task_id, kind, actor, payload, trace_id)"
+            " VALUES (%s, %s, %s, %s, %s, %s::jsonb, %s)",
+            (event_id, goal_id, task_id, kind, actor, body, trace_id),
+        )
     allocated = uow.execute(
         "SELECT seq FROM panestria.task_event WHERE id = %s",
         (event_id,),

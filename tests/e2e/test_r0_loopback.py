@@ -343,7 +343,7 @@ def _foreign_artifact() -> str:
         contract_id = str(uuid4())
         connection.execute(
             "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256) VALUES (%s, %s, 1, %s, %s)",
-            (contract_id, goal_id, "{}", "cd" * 32),
+            (contract_id, goal_id, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', "cd" * 32),
         )
         task_id = str(uuid4())
         connection.execute(

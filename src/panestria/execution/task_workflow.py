@@ -26,6 +26,7 @@ from panestria.execution.determinism import workflow_body_violations
 from panestria.execution.recovery import RecoveryService, format_recovery_audit, workflow_scope
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.repositories.events import append_domain_event
+from panestria.kernel.transition import transition_payload
 
 CHECKPOINT_SCHEMA = "panestria_checkpoint"
 SERIALIZATION_ATTEMPT_LIMIT = 5
@@ -70,11 +71,19 @@ def _serializable(name: str, func: Callable[..., _Result], *args: object) -> _Re
     )
 
 
+def _bound_transition(profile: object, previous: str, target: str, cause: str) -> tuple[dict[str, str], str]:
+    if not isinstance(profile, str):
+        raise KernelDenied("invalid_policy")
+    correlation_id = str(uuid.uuid4())
+    return transition_payload(previous, target, cause, profile, correlation_id), correlation_id
+
+
 def _transition_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
     session = get_datasource().sql_session()
     current = session.execute(
         sa.text(
-            "SELECT task.state, task.row_version, task.goal_id::text, contract.sha256"
+            "SELECT task.state, task.row_version, task.goal_id::text, contract.sha256,"
+            " contract.body->>'autonomy_profile_ref'"
             " FROM panestria.task AS task"
             " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
             " JOIN panestria.task_attempt AS attempt"
@@ -84,7 +93,7 @@ def _transition_body(task_id: str, contract_sha256: str, attempt_number: int) ->
         ),
         {"task_id": task_id, "attempt": attempt_number},
     ).one()
-    state, row_version, goal_id, digest = current
+    state, row_version, goal_id, digest, profile = current
     if str(digest).strip() != contract_sha256:
         raise KernelDenied("invalid_contract")
     if str(state) != "CREATED":
@@ -98,6 +107,7 @@ def _transition_body(task_id: str, contract_sha256: str, attempt_number: int) ->
     target = "VALIDATING"
     if (str(state), target) not in ALLOWED_TRANSITIONS:
         raise KernelDenied("illegal_transition")
+    payload, correlation_id = _bound_transition(profile, str(state), target, "workflow")
     updated = session.execute(
         sa.text(
             "UPDATE panestria.task SET state = :target, row_version = row_version + 1,"
@@ -114,7 +124,8 @@ def _transition_body(task_id: str, contract_sha256: str, attempt_number: int) ->
         task_id=task_id,
         kind="task.transition",
         actor="workflow",
-        payload={"from": str(state), "to": target, "cause": "workflow"},
+        payload=payload,
+        trace_id=correlation_id,
     )
     crash_gate("before-commit")
     return {
@@ -179,7 +190,8 @@ def _mark_failed_body(task_id: str, contract_sha256: str, attempt_number: int, c
     session = get_datasource().sql_session()
     current = session.execute(
         sa.text(
-            "SELECT task.state, task.row_version, task.goal_id::text, contract.sha256"
+            "SELECT task.state, task.row_version, task.goal_id::text, contract.sha256,"
+            " contract.body->>'autonomy_profile_ref'"
             " FROM panestria.task AS task"
             " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
             " JOIN panestria.task_attempt AS attempt"
@@ -189,7 +201,7 @@ def _mark_failed_body(task_id: str, contract_sha256: str, attempt_number: int, c
         ),
         {"task_id": task_id, "attempt": attempt_number},
     ).one()
-    state, row_version, goal_id, digest = current
+    state, row_version, goal_id, digest, profile = current
     if str(digest).strip() != contract_sha256:
         raise KernelDenied("invalid_contract")
     if str(state) == "FAILED":
@@ -197,6 +209,7 @@ def _mark_failed_body(task_id: str, contract_sha256: str, attempt_number: int, c
     target = "FAILED"
     if (str(state), target) not in ALLOWED_TRANSITIONS:
         raise KernelDenied("illegal_transition")
+    payload, correlation_id = _bound_transition(profile, str(state), target, cause)
     updated = session.execute(
         sa.text(
             "UPDATE panestria.task SET state = :target, row_version = row_version + 1,"
@@ -213,7 +226,8 @@ def _mark_failed_body(task_id: str, contract_sha256: str, attempt_number: int, c
         task_id=task_id,
         kind="task.transition",
         actor="workflow",
-        payload={"from": str(state), "to": target, "cause": cause},
+        payload=payload,
+        trace_id=correlation_id,
     )
     return {"task_id": task_id, "state": target, "row_version": str(int(updated))}
 
@@ -287,7 +301,8 @@ def _lease_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict
     session = get_datasource().sql_session()
     current = session.execute(
         sa.text(
-            "SELECT task.state, task.row_version, task.goal_id::text, contract.sha256"
+            "SELECT task.state, task.row_version, task.goal_id::text, contract.sha256,"
+            " contract.body->>'autonomy_profile_ref'"
             " FROM panestria.task AS task"
             " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
             " WHERE task.id = :task_id"
@@ -295,13 +310,14 @@ def _lease_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict
         ),
         {"task_id": task_id},
     ).one()
-    state, row_version, goal_id, digest = current
+    state, row_version, goal_id, digest, profile = current
     if str(digest).strip() != contract_sha256:
         raise KernelDenied("invalid_contract")
     if str(state) in _PAST_READY:
         return {"task_id": task_id, "state": str(state), "replayed": "true"}
     if str(state) != "READY":
         raise KernelDenied("illegal_transition")
+    payload, correlation_id = _bound_transition(profile, "READY", "LEASED", "admitted")
     updated = session.execute(
         sa.text(
             "UPDATE panestria.task SET state = 'LEASED', row_version = row_version + 1,"
@@ -326,7 +342,8 @@ def _lease_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict
         task_id=task_id,
         kind="task.transition",
         actor="workflow",
-        payload={"from": "READY", "to": "LEASED", "cause": "admitted"},
+        payload=payload,
+        trace_id=correlation_id,
     )
     crash_gate("before-commit")
     return {"task_id": task_id, "state": "LEASED", "row_version": str(int(updated))}

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from typing import Any
+from uuid import uuid4
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
@@ -141,7 +142,14 @@ async def cancel_goal(goal_id: str, request: Request) -> JSONResponse:
         return _unavailable()
     try:
         try:
-            receipt = _CANCEL.cancel(UnitOfWork(connection), actor, goal_id, version, reason)
+            receipt = _CANCEL.cancel(
+                UnitOfWork(connection),
+                actor,
+                goal_id,
+                version,
+                reason,
+                correlation_id=str(uuid4()),
+            )
         except KernelDenied as exc:
             connection.rollback()
             return _denied(exc)

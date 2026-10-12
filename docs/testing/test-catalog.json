@@ -85,7 +85,7 @@
       "release": "R0",
       "lane": "security",
       "planned_nodeid": "tests/integration/test_aos_002_services.py::test_foreign_scope_and_mass_assignment",
-      "expected": "Foreign goal/read/write returns scoped denial; client approved_by/policy booleans and unknown executable fields rejected.",
+      "expected": "Foreign goal/read/write returns scoped denial; client approved_by/policy booleans and unknown executable fields rejected. A transition records the current policy and correlation id with the state change; a different policy or a malformed correlation writes neither.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
       "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"

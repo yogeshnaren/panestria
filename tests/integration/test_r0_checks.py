@@ -58,8 +58,8 @@ def _seed_task(connection: psycopg.Connection[object], task_id: str, attempt_id:
     )
     connection.execute(
         "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
-        " VALUES (%s, %s, 1, '{}'::jsonb, %s)",
-        (contract_id, goal_id, SHA),
+        " VALUES (%s, %s, 1, %s::jsonb, %s)",
+        (contract_id, goal_id, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', SHA),
     )
     connection.execute(
         "INSERT INTO panestria.task (id, goal_id, contract_id, name, state, lease_epoch)"

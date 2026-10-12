@@ -6,6 +6,7 @@ from panestria.contracts.task import ALLOWED_TRANSITIONS
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.tasks import TASKS_BY_GOAL_SQL, append_event, lock_task
+from panestria.kernel.transition import require_correlation, require_policy, transition_payload
 from panestria.kernel.uow import UnitOfWork
 
 
@@ -117,13 +118,27 @@ class TaskService:
         epoch: int,
         target: str,
         cause: str,
+        *,
+        policy_version: str,
+        correlation_id: str,
     ) -> TransitionReceipt:
+        policy = require_policy(policy_version)
+        correlation = require_correlation(correlation_id)
         current = lock_task(uow, actor.owner_id, actor.project_id, task_id)
         if current is None:
             raise KernelDenied("not_found")
         goal_id, state, row_version, lease_epoch = current
         if row_version != expected_version or lease_epoch != epoch:
             raise KernelDenied("version_conflict")
+        stored = uow.execute(
+            "SELECT contract.body->>'autonomy_profile_ref'"
+            " FROM panestria.task AS task"
+            " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
+            " WHERE task.id = %s",
+            (task_id,),
+        ).fetchone()
+        if stored is None or stored[0] != policy:
+            raise KernelDenied("policy_mismatch")
         if (state, target) not in ALLOWED_TRANSITIONS:
             raise KernelDenied("illegal_transition")
         updated = uow.execute(
@@ -140,6 +155,7 @@ class TaskService:
             task_id=task_id,
             kind="task.transition",
             actor=actor.owner_id,
-            payload={"from": state, "to": target, "cause": cause},
+            payload=transition_payload(state, target, cause, policy, correlation),
+            trace_id=correlation,
         )
         return TransitionReceipt(task_id, target, int(updated[0]), str(seq))
