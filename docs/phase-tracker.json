@@ -114,11 +114,15 @@
             "AOS-003",
             "AOS-004"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "evidence_refs": [
+            "evidence/AOS-005-S1.xml",
+            "evidence/AOS-005-S1/assertion-map.json",
+            "evidence/AOS-005-S1/environment-manifest.json"
+          ],
+          "plan_status": "S1_ROUTES_TC01_NOT_RUN",
           "plan_ref": "plans/AOS-005-implementation-plan.md"
         }
       ]

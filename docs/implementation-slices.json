@@ -369,7 +369,12 @@
         "AOS-005-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
+      "status": "ROUTES_OBSERVED_TC01_NOT_RUN",
+      "evidence_refs": [
+        "evidence/AOS-005-S1.xml",
+        "evidence/AOS-005-S1/assertion-map.json",
+        "evidence/AOS-005-S1/environment-manifest.json"
+      ],
       "prompt_ref": "cursor/prompts/AOS-005-S1.md"
     },
     {

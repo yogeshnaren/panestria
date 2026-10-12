@@ -1,0 +1,50 @@
+{
+  "slice": "AOS-005-S1",
+  "observed_at": "2026-10-12T06:44:45.867785Z",
+  "candidate_commit": "44d30f0c159f0bc154da65f3497dffe617d1d5d9",
+  "candidate_contains_tested_source": true,
+  "worktree_state_at_test_start": "clean",
+  "junit_sha256": "00fc9752fcfcb972dbeb25d18da9b8c0965b4c30276b706a988bd6c105d7d4ab",
+  "fixture_sha256": "9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283",
+  "fixture": "docs/fixtures/synthetic-goal-contract.json",
+  "execution_mode": "OS_BOUNDARY",
+  "database": "disposable_postgresql",
+  "executor": "fastapi-testclient-and-urllib-cli",
+  "catalog_case_aos_005_tc01": "NOT_RUN",
+  "cli_transport": "CLI functions built a urllib request and the test forwarded it into FastAPI TestClient. No separate TCP listener ran, and uvicorn is not installed.",
+  "hardware": {
+    "probed": false,
+    "verdict": "UNKNOWN",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "release_gate": "INCOMPLETE",
+  "components": [
+    {
+      "name": "fastapi",
+      "resolved_version": "TestClient",
+      "source": "project interpreter",
+      "capability": "loopback Host, bearer token, body limit, scoped goal and event reads",
+      "outcome": "missing auth, non-loopback host, Origin, oversized body, foreign owner, and a non-canonical cursor were rejected; the same idempotency key replayed",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "postgresql",
+      "resolved_version": "postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d",
+      "source": "docker.io/library/postgres:16",
+      "capability": "goal submit transaction and ordered event cursor",
+      "outcome": "one goal.submitted event was readable after commit and a repeated key did not insert another",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pytest",
+      "resolved_version": "9.1.1",
+      "source": "https://pypi.org/simple",
+      "capability": "non-live regression",
+      "outcome": "89 passed",
+      "mocked": false,
+      "live": false
+    }
+  ]
+}
