@@ -367,6 +367,21 @@ def test_git_diff_sees_baseline_edits_deletions_renames_and_directory_symlinks(
     assert "allowed.txt" in executable_report.denied
 
 
+def test_staged_index_change_is_not_hidden_by_a_clean_worktree(
+    tmp_path: Path, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
+    root, worktree, base = _tree(tmp_path, "index-only")
+    readme = worktree / "README.txt"
+    readme.write_text("staged off-scope\n", encoding="utf-8")
+    _git(worktree, ["add", "README.txt"])
+    readme.write_text("base:seed\n", encoding="utf-8")
+    (worktree / "allowed.txt").write_text("edit:alpha\n", encoding="utf-8")
+    report = inspect_diff(root, worktree, ALLOWLIST, base_sha=base)
+    assert report.ok is False
+    assert "README.txt" in report.denied
+
+
 def _git(worktree: Path, args: list[str]) -> None:
     completed = subprocess.run(
         ["git", "-C", str(worktree), *args],
