@@ -1,6 +1,6 @@
 # Architecture delta
 
-This file records the implementation on `a692020724b283ca34739e33bc1a9fbc4733c55d`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
+This file records the implementation on `8d6554bb941f6fdf067ed2013a06591b58f6e944`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
 
 ## What runs
 
