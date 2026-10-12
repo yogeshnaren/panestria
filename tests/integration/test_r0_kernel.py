@@ -224,7 +224,10 @@ def test_graph_idempotency_and_malformed_acceptance(record_property: pytest.Reco
                 headers={"authorization": f"Bearer {TOKEN}", "idempotency-key": "bad-list"},
             )
             assert response.status_code == 422
-            assert "42" not in response.text
+            listed = response.json()
+            assert listed["code"] == "invalid_contract"
+            assert listed["message"] == "invalid_contract"
+            assert "42" not in json.dumps({"code": listed["code"], "message": listed["message"]})
         with psycopg.connect(DATABASE_URL) as connection:
             leaked = connection.execute(
                 "SELECT count(*) FROM panestria.goal WHERE id IN (%s, %s)",
