@@ -212,7 +212,7 @@ def _remove_contained(path: Path, root: Path) -> None:
 
 
 def _record_path(root: Path, attempt_id: str) -> Path:
-    return root / "worktree-records" / f"{attempt_id}.json"
+    return root / "protected" / "worktree-records" / f"{attempt_id}.json"
 
 
 def _write_record(root: Path, manifest: WorkspaceManifest) -> None:
@@ -229,7 +229,7 @@ def _write_record(root: Path, manifest: WorkspaceManifest) -> None:
 
 
 def _read_records(root: Path) -> dict[str, dict[str, object]]:
-    directory = root / "worktree-records"
+    directory = root / "protected" / "worktree-records"
     if not directory.is_dir() or directory.is_symlink():
         return {}
     found: dict[str, dict[str, object]] = {}
