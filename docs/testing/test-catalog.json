@@ -151,7 +151,7 @@
       "release": "R0",
       "lane": "security",
       "planned_nodeid": "tests/integration/test_aos_004.py::test_bad_path_and_tampered_checks",
-      "expected": "Off-scope path/symlink or altered protected mandatory test bundle fails; new worker tests cannot replace required checks. An executable mode on an otherwise allowed path is denied. A staged index change is denied when the worktree copy matches the base. A candidate commit is denied when the worktree no longer shows its changes. A stored passing check does not authorize a different commit. Git push and a hook path other than `/dev/null` do not start. A false test claim that writes `README.md` fails, and the report keeps that path and the exit code.",
+      "expected": "Off-scope path/symlink or altered protected mandatory test bundle fails; new worker tests cannot replace required checks. An executable mode on an otherwise allowed path is denied. A staged index change is denied when the worktree copy matches the base. A candidate commit is denied when the worktree no longer shows its changes. A stored passing check does not authorize a different commit. A commit outside the global allowed paths is denied when the contract has no path check. Git push and a hook path other than `/dev/null` do not start. A false test claim that writes `README.md` fails, and the report keeps that path and the exit code.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
       "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"

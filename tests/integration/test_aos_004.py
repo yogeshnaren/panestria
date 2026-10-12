@@ -1155,6 +1155,109 @@ def test_stored_pass_does_not_merge_a_different_commit(
         assert goal_status is not None and goal_status[0] == "CREATED"
 
 
+def test_global_scope_denies_a_commit_without_a_path_check(
+    record_property: pytest.RecordProperty, tmp_path: Path
+) -> None:
+    _properties(record_property, "AOS-004-TC02", "security")
+    _database()
+    goal = "00000000-0000-4000-8000-000000000250"
+    contract_id = "00000000-0000-4000-8000-000000000251"
+    task = "00000000-0000-4000-8000-000000000252"
+    attempt = "00000000-0000-4000-8000-000000000253"
+    digest = "ef" * 32
+    actor = Actor(OWNER, PROJECT)
+    body = json.loads((ROOT / "docs/fixtures/synthetic-goal-contract.json").read_text(encoding="utf-8"))
+    body["goal_id"] = goal
+    body["acceptance"] = [
+        item for item in body["acceptance"] if item["verifier"]["type"] != "git-diff-path-check"
+    ]
+    sandbox = tmp_path / "global-scope"
+    journey = SyntheticJourney()
+    with psycopg.connect(DATABASE_URL) as connection:
+        connection.execute("INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'owner')", (OWNER,))
+        connection.execute("INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)", (PROJECT, OWNER))
+        connection.execute(
+            "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+            " VALUES (%s, %s, %s, 'synthetic', 'CREATED')",
+            (goal, OWNER, PROJECT),
+        )
+        connection.execute(
+            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+            " VALUES (%s, %s, 1, %s::jsonb, %s)",
+            (contract_id, goal, json.dumps(body), digest),
+        )
+        connection.execute(
+            "INSERT INTO panestria.task (id, goal_id, contract_id, name, state)"
+            " VALUES (%s, %s, %s, 'scope', 'READY')",
+            (task, goal, contract_id),
+        )
+        connection.commit()
+        journey._checks(connection, (contract_id, digest, 1, body))
+        manifest = journey._workspace(sandbox, attempt, goal, OWNER)
+        worktree = Path(manifest.worktree)
+        readme = worktree / "README.txt"
+        readme.write_text("outside the global allowlist\n", encoding="utf-8")
+        _git_commit(worktree, ["add", "README.txt"])
+        _git_commit(worktree, ["-c", "core.hooksPath=/dev/null", "commit", "-m", "synthetic-candidate"])
+        _git_commit(worktree, ["branch", "synthetic-candidate"])
+        _git_commit(worktree, ["checkout", manifest.base_sha, "--", "README.txt"])
+        edited = worktree / "tests" / "synthetic.txt"
+        edited.parent.mkdir(parents=True)
+        payload = b"edit:alpha\n"
+        edited.write_bytes(payload)
+        file_hash = hashlib.sha256(payload).hexdigest()
+        connection.execute(
+            "INSERT INTO panestria.task_attempt"
+            " (id, task_id, attempt_number, lease_epoch, status, adapter, external_ref)"
+            " VALUES (%s, %s, 1, 0, 'RUNNING', 'mock', %s)",
+            (attempt, task, str(sandbox.resolve())),
+        )
+        connection.execute(
+            "INSERT INTO panestria.artifact"
+            " (id, task_id, attempt_id, kind, store_key, sha256, size_bytes)"
+            " VALUES (%s, %s, %s, 'candidate', 'candidate', %s, %s)",
+            ("00000000-0000-4000-8000-000000000254", task, attempt, file_hash, len(payload)),
+        )
+        evidence = "00000000-0000-4000-8000-000000000255"
+        connection.execute(
+            "INSERT INTO panestria.artifact"
+            " (id, task_id, attempt_id, kind, store_key, sha256, size_bytes)"
+            " VALUES (%s, %s, %s, 'check-report', 'report', %s, %s)",
+            (evidence, task, attempt, file_hash, len(payload)),
+        )
+        checks = connection.execute(
+            "SELECT id::text FROM panestria.acceptance_check WHERE contract_id = %s AND required"
+            " ORDER BY check_key",
+            (contract_id,),
+        ).fetchall()
+        assert len(checks) == 2
+        for index, (check_id,) in enumerate(checks):
+            connection.execute(
+                "INSERT INTO panestria.check_run"
+                " (id, acceptance_check_id, attempt_id, task_id, contract_id, verdict,"
+                " evidence_artifact_id, candidate_sha256)"
+                " VALUES (%s, %s, %s, %s, %s, 'PASS', %s, %s)",
+                (
+                    f"00000000-0000-4000-8000-00000000025{index + 6}",
+                    check_id,
+                    attempt,
+                    task,
+                    contract_id,
+                    evidence,
+                    file_hash,
+                ),
+            )
+        connection.commit()
+        journey._finish_dispatch(connection, actor, goal, sandbox)
+        approval = connection.execute(
+            "SELECT count(*) FROM panestria.approval_request WHERE task_id = %s",
+            (task,),
+        ).fetchone()
+        goal_status = connection.execute("SELECT status FROM panestria.goal WHERE id = %s", (goal,)).fetchone()
+        assert approval is not None and approval[0] == 0
+        assert goal_status is not None and goal_status[0] == "CREATED"
+
+
 def test_journey_contract_follows_the_task_or_the_latest_version(
     record_property: pytest.RecordProperty,
 ) -> None:

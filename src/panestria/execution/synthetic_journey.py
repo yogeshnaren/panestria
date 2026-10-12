@@ -474,15 +474,20 @@ class SyntheticJourney:
         manifest: WorkspaceManifest,
         committed: str,
     ) -> bool:
-        """A stored file-hash PASS does not authorize a different commit."""
+        """A stored file-hash PASS does not authorize a different commit.
+
+        Global path scope still applies when the contract has no path check.
+        """
         contract = self._contract(connection, actor, goal_id)
         loaded = load_contract(contract[3])
         root = Path(manifest.root)
         worktree = Path(manifest.worktree)
+        checked = False
         for item in loaded.acceptance:
             spec = item.verifier
             if not isinstance(spec, GitDiffPathCheck) or not item.required:
                 continue
+            checked = True
             report = inspect_diff(
                 root,
                 worktree,
@@ -494,7 +499,17 @@ class SyntheticJourney:
             )
             if not report.ok or report.candidate_tree != committed:
                 return False
-        return True
+        if checked:
+            return True
+        report = inspect_diff(
+            root,
+            worktree,
+            frozenset(loaded.constraints.allowed_paths),
+            base_sha=manifest.base_sha,
+            forbidden=frozenset(loaded.constraints.forbidden_paths),
+            candidate_commit=committed,
+        )
+        return report.ok and report.candidate_tree == committed
 
     def _workspace(self, sandbox: Path, attempt_id: str, seed: str, owner: str) -> WorkspaceManifest:
         sandbox.mkdir(parents=True, exist_ok=True)
