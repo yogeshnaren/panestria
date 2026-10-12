@@ -9,7 +9,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body
-from panestria.api.db import DatabaseUnavailable, open_database
+from panestria.api.db import DatabaseUnavailable, open_database, run_database
 from panestria.api.routes.goals import _api, _kick, _unavailable
 from panestria.api.views import ApprovalList, ApprovalPreviewBody, DecisionReceipt
 from panestria.kernel.approvals import ApprovalService, ApprovalView
@@ -103,7 +103,7 @@ async def decide_approval(approval_id: str, request: Request) -> JSONResponse:
         return JSONResponse(status_code=422, content=error_body("invalid_decision"))
     if not isinstance(document, dict):
         return JSONResponse(status_code=422, content=error_body("invalid_decision"))
-    return _decide(request, api, actor, approval_id, document, key)
+    return await run_database(_decide, request, api, actor, approval_id, document, key)
 
 
 def _decide(

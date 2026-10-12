@@ -8,7 +8,7 @@
       "release": "R0",
       "lane": "unit",
       "planned_nodeid": "tests/integration/test_aos_001.py",
-      "expected": "Valid SYNTHETIC_DEV config and unavailable DB produce truthful bounded health; invalid bind/secret-bearing output rejected. An oversized header line is rejected and is not echoed.",
+      "expected": "Valid SYNTHETIC_DEV config and unavailable DB produce truthful bounded health; invalid bind/secret-bearing output rejected. An oversized header line is rejected and is not echoed. A slow database call does not stop /healthz.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
       "status": "HERMETIC_OBSERVED_NOT_RELEASE"

@@ -10,7 +10,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body
-from panestria.api.db import DatabaseUnavailable, open_database
+from panestria.api.db import DatabaseUnavailable, open_database, run_database
 from panestria.api.views import CancelResult, GoalStatus, GoalSubmission
 from panestria.kernel.cancellation import CancellationService
 from panestria.kernel.errors import KernelDenied
@@ -54,7 +54,7 @@ async def submit_goal(request: Request) -> JSONResponse:
         return JSONResponse(status_code=422, content=error_body("invalid_contract"))
     if not isinstance(document, dict):
         return JSONResponse(status_code=422, content=error_body("invalid_contract"))
-    response = _submit(api, actor, document, key)
+    response = await run_database(_submit, api, actor, document, key)
     if response.status_code == 202:
         _kick(request, str(json.loads(bytes(response.body))["goal_id"]))
     return response
@@ -136,6 +136,10 @@ async def cancel_goal(goal_id: str, request: Request) -> JSONResponse:
     reason = document.get("reason")
     if not isinstance(version, int) or isinstance(version, bool) or not isinstance(reason, str):
         return JSONResponse(status_code=422, content=error_body("invalid_contract"))
+    return await run_database(_cancel, api, actor, goal_id, version, reason)
+
+
+def _cancel(api: GoalApi, actor: Actor, goal_id: str, version: int, reason: str) -> JSONResponse:
     try:
         connection = open_database(api.database_url)
     except DatabaseUnavailable:

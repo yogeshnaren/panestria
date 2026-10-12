@@ -4,14 +4,18 @@ from __future__ import annotations
 
 import asyncio
 import json
+import socket
+import threading
+import time
 from uuid import UUID
 
 import pytest
 from fastapi.testclient import TestClient
 
 from panestria.api.auth import MAX_BODY_BYTES, MAX_HEADER_LINE_BYTES, GoalApi
+from panestria.api.db import DatabaseUnavailable
 from panestria.api.main import create_app, mount_goal_api
-from panestria.api.serve import _read_request
+from panestria.api.serve import _handle, _read_request
 from panestria.config import Settings
 
 TOKEN = "synthetic-loopback-token"
@@ -32,6 +36,72 @@ def _client(database_url: str) -> TestClient:
     application = create_app(settings, lambda _deadline: None)  # type: ignore[arg-type, return-value]
     mount_goal_api(application, GoalApi(TOKEN, OWNER, PROJECT, database_url))
     return TestClient(application, base_url="http://127.0.0.1")
+
+
+def _roundtrip(port: int, payload: bytes) -> bytes:
+    with socket.create_connection(("127.0.0.1", port), timeout=2) as sock:
+        sock.sendall(payload)
+        chunks: list[bytes] = []
+        while True:
+            data = sock.recv(4096)
+            if not data:
+                break
+            chunks.append(data)
+    return b"".join(chunks)
+
+
+def _health_during_submit(entered: threading.Event) -> tuple[float, bytes, bytes]:
+    async def once() -> tuple[float, bytes, bytes]:
+        application = create_app(
+            Settings(
+                schema_version=1,
+                profile="SYNTHETIC_DEV",
+                bind_host="127.0.0.1",
+                bind_port=8765,
+                readiness_budget_ms=200,
+                database_url=CLOSED,  # type: ignore[arg-type]
+            ),
+            lambda _deadline: None,  # type: ignore[arg-type, return-value]
+        )
+        mount_goal_api(application, GoalApi(TOKEN, OWNER, PROJECT, CLOSED))
+        bound = ("127.0.0.1", 0)
+
+        async def connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+            await _handle(application, bound, reader, writer)
+
+        async with application.router.lifespan_context(application):
+            tcp = await asyncio.start_server(connection, "127.0.0.1", 0, limit=MAX_HEADER_LINE_BYTES)
+            sockets = tcp.sockets
+            assert sockets is not None
+            port = int(sockets[0].getsockname()[1])
+            async with tcp:
+                return await asyncio.to_thread(_exchange, port, entered)
+
+    return asyncio.run(once())
+
+
+def _exchange(port: int, entered: threading.Event) -> tuple[float, bytes, bytes]:
+    post = (
+        b"POST /v1/goals HTTP/1.1\r\nHost: 127.0.0.1\r\n"
+        b"Authorization: Bearer " + TOKEN.encode() + b"\r\n"
+        b"Idempotency-Key: slow-db\r\nContent-Type: application/json\r\n"
+        b"Content-Length: 2\r\nConnection: close\r\n\r\n{}"
+    )
+    health = b"GET /healthz HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n"
+    posted: list[bytes] = []
+
+    def send_post() -> None:
+        posted.append(_roundtrip(port, post))
+
+    worker = threading.Thread(target=send_post)
+    worker.start()
+    assert entered.wait(2)
+    started = time.monotonic()
+    health_body = _roundtrip(port, health)
+    elapsed = time.monotonic() - started
+    worker.join(2)
+    assert posted
+    return elapsed, health_body, posted[0]
 
 
 def _parse(raw: bytes) -> object:
@@ -74,6 +144,26 @@ def test_submit_stops_reading_past_the_body_cap(record_property: pytest.RecordPr
         )
     assert response.status_code == 413
     assert response.json()["code"] == "body_too_large"
+
+
+def test_slow_database_call_leaves_health_responsive(
+    monkeypatch: pytest.MonkeyPatch, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-001-TC01")
+    entered = threading.Event()
+
+    def blocked(url: str) -> None:
+        del url
+        entered.set()
+        time.sleep(0.6)
+        raise DatabaseUnavailable
+
+    monkeypatch.setattr("panestria.api.routes.goals.open_database", blocked)
+    elapsed, health, denied = _health_during_submit(entered)
+    assert elapsed < 0.3
+    assert health.startswith(b"HTTP/1.1 200 ")
+    assert b"database_unavailable" in denied
+    assert b"postgresql://" not in denied
 
 
 def test_database_outage_is_unavailable(record_property: pytest.RecordProperty) -> None:
