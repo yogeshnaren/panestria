@@ -165,7 +165,7 @@
       "expected": "Wall watchdog times out silent process, drains bounded streams and confirms process group termination or UNKNOWN.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-004-TC04",
@@ -176,7 +176,7 @@
       "expected": "Corrupt/partial blob denied; crash after finalize before DB ref leaves only a recoverable orphan, never passed evidence.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-005-TC01",
