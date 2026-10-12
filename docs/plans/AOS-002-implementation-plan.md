@@ -59,8 +59,8 @@ These groups are planned obligations, not observed coverage. Actual assertions/p
 |---|---|---|---|
 | AOS-002-TC01 | contract | `tests/contract/test_aos_002.py` | Canonical roundtrip hash stable; edited contract creates new version; raw command, legacy discriminator, bool budget and duplicate check IDs rejected. |
 | AOS-002-TC02 | migration | `tests/integration/test_aos_002_migration.py` | Migration applies and restore/reapply works; wrong project/owner/task-contract linkage, orphan attempts and invalid states rejected by SQL. |
-| AOS-002-TC03 | integration | `tests/integration/test_aos_002.py::test_concurrent_transition_and_cursor` | Two mutations with same row_version produce one winner; global task/goal cursor commit order and rollback gaps are safe. |
-| AOS-002-TC04 | security | `tests/integration/test_aos_002.py::test_foreign_scope_and_mass_assignment` | Foreign goal/read/write returns scoped denial; client approved_by/policy booleans and unknown executable fields rejected. |
+| AOS-002-TC03 | integration | `tests/integration/test_aos_002_services.py::test_concurrent_transition_and_cursor` | Two mutations with same row_version produce one winner; global task/goal cursor commit order and rollback gaps are safe. |
+| AOS-002-TC04 | security | `tests/integration/test_aos_002_services.py::test_foreign_scope_and_mass_assignment` | Foreign goal/read/write returns scoped denial; client approved_by/policy booleans and unknown executable fields rejected. |
 
 After tests exist, baseline command is `uv run --frozen pytest tests/integration/test_aos_002.py --junitxml=evidence/AOS-002.xml`. Register lane markers and gate_case_id in pytest user_properties; default CI excludes live. Release promotion still needs separately observed live cases. Missing future nodes remain pending. Test collection, scenario assertion outcomes and candidate/version consistency must be checked by the gate evaluator, not inferred from exit 0.
 

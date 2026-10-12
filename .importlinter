@@ -47,5 +47,16 @@ source_modules =
 forbidden_modules =
     panestria.api
     panestria.cli
+    panestria.kernel
     panestria.ops
     panestria.config
+
+[importlinter:contract:kernel-not-presentation]
+name = Kernel does not import API, CLI, or local operations
+type = forbidden
+source_modules =
+    panestria.kernel
+forbidden_modules =
+    panestria.api
+    panestria.cli
+    panestria.ops
