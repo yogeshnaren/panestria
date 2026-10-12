@@ -1,6 +1,6 @@
 # Architecture delta
 
-This file records the implementation on `47352ba5b05de2b1ccbcfe9e978ac2984d23140f`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
+This file records the implementation on `0eb6cefcefae01ca529b4bce956e800a6b71f2ac`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
 
 ## What runs
 
@@ -27,4 +27,4 @@ Import Linter checks these boundaries. The kernel does not import the API, CLI, 
 
 An accepted goal becomes a task and a contract-consent approval. After that approval, admission stores a workflow link and enqueues the attempt. The workflow leases the attempt, the mock worker writes the candidate, and the verifiers record check runs and artifact hashes. A merge approval is consumed once. Before a new Git update, the journey rechecks expiry, epoch, candidate, and evidence. If the protected ref already names the approved commit, recovery records success. If the ref is unchanged, recovery uses a compare-and-swap. Any other ref is a conflict.
 
-Event `seq` is a global identity allocated under `pg_advisory_xact_lock(106971, 1)`. ADR 0002 records that rule.
+Event `seq` is a global identity allocated under `pg_advisory_xact_lock(106971, 1)`. ADR 0002 records that rule. A process started with `PANESTRIA_MODE=recover` prints one `recovery_instance` for that process and the pinned workflow id. DBOS is pinned at 3.2.0.
