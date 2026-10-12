@@ -179,6 +179,8 @@ class SyntheticJourney:
         row = connection.execute(
             "SELECT link.dbos_workflow_id FROM panestria.workflow_link AS link"
             " JOIN panestria.task AS task ON task.id = link.task_id"
+            " JOIN panestria.task_attempt AS attempt ON attempt.id = link.attempt_id"
+            " AND attempt.task_id = task.id AND attempt.lease_epoch = task.lease_epoch"
             " JOIN panestria.goal AS goal ON goal.id = task.goal_id"
             " WHERE goal.id = %s AND goal.owner_id = %s AND goal.project_id = %s",
             (goal_id, actor.owner_id, actor.project_id),
@@ -624,11 +626,7 @@ class SyntheticJourney:
             "SELECT count(*) FROM panestria.task_attempt WHERE task_id = %s",
             (task_id,),
         ).fetchone()
-        artifact = connection.execute(
-            "SELECT sha256 FROM panestria.artifact WHERE task_id = %s AND kind = 'candidate'"
-            " ORDER BY created_at DESC LIMIT 1",
-            (task_id,),
-        ).fetchone()
+        artifact_sha = snapshot_artifact(connection, task_id)
         effect = connection.execute(
             "SELECT state FROM panestria.side_effect WHERE task_id = %s",
             (task_id,),
@@ -642,7 +640,7 @@ class SyntheticJourney:
             None if approval is None else approval[2],
             version,
             0 if attempts is None else int(attempts[0]),
-            None if artifact is None else str(artifact[0]),
+            artifact_sha,
             None if effect is None else str(effect[0]),
         )
 
@@ -871,8 +869,14 @@ def _evidence_files_match(connection: Conn, task_id: str, store: Path) -> bool:
 
 
 def snapshot_artifact(connection: Conn, task_id: str) -> str | None:
+    """Candidate hash for the current lease epoch. An older attempt's artifact does not count."""
     row = connection.execute(
-        "SELECT sha256 FROM panestria.artifact WHERE task_id = %s LIMIT 1",
+        "SELECT artifact.sha256 FROM panestria.artifact AS artifact"
+        " JOIN panestria.task AS task ON task.id = artifact.task_id"
+        " JOIN panestria.task_attempt AS attempt ON attempt.id = artifact.attempt_id"
+        " AND attempt.task_id = task.id AND attempt.lease_epoch = task.lease_epoch"
+        " WHERE task.id = %s AND artifact.kind = 'candidate'"
+        " ORDER BY artifact.created_at DESC LIMIT 1",
         (task_id,),
     ).fetchone()
     if row is None:

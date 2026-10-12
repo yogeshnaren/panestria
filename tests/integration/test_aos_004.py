@@ -14,7 +14,7 @@ import pytest
 from psycopg.errors import CheckViolation
 
 from panestria.brokers.harness.mock import OUTPUT_LIMIT, Candidate, MockWorkerAdapter, Observation, WorkerEvent
-from panestria.execution.synthetic_journey import SyntheticJourney, _record_report
+from panestria.execution.synthetic_journey import SyntheticJourney, _record_report, snapshot_artifact
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.sandbox.artifact_ingress import ArtifactIngress, ArtifactRef
@@ -752,6 +752,79 @@ def test_stale_attempt_is_not_reused(record_property: pytest.RecordProperty, tmp
             (stale,),
         ).fetchone()
         assert old == (1, 0, "SUCCEEDED")
+
+
+def test_old_candidate_does_not_stand_in_for_the_current_attempt(
+    record_property: pytest.RecordProperty,
+) -> None:
+    _properties(record_property, "AOS-004-TC04", "chaos")
+    _database()
+    goal = "00000000-0000-4000-8000-0000000001c0"
+    contract = "00000000-0000-4000-8000-0000000001c1"
+    task = "00000000-0000-4000-8000-0000000001c2"
+    stale = "00000000-0000-4000-8000-0000000001c3"
+    current = "00000000-0000-4000-8000-0000000001c4"
+    old_hash = "ab" * 32
+    new_hash = "cd" * 32
+    digest = "ef" * 32
+    actor = Actor(OWNER, PROJECT)
+    with psycopg.connect(DATABASE_URL) as connection:
+        connection.execute("INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'owner')", (OWNER,))
+        connection.execute("INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)", (PROJECT, OWNER))
+        connection.execute(
+            "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+            " VALUES (%s, %s, %s, 'synthetic', 'CREATED')",
+            (goal, OWNER, PROJECT),
+        )
+        connection.execute(
+            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+            " VALUES (%s, %s, 1, %s::jsonb, %s)",
+            (contract, goal, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', digest),
+        )
+        connection.execute(
+            "INSERT INTO panestria.task (id, goal_id, contract_id, name, state, lease_epoch)"
+            " VALUES (%s, %s, %s, 'epoch', 'READY', 4)",
+            (task, goal, contract),
+        )
+        connection.execute(
+            "INSERT INTO panestria.task_attempt"
+            " (id, task_id, attempt_number, lease_epoch, status, adapter)"
+            " VALUES (%s, %s, 1, 0, 'SUCCEEDED', 'mock'),"
+            " (%s, %s, 2, 4, 'RUNNING', 'mock')",
+            (stale, task, current, task),
+        )
+        connection.execute(
+            "INSERT INTO panestria.artifact"
+            " (id, task_id, attempt_id, kind, store_key, sha256, size_bytes)"
+            " VALUES (%s, %s, %s, 'candidate', %s, %s, 1)",
+            ("00000000-0000-4000-8000-0000000001c5", task, stale, old_hash, old_hash),
+        )
+        connection.execute(
+            "INSERT INTO panestria.workflow_link (task_id, attempt_id, dbos_workflow_id)"
+            " VALUES (%s, %s, 'old-workflow')",
+            (task, stale),
+        )
+        connection.commit()
+        assert snapshot_artifact(connection, task) is None
+        journey = SyntheticJourney()
+        assert journey._linked_workflow(connection, actor, goal) is None
+        shown = journey._snapshot(connection, actor, goal)
+        assert shown.artifact_sha256 is None
+        connection.execute(
+            "INSERT INTO panestria.artifact"
+            " (id, task_id, attempt_id, kind, store_key, sha256, size_bytes)"
+            " VALUES (%s, %s, %s, 'candidate', %s, %s, 1)",
+            ("00000000-0000-4000-8000-0000000001c6", task, current, new_hash, new_hash),
+        )
+        connection.execute(
+            "INSERT INTO panestria.workflow_link (task_id, attempt_id, dbos_workflow_id)"
+            " VALUES (%s, %s, 'current-workflow')",
+            (task, current),
+        )
+        connection.commit()
+        assert snapshot_artifact(connection, task) == new_hash
+        assert journey._snapshot(connection, actor, goal).artifact_sha256 == new_hash
+        assert journey._linked_workflow(connection, actor, goal) == "current-workflow"
 
 
 def _assert_event_sequence(
