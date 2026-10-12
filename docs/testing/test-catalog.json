@@ -110,7 +110,7 @@
       "expected": "Kill before DB commit rolls back all app writes; kill after tracked commit before return replays one transition/event, no callback side effect.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-003-TC03",
