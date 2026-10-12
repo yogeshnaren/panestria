@@ -617,3 +617,49 @@ def test_cli_reports_safe_configuration_errors(monkeypatch: pytest.MonkeyPatch) 
         assert "syntheticsecret" not in text
         assert "Traceback" not in text
         assert "ValueError" not in text
+
+
+_PROVIDER_KEYS = ("OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GEMINI_API_KEY")
+
+
+@pytest.mark.live
+def test_fresh_host_loopback(record_property: pytest.RecordProperty) -> None:
+    """AOS-001-TC04. Missing fresh-host evidence is a failure, not a pass."""
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False)
+    record_property("gate_case_id", "AOS-001-TC04")
+    record_property("candidate_commit", commit.stdout.strip())
+    record_property("lane", "live")
+    record_property("execution_mode", "LIVE")
+    record_property("aos_001_tc04", "NOT_RUN")
+    report_path = os.environ.get("PANESTRIA_FRESH_HOST_REPORT", "")
+    if report_path == "":
+        pytest.fail("fresh_host_not_attested")
+    report_file = Path(report_path)
+    if not report_file.is_file():
+        pytest.fail("fresh_host_not_attested")
+    report = json.loads(report_file.read_text())
+    if not isinstance(report, dict):
+        pytest.fail("fresh_host_not_attested")
+    os_release = Path("/etc/os-release").read_text(encoding="utf-8")
+    identity = dict(part.split("=", 1) for part in os_release.splitlines() if "=" in part)
+    boot_id = Path("/proc/sys/kernel/random/boot_id").read_text(encoding="utf-8").strip()
+    if identity.get("ID", "").strip('"') != "ubuntu" or report.get("os_id") != "ubuntu":
+        pytest.fail("fresh_host_not_ubuntu")
+    if report.get("boot_id") != boot_id or report.get("venv_created_this_boot") is not True:
+        pytest.fail("fresh_host_not_attested")
+    for key in _PROVIDER_KEYS:
+        if os.environ.get(key, "") != "":
+            pytest.fail("provider_credential_present")
+    status = Path("/proc/self/status").read_text(encoding="utf-8").splitlines()
+    rss = next((line.split()[1] for line in status if line.startswith("VmRSS:")), "")
+    record_property("rss_kb", rss)
+    listeners = report.get("listen")
+    if not isinstance(listeners, list) or listeners == []:
+        pytest.fail("fresh_host_listeners_missing")
+    for item in listeners:
+        if not isinstance(item, str) or not item.startswith("127.0.0.1:"):
+            pytest.fail("fresh_host_listener_not_loopback")
+    startup = report.get("startup_seconds")
+    if not isinstance(startup, (int, float)) or isinstance(startup, bool) or startup <= 0:
+        pytest.fail("fresh_host_startup_missing")
+    record_property("aos_001_tc04", "OBSERVED")
