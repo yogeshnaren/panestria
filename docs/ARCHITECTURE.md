@@ -1,6 +1,6 @@
 # Architecture delta
 
-This file records the implementation on `26e0d6ef1ca26b07c245581e7733b9abc4ed0d13`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
+This file records the implementation on `5d4606bfcbeb974177a2c3360849f8c5a687b162`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
 
 ## What runs
 
@@ -16,7 +16,7 @@ One Python 3.12 package, `src/panestria`, with a frozen `uv.lock`. PostgreSQL 16
 | `kernel` | Goal, task, approval, artifact, and cancellation services. Repositories append events under the global sequence lock. |
 | `execution` | Admission enqueues `run_task_workflow` on the DBOS queue `panestria-synthetic`. Crash gates stop a process before commit, worker start, verification, effect dispatch, or effect confirmation. |
 | `verification` | Per-node command, path, policy, artifact, and human-review checks. The diff is between the pinned base and the candidate tree. The stored check report keeps the bounded command output and the changed paths. A merge is not prepared, and a new Git update does not run, unless each required report file still matches its stored hash and retained output. |
-| `sandbox` | Disposable Git worktrees and artifact publication checked against the current owner, project, and epoch. |
+| `sandbox` | Disposable Git worktrees and artifact publication checked against the current owner, project, and epoch. Each worktree record stores owner, TTL, and disk use under `protected/`. Cleanup removes an expired or unrecorded attempt and unlinks a directory symlink without deleting its target. |
 | `brokers` | The mock worker only. Modes include `success`, `bad-test`, `bad-path`, `timeout`, `crash`, and `artifact-corrupt`. |
 | `api` / `cli` | Loopback routes and commands for goals, events, artifacts, approvals, and cancellation. |
 | `ops` | Refuses to delete any volume other than `panestria_s3_pgdata`. |
