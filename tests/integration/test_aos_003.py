@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import json
 import os
 import pickle
 import signal
@@ -19,7 +20,7 @@ import sqlalchemy as sa
 
 from panestria.execution.admission import AdmissionReceipt, DurableAdmission, SqlUnitOfWork
 from panestria.execution.dbos_runtime import QUEUE_NAME, open_client, probe_launch, sqlalchemy_url
-from panestria.execution.recovery import connect_for_admission
+from panestria.execution.recovery import RecoveryReport, connect_for_admission, format_recovery_audit, recovery_instance
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 
@@ -130,6 +131,18 @@ def _seed(connection: sa.Connection) -> None:
 def _count(connection: sa.Connection, sql: str, params: dict[str, Any] | None = None) -> int:
     value = connection.execute(sa.text(sql), params or {}).scalar_one()
     return int(value)
+
+
+def test_recovery_instance_is_stable_for_the_process(record_property: pytest.RecordProperty) -> None:
+    _properties(record_property, "AOS-003-TC02")
+    assert recovery_instance() == recovery_instance()
+    report = RecoveryReport("wf-audit", "SUCCESS", "", recovery_instance())
+    line = format_recovery_audit(report)
+    loaded = json.loads(line)
+    assert loaded["recovery_instance"] == recovery_instance()
+    assert loaded["workflow_id"] == "wf-audit"
+    assert loaded["status"] == "SUCCESS"
+    assert "postgresql" not in line
 
 
 def test_atomic_enqueue_and_duplicate(database_url: str, record_property: pytest.RecordProperty) -> None:

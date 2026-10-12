@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import sys
 import time
 import uuid
 from pathlib import Path
@@ -19,7 +20,7 @@ from panestria.execution.dbos_runtime import (
     WORKFLOW_NAME,
     sqlalchemy_url,
 )
-from panestria.execution.recovery import RecoveryService
+from panestria.execution.recovery import RecoveryService, format_recovery_audit
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.repositories.events import append_domain_event
 
@@ -359,6 +360,7 @@ def main() -> None:
             report = RecoveryService().recover_pending(workflow_id)
             if report.status != "SUCCESS":
                 raise SystemExit(2)
+            sys.stdout.write(format_recovery_audit(report) + "\n")
             return
         task_id = os.environ["PANESTRIA_TASK_ID"]
         digest = os.environ["PANESTRIA_CONTRACT_SHA256"]
