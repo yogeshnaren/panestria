@@ -195,7 +195,7 @@
       "release": "R0",
       "lane": "security",
       "planned_nodeid": "tests/e2e/test_aos_005.py::test_approval_digest_actor_expiry",
-      "expected": "Wrong actor/project/digest, expired request or changed payload cannot dispatch effect; unknown check prevents completion. API denials include a generated correlation id and do not copy one from the request.",
+      "expected": "Wrong actor/project/digest, expired request or changed payload cannot dispatch effect; unknown check prevents completion. A newer failed check is not hidden by an older report file. API denials include a generated correlation id and do not copy one from the request.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
       "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"

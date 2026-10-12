@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -11,7 +12,7 @@ from pathlib import Path
 import psycopg
 import pytest
 
-from panestria.execution.synthetic_journey import SyntheticJourney
+from panestria.execution.synthetic_journey import SyntheticJourney, _evidence_files_match
 from panestria.kernel.approvals import ApprovalService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor, GoalService
@@ -311,6 +312,59 @@ def _drive_until_checks(
     assert finished.goal_status != "COMPLETED"
     assert finished.effect_state != "SUCCEEDED"
     assert finished.continuation_kind != "MERGE"
+
+
+def test_newer_failure_hides_an_older_report_file(
+    record_property: pytest.RecordProperty, tmp_path: Path
+) -> None:
+    record_property("gate_case_id", "AOS-005-TC02")
+    _database()
+    task_id = "00000000-0000-4000-8000-0000000000a6"
+    attempt_id = "00000000-0000-4000-8000-0000000000b6"
+    check_id = "00000000-0000-4000-8000-0000000000c6"
+    payload = b"older-pass\n"
+    digest = hashlib.sha256(payload).hexdigest()
+    store = tmp_path / "store"
+    store.mkdir()
+    (store / digest).write_bytes(payload)
+    with psycopg.connect(DATABASE_URL) as connection:
+        connection.execute("INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'owner')", (OWNER,))
+        connection.execute("INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)", (PROJECT, OWNER))
+        _seed_task(connection, task_id, attempt_id, check_id)
+        connection.execute(
+            "INSERT INTO panestria.artifact (id, task_id, attempt_id, kind, store_key, sha256, size_bytes)"
+            " VALUES (%s, %s, %s, 'evidence', 'blob', %s, %s)",
+            ("00000000-0000-4000-8000-0000000000d6", task_id, attempt_id, digest, len(payload)),
+        )
+        connection.execute(
+            "INSERT INTO panestria.check_run"
+            " (id, acceptance_check_id, attempt_id, task_id, contract_id, verdict,"
+            " evidence_artifact_id, candidate_sha256, checked_at)"
+            " VALUES (%s, %s, %s, %s,"
+            " (SELECT contract_id FROM panestria.task WHERE id = %s),"
+            " 'PASS', %s, %s, now() - interval '1 minute')",
+            (
+                "00000000-0000-4000-8000-0000000000e6",
+                check_id,
+                attempt_id,
+                task_id,
+                task_id,
+                "00000000-0000-4000-8000-0000000000d6",
+                digest,
+            ),
+        )
+        connection.commit()
+        assert _evidence_files_match(connection, task_id, store) is True
+        connection.execute(
+            "INSERT INTO panestria.check_run"
+            " (id, acceptance_check_id, attempt_id, task_id, contract_id, verdict, checked_at)"
+            " VALUES (%s, %s, %s, %s,"
+            " (SELECT contract_id FROM panestria.task WHERE id = %s),"
+            " 'FAIL', now())",
+            ("00000000-0000-4000-8000-0000000000e7", check_id, attempt_id, task_id, task_id),
+        )
+        connection.commit()
+        assert _evidence_files_match(connection, task_id, store) is False
 
 
 def _preview(task_id: str, expires_at: str) -> dict[str, object]:

@@ -889,12 +889,12 @@ def _run(argv: list[str], check: bool = True, extra: dict[str, str] | None = Non
 
 
 def _evidence_files_match(connection: Conn, task_id: str, store: Path) -> bool:
-    """A PASS row counts only when its report file matches the stored hash and output."""
+    """The latest run counts. An older PASS file does not hide a newer failure."""
     root = store.resolve()
     if not root.is_dir():
         return False
     rows = connection.execute(
-        "SELECT artifact.sha256, artifact.size_bytes, artifact.kind"
+        "SELECT latest.verdict, artifact.sha256, artifact.size_bytes, artifact.kind"
         " FROM panestria.acceptance_check AS check_row"
         " JOIN panestria.task AS task ON task.contract_id = check_row.contract_id"
         " JOIN LATERAL ("
@@ -903,18 +903,21 @@ def _evidence_files_match(connection: Conn, task_id: str, store: Path) -> bool:
         " ORDER BY attempt.attempt_number DESC LIMIT 1"
         " ) AS current_attempt ON true"
         " JOIN LATERAL ("
-        " SELECT run.evidence_artifact_id FROM panestria.check_run AS run"
+        " SELECT run.verdict, run.evidence_artifact_id FROM panestria.check_run AS run"
         " WHERE run.acceptance_check_id = check_row.id"
-        " AND run.attempt_id = current_attempt.id AND run.verdict = 'PASS'"
+        " AND run.attempt_id = current_attempt.id"
+        " AND run.task_id = task.id AND run.contract_id = check_row.contract_id"
         " ORDER BY run.checked_at DESC LIMIT 1"
         " ) AS latest ON true"
-        " JOIN panestria.artifact AS artifact ON artifact.id = latest.evidence_artifact_id"
+        " LEFT JOIN panestria.artifact AS artifact ON artifact.id = latest.evidence_artifact_id"
         " WHERE task.id = %s AND check_row.required",
         (task_id,),
     ).fetchall()
     if not rows:
         return False
-    for digest, size, kind in rows:
+    for verdict, digest, size, kind in rows:
+        if str(verdict) != "PASS" or digest is None or size is None:
+            return False
         name = str(digest).strip()
         path = (root / name).resolve()
         if path.parent != root or not path.is_file():
