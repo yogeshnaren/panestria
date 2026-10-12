@@ -154,7 +154,7 @@
       "expected": "Off-scope path/symlink or altered protected mandatory test bundle fails; new worker tests cannot replace required checks.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-004-TC03",

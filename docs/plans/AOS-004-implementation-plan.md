@@ -1,6 +1,6 @@
 # AOS-004 — Synthetic worker, isolated Git workspace and deterministic verification: implementation plan
 
-**Release:** R0. **Format:** checklist; shared design supplies cross-component detail. **Implementation:** S1 scripted worker observed. **Tests:** TC01 on a real Git worktree; TC02, TC03, and TC04 not run; not a release pass. **Depends on:** AOS-003. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R0. **Format:** checklist; shared design supplies cross-component detail. **Implementation:** S1 scripted worker and S2 independent checks observed. **Tests:** TC01 and TC02 on a real Git worktree; TC03 and TC04 not run; not a release pass. **Depends on:** AOS-003. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-004.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
