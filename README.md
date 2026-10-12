@@ -47,4 +47,4 @@ Provider credentials are not required for these commands. CI uses the same froze
 
 ## Scope
 
-The package, `SYNTHETIC_DEV` settings, and typed `/healthz` and `/readyz` routes are in place. Ruff, Mypy, Import Linter, and provider-free CI are the toolchain. Compose publishes disposable PostgreSQL on `127.0.0.1:55432`. Alembic head is `0004_check_candidate`. Goal submit, events, approvals, artifact reads, and cancellation are mounted on the loopback API. The fresh-host live case has not been run. R1 has not started. The license file is the repository MIT license.
+The package, `SYNTHETIC_DEV` settings, and typed `/healthz` and `/readyz` routes are in place. Ruff, Mypy, Import Linter, and provider-free CI are the toolchain. Compose publishes disposable PostgreSQL on `127.0.0.1:55432`. Alembic head is `0004_check_candidate`. Goal submit, events, approvals, artifact reads, and cancellation are mounted on the loopback API. Their generated description is [docs/api/openapi.json](docs/api/openapi.json). The fresh-host live case has not been run. R1 has not started. The license file is the repository MIT license.

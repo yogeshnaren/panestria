@@ -23,6 +23,7 @@ from fastapi.testclient import TestClient
 from typer.testing import CliRunner
 
 from panestria.api.auth import GoalApi
+from panestria.api.health import ProbeCheck, ProbeObservation
 from panestria.api.main import create_app, mount_goal_api
 from panestria.cli.approvals import decide_approval
 from panestria.cli.goals import read_events, read_status, submit_contract
@@ -989,3 +990,55 @@ def test_wait_restart_continuation(record_property: pytest.RecordProperty, tmp_p
             assert denied.goal_status != "COMPLETED"
     finally:
         subprocess.run([*COMPOSE, "down", "-v"], check=False)
+
+
+_REQUIRED_ROUTES = {
+    "/healthz",
+    "/readyz",
+    "/v1/approvals",
+    "/v1/approvals/{approval_id}/decision",
+    "/v1/artifacts/{artifact_id}",
+    "/v1/goals",
+    "/v1/goals/{goal_id}",
+    "/v1/goals/{goal_id}/cancel",
+    "/v1/goals/{goal_id}/events",
+}
+
+
+def _openapi_document() -> dict[str, Any]:
+    def probe(deadline: datetime) -> ProbeObservation:
+        del deadline
+        return ProbeObservation(checks=[ProbeCheck(name="database", status="unavailable", reason="not_probed")])
+
+    settings = Settings.model_validate(
+        {
+            "schema_version": 1,
+            "profile": "SYNTHETIC_DEV",
+            "bind_host": "127.0.0.1",
+            "bind_port": 8765,
+            "readiness_budget_ms": 500,
+            "database_url": DATABASE_URL,
+        }
+    )
+    app = create_app(settings, probe)
+    mount_goal_api(app, GoalApi(TOKEN, OWNER, PROJECT, DATABASE_URL))
+    document = app.openapi()
+    if not isinstance(document, dict):
+        raise AssertionError("openapi document is not an object")
+    return document
+
+
+def test_openapi_matches_the_mounted_routes(record_property: pytest.RecordProperty) -> None:
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False)
+    record_property("gate_case_id", "AOS-005-TC01")
+    record_property("candidate_commit", commit.stdout.strip())
+    record_property("lane", "contract")
+    record_property("execution_mode", "HERMETIC")
+    document = _openapi_document()
+    text = json.dumps(document, indent=2, sort_keys=True) + "\n"
+    assert text == (ROOT / "docs" / "api" / "openapi.json").read_text(encoding="utf-8")
+    paths = document.get("paths")
+    assert isinstance(paths, dict)
+    assert _REQUIRED_ROUTES <= set(paths)
+    assert "placeholder-not-a-secret" not in text
+    assert TOKEN not in text
