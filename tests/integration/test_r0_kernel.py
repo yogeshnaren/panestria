@@ -208,9 +208,14 @@ def test_graph_idempotency_and_malformed_acceptance(record_property: pytest.Reco
                     headers={"authorization": f"Bearer {TOKEN}", "idempotency-key": f"bad-{value!r}"},
                 )
                 assert response.status_code == 422
-                assert response.json()["code"] == "invalid_contract"
-                assert "42" not in response.text
-                assert "AC-BAD" not in response.text
+                body = response.json()
+                assert body["code"] == "invalid_contract"
+                assert body["message"] == "invalid_contract"
+                echoed = json.dumps({"code": body["code"], "message": body["message"]})
+                assert "42" not in echoed
+                assert "AC-BAD" not in echoed
+                assert "true" not in echoed
+                assert "null" not in echoed
             document = _document("00000000-0000-4000-8000-000000000098")
             document["acceptance"] = [42]
             response = client.post(
