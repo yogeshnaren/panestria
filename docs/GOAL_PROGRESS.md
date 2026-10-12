@@ -3,13 +3,13 @@
 **Phase:** R0, contract version 1 approved. The 2026-10-12 review did not accept R0. R1 has not started.  
 **Slice:** Corrections through the loopback server are committed. No further phase is authorized.  
 **Branch:** `r0-kernel`.  
-**Last verified source commit:** `453b999924a8356c2633910316a3e38c808729ad`.  
+**Last verified source commit:** `7098ba79b02883947eed7e9df533ef1b39af8efc`.  
 **Evidence commit:** recorded after that source commit; this file is not part of the tested tree.  
 **Gate:** G0 is `INCOMPLETE`. Nineteen required cases were collected. AOS-001-TC04 is `NOT_RUN`. A collected case id is not a claim that every source clause passed, and it is not owner acceptance.
 
 ## Completed
 
-AOS-001-S1 through AOS-005-S3 and the review corrections are on `r0-kernel`. The non-live suite on `453b999924a8356c2633910316a3e38c808729ad` collected 118 tests, 0 failures, and 0 skips in `evidence/R0-corrections.xml`, and deselected the live fresh-host test. That run includes the per-node verifier denials, latest-result selection, admitted DBOS restart, Git reconciliation, dispatch-time authorization, artifact epoch checks, stored-graph cycles, goal idempotency, malformed envelopes, body and database bounds, and a separate loopback process driven by the CLI. Items AOS-001 through AOS-005 remain `IN_PROGRESS`.
+AOS-001-S1 through AOS-005-S3 and the review corrections are on `r0-kernel`. The non-live suite on `7098ba79b02883947eed7e9df533ef1b39af8efc` collected 119 tests, 0 failures, and 0 skips in `evidence/R0-corrections.xml`, and deselected the live fresh-host test. That run includes the per-node verifier denials, latest-result selection, admitted DBOS restart, Git reconciliation, dispatch-time authorization, artifact epoch checks, stored-graph cycles, goal idempotency, malformed envelopes, body and database bounds, and a separate loopback process driven by the CLI. Items AOS-001 through AOS-005 remain `IN_PROGRESS`.
 
 ## Failures and blockers
 
@@ -17,7 +17,7 @@ AOS-001-TC04 is `tests/integration/test_aos_001.py::test_fresh_host_loopback` in
 
 ## Evidence
 
-`evidence/R0-corrections.xml` and `evidence/G0/evaluation.json` name `453b999924a8356c2633910316a3e38c808729ad`.  
+`evidence/R0-corrections.xml` and `evidence/G0/evaluation.json` name `7098ba79b02883947eed7e9df533ef1b39af8efc`.  
 Earlier slice receipts remain under `evidence/AOS-001-S1/` through `evidence/AOS-005-S3/` and name their own source commits.  
 The review package is `docs/reviews/R0-HANDOFF.md`.
 

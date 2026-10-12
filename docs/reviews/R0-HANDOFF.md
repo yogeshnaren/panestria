@@ -3,11 +3,11 @@
 The 2026-10-12 review did not accept R0. This file keeps that review record and the later correction. It is not an owner acceptance, a G0 pass, or permission to start R1.
 
 **Reviewed source:** `af3d431e775c2f3f23722d272dd00f2863689d5b`. Its report remains `evidence/AOS-005-S3.xml`.  
-**Corrected source:** `453b999924a8356c2633910316a3e38c808729ad` on `r0-kernel`.  
-**Correction report:** `evidence/R0-corrections.xml`, SHA-256 `0ffda98eb81787271e342f0e359020e938943a53f0d46f7fd4a59d2fb2a85600`. 118 tests, 0 failures, 0 errors, 0 skips. The live fresh-host test was deselected.  
+**Corrected source:** `7098ba79b02883947eed7e9df533ef1b39af8efc` on `r0-kernel`.  
+**Correction report:** `evidence/R0-corrections.xml`, SHA-256 `a137279bc9ca683eae4f70361d927af209b9e11b51a64427078400be7c3679db`. 119 tests, 0 failures, 0 errors, 0 skips. The live fresh-host test was deselected.  
 **Gate:** `evidence/G0/evaluation.json` records G0 as `INCOMPLETE`. Nineteen of twenty required cases were collected. `AOS-001-TC04` is `NOT_RUN`. A case-group PASS does not prove every source clause and is not owner acceptance.
 
-The original handoff commit recorded `af3d431`. This report's source parent is `453b999924a8356c2633910316a3e38c808729ad`. Older receipts are not rewritten.
+The original handoff commit recorded `af3d431`. This report's source parent is `7098ba79b02883947eed7e9df533ef1b39af8efc`. Older receipts are not rewritten.
 
 ## Ordered commits
 
@@ -15,6 +15,8 @@ Commits are newest first, from the approved contract through the journey. Eviden
 
 | Commit | Reason |
 |---|---|
+| `7098ba7` | Stop the health probe child after generating the OpenAPI document. |
+| `175e7d9` | Commit the generated OpenAPI document for the mounted routes. |
 | `453b999` | Reject a worker that claims tests passed when the required check fails. |
 | `d53c892` | Add contributor and security notes with placeholder-only settings. |
 | `a8c9fd3` | Fail the migration check when the database schema drifts. |
@@ -140,7 +142,7 @@ Expected integrated result, from a clean tree at the tested source:
 uv run --frozen pytest -m "not live" --junitxml=/tmp/panestria-r0.xml -q
 ```
 
-On `453b999924a8356c2633910316a3e38c808729ad` the same command collected 118 passed tests, 0 failures, and 0 skips, and deselected the live fresh-host case. The historical `af3d431` report remains 93 passed and is not a result for the corrected tree.
+On `7098ba79b02883947eed7e9df533ef1b39af8efc` the same command collected 119 passed tests, 0 failures, and 0 skips, and deselected the live fresh-host case. The historical `af3d431` report remains 93 passed and is not a result for the corrected tree.
 
 Positive journey:
 
