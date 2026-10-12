@@ -37,11 +37,19 @@ class Candidate:
 
 
 class MockWorkerAdapter:
-    def __init__(self, manifest: WorkspaceManifest, mode: str, seed: str, output_limit: int = OUTPUT_LIMIT) -> None:
+    def __init__(
+        self,
+        manifest: WorkspaceManifest,
+        mode: str,
+        seed: str,
+        output_limit: int = OUTPUT_LIMIT,
+        relative: str = "allowed.txt",
+    ) -> None:
         self.manifest = manifest
         self.mode = mode
         self.seed = seed
         self.output_limit = output_limit
+        self.relative = relative
         self._process: subprocess.Popen[bytes] | None = None
         self._cancellation_requested = False
         self._terminated = False
@@ -53,6 +61,7 @@ class MockWorkerAdapter:
         env["PANESTRIA_WORKER_SEED"] = self.seed
         env["PANESTRIA_WORKTREE"] = self.manifest.worktree
         env["PANESTRIA_SANDBOX_ROOT"] = self.manifest.root
+        env["PANESTRIA_WORKER_RELATIVE"] = self.relative
         self._process = subprocess.Popen(
             [sys.executable, "-m", "panestria.brokers.harness.mock"],
             cwd=self.manifest.worktree,
@@ -177,17 +186,33 @@ class MockWorkerAdapter:
         outside = Path(self.manifest.root) / "outside.txt"
         if outside.exists():
             return True
-        for path in Path(self.manifest.worktree).iterdir():
-            if path.name in {".git", "README.txt"} or path.name in ALLOWLIST:
-                continue
-            return True
+        worktree = Path(self.manifest.worktree)
+        allowed = {".git", "README.txt", self.relative}
+        if self.relative == "allowed.txt":
+            allowed.update(ALLOWLIST)
+        for dirpath, dirnames, filenames in os.walk(worktree, followlinks=False):
+            dirnames[:] = [name for name in dirnames if name != ".git"]
+            for name in filenames:
+                relative = (Path(dirpath) / name).relative_to(worktree).as_posix()
+                if relative not in allowed:
+                    return True
         return False
 
     def _artifact_hash(self) -> str:
-        path = Path(self.manifest.worktree) / "allowed.txt"
+        path = Path(self.manifest.worktree) / self.relative
         if not path.is_file():
             return ""
         return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _relative_file(worktree: Path, relative: str) -> Path:
+    path = Path(relative)
+    if path.is_absolute() or ".." in path.parts or relative == "":
+        raise SystemExit(2)
+    target = (worktree / path).resolve()
+    if not target.is_relative_to(worktree.resolve()):
+        raise SystemExit(2)
+    return target
 
 
 def main() -> None:
@@ -196,7 +221,10 @@ def main() -> None:
     worktree = Path(os.environ["PANESTRIA_WORKTREE"])
     root = Path(os.environ["PANESTRIA_SANDBOX_ROOT"])
     if mode in {"success", "verbose"}:
-        (worktree / "allowed.txt").write_text(f"edit:{seed}\n")
+        relative = os.environ.get("PANESTRIA_WORKER_RELATIVE", "allowed.txt")
+        target = _relative_file(worktree, relative)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(f"edit:{seed}\n")
         if mode == "verbose":
             sys.stdout.buffer.write(b"x" * 20000)
         else:

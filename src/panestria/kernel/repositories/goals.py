@@ -73,12 +73,12 @@ def read_events(
     goal_id: str,
     after: int,
     limit: int,
-) -> list[tuple[int, str]] | None:
+) -> list[tuple[int, str, dict[str, object]]] | None:
     if read_goal(uow, owner_id, project_id, goal_id) is None:
         return None
     rows = uow.execute(
-        "SELECT seq, kind FROM panestria.task_event"
+        "SELECT seq, kind, payload FROM panestria.task_event"
         " WHERE goal_id = %s AND seq > %s ORDER BY seq LIMIT %s",
         (goal_id, after, limit),
     ).fetchall()
-    return [(int(row[0]), str(row[1])) for row in rows]
+    return [(int(row[0]), str(row[1]), dict(row[2])) for row in rows]

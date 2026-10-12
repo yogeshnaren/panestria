@@ -53,7 +53,7 @@ class GoalService:
         goal_id: str,
         after: int,
         limit: int,
-    ) -> list[tuple[int, str]]:
+    ) -> list[tuple[int, str, dict[str, object]]]:
         rows = read_events(uow, actor.owner_id, actor.project_id, goal_id, after, limit)
         if rows is None:
             raise KernelDenied("not_found")

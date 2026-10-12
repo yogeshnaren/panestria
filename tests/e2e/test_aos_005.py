@@ -9,6 +9,7 @@ import hashlib
 import json
 import os
 import subprocess
+import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -28,6 +29,7 @@ from panestria.cli.goals import read_events, read_status, submit_contract
 from panestria.cli.main import app as cli_app
 from panestria.config import Settings
 from panestria.contracts.approval import effect_digest, load_preview
+from panestria.execution.synthetic_journey import SyntheticJourney
 from panestria.kernel.approvals import ApprovalService, ApprovalView
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -600,5 +602,387 @@ def test_approval_digest_actor_expiry(record_property: pytest.RecordProperty) ->
             ],
         )
         assert refused.exit_code == 2
+    finally:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+
+
+def _case(record_property: pytest.RecordProperty, case_id: str, lane: str) -> None:
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False)
+    dirty = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT, text=True, capture_output=True, check=False)
+    record_property("gate_case_id", case_id)
+    record_property("candidate_commit", commit.stdout.strip())
+    record_property("fixture_digest", hashlib.sha256(FIXTURE.read_bytes()).hexdigest())
+    record_property("lane", lane)
+    record_property("execution_mode", "OS_BOUNDARY")
+    record_property("worktree_state", "dirty" if dirty.stdout.strip() else "clean")
+
+
+def test_r0_positive_journey(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+    """Consent, one mock candidate, independent evidence, and one confirmed effect complete the goal."""
+    _case(record_property, "AOS-005-TC01", "e2e")
+    _database()
+    journey = SyntheticJourney()
+    sandbox = tmp_path / "sandbox"
+    try:
+        with _app() as client:
+            sender = _send(client)
+            status, submitted = submit_contract(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                contract_path=FIXTURE,
+                idempotency_key="journey",
+                send=sender,
+            )
+            assert status == 202
+            goal_id = str(submitted["goal_id"])
+            with psycopg.connect(DATABASE_URL) as connection:
+                opened = journey.open_contract_wait(connection, Actor(OWNER, PROJECT), goal_id, sandbox)
+            assert opened.attempts == 0
+            assert opened.continuation_kind == "DISPATCH"
+            assert opened.approval_id is not None
+            approved_status, approved = decide_approval(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                approval_id=opened.approval_id,
+                effect_digest=str(opened.effect_digest),
+                expected_version=int(opened.expected_version or 0),
+                decision="approve",
+                idempotency_key="consent",
+                send=sender,
+            )
+            assert approved_status == 200
+            assert approved["state"] == "APPROVED"
+            with psycopg.connect(DATABASE_URL) as connection:
+                waiting = journey.resume(connection, Actor(OWNER, PROJECT), goal_id, sandbox)
+            assert waiting.attempts == 1
+            assert waiting.continuation_kind == "MERGE"
+            assert waiting.artifact_sha256
+            _event_status, events = read_events(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                goal_id=goal_id,
+                after="0",
+                send=sender,
+            )
+            recorded = [item for item in events["events"] if item["kind"] == "evidence.recorded"]
+            assert recorded[0]["payload"]["artifact_sha256"] == waiting.artifact_sha256
+            assert recorded[0]["payload"]["verdict"] == "PASS"
+            merge_status, merge = decide_approval(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                approval_id=str(waiting.approval_id),
+                effect_digest=str(waiting.effect_digest),
+                expected_version=int(waiting.expected_version or 0),
+                decision="approve",
+                idempotency_key="merge",
+                send=sender,
+            )
+            assert merge_status == 200
+            assert merge["state"] == "APPROVED"
+            with psycopg.connect(DATABASE_URL) as connection:
+                done = journey.resume(connection, Actor(OWNER, PROJECT), goal_id, sandbox)
+            assert done.goal_status == "COMPLETED"
+            assert done.task_state == "COMPLETED"
+            assert done.effect_state == "SUCCEEDED"
+            assert done.attempts == 1
+            _status, view = read_status(base_url="http://127.0.0.1", token=TOKEN, goal_id=goal_id, send=sender)
+            assert view["status"] == "COMPLETED"
+    finally:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+
+
+def test_decision_race_idempotency(record_property: pytest.RecordProperty) -> None:
+    """One racing decision and one racing consume survive. A changed repeat conflicts."""
+    _case(record_property, "AOS-005-TC03", "integration")
+    _database()
+    try:
+        _seed_approvals()
+        later = _stamp(timedelta(hours=1))
+        service = ApprovalService()
+        actor = Actor(OWNER, PROJECT)
+        with psycopg.connect(DATABASE_URL) as connection:
+            pending = service.request(connection, actor, _preview(DENY, "merge", later))
+            ready = service.request(connection, actor, _preview(MERGE, "merge", later))
+            connection.commit()
+        with psycopg.connect(DATABASE_URL) as connection:
+            service.decide(
+                UnitOfWork(connection),
+                actor,
+                ready.approval_id,
+                ready.effect_digest,
+                ready.expected_version,
+                "approve",
+                "ready-once",
+            )
+            connection.commit()
+        barrier = threading.Barrier(2)
+        raced: list[str] = ["", ""]
+
+        def decide(index: int, decision: str, key: str) -> None:
+            barrier.wait(5)
+            with psycopg.connect(DATABASE_URL) as connection:
+                try:
+                    receipt = service.decide(
+                        UnitOfWork(connection),
+                        actor,
+                        pending.approval_id,
+                        pending.effect_digest,
+                        pending.expected_version,
+                        decision,
+                        key,
+                    )
+                    connection.commit()
+                    raced[index] = receipt.state
+                except KernelDenied as exc:
+                    connection.rollback()
+                    raced[index] = exc.code
+
+        threads = [
+            threading.Thread(target=decide, args=(0, "approve", "race-approve")),
+            threading.Thread(target=decide, args=(1, "deny", "race-deny")),
+        ]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join(10)
+        assert sorted(raced) in (["APPROVED", "decision_conflict"], ["DENIED", "decision_conflict"])
+        with psycopg.connect(DATABASE_URL) as connection:
+            state = connection.execute(
+                "SELECT state FROM panestria.approval_request WHERE id = %s",
+                (pending.approval_id,),
+            ).fetchone()
+            events = connection.execute(
+                "SELECT count(*) FROM panestria.task_event WHERE kind = 'approval.decided' AND task_id = %s",
+                (DENY,),
+            ).fetchone()
+            assert state is not None and state[0] in {"APPROVED", "DENIED"}
+            assert events is not None and int(events[0]) == 1
+        with psycopg.connect(DATABASE_URL) as connection:
+            connection.execute(
+                "INSERT INTO panestria.artifact (id, task_id, attempt_id, kind, store_key, sha256, size_bytes)"
+                " VALUES (%s, %s, %s, 'evidence', 'blob', %s, 1)",
+                ("00000000-0000-4000-8000-000000000091", MERGE, "00000000-0000-4000-8000-000000000071", SHA),
+            )
+            connection.execute(
+                "UPDATE panestria.check_run SET verdict = 'PASS', evidence_artifact_id = %s WHERE task_id = %s",
+                ("00000000-0000-4000-8000-000000000091", MERGE),
+            )
+            version = connection.execute("SELECT row_version FROM panestria.task WHERE id = %s", (MERGE,)).fetchone()
+            connection.commit()
+        assert version is not None
+        consumed: list[str] = ["", ""]
+
+        def consume(index: int) -> None:
+            barrier2.wait(5)
+            with psycopg.connect(DATABASE_URL) as connection:
+                try:
+                    receipt = service.continue_after_approval(
+                        UnitOfWork(connection),
+                        actor,
+                        ready.approval_id,
+                        ready.effect_digest,
+                        int(version[0]),
+                    )
+                    connection.commit()
+                    consumed[index] = receipt.effect_id or "none"
+                except KernelDenied as exc:
+                    connection.rollback()
+                    consumed[index] = exc.code
+
+        barrier2 = threading.Barrier(2)
+        workers = [threading.Thread(target=consume, args=(0,)), threading.Thread(target=consume, args=(1,))]
+        for thread in workers:
+            thread.start()
+        for thread in workers:
+            thread.join(10)
+        assert _effect_count(MERGE) == 1
+        assert len({item for item in consumed if item not in {"", "not_approved", "version_conflict"}}) == 1
+        with psycopg.connect(DATABASE_URL) as connection:
+            other = service.request(connection, actor, _preview(EXPIRE, "merge", later))
+            service.decide(
+                UnitOfWork(connection),
+                actor,
+                other.approval_id,
+                other.effect_digest,
+                other.expected_version,
+                "approve",
+                "same-body",
+            )
+            connection.commit()
+        with psycopg.connect(DATABASE_URL) as connection:
+            try:
+                service.decide(
+                    UnitOfWork(connection),
+                    actor,
+                    other.approval_id,
+                    other.effect_digest,
+                    other.expected_version,
+                    "deny",
+                    "same-body",
+                )
+                connection.commit()
+                changed = "committed"
+            except KernelDenied as exc:
+                connection.rollback()
+                changed = exc.code
+        assert changed == "idempotency_conflict"
+    finally:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+
+
+def _copy_contract(path: Path, goal_id: str) -> Path:
+    document = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    document["goal_id"] = goal_id
+    path.write_text(json.dumps(document), encoding="utf-8")
+    return path
+
+
+def test_wait_restart_continuation(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+    """A contract wait does not dispatch, and a merge wait does not launch another worker."""
+    _case(record_property, "AOS-005-TC04", "chaos")
+    _database()
+    journey = SyntheticJourney()
+    sandbox = tmp_path / "restart"
+    try:
+        with _app() as client:
+            sender = _send(client)
+            _status, submitted = submit_contract(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                contract_path=FIXTURE,
+                idempotency_key="restart",
+                send=sender,
+            )
+            goal_id = str(submitted["goal_id"])
+            actor = Actor(OWNER, PROJECT)
+            with psycopg.connect(DATABASE_URL) as connection:
+                opened = journey.open_contract_wait(connection, actor, goal_id, sandbox)
+                held = journey.resume(connection, actor, goal_id, sandbox)
+            assert held.attempts == 0
+            assert held.task_state == "WAITING_APPROVAL"
+            assert held.continuation_kind == "DISPATCH"
+            decide_approval(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                approval_id=str(opened.approval_id),
+                effect_digest=str(opened.effect_digest),
+                expected_version=int(opened.expected_version or 0),
+                decision="approve",
+                idempotency_key="restart-consent",
+                send=sender,
+            )
+            with psycopg.connect(DATABASE_URL) as connection:
+                waiting = journey.resume(connection, actor, goal_id, sandbox)
+                again = journey.resume(connection, actor, goal_id, sandbox)
+            assert waiting.attempts == 1
+            assert again.attempts == 1
+            assert again.task_state == "WAITING_APPROVAL"
+            assert again.continuation_kind == "MERGE"
+            assert again.goal_status != "COMPLETED"
+            decide_approval(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                approval_id=str(again.approval_id),
+                effect_digest=str(again.effect_digest),
+                expected_version=int(again.expected_version or 0),
+                decision="approve",
+                idempotency_key="restart-merge",
+                send=sender,
+            )
+            with psycopg.connect(DATABASE_URL) as connection:
+                done = journey.resume(connection, actor, goal_id, sandbox)
+            assert done.attempts == 1
+            assert done.goal_status == "COMPLETED"
+            assert done.effect_state == "SUCCEEDED"
+            stale_id = "00000000-0000-4000-8000-0000000000c1"
+            stale_box = tmp_path / "stale"
+            _copy_contract(tmp_path / "stale.json", stale_id)
+            _status, stale_goal = submit_contract(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                contract_path=tmp_path / "stale.json",
+                idempotency_key="stale",
+                send=sender,
+            )
+            with psycopg.connect(DATABASE_URL) as connection:
+                stale_open = journey.open_contract_wait(connection, actor, str(stale_goal["goal_id"]), stale_box)
+            decide_approval(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                approval_id=str(stale_open.approval_id),
+                effect_digest=str(stale_open.effect_digest),
+                expected_version=int(stale_open.expected_version or 0),
+                decision="approve",
+                idempotency_key="stale-consent",
+                send=sender,
+            )
+            with psycopg.connect(DATABASE_URL) as connection:
+                stale_wait = journey.resume(connection, actor, str(stale_goal["goal_id"]), stale_box)
+            moved = subprocess.run(
+                ["git", "-C", str(stale_box / "repo"), "commit", "--allow-empty", "-m", "stale"],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            assert moved.returncode == 0, moved.stderr
+            fetched = subprocess.run(
+                [
+                    "git",
+                    "--git-dir",
+                    str(stale_box / "protected" / "dest.git"),
+                    "fetch",
+                    str(stale_box / "repo"),
+                    "HEAD:refs/heads/main",
+                ],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            assert fetched.returncode == 0, fetched.stderr
+            decide_approval(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                approval_id=str(stale_wait.approval_id),
+                effect_digest=str(stale_wait.effect_digest),
+                expected_version=int(stale_wait.expected_version or 0),
+                decision="approve",
+                idempotency_key="stale-merge",
+                send=sender,
+            )
+            with psycopg.connect(DATABASE_URL) as connection:
+                rejected = journey.resume(connection, actor, str(stale_goal["goal_id"]), stale_box)
+            assert rejected.attempts == 1
+            assert rejected.goal_status != "COMPLETED"
+            assert rejected.effect_state == "FAILED"
+            denied_id = "00000000-0000-4000-8000-0000000000c2"
+            _copy_contract(tmp_path / "deny.json", denied_id)
+            _status, denied_goal = submit_contract(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                contract_path=tmp_path / "deny.json",
+                idempotency_key="deny-goal",
+                send=sender,
+            )
+            with psycopg.connect(DATABASE_URL) as connection:
+                denied_open = journey.open_contract_wait(
+                    connection,
+                    actor,
+                    str(denied_goal["goal_id"]),
+                    tmp_path / "deny-box",
+                )
+            decide_approval(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                approval_id=str(denied_open.approval_id),
+                effect_digest=str(denied_open.effect_digest),
+                expected_version=int(denied_open.expected_version or 0),
+                decision="deny",
+                idempotency_key="deny-consent",
+                send=sender,
+            )
+            with psycopg.connect(DATABASE_URL) as connection:
+                denied = journey.resume(connection, actor, str(denied_goal["goal_id"]), tmp_path / "deny-box")
+            assert denied.attempts == 0
+            assert denied.goal_status != "COMPLETED"
     finally:
         subprocess.run([*COMPOSE, "down", "-v"], check=False)

@@ -48,5 +48,5 @@ def read_events(goal_id: str, request: Request, after: str = "0", limit: int = 5
         connection.close()
     return JSONResponse(
         status_code=200,
-        content={"events": [{"seq": str(seq), "kind": kind} for seq, kind in rows]},
+        content={"events": [{"seq": str(seq), "kind": kind, "payload": payload} for seq, kind, payload in rows]},
     )
