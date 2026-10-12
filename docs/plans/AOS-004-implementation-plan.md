@@ -58,7 +58,7 @@ These groups are planned obligations, not observed coverage. Actual assertions/p
 | Case | Lane | Planned node | Expected passing behavior |
 |---|---|---|---|
 | AOS-004-TC01 | integration | `tests/integration/test_aos_004.py::test_mock_success_and_repeat` | Same seeded fixture yields same verdict and hashes; worker done creates only a candidate until independent checks pass. Scripted events name the attempt and epoch and do not accept the candidate. An unknown mode starts no process. |
-| AOS-004-TC02 | security | `tests/integration/test_aos_004.py::test_bad_path_and_tampered_checks` | Off-scope path/symlink or altered protected mandatory test bundle fails; new worker tests cannot replace required checks. |
+| AOS-004-TC02 | security | `tests/integration/test_aos_004.py::test_bad_path_and_tampered_checks` | Off-scope path/symlink or altered protected mandatory test bundle fails; new worker tests cannot replace required checks. An executable mode on an otherwise allowed path is denied. |
 | AOS-004-TC03 | chaos | `tests/integration/test_aos_004.py::test_hung_process_and_output` | Wall watchdog times out silent process, drains bounded streams and confirms process group termination or UNKNOWN. |
 | AOS-004-TC04 | chaos | `tests/integration/test_aos_004.py::test_artifact_partial_publish` | Corrupt/partial blob denied; crash after finalize before DB ref leaves only a recoverable orphan, never passed evidence. Expired worktree cleanup records owner, TTL, and disk use, and does not follow a directory symlink. |
 

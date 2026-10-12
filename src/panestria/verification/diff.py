@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import stat
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -68,11 +69,14 @@ def _git_changes(worktree: Path, base_sha: str | None) -> tuple[str, str, set[st
         new_mode = fields[1] if len(fields) > 1 else ""
         names = [name for name in paths.split("\t") if name]
         changed.update(names)
-        if new_mode == "120000":
+        if new_mode not in {"100644", "000000"}:
             unsafe.update(names)
     for name in others_text.splitlines():
-        if name:
-            changed.add(name)
+        if not name:
+            continue
+        changed.add(name)
+        if _unexpected_permission(worktree / name):
+            unsafe.add(name)
     _collect_new_symlinks(worktree, base, changed, unsafe)
     return base, tree, changed, unsafe
 
@@ -102,6 +106,17 @@ def _collect_new_symlinks(worktree: Path, base: str, changed: set[str], unsafe: 
                 continue
             changed.add(relative)
             unsafe.add(relative)
+
+
+def _unexpected_permission(path: Path) -> bool:
+    """A changed path must be a regular file without an execute bit."""
+    try:
+        info = path.lstat()
+    except OSError:
+        return True
+    if not stat.S_ISREG(info.st_mode):
+        return True
+    return bool(info.st_mode & 0o111)
 
 
 def _same_as_base(worktree: Path, base: str, relative: str) -> bool:

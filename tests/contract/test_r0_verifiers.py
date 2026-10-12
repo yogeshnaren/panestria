@@ -347,6 +347,23 @@ def test_git_diff_sees_baseline_edits_deletions_renames_and_directory_symlinks(
     assert stale.ok is False
     assert "<not-a-git-tree>" in stale.denied
 
+    plain_root, plain_worktree, plain_base = _tree(tmp_path, "plain-mode")
+    (plain_worktree / "allowed.txt").write_text("edit:alpha\n", encoding="utf-8")
+    plain = inspect_diff(plain_root, plain_worktree, ALLOWLIST, base_sha=plain_base)
+    assert plain.ok is True
+    assert plain.changed == ("allowed.txt",)
+    assert plain.denied == ()
+
+    mode_root, mode_worktree, mode_base = _tree(tmp_path, "exec-mode")
+    executable = mode_worktree / "allowed.txt"
+    executable.write_text("edit:alpha\n", encoding="utf-8")
+    executable.chmod(0o755)
+    _git(mode_worktree, ["add", "allowed.txt"])
+    _git(mode_worktree, ["update-index", "--chmod=+x", "allowed.txt"])
+    executable_report = inspect_diff(mode_root, mode_worktree, ALLOWLIST, base_sha=mode_base)
+    assert executable_report.ok is False
+    assert "allowed.txt" in executable_report.denied
+
 
 def _git(worktree: Path, args: list[str]) -> None:
     completed = subprocess.run(
