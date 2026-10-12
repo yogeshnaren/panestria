@@ -27,14 +27,23 @@ Compose project `panestria-s3` publishes PostgreSQL on `127.0.0.1:55432`. The vo
 
 ## Run
 
-Export the names in `.env.example`. Panestria reads the process environment and does not load that file. The password there is a placeholder.
+For the automatic CLI walkthrough:
 
 ```bash
-make dev-api
 make r0-demo
 ```
 
-`make dev-api` listens on `127.0.0.1`. A non-loopback bind is rejected. `make r0-demo` needs the migrated database. It submits one synthetic goal, approves it, and prints the completed status. Each run uses a new idempotency key. That command is not `AOS-001-TC04`.
+For a browser review of a completed walkthrough:
+
+```bash
+make r0-review
+```
+
+Open **http://127.0.0.1:8870/** when the review link is printed. The page shows the observed goal, check verdicts, evidence hash, synthetic CLI approval receipts, and event history. It is a read-only snapshot; it does not perform new work or record owner acceptance. `make r0-review` stays in the foreground until Ctrl+C. An occupied review port is reported clearly; `python -m panestria.demo --review --review-port 8871` selects another port with the same environment configuration.
+
+Both walkthrough commands need the migrated database. They authenticate and reuse an API already running on port 8765, or start a temporary API when that port is free. They stop only the API they started. An unrelated listener or a different bearer token is refused before a goal is submitted. Each run has a fresh goal and idempotency keys. These commands are not `AOS-001-TC04`.
+
+`make dev-api` is optional: use it to keep the API running for direct CLI calls. It remains in the foreground until Ctrl+C; use a second terminal for the walkthrough. It binds only to loopback. The Make targets provide the synthetic database URL and token defaults. For direct Python invocations, export the names in `.env.example`; Panestria reads the process environment and does not load `.env` automatically.
 
 ## Checks
 

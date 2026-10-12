@@ -7,22 +7,32 @@ Requires a migrated PostgreSQL database and these environment variables:
 - ``PANESTRIA_SCHEMA_VERSION``, ``PANESTRIA_PROFILE``, ``PANESTRIA_BIND_HOST``,
   ``PANESTRIA_BIND_PORT``, and ``PANESTRIA_READINESS_BUDGET_MS``
 
-``make r0-demo`` starts the loopback server and drives submit, approval, evidence,
-and completion with the real CLI. Each run uses a new goal id and idempotency key.
-It does not claim a fresh-host result.
+``make r0-demo`` reuses an authenticated loopback server or starts its own,
+then drives submit, approval, evidence, and completion with the real CLI.
+``make r0-review`` also serves a read-only run snapshot for browser review.
+Each run uses a new goal id and idempotency key. It does not claim a fresh-host result.
 """
 
 from __future__ import annotations
 
+import argparse
+import http.client
 import json
 import os
 import subprocess
 import sys
 import tempfile
 import time
-import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
+
+from pydantic import ValidationError
+
+from panestria.api.health import Liveness
+from panestria.api.views import ApprovalList
+from panestria.config import ProfileRejected, load_settings
+from panestria.review import serve_report
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "docs" / "fixtures" / "synthetic-goal-contract.json"
@@ -59,8 +69,42 @@ def _wait_approval(base: str, token: str, goal_id: str) -> dict[str, object]:
     raise SystemExit(1)
 
 
-def main() -> None:
-    token = os.environ.get("PANESTRIA_TOKEN", "")
+def _get(base: str, path: str, token: str = "") -> object:
+    # http.client neither follows redirects nor consults proxy environment variables.
+    from urllib.parse import urlsplit
+
+    parts = urlsplit(base)
+    connection = http.client.HTTPConnection(str(parts.hostname), parts.port, timeout=2)
+    try:
+        connection.request("GET", path, headers={"Authorization": f"Bearer {token}"} if token else {})
+        response = connection.getresponse()
+        raw = response.read(65537)
+        if response.status != 200 or len(raw) > 65536:
+            raise ValueError("incompatible API")
+        return json.loads(raw)
+    finally:
+        connection.close()
+
+
+def _running_api(base: str, token: str) -> bool:
+    try:
+        health = _get(base, "/healthz")
+    except ConnectionRefusedError:
+        return False
+    except (OSError, ValueError, http.client.HTTPException):
+        raise SystemExit("api_port_in_use: the listener is not a compatible Panestria API") from None
+    try:
+        Liveness.model_validate(health)
+        ApprovalList.model_validate(_get(base, "/v1/approvals", token))
+    except (OSError, ValueError, ValidationError, http.client.HTTPException):
+        raise SystemExit(
+            "api_port_in_use: cannot authenticate the existing Panestria API; check PANESTRIA_TOKEN"
+        ) from None
+    return True
+
+
+def run_demo() -> dict[str, object]:
+    token = os.environ.pop("PANESTRIA_TOKEN", "")
     if os.environ.get("PANESTRIA_DATABASE_URL", "") == "" or len(token) < 16:
         sys.stderr.write("demo requires PANESTRIA_DATABASE_URL and PANESTRIA_TOKEN\n")
         raise SystemExit(2)
@@ -69,13 +113,27 @@ def main() -> None:
     os.environ.setdefault("PANESTRIA_BIND_HOST", "127.0.0.1")
     os.environ.setdefault("PANESTRIA_BIND_PORT", "8765")
     os.environ.setdefault("PANESTRIA_READINESS_BUDGET_MS", "1000")
-    os.environ.setdefault("PANESTRIA_SANDBOX", tempfile.mkdtemp(prefix="panestria-r0-"))
-    port = os.environ["PANESTRIA_BIND_PORT"]
-    base = f"http://127.0.0.1:{port}"
+    owner = os.environ.pop("PANESTRIA_OWNER_ID", "00000000-0000-4000-8000-000000000002")
+    project = os.environ.pop("PANESTRIA_PROJECT_ID", "00000000-0000-4000-8000-000000000003")
+    sandbox_setting = os.environ.pop("PANESTRIA_SANDBOX", "")
+    try:
+        settings = load_settings()
+    except ProfileRejected as exc:
+        sys.stderr.write(f"{exc.code}\n")
+        raise SystemExit(2) from None
+    if settings.bind_host != "127.0.0.1":
+        sys.stderr.write("invalid_bind: the demo CLI requires 127.0.0.1\n")
+        raise SystemExit(2)
+    base = f"http://127.0.0.1:{settings.bind_port}"
+    reused = _running_api(base, token)
+    sandbox = Path(sandbox_setting or tempfile.mkdtemp(prefix="panestria-r0-"))
+    sandbox.mkdir(parents=True, exist_ok=True)
     env = {
         key: value
         for key, value in os.environ.items()
-        if not key.startswith("PANESTRIA_") or key in {
+        if not key.startswith("PANESTRIA_")
+        or key
+        in {
             "PANESTRIA_SCHEMA_VERSION",
             "PANESTRIA_PROFILE",
             "PANESTRIA_BIND_HOST",
@@ -88,30 +146,38 @@ def main() -> None:
             "PANESTRIA_SANDBOX",
         }
     }
-    server = subprocess.Popen(
-        [sys.executable, "-m", "panestria.api.serve"],
-        cwd=ROOT,
-        env=env,
+    env.update(
+        PANESTRIA_TOKEN=token, PANESTRIA_OWNER_ID=owner, PANESTRIA_PROJECT_ID=project, PANESTRIA_SANDBOX=str(sandbox)
     )
+    server = (
+        None
+        if reused
+        else subprocess.Popen(
+            [sys.executable, "-m", "panestria.api.serve"],
+            cwd=ROOT,
+            env=env,
+        )
+    )
+    sys.stderr.write("Reusing the running Panestria API.\n" if reused else "Starting a temporary Panestria API.\n")
     try:
-        deadline = time.monotonic() + 15
-        while time.monotonic() < deadline:
-            if server.poll() is not None:
-                sys.stderr.write("server exited before it accepted connections\n")
-                raise SystemExit(1)
-            try:
-                with urllib.request.urlopen(f"{base}/healthz", timeout=1) as response:
-                    if response.status == 200:
-                        break
-            except OSError:
+        if server is not None:
+            deadline = time.monotonic() + 15
+            while time.monotonic() < deadline:
+                if server.poll() is not None:
+                    sys.stderr.write("server exited before it accepted connections\n")
+                    raise SystemExit(1)
+                if _running_api(base, token):
+                    break
                 time.sleep(0.1)
-        else:
-            sys.stderr.write("server did not become live\n")
-            raise SystemExit(1)
+            else:
+                sys.stderr.write("server did not become live\n")
+                raise SystemExit(1)
         document = json.loads(FIXTURE.read_text())
         document["goal_id"] = str(uuid4())
+        document["owner_id"] = owner
+        document["project_id"] = project
         demo_key = str(document["goal_id"])
-        contract = Path(os.environ["PANESTRIA_SANDBOX"]) / "contract.json"
+        contract = sandbox / f"contract-{demo_key}.json"
         contract.write_text(json.dumps(document))
         submitted = _cli(
             base,
@@ -125,7 +191,7 @@ def main() -> None:
         )
         goal_id = str(submitted["goal_id"])
         consent = _wait_approval(base, token, goal_id)
-        _cli(
+        consent_receipt = _cli(
             base,
             token,
             "approve",
@@ -141,14 +207,12 @@ def main() -> None:
         events = _cli(base, token, "goal", "events", goal_id)
         raw_events = events.get("events")
         event_rows = raw_events if isinstance(raw_events, list) else []
-        recorded = [
-            item for item in event_rows if isinstance(item, dict) and item.get("kind") == "evidence.recorded"
-        ]
-        if recorded:
-            payload = recorded[-1].get("payload")
-            if isinstance(payload, dict) and isinstance(payload.get("artifact_id"), str):
-                _cli(base, token, "artifact", "show", payload["artifact_id"])
-        _cli(
+        recorded = [item for item in event_rows if isinstance(item, dict) and item.get("kind") == "evidence.recorded"]
+        payload = recorded[-1].get("payload") if recorded else None
+        if not isinstance(payload, dict) or not isinstance(payload.get("artifact_id"), str):
+            raise SystemExit("missing_evidence: demo will not approve a merge without its artifact")
+        artifact = _cli(base, token, "artifact", "show", payload["artifact_id"])
+        merge_receipt = _cli(
             base,
             token,
             "approve",
@@ -164,17 +228,57 @@ def main() -> None:
         while time.monotonic() < finished:
             status = _cli(base, token, "goal", "status", goal_id)
             if status.get("status") == "COMPLETED":
-                sys.stdout.write(json.dumps(status) + "\n")
-                return
+                source = subprocess.run(
+                    ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True
+                ).stdout.strip()
+                dirty = bool(
+                    subprocess.run(
+                        ["git", "status", "--porcelain"], cwd=ROOT, capture_output=True, text=True, check=True
+                    ).stdout.strip()
+                )
+                report: dict[str, object] = {
+                    "status": status,
+                    "artifact": artifact,
+                    "approvals": [
+                        {"label": "Contract consent", "request": consent, "receipt": consent_receipt},
+                        {"label": "Synthetic merge", "request": merge, "receipt": merge_receipt},
+                    ],
+                    "events": _cli(base, token, "goal", "events", goal_id),
+                    "base_url": base,
+                    "api_reused": reused,
+                    "source_commit": source,
+                    "source_worktree_dirty": dirty,
+                    "observed_at": datetime.now(timezone.utc).isoformat(),
+                }
+                report_path = sandbox / f"review-{demo_key}.json"
+                report_path.write_text(json.dumps(report, indent=2) + "\n")
+                sys.stderr.write(f"Run receipt: {report_path}\n")
+                return report
             time.sleep(0.5)
         sys.stderr.write("goal did not complete\n")
         raise SystemExit(1)
     finally:
-        server.terminate()
-        try:
-            server.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            server.kill()
+        if server is not None:
+            server.terminate()
+            try:
+                server.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                server.kill()
+                server.wait(timeout=5)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Run the synthetic R0 CLI journey.")
+    parser.add_argument("--review", action="store_true", help="serve a read-only run snapshot afterward")
+    parser.add_argument("--review-port", type=int, default=8870)
+    args = parser.parse_args()
+    if not 1 <= args.review_port <= 65535:
+        parser.error("review port must be between 1 and 65535")
+    report = run_demo()
+    sys.stdout.write(json.dumps(report["status"]) + "\n")
+    sys.stdout.flush()
+    if args.review:
+        serve_report(report, args.review_port)
 
 
 if __name__ == "__main__":
