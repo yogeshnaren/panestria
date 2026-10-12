@@ -1,0 +1,10 @@
+{
+  "source_id": "00000000-0000-4000-8000-000000000007",
+  "text_sha256": "8436d7eb57ce8e93f44e006402a25f78296bafc022330051e45db2463d7fa34f",
+  "extractor_version": "synthetic-text-nfc-v1",
+  "offset_unit": "utf8-byte",
+  "start_offset": 18,
+  "end_offset": 41,
+  "quote": "Café uses Python 3.12.",
+  "note": "Synthetic retained source only; no live fetch is claimed."
+}

@@ -1,0 +1,36 @@
+[project]
+name = "panestria"
+version = "0.0.0"
+description = "Local synthetic-first operating system for scoped agent work."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{ name = "Yogesh Naren Bundey" }]
+dependencies = [
+  "fastapi",
+  "pydantic>=2",
+  "pydantic-settings>=2",
+  "typer>=0.12",
+]
+
+[project.scripts]
+panestria = "panestria.cli.main:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+  "httpx2",
+  "pytest",
+]
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers"
+junit_family = "xunit1"
+testpaths = ["tests"]
+markers = [
+  "unit: hermetic unit lane",
+  "live: live lane; not part of the default synthetic run",
+]

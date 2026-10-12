@@ -1,0 +1,372 @@
+[
+  {
+    "preset": "lite-16gb",
+    "exit_code": 0,
+    "simulated": true,
+    "assignments": [
+      {
+        "role": "steward",
+        "model": "qwen3:4b",
+        "placement": "cpu",
+        "est_mem_gb": 3.6,
+        "est_tps": 12.7,
+        "measured_tps": null,
+        "ctx": 8192,
+        "degraded": true,
+        "reason": "tier 2, fits cpu, ~13 tok/s (below the 25 tok/s target)"
+      },
+      {
+        "role": "embedder",
+        "model": "qwen3-embedding:0.6b",
+        "placement": "cpu",
+        "est_mem_gb": 0.8,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "runs on CPU"
+      },
+      {
+        "role": "stt",
+        "model": "whisper-small",
+        "placement": "cpu",
+        "est_mem_gb": 0.7,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "runs on CPU"
+      },
+      {
+        "role": "heavy",
+        "model": null,
+        "placement": "none",
+        "est_mem_gb": 0.0,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "nothing stronger than the steward fits; heavy work goes to the cloud or waits"
+      },
+      {
+        "role": "+coding",
+        "model": null,
+        "placement": "none",
+        "est_mem_gb": 0.0,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "too slow or too large here; use a cloud route"
+      },
+      {
+        "role": "+tts",
+        "model": "kokoro-82m",
+        "placement": "cpu",
+        "est_mem_gb": 0.5,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "kokoro"
+      }
+    ],
+    "restricted_capability": "triage only: Restricted work is queued or refused, never sent"
+  },
+  {
+    "preset": "omen-8gb",
+    "exit_code": 0,
+    "simulated": true,
+    "assignments": [
+      {
+        "role": "steward",
+        "model": "qwen3:8b",
+        "placement": "gpu",
+        "est_mem_gb": 6.2,
+        "est_tps": 27.1,
+        "measured_tps": null,
+        "ctx": 8192,
+        "degraded": false,
+        "reason": "tier 3, fits gpu, ~27 tok/s"
+      },
+      {
+        "role": "embedder",
+        "model": "qwen3-embedding:0.6b",
+        "placement": "cpu",
+        "est_mem_gb": 0.8,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "runs on CPU"
+      },
+      {
+        "role": "stt",
+        "model": "whisper-small",
+        "placement": "cpu",
+        "est_mem_gb": 0.7,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "runs on CPU"
+      },
+      {
+        "role": "heavy",
+        "model": "qwen3:30b-a3b",
+        "placement": "offload",
+        "est_mem_gb": 19.8,
+        "est_tps": 16.7,
+        "measured_tps": null,
+        "ctx": 16384,
+        "degraded": false,
+        "reason": "tier 5, fits offload, ~17 tok/s"
+      },
+      {
+        "role": "+coding",
+        "model": "qwen3-coder:30b",
+        "placement": "offload",
+        "est_mem_gb": 20.6,
+        "est_tps": 16.6,
+        "measured_tps": null,
+        "ctx": 32768,
+        "degraded": false,
+        "reason": "fits offload"
+      },
+      {
+        "role": "+tts",
+        "model": "kokoro-82m",
+        "placement": "cpu",
+        "est_mem_gb": 0.5,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "kokoro"
+      }
+    ],
+    "restricted_capability": "reduced: Restricted coding and planning run locally, slower and weaker than frontier"
+  },
+  {
+    "preset": "omen-12gb",
+    "exit_code": 0,
+    "simulated": true,
+    "assignments": [
+      {
+        "role": "steward",
+        "model": "qwen3:14b",
+        "placement": "gpu",
+        "est_mem_gb": 10.4,
+        "est_tps": 25.5,
+        "measured_tps": null,
+        "ctx": 8192,
+        "degraded": false,
+        "reason": "tier 4, fits gpu, ~26 tok/s"
+      },
+      {
+        "role": "embedder",
+        "model": "qwen3-embedding:0.6b",
+        "placement": "cpu",
+        "est_mem_gb": 0.8,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "runs on CPU"
+      },
+      {
+        "role": "stt",
+        "model": "whisper-small",
+        "placement": "cpu",
+        "est_mem_gb": 0.7,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "runs on CPU"
+      },
+      {
+        "role": "heavy",
+        "model": "qwen3:30b-a3b",
+        "placement": "offload",
+        "est_mem_gb": 19.8,
+        "est_tps": 16.5,
+        "measured_tps": null,
+        "ctx": 16384,
+        "degraded": false,
+        "reason": "tier 5, fits offload, ~17 tok/s"
+      },
+      {
+        "role": "+coding",
+        "model": "qwen3-coder:30b",
+        "placement": "offload",
+        "est_mem_gb": 20.6,
+        "est_tps": 16.5,
+        "measured_tps": null,
+        "ctx": 32768,
+        "degraded": false,
+        "reason": "fits offload"
+      },
+      {
+        "role": "+tts",
+        "model": "kokoro-82m",
+        "placement": "cpu",
+        "est_mem_gb": 0.5,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "kokoro"
+      }
+    ],
+    "restricted_capability": "reduced: Restricted coding and planning run locally, slower and weaker than frontier"
+  },
+  {
+    "preset": "omen-16gb",
+    "exit_code": 0,
+    "simulated": true,
+    "assignments": [
+      {
+        "role": "steward",
+        "model": "gpt-oss:20b",
+        "placement": "gpu",
+        "est_mem_gb": 13.6,
+        "est_tps": 142.2,
+        "measured_tps": null,
+        "ctx": 8192,
+        "degraded": false,
+        "reason": "tier 4, fits gpu, ~142 tok/s"
+      },
+      {
+        "role": "embedder",
+        "model": "qwen3-embedding:0.6b",
+        "placement": "gpu",
+        "est_mem_gb": 0.8,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "fits on accelerator"
+      },
+      {
+        "role": "stt",
+        "model": "whisper-small",
+        "placement": "cpu",
+        "est_mem_gb": 0.7,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "runs on CPU"
+      },
+      {
+        "role": "heavy",
+        "model": "qwen3:30b-a3b",
+        "placement": "offload",
+        "est_mem_gb": 19.8,
+        "est_tps": 17.2,
+        "measured_tps": null,
+        "ctx": 16384,
+        "degraded": false,
+        "reason": "tier 5, fits offload, ~17 tok/s"
+      },
+      {
+        "role": "+coding",
+        "model": "qwen3-coder:30b",
+        "placement": "offload",
+        "est_mem_gb": 20.6,
+        "est_tps": 17.1,
+        "measured_tps": null,
+        "ctx": 32768,
+        "degraded": false,
+        "reason": "fits offload"
+      },
+      {
+        "role": "+tts",
+        "model": "kokoro-82m",
+        "placement": "gpu",
+        "est_mem_gb": 0.5,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "kokoro"
+      }
+    ],
+    "restricted_capability": "reduced: Restricted coding and planning run locally, slower and weaker than frontier"
+  },
+  {
+    "preset": "mac-studio-512",
+    "exit_code": 0,
+    "simulated": true,
+    "assignments": [
+      {
+        "role": "steward",
+        "model": "qwen3:30b-a3b",
+        "placement": "unified",
+        "est_mem_gb": 19.4,
+        "est_tps": 328.0,
+        "measured_tps": null,
+        "ctx": 8192,
+        "degraded": false,
+        "reason": "tier 5, fits unified, ~328 tok/s"
+      },
+      {
+        "role": "embedder",
+        "model": "qwen3-embedding:8b",
+        "placement": "unified",
+        "est_mem_gb": 4.9,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "fits on accelerator"
+      },
+      {
+        "role": "stt",
+        "model": "whisper-large-v3-turbo",
+        "placement": "unified",
+        "est_mem_gb": 1.8,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "fits on accelerator"
+      },
+      {
+        "role": "heavy",
+        "model": "qwen3:235b-a22b",
+        "placement": "unified",
+        "est_mem_gb": 144.0,
+        "est_tps": 49.6,
+        "measured_tps": null,
+        "ctx": 16384,
+        "degraded": false,
+        "reason": "tier 7, fits unified, ~50 tok/s"
+      },
+      {
+        "role": "+coding",
+        "model": "qwen3-coder:30b",
+        "placement": "unified",
+        "est_mem_gb": 20.6,
+        "est_tps": 328.0,
+        "measured_tps": null,
+        "ctx": 32768,
+        "degraded": false,
+        "reason": "fits unified"
+      },
+      {
+        "role": "+tts",
+        "model": "kokoro-82m",
+        "placement": "unified",
+        "est_mem_gb": 0.5,
+        "est_tps": null,
+        "measured_tps": null,
+        "ctx": null,
+        "degraded": false,
+        "reason": "kokoro"
+      }
+    ],
+    "restricted_capability": "full: Restricted planning and coding run locally"
+  }
+]

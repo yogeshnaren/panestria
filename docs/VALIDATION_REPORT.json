@@ -1,0 +1,29 @@
+{
+  "scope": "R0-R3",
+  "aos_item_plans": 31,
+  "coding_slices": 93,
+  "planned_scenario_groups": 124,
+  "source_requirement_rows": 216,
+  "live_scenario_groups": 18,
+  "local_links_checked": 843,
+  "schema_files_validated": 4,
+  "schema_negative_cases_rejected": 8,
+  "synthetic_utf8_hash_offset_fixture_valid": true,
+  "dependency_order_valid": true,
+  "requirement_id_references_valid": true,
+  "original_specification_bytes_preserved": true,
+  "sql_blueprint_unique_tables": 48,
+  "sql_blueprint_referenced_tables_exist": true,
+  "sql_syntax_or_execution_validated": false,
+  "cursor_rule_frontmatter_valid": true,
+  "application_runtime_tests_run": false,
+  "provider_calls_run": false,
+  "mvp_state": "NOT_STARTED",
+  "sota_authorized": false,
+  "limitations": [
+    "SQL blueprint not syntax-parsed/applied to PostgreSQL",
+    "Scenario catalog/traceability is planned coverage, not actual assertion execution",
+    "Live OS/native credential isolation/provider auth/hardware/support calibration need implementing spikes",
+    "No source code/commits pushed to GitHub"
+  ]
+}

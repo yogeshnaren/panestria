@@ -1,0 +1,16 @@
+{
+  "case_id": "AOS-030-TC04",
+  "candidate_commit": "4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917",
+  "environment_manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "lane": "live",
+  "execution_mode": "HERMETIC",
+  "verdict": "NOT_RUN",
+  "command": [
+    "planned",
+    "owner-trial"
+  ],
+  "exit_code": null,
+  "report_artifact_ref": null,
+  "fixture_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "observed_at": "2026-10-11T00:00:00Z"
+}

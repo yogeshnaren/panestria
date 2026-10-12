@@ -1,0 +1,3894 @@
+{
+  "schema_version": 1,
+  "status": "DESIGN_MAPPING_NOT_RUNTIME_PROOF",
+  "requirements": [
+    {
+      "id": "AOS-001-F01",
+      "aos_id": "AOS-001",
+      "source_kind": "F",
+      "source_clause": "Use one Python 3.12+ distribution managed by `uv`, one `pyproject.toml`/lockfile and `src/agentos/` with `contracts`, `kernel`, `execution`, `brokers`, `policy`, `resources`, `memory`, `telemetry`, `verification`, `api` and `cli` sub-packages; reserve `apps/mission-control` for React/Vite later but do not require Node to execute the R0 API tests.",
+      "slice_ids": [
+        "AOS-001-S1",
+        "AOS-001-S2",
+        "AOS-001-S3"
+      ],
+      "case_ids": [
+        "AOS-001-TC01",
+        "AOS-001-TC02",
+        "AOS-001-TC03",
+        "AOS-001-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-001-F02",
+      "aos_id": "AOS-001",
+      "source_kind": "F",
+      "source_clause": "Pin Python/Node dependencies, create `pyproject.toml`, lint/type/test commands, Alembic location, `.env.example` containing *only placeholders*, Docker Compose PostgreSQL with health check and persistent named volume.",
+      "slice_ids": [
+        "AOS-001-S1",
+        "AOS-001-S2",
+        "AOS-001-S3"
+      ],
+      "case_ids": [
+        "AOS-001-TC01",
+        "AOS-001-TC02",
+        "AOS-001-TC03",
+        "AOS-001-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-001-F03",
+      "aos_id": "AOS-001",
+      "source_kind": "F",
+      "source_clause": "Document environment variable names, process modes, deterministic seeded synthetic project, local-only service binding, `make`/`just` commands and an offline dependency-cache strategy. No runtime arbitrary `pip install`.",
+      "slice_ids": [
+        "AOS-001-S1",
+        "AOS-001-S2",
+        "AOS-001-S3"
+      ],
+      "case_ids": [
+        "AOS-001-TC01",
+        "AOS-001-TC02",
+        "AOS-001-TC03",
+        "AOS-001-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-001-F04",
+      "aos_id": "AOS-001",
+      "source_kind": "F",
+      "source_clause": "CI runs Ruff, Mypy, Import Linter boundary checks, unit and migration smoke tests; integration tests start an ephemeral DB and detect schema drift. Protect repo scripts from unreviewed auto-execution.",
+      "slice_ids": [
+        "AOS-001-S1",
+        "AOS-001-S2",
+        "AOS-001-S3"
+      ],
+      "case_ids": [
+        "AOS-001-TC01",
+        "AOS-001-TC02",
+        "AOS-001-TC03",
+        "AOS-001-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-001-AC01",
+      "aos_id": "AOS-001",
+      "source_kind": "AC",
+      "source_clause": "Fresh Ubuntu VM bootstraps from clean checkout using documented commands.",
+      "slice_ids": [
+        "AOS-001-S1",
+        "AOS-001-S2",
+        "AOS-001-S3"
+      ],
+      "case_ids": [
+        "AOS-001-TC01",
+        "AOS-001-TC02",
+        "AOS-001-TC03",
+        "AOS-001-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-001-AC02",
+      "aos_id": "AOS-001",
+      "source_kind": "AC",
+      "source_clause": "CI enforces Ruff, MyPy, Pytest, dependency-lock reproducibility and basic secret scanner; unit tests run without provider credentials.",
+      "slice_ids": [
+        "AOS-001-S1",
+        "AOS-001-S2",
+        "AOS-001-S3"
+      ],
+      "case_ids": [
+        "AOS-001-TC01",
+        "AOS-001-TC02",
+        "AOS-001-TC03",
+        "AOS-001-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-001-AC03",
+      "aos_id": "AOS-001",
+      "source_kind": "AC",
+      "source_clause": "PostgreSQL service is healthy and migration check returns zero; API inaccessible from non-loopback interface; no unexpected egress during smoke test.",
+      "slice_ids": [
+        "AOS-001-S1",
+        "AOS-001-S2",
+        "AOS-001-S3"
+      ],
+      "case_ids": [
+        "AOS-001-TC01",
+        "AOS-001-TC02",
+        "AOS-001-TC03",
+        "AOS-001-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-001-AC04",
+      "aos_id": "AOS-001",
+      "source_kind": "AC",
+      "source_clause": "Failing lint/test/prohibited dependency injection makes CI fail; no real keys in commit, build image or logs.",
+      "slice_ids": [
+        "AOS-001-S1",
+        "AOS-001-S2",
+        "AOS-001-S3"
+      ],
+      "case_ids": [
+        "AOS-001-TC01",
+        "AOS-001-TC02",
+        "AOS-001-TC03",
+        "AOS-001-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-002-F01",
+      "aos_id": "AOS-002",
+      "source_kind": "F",
+      "source_clause": "Implement Pydantic v2 models for principal/project/goal/GoalContractVersion/task/task dependency/attempt/check and artifact/approval IDs, normalizing UTC timestamps and rejecting unknown unsafe fields.",
+      "slice_ids": [
+        "AOS-002-S1",
+        "AOS-002-S2",
+        "AOS-002-S3"
+      ],
+      "case_ids": [
+        "AOS-002-TC01",
+        "AOS-002-TC02",
+        "AOS-002-TC03",
+        "AOS-002-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-002-F02",
+      "aos_id": "AOS-002",
+      "source_kind": "F",
+      "source_clause": "Create Alembic migration for R0 entities in `01-CANONICAL-DATA-AND-API-CONTRACTS.md` with typed constraints, indexes, foreign keys, unique `(goal_id, version)` and guarded state transitions. Use one transaction to write state plus canonical event.",
+      "slice_ids": [
+        "AOS-002-S1",
+        "AOS-002-S2",
+        "AOS-002-S3"
+      ],
+      "case_ids": [
+        "AOS-002-TC01",
+        "AOS-002-TC02",
+        "AOS-002-TC03",
+        "AOS-002-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-002-F03",
+      "aos_id": "AOS-002",
+      "source_kind": "F",
+      "source_clause": "Convert narrative acceptance lines into typed verifier nodes from the seven-value canonical registry and discriminated schema in `contracts/`; R0 implements the five R0 types, while R2 runners fail admission until installed and approved; never accept worker-supplied shell as a trusted verifier.",
+      "slice_ids": [
+        "AOS-002-S1",
+        "AOS-002-S2",
+        "AOS-002-S3"
+      ],
+      "case_ids": [
+        "AOS-002-TC01",
+        "AOS-002-TC02",
+        "AOS-002-TC03",
+        "AOS-002-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-002-F04",
+      "aos_id": "AOS-002",
+      "source_kind": "F",
+      "source_clause": "Implement deterministic contract hash via canonical serialization; revision creates a new version and invalidates approval tied to prior digest. DAG validation rejects cycles, self-links and unauthorized project references.",
+      "slice_ids": [
+        "AOS-002-S1",
+        "AOS-002-S2",
+        "AOS-002-S3"
+      ],
+      "case_ids": [
+        "AOS-002-TC01",
+        "AOS-002-TC02",
+        "AOS-002-TC03",
+        "AOS-002-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-002-AC01",
+      "aos_id": "AOS-002",
+      "source_kind": "AC",
+      "source_clause": "Roundtrip schema and canonical hash property tests; immutable approved version refuses UPDATE; foreign-owner access returns denial.",
+      "slice_ids": [
+        "AOS-002-S1",
+        "AOS-002-S2",
+        "AOS-002-S3"
+      ],
+      "case_ids": [
+        "AOS-002-TC01",
+        "AOS-002-TC02",
+        "AOS-002-TC03",
+        "AOS-002-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-002-AC02",
+      "aos_id": "AOS-002",
+      "source_kind": "AC",
+      "source_clause": "Concurrent updates same expected version: exactly one wins. DAG cycles and malformed verifier nodes fail admission. Missing/UNKNOWN required check blocks completion.",
+      "slice_ids": [
+        "AOS-002-S1",
+        "AOS-002-S2",
+        "AOS-002-S3"
+      ],
+      "case_ids": [
+        "AOS-002-TC01",
+        "AOS-002-TC02",
+        "AOS-002-TC03",
+        "AOS-002-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-002-AC03",
+      "aos_id": "AOS-002",
+      "source_kind": "AC",
+      "source_clause": "Migration applies to empty DB, rejects invalid constraints; documented restore drill; error payloads do not leak private root.",
+      "slice_ids": [
+        "AOS-002-S1",
+        "AOS-002-S2",
+        "AOS-002-S3"
+      ],
+      "case_ids": [
+        "AOS-002-TC01",
+        "AOS-002-TC02",
+        "AOS-002-TC03",
+        "AOS-002-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-003-F01",
+      "aos_id": "AOS-003",
+      "source_kind": "F",
+      "source_clause": "Implement a `run_task_workflow(task_id, contract_hash)` whose *workflow body remains replay-deterministic*. All time, random IDs, database I/O, worker spawn, and network calls occur in separately checkpointed steps/transactions.",
+      "slice_ids": [
+        "AOS-003-S1",
+        "AOS-003-S2",
+        "AOS-003-S3"
+      ],
+      "case_ids": [
+        "AOS-003-TC01",
+        "AOS-003-TC02",
+        "AOS-003-TC03",
+        "AOS-003-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-003-F02",
+      "aos_id": "AOS-003",
+      "source_kind": "F",
+      "source_clause": "Persist a stable DBOS workflow ID tied to goal/task; repeated start by same key returns prior handle or deliberate conflict. Workflow only runs an authorized current contract version. Use separate schemas in one PostgreSQL database; one datasource transaction/session commits task state, event and durable result. DBOS owns its internal tables.",
+      "slice_ids": [
+        "AOS-003-S1",
+        "AOS-003-S2",
+        "AOS-003-S3"
+      ],
+      "case_ids": [
+        "AOS-003-TC01",
+        "AOS-003-TC02",
+        "AOS-003-TC03",
+        "AOS-003-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-003-F03",
+      "aos_id": "AOS-003",
+      "source_kind": "F",
+      "source_clause": "Implement explicit `CREATED→VALIDATING→READY→LEASED→RUNNING→VERIFYING→COMPLETED` happy path and terminal/error states. Add controlled pause, cancellation requested, retry-wait and reconciliation states as modeled; R0 mock activity never uses real external side effects.",
+      "slice_ids": [
+        "AOS-003-S1",
+        "AOS-003-S2",
+        "AOS-003-S3"
+      ],
+      "case_ids": [
+        "AOS-003-TC01",
+        "AOS-003-TC02",
+        "AOS-003-TC03",
+        "AOS-003-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-003-F04",
+      "aos_id": "AOS-003",
+      "source_kind": "F",
+      "source_clause": "At process startup create/migrate the approved datasource before DBOS.launch, then use DBOS recovery; read authoritative task state from the same database; do not falsely mark a process gone as completed.",
+      "slice_ids": [
+        "AOS-003-S1",
+        "AOS-003-S2",
+        "AOS-003-S3"
+      ],
+      "case_ids": [
+        "AOS-003-TC01",
+        "AOS-003-TC02",
+        "AOS-003-TC03",
+        "AOS-003-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-003-AC01",
+      "aos_id": "AOS-003",
+      "source_kind": "AC",
+      "source_clause": "Kill server before transaction commit, after the atomic transaction commit but before the workflow observes its return, and after a non-database step checkpoint; restart and assert final task result and monotonic event stream.",
+      "slice_ids": [
+        "AOS-003-S1",
+        "AOS-003-S2",
+        "AOS-003-S3"
+      ],
+      "case_ids": [
+        "AOS-003-TC01",
+        "AOS-003-TC02",
+        "AOS-003-TC03",
+        "AOS-003-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-003-AC02",
+      "aos_id": "AOS-003",
+      "source_kind": "AC",
+      "source_clause": "Two concurrent duplicate submissions with same idempotency key produce one logical task; no double artifact. Non-deterministic workflow body test catches bad pattern.",
+      "slice_ids": [
+        "AOS-003-S1",
+        "AOS-003-S2",
+        "AOS-003-S3"
+      ],
+      "case_ids": [
+        "AOS-003-TC01",
+        "AOS-003-TC02",
+        "AOS-003-TC03",
+        "AOS-003-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-003-AC03",
+      "aos_id": "AOS-003",
+      "source_kind": "AC",
+      "source_clause": "Database unavailable: no speculative state transitions; recover cleanly on reconnect. Uncaught terminal exception becomes FAILED and remains inspectable rather than silently restarting forever.",
+      "slice_ids": [
+        "AOS-003-S1",
+        "AOS-003-S2",
+        "AOS-003-S3"
+      ],
+      "case_ids": [
+        "AOS-003-TC01",
+        "AOS-003-TC02",
+        "AOS-003-TC03",
+        "AOS-003-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-004-F01",
+      "aos_id": "AOS-004",
+      "source_kind": "F",
+      "source_clause": "Implement WorkerAdapter Protocol `capabilities/validate/start/events/observe/cancel/collect` and a mock adapter with scripted progress, delay, failure and crash modes.",
+      "slice_ids": [
+        "AOS-004-S1",
+        "AOS-004-S2",
+        "AOS-004-S3"
+      ],
+      "case_ids": [
+        "AOS-004-TC01",
+        "AOS-004-TC02",
+        "AOS-004-TC03",
+        "AOS-004-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-004-F02",
+      "aos_id": "AOS-004",
+      "source_kind": "F",
+      "source_clause": "Construct a toy Git repository in a temporary root with known initial commit; create a per-attempt `git worktree` under a sandbox-controlled directory, never at user-supplied absolute paths. Do not represent a worktree as a security boundary: R0 is mock-only and has no secrets/network credentials.",
+      "slice_ids": [
+        "AOS-004-S1",
+        "AOS-004-S2",
+        "AOS-004-S3"
+      ],
+      "case_ids": [
+        "AOS-004-TC01",
+        "AOS-004-TC02",
+        "AOS-004-TC03",
+        "AOS-004-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-004-F03",
+      "aos_id": "AOS-004",
+      "source_kind": "F",
+      "source_clause": "Trusted test commands reference a reviewed command registry with fixed arguments; capture stdout/stderr with byte limit and timeout. Produce diff path report, test report, artifact hashes and provenance; atomically publish artifacts only for current attempt epoch.",
+      "slice_ids": [
+        "AOS-004-S1",
+        "AOS-004-S2",
+        "AOS-004-S3"
+      ],
+      "case_ids": [
+        "AOS-004-TC01",
+        "AOS-004-TC02",
+        "AOS-004-TC03",
+        "AOS-004-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-004-F04",
+      "aos_id": "AOS-004",
+      "source_kind": "F",
+      "source_clause": "A result is accepted iff all required typed acceptance verifiers PASS; worker narrative does not override failing deterministic checks.",
+      "slice_ids": [
+        "AOS-004-S1",
+        "AOS-004-S2",
+        "AOS-004-S3"
+      ],
+      "case_ids": [
+        "AOS-004-TC01",
+        "AOS-004-TC02",
+        "AOS-004-TC03",
+        "AOS-004-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-004-AC01",
+      "aos_id": "AOS-004",
+      "source_kind": "AC",
+      "source_clause": "Synthetic success produces one modified allowed file, a test PASS and immutable diff with matching hashes.",
+      "slice_ids": [
+        "AOS-004-S1",
+        "AOS-004-S2",
+        "AOS-004-S3"
+      ],
+      "case_ids": [
+        "AOS-004-TC01",
+        "AOS-004-TC02",
+        "AOS-004-TC03",
+        "AOS-004-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-004-AC02",
+      "aos_id": "AOS-004",
+      "source_kind": "AC",
+      "source_clause": "Failing test, path outside allowlist, symlink escape and timeout never yield COMPLETED. Stale epoch cannot publish candidate artifact.",
+      "slice_ids": [
+        "AOS-004-S1",
+        "AOS-004-S2",
+        "AOS-004-S3"
+      ],
+      "case_ids": [
+        "AOS-004-TC01",
+        "AOS-004-TC02",
+        "AOS-004-TC03",
+        "AOS-004-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-004-AC03",
+      "aos_id": "AOS-004",
+      "source_kind": "AC",
+      "source_clause": "Cancel a hung mock process: task reports cancellation request and actual termination state distinctly. Rerun same seeded fixture yields deterministic acceptance verdict.",
+      "slice_ids": [
+        "AOS-004-S1",
+        "AOS-004-S2",
+        "AOS-004-S3"
+      ],
+      "case_ids": [
+        "AOS-004-TC01",
+        "AOS-004-TC02",
+        "AOS-004-TC03",
+        "AOS-004-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-005-F01",
+      "aos_id": "AOS-005",
+      "source_kind": "F",
+      "source_clause": "FastAPI endpoints `/v1/goals`, `/v1/goals/{id}`, `/v1/goals/{id}/events`, `/v1/artifacts/{id}`, `/v1/approvals`, `/v1/approvals/{id}/decision`, `/v1/goals/{id}/cancel`, plus loopback-only health.",
+      "slice_ids": [
+        "AOS-005-S1",
+        "AOS-005-S2",
+        "AOS-005-S3"
+      ],
+      "case_ids": [
+        "AOS-005-TC01",
+        "AOS-005-TC02",
+        "AOS-005-TC03",
+        "AOS-005-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-005-F02",
+      "aos_id": "AOS-005",
+      "source_kind": "F",
+      "source_clause": "CLI: `agentos goal submit --contract path.yaml`, `goal status`, `goal events`, `approve <id>`, `deny <id>`, `artifact show`, `goal cancel`, `r0-demo`. CLI accepts explicit goal id and prints artifact hashes and check verdicts, never hidden approvals.",
+      "slice_ids": [
+        "AOS-005-S1",
+        "AOS-005-S2",
+        "AOS-005-S3"
+      ],
+      "case_ids": [
+        "AOS-005-TC01",
+        "AOS-005-TC02",
+        "AOS-005-TC03",
+        "AOS-005-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-005-F03",
+      "aos_id": "AOS-005",
+      "source_kind": "F",
+      "source_clause": "Approval binds exact action kind, effect_digest, owner/project, policy version and expiration. Deduplicate decisions; rejected/expired approvals do not execute. The approval UI is terminal-first for R0; web can be a read-only minimal view.",
+      "slice_ids": [
+        "AOS-005-S1",
+        "AOS-005-S2",
+        "AOS-005-S3"
+      ],
+      "case_ids": [
+        "AOS-005-TC01",
+        "AOS-005-TC02",
+        "AOS-005-TC03",
+        "AOS-005-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-005-F04",
+      "aos_id": "AOS-005",
+      "source_kind": "F",
+      "source_clause": "Persist event cursors for replay; HTTP local auth must be sufficient to prevent arbitrary local processes and browser-origin attacks, hardened further by AOS-009 before real access.",
+      "slice_ids": [
+        "AOS-005-S1",
+        "AOS-005-S2",
+        "AOS-005-S3"
+      ],
+      "case_ids": [
+        "AOS-005-TC01",
+        "AOS-005-TC02",
+        "AOS-005-TC03",
+        "AOS-005-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-005-AC01",
+      "aos_id": "AOS-005",
+      "source_kind": "AC",
+      "source_clause": "A fresh environment runs `make r0-demo`; CLI creates goal, shows RUNNING, returns verifier result, requests approval, and moves to COMPLETED only after approved synthetic action.",
+      "slice_ids": [
+        "AOS-005-S1",
+        "AOS-005-S2",
+        "AOS-005-S3"
+      ],
+      "case_ids": [
+        "AOS-005-TC01",
+        "AOS-005-TC02",
+        "AOS-005-TC03",
+        "AOS-005-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-005-AC02",
+      "aos_id": "AOS-005",
+      "source_kind": "AC",
+      "source_clause": "Kill API before approval, restart, decide once: exact action executes once in mock; altered effect_digest/expired request denied. Wrong project/owner/task linkage fails the database constraints and service guards; an unauthorized minimum actor cannot decide or consume the request.",
+      "slice_ids": [
+        "AOS-005-S1",
+        "AOS-005-S2",
+        "AOS-005-S3"
+      ],
+      "case_ids": [
+        "AOS-005-TC01",
+        "AOS-005-TC02",
+        "AOS-005-TC03",
+        "AOS-005-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-005-AC03",
+      "aos_id": "AOS-005",
+      "source_kind": "AC",
+      "source_clause": "HTTP from unauthorized origin and wrong Host denied in basic test; AOS-009 later completes browser/DNS rebinding adversarial matrix.",
+      "slice_ids": [
+        "AOS-005-S1",
+        "AOS-005-S2",
+        "AOS-005-S3"
+      ],
+      "case_ids": [
+        "AOS-005-TC01",
+        "AOS-005-TC02",
+        "AOS-005-TC03",
+        "AOS-005-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-005-AC04",
+      "aos_id": "AOS-005",
+      "source_kind": "AC",
+      "source_clause": "CLI sees correct state after reconnect, including canonical event cursor and artifact SHA256.",
+      "slice_ids": [
+        "AOS-005-S1",
+        "AOS-005-S2",
+        "AOS-005-S3"
+      ],
+      "case_ids": [
+        "AOS-005-TC01",
+        "AOS-005-TC02",
+        "AOS-005-TC03",
+        "AOS-005-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-006-F01",
+      "aos_id": "AOS-006",
+      "source_kind": "F",
+      "source_clause": "Lease epoch monotonic per task, compare-and-swap transition on epoch; heartbeat TTL and abandoned-attempt reclamation with recovery record.",
+      "slice_ids": [
+        "AOS-006-S1",
+        "AOS-006-S2",
+        "AOS-006-S3"
+      ],
+      "case_ids": [
+        "AOS-006-TC01",
+        "AOS-006-TC02",
+        "AOS-006-TC03",
+        "AOS-006-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-006-F02",
+      "aos_id": "AOS-006",
+      "source_kind": "F",
+      "source_clause": "Append outbox intent and side-effect idempotency key in DB transaction before dispatch. Classify effects as read-only, idempotent-with-key, reconcile-by-query, compensatable, or non-retryable.",
+      "slice_ids": [
+        "AOS-006-S1",
+        "AOS-006-S2",
+        "AOS-006-S3"
+      ],
+      "case_ids": [
+        "AOS-006-TC01",
+        "AOS-006-TC02",
+        "AOS-006-TC03",
+        "AOS-006-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-006-F03",
+      "aos_id": "AOS-006",
+      "source_kind": "F",
+      "source_clause": "On timeout/transport drop mark effect UNKNOWN → RECONCILING; run target query with stable fingerprint before retry; unresolved effects require owner approval.",
+      "slice_ids": [
+        "AOS-006-S1",
+        "AOS-006-S2",
+        "AOS-006-S3"
+      ],
+      "case_ids": [
+        "AOS-006-TC01",
+        "AOS-006-TC02",
+        "AOS-006-TC03",
+        "AOS-006-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-006-F04",
+      "aos_id": "AOS-006",
+      "source_kind": "F",
+      "source_clause": "Per-task max attempts, capped exponential backoff plus jitter, retry budget and no hot-loop on 429/denied policies.",
+      "slice_ids": [
+        "AOS-006-S1",
+        "AOS-006-S2",
+        "AOS-006-S3"
+      ],
+      "case_ids": [
+        "AOS-006-TC01",
+        "AOS-006-TC02",
+        "AOS-006-TC03",
+        "AOS-006-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-006-AC01",
+      "aos_id": "AOS-006",
+      "source_kind": "AC",
+      "source_clause": "Two workers race: stale epoch update refused; heartbeat expiry does not claim external cancellation.",
+      "slice_ids": [
+        "AOS-006-S1",
+        "AOS-006-S2",
+        "AOS-006-S3"
+      ],
+      "case_ids": [
+        "AOS-006-TC01",
+        "AOS-006-TC02",
+        "AOS-006-TC03",
+        "AOS-006-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-006-AC02",
+      "aos_id": "AOS-006",
+      "source_kind": "AC",
+      "source_clause": "Mock PR created then response lost: exactly one PR recognized after recovery; unqueryable external operation remains paused for approval.",
+      "slice_ids": [
+        "AOS-006-S1",
+        "AOS-006-S2",
+        "AOS-006-S3"
+      ],
+      "case_ids": [
+        "AOS-006-TC01",
+        "AOS-006-TC02",
+        "AOS-006-TC03",
+        "AOS-006-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-006-AC03",
+      "aos_id": "AOS-006",
+      "source_kind": "AC",
+      "source_clause": "Replay duplicate outbox row does not repeat non-idempotent action; runaway retry max enforced.",
+      "slice_ids": [
+        "AOS-006-S1",
+        "AOS-006-S2",
+        "AOS-006-S3"
+      ],
+      "case_ids": [
+        "AOS-006-TC01",
+        "AOS-006-TC02",
+        "AOS-006-TC03",
+        "AOS-006-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-007-F01",
+      "aos_id": "AOS-007",
+      "source_kind": "F",
+      "source_clause": "Project trust profile controls tested runtime envelope (`SYNTHETIC_DEV`, `PERSONAL_SANDBOX`, `TRUSTED_PROJECT`, `HARDENED_WORKSPACE`); promotion needs versioned security test evidence and owner approval.",
+      "slice_ids": [
+        "AOS-007-S1",
+        "AOS-007-S2",
+        "AOS-007-S3"
+      ],
+      "case_ids": [
+        "AOS-007-TC01",
+        "AOS-007-TC02",
+        "AOS-007-TC03",
+        "AOS-007-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-007-F02",
+      "aos_id": "AOS-007",
+      "source_kind": "F",
+      "source_clause": "Privacy label flows from source to snippets, embeddings, prompts, derived artifacts and traces; derived joins inherit most restrictive relevant label unless explicit reviewed downgrade.",
+      "slice_ids": [
+        "AOS-007-S1",
+        "AOS-007-S2",
+        "AOS-007-S3"
+      ],
+      "case_ids": [
+        "AOS-007-TC01",
+        "AOS-007-TC02",
+        "AOS-007-TC03",
+        "AOS-007-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-007-F03",
+      "aos_id": "AOS-007",
+      "source_kind": "F",
+      "source_clause": "Autonomy policy is per-action (read/edit/tool-install/external-send/spend/merge/delete/policy-change) with observe/suggest/approve-first/act-and-report/act-silently when permitted.",
+      "slice_ids": [
+        "AOS-007-S1",
+        "AOS-007-S2",
+        "AOS-007-S3"
+      ],
+      "case_ids": [
+        "AOS-007-TC01",
+        "AOS-007-TC02",
+        "AOS-007-TC03",
+        "AOS-007-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-007-F04",
+      "aos_id": "AOS-007",
+      "source_kind": "F",
+      "source_clause": "Policy engine emits versioned decision, enforcement requirements, denied reasons; neither LLM nor client supplies trusted `approval_granted` booleans.",
+      "slice_ids": [
+        "AOS-007-S1",
+        "AOS-007-S2",
+        "AOS-007-S3"
+      ],
+      "case_ids": [
+        "AOS-007-TC01",
+        "AOS-007-TC02",
+        "AOS-007-TC03",
+        "AOS-007-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-007-AC01",
+      "aos_id": "AOS-007",
+      "source_kind": "AC",
+      "source_clause": "Property-test every pair of axes; raising trust with same privacy/autonomy does not enable send or egress; privacy downgrade does not grant file write.",
+      "slice_ids": [
+        "AOS-007-S1",
+        "AOS-007-S2",
+        "AOS-007-S3"
+      ],
+      "case_ids": [
+        "AOS-007-TC01",
+        "AOS-007-TC02",
+        "AOS-007-TC03",
+        "AOS-007-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-007-AC02",
+      "aos_id": "AOS-007",
+      "source_kind": "AC",
+      "source_clause": "Two projects cannot share policy/profile by implicit filesystem path; policy update invalidates stale approval; RESTRICTED→cloud always DENY.",
+      "slice_ids": [
+        "AOS-007-S1",
+        "AOS-007-S2",
+        "AOS-007-S3"
+      ],
+      "case_ids": [
+        "AOS-007-TC01",
+        "AOS-007-TC02",
+        "AOS-007-TC03",
+        "AOS-007-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-007-AC03",
+      "aos_id": "AOS-007",
+      "source_kind": "AC",
+      "source_clause": "Missing/uncertain classification denies or requests user decision, not silently PUBLIC.",
+      "slice_ids": [
+        "AOS-007-S1",
+        "AOS-007-S2",
+        "AOS-007-S3"
+      ],
+      "case_ids": [
+        "AOS-007-TC01",
+        "AOS-007-TC02",
+        "AOS-007-TC03",
+        "AOS-007-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-008-F01",
+      "aos_id": "AOS-008",
+      "source_kind": "F",
+      "source_clause": "Define `mock-no-network`, `read-only-research`, `scoped-code-edit`, `restricted-offline` profiles with specific mount allowlist, process UID, cgroups/seccomp where supported, destination allowlist, capability flags, CPU/RAM/time bounds.",
+      "slice_ids": [
+        "AOS-008-S1",
+        "AOS-008-S2",
+        "AOS-008-S3"
+      ],
+      "case_ids": [
+        "AOS-008-TC01",
+        "AOS-008-TC02",
+        "AOS-008-TC03",
+        "AOS-008-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-008-F02",
+      "aos_id": "AOS-008",
+      "source_kind": "F",
+      "source_clause": "Use Linux namespaces/bubblewrap or Docker with explicit hardening selected by threat model. Worktrees isolated but not trusted as sole security boundary; vendor CLIs may require authorized network egress to their endpoints.",
+      "slice_ids": [
+        "AOS-008-S1",
+        "AOS-008-S2",
+        "AOS-008-S3"
+      ],
+      "case_ids": [
+        "AOS-008-TC01",
+        "AOS-008-TC02",
+        "AOS-008-TC03",
+        "AOS-008-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-008-F03",
+      "aos_id": "AOS-008",
+      "source_kind": "F",
+      "source_clause": "Protect against bind mount escapes, symlinks, hardlinks, Git hooks, known private credential paths, `/proc` escapes, shell config and unexpected proxies; test sandbox startup fail-closed.",
+      "slice_ids": [
+        "AOS-008-S1",
+        "AOS-008-S2",
+        "AOS-008-S3"
+      ],
+      "case_ids": [
+        "AOS-008-TC01",
+        "AOS-008-TC02",
+        "AOS-008-TC03",
+        "AOS-008-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-008-F04",
+      "aos_id": "AOS-008",
+      "source_kind": "F",
+      "source_clause": "Disallow privileged containers, host Docker socket mounts and broad `$HOME` visibility; separate vendor CLI auth state from untrusted worktree filesystem.",
+      "slice_ids": [
+        "AOS-008-S1",
+        "AOS-008-S2",
+        "AOS-008-S3"
+      ],
+      "case_ids": [
+        "AOS-008-TC01",
+        "AOS-008-TC02",
+        "AOS-008-TC03",
+        "AOS-008-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-008-AC01",
+      "aos_id": "AOS-008",
+      "source_kind": "AC",
+      "source_clause": "Attempt read `~/.ssh`, `/etc/shadow`, parent of worktree, follow symlink outside root and resolve 127.0.0.1/169.254.169.254: blocked at OS/network boundary.",
+      "slice_ids": [
+        "AOS-008-S1",
+        "AOS-008-S2",
+        "AOS-008-S3"
+      ],
+      "case_ids": [
+        "AOS-008-TC01",
+        "AOS-008-TC02",
+        "AOS-008-TC03",
+        "AOS-008-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-008-AC02",
+      "aos_id": "AOS-008",
+      "source_kind": "AC",
+      "source_clause": "Network disallowed profile demonstrably cannot open remote or localhost socket; worker cannot mount broader filesystem or launch privileged container.",
+      "slice_ids": [
+        "AOS-008-S1",
+        "AOS-008-S2",
+        "AOS-008-S3"
+      ],
+      "case_ids": [
+        "AOS-008-TC01",
+        "AOS-008-TC02",
+        "AOS-008-TC03",
+        "AOS-008-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-008-AC03",
+      "aos_id": "AOS-008",
+      "source_kind": "AC",
+      "source_clause": "Sandbox failure means task FAIL/DENY, not unconfined fallback.",
+      "slice_ids": [
+        "AOS-008-S1",
+        "AOS-008-S2",
+        "AOS-008-S3"
+      ],
+      "case_ids": [
+        "AOS-008-TC01",
+        "AOS-008-TC02",
+        "AOS-008-TC03",
+        "AOS-008-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-009-F01",
+      "aos_id": "AOS-009",
+      "source_kind": "F",
+      "source_clause": "Enforce loopback bind, allowlisted Host, trusted Origin, session auth, anti-CSRF on mutations, no wildcard CORS and browser security headers. Detect DNS rebinding via Host validation and trusted origin checks.",
+      "slice_ids": [
+        "AOS-009-S1",
+        "AOS-009-S2",
+        "AOS-009-S3"
+      ],
+      "case_ids": [
+        "AOS-009-TC01",
+        "AOS-009-TC02",
+        "AOS-009-TC03",
+        "AOS-009-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-009-F02",
+      "aos_id": "AOS-009",
+      "source_kind": "F",
+      "source_clause": "Approval is exact `(owner, project, task, effect_hash, action, policy_version, expiry)` and single-consumption. Mutating operation checks policy again on execution; approve button never executes a different payload.",
+      "slice_ids": [
+        "AOS-009-S1",
+        "AOS-009-S2",
+        "AOS-009-S3"
+      ],
+      "case_ids": [
+        "AOS-009-TC01",
+        "AOS-009-TC02",
+        "AOS-009-TC03",
+        "AOS-009-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-009-F03",
+      "aos_id": "AOS-009",
+      "source_kind": "F",
+      "source_clause": "Rate-limit endpoints and cap body sizes; API content-type/schema validation; prevent cached sensitive artifact responses. Implement non-browser CLI auth without bypassing owner identity.",
+      "slice_ids": [
+        "AOS-009-S1",
+        "AOS-009-S2",
+        "AOS-009-S3"
+      ],
+      "case_ids": [
+        "AOS-009-TC01",
+        "AOS-009-TC02",
+        "AOS-009-TC03",
+        "AOS-009-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-009-F04",
+      "aos_id": "AOS-009",
+      "source_kind": "F",
+      "source_clause": "Do not expose remotely except user-configured Tailscale/SSH binding with explicit stronger auth and threat review.",
+      "slice_ids": [
+        "AOS-009-S1",
+        "AOS-009-S2",
+        "AOS-009-S3"
+      ],
+      "case_ids": [
+        "AOS-009-TC01",
+        "AOS-009-TC02",
+        "AOS-009-TC03",
+        "AOS-009-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-009-AC01",
+      "aos_id": "AOS-009",
+      "source_kind": "AC",
+      "source_clause": "Foreign origin POST, wrong Host, DNS rebinding host, expired and duplicate approval denied.",
+      "slice_ids": [
+        "AOS-009-S1",
+        "AOS-009-S2",
+        "AOS-009-S3"
+      ],
+      "case_ids": [
+        "AOS-009-TC01",
+        "AOS-009-TC02",
+        "AOS-009-TC03",
+        "AOS-009-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-009-AC02",
+      "aos_id": "AOS-009",
+      "source_kind": "AC",
+      "source_clause": "Contract mutation after approval invalidates old digest; race approving/rejecting has one final result.",
+      "slice_ids": [
+        "AOS-009-S1",
+        "AOS-009-S2",
+        "AOS-009-S3"
+      ],
+      "case_ids": [
+        "AOS-009-TC01",
+        "AOS-009-TC02",
+        "AOS-009-TC03",
+        "AOS-009-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-009-AC03",
+      "aos_id": "AOS-009",
+      "source_kind": "AC",
+      "source_clause": "Authorized local CLI unaffected; referrer/CSRF bypass tests and websocket/SSE origin cases covered.",
+      "slice_ids": [
+        "AOS-009-S1",
+        "AOS-009-S2",
+        "AOS-009-S3"
+      ],
+      "case_ids": [
+        "AOS-009-TC01",
+        "AOS-009-TC02",
+        "AOS-009-TC03",
+        "AOS-009-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-010-F01",
+      "aos_id": "AOS-010",
+      "source_kind": "F",
+      "source_clause": "Inventory and validate any existing `claude-code-worker` skill. Pin Claude CLI version and auto-updater policy; probe `claude auth status` without extracting credentials.",
+      "slice_ids": [
+        "AOS-010-S1",
+        "AOS-010-S2",
+        "AOS-010-S3"
+      ],
+      "case_ids": [
+        "AOS-010-TC01",
+        "AOS-010-TC02",
+        "AOS-010-TC03",
+        "AOS-010-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-010-F02",
+      "aos_id": "AOS-010",
+      "source_kind": "F",
+      "source_clause": "Implement subscription-compatible startup profiles. Test `--safe-mode` for disabling project customizations; it may ignore `CLAUDE.md`, so trusted context enters via documented prompt-file interface. Evaluate `--restricted` against the pinned build and explicit tool list; fallback to controlled `--setting-sources`, `--settings`, `--strict-mcp-config` only if behavior proven. `--bare` is API-only; do not imply subscription access.",
+      "slice_ids": [
+        "AOS-010-S1",
+        "AOS-010-S2",
+        "AOS-010-S3"
+      ],
+      "case_ids": [
+        "AOS-010-TC01",
+        "AOS-010-TC02",
+        "AOS-010-TC03",
+        "AOS-010-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-010-F03",
+      "aos_id": "AOS-010",
+      "source_kind": "F",
+      "source_clause": "Use dedicated Claude config directory owned by user; worker sees only scope-necessary CLI state; sandbox-protect from repo contents. Explicit permission mode, no interactive prompt expectation, max turns/wall time, runtime cancel/status semantics.",
+      "slice_ids": [
+        "AOS-010-S1",
+        "AOS-010-S2",
+        "AOS-010-S3"
+      ],
+      "case_ids": [
+        "AOS-010-TC01",
+        "AOS-010-TC02",
+        "AOS-010-TC03",
+        "AOS-010-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-010-F04",
+      "aos_id": "AOS-010",
+      "source_kind": "F",
+      "source_clause": "Parse versioned streamed JSON defensively; normalize events; fail closed on unknown event/privilege request or missing auth. Disable auto-execution from `.claude/`, `.mcp.json` and `.claude/settings.json` on test fixture.",
+      "slice_ids": [
+        "AOS-010-S1",
+        "AOS-010-S2",
+        "AOS-010-S3"
+      ],
+      "case_ids": [
+        "AOS-010-TC01",
+        "AOS-010-TC02",
+        "AOS-010-TC03",
+        "AOS-010-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-010-AC01",
+      "aos_id": "AOS-010",
+      "source_kind": "AC",
+      "source_clause": "Malicious `SessionStart` and `PreToolUse` hooks and MCP definitions with exfil sentinel never execute.",
+      "slice_ids": [
+        "AOS-010-S1",
+        "AOS-010-S2",
+        "AOS-010-S3"
+      ],
+      "case_ids": [
+        "AOS-010-TC01",
+        "AOS-010-TC02",
+        "AOS-010-TC03",
+        "AOS-010-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-010-AC02",
+      "aos_id": "AOS-010",
+      "source_kind": "AC",
+      "source_clause": "Safe-mode context comes through approved prompt file, not ignored workspace `CLAUDE.md`; scope of safe/restricted modes confirmed against installed CLI.",
+      "slice_ids": [
+        "AOS-010-S1",
+        "AOS-010-S2",
+        "AOS-010-S3"
+      ],
+      "case_ids": [
+        "AOS-010-TC01",
+        "AOS-010-TC02",
+        "AOS-010-TC03",
+        "AOS-010-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-010-AC03",
+      "aos_id": "AOS-010",
+      "source_kind": "AC",
+      "source_clause": "No-tools mode cannot call shell; Build profile explicitly permits bounded Bash inside sandbox; auth-required and quota errors handled without retry storm.",
+      "slice_ids": [
+        "AOS-010-S1",
+        "AOS-010-S2",
+        "AOS-010-S3"
+      ],
+      "case_ids": [
+        "AOS-010-TC01",
+        "AOS-010-TC02",
+        "AOS-010-TC03",
+        "AOS-010-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-010-AC04",
+      "aos_id": "AOS-010",
+      "source_kind": "AC",
+      "source_clause": "Cancel/timeout produces correct status; structured-output schema fixture tests cover partial/truncated JSON.",
+      "slice_ids": [
+        "AOS-010-S1",
+        "AOS-010-S2",
+        "AOS-010-S3"
+      ],
+      "case_ids": [
+        "AOS-010-TC01",
+        "AOS-010-TC02",
+        "AOS-010-TC03",
+        "AOS-010-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027a-F01",
+      "aos_id": "AOS-027a",
+      "source_kind": "F",
+      "source_clause": "Implement the R1 single-worker verifier and merge-approval service after AOS-004, AOS-009 and AOS-010. Use canonical trusted-command-ref, git-diff-path-check and policy-decision checks; human-review evidence cannot substitute for explicit action authorization.",
+      "slice_ids": [
+        "AOS-027a-S1",
+        "AOS-027a-S2",
+        "AOS-027a-S3"
+      ],
+      "case_ids": [
+        "AOS-027a-TC01",
+        "AOS-027a-TC02",
+        "AOS-027a-TC03",
+        "AOS-027a-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027a-F02",
+      "aos_id": "AOS-027a",
+      "source_kind": "F",
+      "source_clause": "Verifier must run against the **candidate final tree** for the single worker and exact intended destination base; a stale worktree test report cannot authorize a changed candidate. Use pinned known test commands with timeout and output limit; file diff signed with commit/tree SHA.",
+      "slice_ids": [
+        "AOS-027a-S1",
+        "AOS-027a-S2",
+        "AOS-027a-S3"
+      ],
+      "case_ids": [
+        "AOS-027a-TC01",
+        "AOS-027a-TC02",
+        "AOS-027a-TC03",
+        "AOS-027a-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027a-F03",
+      "aos_id": "AOS-027a",
+      "source_kind": "F",
+      "source_clause": "Protected merge requires approval digest binding exact candidate commit, destination branch, check set, project/action policy version and expiry. Revalidate immediately before side effect; unexpected external effect goes RECONCILING.",
+      "slice_ids": [
+        "AOS-027a-S1",
+        "AOS-027a-S2",
+        "AOS-027a-S3"
+      ],
+      "case_ids": [
+        "AOS-027a-TC01",
+        "AOS-027a-TC02",
+        "AOS-027a-TC03",
+        "AOS-027a-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027a-F04",
+      "aos_id": "AOS-027a",
+      "source_kind": "F",
+      "source_clause": "Missing evidence, failed/UNKNOWN checks, modified diff after approval or policy mismatch means no merge.",
+      "slice_ids": [
+        "AOS-027a-S1",
+        "AOS-027a-S2",
+        "AOS-027a-S3"
+      ],
+      "case_ids": [
+        "AOS-027a-TC01",
+        "AOS-027a-TC02",
+        "AOS-027a-TC03",
+        "AOS-027a-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027a-AC01",
+      "aos_id": "AOS-027a",
+      "source_kind": "AC",
+      "source_clause": "Deliberately failing tests reject worker 'done'; unauthorized path diff rejects before completion.",
+      "slice_ids": [
+        "AOS-027a-S1",
+        "AOS-027a-S2",
+        "AOS-027a-S3"
+      ],
+      "case_ids": [
+        "AOS-027a-TC01",
+        "AOS-027a-TC02",
+        "AOS-027a-TC03",
+        "AOS-027a-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027a-AC02",
+      "aos_id": "AOS-027a",
+      "source_kind": "AC",
+      "source_clause": "Rebase changes candidate hash: old approval invalid. Inject lost response after mock merge: no duplicate merge; unresolved state requires reconciliation.",
+      "slice_ids": [
+        "AOS-027a-S1",
+        "AOS-027a-S2",
+        "AOS-027a-S3"
+      ],
+      "case_ids": [
+        "AOS-027a-TC01",
+        "AOS-027a-TC02",
+        "AOS-027a-TC03",
+        "AOS-027a-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027a-AC03",
+      "aos_id": "AOS-027a",
+      "source_kind": "AC",
+      "source_clause": "One hardened Claude Code worker produces a candidate, verifier independently checks it, and a single-use effect_digest-bound approval permits only that exact scoped merge. Wrong owner/project, changed destination/base/candidate/check set or expired approval denies execution.",
+      "slice_ids": [
+        "AOS-027a-S1",
+        "AOS-027a-S2",
+        "AOS-027a-S3"
+      ],
+      "case_ids": [
+        "AOS-027a-TC01",
+        "AOS-027a-TC02",
+        "AOS-027a-TC03",
+        "AOS-027a-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-011-F01",
+      "aos_id": "AOS-011",
+      "source_kind": "F",
+      "source_clause": "Create normalized `memory_item`, `memory_source`, `memory_revision`, `memory_use_event` and optional `context_pack` tables, owner/project/privacy/provenance/validity and retention fields. R1 starts with PostgreSQL full-text search, deterministic ranking baseline; pgvector optional with model-version metadata.",
+      "slice_ids": [
+        "AOS-011-S1",
+        "AOS-011-S2",
+        "AOS-011-S3"
+      ],
+      "case_ids": [
+        "AOS-011-TC01",
+        "AOS-011-TC02",
+        "AOS-011-TC03",
+        "AOS-011-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-011-F02",
+      "aos_id": "AOS-011",
+      "source_kind": "F",
+      "source_clause": "Record distinct `retrieved`, `included`, `used_by_worker`, `judged_unused`, `candidate_helped` stages with source/observer/confidence; do not auto-equate inclusion with use or successful task with causality.",
+      "slice_ids": [
+        "AOS-011-S1",
+        "AOS-011-S2",
+        "AOS-011-S3"
+      ],
+      "case_ids": [
+        "AOS-011-TC01",
+        "AOS-011-TC02",
+        "AOS-011-TC03",
+        "AOS-011-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-011-F03",
+      "aos_id": "AOS-011",
+      "source_kind": "F",
+      "source_clause": "Restrict memory writes to user-submitted facts or verified explicit task outputs in R1; model-inferred changes proposed for approval. No automatic deletion based on unvalidated utility score.",
+      "slice_ids": [
+        "AOS-011-S1",
+        "AOS-011-S2",
+        "AOS-011-S3"
+      ],
+      "case_ids": [
+        "AOS-011-TC01",
+        "AOS-011-TC02",
+        "AOS-011-TC03",
+        "AOS-011-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-011-F04",
+      "aos_id": "AOS-011",
+      "source_kind": "F",
+      "source_clause": "Protect memory from cross-owner/project leakage through application checks and, if feasible, PostgreSQL row-level security tests. Retrieval returns source IDs and relevance explanations.",
+      "slice_ids": [
+        "AOS-011-S1",
+        "AOS-011-S2",
+        "AOS-011-S3"
+      ],
+      "case_ids": [
+        "AOS-011-TC01",
+        "AOS-011-TC02",
+        "AOS-011-TC03",
+        "AOS-011-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-011-AC01",
+      "aos_id": "AOS-011",
+      "source_kind": "AC",
+      "source_clause": "Query returns correct project-local preference and evidence; another project's secret cannot appear, even through semantic similarity.",
+      "slice_ids": [
+        "AOS-011-S1",
+        "AOS-011-S2",
+        "AOS-011-S3"
+      ],
+      "case_ids": [
+        "AOS-011-TC01",
+        "AOS-011-TC02",
+        "AOS-011-TC03",
+        "AOS-011-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-011-AC02",
+      "aos_id": "AOS-011",
+      "source_kind": "AC",
+      "source_clause": "Five event stages each persist and survive restart, including explicit judged-unused; nonobserved stages remain unknown rather than inferred.",
+      "slice_ids": [
+        "AOS-011-S1",
+        "AOS-011-S2",
+        "AOS-011-S3"
+      ],
+      "case_ids": [
+        "AOS-011-TC01",
+        "AOS-011-TC02",
+        "AOS-011-TC03",
+        "AOS-011-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-011-AC03",
+      "aos_id": "AOS-011",
+      "source_kind": "AC",
+      "source_clause": "Invalid/superseded facts suppressed from current recall but lineage preserved; injection in retrieved content never upgrades policy.",
+      "slice_ids": [
+        "AOS-011-S1",
+        "AOS-011-S2",
+        "AOS-011-S3"
+      ],
+      "case_ids": [
+        "AOS-011-TC01",
+        "AOS-011-TC02",
+        "AOS-011-TC03",
+        "AOS-011-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-012-F01",
+      "aos_id": "AOS-012",
+      "source_kind": "F",
+      "source_clause": "Persist eligible/denied backend candidates, reason, capability class, policy IDs, selected route, expected cost/risk and uncertainty; post-execution task outcome references deterministic verifier/user acceptance.",
+      "slice_ids": [
+        "AOS-012-S1",
+        "AOS-012-S2",
+        "AOS-012-S3"
+      ],
+      "case_ids": [
+        "AOS-012-TC01",
+        "AOS-012-TC02",
+        "AOS-012-TC03",
+        "AOS-012-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-012-F02",
+      "aos_id": "AOS-012",
+      "source_kind": "F",
+      "source_clause": "Record `user_correction` as diff/rejection/explicit text with output version, owner consent and sensitivity. Do not train or infer preferences merely from passive prompt data.",
+      "slice_ids": [
+        "AOS-012-S1",
+        "AOS-012-S2",
+        "AOS-012-S3"
+      ],
+      "case_ids": [
+        "AOS-012-TC01",
+        "AOS-012-TC02",
+        "AOS-012-TC03",
+        "AOS-012-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-012-F03",
+      "aos_id": "AOS-012",
+      "source_kind": "F",
+      "source_clause": "Store three separate outbound-data dimensions: `authorized` (policy), `accessible` (files/prompt scope), `observed` (OS/process network metadata); encrypted CLI contents may be unknowable.",
+      "slice_ids": [
+        "AOS-012-S1",
+        "AOS-012-S2",
+        "AOS-012-S3"
+      ],
+      "case_ids": [
+        "AOS-012-TC01",
+        "AOS-012-TC02",
+        "AOS-012-TC03",
+        "AOS-012-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-012-F04",
+      "aos_id": "AOS-012",
+      "source_kind": "F",
+      "source_clause": "Cost and quota observations use `known/estimated/unknown` with null amount for unknown; event schemas are versioned for eventual subscriptions optimizer.",
+      "slice_ids": [
+        "AOS-012-S1",
+        "AOS-012-S2",
+        "AOS-012-S3"
+      ],
+      "case_ids": [
+        "AOS-012-TC01",
+        "AOS-012-TC02",
+        "AOS-012-TC03",
+        "AOS-012-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-012-AC01",
+      "aos_id": "AOS-012",
+      "source_kind": "AC",
+      "source_clause": "After process restart reconstruct route selection and rejection reasons from DB alone.",
+      "slice_ids": [
+        "AOS-012-S1",
+        "AOS-012-S2",
+        "AOS-012-S3"
+      ],
+      "case_ids": [
+        "AOS-012-TC01",
+        "AOS-012-TC02",
+        "AOS-012-TC03",
+        "AOS-012-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-012-AC02",
+      "aos_id": "AOS-012",
+      "source_kind": "AC",
+      "source_clause": "Unknown quota yields null, not 0 or unlimited; possible egress reported accessible but not observed with correct distinction.",
+      "slice_ids": [
+        "AOS-012-S1",
+        "AOS-012-S2",
+        "AOS-012-S3"
+      ],
+      "case_ids": [
+        "AOS-012-TC01",
+        "AOS-012-TC02",
+        "AOS-012-TC03",
+        "AOS-012-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-012-AC03",
+      "aos_id": "AOS-012",
+      "source_kind": "AC",
+      "source_clause": "User correction cannot overwrite immutable original answer artifact; denied route remains denied after another agent suggests it.",
+      "slice_ids": [
+        "AOS-012-S1",
+        "AOS-012-S2",
+        "AOS-012-S3"
+      ],
+      "case_ids": [
+        "AOS-012-TC01",
+        "AOS-012-TC02",
+        "AOS-012-TC03",
+        "AOS-012-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-014-F01",
+      "aos_id": "AOS-014",
+      "source_kind": "F",
+      "source_clause": "Add OpenTelemetry instrumentation to API, kernel, DBOS step, worker adapter and verifier, using propagated trace IDs and task/attempt correlation IDs. Never export content by default.",
+      "slice_ids": [
+        "AOS-014-S1",
+        "AOS-014-S2",
+        "AOS-014-S3"
+      ],
+      "case_ids": [
+        "AOS-014-TC01",
+        "AOS-014-TC02",
+        "AOS-014-TC03",
+        "AOS-014-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-014-F02",
+      "aos_id": "AOS-014",
+      "source_kind": "F",
+      "source_clause": "Canonical events persisted in DB before fanout; event cursor monotonically ordered and stable across restart. SSE supports reconnect and `Last-Event-ID` with scoped ownership/authorization.",
+      "slice_ids": [
+        "AOS-014-S1",
+        "AOS-014-S2",
+        "AOS-014-S3"
+      ],
+      "case_ids": [
+        "AOS-014-TC01",
+        "AOS-014-TC02",
+        "AOS-014-TC03",
+        "AOS-014-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-014-F03",
+      "aos_id": "AOS-014",
+      "source_kind": "F",
+      "source_clause": "Audit events retain actor, policy decision ID, effect ID, event digest and optional hash-chain reference; privacy-aware structured logging with sensitive fields redacted.",
+      "slice_ids": [
+        "AOS-014-S1",
+        "AOS-014-S2",
+        "AOS-014-S3"
+      ],
+      "case_ids": [
+        "AOS-014-TC01",
+        "AOS-014-TC02",
+        "AOS-014-TC03",
+        "AOS-014-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-014-F04",
+      "aos_id": "AOS-014",
+      "source_kind": "F",
+      "source_clause": "Phoenix export optional at R1, required by R3 if it still meets footprint. Unknown model usage logs as unknown.",
+      "slice_ids": [
+        "AOS-014-S1",
+        "AOS-014-S2",
+        "AOS-014-S3"
+      ],
+      "case_ids": [
+        "AOS-014-TC01",
+        "AOS-014-TC02",
+        "AOS-014-TC03",
+        "AOS-014-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-014-AC01",
+      "aos_id": "AOS-014",
+      "source_kind": "AC",
+      "source_clause": "Disconnect SSE after N events and reconnect: receive every unique event, no false completion; duplicate delivery safe.",
+      "slice_ids": [
+        "AOS-014-S1",
+        "AOS-014-S2",
+        "AOS-014-S3"
+      ],
+      "case_ids": [
+        "AOS-014-TC01",
+        "AOS-014-TC02",
+        "AOS-014-TC03",
+        "AOS-014-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-014-AC02",
+      "aos_id": "AOS-014",
+      "source_kind": "AC",
+      "source_clause": "Trace ID joins API→DBOS→adapter→verifier; secret sentinel never appears in JSON event or Phoenix exporter.",
+      "slice_ids": [
+        "AOS-014-S1",
+        "AOS-014-S2",
+        "AOS-014-S3"
+      ],
+      "case_ids": [
+        "AOS-014-TC01",
+        "AOS-014-TC02",
+        "AOS-014-TC03",
+        "AOS-014-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-014-AC03",
+      "aos_id": "AOS-014",
+      "source_kind": "AC",
+      "source_clause": "A child attempt event from stale epoch cannot mutate current task; exported traces honor Restricted local-only policy.",
+      "slice_ids": [
+        "AOS-014-S1",
+        "AOS-014-S2",
+        "AOS-014-S3"
+      ],
+      "case_ids": [
+        "AOS-014-TC01",
+        "AOS-014-TC02",
+        "AOS-014-TC03",
+        "AOS-014-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-015-F01",
+      "aos_id": "AOS-015",
+      "source_kind": "F",
+      "source_clause": "Inventory existing `hardware-probe` skill and `hwprobe.py` source/tests; verify claimed five simulated profiles, provenance and license. Run read-only OS probes (`nvidia-smi`, CPU info, RAM, upower, ROCm/macOS when available); missing tool reported unsupported, not 0 resources.",
+      "slice_ids": [
+        "AOS-015-S1",
+        "AOS-015-S2",
+        "AOS-015-S3"
+      ],
+      "case_ids": [
+        "AOS-015-TC01",
+        "AOS-015-TC02",
+        "AOS-015-TC03",
+        "AOS-015-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-015-F02",
+      "aos_id": "AOS-015",
+      "source_kind": "F",
+      "source_clause": "Define signed/versioned `HardwareManifest` with OS/kernel, accelerator type, total/free VRAM, RAM, driver/runtime, measured/estimated bandwidth, thermal/battery/AC status, time and permissions; avoid privileged probing.",
+      "slice_ids": [
+        "AOS-015-S1",
+        "AOS-015-S2",
+        "AOS-015-S3"
+      ],
+      "case_ids": [
+        "AOS-015-TC01",
+        "AOS-015-TC02",
+        "AOS-015-TC03",
+        "AOS-015-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-015-F03",
+      "aos_id": "AOS-015",
+      "source_kind": "F",
+      "source_clause": "A model-role catalog estimates resident memory as weights + KV + overhead, capability and license; no guaranteed tok/s from bandwidth estimate. Select steward by safe fit then benchmark actual TTFT/throughput.",
+      "slice_ids": [
+        "AOS-015-S1",
+        "AOS-015-S2",
+        "AOS-015-S3"
+      ],
+      "case_ids": [
+        "AOS-015-TC01",
+        "AOS-015-TC02",
+        "AOS-015-TC03",
+        "AOS-015-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-015-F04",
+      "aos_id": "AOS-015",
+      "source_kind": "F",
+      "source_clause": "Re-probe on install/boot/drivers/catalog changes and preserve previous manifest for before/after comparison; allow user pin with an explicit degraded warning.",
+      "slice_ids": [
+        "AOS-015-S1",
+        "AOS-015-S2",
+        "AOS-015-S3"
+      ],
+      "case_ids": [
+        "AOS-015-TC01",
+        "AOS-015-TC02",
+        "AOS-015-TC03",
+        "AOS-015-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-015-AC01",
+      "aos_id": "AOS-015",
+      "source_kind": "AC",
+      "source_clause": "Run probe on actual Omen: record GPU name and real VRAM, RAM, driver and power; missing nvidia-smi gives explicit fallback.",
+      "slice_ids": [
+        "AOS-015-S1",
+        "AOS-015-S2",
+        "AOS-015-S3"
+      ],
+      "case_ids": [
+        "AOS-015-TC01",
+        "AOS-015-TC02",
+        "AOS-015-TC03",
+        "AOS-015-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-015-AC02",
+      "aos_id": "AOS-015",
+      "source_kind": "AC",
+      "source_clause": "Five attached simulated profile fixtures (smoke-checked in this revision) pass expected placement/low-memory degradation; no silent cloud selection for Restricted work.",
+      "slice_ids": [
+        "AOS-015-S1",
+        "AOS-015-S2",
+        "AOS-015-S3"
+      ],
+      "case_ids": [
+        "AOS-015-TC01",
+        "AOS-015-TC02",
+        "AOS-015-TC03",
+        "AOS-015-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-015-AC03",
+      "aos_id": "AOS-015",
+      "source_kind": "AC",
+      "source_clause": "Non-privileged probe doesn't change NVIDIA driver/prime config; manifests parse from fresh JSON Schema.",
+      "slice_ids": [
+        "AOS-015-S1",
+        "AOS-015-S2",
+        "AOS-015-S3"
+      ],
+      "case_ids": [
+        "AOS-015-TC01",
+        "AOS-015-TC02",
+        "AOS-015-TC03",
+        "AOS-015-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-016-F01",
+      "aos_id": "AOS-016",
+      "source_kind": "F",
+      "source_clause": "Implement `InferenceProvider` contract for chat/generate/stream/embed with capability manifest, model version, context/token budget, retries and actual/unknown resource usage; first implementation Ollama with local endpoint.",
+      "slice_ids": [
+        "AOS-016-S1",
+        "AOS-016-S2",
+        "AOS-016-S3"
+      ],
+      "case_ids": [
+        "AOS-016-TC01",
+        "AOS-016-TC02",
+        "AOS-016-TC03",
+        "AOS-016-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-016-F02",
+      "aos_id": "AOS-016",
+      "source_kind": "F",
+      "source_clause": "Choose a small legal-to-distribute instruct model from measured hardware catalog; run bounded prompt, disable cloud fallback when offline/Restricted. Warm and cold start benchmark; TTFT, tokens/s, completion and GPU/CPU RSS measured.",
+      "slice_ids": [
+        "AOS-016-S1",
+        "AOS-016-S2",
+        "AOS-016-S3"
+      ],
+      "case_ids": [
+        "AOS-016-TC01",
+        "AOS-016-TC02",
+        "AOS-016-TC03",
+        "AOS-016-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-016-F03",
+      "aos_id": "AOS-016",
+      "source_kind": "F",
+      "source_clause": "Overload guard: queue/cancel at capacity, avoid multiple resident copies, CPU deterministic fallback for status/routing, communicate unavailable instead of silently calling API.",
+      "slice_ids": [
+        "AOS-016-S1",
+        "AOS-016-S2",
+        "AOS-016-S3"
+      ],
+      "case_ids": [
+        "AOS-016-TC01",
+        "AOS-016-TC02",
+        "AOS-016-TC03",
+        "AOS-016-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-016-F04",
+      "aos_id": "AOS-016",
+      "source_kind": "F",
+      "source_clause": "Tie inference events to task/trace and preserve memory-source citations if used by Ask.",
+      "slice_ids": [
+        "AOS-016-S1",
+        "AOS-016-S2",
+        "AOS-016-S3"
+      ],
+      "case_ids": [
+        "AOS-016-TC01",
+        "AOS-016-TC02",
+        "AOS-016-TC03",
+        "AOS-016-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-016-AC01",
+      "aos_id": "AOS-016",
+      "source_kind": "AC",
+      "source_clause": "Full network disabled: steward answers bounded local prompts and emits no external requests.",
+      "slice_ids": [
+        "AOS-016-S1",
+        "AOS-016-S2",
+        "AOS-016-S3"
+      ],
+      "case_ids": [
+        "AOS-016-TC01",
+        "AOS-016-TC02",
+        "AOS-016-TC03",
+        "AOS-016-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-016-AC02",
+      "aos_id": "AOS-016",
+      "source_kind": "AC",
+      "source_clause": "Warm and cold runs reported separately on physical Omen, with model size and actual VRAM; memory overload refuses safely and recovers.",
+      "slice_ids": [
+        "AOS-016-S1",
+        "AOS-016-S2",
+        "AOS-016-S3"
+      ],
+      "case_ids": [
+        "AOS-016-TC01",
+        "AOS-016-TC02",
+        "AOS-016-TC03",
+        "AOS-016-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-016-AC03",
+      "aos_id": "AOS-016",
+      "source_kind": "AC",
+      "source_clause": "Timeout and model unload mid-stream lead to explicit degraded/unavailable status, not half a success event.",
+      "slice_ids": [
+        "AOS-016-S1",
+        "AOS-016-S2",
+        "AOS-016-S3"
+      ],
+      "case_ids": [
+        "AOS-016-TC01",
+        "AOS-016-TC02",
+        "AOS-016-TC03",
+        "AOS-016-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-017-F01",
+      "aos_id": "AOS-017",
+      "source_kind": "F",
+      "source_clause": "Build CLI `agentos ask` and thin HTTP API; classify request, select local model, retrieve memory using owner/project filters and compile small context pack with source refs and untrusted-content wrapping.",
+      "slice_ids": [
+        "AOS-017-S1",
+        "AOS-017-S2",
+        "AOS-017-S3"
+      ],
+      "case_ids": [
+        "AOS-017-TC01",
+        "AOS-017-TC02",
+        "AOS-017-TC03",
+        "AOS-017-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-017-F02",
+      "aos_id": "AOS-017",
+      "source_kind": "F",
+      "source_clause": "No internet or subscription required to boot or answer; user sees cold-start/unavailable errors and provenance when memory used. Provide optional lightweight web Ask input if interface scaffold exists; not a frontend gate.",
+      "slice_ids": [
+        "AOS-017-S1",
+        "AOS-017-S2",
+        "AOS-017-S3"
+      ],
+      "case_ids": [
+        "AOS-017-TC01",
+        "AOS-017-TC02",
+        "AOS-017-TC03",
+        "AOS-017-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-017-F03",
+      "aos_id": "AOS-017",
+      "source_kind": "F",
+      "source_clause": "Use deterministic intent bounds and timeouts; avoid prompt-only privacy decisions. Store only consented content, with corrections captured separately from responses.",
+      "slice_ids": [
+        "AOS-017-S1",
+        "AOS-017-S2",
+        "AOS-017-S3"
+      ],
+      "case_ids": [
+        "AOS-017-TC01",
+        "AOS-017-TC02",
+        "AOS-017-TC03",
+        "AOS-017-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-017-AC01",
+      "aos_id": "AOS-017",
+      "source_kind": "AC",
+      "source_clause": "A-1: 10 fixed queries offline including 3 project-memory recalls and malicious 'enable cloud' prompt; no observed/accessible outbound inference.",
+      "slice_ids": [
+        "AOS-017-S1",
+        "AOS-017-S2",
+        "AOS-017-S3"
+      ],
+      "case_ids": [
+        "AOS-017-TC01",
+        "AOS-017-TC02",
+        "AOS-017-TC03",
+        "AOS-017-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-017-AC02",
+      "aos_id": "AOS-017",
+      "source_kind": "AC",
+      "source_clause": "Latency distribution measured on actual hardware; provisional warm p95 TTFT ≤3 s only if hardware ADR confirms feasibility.",
+      "slice_ids": [
+        "AOS-017-S1",
+        "AOS-017-S2",
+        "AOS-017-S3"
+      ],
+      "case_ids": [
+        "AOS-017-TC01",
+        "AOS-017-TC02",
+        "AOS-017-TC03",
+        "AOS-017-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-017-AC03",
+      "aos_id": "AOS-017",
+      "source_kind": "AC",
+      "source_clause": "Different project memory never retrieved; missing local model returns actionable error, not unauthorized cloud response.",
+      "slice_ids": [
+        "AOS-017-S1",
+        "AOS-017-S2",
+        "AOS-017-S3"
+      ],
+      "case_ids": [
+        "AOS-017-TC01",
+        "AOS-017-TC02",
+        "AOS-017-TC03",
+        "AOS-017-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-018-F01",
+      "aos_id": "AOS-018",
+      "source_kind": "F",
+      "source_clause": "Build OS-level no-network test harness and optional network namespace; assert no DNS, HTTP or provider CLI fallback for local-only work. Test model cold load, unload and abort during response.",
+      "slice_ids": [
+        "AOS-018-S1",
+        "AOS-018-S2",
+        "AOS-018-S3"
+      ],
+      "case_ids": [
+        "AOS-018-TC01",
+        "AOS-018-TC02",
+        "AOS-018-TC03",
+        "AOS-018-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-018-F02",
+      "aos_id": "AOS-018",
+      "source_kind": "F",
+      "source_clause": "Sample GPU VRAM/compute, CPU, RAM, battery/AC, thermal flags and active-foreground policy; implement conservative admission ceiling and a deterministic steward control fallback if GPU unavailable.",
+      "slice_ids": [
+        "AOS-018-S1",
+        "AOS-018-S2",
+        "AOS-018-S3"
+      ],
+      "case_ids": [
+        "AOS-018-TC01",
+        "AOS-018-TC02",
+        "AOS-018-TC03",
+        "AOS-018-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-018-F03",
+      "aos_id": "AOS-018",
+      "source_kind": "F",
+      "source_clause": "Test prompt/time budget, OOM recovery, model process restart, disk pressure and cloud account absence. Distinguish intentional queue from hung service.",
+      "slice_ids": [
+        "AOS-018-S1",
+        "AOS-018-S2",
+        "AOS-018-S3"
+      ],
+      "case_ids": [
+        "AOS-018-TC01",
+        "AOS-018-TC02",
+        "AOS-018-TC03",
+        "AOS-018-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-018-AC01",
+      "aos_id": "AOS-018",
+      "source_kind": "AC",
+      "source_clause": "No egress in network-disabled A-1, including DNS and model auto-download.",
+      "slice_ids": [
+        "AOS-018-S1",
+        "AOS-018-S2",
+        "AOS-018-S3"
+      ],
+      "case_ids": [
+        "AOS-018-TC01",
+        "AOS-018-TC02",
+        "AOS-018-TC03",
+        "AOS-018-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-018-AC02",
+      "aos_id": "AOS-018",
+      "source_kind": "AC",
+      "source_clause": "Under synthetic GPU allocation pressure, heavy inference waits/steps down and existing durable tasks remain recoverable.",
+      "slice_ids": [
+        "AOS-018-S1",
+        "AOS-018-S2",
+        "AOS-018-S3"
+      ],
+      "case_ids": [
+        "AOS-018-TC01",
+        "AOS-018-TC02",
+        "AOS-018-TC03",
+        "AOS-018-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-018-AC03",
+      "aos_id": "AOS-018",
+      "source_kind": "AC",
+      "source_clause": "Battery mode and disabled GPU produce explicit CPU or unavailable states without silent cloud fallbacks.",
+      "slice_ids": [
+        "AOS-018-S1",
+        "AOS-018-S2",
+        "AOS-018-S3"
+      ],
+      "case_ids": [
+        "AOS-018-TC01",
+        "AOS-018-TC02",
+        "AOS-018-TC03",
+        "AOS-018-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-013-F01",
+      "aos_id": "AOS-013",
+      "source_kind": "F",
+      "source_clause": "Schema `research_source_snapshot` includes request URL, verified terminal URL, redirects, timestamp, status, type, byte limit, SHA-256 raw fetch hash, normalized text hash, extractor version, privacy class and encrypted/protected store key.",
+      "slice_ids": [
+        "AOS-013-S1",
+        "AOS-013-S2",
+        "AOS-013-S3"
+      ],
+      "case_ids": [
+        "AOS-013-TC01",
+        "AOS-013-TC02",
+        "AOS-013-TC03",
+        "AOS-013-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-013-F02",
+      "aos_id": "AOS-013",
+      "source_kind": "F",
+      "source_clause": "Retain source text with stable UTF-8 offsets and extractor-specific mapping to original bytes where possible; passages referenced as `(source_id,start,end,normalization_version)`.",
+      "slice_ids": [
+        "AOS-013-S1",
+        "AOS-013-S2",
+        "AOS-013-S3"
+      ],
+      "case_ids": [
+        "AOS-013-TC01",
+        "AOS-013-TC02",
+        "AOS-013-TC03",
+        "AOS-013-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-013-F03",
+      "aos_id": "AOS-013",
+      "source_kind": "F",
+      "source_clause": "`claim_evidence` stores claim text/hash, one-to-many source passage refs, quote-match status, support verdict, conflict set and source-fetch errors.",
+      "slice_ids": [
+        "AOS-013-S1",
+        "AOS-013-S2",
+        "AOS-013-S3"
+      ],
+      "case_ids": [
+        "AOS-013-TC01",
+        "AOS-013-TC02",
+        "AOS-013-TC03",
+        "AOS-013-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-013-F04",
+      "aos_id": "AOS-013",
+      "source_kind": "F",
+      "source_clause": "Canonical source IDs only minted by trusted reader, not model text; static corpus fixtures for redirects, corrupted/truncated content, table extraction ambiguity.",
+      "slice_ids": [
+        "AOS-013-S1",
+        "AOS-013-S2",
+        "AOS-013-S3"
+      ],
+      "case_ids": [
+        "AOS-013-TC01",
+        "AOS-013-TC02",
+        "AOS-013-TC03",
+        "AOS-013-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-013-AC01",
+      "aos_id": "AOS-013",
+      "source_kind": "AC",
+      "source_clause": "Invalid source ID, missing passage, offset outside snapshot, changed source body, and fabricated URL all rejected.",
+      "slice_ids": [
+        "AOS-013-S1",
+        "AOS-013-S2",
+        "AOS-013-S3"
+      ],
+      "case_ids": [
+        "AOS-013-TC01",
+        "AOS-013-TC02",
+        "AOS-013-TC03",
+        "AOS-013-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-013-AC02",
+      "aos_id": "AOS-013",
+      "source_kind": "AC",
+      "source_clause": "Exact-quote fixture passes only when normalization recorded; page with truncated table marked insufficient, not invented.",
+      "slice_ids": [
+        "AOS-013-S1",
+        "AOS-013-S2",
+        "AOS-013-S3"
+      ],
+      "case_ids": [
+        "AOS-013-TC01",
+        "AOS-013-TC02",
+        "AOS-013-TC03",
+        "AOS-013-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-013-AC03",
+      "aos_id": "AOS-013",
+      "source_kind": "AC",
+      "source_clause": "Fetch records immutable; claim verdict references explicit extractor version and source hash.",
+      "slice_ids": [
+        "AOS-013-S1",
+        "AOS-013-S2",
+        "AOS-013-S3"
+      ],
+      "case_ids": [
+        "AOS-013-TC01",
+        "AOS-013-TC02",
+        "AOS-013-TC03",
+        "AOS-013-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-019-F01",
+      "aos_id": "AOS-019",
+      "source_kind": "F",
+      "source_clause": "Define `SearchProvider.search(query, constraints)` for configured API and optional SearXNG. Search query is off-device disclosure (including SearXNG upstream engines), recorded with consent/provider/labels. No search from Restricted tasks unless explicitly local-only index.",
+      "slice_ids": [
+        "AOS-019-S1",
+        "AOS-019-S2",
+        "AOS-019-S3"
+      ],
+      "case_ids": [
+        "AOS-019-TC01",
+        "AOS-019-TC02",
+        "AOS-019-TC03",
+        "AOS-019-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-019-F02",
+      "aos_id": "AOS-019",
+      "source_kind": "F",
+      "source_clause": "`FetchBroker.fetch(url)` validates scheme, port, hostname, resolved IP sets (IPv4/IPv6), redirects, proxy bypass, content type, max bytes/time/redirects and protocol downgrade; deny private/loopback/link-local/metadata/multicast and IPv4-mapped IPv6 as appropriate. Re-resolve/validate on every redirect and connect to pinned, checked address to resist DNS rebinding.",
+      "slice_ids": [
+        "AOS-019-S1",
+        "AOS-019-S2",
+        "AOS-019-S3"
+      ],
+      "case_ids": [
+        "AOS-019-TC01",
+        "AOS-019-TC02",
+        "AOS-019-TC03",
+        "AOS-019-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-019-F03",
+      "aos_id": "AOS-019",
+      "source_kind": "F",
+      "source_clause": "Network isolation must enforce the decision below application-level URL parser; no ambient browser cookies, cloud auth headers or arbitrary URL schemes.",
+      "slice_ids": [
+        "AOS-019-S1",
+        "AOS-019-S2",
+        "AOS-019-S3"
+      ],
+      "case_ids": [
+        "AOS-019-TC01",
+        "AOS-019-TC02",
+        "AOS-019-TC03",
+        "AOS-019-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-019-F04",
+      "aos_id": "AOS-019",
+      "source_kind": "F",
+      "source_clause": "Results are untrusted candidates; no page text can request a new tool privilege or broaden egress.",
+      "slice_ids": [
+        "AOS-019-S1",
+        "AOS-019-S2",
+        "AOS-019-S3"
+      ],
+      "case_ids": [
+        "AOS-019-TC01",
+        "AOS-019-TC02",
+        "AOS-019-TC03",
+        "AOS-019-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-019-AC01",
+      "aos_id": "AOS-019",
+      "source_kind": "AC",
+      "source_clause": "SSRF fixture: 127.0.0.1, RFC1918, 169.254.169.254, DNS rebinding, IPv6 loopback, redirect to internal IP, alternative encoding blocked in resolver and sandbox.",
+      "slice_ids": [
+        "AOS-019-S1",
+        "AOS-019-S2",
+        "AOS-019-S3"
+      ],
+      "case_ids": [
+        "AOS-019-TC01",
+        "AOS-019-TC02",
+        "AOS-019-TC03",
+        "AOS-019-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-019-AC02",
+      "aos_id": "AOS-019",
+      "source_kind": "AC",
+      "source_clause": "Invalid content-type/oversized response safely terminated; search API failure not silently retried to a different provider.",
+      "slice_ids": [
+        "AOS-019-S1",
+        "AOS-019-S2",
+        "AOS-019-S3"
+      ],
+      "case_ids": [
+        "AOS-019-TC01",
+        "AOS-019-TC02",
+        "AOS-019-TC03",
+        "AOS-019-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-019-AC03",
+      "aos_id": "AOS-019",
+      "source_kind": "AC",
+      "source_clause": "SearXNG JSON 403 when not configured becomes explicit setup error; tests prove query count recorded as outbound disclosure.",
+      "slice_ids": [
+        "AOS-019-S1",
+        "AOS-019-S2",
+        "AOS-019-S3"
+      ],
+      "case_ids": [
+        "AOS-019-TC01",
+        "AOS-019-TC02",
+        "AOS-019-TC03",
+        "AOS-019-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-020-F01",
+      "aos_id": "AOS-020",
+      "source_kind": "F",
+      "source_clause": "Implement read-only `ReaderWorker` process/container with only fetch API capability; convert approved HTML/plain-text documents to normalized text with source ID, canonical URL, content hash, extractor version and passage offsets.",
+      "slice_ids": [
+        "AOS-020-S1",
+        "AOS-020-S2",
+        "AOS-020-S3"
+      ],
+      "case_ids": [
+        "AOS-020-TC01",
+        "AOS-020-TC02",
+        "AOS-020-TC03",
+        "AOS-020-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-020-F02",
+      "aos_id": "AOS-020",
+      "source_kind": "F",
+      "source_clause": "Segregate reader from synthesis worker, which gets structured text observations not executable page instructions; reader has no private mounts, Git repo, secrets, agent provider auth or general tool dispatch.",
+      "slice_ids": [
+        "AOS-020-S1",
+        "AOS-020-S2",
+        "AOS-020-S3"
+      ],
+      "case_ids": [
+        "AOS-020-TC01",
+        "AOS-020-TC02",
+        "AOS-020-TC03",
+        "AOS-020-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-020-F03",
+      "aos_id": "AOS-020",
+      "source_kind": "F",
+      "source_clause": "Reject truncated/malformed extract rather than claim complete source; record content limitations for tables/PDF/scripted sites. Avoid open-ended crawling; bound max pages, bytes and depth.",
+      "slice_ids": [
+        "AOS-020-S1",
+        "AOS-020-S2",
+        "AOS-020-S3"
+      ],
+      "case_ids": [
+        "AOS-020-TC01",
+        "AOS-020-TC02",
+        "AOS-020-TC03",
+        "AOS-020-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-020-AC01",
+      "aos_id": "AOS-020",
+      "source_kind": "AC",
+      "source_clause": "Every displayed citation resolves to a retained source snapshot. Corrupt/changed source hash causes refusal.",
+      "slice_ids": [
+        "AOS-020-S1",
+        "AOS-020-S2",
+        "AOS-020-S3"
+      ],
+      "case_ids": [
+        "AOS-020-TC01",
+        "AOS-020-TC02",
+        "AOS-020-TC03",
+        "AOS-020-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-020-AC02",
+      "aos_id": "AOS-020",
+      "source_kind": "AC",
+      "source_clause": "Malicious webpage asks for shell command/exfil: no actor gets request and no privileged tool invoked.",
+      "slice_ids": [
+        "AOS-020-S1",
+        "AOS-020-S2",
+        "AOS-020-S3"
+      ],
+      "case_ids": [
+        "AOS-020-TC01",
+        "AOS-020-TC02",
+        "AOS-020-TC03",
+        "AOS-020-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-020-AC03",
+      "aos_id": "AOS-020",
+      "source_kind": "AC",
+      "source_clause": "Extraction truncation and nontext document yield explicit incomplete evidence; duplicate URL fetches create versioned snapshots.",
+      "slice_ids": [
+        "AOS-020-S1",
+        "AOS-020-S2",
+        "AOS-020-S3"
+      ],
+      "case_ids": [
+        "AOS-020-TC01",
+        "AOS-020-TC02",
+        "AOS-020-TC03",
+        "AOS-020-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-021-F01",
+      "aos_id": "AOS-021",
+      "source_kind": "F",
+      "source_clause": "Integrate candidate `verified-research-brief` skill after inspection. Parse brief into structured claims, citations, quotations and passage offsets; reject source IDs not minted from retained fetches.",
+      "slice_ids": [
+        "AOS-021-S1",
+        "AOS-021-S2",
+        "AOS-021-S3"
+      ],
+      "case_ids": [
+        "AOS-021-TC01",
+        "AOS-021-TC02",
+        "AOS-021-TC03",
+        "AOS-021-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-021-F02",
+      "aos_id": "AOS-021",
+      "source_kind": "F",
+      "source_clause": "Exact quote normalization policy must specify Unicode NFKC or NFC choice, whitespace collapsing, HTML entity handling, punctuation and case behavior; retain both original and normalized snippets, and never normalize away substantive edits.",
+      "slice_ids": [
+        "AOS-021-S1",
+        "AOS-021-S2",
+        "AOS-021-S3"
+      ],
+      "case_ids": [
+        "AOS-021-TC01",
+        "AOS-021-TC02",
+        "AOS-021-TC03",
+        "AOS-021-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-021-F03",
+      "aos_id": "AOS-021",
+      "source_kind": "F",
+      "source_clause": "Each claim uses real `source_id`, `start/end` and extractor version; offsets checked against source SHA. `SUPPORTED` requires subsequent AOS-022 semantic check; citation check alone yields `EVIDENCE_PRESENT`, not factual support.",
+      "slice_ids": [
+        "AOS-021-S1",
+        "AOS-021-S2",
+        "AOS-021-S3"
+      ],
+      "case_ids": [
+        "AOS-021-TC01",
+        "AOS-021-TC02",
+        "AOS-021-TC03",
+        "AOS-021-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-021-F04",
+      "aos_id": "AOS-021",
+      "source_kind": "F",
+      "source_clause": "Deterministic verifier must operate without remote model and be rerunnable against immutable fixtures.",
+      "slice_ids": [
+        "AOS-021-S1",
+        "AOS-021-S2",
+        "AOS-021-S3"
+      ],
+      "case_ids": [
+        "AOS-021-TC01",
+        "AOS-021-TC02",
+        "AOS-021-TC03",
+        "AOS-021-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-021-AC01",
+      "aos_id": "AOS-021",
+      "source_kind": "AC",
+      "source_clause": "Pass exact quote with expected Unicode/whitespace normalization; reject fabricated quotation, out-of-range passage, URL-only citation and hash mismatch.",
+      "slice_ids": [
+        "AOS-021-S1",
+        "AOS-021-S2",
+        "AOS-021-S3"
+      ],
+      "case_ids": [
+        "AOS-021-TC01",
+        "AOS-021-TC02",
+        "AOS-021-TC03",
+        "AOS-021-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-021-AC02",
+      "aos_id": "AOS-021",
+      "source_kind": "AC",
+      "source_clause": "Claim with real source but unrelated passage passes source/quote check only and remains awaiting support review.",
+      "slice_ids": [
+        "AOS-021-S1",
+        "AOS-021-S2",
+        "AOS-021-S3"
+      ],
+      "case_ids": [
+        "AOS-021-TC01",
+        "AOS-021-TC02",
+        "AOS-021-TC03",
+        "AOS-021-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-021-AC03",
+      "aos_id": "AOS-021",
+      "source_kind": "AC",
+      "source_clause": "Fixtures are deterministic across process restarts; re-extraction with new version records new mapping not silent overwrite.",
+      "slice_ids": [
+        "AOS-021-S1",
+        "AOS-021-S2",
+        "AOS-021-S3"
+      ],
+      "case_ids": [
+        "AOS-021-TC01",
+        "AOS-021-TC02",
+        "AOS-021-TC03",
+        "AOS-021-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-022-F01",
+      "aos_id": "AOS-022",
+      "source_kind": "F",
+      "source_clause": "Create a labeled fixture set with supported, unsupported, partially supported, conflicting and opinion/interpretation claims; calibrate adjudicator rubric with actual human labels.",
+      "slice_ids": [
+        "AOS-022-S1",
+        "AOS-022-S2",
+        "AOS-022-S3"
+      ],
+      "case_ids": [
+        "AOS-022-TC01",
+        "AOS-022-TC02",
+        "AOS-022-TC03",
+        "AOS-022-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-022-F02",
+      "aos_id": "AOS-022",
+      "source_kind": "F",
+      "source_clause": "Use deterministic checks first. For semantic entailment, choose an independent model family where policy/hardware allow; on local-only hardware use local verifier with explicitly lower confidence and `UNKNOWN` when insufficient.",
+      "slice_ids": [
+        "AOS-022-S1",
+        "AOS-022-S2",
+        "AOS-022-S3"
+      ],
+      "case_ids": [
+        "AOS-022-TC01",
+        "AOS-022-TC02",
+        "AOS-022-TC03",
+        "AOS-022-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-022-F03",
+      "aos_id": "AOS-022",
+      "source_kind": "F",
+      "source_clause": "Allow abstention. Treat multiple sources that repeat the same unsupported assertion as correlated, not independent corroboration. Do not claim 100% factual correctness from a second LLM.",
+      "slice_ids": [
+        "AOS-022-S1",
+        "AOS-022-S2",
+        "AOS-022-S3"
+      ],
+      "case_ids": [
+        "AOS-022-TC01",
+        "AOS-022-TC02",
+        "AOS-022-TC03",
+        "AOS-022-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-022-F04",
+      "aos_id": "AOS-022",
+      "source_kind": "F",
+      "source_clause": "User output surfaces per-claim support verdict, uncertainty, evidence passage, contradiction IDs and human corrections.",
+      "slice_ids": [
+        "AOS-022-S1",
+        "AOS-022-S2",
+        "AOS-022-S3"
+      ],
+      "case_ids": [
+        "AOS-022-TC01",
+        "AOS-022-TC02",
+        "AOS-022-TC03",
+        "AOS-022-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-022-AC01",
+      "aos_id": "AOS-022",
+      "source_kind": "AC",
+      "source_clause": "Labeled examples: fabricated claim with valid URL rejected; contradicted claim flagged; true excerpt receives supported; ambiguous interpretation marked not strictly factual.",
+      "slice_ids": [
+        "AOS-022-S1",
+        "AOS-022-S2",
+        "AOS-022-S3"
+      ],
+      "case_ids": [
+        "AOS-022-TC01",
+        "AOS-022-TC02",
+        "AOS-022-TC03",
+        "AOS-022-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-022-AC02",
+      "aos_id": "AOS-022",
+      "source_kind": "AC",
+      "source_clause": "Verifier offline/unavailable returns UNKNOWN and requires edit/abstain; no auto-promotion of unverified claim.",
+      "slice_ids": [
+        "AOS-022-S1",
+        "AOS-022-S2",
+        "AOS-022-S3"
+      ],
+      "case_ids": [
+        "AOS-022-TC01",
+        "AOS-022-TC02",
+        "AOS-022-TC03",
+        "AOS-022-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-022-AC03",
+      "aos_id": "AOS-022",
+      "source_kind": "AC",
+      "source_clause": "Source conflict preserved rather than majority vote over duplicates.",
+      "slice_ids": [
+        "AOS-022-S1",
+        "AOS-022-S2",
+        "AOS-022-S3"
+      ],
+      "case_ids": [
+        "AOS-022-TC01",
+        "AOS-022-TC02",
+        "AOS-022-TC03",
+        "AOS-022-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-023-F01",
+      "aos_id": "AOS-023",
+      "source_kind": "F",
+      "source_clause": "Ask/Delegate/Build API routes remain distinct; R2 Delegate accepts a bounded question, allowed search providers, per-task fetch/latency/budget constraints and permitted topic data classes.",
+      "slice_ids": [
+        "AOS-023-S1",
+        "AOS-023-S2",
+        "AOS-023-S3"
+      ],
+      "case_ids": [
+        "AOS-023-TC01",
+        "AOS-023-TC02",
+        "AOS-023-TC03",
+        "AOS-023-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-023-F02",
+      "aos_id": "AOS-023",
+      "source_kind": "F",
+      "source_clause": "Planner breaks request into ≤N research subqueries, calls approved search provider, fetcher and isolated reader; synthesizer constructs structured claim and source list; all factual claims go through source/quote and semantic support pipeline.",
+      "slice_ids": [
+        "AOS-023-S1",
+        "AOS-023-S2",
+        "AOS-023-S3"
+      ],
+      "case_ids": [
+        "AOS-023-TC01",
+        "AOS-023-TC02",
+        "AOS-023-TC03",
+        "AOS-023-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-023-F03",
+      "aos_id": "AOS-023",
+      "source_kind": "F",
+      "source_clause": "Result includes objective question summary, evidence-backed claims, links/source snapshot IDs, uncertainty/contradictions, retrieval errors and fact-check results. Explicitly reject authenticated/private browsing and executable site instructions.",
+      "slice_ids": [
+        "AOS-023-S1",
+        "AOS-023-S2",
+        "AOS-023-S3"
+      ],
+      "case_ids": [
+        "AOS-023-TC01",
+        "AOS-023-TC02",
+        "AOS-023-TC03",
+        "AOS-023-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-023-F04",
+      "aos_id": "AOS-023",
+      "source_kind": "F",
+      "source_clause": "R2 security gates include SSRF, DNS rebinding, prompt-injection reader/actor split and provider search disclosure logging.",
+      "slice_ids": [
+        "AOS-023-S1",
+        "AOS-023-S2",
+        "AOS-023-S3"
+      ],
+      "case_ids": [
+        "AOS-023-TC01",
+        "AOS-023-TC02",
+        "AOS-023-TC03",
+        "AOS-023-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-023-AC01",
+      "aos_id": "AOS-023",
+      "source_kind": "AC",
+      "source_clause": "D-1: ≥5 fixture briefs including fabricated quote, fabricated URL, claim contradiction, injection and SSRF attempt. All negative fixtures explicitly fail/abstain.",
+      "slice_ids": [
+        "AOS-023-S1",
+        "AOS-023-S2",
+        "AOS-023-S3"
+      ],
+      "case_ids": [
+        "AOS-023-TC01",
+        "AOS-023-TC02",
+        "AOS-023-TC03",
+        "AOS-023-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-023-AC02",
+      "aos_id": "AOS-023",
+      "source_kind": "AC",
+      "source_clause": "One authorized live public-web brief completes and every displayed citation resolves to retained successfully fetched source.",
+      "slice_ids": [
+        "AOS-023-S1",
+        "AOS-023-S2",
+        "AOS-023-S3"
+      ],
+      "case_ids": [
+        "AOS-023-TC01",
+        "AOS-023-TC02",
+        "AOS-023-TC03",
+        "AOS-023-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-023-AC03",
+      "aos_id": "AOS-023",
+      "source_kind": "AC",
+      "source_clause": "Network-disabled Ask still operates unchanged; no delegated task can open user secrets or call shell actor.",
+      "slice_ids": [
+        "AOS-023-S1",
+        "AOS-023-S2",
+        "AOS-023-S3"
+      ],
+      "case_ids": [
+        "AOS-023-TC01",
+        "AOS-023-TC02",
+        "AOS-023-TC03",
+        "AOS-023-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-024-F01",
+      "aos_id": "AOS-024",
+      "source_kind": "F",
+      "source_clause": "Implement Codex CLI adapter using officially supported headless/JSON interface and signed-in user's own permitted account. Do not handle consumer credentials directly or pool accounts; background usage requires express consent if applicable.",
+      "slice_ids": [
+        "AOS-024-S1",
+        "AOS-024-S2",
+        "AOS-024-S3"
+      ],
+      "case_ids": [
+        "AOS-024-TC01",
+        "AOS-024-TC02",
+        "AOS-024-TC03",
+        "AOS-024-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-024-F02",
+      "aos_id": "AOS-024",
+      "source_kind": "F",
+      "source_clause": "Pin binary/protocol version; validate auth status using supported commands, protect config state from repo files, constrain execution worktree and tool permissions; never inherit arbitrary unattended approvals.",
+      "slice_ids": [
+        "AOS-024-S1",
+        "AOS-024-S2",
+        "AOS-024-S3"
+      ],
+      "case_ids": [
+        "AOS-024-TC01",
+        "AOS-024-TC02",
+        "AOS-024-TC03",
+        "AOS-024-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-024-F03",
+      "aos_id": "AOS-024",
+      "source_kind": "F",
+      "source_clause": "Map Codex events/errors/usage to common schema; differentiate auth-required, 429, failure, structured output parse failure, no native resume and uncertain process effects.",
+      "slice_ids": [
+        "AOS-024-S1",
+        "AOS-024-S2",
+        "AOS-024-S3"
+      ],
+      "case_ids": [
+        "AOS-024-TC01",
+        "AOS-024-TC02",
+        "AOS-024-TC03",
+        "AOS-024-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-024-F04",
+      "aos_id": "AOS-024",
+      "source_kind": "F",
+      "source_clause": "Adapter testing uses recorded sanitized synthetic events plus live optional smoke tests only on a synthetic repo under user consent.",
+      "slice_ids": [
+        "AOS-024-S1",
+        "AOS-024-S2",
+        "AOS-024-S3"
+      ],
+      "case_ids": [
+        "AOS-024-TC01",
+        "AOS-024-TC02",
+        "AOS-024-TC03",
+        "AOS-024-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-024-AC01",
+      "aos_id": "AOS-024",
+      "source_kind": "AC",
+      "source_clause": "Synthetic Codex JSON fixture parses to normalized events; corrupted stream and unknown field fail safely.",
+      "slice_ids": [
+        "AOS-024-S1",
+        "AOS-024-S2",
+        "AOS-024-S3"
+      ],
+      "case_ids": [
+        "AOS-024-TC01",
+        "AOS-024-TC02",
+        "AOS-024-TC03",
+        "AOS-024-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-024-AC02",
+      "aos_id": "AOS-024",
+      "source_kind": "AC",
+      "source_clause": "Malicious repo config cannot widen worktree or command scope. Cancellation, timeout, unauthorized auth and 429 yield correct states.",
+      "slice_ids": [
+        "AOS-024-S1",
+        "AOS-024-S2",
+        "AOS-024-S3"
+      ],
+      "case_ids": [
+        "AOS-024-TC01",
+        "AOS-024-TC02",
+        "AOS-024-TC03",
+        "AOS-024-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-024-AC03",
+      "aos_id": "AOS-024",
+      "source_kind": "AC",
+      "source_clause": "Parallel adapter test verifies no Claude-specific fields leak into kernel API.",
+      "slice_ids": [
+        "AOS-024-S1",
+        "AOS-024-S2",
+        "AOS-024-S3"
+      ],
+      "case_ids": [
+        "AOS-024-TC01",
+        "AOS-024-TC02",
+        "AOS-024-TC03",
+        "AOS-024-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-025-F01",
+      "aos_id": "AOS-025",
+      "source_kind": "F",
+      "source_clause": "Planner consumes immutable goal contract, project inventory and capabilities, produces typed DAG with task IDs, required worker/tools, expected artifact/check and dependency edges. Enforce bounded task count, depth and budget before admission.",
+      "slice_ids": [
+        "AOS-025-S1",
+        "AOS-025-S2",
+        "AOS-025-S3"
+      ],
+      "case_ids": [
+        "AOS-025-TC01",
+        "AOS-025-TC02",
+        "AOS-025-TC03",
+        "AOS-025-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-025-F02",
+      "aos_id": "AOS-025",
+      "source_kind": "F",
+      "source_clause": "Use direct structured local/model call first, optionally a small LangGraph plan-review-revise subgraph where actual cycles justify it. LangGraph checkpoint never becomes authoritative task state.",
+      "slice_ids": [
+        "AOS-025-S1",
+        "AOS-025-S2",
+        "AOS-025-S3"
+      ],
+      "case_ids": [
+        "AOS-025-TC01",
+        "AOS-025-TC02",
+        "AOS-025-TC03",
+        "AOS-025-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-025-F03",
+      "aos_id": "AOS-025",
+      "source_kind": "F",
+      "source_clause": "On verifier failure, propose a new plan version with reasoning and explicit approval if contract scope, privacy or cost changes. Long-running agents end milestones with a handoff and clean artifacts; prohibit recursive infinite replanning.",
+      "slice_ids": [
+        "AOS-025-S1",
+        "AOS-025-S2",
+        "AOS-025-S3"
+      ],
+      "case_ids": [
+        "AOS-025-TC01",
+        "AOS-025-TC02",
+        "AOS-025-TC03",
+        "AOS-025-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-025-AC01",
+      "aos_id": "AOS-025",
+      "source_kind": "AC",
+      "source_clause": "Planner output with cycles, missing acceptance checks or unapproved capability rejected.",
+      "slice_ids": [
+        "AOS-025-S1",
+        "AOS-025-S2",
+        "AOS-025-S3"
+      ],
+      "case_ids": [
+        "AOS-025-TC01",
+        "AOS-025-TC02",
+        "AOS-025-TC03",
+        "AOS-025-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-025-AC02",
+      "aos_id": "AOS-025",
+      "source_kind": "AC",
+      "source_clause": "Bounded replan terminates after configured attempts; changing contract scope needs new approved version.",
+      "slice_ids": [
+        "AOS-025-S1",
+        "AOS-025-S2",
+        "AOS-025-S3"
+      ],
+      "case_ids": [
+        "AOS-025-TC01",
+        "AOS-025-TC02",
+        "AOS-025-TC03",
+        "AOS-025-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-025-AC03",
+      "aos_id": "AOS-025",
+      "source_kind": "AC",
+      "source_clause": "A simple synthetic one-task plan works without LangGraph; graph mode yields equivalent task contract with traceable decisions.",
+      "slice_ids": [
+        "AOS-025-S1",
+        "AOS-025-S2",
+        "AOS-025-S3"
+      ],
+      "case_ids": [
+        "AOS-025-TC01",
+        "AOS-025-TC02",
+        "AOS-025-TC03",
+        "AOS-025-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-026-F01",
+      "aos_id": "AOS-026",
+      "source_kind": "F",
+      "source_clause": "Task DAG scheduler determines ready nodes, leases worker attempts with fencing epochs, admits only after effective trust/privacy/autonomy, quota, cost and resource constraints.",
+      "slice_ids": [
+        "AOS-026-S1",
+        "AOS-026-S2",
+        "AOS-026-S3"
+      ],
+      "case_ids": [
+        "AOS-026-TC01",
+        "AOS-026-TC02",
+        "AOS-026-TC03",
+        "AOS-026-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-026-F02",
+      "aos_id": "AOS-026",
+      "source_kind": "F",
+      "source_clause": "Each worker receives isolated checked-out worktree branch; common ancestor tracked, diff hashes and merge-conflict checks done before integration. Limit WIP/concurrent harness processes; support queue priorities and urgent reserve without subscription quota abuse.",
+      "slice_ids": [
+        "AOS-026-S1",
+        "AOS-026-S2",
+        "AOS-026-S3"
+      ],
+      "case_ids": [
+        "AOS-026-TC01",
+        "AOS-026-TC02",
+        "AOS-026-TC03",
+        "AOS-026-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-026-F03",
+      "aos_id": "AOS-026",
+      "source_kind": "F",
+      "source_clause": "On GPU/foreground pressure no new heavy workers admitted, current work deferred safely; mismatched provider plan entitlement never silently falls back to unapproved cloud.",
+      "slice_ids": [
+        "AOS-026-S1",
+        "AOS-026-S2",
+        "AOS-026-S3"
+      ],
+      "case_ids": [
+        "AOS-026-TC01",
+        "AOS-026-TC02",
+        "AOS-026-TC03",
+        "AOS-026-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-026-F04",
+      "aos_id": "AOS-026",
+      "source_kind": "F",
+      "source_clause": "On a conflict, stop automatic merge and present verifier/owner with alternatives; do not allow agent A to overwrite B's artifacts.",
+      "slice_ids": [
+        "AOS-026-S1",
+        "AOS-026-S2",
+        "AOS-026-S3"
+      ],
+      "case_ids": [
+        "AOS-026-TC01",
+        "AOS-026-TC02",
+        "AOS-026-TC03",
+        "AOS-026-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-026-AC01",
+      "aos_id": "AOS-026",
+      "source_kind": "AC",
+      "source_clause": "Two workers modify disjoint files and pass tests; conflicting same-line edits stop before protected merge.",
+      "slice_ids": [
+        "AOS-026-S1",
+        "AOS-026-S2",
+        "AOS-026-S3"
+      ],
+      "case_ids": [
+        "AOS-026-TC01",
+        "AOS-026-TC02",
+        "AOS-026-TC03",
+        "AOS-026-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-026-AC02",
+      "aos_id": "AOS-026",
+      "source_kind": "AC",
+      "source_clause": "Concurrency cap enforced under 8 competing synthetic jobs; stale attempt cannot publish; failure of one does not falsely complete dependent tasks.",
+      "slice_ids": [
+        "AOS-026-S1",
+        "AOS-026-S2",
+        "AOS-026-S3"
+      ],
+      "case_ids": [
+        "AOS-026-TC01",
+        "AOS-026-TC02",
+        "AOS-026-TC03",
+        "AOS-026-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-026-AC03",
+      "aos_id": "AOS-026",
+      "source_kind": "AC",
+      "source_clause": "Quota unknown route receives conservative behavior and Restricted never cloud-falls-back.",
+      "slice_ids": [
+        "AOS-026-S1",
+        "AOS-026-S2",
+        "AOS-026-S3"
+      ],
+      "case_ids": [
+        "AOS-026-TC01",
+        "AOS-026-TC02",
+        "AOS-026-TC03",
+        "AOS-026-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027b-F01",
+      "aos_id": "AOS-027b",
+      "source_kind": "F",
+      "source_clause": "Extend the AOS-027a service after AOS-026. Collect fenced worker results, detect conflicts, construct the integrated candidate tree and run the complete required check set on that tree; reuse the R1 approval and evidence contracts.",
+      "slice_ids": [
+        "AOS-027b-S1",
+        "AOS-027b-S2",
+        "AOS-027b-S3"
+      ],
+      "case_ids": [
+        "AOS-027b-TC01",
+        "AOS-027b-TC02",
+        "AOS-027b-TC03",
+        "AOS-027b-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027b-F02",
+      "aos_id": "AOS-027b",
+      "source_kind": "F",
+      "source_clause": "Verifier must run against the **candidate final tree** (post-integration for multiworker), not only each worktree's isolated passing tests. Use pinned known test commands with timeout and output limit; file diff signed with commit/tree SHA.",
+      "slice_ids": [
+        "AOS-027b-S1",
+        "AOS-027b-S2",
+        "AOS-027b-S3"
+      ],
+      "case_ids": [
+        "AOS-027b-TC01",
+        "AOS-027b-TC02",
+        "AOS-027b-TC03",
+        "AOS-027b-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027b-F03",
+      "aos_id": "AOS-027b",
+      "source_kind": "F",
+      "source_clause": "Protected merge requires approval digest binding exact candidate commit, destination branch, check set, project/action policy version and expiry. Revalidate immediately before side effect; unexpected external effect goes RECONCILING.",
+      "slice_ids": [
+        "AOS-027b-S1",
+        "AOS-027b-S2",
+        "AOS-027b-S3"
+      ],
+      "case_ids": [
+        "AOS-027b-TC01",
+        "AOS-027b-TC02",
+        "AOS-027b-TC03",
+        "AOS-027b-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027b-F04",
+      "aos_id": "AOS-027b",
+      "source_kind": "F",
+      "source_clause": "Missing evidence, failed/UNKNOWN checks, modified diff after approval or policy mismatch means no merge.",
+      "slice_ids": [
+        "AOS-027b-S1",
+        "AOS-027b-S2",
+        "AOS-027b-S3"
+      ],
+      "case_ids": [
+        "AOS-027b-TC01",
+        "AOS-027b-TC02",
+        "AOS-027b-TC03",
+        "AOS-027b-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027b-AC01",
+      "aos_id": "AOS-027b",
+      "source_kind": "AC",
+      "source_clause": "Two independently passing worker trees whose integrated result fails tests must be rejected. A stale/fenced result cannot enter the integrated candidate; overlapping changes require an explicit reviewed resolution and fresh check run.",
+      "slice_ids": [
+        "AOS-027b-S1",
+        "AOS-027b-S2",
+        "AOS-027b-S3"
+      ],
+      "case_ids": [
+        "AOS-027b-TC01",
+        "AOS-027b-TC02",
+        "AOS-027b-TC03",
+        "AOS-027b-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027b-AC02",
+      "aos_id": "AOS-027b",
+      "source_kind": "AC",
+      "source_clause": "Rebase changes candidate hash: old approval invalid. Inject lost response after mock merge: no duplicate merge; unresolved state requires reconciliation.",
+      "slice_ids": [
+        "AOS-027b-S1",
+        "AOS-027b-S2",
+        "AOS-027b-S3"
+      ],
+      "case_ids": [
+        "AOS-027b-TC01",
+        "AOS-027b-TC02",
+        "AOS-027b-TC03",
+        "AOS-027b-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-027b-AC03",
+      "aos_id": "AOS-027b",
+      "source_kind": "AC",
+      "source_clause": "Two-worker tree tests re-run after integration; passing isolated suites insufficient when combined result fails.",
+      "slice_ids": [
+        "AOS-027b-S1",
+        "AOS-027b-S2",
+        "AOS-027b-S3"
+      ],
+      "case_ids": [
+        "AOS-027b-TC01",
+        "AOS-027b-TC02",
+        "AOS-027b-TC03",
+        "AOS-027b-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-028-F01",
+      "aos_id": "AOS-028",
+      "source_kind": "F",
+      "source_clause": "React/Vite typed client generated from OpenAPI; goal/task list and detail, event timeline, approval inbox, artifact/diff/test evidence and three distinct inputs. Focus keyboard/accessible minimal workflows before graphs.",
+      "slice_ids": [
+        "AOS-028-S1",
+        "AOS-028-S2",
+        "AOS-028-S3"
+      ],
+      "case_ids": [
+        "AOS-028-TC01",
+        "AOS-028-TC02",
+        "AOS-028-TC03",
+        "AOS-028-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-028-F02",
+      "aos_id": "AOS-028",
+      "source_kind": "F",
+      "source_clause": "SSE with event cursors, reconnect/backfill and idempotent reducer; reconcile with canonical API after reconnect. Handle unknown/RECONCILING/approval states explicitly, never optimistic display of COMPLETED.",
+      "slice_ids": [
+        "AOS-028-S1",
+        "AOS-028-S2",
+        "AOS-028-S3"
+      ],
+      "case_ids": [
+        "AOS-028-TC01",
+        "AOS-028-TC02",
+        "AOS-028-TC03",
+        "AOS-028-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-028-F03",
+      "aos_id": "AOS-028",
+      "source_kind": "F",
+      "source_clause": "Host/origin/CSRF and local authorization integrated with AOS-009; hide Restricted content from unauthorized client context; safe markdown/source rendering and no executable HTML.",
+      "slice_ids": [
+        "AOS-028-S1",
+        "AOS-028-S2",
+        "AOS-028-S3"
+      ],
+      "case_ids": [
+        "AOS-028-TC01",
+        "AOS-028-TC02",
+        "AOS-028-TC03",
+        "AOS-028-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-028-F04",
+      "aos_id": "AOS-028",
+      "source_kind": "F",
+      "source_clause": "Optional trace links to Phoenix and display accessible vs observed egress, unknown usage not $0.",
+      "slice_ids": [
+        "AOS-028-S1",
+        "AOS-028-S2",
+        "AOS-028-S3"
+      ],
+      "case_ids": [
+        "AOS-028-TC01",
+        "AOS-028-TC02",
+        "AOS-028-TC03",
+        "AOS-028-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-028-AC01",
+      "aos_id": "AOS-028",
+      "source_kind": "AC",
+      "source_clause": "Browser reconnect midway through workflow shows all events exactly once in UI.",
+      "slice_ids": [
+        "AOS-028-S1",
+        "AOS-028-S2",
+        "AOS-028-S3"
+      ],
+      "case_ids": [
+        "AOS-028-TC01",
+        "AOS-028-TC02",
+        "AOS-028-TC03",
+        "AOS-028-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-028-AC02",
+      "aos_id": "AOS-028",
+      "source_kind": "AC",
+      "source_clause": "Approval preview mismatch or stale digest blocks submission; task remains pending on network errors.",
+      "slice_ids": [
+        "AOS-028-S1",
+        "AOS-028-S2",
+        "AOS-028-S3"
+      ],
+      "case_ids": [
+        "AOS-028-TC01",
+        "AOS-028-TC02",
+        "AOS-028-TC03",
+        "AOS-028-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-028-AC03",
+      "aos_id": "AOS-028",
+      "source_kind": "AC",
+      "source_clause": "Keyboard navigation/contrast and no secret content in URL/logs; cross-origin mutation denied.",
+      "slice_ids": [
+        "AOS-028-S1",
+        "AOS-028-S2",
+        "AOS-028-S3"
+      ],
+      "case_ids": [
+        "AOS-028-TC01",
+        "AOS-028-TC02",
+        "AOS-028-TC03",
+        "AOS-028-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-029-F01",
+      "aos_id": "AOS-029",
+      "source_kind": "F",
+      "source_clause": "Emit OTel traces (task/attempt/policy/route/check) with privacy-aware sampling; run Phoenix locally as optional service in Compose and ensure AgentOS works if Phoenix down.",
+      "slice_ids": [
+        "AOS-029-S1",
+        "AOS-029-S2",
+        "AOS-029-S3"
+      ],
+      "case_ids": [
+        "AOS-029-TC01",
+        "AOS-029-TC02",
+        "AOS-029-TC03",
+        "AOS-029-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-029-F02",
+      "aos_id": "AOS-029",
+      "source_kind": "F",
+      "source_clause": "Usage/cost labels known, estimated, unknown; separate plan quota estimates and actual paid API/overage; reconcile provider errors and account limits only by officially supported paths.",
+      "slice_ids": [
+        "AOS-029-S1",
+        "AOS-029-S2",
+        "AOS-029-S3"
+      ],
+      "case_ids": [
+        "AOS-029-TC01",
+        "AOS-029-TC02",
+        "AOS-029-TC03",
+        "AOS-029-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-029-F03",
+      "aos_id": "AOS-029",
+      "source_kind": "F",
+      "source_clause": "Exposure view shows accessible manifest for encrypted remote CLI workspace, explicit authorized payload policy and OS/network observed metadata, with provider and consent reference.",
+      "slice_ids": [
+        "AOS-029-S1",
+        "AOS-029-S2",
+        "AOS-029-S3"
+      ],
+      "case_ids": [
+        "AOS-029-TC01",
+        "AOS-029-TC02",
+        "AOS-029-TC03",
+        "AOS-029-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-029-F04",
+      "aos_id": "AOS-029",
+      "source_kind": "F",
+      "source_clause": "Ensure no raw tokens, excluded paths, credentials or arbitrary full prompt bodies in telemetry, even on exception.",
+      "slice_ids": [
+        "AOS-029-S1",
+        "AOS-029-S2",
+        "AOS-029-S3"
+      ],
+      "case_ids": [
+        "AOS-029-TC01",
+        "AOS-029-TC02",
+        "AOS-029-TC03",
+        "AOS-029-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-029-AC01",
+      "aos_id": "AOS-029",
+      "source_kind": "AC",
+      "source_clause": "Synthetic secret injected in prompt/env never appears in Phoenix/log/event; export disable has no effect on correctness.",
+      "slice_ids": [
+        "AOS-029-S1",
+        "AOS-029-S2",
+        "AOS-029-S3"
+      ],
+      "case_ids": [
+        "AOS-029-TC01",
+        "AOS-029-TC02",
+        "AOS-029-TC03",
+        "AOS-029-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-029-AC02",
+      "aos_id": "AOS-029",
+      "source_kind": "AC",
+      "source_clause": "Unknown provider token usage remains unknown; no '$0' fallback in UI. Encrypted CLI egress report says accessible vs observed, not guessed payload.",
+      "slice_ids": [
+        "AOS-029-S1",
+        "AOS-029-S2",
+        "AOS-029-S3"
+      ],
+      "case_ids": [
+        "AOS-029-TC01",
+        "AOS-029-TC02",
+        "AOS-029-TC03",
+        "AOS-029-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-029-AC03",
+      "aos_id": "AOS-029",
+      "source_kind": "AC",
+      "source_clause": "Can trace one goal through task→worker→verifier→approval across restart.",
+      "slice_ids": [
+        "AOS-029-S1",
+        "AOS-029-S2",
+        "AOS-029-S3"
+      ],
+      "case_ids": [
+        "AOS-029-TC01",
+        "AOS-029-TC02",
+        "AOS-029-TC03",
+        "AOS-029-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-030-F01",
+      "aos_id": "AOS-030",
+      "source_kind": "F",
+      "source_clause": "Create immutable gate manifest referencing each fixture/test run, component version, hardware, provider, sandbox profile and approval evidence. A-1 offline Ask (ten prompts and source-linked recall); D-1 verified research with malicious web fixtures; B-1 crash-safe two-worker Build with hostile configs.",
+      "slice_ids": [
+        "AOS-030-S1",
+        "AOS-030-S2",
+        "AOS-030-S3"
+      ],
+      "case_ids": [
+        "AOS-030-TC01",
+        "AOS-030-TC02",
+        "AOS-030-TC03",
+        "AOS-030-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-030-F02",
+      "aos_id": "AOS-030",
+      "source_kind": "F",
+      "source_clause": "Execute six fault drills: ambiguous external effect, prompt injection, exhausted entitlement, GPU pressure, false-done and approval-change-after-crash. Also test independent trust/privacy/autonomy mutations and reboots.",
+      "slice_ids": [
+        "AOS-030-S1",
+        "AOS-030-S2",
+        "AOS-030-S3"
+      ],
+      "case_ids": [
+        "AOS-030-TC01",
+        "AOS-030-TC02",
+        "AOS-030-TC03",
+        "AOS-030-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-030-F03",
+      "aos_id": "AOS-030",
+      "source_kind": "F",
+      "source_clause": "Record task completion, user corrections, approval burdens, refusal reasons, disk/resource pressure and verified data egress. Run 14 days daily under consented personal scope, distinguishing blockers from deferred features.",
+      "slice_ids": [
+        "AOS-030-S1",
+        "AOS-030-S2",
+        "AOS-030-S3"
+      ],
+      "case_ids": [
+        "AOS-030-TC01",
+        "AOS-030-TC02",
+        "AOS-030-TC03",
+        "AOS-030-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-030-F04",
+      "aos_id": "AOS-030",
+      "source_kind": "F",
+      "source_clause": "Every failed P0 security gate blocks release; confidence summaries avoid unjustified numerical significance on small N.",
+      "slice_ids": [
+        "AOS-030-S1",
+        "AOS-030-S2",
+        "AOS-030-S3"
+      ],
+      "case_ids": [
+        "AOS-030-TC01",
+        "AOS-030-TC02",
+        "AOS-030-TC03",
+        "AOS-030-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-030-AC01",
+      "aos_id": "AOS-030",
+      "source_kind": "AC",
+      "source_clause": "All required fixture tests pass without network escape, duplicate external effects or false-completion.",
+      "slice_ids": [
+        "AOS-030-S1",
+        "AOS-030-S2",
+        "AOS-030-S3"
+      ],
+      "case_ids": [
+        "AOS-030-TC01",
+        "AOS-030-TC02",
+        "AOS-030-TC03",
+        "AOS-030-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-030-AC02",
+      "aos_id": "AOS-030",
+      "source_kind": "AC",
+      "source_clause": "Two-week observed period shows no confirmed policy or task-state integrity breach; incidents root-caused with regression tests.",
+      "slice_ids": [
+        "AOS-030-S1",
+        "AOS-030-S2",
+        "AOS-030-S3"
+      ],
+      "case_ids": [
+        "AOS-030-TC01",
+        "AOS-030-TC02",
+        "AOS-030-TC03",
+        "AOS-030-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "AOS-030-AC03",
+      "aos_id": "AOS-030",
+      "source_kind": "AC",
+      "source_clause": "Unverified provider features and known missing hardware outcomes documented rather than green.",
+      "slice_ids": [
+        "AOS-030-S1",
+        "AOS-030-S2",
+        "AOS-030-S3"
+      ],
+      "case_ids": [
+        "AOS-030-TC01",
+        "AOS-030-TC02",
+        "AOS-030-TC03",
+        "AOS-030-TC04"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    }
+  ]
+}

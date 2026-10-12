@@ -1,0 +1,11 @@
+---
+description: Implement one evidence-backed Panestria R0-R3 slice at a time
+alwaysApply: true
+---
+Read selected AOS slice and actual dependency code/evidence. Preserve unrelated changes.
+Use one src/panestria distribution. Kernel owns task/approval/effect/budget state; UI/models cannot authorize or declare completion.
+Use canonical verifier types, task_event, effect_digest, scoped identities and atomic datasource state/event transactions. External effects require intent/receipt/reconciliation.
+Create meaningful tests for source requirement IDs. Record actual results; NOT_RUN/SKIP/UNKNOWN is not PASS. Mocks cannot certify required live adapter/hardware/OS boundaries.
+Do not edit frozen references, weaken checks, introduce privilege bypass, provision credentials, publish/push/merge, or implement R4+ from a slice request. Live/account/OS provisioning needs its actual scoped authorization.
+Read design files explicitly. This rule is coding guidance, not an OS sandbox or policy grant.
+Stop after selected slice; report evidence, pending work and rollback.

@@ -1,0 +1,1625 @@
+{
+  "project": "panestria",
+  "roadmap_revision": 2,
+  "baseline_version": "v0.6.1",
+  "baseline_revision": "planning-fixes-1",
+  "repository_url": "https://github.com/yogeshnaren/panestria",
+  "repository_inspected": true,
+  "mvp": {
+    "boundary": "R3",
+    "owner_confirmed_boundary": true,
+    "aos_item_count": 31,
+    "state": "NOT_STARTED",
+    "candidate_commit": null,
+    "gate_manifest": null,
+    "trial_days_required": 14,
+    "owner_acceptance": "PENDING",
+    "sota_implementation_authorized": false
+  },
+  "phases": [
+    {
+      "release": "R0",
+      "title": "Durable synthetic kernel",
+      "track": "MVP",
+      "outcome": "A synthetic goal runs through durable mock work, independent verification and exact approval; restart preserves state.",
+      "gate": "G0",
+      "status": "IN_PROGRESS",
+      "gate_status": "NOT_RUN",
+      "items": [
+        {
+          "id": "AOS-001",
+          "title": "Repository scaffold, developer toolchain, CI and local services",
+          "dependencies": [],
+          "status": "IN_PROGRESS",
+          "planning_format": "checklist",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [
+            "evidence/AOS-001.xml",
+            "evidence/AOS-001-S1/case-result.json"
+          ],
+          "plan_status": "S1_CORRECTIONS_AWAITING_ACCEPTANCE",
+          "plan_ref": "plans/AOS-001-implementation-plan.md"
+        },
+        {
+          "id": "AOS-002",
+          "title": "Goal contracts, tasks, attempts and database migration v1",
+          "dependencies": [
+            "AOS-001"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-002-implementation-plan.md"
+        },
+        {
+          "id": "AOS-003",
+          "title": "DBOS-backed durable single-task execution and recovery",
+          "dependencies": [
+            "AOS-002"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-003-implementation-plan.md"
+        },
+        {
+          "id": "AOS-004",
+          "title": "Synthetic worker, isolated Git workspace and deterministic verification",
+          "dependencies": [
+            "AOS-003"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "checklist",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-004-implementation-plan.md"
+        },
+        {
+          "id": "AOS-005",
+          "title": "Minimal goal/approval API and CLI end-to-end synthetic slice",
+          "dependencies": [
+            "AOS-003",
+            "AOS-004"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-005-implementation-plan.md"
+        }
+      ]
+    },
+    {
+      "release": "R1",
+      "title": "Personal alpha: offline Ask and one-worker Build",
+      "track": "MVP",
+      "outcome": "A useful private local assistant and one hardened Claude Code worker with scoped memory, evidence and approvals.",
+      "gate": "G1",
+      "status": "DRAFT",
+      "gate_status": "NOT_RUN",
+      "items": [
+        {
+          "id": "AOS-006",
+          "title": "Lease fencing, retry bounds, outbox and external-action reconciliation",
+          "dependencies": [
+            "AOS-003"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-006-implementation-plan.md"
+        },
+        {
+          "id": "AOS-007",
+          "title": "Independent project trust, data privacy and autonomy policy model",
+          "dependencies": [
+            "AOS-002"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-007-implementation-plan.md"
+        },
+        {
+          "id": "AOS-008",
+          "title": "Sandbox profiles, mount validation and enforceable outbound controls",
+          "dependencies": [
+            "AOS-004",
+            "AOS-007"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-008-implementation-plan.md"
+        },
+        {
+          "id": "AOS-009",
+          "title": "Loopback API authentication, host/origin hardening and approvals",
+          "dependencies": [
+            "AOS-005",
+            "AOS-007"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-009-implementation-plan.md"
+        },
+        {
+          "id": "AOS-010",
+          "title": "Hardened Claude Code worker adapter and hostile-repository tests",
+          "dependencies": [
+            "AOS-004",
+            "AOS-008",
+            "AOS-009"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-010-implementation-plan.md"
+        },
+        {
+          "id": "AOS-027a",
+          "title": "Single-worker verification and protected merge approval",
+          "dependencies": [
+            "AOS-004",
+            "AOS-009",
+            "AOS-010"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-027a-implementation-plan.md"
+        },
+        {
+          "id": "AOS-011",
+          "title": "Source-linked personal memory schema and five-stage use events",
+          "dependencies": [
+            "AOS-002"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-011-implementation-plan.md"
+        },
+        {
+          "id": "AOS-012",
+          "title": "Routing outcomes, corrections and cloud-exposure event contracts",
+          "dependencies": [
+            "AOS-002",
+            "AOS-007"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-012-implementation-plan.md"
+        },
+        {
+          "id": "AOS-014",
+          "title": "OpenTelemetry correlation, canonical event replay and SSE",
+          "dependencies": [
+            "AOS-003",
+            "AOS-012"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-014-implementation-plan.md"
+        },
+        {
+          "id": "AOS-015",
+          "title": "Hardware probe integration and versioned capability manifest",
+          "dependencies": [
+            "AOS-001"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-015-implementation-plan.md"
+        },
+        {
+          "id": "AOS-016",
+          "title": "Local inference adapter and warm/cold/pressure benchmarking",
+          "dependencies": [
+            "AOS-011",
+            "AOS-015"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-016-implementation-plan.md"
+        },
+        {
+          "id": "AOS-017",
+          "title": "Offline Ask and source-scoped memory interaction",
+          "dependencies": [
+            "AOS-011",
+            "AOS-016"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-017-implementation-plan.md"
+        },
+        {
+          "id": "AOS-018",
+          "title": "Offline, degraded-mode and foreground-resource safety tests",
+          "dependencies": [
+            "AOS-015",
+            "AOS-016",
+            "AOS-017"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-018-implementation-plan.md"
+        }
+      ]
+    },
+    {
+      "release": "R2",
+      "title": "Research alpha: verified Delegate",
+      "track": "MVP",
+      "outcome": "A bounded public-web research brief with fetched source hashes, exact passages, support judgments and isolated retrieval.",
+      "gate": "G2",
+      "status": "DRAFT",
+      "gate_status": "NOT_RUN",
+      "items": [
+        {
+          "id": "AOS-013",
+          "title": "Research source snapshots, hashes, passage spans and claim evidence",
+          "dependencies": [
+            "AOS-002",
+            "AOS-008"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-013-implementation-plan.md"
+        },
+        {
+          "id": "AOS-019",
+          "title": "Search abstraction and SSRF-safe web retrieval broker",
+          "dependencies": [
+            "AOS-008",
+            "AOS-009",
+            "AOS-013"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-019-implementation-plan.md"
+        },
+        {
+          "id": "AOS-020",
+          "title": "Quarantined web reader and immutable source provenance",
+          "dependencies": [
+            "AOS-013",
+            "AOS-019"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-020-implementation-plan.md"
+        },
+        {
+          "id": "AOS-021",
+          "title": "Deterministic source citation and exact quotation verifier",
+          "dependencies": [
+            "AOS-020"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-021-implementation-plan.md"
+        },
+        {
+          "id": "AOS-022",
+          "title": "Claim-support adjudication, contradiction and uncertainty labeling",
+          "dependencies": [
+            "AOS-021",
+            "AOS-016"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-022-implementation-plan.md"
+        },
+        {
+          "id": "AOS-023",
+          "title": "Bounded Delegate planner, research brief output and R2 gate",
+          "dependencies": [
+            "AOS-019",
+            "AOS-020",
+            "AOS-021",
+            "AOS-022"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-023-implementation-plan.md"
+        }
+      ]
+    },
+    {
+      "release": "R3",
+      "title": "Complete MVP: two-worker Build and Mission Control",
+      "track": "MVP",
+      "outcome": "Offline Ask, verified Delegate and concurrent Build work together with genuine task status, evidence, approvals, traces and exposure records.",
+      "gate": "G3",
+      "status": "DRAFT",
+      "gate_status": "NOT_RUN",
+      "items": [
+        {
+          "id": "AOS-024",
+          "title": "Codex supported CLI adapter and contract suite",
+          "dependencies": [
+            "AOS-004",
+            "AOS-008",
+            "AOS-010"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-024-implementation-plan.md"
+        },
+        {
+          "id": "AOS-025",
+          "title": "Build task DAG and bounded LangGraph reasoning/replan",
+          "dependencies": [
+            "AOS-003",
+            "AOS-016"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-025-implementation-plan.md"
+        },
+        {
+          "id": "AOS-026",
+          "title": "Concurrent two-worker scheduler, worktree conflict control and admission",
+          "dependencies": [
+            "AOS-006",
+            "AOS-010",
+            "AOS-024",
+            "AOS-025"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-026-implementation-plan.md"
+        },
+        {
+          "id": "AOS-027b",
+          "title": "Integrated multi-worker verification and protected merge",
+          "dependencies": [
+            "AOS-027a",
+            "AOS-026"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-027b-implementation-plan.md"
+        },
+        {
+          "id": "AOS-028",
+          "title": "React Mission Control task views, approvals and event replay",
+          "dependencies": [
+            "AOS-005",
+            "AOS-014",
+            "AOS-017",
+            "AOS-023",
+            "AOS-027b"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-028-implementation-plan.md"
+        },
+        {
+          "id": "AOS-029",
+          "title": "OTel/Phoenix tracing, cost/usage confidence and exposure dashboard",
+          "dependencies": [
+            "AOS-012",
+            "AOS-014",
+            "AOS-028"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-029-implementation-plan.md"
+        },
+        {
+          "id": "AOS-030",
+          "title": "A-1/D-1/B-1 acceptance, chaos and two-week dogfood gate",
+          "dependencies": [
+            "AOS-017",
+            "AOS-018",
+            "AOS-019",
+            "AOS-020",
+            "AOS-021",
+            "AOS-022",
+            "AOS-023",
+            "AOS-024",
+            "AOS-025",
+            "AOS-026",
+            "AOS-027b",
+            "AOS-028",
+            "AOS-029"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": [],
+          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_ref": "plans/AOS-030-implementation-plan.md"
+        }
+      ]
+    },
+    {
+      "release": "R4",
+      "title": "SOTA: routing, quotas and compute",
+      "track": "SOTA",
+      "outcome": "Measured quality/cost routing and an adaptive foreground-aware governor with benchmark-supported inference choices.",
+      "gate": "G4",
+      "status": "DRAFT_BLOCKED_BY_MVP_REVIEW",
+      "gate_status": "NOT_RUN",
+      "items": [
+        {
+          "id": "AOS-031",
+          "title": "Provider subscription entitlement telemetry and consented quota-aware routing",
+          "dependencies": [
+            "AOS-012",
+            "AOS-026",
+            "AOS-029"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": []
+        },
+        {
+          "id": "AOS-032",
+          "title": "Controlled inference engine comparison: Ollama, vLLM and SGLang",
+          "dependencies": [
+            "AOS-015",
+            "AOS-016",
+            "AOS-031"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": []
+        },
+        {
+          "id": "AOS-033",
+          "title": "Adaptive quota/resource governor and optional secure API gateway",
+          "dependencies": [
+            "AOS-026",
+            "AOS-031",
+            "AOS-032"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": []
+        }
+      ]
+    },
+    {
+      "release": "R5",
+      "title": "SOTA: context, memory and daily-use surfaces",
+      "track": "SOTA",
+      "outcome": "Rich context and retrieval, voice/hotkey/tray/mobile/app integrations and scoped computer use.",
+      "gate": "G5",
+      "status": "DRAFT_BLOCKED_BY_MVP_REVIEW",
+      "gate_status": "NOT_RUN",
+      "items": [
+        {
+          "id": "AOS-034",
+          "title": "Provenance-aware context compiler, hybrid RAG, voice and quick desktop UX",
+          "dependencies": [
+            "AOS-011",
+            "AOS-017",
+            "AOS-029"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": []
+        },
+        {
+          "id": "AOS-035",
+          "title": "Sandboxed computer use and authorized desktop/browser integrations",
+          "dependencies": [
+            "AOS-008",
+            "AOS-019",
+            "AOS-034"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": []
+        }
+      ]
+    },
+    {
+      "release": "R6",
+      "title": "SOTA: evaluated adaptation and capability discovery",
+      "track": "SOTA",
+      "outcome": "Versioned replay/shadow evaluation, safe skill/model/tool proposals, memory compaction/forgetting and reversible improvements.",
+      "gate": "G6",
+      "status": "DRAFT_BLOCKED_BY_MVP_REVIEW",
+      "gate_status": "NOT_RUN",
+      "items": [
+        {
+          "id": "AOS-036",
+          "title": "Offline evaluation, gated improvement, skill registry and memory lifecycle",
+          "dependencies": [
+            "AOS-012",
+            "AOS-013",
+            "AOS-021",
+            "AOS-022",
+            "AOS-034"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": []
+        }
+      ]
+    },
+    {
+      "release": "R7",
+      "title": "SOTA: portability, multi-machine and public distribution",
+      "track": "SOTA",
+      "outcome": "Independently installable signed releases, cross-platform conformance, scoped remote workers, restore/upgrade and sustained operations.",
+      "gate": "G7",
+      "status": "DRAFT_BLOCKED_BY_MVP_REVIEW",
+      "gate_status": "NOT_RUN",
+      "items": [
+        {
+          "id": "AOS-037",
+          "title": "Portable open-source release, multi-machine evaluation and sustained operations",
+          "dependencies": [
+            "AOS-001",
+            "AOS-002",
+            "AOS-003",
+            "AOS-004",
+            "AOS-005",
+            "AOS-006",
+            "AOS-007",
+            "AOS-008",
+            "AOS-009",
+            "AOS-010",
+            "AOS-011",
+            "AOS-012",
+            "AOS-013",
+            "AOS-014",
+            "AOS-015",
+            "AOS-016",
+            "AOS-017",
+            "AOS-018",
+            "AOS-019",
+            "AOS-020",
+            "AOS-021",
+            "AOS-022",
+            "AOS-023",
+            "AOS-024",
+            "AOS-025",
+            "AOS-026",
+            "AOS-027b",
+            "AOS-028",
+            "AOS-029",
+            "AOS-030",
+            "AOS-031",
+            "AOS-032",
+            "AOS-033",
+            "AOS-034",
+            "AOS-035",
+            "AOS-036"
+          ],
+          "status": "NOT_STARTED",
+          "planning_format": "full",
+          "slice_developer_days_target": 1,
+          "evidence_refs": []
+        }
+      ]
+    }
+  ],
+  "capability_coverage": [
+    {
+      "name": "Goals and objectives",
+      "source_section": "2",
+      "baseline_target_text": "Conversational goals; multi-project priorities; recurring objectives; deadlines and preference-aware trade-offs",
+      "baseline_mvp_text": "Immutable goal contract, explicit priority, acceptance tests, user review",
+      "mvp_aos": [
+        "002",
+        "005",
+        "025"
+      ],
+      "expansion_phases": [
+        "R4",
+        "R6"
+      ],
+      "expansion_aos": [
+        "033",
+        "036"
+      ],
+      "planned_behavior": "Deadlines, recurring objectives, multi-project priorities and proactive/value-of-information proposals",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Task DAG",
+      "source_section": "2",
+      "baseline_target_text": "Incremental plan decomposition, dependencies, critical path, incremental replans",
+      "baseline_mvp_text": "Versioned DAG with basic parent/dependency edges",
+      "mvp_aos": [
+        "002",
+        "025"
+      ],
+      "expansion_phases": [
+        "R4",
+        "R6"
+      ],
+      "expansion_aos": [
+        "033",
+        "036"
+      ],
+      "planned_behavior": "Critical-path/resource/value-aware scheduling and richer bounded replanning",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Agent lifecycle",
+      "source_section": "2",
+      "baseline_target_text": "Spawn, assign, observe, suspend/resume, cancel, supervise, replace agents",
+      "baseline_mvp_text": "Claude Code + Codex attempts and local model call; explicit state machine",
+      "mvp_aos": [
+        "003",
+        "004",
+        "006",
+        "010",
+        "024",
+        "026"
+      ],
+      "expansion_phases": [
+        "R6",
+        "R7"
+      ],
+      "expansion_aos": [
+        "036",
+        "037"
+      ],
+      "planned_behavior": "Additional reviewed adapters, replacement/supervision and remote lifecycle",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Durable workflows",
+      "source_section": "2",
+      "baseline_target_text": "Persistent timers, approvals, retries, distributed recovery, side-effect reconciliation",
+      "baseline_mvp_text": "DBOS/Postgres persisted steps; crash tests; idempotent external calls",
+      "mvp_aos": [
+        "003",
+        "006"
+      ],
+      "expansion_phases": [
+        "R7"
+      ],
+      "expansion_aos": [
+        "037"
+      ],
+      "planned_behavior": "Long waits/timers and optional distributed recovery on measured multi-host needs",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Multi-agent concurrency",
+      "source_section": "2",
+      "baseline_target_text": "Adaptive parallelism across heterogeneous workers and machines",
+      "baseline_mvp_text": "At least 2 independent worktree workers",
+      "mvp_aos": [
+        "026",
+        "027b"
+      ],
+      "expansion_phases": [
+        "R4",
+        "R7"
+      ],
+      "expansion_aos": [
+        "033",
+        "037"
+      ],
+      "planned_behavior": "Adaptive concurrency, fair admission and heterogeneous host scheduling",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Long-running work",
+      "source_section": "2",
+      "baseline_target_text": "Milestone contracts, intermittent verification, context refresh, safe checkpoint/resume",
+      "baseline_mvp_text": "Goal → plan → work → tests → review with bounded attempts",
+      "mvp_aos": [
+        "002",
+        "003",
+        "025",
+        "027b"
+      ],
+      "expansion_phases": [
+        "R6",
+        "R7"
+      ],
+      "expansion_aos": [
+        "036",
+        "037"
+      ],
+      "planned_behavior": "Milestone handoffs, fresh-session context, supervisor interventions and extended recovery",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Local steward",
+      "source_section": "2",
+      "baseline_target_text": "Constantly accessible local triage, personalization, and low-cost routing",
+      "baseline_mvp_text": "**Offline Ask** with local model, network-disabled test, deterministic kernel fallback",
+      "mvp_aos": [
+        "015",
+        "016",
+        "017",
+        "018"
+      ],
+      "expansion_phases": [
+        "R5",
+        "R6"
+      ],
+      "expansion_aos": [
+        "034",
+        "036"
+      ],
+      "planned_behavior": "Provenance-aware personalization and on-demand resident/small/CPU placement",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Planner/supervisor",
+      "source_section": "2",
+      "baseline_target_text": "Multi-model planning, conditional subgraphs, critique/replan",
+      "baseline_mvp_text": "Minimal schema-checked plan/verify for Delegate and Build; LangGraph only for useful loops",
+      "mvp_aos": [
+        "023",
+        "025"
+      ],
+      "expansion_phases": [
+        "R4",
+        "R6"
+      ],
+      "expansion_aos": [
+        "033",
+        "036"
+      ],
+      "planned_behavior": "Task-value scheduling, independent critique/verifier ensembles and gated replan policies",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Harness broker",
+      "source_section": "2",
+      "baseline_target_text": "ACP/native adapters, per-vendor permissions, quota/safety/quality routing",
+      "baseline_mvp_text": "Version-pinned official Claude Code/Codex adapters",
+      "mvp_aos": [
+        "010",
+        "024"
+      ],
+      "expansion_phases": [
+        "R6",
+        "R7"
+      ],
+      "expansion_aos": [
+        "036",
+        "037"
+      ],
+      "planned_behavior": "Additional native harness/ACP candidates; only compatible scoped adapters enabled",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Token broker",
+      "source_section": "2",
+      "baseline_target_text": "Local/API routing with capability, latency, privacy and budget optimization",
+      "baseline_mvp_text": "Ollama + one API SDK via stable contract",
+      "mvp_aos": [
+        "012",
+        "016",
+        "029"
+      ],
+      "expansion_phases": [
+        "R4",
+        "R7"
+      ],
+      "expansion_aos": [
+        "031",
+        "032",
+        "033",
+        "037"
+      ],
+      "planned_behavior": "Raw local/API inference contract, eligibility/latency/cost routing and extra serving backends; MVP-X01 tracks the baseline SDK path",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Model serving",
+      "source_section": "2",
+      "baseline_target_text": "Ollama, vLLM, SGLang, llama.cpp, MLX, dynamic model swap",
+      "baseline_mvp_text": "Ollama; collect baseline latency/quality/capacity",
+      "mvp_aos": [
+        "015",
+        "016"
+      ],
+      "expansion_phases": [
+        "R4",
+        "R7"
+      ],
+      "expansion_aos": [
+        "032",
+        "033",
+        "037"
+      ],
+      "planned_behavior": "Matched inference experiments, quantization/offload/batching/cache/affinity and native Apple profile",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Subscription entitlement",
+      "source_section": "2",
+      "baseline_target_text": "Legitimate official harness/app paths, telemetry, forecasting, pause/reset scheduling",
+      "baseline_mvp_text": "Explicit opt-in, CLI login external to AgentOS, capacity unknown/exhausted handling",
+      "mvp_aos": [
+        "010",
+        "012",
+        "024",
+        "026",
+        "029"
+      ],
+      "expansion_phases": [
+        "R4"
+      ],
+      "expansion_aos": [
+        "031",
+        "033"
+      ],
+      "planned_behavior": "Approved telemetry/forecasting, capacity reserves and uncertainty-aware quotas",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "API cost optimization",
+      "source_section": "2",
+      "baseline_target_text": "Monthly caps, hard/soft limits, shadow price, quality-adjusted routing",
+      "baseline_mvp_text": "Actual spend/accounting + hard stop; no speculative optimizer required",
+      "mvp_aos": [
+        "006",
+        "012",
+        "026",
+        "029"
+      ],
+      "expansion_phases": [
+        "R4"
+      ],
+      "expansion_aos": [
+        "031",
+        "033"
+      ],
+      "planned_behavior": "Hard stops before advanced pacing/shadow price/quality-adjusted value optimization",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Hardware discovery",
+      "source_section": "2",
+      "baseline_target_text": "Profile memory/capability/GPU/CPU bandwidth and model fit; cross-host pool",
+      "baseline_mvp_text": "**MUST:** run existing `hwprobe.py` if available (validate provenance), detect RTX/VRAM, benchmark/select local steward, record manifest",
+      "mvp_aos": [
+        "015",
+        "016",
+        "018"
+      ],
+      "expansion_phases": [
+        "R4",
+        "R7"
+      ],
+      "expansion_aos": [
+        "032",
+        "033",
+        "037"
+      ],
+      "planned_behavior": "Actual measured manifests and benchmark-based per-host model/engine placement",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Resource governor",
+      "source_section": "2",
+      "baseline_target_text": "Foreground awareness, thermal/power modes, GPU eviction/admission",
+      "baseline_mvp_text": "CPU/RAM/VRAM ceilings, max processes, AC/battery signals if present",
+      "mvp_aos": [
+        "018",
+        "026"
+      ],
+      "expansion_phases": [
+        "R4",
+        "R7"
+      ],
+      "expansion_aos": [
+        "033",
+        "037"
+      ],
+      "planned_behavior": "Thermal/battery/foreground modes, fair budgets, specialist slots and safe eviction",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Context compiler",
+      "source_section": "2",
+      "baseline_target_text": "Native worktree packs for each harness, task- and privacy-scoped",
+      "baseline_mvp_text": "Global/project instructions + task summary, allowlisted paths",
+      "mvp_aos": [
+        "010",
+        "011",
+        "024",
+        "025"
+      ],
+      "expansion_phases": [
+        "R5"
+      ],
+      "expansion_aos": [
+        "034"
+      ],
+      "planned_behavior": "Cross-harness source/skill lineage, token budgets, privacy filters and pack hashes",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Persistent memory",
+      "source_section": "2",
+      "baseline_target_text": "Episodic, semantic, procedural, preferences, temporal provenance",
+      "baseline_mvp_text": "**Phase 0 schema/events; Phase 1 Ask lookup** with citations and retrieval counters",
+      "mvp_aos": [
+        "011",
+        "017"
+      ],
+      "expansion_phases": [
+        "R5",
+        "R6"
+      ],
+      "expansion_aos": [
+        "034",
+        "036"
+      ],
+      "planned_behavior": "Identity/preferences, project decisions, facts, episodes, procedural skills and routing statistics",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Advanced RAG",
+      "source_section": "2",
+      "baseline_target_text": "Hybrid retrieval, reranking, grounded citations, eval-driven compaction",
+      "baseline_mvp_text": "Basic owner-scoped FTS and source-linked lookup for Ask; rich hybrid/compaction later",
+      "mvp_aos": [
+        "011",
+        "017"
+      ],
+      "expansion_phases": [
+        "R5",
+        "R6"
+      ],
+      "expansion_aos": [
+        "034",
+        "036"
+      ],
+      "planned_behavior": "FTS/embeddings/hybrid/rerank candidates with paired retrieval/utility evaluation",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Memory lifecycle",
+      "source_section": "2",
+      "baseline_target_text": "Hot/warm/cold/deletion, lineage, decay, compaction, forgetting",
+      "baseline_mvp_text": "Provenance and delete interface; retention policy foundations",
+      "mvp_aos": [
+        "011",
+        "017"
+      ],
+      "expansion_phases": [
+        "R6"
+      ],
+      "expansion_aos": [
+        "036"
+      ],
+      "planned_behavior": "Suppression baseline then hot/warm/cold/tombstones, lineage/pins, decay/compaction and erasure",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Tool/MCP registry",
+      "source_section": "2",
+      "baseline_target_text": "Capability and risk manifests, on-demand discovery, verified installs",
+      "baseline_mvp_text": "Allowlisted local tools only; user-approved MCP addition",
+      "mvp_aos": [
+        "008",
+        "010",
+        "024",
+        "025"
+      ],
+      "expansion_phases": [
+        "R5",
+        "R6",
+        "R7"
+      ],
+      "expansion_aos": [
+        "034",
+        "035",
+        "036",
+        "037"
+      ],
+      "planned_behavior": "Static manifest baseline; scoped MCP frontend, semantic registry/scout and tested external tools",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Agent-to-agent",
+      "source_section": "2",
+      "baseline_target_text": "A2A federation and remote agent discovery",
+      "baseline_mvp_text": "Internal worker interface; no federation required",
+      "mvp_aos": [
+        "024",
+        "025",
+        "026"
+      ],
+      "expansion_phases": [
+        "R7"
+      ],
+      "expansion_aos": [
+        "037"
+      ],
+      "planned_behavior": "Optional ACP/A2A federation and remote discovery with owner-scoped authority",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Computer use",
+      "source_section": "2",
+      "baseline_target_text": "Browser and desktop automation in isolated environments",
+      "baseline_mvp_text": "**MVP permits read-only, quarantined HTTP research fetching**, not general browser/GUI control; full use later",
+      "mvp_aos": [
+        "019",
+        "020"
+      ],
+      "expansion_phases": [
+        "R5"
+      ],
+      "expansion_aos": [
+        "035"
+      ],
+      "planned_behavior": "Observation/actor split, scoped browser/desktop actions, approvals and manual takeover",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Voice",
+      "source_section": "2",
+      "baseline_target_text": "Push-to-talk, local STT, streaming speech, wake word",
+      "baseline_mvp_text": "Text input only",
+      "mvp_aos": [],
+      "expansion_phases": [
+        "R5"
+      ],
+      "expansion_aos": [
+        "034"
+      ],
+      "planned_behavior": "Local STT/TTS, push-to-talk, optional streaming/wake word; capture disabled by default",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Desktop integration",
+      "source_section": "2",
+      "baseline_target_text": "Global hotkey, tray, active-window opt-in, app extensions",
+      "baseline_mvp_text": "Fast text capture via CLI/web, native global hotkey later",
+      "mvp_aos": [
+        "005",
+        "028"
+      ],
+      "expansion_phases": [
+        "R5"
+      ],
+      "expansion_aos": [
+        "034",
+        "035"
+      ],
+      "planned_behavior": "Hotkey/tray, selected window/clipboard context, IDE/office/note-app integration",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Phone/mobile",
+      "source_section": "2",
+      "baseline_target_text": "Tailscale-protected remote monitoring and approvals",
+      "baseline_mvp_text": "Not needed; UI can be responsive",
+      "mvp_aos": [],
+      "expansion_phases": [
+        "R5",
+        "R7"
+      ],
+      "expansion_aos": [
+        "034",
+        "037"
+      ],
+      "planned_behavior": "Authenticated private monitoring/approvals; exposure/remote trust tested",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Mission Control",
+      "source_section": "2",
+      "baseline_target_text": "Fleet/task DAG/quota/resources/cost/quality/trace/security/approval views",
+      "baseline_mvp_text": "Tasks, live events, approvals, artifacts, spend/usage summary",
+      "mvp_aos": [
+        "028",
+        "029"
+      ],
+      "expansion_phases": [
+        "R4",
+        "R5",
+        "R6",
+        "R7"
+      ],
+      "expansion_aos": [
+        "033",
+        "034",
+        "036",
+        "037"
+      ],
+      "planned_behavior": "Fleet/DAG/priorities/quotas/resources/cost/quality/security/memory/skills full views",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Observability",
+      "source_section": "2",
+      "baseline_target_text": "Full OTel, GenAI spans, OTel metrics/logs, Phoenix/Langfuse/optional LangSmith",
+      "baseline_mvp_text": "OTel + Phoenix, audit events, correlation IDs",
+      "mvp_aos": [
+        "014",
+        "029"
+      ],
+      "expansion_phases": [
+        "R4",
+        "R6",
+        "R7"
+      ],
+      "expansion_aos": [
+        "033",
+        "036",
+        "037"
+      ],
+      "planned_behavior": "OTel stable contract, trace/audit separation, eval dashboards and optional telemetry backends",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Cloud exposure ledger",
+      "source_section": "2",
+      "baseline_target_text": "Destination, accessible manifest, authorized payload class, observed egress, consent",
+      "baseline_mvp_text": "Permit/deny events, workspace manifests, endpoint metadata",
+      "mvp_aos": [
+        "008",
+        "012",
+        "029"
+      ],
+      "expansion_phases": [
+        "R5",
+        "R7"
+      ],
+      "expansion_aos": [
+        "035",
+        "037"
+      ],
+      "planned_behavior": "Authorized/accessible/observed data across UI capture, specialists and remote executors",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Security",
+      "source_section": "2",
+      "baseline_target_text": "Isolation, least privilege, threat modeling, signed tool manifests, secret broker",
+      "baseline_mvp_text": "Default-deny egress, restricted workspace, scoped subprocesses, approval gates",
+      "mvp_aos": [
+        "002",
+        "005",
+        "006",
+        "007",
+        "008",
+        "009",
+        "010",
+        "013",
+        "020",
+        "024",
+        "027a",
+        "027b"
+      ],
+      "expansion_phases": [
+        "R5",
+        "R6",
+        "R7"
+      ],
+      "expansion_aos": [
+        "035",
+        "036",
+        "037"
+      ],
+      "planned_behavior": "Baseline boundaries first; hardened tool/UI/remote tiers, scanning/secrets and external review",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Verification",
+      "source_section": "2",
+      "baseline_target_text": "Deterministic tests, independent judges, artifact checks, drift/stall monitors",
+      "baseline_mvp_text": "**Build:** tests/diff checks; **Delegate:** fetched URL+hash, quotation match, claim-support adjudication; **Ask:** offline factual/source safety checks",
+      "mvp_aos": [
+        "004",
+        "017",
+        "021",
+        "022",
+        "027a",
+        "027b",
+        "030"
+      ],
+      "expansion_phases": [
+        "R6"
+      ],
+      "expansion_aos": [
+        "036"
+      ],
+      "planned_behavior": "Independent ensembles, drift/stall monitoring and calibrated human/model evidence",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Evaluation",
+      "source_section": "2",
+      "baseline_target_text": "Frozen replay, per-component routing and memory ablations, cost-per-success",
+      "baseline_mvp_text": "Small fixed test suite + manual evaluation baseline",
+      "mvp_aos": [
+        "017",
+        "022",
+        "027a",
+        "027b",
+        "030"
+      ],
+      "expansion_phases": [
+        "R6",
+        "R7"
+      ],
+      "expansion_aos": [
+        "036",
+        "037"
+      ],
+      "planned_behavior": "Frozen replay/holdout, routing/memory ablations, vendor drift and conformance",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Self-improvement",
+      "source_section": "2",
+      "baseline_target_text": "Candidate mining, GEPA/DSPy, shadow evals, skill/policy approvals, rollback",
+      "baseline_mvp_text": "Capture accepted/rejected outcomes, **no auto-promotion**",
+      "mvp_aos": [
+        "011",
+        "012",
+        "030"
+      ],
+      "expansion_phases": [
+        "R6"
+      ],
+      "expansion_aos": [
+        "036"
+      ],
+      "planned_behavior": "Capture baseline; candidate mining, replay/shadow/canary, approvals and rollback",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Specialist packs",
+      "source_section": "2",
+      "baseline_target_text": "Coding/vision/image/STT/TTS with hardware-aware residency",
+      "baseline_mvp_text": "Primary steward + first coding and research worker profiles; extra packs later",
+      "mvp_aos": [
+        "010",
+        "016",
+        "020",
+        "024"
+      ],
+      "expansion_phases": [
+        "R5",
+        "R6"
+      ],
+      "expansion_aos": [
+        "034",
+        "035",
+        "036"
+      ],
+      "planned_behavior": "Coding/vision/OCR/image/STT/TTS/browser/SQL/science/retrieval/custom/authorized RE packs",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Multi-machine",
+      "source_section": "2",
+      "baseline_target_text": "Assign across user-owned Linux/macOS devices, trust-aware scheduling",
+      "baseline_mvp_text": "Single workstation, remote executor interface deferred",
+      "mvp_aos": [],
+      "expansion_phases": [
+        "R7"
+      ],
+      "expansion_aos": [
+        "037"
+      ],
+      "planned_behavior": "Heterogeneous user-owned worker pool, trust zones, explicit credentials and recovery",
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "Open-source distribution",
+      "source_section": "2",
+      "baseline_target_text": "Signed installer, SBOM, cross-platform matrix, migration tests",
+      "baseline_mvp_text": "Developer setup + documented reproducible install",
+      "mvp_aos": [
+        "001",
+        "030"
+      ],
+      "expansion_phases": [
+        "R7"
+      ],
+      "expansion_aos": [
+        "037"
+      ],
+      "planned_behavior": "Developer setup then signed installer/SBOM/offline bundles/license/upgrade/security response",
+      "implementation_status": "NOT_STARTED"
+    }
+  ],
+  "preservation_pillars": [
+    {
+      "name": "1. Personal omnipresence",
+      "baseline_target_text": "One persistent local AI, global summon hotkey, tray/menu-bar, quiet hours, opt-in screen context, push-to-talk, streaming voice, phone approvals, app extensions",
+      "phases": [
+        "R1",
+        "R3",
+        "R5"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "2. Global task/goal intelligence",
+      "baseline_target_text": "Versioned goal contracts, task DAGs, priority queues, deadlines, proactive proposals, supervisor intervention, value-of-information scheduling, dependent/parallel agents",
+      "phases": [
+        "R0",
+        "R3",
+        "R4",
+        "R6"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "3. Durable execution",
+      "baseline_target_text": "Crash/reboot and weeks-long wait recovery, leases/fencing, heartbeat, idempotency, outbox, reconciliation, human wait, priority & backpressure, multi-machine worker queues",
+      "phases": [
+        "R0",
+        "R1",
+        "R3",
+        "R7"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "4. Two-broker provider abstraction",
+      "baseline_target_text": "Native vendor harnesses and local/cloud raw inference as separate interfaces; ACP/MCP/A2A interop; explicit capabilities rather than pretending subscriptions are API keys",
+      "phases": [
+        "R1",
+        "R3",
+        "R4",
+        "R6",
+        "R7"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "5. Intelligent routing and accounting",
+      "baseline_target_text": "Entitlement state, rate limits, reset forecasting, quota opportunity cost, API daily pacing, plan reserve, task-class success estimates, budget hard stop, provider terms",
+      "phases": [
+        "R1",
+        "R3",
+        "R4"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "6. Local inference serving",
+      "baseline_target_text": "Dynamic model selection, quantization, CPU/GPU offload, GPU affinity, batching, shared-prefix caching, precision/capability testing, active/cold models",
+      "phases": [
+        "R1",
+        "R4",
+        "R7"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "7. Resource-aware good-neighbor OS",
+      "baseline_target_text": "CPU/RAM/VRAM/resource limits, AC/battery, thermals, idle/foreground mode, model eviction/swap, tenant/process isolation, fair scheduling",
+      "phases": [
+        "R1",
+        "R3",
+        "R4",
+        "R7"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "8. Privacy/security governance",
+      "baseline_target_text": "Independent trust/privacy/autonomy; local-only Restricted; inherited labels; least privilege, sandbox, OPA authorization, prompt injection defense, secrets, audited egress and action approval",
+      "phases": [
+        "R0",
+        "R1",
+        "R2",
+        "R3",
+        "R5",
+        "R6",
+        "R7"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "9. Memory as portable asset",
+      "baseline_target_text": "Profile/standing rules, project decisions, factual provenance, episodic memory, reusable skills, RAG documents, metadata, cross-tool context packs, conflict/supersession",
+      "phases": [
+        "R1",
+        "R5",
+        "R6"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "10. Memory lifecycle and forgetting",
+      "baseline_target_text": "Hot/warm/cold/tombstones, value scoring, provenance-aware merging, decays/half-lives, source lineage, user pins, GDPR-like erasure & cryptographic backup policy, eval-based compaction",
+      "phases": [
+        "R1",
+        "R6"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "11. Tool/capability discovery",
+      "baseline_target_text": "Semantic + typed capability registry, MCP Registry scouting, install proposals with permission manifests, signature/pin/scan, empirical quality scores, only task-needed tool descriptors loaded",
+      "phases": [
+        "R1",
+        "R3",
+        "R5",
+        "R6"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "12. Specialist packs",
+      "baseline_target_text": "Load-on-demand coding, browser, vision, image generation, speech transcription, speech synthesis, RE, science/other custom tasks with hardware-adaptive model manifests",
+      "phases": [
+        "R1",
+        "R2",
+        "R3",
+        "R5",
+        "R6"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "13. Human/computer collaboration",
+      "baseline_target_text": "Desktop/window selected context, clipboard capture, browser automation, site permissions, pre-action previews, reusable IDE integrations and human review inbox",
+      "phases": [
+        "R1",
+        "R3",
+        "R5"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "14. Mission Control and observability",
+      "baseline_target_text": "Live fleet, task graph, priorities, quota reset curves, spend by task/provider, logs/traces, risk, skills, memory, test/eval quality, cloud exposure; UI + TUI/API",
+      "phases": [
+        "R1",
+        "R3",
+        "R4",
+        "R5",
+        "R6",
+        "R7"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "15. Continuous measured improvement",
+      "baseline_target_text": "User corrections, memory/routing attribution, frozen + live eval sets, prompt optimizer, skill mining, controlled LoRA/QLoRA of local steward, canary and rollback",
+      "phases": [
+        "R1",
+        "R3",
+        "R6"
+      ],
+      "implementation_status": "NOT_STARTED"
+    },
+    {
+      "name": "16. Portability and open source",
+      "baseline_target_text": "One kernel on CPU-only laptops/Ubuntu NVIDIA/Mac Studio, BYO subscriptions, provider compliance, Apache-2.0 candidate, installer profiles, signed builds, SBOM, offline-first operation",
+      "phases": [
+        "R0",
+        "R3",
+        "R7"
+      ],
+      "implementation_status": "NOT_STARTED"
+    }
+  ],
+  "mvp_baseline_obligations": [
+    {
+      "id": "MVP-X01",
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X02",
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X03",
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X04",
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X05",
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X06",
+      "status": "NOT_STARTED",
+      "evidence_refs": []
+    }
+  ],
+  "repository_baseline_commit": "4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917",
+  "repository_default_branch": "main",
+  "repository_visibility": "public"
+}

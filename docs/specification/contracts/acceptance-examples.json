@@ -1,0 +1,112 @@
+[
+  {
+    "id": "AC-001",
+    "description": "Example trusted-command-ref",
+    "required": true,
+    "verifier": {
+      "type": "trusted-command-ref",
+      "command_ref": "synthetic-test-suite",
+      "expected_exit_code": 0,
+      "timeout_seconds": 30
+    },
+    "evidence": {
+      "required": true,
+      "kind": "trusted-command-ref-report"
+    }
+  },
+  {
+    "id": "AC-002",
+    "description": "Example git-diff-path-check",
+    "required": true,
+    "verifier": {
+      "type": "git-diff-path-check",
+      "allowed_paths": [
+        "src/**",
+        "tests/**"
+      ],
+      "forbidden_paths": [
+        ".env*",
+        ".git/config",
+        "secrets/**"
+      ]
+    },
+    "evidence": {
+      "required": true,
+      "kind": "git-diff-path-check-report"
+    }
+  },
+  {
+    "id": "AC-003",
+    "description": "Example policy-decision",
+    "required": true,
+    "verifier": {
+      "type": "policy-decision",
+      "action": "protected-merge",
+      "expected": "approval-required"
+    },
+    "evidence": {
+      "required": true,
+      "kind": "policy-decision-report"
+    }
+  },
+  {
+    "id": "AC-004",
+    "description": "Example artifact-exists",
+    "required": true,
+    "verifier": {
+      "type": "artifact-exists",
+      "artifact_ref": "synthetic-test-report",
+      "expected_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "evidence": {
+      "required": true,
+      "kind": "artifact-exists-report"
+    }
+  },
+  {
+    "id": "AC-005",
+    "description": "Example human-review",
+    "required": true,
+    "verifier": {
+      "type": "human-review",
+      "reviewer_ref": "local-owner",
+      "evidence_requirements": [
+        "current candidate hash",
+        "review rationale"
+      ]
+    },
+    "evidence": {
+      "required": true,
+      "kind": "human-review-report"
+    }
+  },
+  {
+    "id": "AC-006",
+    "description": "Example citation-check",
+    "required": true,
+    "verifier": {
+      "type": "citation-check",
+      "source_manifest_ref": "sources-v1",
+      "claims_ref": "claims-v1"
+    },
+    "evidence": {
+      "required": true,
+      "kind": "citation-check-report"
+    }
+  },
+  {
+    "id": "AC-007",
+    "description": "Example rubric-review",
+    "required": true,
+    "verifier": {
+      "type": "rubric-review",
+      "rubric_ref": "review-rubric-v1",
+      "calibration_set_ref": "calibration-v1",
+      "reviewer_ref": "local-owner"
+    },
+    "evidence": {
+      "required": true,
+      "kind": "rubric-review-report"
+    }
+  }
+]

@@ -1,0 +1,18 @@
+SKIP  spec validation (pip install skills-ref)
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/hardware-probe/scripts/hwprobe.py --preset omen-8gb --want coding,tts
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/goal-contract/scripts/validate_contract.py /tmp/tmp.8IbPjyIRjj/good.json
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/goal-contract/scripts/validate_contract.py /tmp/tmp.8IbPjyIRjj/bad.json
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/verified-research-brief/scripts/verify_citations.py /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/verified-research-brief/assets/example/brief.md /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/verified-research-brief/assets/example/sources.json
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/verified-research-brief/scripts/verify_citations.py /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/verified-research-brief/assets/example/.bad.md /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/verified-research-brief/assets/example/sources.json
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/claude-code-worker/scripts/prepare_worktree.py /tmp/tmp.8IbPjyIRjj/wt
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/claude-code-worker/scripts/prepare_worktree.py /tmp/tmp.8IbPjyIRjj/wt --apply
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/claude-code-worker/scripts/prepare_worktree.py /tmp/tmp.8IbPjyIRjj/wt
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/claude-code-worker/scripts/run_worker.py --worktree /tmp/tmp.8IbPjyIRjj/wt --prompt-file /tmp/tmp.8IbPjyIRjj/task.md --dry-run
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/egress-preflight/scripts/egress_manifest.py /tmp/tmp.8IbPjyIRjj/ws --policy /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/egress-preflight/assets/egress-policy.example.json --class internal --dest anthropic
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/egress-preflight/scripts/egress_manifest.py /tmp/tmp.8IbPjyIRjj/ws --policy /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/egress-preflight/assets/egress-policy.example.json --class internal --dest anthropic
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/egress-preflight/scripts/egress_manifest.py /tmp/tmp.8IbPjyIRjj/ws --policy /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/egress-preflight/assets/egress-policy.example.json --class restricted --dest openai
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/milestone-handoff/scripts/check_features.py /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/milestone-handoff/assets/features.template.json /tmp/tmp.8IbPjyIRjj/noev.json
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/milestone-handoff/scripts/check_features.py /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/milestone-handoff/assets/features.template.json /tmp/tmp.8IbPjyIRjj/ok.json
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/capture-learning/scripts/validate_candidates.py /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/capture-learning/assets/candidate.examples.jsonl
+PASS  python3 /tmp/agentos-skills-audit-ykmf4o0l/agentos-skills/skills/capture-learning/scripts/validate_candidates.py /tmp/tmp.8IbPjyIRjj/bad.jsonl
+ALL PASSED

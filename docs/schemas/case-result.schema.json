@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Observed release case result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "case_id",
+    "candidate_commit",
+    "environment_manifest_sha256",
+    "lane",
+    "execution_mode",
+    "verdict",
+    "command",
+    "exit_code",
+    "report_artifact_ref",
+    "fixture_sha256",
+    "observed_at"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "pattern": "^AOS-[0-9]{3}[ab]?-TC[0-9]{2}$"
+    },
+    "candidate_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
+    },
+    "environment_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "lane": {
+      "enum": [
+        "unit",
+        "contract",
+        "migration",
+        "integration",
+        "security",
+        "chaos",
+        "e2e",
+        "live"
+      ]
+    },
+    "execution_mode": {
+      "enum": [
+        "HERMETIC",
+        "OS_BOUNDARY",
+        "LIVE"
+      ]
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "SKIP",
+        "NOT_RUN",
+        "UNKNOWN"
+      ]
+    },
+    "command": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "exit_code": {
+      "oneOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "report_artifact_ref": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fixture_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "PASS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "exit_code": {
+            "const": 0
+          },
+          "report_artifact_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lane": {
+            "const": "live"
+          },
+          "verdict": {
+            "const": "PASS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_mode": {
+            "const": "LIVE"
+          }
+        }
+      }
+    }
+  ]
+}

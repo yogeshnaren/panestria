@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentOS v1 acceptance node",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "description",
+    "required",
+    "verifier",
+    "evidence"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "verifier": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "command_ref",
+            "expected_exit_code",
+            "timeout_seconds"
+          ],
+          "properties": {
+            "type": {
+              "const": "trusted-command-ref"
+            },
+            "command_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "expected_exit_code": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 255
+            },
+            "timeout_seconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "allowed_paths",
+            "forbidden_paths"
+          ],
+          "properties": {
+            "type": {
+              "const": "git-diff-path-check"
+            },
+            "allowed_paths": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "forbidden_paths": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "action",
+            "expected"
+          ],
+          "properties": {
+            "type": {
+              "const": "policy-decision"
+            },
+            "action": {
+              "type": "string",
+              "minLength": 1
+            },
+            "expected": {
+              "enum": [
+                "allow",
+                "deny",
+                "approval-required"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "artifact_ref",
+            "expected_sha256"
+          ],
+          "properties": {
+            "type": {
+              "const": "artifact-exists"
+            },
+            "artifact_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "expected_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "reviewer_ref",
+            "evidence_requirements"
+          ],
+          "properties": {
+            "type": {
+              "const": "human-review"
+            },
+            "reviewer_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "evidence_requirements": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "source_manifest_ref",
+            "claims_ref"
+          ],
+          "properties": {
+            "type": {
+              "const": "citation-check"
+            },
+            "source_manifest_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "claims_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "rubric_ref",
+            "calibration_set_ref",
+            "reviewer_ref"
+          ],
+          "properties": {
+            "type": {
+              "const": "rubric-review"
+            },
+            "rubric_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "calibration_set_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reviewer_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "kind"
+      ],
+      "properties": {
+        "required": {
+          "const": true
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

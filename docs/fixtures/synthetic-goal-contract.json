@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "goal_id": "00000000-0000-4000-8000-000000000001",
+  "contract_version": 1,
+  "owner_id": "00000000-0000-4000-8000-000000000002",
+  "project_id": "00000000-0000-4000-8000-000000000003",
+  "intent": "Modify only the synthetic example under independent checks.",
+  "privacy_class": "RESTRICTED",
+  "trust_profile_id": "SYNTHETIC_DEV",
+  "autonomy_profile_ref": "synthetic-approve-first-v1",
+  "constraints": {
+    "allowed_paths": [
+      "src/**",
+      "tests/**"
+    ],
+    "forbidden_paths": [
+      ".env*",
+      ".git/config",
+      "secrets/**"
+    ],
+    "permitted_capabilities": [
+      "scoped-file-edit",
+      "trusted-test-runner"
+    ],
+    "cloud_egress": "deny"
+  },
+  "budget": {
+    "max_attempts_per_task": 2,
+    "max_wall_seconds": 120,
+    "max_api_usd": "0.000000"
+  },
+  "acceptance": [
+    {
+      "id": "AC-001",
+      "description": "Example trusted-command-ref",
+      "required": true,
+      "verifier": {
+        "type": "trusted-command-ref",
+        "command_ref": "synthetic-test-suite",
+        "expected_exit_code": 0,
+        "timeout_seconds": 30
+      },
+      "evidence": {
+        "required": true,
+        "kind": "trusted-command-ref-report"
+      }
+    },
+    {
+      "id": "AC-002",
+      "description": "Example git-diff-path-check",
+      "required": true,
+      "verifier": {
+        "type": "git-diff-path-check",
+        "allowed_paths": [
+          "src/**",
+          "tests/**"
+        ],
+        "forbidden_paths": [
+          ".env*",
+          ".git/config",
+          "secrets/**"
+        ]
+      },
+      "evidence": {
+        "required": true,
+        "kind": "git-diff-path-check-report"
+      }
+    },
+    {
+      "id": "AC-003",
+      "description": "Example policy-decision",
+      "required": true,
+      "verifier": {
+        "type": "policy-decision",
+        "action": "protected-merge",
+        "expected": "approval-required"
+      },
+      "evidence": {
+        "required": true,
+        "kind": "policy-decision-report"
+      }
+    }
+  ],
+  "non_goals": [
+    "real provider use",
+    "public publishing",
+    "dependency upgrades"
+  ]
+}

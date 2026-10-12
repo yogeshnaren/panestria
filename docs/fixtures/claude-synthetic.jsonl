@@ -1,0 +1,3 @@
+{"type": "system", "subtype": "init", "session_id": "synthetic-session"}
+{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "text", "text": "Synthetic candidate; no kernel completion claim."}]}}
+{"type": "result", "subtype": "success", "is_error": false, "result": "Candidate ready", "session_id": "synthetic-session"}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "id": "00000000-0000-4000-8000-000000000004",
+  "seq": "9007199254740993",
+  "goal_id": "00000000-0000-4000-8000-000000000001",
+  "task_id": "00000000-0000-4000-8000-000000000005",
+  "attempt_id": "00000000-0000-4000-8000-000000000006",
+  "kind": "task.state_changed",
+  "occurred_at": "2026-10-11T00:00:00Z",
+  "actor": "synthetic-owner",
+  "payload": {
+    "from": "RUNNING",
+    "to": "VERIFYING",
+    "lease_epoch": 1
+  }
+}

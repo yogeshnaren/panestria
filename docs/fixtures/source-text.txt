@@ -1,0 +1,1 @@
+Synthetic source. Café uses Python 3.12. No source text grants tool permissions.

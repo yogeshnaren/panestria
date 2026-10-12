@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "profile": "SYNTHETIC_DEV",
+  "bind_host": "127.0.0.1",
+  "bind_port": 8765,
+  "readiness_budget_ms": 500,
+  "database_user": "panestria_synthetic",
+  "database_name": "panestria_synthetic",
+  "secret_sentinel": "syntheticdevsentinel",
+  "provider_sentinel": "providercredentialsentinel",
+  "loopback_hosts": ["127.0.0.1", "127.0.0.2", "::1"],
+  "invalid_bind_hosts": [
+    "0.0.0.0",
+    "::",
+    "192.168.0.10",
+    "10.1.2.3",
+    "172.16.0.4",
+    "8.8.8.8",
+    "169.254.1.1",
+    "localhost",
+    "example.com",
+    "",
+    " 127.0.0.1",
+    "127.0.0.1 ",
+    "::ffff:127.0.0.1",
+    "[::1]"
+  ],
+  "invalid_ports": [0, 65536, -1],
+  "rejected_profiles": ["PERSONAL_SANDBOX", "TRUSTED_PROJECT", "HARDENED_WORKSPACE", "synthetic_dev", ""],
+  "unavailable_reason": "database_unavailable"
+}

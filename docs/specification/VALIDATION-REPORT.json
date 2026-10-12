@@ -1,0 +1,30 @@
+{
+  "revision": "planning-fixes-1",
+  "checks": {
+    "active_spec_count": 38,
+    "acyclic_dependency_nodes": 38,
+    "later_release_dependencies": 0,
+    "spec_backlog_dependency_mismatches": 0,
+    "complete_package_local_links_checked": 705,
+    "acceptance_schema_valid": true,
+    "positive_acceptance_variants": 7,
+    "negative_schema_cases_rejected": 16,
+    "sql_enum_matches_registry": true,
+    "contracts_yaml_example_validated": true,
+    "r0_json_example_validated": true,
+    "required_schema_naming_scope_state_cursor_checks": true,
+    "frozen_architecture_sha256": "a5dc6255ce6884dd4b1e7e8d9e69bd12ea50f7c5aa6f85ddf77598cbe55953a3",
+    "skills_zip_preserved": true,
+    "original_archives_preserved": true,
+    "observed_skill_smoke_assertions_passed": 16,
+    "observed_hardware_preset_smokes_passed": 5,
+    "agent_skills_format_validations_skipped": 7,
+    "r0_package_local_links_checked": 69
+  },
+  "limitations": [
+    "AgentOS implementation not executed",
+    "SQL blueprint checked for required structure and consistency, not migrated against PostgreSQL",
+    "DBOS docs verified; runtime/version/crash fixtures deferred to AOS-003 implementation",
+    "Prototype tests do not validate production sandbox, vendor auth or physical hardware"
+  ]
+}
