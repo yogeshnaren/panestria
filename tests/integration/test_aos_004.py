@@ -827,6 +827,81 @@ def test_old_candidate_does_not_stand_in_for_the_current_attempt(
         assert journey._linked_workflow(connection, actor, goal) == "current-workflow"
 
 
+def test_latest_approval_request_wins(record_property: pytest.RecordProperty) -> None:
+    _properties(record_property, "AOS-005-TC04", "chaos")
+    _database()
+    goal = "00000000-0000-4000-8000-0000000001d0"
+    contract = "00000000-0000-4000-8000-0000000001d1"
+    task = "00000000-0000-4000-8000-0000000001d2"
+    older = "00000000-0000-4000-8000-0000000001d3"
+    newer = "00000000-0000-4000-8000-0000000001d4"
+    digest = "ab" * 32
+    other = "cd" * 32
+    actor = Actor(OWNER, PROJECT)
+    with psycopg.connect(DATABASE_URL) as connection:
+        connection.execute("INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'owner')", (OWNER,))
+        connection.execute("INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)", (PROJECT, OWNER))
+        connection.execute(
+            "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+            " VALUES (%s, %s, %s, 'synthetic', 'ACTIVE')",
+            (goal, OWNER, PROJECT),
+        )
+        connection.execute(
+            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+            " VALUES (%s, %s, 1, %s::jsonb, %s)",
+            (contract, goal, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', digest),
+        )
+        connection.execute(
+            "INSERT INTO panestria.task"
+            " (id, goal_id, contract_id, name, state, continuation_kind, lease_epoch)"
+            " VALUES (%s, %s, %s, 'approve', 'WAITING_APPROVAL', 'DISPATCH', 0)",
+            (task, goal, contract),
+        )
+        for request_id, state, effect in (
+            (older, "DENIED", digest),
+            (newer, "APPROVED", other),
+        ):
+            connection.execute(
+                "INSERT INTO panestria.approval_request"
+                " (id, goal_id, task_id, owner_id, project_id, minimum_actor_id, action_kind,"
+                " effect_digest, policy_version, state, expires_at, decided_at, decided_by, preview)"
+                " VALUES (%s, %s, %s, %s, %s, %s, 'contract_consent', %s,"
+                " 'synthetic-approve-first-v1', %s, now() + interval '1 hour', now(), %s, %s::jsonb)",
+                (
+                    request_id,
+                    goal,
+                    task,
+                    OWNER,
+                    PROJECT,
+                    OWNER,
+                    effect,
+                    state,
+                    OWNER,
+                    '{"action_kind":"contract_consent"}',
+                ),
+            )
+            connection.execute(
+                "INSERT INTO panestria.task_event (id, goal_id, task_id, kind, actor, payload)"
+                " VALUES (%s, %s, %s, 'approval.requested', %s, %s::jsonb)",
+                (
+                    str(UUID(int=UUID(request_id).int + 1)),
+                    goal,
+                    task,
+                    OWNER,
+                    '{"approval_id":"%s"}' % request_id,
+                ),
+            )
+        connection.commit()
+        journey = SyntheticJourney()
+        found = journey._approval(connection, task, "contract_consent")
+        assert found is not None
+        assert found[0] == newer
+        assert found[1] == "APPROVED"
+        snapshot = journey._snapshot(connection, actor, goal)
+        assert snapshot.approval_id == newer
+        assert journey._decision(connection, snapshot) == "APPROVED"
+
+
 def _assert_event_sequence(
     recorded: tuple[WorkerEvent, ...],
     attempt_id: str,

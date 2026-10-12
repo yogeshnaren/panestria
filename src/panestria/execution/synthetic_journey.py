@@ -704,8 +704,13 @@ class SyntheticJourney:
 
     def _approval(self, connection: Conn, task_id: str, action: str) -> tuple[str, str, str] | None:
         row = connection.execute(
-            "SELECT id::text, state, effect_digest FROM panestria.approval_request"
-            " WHERE task_id = %s AND action_kind = %s",
+            "SELECT request.id::text, request.state, request.effect_digest"
+            " FROM panestria.approval_request AS request"
+            " LEFT JOIN panestria.task_event AS event ON event.task_id = request.task_id"
+            " AND event.kind = 'approval.requested'"
+            " AND event.payload->>'approval_id' = request.id::text"
+            " WHERE request.task_id = %s AND request.action_kind = %s"
+            " ORDER BY event.seq DESC NULLS LAST LIMIT 1",
             (task_id, action),
         ).fetchone()
         if row is None:
