@@ -31,6 +31,8 @@ class RecoveryReport:
         recovery_instance_id: str,
         recovery_attempts: int | None,
         latency_ms: int,
+        goal_id: str = "",
+        task_id: str = "",
     ) -> None:
         self.workflow_id = workflow_id
         self.status = status
@@ -38,21 +40,85 @@ class RecoveryReport:
         self.recovery_instance = recovery_instance_id
         self.recovery_attempts = recovery_attempts
         self.latency_ms = latency_ms
+        self.goal_id = goal_id
+        self.task_id = task_id
 
 
 def format_recovery_audit(report: RecoveryReport) -> str:
-    """One line for the recover command. It names the process, the workflow, and the wait."""
+    """One line for the recover command. It names the goal, task, workflow, and the wait."""
     return json.dumps(
         {
+            "goal_id": report.goal_id,
             "latency_ms": report.latency_ms,
             "recovery_attempts": report.recovery_attempts,
             "recovery_instance": report.recovery_instance,
             "status": report.status,
+            "task_id": report.task_id,
             "workflow_id": report.workflow_id,
         },
         separators=(",", ":"),
         sort_keys=True,
     )
+
+
+def workflow_scope(database_url: str, workflow_id: str) -> tuple[str, str]:
+    """Return the goal and task linked to a workflow. Missing links are empty."""
+    engine = sa.create_engine(sqlalchemy_url(database_url), connect_args={"connect_timeout": 2})
+    try:
+        with engine.connect() as connection:
+            row = connection.execute(
+                sa.text(
+                    "SELECT goal.id::text, task.id::text"
+                    " FROM panestria.workflow_link AS link"
+                    " JOIN panestria.task AS task ON task.id = link.task_id"
+                    " JOIN panestria.goal AS goal ON goal.id = task.goal_id"
+                    " WHERE link.dbos_workflow_id = :workflow"
+                ),
+                {"workflow": workflow_id},
+            ).fetchone()
+    finally:
+        engine.dispose()
+    if row is None or row[0] is None or row[1] is None:
+        return "", ""
+    return str(row[0]), str(row[1])
+
+
+def unfinished_audits(database_url: str) -> tuple[str, ...]:
+    """List PENDING and ENQUEUED workflows with their goal and task. No database URL."""
+    engine = sa.create_engine(sqlalchemy_url(database_url), connect_args={"connect_timeout": 2})
+    try:
+        with engine.connect() as connection:
+            rows = connection.execute(
+                sa.text(
+                    "SELECT workflow.workflow_uuid, workflow.status, workflow.recovery_attempts,"
+                    " goal.id::text, task.id::text"
+                    " FROM dbos.workflow_status AS workflow"
+                    " LEFT JOIN panestria.workflow_link AS link"
+                    " ON link.dbos_workflow_id = workflow.workflow_uuid"
+                    " LEFT JOIN panestria.task AS task ON task.id = link.task_id"
+                    " LEFT JOIN panestria.goal AS goal ON goal.id = task.goal_id"
+                    " WHERE workflow.status IN ('PENDING', 'ENQUEUED')"
+                    " ORDER BY workflow.workflow_uuid"
+                )
+            ).fetchall()
+    finally:
+        engine.dispose()
+    lines: list[str] = []
+    for workflow_id, status, attempts, goal_id, task_id in rows:
+        lines.append(
+            json.dumps(
+                {
+                    "goal_id": "" if goal_id is None else str(goal_id),
+                    "recovery_attempts": None if attempts is None else int(attempts),
+                    "status": str(status),
+                    "task_id": "" if task_id is None else str(task_id),
+                    "workflow_id": str(workflow_id),
+                },
+                separators=(",", ":"),
+                sort_keys=True,
+            )
+        )
+    return tuple(lines)
 
 
 class RecoveryService:

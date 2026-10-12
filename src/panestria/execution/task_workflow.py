@@ -22,7 +22,7 @@ from panestria.execution.dbos_runtime import (
     WORKFLOW_NAME,
     sqlalchemy_url,
 )
-from panestria.execution.recovery import RecoveryService, format_recovery_audit
+from panestria.execution.recovery import RecoveryService, format_recovery_audit, workflow_scope
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.repositories.events import append_domain_event
 
@@ -457,6 +457,7 @@ def main() -> None:
         if mode == "recover":
             report = RecoveryService().recover_pending(workflow_id)
             _record_exhausted_recovery(workflow_id, report.status)
+            report.goal_id, report.task_id = workflow_scope(database_url, workflow_id)
             sys.stdout.write(format_recovery_audit(report) + "\n")
             if report.status != "SUCCESS":
                 raise SystemExit(2)

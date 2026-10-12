@@ -20,7 +20,14 @@ import sqlalchemy as sa
 
 from panestria.execution.admission import AdmissionReceipt, DurableAdmission, SqlUnitOfWork
 from panestria.execution.dbos_runtime import QUEUE_NAME, open_client, probe_launch, sqlalchemy_url
-from panestria.execution.recovery import RecoveryReport, connect_for_admission, format_recovery_audit, recovery_instance
+from panestria.execution.recovery import (
+    RecoveryReport,
+    connect_for_admission,
+    format_recovery_audit,
+    recovery_instance,
+    unfinished_audits,
+    workflow_scope,
+)
 from panestria.execution.task_workflow import (
     SERIALIZATION_ATTEMPT_LIMIT,
     limit_serialization_attempts,
@@ -225,6 +232,14 @@ def test_recovery_instance_is_stable_for_the_process(record_property: pytest.Rec
     assert loaded["status"] == "SUCCESS"
     assert loaded["recovery_attempts"] == 2
     assert loaded["latency_ms"] == 15
+    assert loaded["goal_id"] == ""
+    assert loaded["task_id"] == ""
+    named = json.loads(
+        format_recovery_audit(RecoveryReport("wf-audit", "SUCCESS", "", recovery_instance(), 2, 15, GOAL, TASK))
+    )
+    assert named["goal_id"] == GOAL
+    assert named["task_id"] == TASK
+    assert "postgresql" not in json.dumps(named)
     pending = json.loads(
         format_recovery_audit(RecoveryReport("wf-wait", "PENDING", "", recovery_instance(), None, 20000))
     )
@@ -943,5 +958,89 @@ def test_database_restore_and_reconnect(
     try:
         assert _snapshot(engine, TASK_RESTORE, "wf-restore") == before
     finally:
+        engine.dispose()
+
+
+def test_unfinished_workflow_names_goal_and_task(database_url: str, record_property: pytest.RecordProperty) -> None:
+    _properties(record_property, "AOS-003-TC02")
+    goal = "00000000-0000-4000-8000-0000000000e4"
+    task = "00000000-0000-4000-8000-0000000000e5"
+    attempt = "00000000-0000-4000-8000-0000000000e6"
+    contract = "00000000-0000-4000-8000-0000000000e7"
+    workflow = "00000000-0000-4000-8000-0000000000e8"
+    engine, client = open_client(database_url)
+    try:
+        with engine.connect() as connection:
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.principal (id, display_name) VALUES (:owner, 'owner')"
+                    " ON CONFLICT (id) DO NOTHING"
+                ),
+                {"owner": OWNER},
+            )
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.project (id, owner_id) VALUES (:project, :owner)"
+                    " ON CONFLICT (id) DO NOTHING"
+                ),
+                {"project": PROJECT, "owner": OWNER},
+            )
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+                    " VALUES (:goal, :owner, :project, 'observe', 'CREATED')"
+                ),
+                {"goal": goal, "owner": OWNER, "project": PROJECT},
+            )
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+                    " VALUES (:contract, :goal, 1, '{}'::jsonb, :digest)"
+                ),
+                {"contract": contract, "goal": goal, "digest": DIGEST},
+            )
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.task (id, goal_id, contract_id, name, state)"
+                    " VALUES (:task, :goal, :contract, 'observe', 'CREATED')"
+                ),
+                {"task": task, "goal": goal, "contract": contract},
+            )
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.task_attempt"
+                    " (id, task_id, attempt_number, lease_epoch, status, adapter)"
+                    " VALUES (:attempt, :task, 1, 0, 'PENDING', 'synthetic')"
+                ),
+                {"attempt": attempt, "task": task},
+            )
+            connection.commit()
+            DurableAdmission(client).submit(
+                SqlUnitOfWork(connection),
+                Actor(OWNER, PROJECT),
+                task,
+                workflow,
+                attempt_id=attempt,
+                idempotency_key="observe-unfinished",
+                contract_sha256=DIGEST,
+            )
+            connection.commit()
+        lines = unfinished_audits(database_url)
+        observed = [json.loads(line) for line in lines if json.loads(line)["workflow_id"] == workflow]
+        assert len(observed) == 1
+        assert observed[0]["goal_id"] == goal
+        assert observed[0]["task_id"] == task
+        assert observed[0]["status"] in {"PENDING", "ENQUEUED"}
+        assert isinstance(observed[0]["recovery_attempts"], int)
+        assert "postgresql" not in "\n".join(lines)
+        assert workflow_scope(database_url, workflow) == (goal, task)
+        with engine.connect() as connection:
+            status = connection.execute(
+                sa.text("SELECT status FROM panestria.goal WHERE id = :goal"),
+                {"goal": goal},
+            ).scalar_one()
+        assert status != "COMPLETED"
+    finally:
+        client.destroy()
         engine.dispose()
 

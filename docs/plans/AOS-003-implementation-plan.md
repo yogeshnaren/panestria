@@ -40,6 +40,7 @@ Repositories use the supplied UnitOfWork/session and never commit independently.
 | AOS-003-AC01 | Kill server before transaction commit, after the atomic transaction commit but before the workflow observes its return, and after a non-database step checkpoint; restart and assert final task result and monotonic event stream. | AOS-003-S1, AOS-003-S2, AOS-003-S3; owning files/interfaces above | AOS-003-TC01, AOS-003-TC02, AOS-003-TC03, AOS-003-TC04; parameterize every condition in this clause |
 | AOS-003-AC02 | Two concurrent duplicate submissions with same idempotency key produce one logical task; no double artifact. Non-deterministic workflow body test catches bad pattern. | AOS-003-S1, AOS-003-S2, AOS-003-S3; owning files/interfaces above | AOS-003-TC01, AOS-003-TC02, AOS-003-TC03, AOS-003-TC04; parameterize every condition in this clause |
 | AOS-003-AC03 | Database unavailable: no speculative state transitions; recover cleanly on reconnect. Uncaught terminal exception becomes FAILED and remains inspectable rather than silently restarting forever. | AOS-003-S1, AOS-003-S2, AOS-003-S3; owning files/interfaces above | AOS-003-TC01, AOS-003-TC02, AOS-003-TC03, AOS-003-TC04; parameterize every condition in this clause |
+| AOS-003-OP01 | Structured logs with goal/task/workflow ID; observe unfinished workflows, retry counts, and recovery latency. | AOS-003-S3; `src/panestria/execution/recovery.py` | AOS-003-TC02 lists PENDING and ENQUEUED workflows with goal, task, and recovery attempts, and the recover line carries the same ids. |
 
 These groups are planned obligations, not observed coverage. Actual assertions/parameters must map each clause ID; split a broad scenario group when needed. A multi-condition clause cannot pass from only one happy-path assertion.
 
@@ -56,7 +57,7 @@ These groups are planned obligations, not observed coverage. Actual assertions/p
 | Case | Lane | Planned node | Expected passing behavior |
 |---|---|---|---|
 | AOS-003-TC01 | integration | `tests/integration/test_aos_003.py::test_atomic_enqueue_and_duplicate` | Concurrent duplicate requests produce one task/workflow; rollback of admission yields neither task nor enqueue. |
-| AOS-003-TC02 | chaos | `tests/integration/test_aos_003.py::test_before_after_commit` | Kill before DB commit rolls back all app writes; kill after tracked commit before return replays one transition/event, no callback side effect. |
+| AOS-003-TC02 | chaos | `tests/integration/test_aos_003.py::test_before_after_commit` | Kill before DB commit rolls back all app writes; kill after tracked commit before return replays one transition/event, no callback side effect. Unfinished workflows are listed with goal, task, workflow, and recovery attempts. |
 | AOS-003-TC03 | chaos | `tests/integration/test_aos_003.py::test_uncommitted_external_step` | Synthetic effect completed but checkpoint response lost is observed/reconciled before repeat; FAILED not swallowed. |
 | AOS-003-TC04 | integration | `tests/integration/test_aos_003.py::test_database_restore_and_reconnect` | DB unavailable admits no speculative transitions; consistent app+DBOS restore resumes same IDs and correct authoritative status. |
 

@@ -412,6 +412,19 @@
       "status": "NOT_IMPLEMENTED"
     },
     {
+      "id": "AOS-003-OP01",
+      "aos_id": "AOS-003",
+      "source_kind": "OP",
+      "source_clause": "Document recovery command, DBOS version pin and migration compatibility; structured logs with goal/task/workflow ID; observe unfinished workflows, retry counts, and recovery latency. Add chaos-test script with deterministic signal barriers.",
+      "slice_ids": [
+        "AOS-003-S3"
+      ],
+      "case_ids": [
+        "AOS-003-TC02"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
       "id": "AOS-004-F01",
       "aos_id": "AOS-004",
       "source_kind": "F",
