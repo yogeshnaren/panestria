@@ -6,7 +6,9 @@ import os
 import sys
 import time
 import uuid
+from collections.abc import Callable
 from pathlib import Path
+from typing import TypeVar
 
 import sqlalchemy as sa
 from dbos import DBOS, DBOSConfig, SetWorkflowID, SQLAlchemyDatasource
@@ -25,7 +27,9 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.repositories.events import append_domain_event
 
 CHECKPOINT_SCHEMA = "panestria_checkpoint"
+SERIALIZATION_ATTEMPT_LIMIT = 5
 _datasource: SQLAlchemyDatasource | None = None
+_Result = TypeVar("_Result")
 
 
 def configure(database_url: str) -> SQLAlchemyDatasource:
@@ -40,6 +44,28 @@ def get_datasource() -> SQLAlchemyDatasource:
     if _datasource is None:
         raise RuntimeError("workflow datasource is not configured")
     return _datasource
+
+
+def limit_serialization_attempts(func: Callable[..., _Result]) -> Callable[..., _Result]:
+    """Stop a serialization storm. The library loop itself has no attempt cap."""
+    attempts = 0
+
+    def wrapped(*args: object, **kwargs: object) -> _Result:
+        nonlocal attempts
+        attempts += 1
+        if attempts > SERIALIZATION_ATTEMPT_LIMIT:
+            raise KernelDenied("serialization_retry_limit")
+        return func(*args, **kwargs)
+
+    return wrapped
+
+
+def _serializable(name: str, func: Callable[..., _Result], *args: object) -> _Result:
+    return get_datasource().run_tx_step(
+        {"name": name, "isolation_level": "SERIALIZABLE"},
+        limit_serialization_attempts(func),
+        *args,
+    )
 
 
 def _transition_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
@@ -99,13 +125,7 @@ def _transition_body(task_id: str, contract_sha256: str, attempt_number: int) ->
 
 def transition_task_tx(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
     """Tracked transaction. The checkpoint commits with the task row and the event."""
-    return get_datasource().run_tx_step(
-        {"name": "transition_task_tx", "isolation_level": "SERIALIZABLE"},
-        _transition_body,
-        task_id,
-        contract_sha256,
-        attempt_number,
-    )
+    return _serializable("transition_task_tx", _transition_body, task_id, contract_sha256, attempt_number)
 
 
 @DBOS.step(name="synthetic_observe")
@@ -198,13 +218,7 @@ def _mark_failed_body(task_id: str, contract_sha256: str, attempt_number: int) -
 
 def mark_failed_tx(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
     """Commit FAILED before the workflow exception. Replay does not append again."""
-    return get_datasource().run_tx_step(
-        {"name": "mark_failed_tx", "isolation_level": "SERIALIZABLE"},
-        _mark_failed_body,
-        task_id,
-        contract_sha256,
-        attempt_number,
-    )
+    return _serializable("mark_failed_tx", _mark_failed_body, task_id, contract_sha256, attempt_number)
 
 
 _PAST_READY = frozenset({"LEASED", "RUNNING", "VERIFYING", "WAITING_APPROVAL"})
@@ -261,13 +275,7 @@ def _lease_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict
 
 def lease_attempt_tx(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
     """Commit the lease with its event. A crash before commit leaves the task READY."""
-    return get_datasource().run_tx_step(
-        {"name": "lease_attempt_tx", "isolation_level": "SERIALIZABLE"},
-        _lease_body,
-        task_id,
-        contract_sha256,
-        attempt_number,
-    )
+    return _serializable("lease_attempt_tx", _lease_body, task_id, contract_sha256, attempt_number)
 
 
 @DBOS.step(name="execute_admitted_attempt", retries_allowed=False)

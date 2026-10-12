@@ -21,6 +21,7 @@ import sqlalchemy as sa
 from panestria.execution.admission import AdmissionReceipt, DurableAdmission, SqlUnitOfWork
 from panestria.execution.dbos_runtime import QUEUE_NAME, open_client, probe_launch, sqlalchemy_url
 from panestria.execution.recovery import RecoveryReport, connect_for_admission, format_recovery_audit, recovery_instance
+from panestria.execution.task_workflow import SERIALIZATION_ATTEMPT_LIMIT, limit_serialization_attempts
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 
@@ -131,6 +132,27 @@ def _seed(connection: sa.Connection) -> None:
 def _count(connection: sa.Connection, sql: str, params: dict[str, Any] | None = None) -> int:
     value = connection.execute(sa.text(sql), params or {}).scalar_one()
     return int(value)
+
+
+def test_serialization_attempts_stop(record_property: pytest.RecordProperty) -> None:
+    _properties(record_property, "AOS-003-TC02")
+    calls = 0
+
+    def fail() -> None:
+        nonlocal calls
+        calls += 1
+        raise RuntimeError("serialization-conflict")
+
+    wrapped = limit_serialization_attempts(fail)
+    with pytest.raises(KernelDenied) as caught:
+        while True:
+            try:
+                wrapped()
+            except RuntimeError:
+                continue
+    assert caught.value.code == "serialization_retry_limit"
+    assert calls == SERIALIZATION_ATTEMPT_LIMIT
+    assert limit_serialization_attempts(lambda: "ok")() == "ok"
 
 
 def test_recovery_instance_is_stable_for_the_process(record_property: pytest.RecordProperty) -> None:
