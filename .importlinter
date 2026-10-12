@@ -72,3 +72,13 @@ forbidden_modules =
     panestria.api
     panestria.cli
     panestria.ops
+
+[importlinter:contract:workers-not-presentation]
+name = Workers and sandbox do not import API or CLI
+type = forbidden
+source_modules =
+    panestria.brokers
+    panestria.sandbox
+forbidden_modules =
+    panestria.api
+    panestria.cli
