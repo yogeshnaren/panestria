@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import os
 import subprocess
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -16,9 +17,11 @@ import psycopg
 from panestria.brokers.harness.mock import Candidate, MockWorkerAdapter
 from panestria.contracts.approval import load_preview
 from panestria.contracts.goal import load_contract
+from panestria.execution.crash_gate import crash_gate
 from panestria.kernel.approvals import ApprovalService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
+from panestria.kernel.repositories.approvals import required_verdicts
 from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.tasks import TaskService
 from panestria.kernel.uow import UnitOfWork
@@ -110,9 +113,91 @@ class SyntheticJourney:
             self._finalize(connection, actor, goal_id, sandbox)
             return self._snapshot(connection, actor, goal_id)
         if snapshot.task_state in {"READY", "LEASED", "RUNNING", "VERIFYING"} and snapshot.attempts >= 1:
-            self._finish_dispatch(connection, actor, goal_id, sandbox)
+            if os.environ.get("PANESTRIA_DEFER_CONSUME") == "1":
+                return snapshot
+            workflow_id = self._linked_workflow(connection, actor, goal_id)
+            if workflow_id is not None:
+                self._consume(_database_url(connection), workflow_id)
             return self._snapshot(connection, actor, goal_id)
         return snapshot
+
+    def _admit_attempt(self, connection: Conn, actor: Actor, goal_id: str, sandbox: Path) -> str:
+        from panestria.execution.admission import DurableAdmission, SqlUnitOfWork
+        from panestria.execution.dbos_runtime import open_client
+
+        task_id, _version = self._identity(connection, actor, goal_id)
+        attempt_id = self._pending_attempt(connection, task_id, sandbox)
+        contract = self._contract(connection, actor, goal_id)
+        connection.commit()
+        workflow_id = f"admit-{attempt_id}"
+        database_url = _database_url(connection)
+        engine, client = open_client(database_url)
+        try:
+            with engine.connect() as admitted:
+                DurableAdmission(client).submit(
+                    SqlUnitOfWork(admitted),
+                    actor,
+                    task_id,
+                    workflow_id,
+                    attempt_id=attempt_id,
+                    idempotency_key=workflow_id,
+                    contract_sha256=str(contract[1]).strip(),
+                )
+                admitted.commit()
+        finally:
+            client.destroy()
+            engine.dispose()
+        return workflow_id
+
+    def _pending_attempt(self, connection: Conn, task_id: str, sandbox: Path) -> str:
+        row = connection.execute(
+            "SELECT id::text FROM panestria.task_attempt WHERE task_id = %s",
+            (task_id,),
+        ).fetchone()
+        if row is not None:
+            return str(row[0])
+        attempt_id = str(uuid4())
+        connection.execute(
+            "INSERT INTO panestria.task_attempt"
+            " (id, task_id, attempt_number, lease_epoch, status, adapter, external_ref)"
+            " VALUES (%s, %s, 1, 0, 'PENDING', 'mock', %s)",
+            (attempt_id, task_id, str(sandbox.resolve())),
+        )
+        connection.commit()
+        return attempt_id
+
+    def _linked_workflow(self, connection: Conn, actor: Actor, goal_id: str) -> str | None:
+        row = connection.execute(
+            "SELECT link.dbos_workflow_id FROM panestria.workflow_link AS link"
+            " JOIN panestria.task AS task ON task.id = link.task_id"
+            " JOIN panestria.goal AS goal ON goal.id = task.goal_id"
+            " WHERE goal.id = %s AND goal.owner_id = %s AND goal.project_id = %s",
+            (goal_id, actor.owner_id, actor.project_id),
+        ).fetchone()
+        if row is None:
+            return None
+        return str(row[0])
+
+    def _consume(self, database_url: str, workflow_id: str) -> None:
+        env = os.environ.copy()
+        env["PANESTRIA_DATABASE_URL"] = database_url
+        env["PANESTRIA_MODE"] = "consume"
+        env["PANESTRIA_WORKFLOW_ID"] = workflow_id
+        env.pop("PANESTRIA_CRASH_AT", None)
+        env.pop("PANESTRIA_READY_FILE", None)
+        root = Path(__file__).resolve().parents[3]
+        completed = subprocess.run(
+            [sys.executable, "-m", "panestria.execution.task_workflow"],
+            cwd=root,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=60,
+        )
+        if completed.returncode != 0:
+            detail = (completed.stderr or completed.stdout).strip()
+            raise RuntimeError(detail or f"workflow consumer exited {completed.returncode}")
 
     def _dispatch(self, connection: Conn, actor: Actor, goal_id: str, sandbox: Path) -> None:
         task_id, version = self._identity(connection, actor, goal_id)
@@ -121,7 +206,10 @@ class SyntheticJourney:
             return
         self.approvals.continue_after_approval(connection_uow(connection), actor, approval[0], approval[2], version)
         connection.commit()
-        self._finish_dispatch(connection, actor, goal_id, sandbox)
+        workflow_id = self._admit_attempt(connection, actor, goal_id, sandbox)
+        if os.environ.get("PANESTRIA_DEFER_CONSUME") == "1":
+            return
+        self._consume(_database_url(connection), workflow_id)
 
     def _finish_dispatch(self, connection: Conn, actor: Actor, goal_id: str, sandbox: Path) -> None:
         if self._approval(connection, self._identity(connection, actor, goal_id)[0], "merge") is not None:
@@ -133,11 +221,14 @@ class SyntheticJourney:
         if candidate.status != "CANDIDATE":
             raise KernelDenied("candidate_rejected")
         committed = self._commit_candidate(manifest)
+        crash_gate("before-verify")
         file_hash = hashlib.sha256((Path(manifest.worktree) / _EDIT).read_bytes()).hexdigest()
         if snapshot_artifact(connection, task_id) is None:
             proved = self._prove(connection, actor, task_id, attempt_id, manifest, file_hash)
             if not proved:
                 return
+        elif not _checks_passed(connection, task_id, file_hash):
+            return
         self._walk(connection, actor, task_id)
         contract = self._contract(connection, actor, goal_id)
         destination = f"refs/heads/main@{committed}"
@@ -555,6 +646,21 @@ class _Existing:
 
 def connection_uow(connection: Conn) -> UnitOfWork:
     return UnitOfWork(connection)
+
+
+def _database_url(connection: Conn) -> str:
+    configured = os.environ.get("PANESTRIA_DATABASE_URL")
+    if configured:
+        return configured
+    info = connection.info.get_parameters()
+    return (
+        f"postgresql://{info['user']}:{info.get('password', '')}@{info['host']}:{info['port']}/{info['dbname']}"
+    )
+
+
+def _checks_passed(connection: Conn, task_id: str, candidate_sha256: str) -> bool:
+    verdicts = required_verdicts(connection_uow(connection), task_id, candidate_sha256)
+    return bool(verdicts) and all(verdict == "PASS" for _check, verdict in verdicts)
 
 
 def _stamp(delta: timedelta) -> str:

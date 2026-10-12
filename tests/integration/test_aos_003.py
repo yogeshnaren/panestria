@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import os
+import pickle
 import signal
 import subprocess
 import threading
@@ -210,6 +212,12 @@ def test_atomic_enqueue_and_duplicate(database_url: str, record_property: pytest
                 connection,
                 "SELECT count(*) FROM panestria.task_event WHERE kind = 'task.admitted'",
             ) == 1
+            queued_inputs = connection.execute(
+                sa.text("SELECT inputs FROM dbos.workflow_input WHERE workflow_uuid = :workflow"),
+                {"workflow": WORKFLOW},
+            ).scalar_one()
+        loaded = pickle.loads(base64.b64decode(str(queued_inputs)))
+        assert loaded["args"] == (TASK, DIGEST, 1)
 
         with engine.connect() as connection:
             replay = admission.submit(
@@ -280,6 +288,63 @@ def test_atomic_enqueue_and_duplicate(database_url: str, record_property: pytest
                 "SELECT count(*) FROM panestria.workflow_link WHERE task_id = :task",
                 {"task": TASK_B},
             ) == 1
+        running_task = "00000000-0000-4000-8000-0000000000f1"
+        running_attempt = "00000000-0000-4000-8000-0000000000f2"
+        with engine.begin() as connection:
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.task (id, goal_id, contract_id, name, state)"
+                    " VALUES (:task, :goal, :contract, 'running', 'RUNNING')"
+                ),
+                {"task": running_task, "goal": GOAL, "contract": CONTRACT},
+            )
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.task_attempt"
+                    " (id, task_id, attempt_number, lease_epoch, status, adapter)"
+                    " VALUES (:attempt, :task, 1, 0, 'PENDING', 'synthetic')"
+                ),
+                {"attempt": running_attempt, "task": running_task},
+            )
+        with engine.connect() as connection:
+            before = _count(connection, "SELECT count(*) FROM dbos.workflow_status")
+            with pytest.raises(KernelDenied) as running:
+                admission.submit(
+                    SqlUnitOfWork(connection),
+                    actor,
+                    running_task,
+                    "wf-running",
+                    attempt_id=running_attempt,
+                    idempotency_key="running",
+                    contract_sha256=DIGEST,
+                )
+            assert running.value.code == "illegal_transition"
+            connection.rollback()
+            with pytest.raises(KernelDenied) as mismatched:
+                admission.submit(
+                    SqlUnitOfWork(connection),
+                    actor,
+                    TASK,
+                    "wf-other-digest",
+                    attempt_id=ATTEMPT,
+                    idempotency_key="other-digest",
+                    contract_sha256="cd" * 32,
+                )
+            assert mismatched.value.code == "invalid_contract"
+            connection.rollback()
+            with pytest.raises(KernelDenied) as changed:
+                admission.submit(
+                    SqlUnitOfWork(connection),
+                    actor,
+                    TASK,
+                    "wf-changed-identity",
+                    attempt_id=ATTEMPT,
+                    idempotency_key="admit-1",
+                    contract_sha256=DIGEST,
+                )
+            assert changed.value.code == "idempotency_conflict"
+            connection.rollback()
+            assert _count(connection, "SELECT count(*) FROM dbos.workflow_status") == before
     finally:
         client.destroy()
         engine.dispose()

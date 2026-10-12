@@ -57,6 +57,7 @@ def _properties(record_property: pytest.RecordProperty) -> None:
 
 
 def _database() -> None:
+    os.environ["PANESTRIA_DATABASE_URL"] = DATABASE_URL
     subprocess.run([*COMPOSE, "down", "-v"], check=False)
     up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
     assert up.returncode == 0, up.stderr
