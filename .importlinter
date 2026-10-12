@@ -38,3 +38,14 @@ source_modules =
 forbidden_modules =
     panestria.api
     panestria.cli
+
+[importlinter:contract:contracts-independent]
+name = Contracts do not import application packages
+type = forbidden
+source_modules =
+    panestria.contracts
+forbidden_modules =
+    panestria.api
+    panestria.cli
+    panestria.ops
+    panestria.config

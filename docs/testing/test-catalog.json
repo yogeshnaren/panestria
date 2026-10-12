@@ -51,7 +51,7 @@
       "aos_id": "AOS-002",
       "release": "R0",
       "lane": "contract",
-      "planned_nodeid": "tests/integration/test_aos_002.py::test_contract_hash_and_aliases",
+      "planned_nodeid": "tests/contract/test_aos_002.py",
       "expected": "Canonical roundtrip hash stable; edited contract creates new version; raw command, legacy discriminator, bool budget and duplicate check IDs rejected.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
