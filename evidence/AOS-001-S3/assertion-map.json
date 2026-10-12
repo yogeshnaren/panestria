@@ -1,0 +1,86 @@
+{
+  "slice": "AOS-001-S3",
+  "case_id": "AOS-001-TC03",
+  "nodeids": [
+    "tests/integration/test_aos_001_postgres.py::test_wrong_volume_and_symlink_cleanup_are_denied",
+    "tests/integration/test_aos_001_postgres.py::test_expected_directory_reset_removes_only_children",
+    "tests/integration/test_aos_001_postgres.py::test_scoped_database_is_healthy_and_scaffold_is_empty"
+  ],
+  "lane": "integration",
+  "execution_mode": "OS_BOUNDARY",
+  "verdict": "PASS",
+  "release_gate": "INCOMPLETE",
+  "release_gate_reason": "TC03 passed on disposable PostgreSQL for 61d9e4729ded8e39d7a5ebc1048d803a6cdcab2b. TC04 remains NOT_RUN. G0 is not a pass. This is not a fresh-host proof.",
+  "not_run": [
+    {
+      "case_id": "AOS-001-TC04",
+      "reason": "fresh Ubuntu host not available"
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "uv",
+        "lock",
+        "--check",
+        "--offline"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "mypy",
+        "src/panestria"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "lint-imports",
+        "--config",
+        ".importlinter"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "python",
+        "tools/secret_scan.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-m",
+        "not live",
+        "--junitxml=evidence/AOS-001-S3.xml"
+      ],
+      "exit_code": 0,
+      "passed": 71
+    }
+  ]
+}

@@ -33,7 +33,7 @@
       "expected": "Fresh scoped DB is healthy, empty Alembic scaffold applies, wrong-volume/symlink cleanup denied.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-001-TC04",

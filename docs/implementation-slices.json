@@ -74,7 +74,11 @@
         "AOS-001-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
+      "status": "SCAFFOLD_OBSERVED_TC04_NOT_RUN",
+      "evidence_refs": [
+        "evidence/AOS-001-S3.xml",
+        "evidence/AOS-001-S3/case-result.json"
+      ],
       "prompt_ref": "cursor/prompts/AOS-001-S3.md"
     },
     {
