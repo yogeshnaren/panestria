@@ -1,0 +1,131 @@
+{
+  "slice": "AOS-001-S2",
+  "case_id": "AOS-001-TC02",
+  "nodeids": [
+    "tests/contract/test_aos_001_toolchain.py::test_installed_package_imports",
+    "tests/contract/test_aos_001_toolchain.py::test_production_import_boundary_passes",
+    "tests/contract/test_aos_001_toolchain.py::test_forbidden_import_fails_boundary_gate",
+    "tests/contract/test_aos_001_toolchain.py::test_allowed_import_passes_boundary_gate",
+    "tests/contract/test_aos_001_toolchain.py::test_current_lock_matches_metadata",
+    "tests/contract/test_aos_001_toolchain.py::test_stale_lock_fails",
+    "tests/contract/test_aos_001_toolchain.py::test_production_lint_and_types_pass",
+    "tests/contract/test_aos_001_toolchain.py::test_disposable_lint_and_type_failures",
+    "tests/contract/test_aos_001_toolchain.py::test_disposable_failing_unit_test",
+    "tests/contract/test_aos_001_toolchain.py::test_repository_secret_scan_passes_and_sentinel_fails",
+    "tests/contract/test_aos_001_toolchain.py::test_ci_does_not_inject_provider_credentials"
+  ],
+  "lane": "contract",
+  "execution_mode": "HERMETIC",
+  "verdict": "PASS",
+  "release_gate": "INCOMPLETE",
+  "release_gate_reason": "TC02 passed on 99afb1a319e22fb24e86b7a4cc638a03e2557c0c. TC03 is not implemented. TC04 is NOT_RUN because no fresh Ubuntu host exists. G0 is not a pass.",
+  "assertions": [
+    {
+      "name": "forbidden_import_fails",
+      "requirement_ids": [
+        "AOS-001-F04",
+        "AOS-001-AC02"
+      ],
+      "result": "PASS"
+    },
+    {
+      "name": "stale_lock_fails",
+      "requirement_ids": [
+        "AOS-001-AC02"
+      ],
+      "result": "PASS"
+    },
+    {
+      "name": "lint_type_unit_failures",
+      "requirement_ids": [
+        "AOS-001-AC04"
+      ],
+      "result": "PASS"
+    },
+    {
+      "name": "provider_free_ci",
+      "requirement_ids": [
+        "AOS-001-AC02",
+        "AOS-001-AC04"
+      ],
+      "result": "PASS"
+    }
+  ],
+  "not_run": [
+    {
+      "case_id": "AOS-001-TC03",
+      "reason": "AOS-001-S3"
+    },
+    {
+      "case_id": "AOS-001-TC04",
+      "reason": "fresh Ubuntu host not available"
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "uv",
+        "lock",
+        "--check",
+        "--offline"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "mypy",
+        "src/panestria"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "lint-imports",
+        "--config",
+        ".importlinter"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "python",
+        "tools/secret_scan.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-m",
+        "not live",
+        "--junitxml=evidence/AOS-001-S2.xml"
+      ],
+      "exit_code": 0,
+      "passed": 68,
+      "report": "evidence/AOS-001-S2.xml"
+    }
+  ]
+}

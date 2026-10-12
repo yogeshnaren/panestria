@@ -1,0 +1,83 @@
+{
+  "slice": "AOS-001-S2",
+  "observed_at": "2026-10-12T05:22:08.713598Z",
+  "candidate_commit": "99afb1a319e22fb24e86b7a4cc638a03e2557c0c",
+  "candidate_contains_tested_source": true,
+  "worktree_state_at_test_start": "clean",
+  "junit_sha256": "a54258d6b99f441ba817dfb09baf993465cefba00a46f2318f8078137abbb034",
+  "fixture_sha256": "7ea102658afd4bbeef03b93985f96f749fe21d211f3f15a29bead81bdb3e57a9",
+  "execution_mode": "HERMETIC",
+  "database": "not_used",
+  "executor": "not_implemented",
+  "hardware": {
+    "probed": false,
+    "verdict": "UNKNOWN",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "release_gate": "INCOMPLETE",
+  "components": [
+    {
+      "name": "python",
+      "resolved_version": "3.12.4",
+      "source": "/home/yogesh/anaconda3/bin/python3",
+      "capability": "interpreter",
+      "outcome": "observed",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "uv",
+      "resolved_version": "0.12.3",
+      "source": "https://docs.astral.sh/uv/",
+      "capability": "lock check and frozen commands",
+      "outcome": "uv lock --check --offline exit 0",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "ruff",
+      "resolved_version": "0.17.0",
+      "source": "https://pypi.org/simple",
+      "capability": "lint",
+      "outcome": "exit 0 on the tree; disposable unused import failed",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "mypy",
+      "resolved_version": "2.4.0",
+      "source": "https://pypi.org/simple",
+      "capability": "strict type check",
+      "outcome": "exit 0 on src/panestria; disposable mismatch failed",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "import-linter",
+      "resolved_version": "2.15",
+      "source": "https://pypi.org/simple",
+      "capability": "import boundaries",
+      "outcome": "production kept; forbidden fixture broken",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pytest",
+      "resolved_version": "9.1.1",
+      "source": "https://pypi.org/simple",
+      "capability": "non-live lane",
+      "outcome": "68 passed",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "postgresql",
+      "resolved_version": null,
+      "source": "not provisioned",
+      "capability": "database",
+      "outcome": "not used in this slice",
+      "mocked": false,
+      "live": false
+    }
+  ]
+}

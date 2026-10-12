@@ -45,7 +45,11 @@
         "AOS-001-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
+      "status": "TOOLCHAIN_OBSERVED_AWAITING_REVIEW",
+      "evidence_refs": [
+        "evidence/AOS-001-S2.xml",
+        "evidence/AOS-001-S2/case-result.json"
+      ],
       "prompt_ref": "cursor/prompts/AOS-001-S2.md"
     },
     {

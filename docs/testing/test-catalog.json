@@ -22,7 +22,7 @@
       "expected": "A disposable forbidden import, stale lock, failing lint/type/unit each fail its gate; positive installed src imports pass.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "HERMETIC_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-001-TC03",

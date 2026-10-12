@@ -1,26 +1,24 @@
 # Goal progress
 
 **Phase:** R0, contract version 1 approved.  
-**Slice:** AOS-001-S2, implemented and not yet evidenced on a clean commit.  
+**Slice:** AOS-001-S2 evidenced. Next is AOS-001-S3.  
 **Branch:** `r0-kernel`.  
-**Last verified source commit:** `af6794e112c888fd61b6e6b98a4824acab9c1681`.  
-**Evidence commit:** `48e378ee2f03a98c2e637b1d4f3b6066a5d13eaf`.  
-**Branch inspected:** `main`, clean before the contract draft.
+**Last verified source commit:** `99afb1a319e22fb24e86b7a4cc638a03e2557c0c`.  
+**Evidence commit:** recorded after that source commit; this file is not part of the tested tree.  
+**Branch inspected:** `r0-kernel`.
 
 ## Completed
 
-AOS-001-S1 is present in the source commit above. Hermetic AOS-001-TC01 passed, 57 tests, and the case result names that source commit. The manifest hash matches. Probe isolation, public reason allowlisting, and malformed URL rejection are in the current tree. Release gate G0 is `NOT_RUN`.
+AOS-001-S1 hermetic TC01 passed on `af6794e112c888fd61b6e6b98a4824acab9c1681`. AOS-001-S2 toolchain gates passed on `99afb1a319e22fb24e86b7a4cc638a03e2557c0c`: lock check, Ruff, Mypy, Import Linter, secret scan, and 68 non-live tests. G0 is `NOT_RUN`.
 
 ## Failures and blockers
 
-Contract approval is pending. AOS-001-TC04 has no fresh Ubuntu host. G0 cannot pass while that live case is `NOT_RUN`.
+AOS-001-TC04 has no fresh Ubuntu host. G0 cannot pass while that live case is `NOT_RUN`. TC03 is not implemented.
 
 ## Evidence
 
-`evidence/AOS-001.xml`  
-`evidence/AOS-001-S1/case-result.json`  
-`evidence/AOS-001-S1/environment-manifest.json`  
-`evidence/AOS-001-S1/assertion-map.json`
+`evidence/AOS-001.xml` and `evidence/AOS-001-S1/` name `af6794e112c888fd61b6e6b98a4824acab9c1681`.  
+`evidence/AOS-001-S2.xml` and `evidence/AOS-001-S2/` name `99afb1a319e22fb24e86b7a4cc638a03e2557c0c`.
 
 ## Approved permissions
 
@@ -28,7 +26,7 @@ Contract approval is pending. AOS-001-TC04 has no fresh Ubuntu host. G0 cannot p
 
 ## Next action
 
-Commit AOS-001-S2, rerun the contract lane on that commit, and record evidence that names the tested source commit.
+Implement AOS-001-S3: scoped PostgreSQL, Alembic scaffold, and the setup runbook. Keep AOS-001-TC04 `NOT_RUN` until a fresh Ubuntu host exists.
 
 ## Resume
 
