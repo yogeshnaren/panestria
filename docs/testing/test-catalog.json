@@ -140,7 +140,7 @@
       "release": "R0",
       "lane": "integration",
       "planned_nodeid": "tests/integration/test_aos_004.py::test_mock_success_and_repeat",
-      "expected": "Same seeded fixture yields same verdict and hashes; worker done creates only a candidate until independent checks pass.",
+      "expected": "Same seeded fixture yields same verdict and hashes; worker done creates only a candidate until independent checks pass. Scripted events name the attempt and epoch and do not accept the candidate. An unknown mode starts no process.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
       "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"

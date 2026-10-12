@@ -11,11 +11,28 @@ import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Protocol
+from uuid import NAMESPACE_URL, uuid5
 
 from panestria.sandbox.worktree import WorkspaceManifest
 
 OUTPUT_LIMIT = 4096
 ALLOWLIST = frozenset({"allowed.txt"})
+_EVENT_NAMES = ("started", "progress", "artifact.created", "verifying", "finished")
+_MODES = frozenset(
+    {
+        "artifact_corrupt",
+        "bad_path",
+        "bad_test",
+        "crash",
+        "false_done",
+        "flood",
+        "hung",
+        "success",
+        "timeout",
+        "verbose",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -23,6 +40,37 @@ class Observation:
     cancellation_requested: bool
     terminated: bool
     running: bool
+
+
+@dataclass(frozen=True)
+class WorkerEvent:
+    name: str
+    event_id: str
+    attempt_id: str
+    epoch: int
+
+
+class WorkerAdapter(Protocol):
+    def capabilities(self) -> frozenset[str]:
+        """Modes this adapter can run. A name outside this set is not a command."""
+
+    def validate(self) -> None:
+        """Reject an unknown mode, seed, path, or epoch before a process starts."""
+
+    def start(self) -> None:
+        """Start the scripted process after validation."""
+
+    def events(self) -> tuple[WorkerEvent, ...]:
+        """Lifecycle events recorded so far. They do not accept the candidate."""
+
+    def observe(self) -> Observation:
+        """Report cancellation, termination, and whether the process is still running."""
+
+    def cancel(self) -> None:
+        """Record cancellation, then terminate the process group."""
+
+    def collect(self, timeout: float = 5) -> Candidate:
+        """Drain bounded output and return a candidate that stays unaccepted."""
 
 
 @dataclass(frozen=True)
@@ -44,18 +92,40 @@ class MockWorkerAdapter:
         seed: str,
         output_limit: int = OUTPUT_LIMIT,
         relative: str = "allowed.txt",
+        *,
+        epoch: int = 1,
     ) -> None:
         self.manifest = manifest
         self.mode = mode.replace("-", "_")
         self.seed = seed
         self.output_limit = output_limit
         self.relative = relative
+        self.epoch = epoch
         self._process: subprocess.Popen[bytes] | None = None
         self._cancellation_requested = False
         self._terminated = False
         self._timed_out = False
+        self._events: list[WorkerEvent] = []
+
+    def capabilities(self) -> frozenset[str]:
+        return _MODES
+
+    def validate(self) -> None:
+        if self.mode not in _MODES:
+            raise ValueError("worker mode")
+        if not isinstance(self.seed, str) or self.seed == "" or len(self.seed) > 128 or "\n" in self.seed:
+            raise ValueError("worker seed")
+        if not isinstance(self.epoch, int) or isinstance(self.epoch, bool) or self.epoch < 0:
+            raise ValueError("worker epoch")
+        path = Path(self.relative)
+        if path.is_absolute() or self.relative == "" or ".." in path.parts:
+            raise ValueError("worker path")
+
+    def events(self) -> tuple[WorkerEvent, ...]:
+        return tuple(self._events)
 
     def start(self) -> None:
+        self.validate()
         env = os.environ.copy()
         env["PANESTRIA_WORKER_MODE"] = self.mode
         env["PANESTRIA_WORKER_SEED"] = self.seed
@@ -70,6 +140,7 @@ class MockWorkerAdapter:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
+        self._record("started")
 
     def observe(self) -> Observation:
         running = self._process is not None and self._process.poll() is None and not self._terminated
@@ -91,6 +162,8 @@ class MockWorkerAdapter:
         status = self._status(process.returncode)
         if self._escaped():
             status = "REJECTED"
+        for name in _EVENT_NAMES[1:]:
+            self._record(name)
         return Candidate(
             status=status,
             accepted=False,
@@ -148,6 +221,19 @@ class MockWorkerAdapter:
             if room > 0:
                 kept += chunk[:room]
             truncated = True
+
+    def _record(self, name: str) -> None:
+        if any(event.name == name for event in self._events):
+            return
+        token = f"{self.manifest.attempt_id}:{self.seed}:{self.epoch}:{name}"
+        self._events.append(
+            WorkerEvent(
+                name=name,
+                event_id=str(uuid5(NAMESPACE_URL, token)),
+                attempt_id=self.manifest.attempt_id,
+                epoch=self.epoch,
+            )
+        )
 
     def _kill(self) -> None:
         process = self._process

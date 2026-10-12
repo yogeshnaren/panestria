@@ -7,12 +7,13 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from uuid import UUID
 
 import psycopg
 import pytest
 from psycopg.errors import CheckViolation
 
-from panestria.brokers.harness.mock import OUTPUT_LIMIT, Candidate, MockWorkerAdapter, Observation
+from panestria.brokers.harness.mock import OUTPUT_LIMIT, Candidate, MockWorkerAdapter, Observation, WorkerEvent
 from panestria.sandbox.artifact_ingress import ArtifactIngress, ArtifactRef
 from panestria.sandbox.worktree import CleanupReport, WorkspaceManifest, WorktreeManager
 from panestria.verification.artifacts import decide
@@ -560,3 +561,56 @@ def test_expired_worktree_cleanup_does_not_follow_symlinks(
     assert kept.read_text() == "kept\n"
     assert (live_dir / "keep.txt").read_text() == "keep\n"
     assert (root / "repo" / "README.txt").read_text() == "base:alpha\n"
+
+
+def test_scripted_events_name_the_attempt_and_stay_unaccepted(
+    record_property: pytest.RecordProperty,
+    tmp_path: Path,
+) -> None:
+    _properties(record_property, "AOS-004-TC01", "integration")
+    sequence = ("started", "progress", "artifact.created", "verifying", "finished")
+    dummy = WorkspaceManifest("unused", "unused", "unused", "0" * 40, "attempt-events")
+    refused = MockWorkerAdapter(dummy, "shell", SEED)
+    assert "shell" not in refused.capabilities()
+    with pytest.raises(ValueError, match="worker mode"):
+        refused.start()
+    assert refused.observe().running is False
+    assert refused.events() == ()
+    with pytest.raises(ValueError, match="worker path"):
+        MockWorkerAdapter(dummy, "success", SEED, relative="../outside.txt").validate()
+    with pytest.raises(ValueError, match="worker epoch"):
+        MockWorkerAdapter(dummy, "success", SEED, epoch=-1).validate()
+
+    first_manifest = WorktreeManager().create(tmp_path / "events-a", "attempt-events", SEED)
+    first = MockWorkerAdapter(first_manifest, "success", SEED, epoch=3)
+    first.validate()
+    assert first.events() == ()
+    first.start()
+    assert [item.name for item in first.events()] == ["started"]
+    candidate = first.collect()
+    recorded = first.events()
+    assert candidate.accepted is False
+    assert candidate.status == "CANDIDATE"
+    _assert_event_sequence(recorded, first_manifest.attempt_id, 3, sequence)
+
+    second_manifest = WorktreeManager().create(tmp_path / "events-b", "attempt-events", SEED)
+    second = MockWorkerAdapter(second_manifest, "success", SEED, epoch=3)
+    second.start()
+    second.collect()
+    assert [item.event_id for item in second.events()] == [item.event_id for item in recorded]
+
+
+def _assert_event_sequence(
+    recorded: tuple[WorkerEvent, ...],
+    attempt_id: str,
+    epoch: int,
+    sequence: tuple[str, ...],
+) -> None:
+    assert [item.name for item in recorded] == list(sequence)
+    seen: set[str] = set()
+    for item in recorded:
+        assert item.attempt_id == attempt_id
+        assert item.epoch == epoch
+        assert UUID(item.event_id).version == 5
+        assert item.event_id not in seen
+        seen.add(item.event_id)
