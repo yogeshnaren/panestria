@@ -16,6 +16,7 @@ import psycopg
 from psycopg.errors import UniqueViolation
 
 from panestria.brokers.harness.mock import Candidate, MockWorkerAdapter
+from panestria.contracts.acceptance import GitDiffPathCheck
 from panestria.contracts.approval import load_preview
 from panestria.contracts.goal import load_contract
 from panestria.execution.crash_gate import crash_gate
@@ -30,6 +31,7 @@ from panestria.kernel.uow import UnitOfWork
 from panestria.sandbox.artifact_ingress import ArtifactIngress, ArtifactRef
 from panestria.sandbox.gitcmd import allow_git
 from panestria.sandbox.worktree import WorkspaceManifest, WorktreeManager
+from panestria.verification.diff import inspect_diff
 from panestria.verification.nodes import NodeReport, evaluate_checks, report_output_consistent, required_passed
 from panestria.verification.policy import decide_action
 from panestria.verification.registry import CommandRegistry
@@ -239,6 +241,8 @@ class SyntheticJourney:
             if not proved:
                 return
         elif not _checks_passed(connection, task_id, file_hash):
+            return
+        if not self._candidate_tree_allowed(connection, actor, goal_id, manifest, committed):
             return
         self._walk(connection, actor, task_id)
         contract = self._contract(connection, actor, goal_id)
@@ -457,6 +461,36 @@ class SyntheticJourney:
         )
         connection.commit()
         return passed
+
+    def _candidate_tree_allowed(
+        self,
+        connection: Conn,
+        actor: Actor,
+        goal_id: str,
+        manifest: WorkspaceManifest,
+        committed: str,
+    ) -> bool:
+        """A stored file-hash PASS does not authorize a different commit."""
+        contract = self._contract(connection, actor, goal_id)
+        loaded = load_contract(contract[3])
+        root = Path(manifest.root)
+        worktree = Path(manifest.worktree)
+        for item in loaded.acceptance:
+            spec = item.verifier
+            if not isinstance(spec, GitDiffPathCheck) or not item.required:
+                continue
+            report = inspect_diff(
+                root,
+                worktree,
+                frozenset(spec.allowed_paths),
+                base_sha=manifest.base_sha,
+                forbidden=frozenset([*spec.forbidden_paths, *loaded.constraints.forbidden_paths]),
+                also_allowed=frozenset(loaded.constraints.allowed_paths),
+                candidate_commit=committed,
+            )
+            if not report.ok or report.candidate_tree != committed:
+                return False
+        return True
 
     def _workspace(self, sandbox: Path, attempt_id: str, seed: str, owner: str) -> WorkspaceManifest:
         sandbox.mkdir(parents=True, exist_ok=True)
