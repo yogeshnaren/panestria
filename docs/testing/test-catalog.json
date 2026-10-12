@@ -121,7 +121,7 @@
       "expected": "Synthetic effect completed but checkpoint response lost is observed/reconciled before repeat; FAILED not swallowed.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-003-TC04",
@@ -132,7 +132,7 @@
       "expected": "DB unavailable admits no speculative transitions; consistent app+DBOS restore resumes same IDs and correct authoritative status.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-004-TC01",
