@@ -114,6 +114,7 @@ def _send(client: TestClient):
 
 def test_loopback_submit_scope_and_replay(record_property: pytest.RecordProperty) -> None:
     _properties(record_property)
+    record_property("gate_case_id", "AOS-005-TC01")
     _database()
     try:
         body = FIXTURE.read_bytes()
