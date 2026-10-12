@@ -1,4 +1,4 @@
-"""Local CLI. Domain commands are not part of this slice."""
+"""Local CLI for health, goals, and exact approval decisions."""
 
 from __future__ import annotations
 
@@ -15,11 +15,14 @@ from panestria.api.health import (
     default_readiness_probe,
     secret_rejection_body,
 )
+from panestria.cli.approvals import approve_command, deny_command
 from panestria.cli.goals import goal_app
 from panestria.config import ProfileRejected, load_settings
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 app.add_typer(goal_app, name="goal")
+app.command("approve")(approve_command)
+app.command("deny")(deny_command)
 
 
 def _version_callback(value: bool) -> None:

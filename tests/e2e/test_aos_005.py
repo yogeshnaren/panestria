@@ -1,4 +1,4 @@
-"""AOS-005-S1. Loopback goal submit, scoped read, and typed replay.
+"""AOS-005 loopback goals and locked approval decisions.
 
 The completed synthetic journey is AOS-005-TC01 and stays NOT_RUN.
 """
@@ -9,20 +9,29 @@ import hashlib
 import json
 import os
 import subprocess
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlsplit
 from urllib.request import Request
 
 import psycopg
 import pytest
+import typer
 from fastapi.testclient import TestClient
 from typer.testing import CliRunner
 
 from panestria.api.auth import GoalApi
 from panestria.api.main import create_app, mount_goal_api
+from panestria.cli.approvals import decide_approval
 from panestria.cli.goals import read_events, read_status, submit_contract
 from panestria.cli.main import app as cli_app
 from panestria.config import Settings
+from panestria.contracts.approval import effect_digest, load_preview
+from panestria.kernel.approvals import ApprovalService, ApprovalView
+from panestria.kernel.errors import KernelDenied
+from panestria.kernel.goals import Actor
+from panestria.kernel.uow import UnitOfWork
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "docs" / "fixtures" / "synthetic-goal-contract.json"
@@ -235,6 +244,359 @@ def test_loopback_submit_scope_and_replay(record_property: pytest.RecordProperty
                 TOKEN,
                 "--idempotency-key",
                 "once",
+            ],
+        )
+        assert refused.exit_code == 2
+    finally:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+
+
+GOAL = "00000000-0000-4000-8000-0000000000a1"
+CONTRACT = "00000000-0000-4000-8000-0000000000a2"
+OTHER = "00000000-0000-4000-8000-000000000099"
+OTHER_PROJECT = "00000000-0000-4000-8000-000000000098"
+SHA = "ab" * 32
+MERGE = "00000000-0000-4000-8000-000000000051"
+CONSENT = "00000000-0000-4000-8000-000000000052"
+DENY = "00000000-0000-4000-8000-000000000053"
+EXPIRE = "00000000-0000-4000-8000-000000000054"
+ACTOR = "00000000-0000-4000-8000-000000000056"
+FOREIGN_GOAL = "00000000-0000-4000-8000-0000000000b1"
+FOREIGN_CONTRACT = "00000000-0000-4000-8000-0000000000b2"
+FOREIGN_TASK = "00000000-0000-4000-8000-000000000055"
+_SERVICE = ApprovalService()
+
+
+def _stamp(delta: timedelta) -> str:
+    return (datetime.now(timezone.utc) + delta).strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")
+
+
+def _preview(task_id: str, action: str, expires: str, minimum_actor: str = OWNER) -> dict[str, Any]:
+    return {
+        "action_kind": action,
+        "owner_id": OWNER,
+        "project_id": PROJECT,
+        "task_id": task_id,
+        "contract_sha256": SHA,
+        "contract_version": 1,
+        "policy_version": "synthetic-1",
+        "destination": "refs/heads/main",
+        "expected_base": "base",
+        "candidate_sha256": SHA,
+        "required_checks": ["synthetic-required"],
+        "minimum_actor_id": minimum_actor,
+        "expires_at": expires,
+    }
+
+
+def _seed_approvals() -> None:
+    with psycopg.connect(DATABASE_URL) as connection:
+        connection.execute("INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'other')", (OTHER,))
+        connection.execute(
+            "INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)",
+            (OTHER_PROJECT, OTHER),
+        )
+        connection.execute(
+            "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+            " VALUES (%s, %s, %s, 'merge', 'CREATED')",
+            (GOAL, OWNER, PROJECT),
+        )
+        connection.execute(
+            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256) VALUES (%s, %s, 1, '{}', %s)",
+            (CONTRACT, GOAL, SHA),
+        )
+        connection.execute(
+            "INSERT INTO panestria.acceptance_check"
+            " (id, contract_id, check_key, description, verifier_type, verifier_spec)"
+            " VALUES (%s, %s, 'synthetic-required', 'required', 'trusted-command-ref',"
+            """ '{"type":"trusted-command-ref"}')""",
+            ("00000000-0000-4000-8000-000000000061", CONTRACT),
+        )
+        for task_id, name, state in (
+            (MERGE, "merge", "VERIFYING"),
+            (DENY, "deny", "VERIFYING"),
+            (EXPIRE, "expire", "VERIFYING"),
+            (ACTOR, "actor", "VERIFYING"),
+            (CONSENT, "consent", "VALIDATING"),
+        ):
+            connection.execute(
+                "INSERT INTO panestria.task (id, goal_id, contract_id, name, state) VALUES (%s, %s, %s, %s, %s)",
+                (task_id, GOAL, CONTRACT, name, state),
+            )
+        connection.execute(
+            "INSERT INTO panestria.task_attempt (id, task_id, attempt_number, lease_epoch, status, adapter)"
+            " VALUES (%s, %s, 1, 0, 'SUCCEEDED', 'mock')",
+            ("00000000-0000-4000-8000-000000000071", MERGE),
+        )
+        connection.execute(
+            "INSERT INTO panestria.check_run"
+            " (id, acceptance_check_id, attempt_id, task_id, contract_id, verdict)"
+            " VALUES (%s, %s, %s, %s, %s, 'UNKNOWN')",
+            (
+                "00000000-0000-4000-8000-000000000081",
+                "00000000-0000-4000-8000-000000000061",
+                "00000000-0000-4000-8000-000000000071",
+                MERGE,
+                CONTRACT,
+            ),
+        )
+        connection.execute(
+            "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+            " VALUES (%s, %s, %s, 'foreign', 'CREATED')",
+            (FOREIGN_GOAL, OTHER, OTHER_PROJECT),
+        )
+        connection.execute(
+            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256) VALUES (%s, %s, 1, '{}', %s)",
+            (FOREIGN_CONTRACT, FOREIGN_GOAL, SHA),
+        )
+        connection.execute(
+            "INSERT INTO panestria.acceptance_check"
+            " (id, contract_id, check_key, description, verifier_type, verifier_spec)"
+            " VALUES (%s, %s, 'synthetic-required', 'required', 'trusted-command-ref',"
+            """ '{"type":"trusted-command-ref"}')""",
+            ("00000000-0000-4000-8000-000000000062", FOREIGN_CONTRACT),
+        )
+        connection.execute(
+            "INSERT INTO panestria.task (id, goal_id, contract_id, name, state)"
+            " VALUES (%s, %s, %s, 'foreign', 'VERIFYING')",
+            (FOREIGN_TASK, FOREIGN_GOAL, FOREIGN_CONTRACT),
+        )
+        connection.commit()
+
+
+def _open(actor: Actor, preview: dict[str, Any]) -> ApprovalView:
+    with psycopg.connect(DATABASE_URL) as connection:
+        view = _SERVICE.request(UnitOfWork(connection), actor, preview)
+        connection.commit()
+        return view
+
+
+def _continue(approval_id: str, digest: str, version: int) -> object:
+    with psycopg.connect(DATABASE_URL) as connection:
+        try:
+            receipt = _SERVICE.continue_after_approval(
+                UnitOfWork(connection),
+                Actor(OWNER, PROJECT),
+                approval_id,
+                digest,
+                version,
+            )
+        except KernelDenied:
+            connection.rollback()
+            raise
+        connection.commit()
+        return receipt
+
+
+def _effect_count(task_id: str) -> int:
+    with psycopg.connect(DATABASE_URL) as connection:
+        row = connection.execute("SELECT count(*) FROM panestria.side_effect WHERE task_id = %s", (task_id,)).fetchone()
+    return 0 if row is None else int(row[0])
+
+
+def test_approval_digest_actor_expiry(record_property: pytest.RecordProperty) -> None:
+    """Wrong actor, project, digest, expiry, or an unknown check cannot dispatch."""
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False)
+    dirty = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT, text=True, capture_output=True, check=False)
+    record_property("gate_case_id", "AOS-005-TC02")
+    record_property("candidate_commit", commit.stdout.strip())
+    record_property("fixture_digest", hashlib.sha256(FIXTURE.read_bytes()).hexdigest())
+    record_property("lane", "security")
+    record_property("execution_mode", "OS_BOUNDARY")
+    record_property("worktree_state", "dirty" if dirty.stdout.strip() else "clean")
+    record_property("aos_005_tc01", "NOT_RUN")
+    _database()
+    try:
+        _seed_approvals()
+        later = _stamp(timedelta(hours=1))
+        earlier = _stamp(timedelta(hours=-1))
+        merge = _open(Actor(OWNER, PROJECT), _preview(MERGE, "merge", later))
+        denied = _open(Actor(OWNER, PROJECT), _preview(DENY, "merge", later))
+        expired = _open(Actor(OWNER, PROJECT), _preview(EXPIRE, "merge", earlier))
+        consent = _open(Actor(OWNER, PROJECT), _preview(CONSENT, "contract_consent", later))
+        mismatched_actor = _open(Actor(OWNER, PROJECT), _preview(ACTOR, "merge", later, OTHER))
+        foreign_preview = _preview(FOREIGN_TASK, "merge", later, OTHER)
+        foreign_preview["owner_id"] = OTHER
+        foreign_preview["project_id"] = OTHER_PROJECT
+        foreign = _open(Actor(OTHER, OTHER_PROJECT), foreign_preview)
+        assert merge.continuation_kind == "MERGE"
+        assert consent.continuation_kind == "DISPATCH"
+        with _app() as client:
+            preview = client.get(f"/v1/approvals/{merge.approval_id}", headers={"Authorization": f"Bearer {TOKEN}"})
+            assert preview.status_code == 200
+            body = preview.json()
+            assert body["effect_digest"] == effect_digest(load_preview(body["preview"]))
+            changed = dict(body["preview"])
+            changed["candidate_sha256"] = "cd" * 32
+            changed_digest = effect_digest(load_preview(changed))
+            assert changed_digest != body["effect_digest"]
+            mismatch = client.post(
+                f"/v1/approvals/{merge.approval_id}/decision",
+                json={
+                    "decision": "approve",
+                    "effect_digest": changed_digest,
+                    "expected_version": body["expected_version"],
+                },
+                headers={"Authorization": f"Bearer {TOKEN}", "Idempotency-Key": "changed"},
+            )
+            assert mismatch.status_code == 409
+            assert mismatch.json()["code"] == "digest_mismatch"
+            hidden = client.get(f"/v1/approvals/{foreign.approval_id}", headers={"Authorization": f"Bearer {TOKEN}"})
+            assert hidden.status_code == 404
+            actor = client.post(
+                f"/v1/approvals/{mismatched_actor.approval_id}/decision",
+                json={
+                    "decision": "approve",
+                    "effect_digest": mismatched_actor.effect_digest,
+                    "expected_version": mismatched_actor.expected_version,
+                },
+                headers={"Authorization": f"Bearer {TOKEN}", "Idempotency-Key": "actor"},
+            )
+            assert actor.status_code == 403
+            assert actor.json()["code"] == "actor_mismatch"
+            stale = client.post(
+                f"/v1/approvals/{expired.approval_id}/decision",
+                json={
+                    "decision": "approve",
+                    "effect_digest": expired.effect_digest,
+                    "expected_version": expired.expected_version,
+                },
+                headers={"Authorization": f"Bearer {TOKEN}", "Idempotency-Key": "expire"},
+            )
+            assert stale.status_code == 409
+            assert stale.json()["code"] == "expired"
+            sender = _send(client)
+            with pytest.raises(typer.Exit):
+                decide_approval(
+                    base_url="http://127.0.0.1",
+                    token=TOKEN,
+                    approval_id=merge.approval_id,
+                    effect_digest=changed_digest,
+                    expected_version=int(body["expected_version"]),
+                    decision="approve",
+                    idempotency_key="cli-changed",
+                    send=sender,
+                )
+            approved_status, approved = decide_approval(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                approval_id=merge.approval_id,
+                effect_digest=str(body["effect_digest"]),
+                expected_version=int(body["expected_version"]),
+                decision="approve",
+                idempotency_key="approve-once",
+                send=sender,
+            )
+            assert approved_status == 200
+            assert approved["state"] == "APPROVED"
+            assert approved["effect_digest"] == body["effect_digest"]
+            assert approved["replayed"] is False
+            replay_status, replay = decide_approval(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                approval_id=merge.approval_id,
+                effect_digest=str(body["effect_digest"]),
+                expected_version=int(body["expected_version"]),
+                decision="approve",
+                idempotency_key="approve-once",
+                send=sender,
+            )
+            assert replay_status == 200
+            assert replay["replayed"] is True
+            with pytest.raises(typer.Exit):
+                decide_approval(
+                    base_url="http://127.0.0.1",
+                    token=TOKEN,
+                    approval_id=merge.approval_id,
+                    effect_digest=str(body["effect_digest"]),
+                    expected_version=int(approved["row_version"]),
+                    decision="deny",
+                    idempotency_key="approve-once",
+                    send=sender,
+                )
+            deny_status, deny_body = decide_approval(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                approval_id=denied.approval_id,
+                effect_digest=denied.effect_digest,
+                expected_version=denied.expected_version,
+                decision="deny",
+                idempotency_key="deny-once",
+                send=sender,
+            )
+            assert deny_status == 200
+            assert deny_body["state"] == "DENIED"
+            consent_status, consent_body = decide_approval(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                approval_id=consent.approval_id,
+                effect_digest=consent.effect_digest,
+                expected_version=consent.expected_version,
+                decision="approve",
+                idempotency_key="consent-once",
+                send=sender,
+            )
+            assert consent_status == 200
+        assert _effect_count(MERGE) == 0
+        with pytest.raises(KernelDenied) as unknown:
+            _continue(merge.approval_id, merge.effect_digest, int(approved["row_version"]))
+        assert unknown.value.code == "unknown_check"
+        assert _effect_count(MERGE) == 0
+        with psycopg.connect(DATABASE_URL) as connection:
+            goal = connection.execute("SELECT status FROM panestria.goal WHERE id = %s", (GOAL,)).fetchone()
+            task = connection.execute("SELECT state FROM panestria.task WHERE id = %s", (MERGE,)).fetchone()
+            assert goal is not None and goal[0] != "COMPLETED"
+            assert task is not None and task[0] == "WAITING_APPROVAL"
+            connection.execute(
+                "INSERT INTO panestria.artifact (id, task_id, attempt_id, kind, store_key, sha256, size_bytes)"
+                " VALUES (%s, %s, %s, 'evidence', 'blob', %s, 1)",
+                ("00000000-0000-4000-8000-000000000091", MERGE, "00000000-0000-4000-8000-000000000071", SHA),
+            )
+            connection.execute(
+                "UPDATE panestria.check_run SET verdict = 'PASS', evidence_artifact_id = %s WHERE id = %s",
+                ("00000000-0000-4000-8000-000000000091", "00000000-0000-4000-8000-000000000081"),
+            )
+            connection.commit()
+        continued = _continue(merge.approval_id, merge.effect_digest, int(approved["row_version"]))
+        assert continued.task_state == "VERIFYING"  # type: ignore[attr-defined]
+        assert continued.effect_id is not None  # type: ignore[attr-defined]
+        assert _effect_count(MERGE) == 1
+        again = _continue(merge.approval_id, merge.effect_digest, int(approved["row_version"]))
+        assert again.replayed is True  # type: ignore[attr-defined]
+        assert again.effect_id == continued.effect_id  # type: ignore[attr-defined]
+        with psycopg.connect(DATABASE_URL) as connection:
+            attempts = connection.execute(
+                "SELECT count(*) FROM panestria.task_attempt WHERE task_id = %s",
+                (MERGE,),
+            ).fetchone()
+            assert attempts is not None and int(attempts[0]) == 1
+        with pytest.raises(KernelDenied) as denied_effect:
+            _continue(denied.approval_id, denied.effect_digest, int(deny_body["row_version"]))
+        assert denied_effect.value.code == "not_approved"
+        with pytest.raises(KernelDenied) as expired_effect:
+            _continue(expired.approval_id, expired.effect_digest, expired.expected_version + 1)
+        assert expired_effect.value.code == "expired"
+        assert _effect_count(DENY) == 0
+        assert _effect_count(EXPIRE) == 0
+        resumed = _continue(consent.approval_id, consent.effect_digest, int(consent_body["row_version"]))
+        assert resumed.task_state == "READY"  # type: ignore[attr-defined]
+        assert resumed.effect_id is None  # type: ignore[attr-defined]
+        assert _effect_count(CONSENT) == 0
+        refused = CliRunner().invoke(
+            cli_app,
+            [
+                "approve",
+                merge.approval_id,
+                "--effect-digest",
+                SHA,
+                "--expected-version",
+                "1",
+                "--idempotency-key",
+                "x",
+                "--base-url",
+                "http://example.com",
+                "--token",
+                TOKEN,
             ],
         )
         assert refused.exit_code == 2

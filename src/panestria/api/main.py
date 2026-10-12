@@ -21,6 +21,7 @@ from panestria.api.health import (
     SecretBearingOutputRejected,
     secret_rejection_body,
 )
+from panestria.api.routes.approvals import router as approvals_router
 from panestria.api.routes.events import router as events_router
 from panestria.api.routes.goals import router as goals_router
 from panestria.config import Settings, ValidatedSettings
@@ -80,3 +81,4 @@ def mount_goal_api(app: FastAPI, goal_api: GoalApi) -> None:
     app.state.goal_api = goal_api
     app.include_router(goals_router)
     app.include_router(events_router)
+    app.include_router(approvals_router)
