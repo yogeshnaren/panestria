@@ -46,4 +46,4 @@ make test
 
 `make test` excludes the live fresh-host test. Provider credentials are not required.
 
-A killed workflow process is resumed with `PANESTRIA_MODE=recover` and `PANESTRIA_WORKFLOW_ID` set to the pinned id. On success it prints one JSON line containing `recovery_instance` and `workflow_id`. DBOS is pinned at 3.2.0. That command is not a fresh-host result.
+A killed workflow process is resumed with `PANESTRIA_MODE=recover` and `PANESTRIA_WORKFLOW_ID` set to the pinned id. It prints one JSON line containing `recovery_instance`, `workflow_id`, `recovery_attempts`, `latency_ms`, and `status`. Success exits 0. A still-pending or failed workflow prints that line and exits 2. DBOS is pinned at 3.2.0. That command is not a fresh-host result.

@@ -1,6 +1,6 @@
 # Architecture delta
 
-This file records the implementation on `fc9c29e22411eb353449585b60b5eefaacb76dd0`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
+This file records the implementation on `a27bf7601a019c28dde547aad62abfb96a67dc98`. R0 is not accepted. The design in `docs/design/01-ARCHITECTURE-AND-CONTRACTS.md` still describes later releases. Those releases are not implemented here.
 
 ## What runs
 
@@ -27,4 +27,4 @@ Import Linter checks these boundaries. The kernel does not import the API, CLI, 
 
 An accepted goal becomes a task and a contract-consent approval. After that approval, admission stores a workflow link and enqueues the attempt. The workflow leases the attempt, the mock worker writes the candidate, and the verifiers record check runs and artifact hashes. A merge approval is consumed once. Before a new Git update, the journey rechecks expiry, epoch, candidate, and evidence. If the protected ref already names the approved commit, recovery records success. If the ref is unchanged, recovery uses a compare-and-swap. Any other ref is a conflict.
 
-Event `seq` is a global identity allocated under `pg_advisory_xact_lock(106971, 1)`. ADR 0002 records that rule. A process started with `PANESTRIA_MODE=recover` prints one `recovery_instance` for that process and the pinned workflow id. DBOS is pinned at 3.2.0. A serializable workflow transaction raises `serialization_retry_limit` after five conflicting attempts. The task and effect workflows record that task FAILED and re-raise, so the workflow stays ERROR. Any other terminal workflow error is recorded the same way. A lost version race, an illegal transition, and a contract mismatch are re-raised without that receipt.
+Event `seq` is a global identity allocated under `pg_advisory_xact_lock(106971, 1)`. ADR 0002 records that rule. A process started with `PANESTRIA_MODE=recover` prints one line with `recovery_instance`, the pinned workflow id, `recovery_attempts`, `latency_ms`, and the status. A workflow that is still pending prints `PENDING` and the command exits 2. DBOS is pinned at 3.2.0. Git commands used by the worktree, the diff, and the journey are limited to 30 seconds. A serializable workflow transaction raises `serialization_retry_limit` after five conflicting attempts. The task and effect workflows record that task FAILED and re-raise, so the workflow stays ERROR. Any other terminal workflow error is recorded the same way. A lost version race, an illegal transition, and a contract mismatch are re-raised without that receipt.
