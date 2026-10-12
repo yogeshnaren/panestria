@@ -62,7 +62,7 @@
       "aos_id": "AOS-002",
       "release": "R0",
       "lane": "migration",
-      "planned_nodeid": "tests/integration/test_aos_002.py::test_scope_constraints",
+      "planned_nodeid": "tests/integration/test_aos_002_migration.py",
       "expected": "Migration applies and restore/reapply works; wrong project/owner/task-contract linkage, orphan attempts and invalid states rejected by SQL.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,

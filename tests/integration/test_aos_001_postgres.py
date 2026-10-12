@@ -119,7 +119,7 @@ def test_scoped_database_is_healthy_and_scaffold_is_empty() -> None:
         else:
             raise AssertionError(last_error)
         upgraded = subprocess.run(
-            ["uv", "run", "--frozen", "alembic", "-c", "migrations/alembic.ini", "upgrade", "head"],
+            ["uv", "run", "--frozen", "alembic", "-c", "migrations/alembic.ini", "upgrade", "0001_scaffold"],
             cwd=ROOT,
             check=False,
             capture_output=True,
