@@ -555,8 +555,9 @@ def test_approval_digest_actor_expiry(record_property: pytest.RecordProperty) ->
                 ("00000000-0000-4000-8000-000000000091", MERGE, "00000000-0000-4000-8000-000000000071", SHA),
             )
             connection.execute(
-                "UPDATE panestria.check_run SET verdict = 'PASS', evidence_artifact_id = %s WHERE id = %s",
-                ("00000000-0000-4000-8000-000000000091", "00000000-0000-4000-8000-000000000081"),
+                "UPDATE panestria.check_run"
+                " SET verdict = 'PASS', evidence_artifact_id = %s, candidate_sha256 = %s WHERE id = %s",
+                ("00000000-0000-4000-8000-000000000091", SHA, "00000000-0000-4000-8000-000000000081"),
             )
             connection.commit()
         continued = _continue(merge.approval_id, merge.effect_digest, int(approved["row_version"]))
@@ -764,8 +765,9 @@ def test_decision_race_idempotency(record_property: pytest.RecordProperty) -> No
                 ("00000000-0000-4000-8000-000000000091", MERGE, "00000000-0000-4000-8000-000000000071", SHA),
             )
             connection.execute(
-                "UPDATE panestria.check_run SET verdict = 'PASS', evidence_artifact_id = %s WHERE task_id = %s",
-                ("00000000-0000-4000-8000-000000000091", MERGE),
+                "UPDATE panestria.check_run"
+                " SET verdict = 'PASS', evidence_artifact_id = %s, candidate_sha256 = %s WHERE task_id = %s",
+                ("00000000-0000-4000-8000-000000000091", SHA, MERGE),
             )
             version = connection.execute("SELECT row_version FROM panestria.task WHERE id = %s", (MERGE,)).fetchone()
             connection.commit()

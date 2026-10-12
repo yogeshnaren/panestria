@@ -189,20 +189,57 @@ def insert_idempotency(
     )
 
 
-def required_verdicts(uow: UnitOfWork, task_id: str) -> list[tuple[str, str | None]]:
+def required_verdicts(
+    uow: UnitOfWork,
+    task_id: str,
+    candidate_sha256: str | None = None,
+) -> list[tuple[str, str | None]]:
+    """Latest run on the current attempt. A missing artifact does not reveal an older PASS."""
     rows = uow.execute(
-        "SELECT check_row.check_key, ("
-        " SELECT run.verdict FROM panestria.check_run AS run"
-        " JOIN panestria.task_attempt AS attempt ON attempt.id = run.attempt_id"
-        " WHERE run.acceptance_check_id = check_row.id AND attempt.task_id = task.id"
-        " AND run.evidence_artifact_id IS NOT NULL"
-        " ORDER BY run.checked_at DESC LIMIT 1)"
+        "SELECT check_row.check_key, latest.verdict, latest.evidence_artifact_id::text,"
+        " latest.candidate_sha256"
         " FROM panestria.acceptance_check AS check_row"
         " JOIN panestria.task AS task ON task.contract_id = check_row.contract_id"
-        " WHERE task.id = %s AND check_row.required ORDER BY check_row.check_key",
+        " JOIN LATERAL ("
+        " SELECT attempt.id FROM panestria.task_attempt AS attempt"
+        " WHERE attempt.task_id = task.id AND attempt.lease_epoch = task.lease_epoch"
+        " ORDER BY attempt.attempt_number DESC LIMIT 1"
+        " ) AS current_attempt ON true"
+        " LEFT JOIN LATERAL ("
+        " SELECT run.verdict, run.evidence_artifact_id, run.candidate_sha256"
+        " FROM panestria.check_run AS run"
+        " WHERE run.acceptance_check_id = check_row.id"
+        " AND run.attempt_id = current_attempt.id"
+        " AND run.task_id = task.id"
+        " AND run.contract_id = check_row.contract_id"
+        " ORDER BY run.checked_at DESC LIMIT 1"
+        " ) AS latest ON true"
+        " WHERE task.id = %s AND check_row.required"
+        " ORDER BY check_row.check_key",
         (task_id,),
     ).fetchall()
-    return [(str(key), None if verdict is None else str(verdict)) for key, verdict in rows]
+    return [
+        (str(key), _authoritative(verdict, evidence_id, stored_candidate, candidate_sha256))
+        for key, verdict, evidence_id, stored_candidate in rows
+    ]
+
+
+def _authoritative(
+    verdict: object,
+    evidence_id: object,
+    stored_candidate: object,
+    expected_candidate: str | None,
+) -> str | None:
+    if verdict is None:
+        return None
+    recorded = str(verdict)
+    if recorded != "PASS":
+        return recorded
+    if evidence_id is None or stored_candidate is None:
+        return None
+    if expected_candidate is not None and str(stored_candidate).strip() != expected_candidate:
+        return None
+    return "PASS"
 
 
 def consumption(uow: UnitOfWork, request_id: str) -> tuple[bool, str | None]:

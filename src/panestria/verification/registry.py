@@ -25,13 +25,12 @@ class CommandRegistry:
     def load(cls, bundle_root: Path, interpreter: str) -> CommandRegistry:
         script = bundle_root / "required_check.py"
         digest = hashlib.sha256(script.read_bytes()).hexdigest()
-        command = RegisteredCommand(
-            "synthetic-required",
-            (interpreter, str(script.resolve())),
-            True,
-            digest,
+        argv = (interpreter, str(script.resolve()))
+        commands = (
+            RegisteredCommand("synthetic-required", argv, True, digest),
+            RegisteredCommand("synthetic-test-suite", argv, False, digest),
         )
-        return cls(bundle_root, interpreter, (command,))
+        return cls(bundle_root, interpreter, commands)
 
     def required(self) -> tuple[RegisteredCommand, ...]:
         return tuple(command for command in self._commands.values() if command.required)

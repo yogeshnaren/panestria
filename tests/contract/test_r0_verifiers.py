@@ -1,0 +1,315 @@
+"""R0-01 and R0-07. Each acceptance node uses its own specification."""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+from panestria.contracts.goal import GoalContract, contract_sha256, load_contract
+from panestria.sandbox.worktree import WorktreeManager
+from panestria.verification.diff import inspect_diff
+from panestria.verification.nodes import ArtifactFact, ReviewFact, evaluate_checks, required_passed
+from panestria.verification.registry import CommandRegistry, RegisteredCommand
+from panestria.verification.runner import OUTPUT_LIMIT, TrustedCheckRunner
+
+ROOT = Path(__file__).resolve().parents[2]
+FIXTURE = ROOT / "docs" / "fixtures" / "synthetic-goal-contract.json"
+ALLOWLIST = frozenset({"allowed.txt"})
+
+
+def _contract(acceptance: list[dict[str, object]]) -> GoalContract:
+    document = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    document["acceptance"] = acceptance
+    loaded = load_contract(document)
+    assert isinstance(loaded, GoalContract)
+    return loaded
+
+
+def _check(check_id: str, required: bool, verifier: dict[str, object]) -> dict[str, object]:
+    return {
+        "id": check_id,
+        "description": check_id,
+        "required": required,
+        "verifier": verifier,
+        "evidence": {"required": True, "kind": f"{verifier['type']}-report"},
+    }
+
+
+def _bundle(root: Path) -> tuple[CommandRegistry, TrustedCheckRunner, Path]:
+    bundle = root / "protected" / "bundle"
+    bundle.mkdir(parents=True)
+    passing = bundle / "pass.py"
+    failing = bundle / "fail.py"
+    sleeping = bundle / "sleep.py"
+    flooding = bundle / "flood.py"
+    passing.write_text("raise SystemExit(0)\n", encoding="utf-8")
+    failing.write_text("raise SystemExit(1)\n", encoding="utf-8")
+    sleeping.write_text("import time\ntime.sleep(30)\n", encoding="utf-8")
+    flooding.write_text("import sys\nsys.stdout.buffer.write(b'x' * 10000)\n", encoding="utf-8")
+    commands: list[RegisteredCommand] = []
+    for ref, script in (
+        ("synthetic-test-suite", passing),
+        ("exits-one", failing),
+        ("sleeps", sleeping),
+        ("floods", flooding),
+    ):
+        digest = hashlib.sha256(script.read_bytes()).hexdigest()
+        commands.append(RegisteredCommand(ref, (sys.executable, str(script.resolve())), False, digest))
+    registry = CommandRegistry(bundle, sys.executable, tuple(commands))
+    return registry, TrustedCheckRunner(registry), root / "candidate.txt"
+
+
+def _tree(tmp_path: Path, name: str) -> tuple[Path, Path, str]:
+    manifest = WorktreeManager().create(tmp_path / name, "attempt-1", "seed")
+    return Path(manifest.root), Path(manifest.worktree), manifest.base_sha
+
+
+def test_distinct_command_specs_do_not_share_one_result(tmp_path: Path) -> None:
+    registry, runner, candidate = _bundle(tmp_path)
+    candidate.write_text("edit:seed\n", encoding="utf-8")
+    root, worktree, base = _tree(tmp_path, "commands")
+    contract = _contract(
+        [
+            _check(
+                "pass-zero",
+                True,
+                {
+                    "type": "trusted-command-ref",
+                    "command_ref": "synthetic-test-suite",
+                    "expected_exit_code": 0,
+                    "timeout_seconds": 5,
+                },
+            ),
+            _check(
+                "want-one",
+                True,
+                {
+                    "type": "trusted-command-ref",
+                    "command_ref": "synthetic-test-suite",
+                    "expected_exit_code": 1,
+                    "timeout_seconds": 5,
+                },
+            ),
+            _check(
+                "unknown",
+                True,
+                {
+                    "type": "trusted-command-ref",
+                    "command_ref": "not-in-the-command-registry",
+                    "expected_exit_code": 1,
+                    "timeout_seconds": 5,
+                },
+            ),
+        ]
+    )
+    reports = evaluate_checks(
+        contract,
+        root=root,
+        worktree=worktree,
+        base_sha=base,
+        registry=registry,
+        runner=runner,
+        attempt_id="attempt-1",
+        candidate_sha256=hashlib.sha256(candidate.read_bytes()).hexdigest(),
+        candidate_path=candidate,
+    )
+    by_id = {item.check_id: item for item in reports}
+    assert by_id["pass-zero"].verdict == "PASS"
+    assert by_id["want-one"].verdict == "FAIL"
+    assert by_id["want-one"].reason == "exit_0"
+    assert by_id["unknown"].verdict == "FAIL"
+    assert by_id["unknown"].reason == "unknown_command"
+    assert required_passed(reports) is False
+    assert {item.contract_sha256 for item in reports} == {contract_sha256(contract)}
+
+
+def test_timeout_and_output_limit_fail_closed(tmp_path: Path) -> None:
+    registry, runner, candidate = _bundle(tmp_path)
+    candidate.write_text("x\n", encoding="utf-8")
+    timed = runner.run("sleeps", candidate, 1, expected_exit_code=0)
+    assert timed.verdict == "FAIL"
+    assert timed.reason == "timeout"
+    flooded = runner.run("floods", candidate, 5, expected_exit_code=0)
+    assert flooded.verdict == "FAIL"
+    assert flooded.reason == "output_limit"
+    assert flooded.truncated is True
+    assert flooded.output_sha256 == hashlib.sha256(b"x" * OUTPUT_LIMIT).hexdigest()
+    expected = runner.run("exits-one", candidate, 5, expected_exit_code=1)
+    assert expected.verdict == "PASS"
+    assert expected.exit_code == 1
+
+
+def test_narrower_path_check_rejects_an_otherwise_allowed_edit(tmp_path: Path) -> None:
+    root, worktree, base = _tree(tmp_path, "paths")
+    target = worktree / "tests" / "synthetic.txt"
+    target.parent.mkdir()
+    target.write_text("edit:seed\n", encoding="utf-8")
+    broad = inspect_diff(
+        root,
+        worktree,
+        frozenset({"tests/**"}),
+        base_sha=base,
+        also_allowed=frozenset({"tests/**"}),
+    )
+    assert broad.ok is True
+    assert broad.changed == ("tests/synthetic.txt",)
+    narrow = inspect_diff(
+        root,
+        worktree,
+        frozenset({"unrelated/**"}),
+        base_sha=base,
+        also_allowed=frozenset({"src/**", "tests/**"}),
+    )
+    assert narrow.ok is False
+    assert "tests/synthetic.txt" in narrow.denied
+
+
+def test_policy_uses_the_action_not_the_requested_expectation(tmp_path: Path) -> None:
+    contract = _contract(
+        [
+            _check(
+                "merge-policy",
+                True,
+                {"type": "policy-decision", "action": "protected-merge", "expected": "allow"},
+            ),
+            _check(
+                "unknown-policy",
+                False,
+                {"type": "policy-decision", "action": "unrestricted-shell", "expected": "allow"},
+            ),
+        ]
+    )
+    registry = CommandRegistry(tmp_path, sys.executable, ())
+    reports = evaluate_checks(
+        contract,
+        root=tmp_path,
+        worktree=tmp_path,
+        base_sha="a" * 40,
+        registry=registry,
+        runner=TrustedCheckRunner(registry),
+        attempt_id="attempt-1",
+        candidate_sha256="ab" * 32,
+        candidate_path=tmp_path / "candidate",
+    )
+    assert reports[0].verdict == "FAIL"
+    assert reports[0].reason == "policy_mismatch"
+    assert reports[1].verdict == "FAIL"
+    assert reports[1].reason == "unknown_action"
+    assert reports[1].required is False
+
+
+def test_missing_artifact_and_human_review_are_not_pass(tmp_path: Path) -> None:
+    digest = "cd" * 32
+    contract = _contract(
+        [
+            _check(
+                "blob",
+                True,
+                {"type": "artifact-exists", "artifact_ref": "candidate", "expected_sha256": digest},
+            ),
+            _check(
+                "person",
+                True,
+                {
+                    "type": "human-review",
+                    "reviewer_ref": "owner",
+                    "evidence_requirements": ["diff"],
+                },
+            ),
+            _check(
+                "optional-blob",
+                False,
+                {"type": "artifact-exists", "artifact_ref": "optional", "expected_sha256": digest},
+            ),
+        ]
+    )
+    registry = CommandRegistry(tmp_path, sys.executable, ())
+    missing = evaluate_checks(
+        contract,
+        root=tmp_path,
+        worktree=tmp_path,
+        base_sha="b" * 40,
+        registry=registry,
+        runner=TrustedCheckRunner(registry),
+        attempt_id="attempt-1",
+        candidate_sha256=digest,
+        candidate_path=tmp_path / "candidate",
+    )
+    assert [item.verdict for item in missing] == ["FAIL", "FAIL", "FAIL"]
+    assert missing[0].reason == "missing_artifact"
+    assert missing[1].reason == "missing_review"
+    assert required_passed(missing) is False
+    present = evaluate_checks(
+        contract,
+        root=tmp_path,
+        worktree=tmp_path,
+        base_sha="b" * 40,
+        registry=registry,
+        runner=TrustedCheckRunner(registry),
+        attempt_id="attempt-9",
+        candidate_sha256=digest,
+        candidate_path=tmp_path / "candidate",
+        artifacts=(ArtifactFact("candidate", digest),),
+        reviews=(ReviewFact("owner", ("diff", "notes")),),
+    )
+    assert present[0].verdict == "PASS"
+    assert present[1].verdict == "PASS"
+    assert present[2].verdict == "FAIL"
+    assert required_passed(present) is True
+    assert present[0].attempt_id == "attempt-9"
+
+
+def test_git_diff_sees_baseline_edits_deletions_renames_and_directory_symlinks(tmp_path: Path) -> None:
+    root, worktree, base = _tree(tmp_path, "gitdiff")
+    (worktree / "README.txt").write_text("changed baseline\n", encoding="utf-8")
+    outside = tmp_path / "outside-tree"
+    outside.mkdir()
+    (worktree / "escape").symlink_to(outside, target_is_directory=True)
+    report = inspect_diff(root, worktree, ALLOWLIST, base_sha=base)
+    assert report.ok is False
+    assert "README.txt" in report.denied
+    assert "escape" in report.denied
+
+    fresh_root, fresh_worktree, fresh_base = _tree(tmp_path, "delete")
+    (fresh_worktree / "README.txt").unlink()
+    deleted = inspect_diff(fresh_root, fresh_worktree, ALLOWLIST, base_sha=fresh_base)
+    assert deleted.ok is False
+    assert "README.txt" in deleted.denied
+
+    rename_root, rename_worktree, rename_base = _tree(tmp_path, "rename")
+    _git(rename_worktree, ["mv", "README.txt", "other.txt"])
+    renamed = inspect_diff(rename_root, rename_worktree, ALLOWLIST, base_sha=rename_base)
+    assert renamed.ok is False
+    assert "other.txt" in renamed.denied
+
+    stale = inspect_diff(rename_root, rename_worktree, ALLOWLIST, base_sha="f" * 40)
+    assert stale.ok is False
+    assert "<not-a-git-tree>" in stale.denied
+
+
+def _git(worktree: Path, args: list[str]) -> None:
+    completed = subprocess.run(
+        ["git", "-C", str(worktree), *args],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+
+
+@pytest.mark.contract
+def test_loaded_registry_keeps_the_required_command_separate(tmp_path: Path) -> None:
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    script = bundle / "required_check.py"
+    script.write_text("raise SystemExit(0)\n", encoding="utf-8")
+    registry = CommandRegistry.load(bundle, sys.executable)
+    assert tuple(item.ref for item in registry.required()) == ("synthetic-required",)
+    suite = registry.resolve("synthetic-test-suite")
+    required = registry.resolve("synthetic-required")
+    assert suite.script_sha256 == required.script_sha256

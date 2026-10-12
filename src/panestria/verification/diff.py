@@ -1,12 +1,14 @@
-"""Exact worktree diff. Symlinks and off-scope paths fail closed."""
+"""Diff a pinned Git base against the candidate worktree. Unchanged baseline files stay quiet."""
 
 from __future__ import annotations
 
 import os
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-_BASELINE = frozenset({".git", "README.txt"})
+from panestria.verification.paths import path_permitted
+
 _RESERVED_ROOT = frozenset({"repo", "attempts", "store", "protected"})
 
 
@@ -15,28 +17,118 @@ class DiffReport:
     changed: tuple[str, ...]
     denied: tuple[str, ...]
     ok: bool
+    base_sha: str = ""
+    candidate_tree: str = ""
 
 
-def inspect_diff(root: Path, worktree: Path, allowlist: frozenset[str]) -> DiffReport:
+def inspect_diff(
+    root: Path,
+    worktree: Path,
+    allowlist: frozenset[str],
+    *,
+    base_sha: str | None = None,
+    forbidden: frozenset[str] = frozenset(),
+    also_allowed: frozenset[str] | None = None,
+) -> DiffReport:
     denied: list[str] = []
-    changed: list[str] = []
     for child in root.iterdir():
         if child.name not in _RESERVED_ROOT:
             denied.append(child.name)
-    for dirpath, dirnames, filenames in os.walk(worktree, followlinks=False):
-        dirnames[:] = [name for name in dirnames if name != ".git"]
-        for name in filenames:
-            path = Path(dirpath) / name
-            relative = path.relative_to(worktree).as_posix()
-            if path.is_symlink():
-                denied.append(relative)
-                continue
-            if relative in _BASELINE:
-                continue
-            if relative not in allowlist:
-                denied.append(relative)
-                continue
-            changed.append(relative)
+    base, tree, changed, unsafe = _git_changes(worktree, base_sha)
+    if base == "":
+        denied.append("<not-a-git-tree>")
+    for relative in sorted(changed):
+        if relative in unsafe or not path_permitted(relative, allowlist, forbidden, also_allowed=also_allowed):
+            denied.append(relative)
     rejected = tuple(sorted(set(denied)))
-    present = tuple(sorted(set(changed)))
-    return DiffReport(present, rejected, ok=not rejected and bool(present))
+    present = tuple(sorted(path for path in changed if path not in rejected))
+    return DiffReport(present, rejected, ok=not rejected and bool(present), base_sha=base, candidate_tree=tree)
+
+
+def _git_changes(worktree: Path, base_sha: str | None) -> tuple[str, str, set[str], set[str]]:
+    if not (worktree / ".git").exists():
+        return "", "", set(), set()
+    base_text = _git(worktree, ["rev-parse", base_sha or "HEAD"])
+    tree_text = _git(worktree, ["rev-parse", "HEAD"])
+    if base_text is None or tree_text is None:
+        return "", "", set(), set()
+    base = base_text.strip()
+    tree = tree_text.strip()
+    raw = _git(worktree, ["diff", "--raw", "--find-renames", "--no-abbrev", base])
+    others_text = _git(worktree, ["ls-files", "--others", "--exclude-standard"])
+    if raw is None or others_text is None or base == "" or tree == "":
+        return "", "", set(), set()
+    changed: set[str] = set()
+    unsafe: set[str] = set()
+    for line in raw.splitlines():
+        meta, separator, paths = line.partition("\t")
+        if separator == "" or not meta.startswith(":"):
+            continue
+        fields = meta.split()
+        new_mode = fields[1] if len(fields) > 1 else ""
+        names = [name for name in paths.split("\t") if name]
+        changed.update(names)
+        if new_mode == "120000":
+            unsafe.update(names)
+    for name in others_text.splitlines():
+        if name:
+            changed.add(name)
+    _collect_new_symlinks(worktree, base, changed, unsafe)
+    return base, tree, changed, unsafe
+
+
+def _collect_new_symlinks(worktree: Path, base: str, changed: set[str], unsafe: set[str]) -> None:
+    for dirpath, dirnames, filenames in os.walk(worktree, followlinks=False):
+        current = Path(dirpath)
+        if current.name == ".git" or ".git" in current.relative_to(worktree).parts:
+            dirnames.clear()
+            continue
+        for name in list(dirnames):
+            path = current / name
+            if not path.is_symlink():
+                continue
+            relative = path.relative_to(worktree).as_posix()
+            dirnames.remove(name)
+            if _same_as_base(worktree, base, relative):
+                continue
+            changed.add(relative)
+            unsafe.add(relative)
+        for name in filenames:
+            path = current / name
+            if name == ".git" or not path.is_symlink():
+                continue
+            relative = path.relative_to(worktree).as_posix()
+            if _same_as_base(worktree, base, relative):
+                continue
+            changed.add(relative)
+            unsafe.add(relative)
+
+
+def _same_as_base(worktree: Path, base: str, relative: str) -> bool:
+    probe = subprocess.run(
+        ["git", "-C", str(worktree), "cat-file", "-e", f"{base}:{relative}"],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if probe.returncode != 0:
+        return False
+    diff = subprocess.run(
+        ["git", "-C", str(worktree), "diff", "--raw", "--no-abbrev", base, "--", relative],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    return diff.returncode == 0 and diff.stdout.strip() == ""
+
+
+def _git(worktree: Path, args: list[str]) -> str | None:
+    completed = subprocess.run(
+        ["git", "-C", str(worktree), *args],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        return None
+    return completed.stdout

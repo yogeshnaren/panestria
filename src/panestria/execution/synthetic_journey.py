@@ -24,10 +24,9 @@ from panestria.kernel.tasks import TaskService
 from panestria.kernel.uow import UnitOfWork
 from panestria.sandbox.artifact_ingress import ArtifactIngress
 from panestria.sandbox.worktree import WorkspaceManifest, WorktreeManager
-from panestria.verification.artifacts import decide
-from panestria.verification.diff import inspect_diff
+from panestria.verification.nodes import NodeReport, evaluate_checks, required_passed
 from panestria.verification.registry import CommandRegistry
-from panestria.verification.runner import CheckResult, TrustedCheckRunner
+from panestria.verification.runner import TrustedCheckRunner
 
 Conn = psycopg.Connection[Any]
 _EDIT = "tests/synthetic.txt"
@@ -136,7 +135,9 @@ class SyntheticJourney:
         committed = self._commit_candidate(manifest)
         file_hash = hashlib.sha256((Path(manifest.worktree) / _EDIT).read_bytes()).hexdigest()
         if snapshot_artifact(connection, task_id) is None:
-            self._prove(connection, actor, task_id, attempt_id, manifest, file_hash)
+            proved = self._prove(connection, actor, task_id, attempt_id, manifest, file_hash)
+            if not proved:
+                return
         self._walk(connection, actor, task_id)
         contract = self._contract(connection, actor, goal_id)
         destination = f"refs/heads/main@{committed}"
@@ -209,46 +210,59 @@ class SyntheticJourney:
         attempt_id: str,
         manifest: WorkspaceManifest,
         file_hash: str,
-    ) -> None:
+    ) -> bool:
         root = Path(manifest.root)
         source = Path(manifest.worktree) / _EDIT
-        report = inspect_diff(root, Path(manifest.worktree), frozenset({_EDIT}))
         bundle = root / "protected" / "bundle"
         bundle.mkdir(parents=True, exist_ok=True)
         script = bundle / "required_check.py"
         if not script.exists():
             script.write_text(_SCRIPT)
         registry = CommandRegistry.load(bundle, _interpreter())
-        command = TrustedCheckRunner(registry).run("synthetic-required", source, 30)
         contract = self._contract(connection, actor, self._goal_of(connection, task_id))
         loaded = load_contract(contract[3])
-        diff_ok = _contract_paths(loaded, Path(manifest.worktree))
-        policy_ok = _policy(loaded)
-        results = (
-            CheckResult("trusted-command-ref", command.verdict, command.reason),
-            CheckResult("git-diff-path-check", "PASS" if diff_ok else "FAIL", "paths"),
-            CheckResult("policy-decision", "PASS" if policy_ok else "FAIL", "approval-required"),
+        reports = evaluate_checks(
+            loaded,
+            root=root,
+            worktree=Path(manifest.worktree),
+            base_sha=manifest.base_sha,
+            registry=registry,
+            runner=TrustedCheckRunner(registry),
+            attempt_id=attempt_id,
+            candidate_sha256=file_hash,
+            candidate_path=source,
         )
-        verdict = decide(report, results, tuple(item.ref for item in results), True)
-        if verdict.verdict != "PASS":
-            raise KernelDenied("unknown_check")
+        passed = required_passed(reports)
         published = ArtifactIngress(root / "store", Path(manifest.worktree)).finalize(source, actor.owner_id, 0)
         if published.digest != file_hash:
             raise KernelDenied("unknown_check")
-        artifact_id = str(uuid4())
-        ArtifactIngress(root / "store", Path(manifest.worktree)).record_ref(
+        candidate_id = str(uuid4())
+        ingress = ArtifactIngress(root / "store", Path(manifest.worktree))
+        ingress.record_ref(
             connection,
             published,
-            artifact_id=artifact_id,
+            artifact_id=candidate_id,
             task_id=task_id,
             attempt_id=attempt_id,
         )
-        for check_id, _ref, check_verdict in _check_rows(connection, contract[0], results):
+        for report in reports:
+            evidence_id = _record_report(connection, ingress, report, task_id, attempt_id)
+            check_id = _check_id(connection, contract[0], report.check_id)
             connection.execute(
                 "INSERT INTO panestria.check_run"
-                " (id, acceptance_check_id, attempt_id, task_id, contract_id, verdict, evidence_artifact_id)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (str(uuid4()), check_id, attempt_id, task_id, contract[0], check_verdict, artifact_id),
+                " (id, acceptance_check_id, attempt_id, task_id, contract_id, verdict,"
+                " evidence_artifact_id, candidate_sha256)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                (
+                    str(uuid4()),
+                    check_id,
+                    attempt_id,
+                    task_id,
+                    contract[0],
+                    report.verdict,
+                    evidence_id,
+                    report.candidate_sha256,
+                ),
             )
         append_event(
             connection_uow(connection),
@@ -256,9 +270,10 @@ class SyntheticJourney:
             task_id=task_id,
             kind="evidence.recorded",
             actor=actor.owner_id,
-            payload={"artifact_sha256": published.digest, "verdict": verdict.verdict},
+            payload={"artifact_sha256": published.digest, "verdict": "PASS" if passed else "FAIL"},
         )
         connection.commit()
+        return passed
 
     def _workspace(self, sandbox: Path, attempt_id: str, seed: str) -> WorkspaceManifest:
         sandbox.mkdir(parents=True, exist_ok=True)
@@ -422,7 +437,8 @@ class SyntheticJourney:
             (task_id,),
         ).fetchone()
         artifact = connection.execute(
-            "SELECT sha256 FROM panestria.artifact WHERE task_id = %s ORDER BY created_at DESC LIMIT 1",
+            "SELECT sha256 FROM panestria.artifact WHERE task_id = %s AND kind = 'candidate'"
+            " ORDER BY created_at DESC LIMIT 1",
             (task_id,),
         ).fetchone()
         effect = connection.execute(
@@ -560,46 +576,6 @@ def _run(argv: list[str], check: bool = True, extra: dict[str, str] | None = Non
     return completed
 
 
-def _policy(contract: object) -> bool:
-    acceptance = contract.acceptance  # type: ignore[attr-defined]
-    for item in acceptance:
-        if item.verifier.type != "policy-decision":
-            continue
-        if getattr(item.verifier, "expected", None) != "approval-required":
-            return False
-    return True
-
-
-def _contract_paths(contract: object, worktree: Path) -> bool:
-    allowed = contract.constraints.allowed_paths  # type: ignore[attr-defined]
-    forbidden = contract.constraints.forbidden_paths  # type: ignore[attr-defined]
-    changed: list[str] = []
-    for dirpath, dirnames, filenames in os.walk(worktree, followlinks=False):
-        dirnames[:] = [name for name in dirnames if name != ".git"]
-        for name in filenames:
-            relative = (Path(dirpath) / name).relative_to(worktree).as_posix()
-            if relative in {".git", "README.txt"}:
-                continue
-            changed.append(relative)
-    if not changed:
-        return False
-    for item in changed:
-        if any(_glob(pattern, item) for pattern in forbidden):
-            return False
-        if not any(_glob(pattern, item) for pattern in allowed):
-            return False
-    return True
-
-
-def _glob(pattern: str, relative: str) -> bool:
-    if pattern.endswith("/**"):
-        prefix = pattern[:-3]
-        return relative == prefix or relative.startswith(prefix + "/")
-    if pattern.endswith("*"):
-        return relative.startswith(pattern[:-1])
-    return relative == pattern
-
-
 def snapshot_artifact(connection: Conn, task_id: str) -> str | None:
     row = connection.execute(
         "SELECT sha256 FROM panestria.artifact WHERE task_id = %s LIMIT 1",
@@ -610,10 +586,37 @@ def snapshot_artifact(connection: Conn, task_id: str) -> str | None:
     return str(row[0])
 
 
-def _check_rows(connection: Conn, contract_id: str, results: tuple[CheckResult, ...]) -> list[tuple[str, str, str]]:
-    rows = connection.execute(
-        "SELECT id::text, verifier_type FROM panestria.acceptance_check WHERE contract_id = %s AND required",
-        (contract_id,),
-    ).fetchall()
-    verdicts = {item.ref: item.verdict for item in results}
-    return [(str(row[0]), str(row[1]), verdicts[str(row[1])]) for row in rows]
+def _check_id(connection: Conn, contract_id: str, check_key: str) -> str:
+    row = connection.execute(
+        "SELECT id::text FROM panestria.acceptance_check WHERE contract_id = %s AND check_key = %s",
+        (contract_id, check_key),
+    ).fetchone()
+    if row is None:
+        raise KernelDenied("unknown_check")
+    return str(row[0])
+
+
+def _record_report(
+    connection: Conn,
+    ingress: ArtifactIngress,
+    report: NodeReport,
+    task_id: str,
+    attempt_id: str,
+) -> str:
+    blob = ingress.store / f"report-{report.check_id}"
+    blob.write_bytes(report.canonical_bytes())
+    digest = hashlib.sha256(blob.read_bytes()).hexdigest()
+    target = ingress.store / digest
+    if not target.exists():
+        blob.replace(target)
+    else:
+        blob.unlink()
+    size = target.stat().st_size
+    artifact_id = str(uuid4())
+    connection.execute(
+        "INSERT INTO panestria.artifact"
+        " (id, task_id, attempt_id, kind, store_key, sha256, size_bytes)"
+        " VALUES (%s, %s, %s, 'check-report', %s, %s, %s)",
+        (artifact_id, task_id, attempt_id, digest, digest, size),
+    )
+    return artifact_id

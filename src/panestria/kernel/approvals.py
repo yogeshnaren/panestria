@@ -322,7 +322,7 @@ class ApprovalService:
         return loaded
 
     def _require_pass(self, uow: UnitOfWork, task_id: str, preview: dict[str, Any]) -> None:
-        verdicts = required_verdicts(uow, task_id)
+        verdicts = required_verdicts(uow, task_id, str(preview["candidate_sha256"]))
         keys = [key for key, _verdict in verdicts]
         if keys != preview["required_checks"] or any(verdict != "PASS" for _key, verdict in verdicts):
             raise KernelDenied("unknown_check")
