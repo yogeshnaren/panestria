@@ -143,7 +143,7 @@
       "expected": "Same seeded fixture yields same verdict and hashes; worker done creates only a candidate until independent checks pass.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-004-TC02",

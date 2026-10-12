@@ -92,11 +92,14 @@
           "dependencies": [
             "AOS-003"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "checklist",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "evidence_refs": [
+            "evidence/AOS-004-S1.xml",
+            "evidence/AOS-004-S1/case-result.json"
+          ],
+          "plan_status": "S1_WORKER_AWAITING_REVIEW",
           "plan_ref": "plans/AOS-004-implementation-plan.md"
         },
         {

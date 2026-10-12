@@ -1,19 +1,19 @@
 # Goal progress
 
 **Phase:** R0, contract version 1 approved.  
-**Slice:** AOS-003-S3 evidenced. Next is AOS-004-S1.  
+**Slice:** AOS-004-S1 evidenced. Next is AOS-004-S2.  
 **Branch:** `r0-kernel`.  
-**Last verified source commit:** `cd2b6b4e9512108bbb52cce1460c229f613f6874`.  
+**Last verified source commit:** `abf45f8634ebd326a0ce692ef8e0a0665e0905ea`.  
 **Evidence commit:** recorded after that source commit; this file is not part of the tested tree.  
 **Branch inspected:** `r0-kernel`.
 
 ## Completed
 
-AOS-001-S1 hermetic TC01 passed on `af6794e112c888fd61b6e6b98a4824acab9c1681`. AOS-001-S2 toolchain gates passed on `99afb1a319e22fb24e86b7a4cc638a03e2557c0c`. AOS-001-S3 disposable PostgreSQL TC03 passed on `61d9e4729ded8e39d7a5ebc1048d803a6cdcab2b`. AOS-002-S1 canonical contracts passed on `834ae35db83126e9c96e8e9e320d0514ee39077a`. AOS-002-S2 kernel migration passed on `dee9dc2a316e46411e57efabaad01821b92a4d9e`. AOS-002-S3 scoped mutations passed on `57935008ce22ae484bd5065b72e587736180e132`. AOS-003-S1 atomic admission passed on `655a0c5fad43ec242bc4c2ea95d2bacadff86cd2`. AOS-003-S2 replay passed on `9a652c13f3cece672b25ec5b20b33e25f97ea2ea`. AOS-003-S3 lost-effect reconciliation and restore passed on `cd2b6b4e9512108bbb52cce1460c229f613f6874`. G0 is `NOT_RUN`.
+AOS-001-S1 hermetic TC01 passed on `af6794e112c888fd61b6e6b98a4824acab9c1681`. AOS-001-S2 toolchain gates passed on `99afb1a319e22fb24e86b7a4cc638a03e2557c0c`. AOS-001-S3 disposable PostgreSQL TC03 passed on `61d9e4729ded8e39d7a5ebc1048d803a6cdcab2b`. AOS-002-S1 canonical contracts passed on `834ae35db83126e9c96e8e9e320d0514ee39077a`. AOS-002-S2 kernel migration passed on `dee9dc2a316e46411e57efabaad01821b92a4d9e`. AOS-002-S3 scoped mutations passed on `57935008ce22ae484bd5065b72e587736180e132`. AOS-003-S1 atomic admission passed on `655a0c5fad43ec242bc4c2ea95d2bacadff86cd2`. AOS-003-S2 replay passed on `9a652c13f3cece672b25ec5b20b33e25f97ea2ea`. AOS-003-S3 lost-effect reconciliation and restore passed on `cd2b6b4e9512108bbb52cce1460c229f613f6874`. AOS-004-S1 scripted worker passed on `abf45f8634ebd326a0ce692ef8e0a0665e0905ea`. G0 is `NOT_RUN`.
 
 ## Failures and blockers
 
-AOS-001-TC04 has no fresh Ubuntu host. G0 cannot pass while that live case is `NOT_RUN`. AOS-003 is awaiting review and is not an accepted item.
+AOS-001-TC04 has no fresh Ubuntu host. G0 cannot pass while that live case is `NOT_RUN`. AOS-003 and AOS-004 are awaiting review and are not accepted items. AOS-004-TC02, TC03, and TC04 are not run.
 
 ## Evidence
 
@@ -25,7 +25,8 @@ AOS-001-TC04 has no fresh Ubuntu host. G0 cannot pass while that live case is `N
 `evidence/AOS-002-S3/` names `57935008ce22ae484bd5065b72e587736180e132`.  
 `evidence/AOS-003-S1/` names `655a0c5fad43ec242bc4c2ea95d2bacadff86cd2`.  
 `evidence/AOS-003-S2/` names `9a652c13f3cece672b25ec5b20b33e25f97ea2ea`.  
-`evidence/AOS-003-S3/` names `cd2b6b4e9512108bbb52cce1460c229f613f6874`.
+`evidence/AOS-003-S3/` names `cd2b6b4e9512108bbb52cce1460c229f613f6874`.  
+`evidence/AOS-004-S1/` names `abf45f8634ebd326a0ce692ef8e0a0665e0905ea`.
 
 ## Approved permissions
 
@@ -33,7 +34,7 @@ AOS-001-TC04 has no fresh Ubuntu host. G0 cannot pass while that live case is `N
 
 ## Next action
 
-Implement AOS-004-S1: the synthetic worker, isolated worktree, and reviewed command registry.
+Implement AOS-004-S2: the reviewed command registry and independent checks. A worker result stays a candidate until those checks pass.
 
 ## Resume
 
