@@ -124,7 +124,7 @@ def test_repository_secret_scan_passes_and_sentinel_fails() -> None:
     dirty = _run(["uv", "run", "--frozen", "python", "tools/secret_scan.py", str(SENTINEL)])
     assert clean.returncode == 0, clean.stdout
     assert dirty.returncode != 0
-    assert "AKIA0000000000000000" not in dirty.stdout
+    assert dirty.stdout.strip() == "tests/fixtures/boundaries/secret_sentinel.txt: aws-access-key-id"
 
 
 def test_ci_does_not_inject_provider_credentials() -> None:
