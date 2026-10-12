@@ -3,11 +3,11 @@
 The 2026-10-12 review did not accept R0. This file keeps that review record and the later correction. It is not an owner acceptance, a G0 pass, or permission to start R1.
 
 **Reviewed source:** `af3d431e775c2f3f23722d272dd00f2863689d5b`. Its report remains `evidence/AOS-005-S3.xml`.  
-**Corrected source:** `0c7ff347ddaa8509c75b610f23abef01e76a96cd` on `r0-kernel`.  
-**Correction report:** `evidence/R0-corrections.xml`, SHA-256 `6790753fc496da09f4faf4c4b2fcd03552418c56131b021386378901c60a875e`. 123 tests, 0 failures, 0 errors, 0 skips. The live fresh-host test was deselected.  
+**Corrected source:** `a9bbc005ee584e80b4858786565f6cab26d536b9` on `r0-kernel`.  
+**Correction report:** `evidence/R0-corrections.xml`, SHA-256 `e1207c899ec6cae8d1ab4bcdceb3a2675ce1e881e1ea3fb193628fa0309af785`. 124 tests, 0 failures, 0 errors, 0 skips. The live fresh-host test was deselected.  
 **Gate:** `evidence/G0/evaluation.json` records G0 as `INCOMPLETE`. Nineteen of twenty required cases were collected. `AOS-001-TC04` is `NOT_RUN`. A case-group PASS does not prove every source clause and is not owner acceptance.
 
-The original handoff commit recorded `af3d431`. This report's source parent is `0c7ff347ddaa8509c75b610f23abef01e76a96cd`. Older receipts are not rewritten.
+The original handoff commit recorded `af3d431`. This report's source parent is `a9bbc005ee584e80b4858786565f6cab26d536b9`. Older receipts are not rewritten.
 
 ## Ordered commits
 
@@ -15,6 +15,7 @@ Commits are newest first, from the approved contract through the journey. Eviden
 
 | Commit | Reason |
 |---|---|
+| `a9bbc00` | Record FAILED when a serialization storm stops a workflow transaction. |
 | `0c7ff34` | Stop a serializable workflow transaction after five conflicting attempts. |
 | `0eb6cef` | Log one recovery identity for each restarted workflow process. |
 | `47352ba` | Reject CLI success bodies that omit the published response fields. |
@@ -106,7 +107,7 @@ Catalog status for an observed case is `OS_BOUNDARY_OBSERVED_NOT_RELEASE` or `HE
 - AOS-001-TC04 is `tests/integration/test_aos_001.py::test_fresh_host_loopback` in `ae4e142`, marked `live`. It fails with `fresh_host_not_attested` on this machine before starting a server. The same measurement recorded a loopback socket, startup, and RSS against the disposable database here. That is not a fresh-host pass. G0 stays incomplete until a fresh Ubuntu host records a pass and an owner accepts the candidate.
 - `adr/0002-event-seq-and-effect-digest.md` records the global sequence lock and the effect-digest binding. It is not a new suite run and it does not accept R0.
 - `evidence/R0-dbos-crash-transcript.txt` records the admission restart test and the Git reconciliation test, 2 passed in 36.51s, on source `53785d5`. `docs/ARCHITECTURE.md` describes the later implementation. `docs/SETUP.md` records the local commands. The fresh-host startup time and idle RSS are still unrecorded.
-- The DBOS 3.2.0 transaction loop still has no attempt-count field, and the wait between attempts stays at 2 seconds. The workflow callback now raises `serialization_retry_limit` after five conflicting attempts, so that transaction stops. That is not a fresh-host result.
+- The DBOS 3.2.0 transaction loop still has no attempt-count field, and the wait between attempts stays at 2 seconds. The workflow callback raises `serialization_retry_limit` after five conflicting attempts. `run_task_workflow` and `run_effect_workflow` then record the task FAILED with cause `serialization-retry-limit` and re-raise, so the workflow stays ERROR. A unit test injects that denial and does not start PostgreSQL. That is not a fresh-host result.
 - The review counterexamples are covered by new regressions on `fc359b0`. Their case-group PASS marks are not a statement that every source clause was asserted. `test_loopback_submit_scope_and_replay` still has no case id.
 - `make r0-demo` starts `python -m panestria.api.serve` and the real CLI. On 2026-10-12 it completed one synthetic goal on the disposable database at source `fc359b0`. The same day, `make db-up` and `make db-migrate` reached Alembic head `0004_check_candidate`, `make db-down` left `panestria_s3_pgdata`, and `make reset-synthetic-data` removed that volume. Those observations are not AOS-001-TC04.
 - `GET /v1/artifacts/{id}`, `panestria artifact show`, `panestria approvals`, and `panestria goal cancel` are implemented. A corrupted artifact hash and a foreign owner are denied. A prepared effect stays `CANCELLING` and is not merged.
@@ -151,7 +152,7 @@ Expected integrated result, from a clean tree at the tested source:
 uv run --frozen pytest -m "not live" --junitxml=/tmp/panestria-r0.xml -q
 ```
 
-On `0c7ff347ddaa8509c75b610f23abef01e76a96cd` the same command collected 123 passed tests, 0 failures, and 0 skips, and deselected the live fresh-host case. `make r0-demo` then completed two goals on the disposable database; the audit is `evidence/R0-demo-transcript.json`. `docs/design/schema-erd.md` was generated from that database. The historical `af3d431` report remains 93 passed and is not a result for the corrected tree.
+On `a9bbc005ee584e80b4858786565f6cab26d536b9` the same command collected 124 passed tests, 0 failures, and 0 skips, and deselected the live fresh-host case. `make r0-demo` then completed two goals on the disposable database; the audit is `evidence/R0-demo-transcript.json`. `docs/design/schema-erd.md` was generated from that database. The historical `af3d431` report remains 93 passed and is not a result for the corrected tree.
 
 Positive journey:
 
