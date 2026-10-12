@@ -8,7 +8,8 @@ Requires a migrated PostgreSQL database and these environment variables:
   ``PANESTRIA_BIND_PORT``, and ``PANESTRIA_READINESS_BUDGET_MS``
 
 ``make r0-demo`` starts the loopback server and drives submit, approval, evidence,
-and completion with the real CLI. It does not claim a fresh-host result.
+and completion with the real CLI. Each run uses a new goal id and idempotency key.
+It does not claim a fresh-host result.
 """
 
 from __future__ import annotations
@@ -109,9 +110,19 @@ def main() -> None:
             raise SystemExit(1)
         document = json.loads(FIXTURE.read_text())
         document["goal_id"] = str(uuid4())
+        demo_key = str(document["goal_id"])
         contract = Path(os.environ["PANESTRIA_SANDBOX"]) / "contract.json"
         contract.write_text(json.dumps(document))
-        submitted = _cli(base, token, "goal", "submit", "--contract", str(contract), "--idempotency-key", "r0-demo")
+        submitted = _cli(
+            base,
+            token,
+            "goal",
+            "submit",
+            "--contract",
+            str(contract),
+            "--idempotency-key",
+            f"r0-demo-{demo_key}",
+        )
         goal_id = str(submitted["goal_id"])
         consent = _wait_approval(base, token, goal_id)
         _cli(
@@ -124,7 +135,7 @@ def main() -> None:
             "--expected-version",
             str(consent["expected_version"]),
             "--idempotency-key",
-            "r0-demo-consent",
+            f"r0-demo-consent-{demo_key}",
         )
         merge = _wait_approval(base, token, goal_id)
         events = _cli(base, token, "goal", "events", goal_id)
@@ -147,7 +158,7 @@ def main() -> None:
             "--expected-version",
             str(merge["expected_version"]),
             "--idempotency-key",
-            "r0-demo-merge",
+            f"r0-demo-merge-{demo_key}",
         )
         finished = time.monotonic() + 30
         while time.monotonic() < finished:
