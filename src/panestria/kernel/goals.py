@@ -16,6 +16,7 @@ from panestria.kernel.repositories.goals import (
     insert_goal,
     insert_idempotency,
     lock_idempotency,
+    read_events,
     read_goal,
 )
 from panestria.kernel.repositories.tasks import append_event
@@ -45,6 +46,19 @@ class GoalView:
 
 
 class GoalService:
+    def events(
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        goal_id: str,
+        after: int,
+        limit: int,
+    ) -> list[tuple[int, str]]:
+        rows = read_events(uow, actor.owner_id, actor.project_id, goal_id, after, limit)
+        if rows is None:
+            raise KernelDenied("not_found")
+        return rows
+
     def get(self, uow: UnitOfWork, actor: Actor, goal_id: str) -> GoalView:
         row = read_goal(uow, actor.owner_id, actor.project_id, goal_id)
         if row is None:

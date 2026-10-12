@@ -11,6 +11,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from panestria import package_version
+from panestria.api.auth import GoalApi
 from panestria.api.health import (
     ErrorBody,
     HealthService,
@@ -20,10 +21,16 @@ from panestria.api.health import (
     SecretBearingOutputRejected,
     secret_rejection_body,
 )
+from panestria.api.routes.events import router as events_router
+from panestria.api.routes.goals import router as goals_router
 from panestria.config import Settings, ValidatedSettings
 
 
-def create_app(settings: Settings | ValidatedSettings, readiness_probe: ReadinessProbe) -> FastAPI:
+def create_app(
+    settings: Settings | ValidatedSettings,
+    readiness_probe: ReadinessProbe,
+    goal_api: GoalApi | None = None,
+) -> FastAPI:
     if isinstance(settings, ValidatedSettings):
         validated = settings
     elif isinstance(settings, Settings):
@@ -48,6 +55,10 @@ def create_app(settings: Settings | ValidatedSettings, readiness_probe: Readines
     )
     app.state.settings = validated
     app.state.health = service
+    app.state.goal_api = goal_api
+    if goal_api is not None:
+        app.include_router(goals_router)
+        app.include_router(events_router)
 
     @app.get("/healthz", response_model=Liveness)
     def healthz() -> Liveness:

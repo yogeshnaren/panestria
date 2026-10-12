@@ -64,3 +64,21 @@ def read_goal(uow: UnitOfWork, owner_id: str, project_id: str, goal_id: str) -> 
         " WHERE id = %s AND owner_id = %s AND project_id = %s",
         (goal_id, owner_id, project_id),
     ).fetchone()
+
+
+def read_events(
+    uow: UnitOfWork,
+    owner_id: str,
+    project_id: str,
+    goal_id: str,
+    after: int,
+    limit: int,
+) -> list[tuple[int, str]] | None:
+    if read_goal(uow, owner_id, project_id, goal_id) is None:
+        return None
+    rows = uow.execute(
+        "SELECT seq, kind FROM panestria.task_event"
+        " WHERE goal_id = %s AND seq > %s ORDER BY seq LIMIT %s",
+        (goal_id, after, limit),
+    ).fetchall()
+    return [(int(row[0]), str(row[1])) for row in rows]
