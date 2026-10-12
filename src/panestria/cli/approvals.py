@@ -7,6 +7,7 @@ from urllib.request import Request
 
 import typer
 
+from panestria.api.views import ApprovalList, DecisionReceipt
 from panestria.cli.goals import Send, _default_send, _finish, loopback_base
 
 _APPROVE_ID = typer.Argument(...)
@@ -51,7 +52,7 @@ def decide_approval(
         method="POST",
     )
     status, payload = send(request)
-    return _finish(status, payload)
+    return _finish(status, payload, DecisionReceipt)
 
 
 def list_approvals(
@@ -67,7 +68,7 @@ def list_approvals(
         method="GET",
     )
     status, payload = send(request)
-    return _finish(status, payload)
+    return _finish(status, payload, ApprovalList)
 
 
 _LIST_BASE = typer.Option(..., "--base-url")

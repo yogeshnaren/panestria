@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body
 from panestria.api.db import DatabaseUnavailable, open_database
 from panestria.api.routes.goals import _api, _kick, _unavailable
+from panestria.api.views import ApprovalList, ApprovalPreviewBody, DecisionReceipt
 from panestria.kernel.approvals import ApprovalService, ApprovalView
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -35,7 +36,7 @@ def _denied(exc: KernelDenied) -> JSONResponse:
     return JSONResponse(status_code=_STATUSES.get(exc.code, 422), content=error_body(exc.code))
 
 
-@router.get("/v1/approvals")
+@router.get("/v1/approvals", responses={200: {"model": ApprovalList}})
 def list_approvals(request: Request, limit: int = 50) -> JSONResponse:
     try:
         api = _api(request)
@@ -60,7 +61,7 @@ def list_approvals(request: Request, limit: int = 50) -> JSONResponse:
     return JSONResponse(status_code=200, headers={"Cache-Control": "no-store"}, content={"approvals": listed})
 
 
-@router.get("/v1/approvals/{approval_id}")
+@router.get("/v1/approvals/{approval_id}", responses={200: {"model": ApprovalPreviewBody}})
 def read_approval(approval_id: str, request: Request) -> JSONResponse:
     try:
         api = _api(request)
@@ -83,7 +84,7 @@ def read_approval(approval_id: str, request: Request) -> JSONResponse:
     return JSONResponse(status_code=200, content=_view_body(view))
 
 
-@router.post("/v1/approvals/{approval_id}/decision")
+@router.post("/v1/approvals/{approval_id}/decision", responses={200: {"model": DecisionReceipt}})
 async def decide_approval(approval_id: str, request: Request) -> JSONResponse:
     try:
         api = _api(request)

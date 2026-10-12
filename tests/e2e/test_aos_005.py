@@ -1045,3 +1045,31 @@ def test_openapi_matches_the_mounted_routes(record_property: pytest.RecordProper
     assert _REQUIRED_ROUTES <= set(paths)
     assert "placeholder-not-a-secret" not in text
     assert TOKEN not in text
+    assert "GoalStatus" in text
+
+
+def test_cli_rejects_a_status_body_outside_the_published_model(record_property: pytest.RecordProperty) -> None:
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False)
+    record_property("gate_case_id", "AOS-005-TC01")
+    record_property("candidate_commit", commit.stdout.strip())
+    record_property("lane", "contract")
+    record_property("execution_mode", "HERMETIC")
+    body = {
+        "goal_id": "00000000-0000-4000-8000-000000000001",
+        "status": "COMPLETED",
+        "task_version": 11,
+    }
+    accepted = read_status(
+        base_url="http://127.0.0.1:9",
+        token=TOKEN,
+        goal_id=body["goal_id"],
+        send=lambda _request: (200, json.dumps(body).encode()),
+    )
+    assert accepted[1]["status"] == "COMPLETED"
+    with pytest.raises(typer.Exit):
+        read_status(
+            base_url="http://127.0.0.1:9",
+            token=TOKEN,
+            goal_id=body["goal_id"],
+            send=lambda _request: (200, b'{"goal_id": "x", "status": "COMPLETED"}'),
+        )

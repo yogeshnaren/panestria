@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body
 from panestria.api.db import DatabaseUnavailable, open_database
+from panestria.api.views import CancelResult, GoalStatus, GoalSubmission
 from panestria.kernel.cancellation import CancellationService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor, GoalService
@@ -33,7 +34,7 @@ def _denied(exc: KernelDenied) -> JSONResponse:
     return JSONResponse(status_code=status, content=error_body(exc.code))
 
 
-@router.post("/v1/goals")
+@router.post("/v1/goals", responses={202: {"model": GoalSubmission}})
 async def submit_goal(request: Request) -> JSONResponse:
     try:
         api = _api(request)
@@ -83,7 +84,7 @@ def _submit(api: GoalApi, actor: Actor, document: dict[str, Any], key: str) -> J
     )
 
 
-@router.get("/v1/goals/{goal_id}")
+@router.get("/v1/goals/{goal_id}", responses={200: {"model": GoalStatus}})
 def read_goal(goal_id: str, request: Request) -> JSONResponse:
     try:
         api = _api(request)
@@ -114,7 +115,7 @@ def read_goal(goal_id: str, request: Request) -> JSONResponse:
     )
 
 
-@router.post("/v1/goals/{goal_id}/cancel")
+@router.post("/v1/goals/{goal_id}/cancel", responses={200: {"model": CancelResult}})
 async def cancel_goal(goal_id: str, request: Request) -> JSONResponse:
     try:
         api = _api(request)

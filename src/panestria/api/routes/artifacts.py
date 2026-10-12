@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from panestria.api.auth import LoopbackDenied, authorize, error_body
 from panestria.api.db import DatabaseUnavailable, open_database
 from panestria.api.routes.goals import _api, _unavailable
+from panestria.api.views import ArtifactBody
 from panestria.kernel.artifacts import ArtifactService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.uow import UnitOfWork
@@ -19,7 +20,7 @@ _SERVICE = ArtifactService()
 _STATUSES = {"not_found": 404, "missing_evidence": 409, "corrupt_artifact": 409}
 
 
-@router.get("/v1/artifacts/{artifact_id}")
+@router.get("/v1/artifacts/{artifact_id}", responses={200: {"model": ArtifactBody}})
 def read_artifact(artifact_id: str, request: Request) -> JSONResponse:
     try:
         api = _api(request)

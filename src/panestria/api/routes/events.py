@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body
 from panestria.api.db import DatabaseUnavailable, open_database
+from panestria.api.views import EventPage
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import GoalService
 from panestria.kernel.uow import UnitOfWork
@@ -21,7 +22,7 @@ def _parse_seq(value: str) -> int:
     raise ValueError(value)
 
 
-@router.get("/v1/goals/{goal_id}/events")
+@router.get("/v1/goals/{goal_id}/events", responses={200: {"model": EventPage}})
 def read_events(goal_id: str, request: Request, after: str = "0", limit: int = 50) -> JSONResponse:
     try:
         api = getattr(request.app.state, "goal_api", None)

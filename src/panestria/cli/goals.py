@@ -10,8 +10,10 @@ from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 import typer
+from pydantic import BaseModel, ValidationError
 
 from panestria.api.auth import MAX_BODY_BYTES
+from panestria.api.views import ArtifactBody, CancelResult, EventPage, GoalStatus, GoalSubmission
 
 goal_app = typer.Typer(no_args_is_help=True)
 _LOOPBACK = frozenset({"127.0.0.1", "localhost"})
@@ -72,7 +74,7 @@ def submit_contract(
         method="POST",
     )
     status, payload = send(request)
-    return _finish(status, payload)
+    return _finish(status, payload, GoalSubmission)
 
 
 def read_status(
@@ -89,7 +91,7 @@ def read_status(
         method="GET",
     )
     status, payload = send(request)
-    return _finish(status, payload)
+    return _finish(status, payload, GoalStatus)
 
 
 def read_events(
@@ -107,7 +109,7 @@ def read_events(
         method="GET",
     )
     status, payload = send(request)
-    return _finish(status, payload)
+    return _finish(status, payload, EventPage)
 
 
 def cancel_goal(
@@ -128,7 +130,7 @@ def cancel_goal(
         method="POST",
     )
     status, payload = send(request)
-    return _finish(status, payload)
+    return _finish(status, payload, CancelResult)
 
 
 def show_artifact(
@@ -145,17 +147,24 @@ def show_artifact(
         method="GET",
     )
     status, payload = send(request)
-    return _finish(status, payload)
+    return _finish(status, payload, ArtifactBody)
 
 
-def _finish(status: int, payload: bytes) -> tuple[int, dict[str, object]]:
+def _finish(status: int, payload: bytes, model: type[BaseModel]) -> tuple[int, dict[str, object]]:
     loaded = json.loads(payload)
     if not isinstance(loaded, dict):
         raise typer.Exit(code=1)
     if status >= 400:
         typer.echo(json.dumps(loaded), err=True)
         raise typer.Exit(code=1)
-    return status, loaded
+    try:
+        parsed = model.model_validate(loaded)
+    except ValidationError:
+        raise typer.Exit(code=1) from None
+    dumped = parsed.model_dump()
+    if not isinstance(dumped, dict):
+        raise typer.Exit(code=1)
+    return status, dumped
 
 
 @goal_app.command("submit")
