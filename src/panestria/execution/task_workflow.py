@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import time
+import uuid
 from pathlib import Path
 
 import sqlalchemy as sa
@@ -111,12 +112,118 @@ def synthetic_observe(task_id: str) -> str:
     return f"observed:{task_id}"
 
 
+def _record_effect(task_id: str, contract_sha256: str) -> tuple[str, bool]:
+    """Commit the external receipt on its own connection, before the step checkpoint."""
+    engine = sa.create_engine(sqlalchemy_url(os.environ["PANESTRIA_DATABASE_URL"]))
+    try:
+        with engine.begin() as connection:
+            found = connection.execute(
+                sa.text(
+                    "SELECT external_ref FROM panestria.side_effect"
+                    " WHERE task_id = :task AND effect_key = 'synthetic-observe'"
+                ),
+                {"task": task_id},
+            ).one_or_none()
+            if found is not None:
+                return str(found[0]), False
+            ref = f"synthetic:{task_id}"
+            connection.execute(
+                sa.text(
+                    "INSERT INTO panestria.side_effect"
+                    " (id, task_id, effect_key, target, request_hash, state, external_ref,"
+                    " reconciliation_note)"
+                    " VALUES (:id, :task, 'synthetic-observe', 'synthetic', :digest,"
+                    " 'SUCCEEDED', :ref, 'recorded-before-checkpoint')"
+                ),
+                {"id": str(uuid.uuid4()), "task": task_id, "digest": contract_sha256, "ref": ref},
+            )
+            return ref, True
+    finally:
+        engine.dispose()
+
+
+@DBOS.step(name="synthetic_effect", retries_allowed=False)
+def synthetic_effect(task_id: str, contract_sha256: str) -> str:
+    """Reconcile a committed effect. A lost checkpoint must not repeat it."""
+    ref, created = _record_effect(task_id, contract_sha256)
+    if created:
+        _crash_gate("after-effect")
+    return ref
+
+
+def _mark_failed_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
+    session = get_datasource().sql_session()
+    current = session.execute(
+        sa.text(
+            "SELECT task.state, task.row_version, task.goal_id::text, contract.sha256"
+            " FROM panestria.task AS task"
+            " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
+            " JOIN panestria.task_attempt AS attempt"
+            " ON attempt.task_id = task.id AND attempt.attempt_number = :attempt"
+            " WHERE task.id = :task_id"
+            " FOR UPDATE OF task"
+        ),
+        {"task_id": task_id, "attempt": attempt_number},
+    ).one()
+    state, row_version, goal_id, digest = current
+    if str(digest).strip() != contract_sha256:
+        raise KernelDenied("invalid_contract")
+    if str(state) == "FAILED":
+        return {"task_id": task_id, "state": "FAILED", "replayed": "true"}
+    target = "FAILED"
+    if (str(state), target) not in ALLOWED_TRANSITIONS:
+        raise KernelDenied("illegal_transition")
+    updated = session.execute(
+        sa.text(
+            "UPDATE panestria.task SET state = :target, row_version = row_version + 1,"
+            " updated_at = now() WHERE id = :task_id AND row_version = :version"
+            " RETURNING row_version"
+        ),
+        {"target": target, "task_id": task_id, "version": int(row_version)},
+    ).scalar_one_or_none()
+    if updated is None:
+        raise KernelDenied("version_conflict")
+    append_domain_event(
+        session.connection(),
+        goal_id=str(goal_id),
+        task_id=task_id,
+        kind="task.transition",
+        actor="workflow",
+        payload={"from": str(state), "to": target, "cause": "terminal-synthetic-failure"},
+    )
+    return {"task_id": task_id, "state": target, "row_version": str(int(updated))}
+
+
+def mark_failed_tx(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
+    """Commit FAILED before the workflow exception. Replay does not append again."""
+    return get_datasource().run_tx_step(
+        {"name": "mark_failed_tx", "isolation_level": "SERIALIZABLE"},
+        _mark_failed_body,
+        task_id,
+        contract_sha256,
+        attempt_number,
+    )
+
+
 @DBOS.workflow(name=WORKFLOW_NAME)
 def run_task_workflow(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
     result = transition_task_tx(task_id, contract_sha256, attempt_number)
     _crash_gate("after-commit")
     result["observed"] = synthetic_observe(task_id)
     return result
+
+
+@DBOS.workflow(name="run_effect_workflow")
+def run_effect_workflow(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
+    transition_task_tx(task_id, contract_sha256, attempt_number)
+    ref = synthetic_effect(task_id, contract_sha256)
+    return {"task_id": task_id, "external_ref": ref}
+
+
+@DBOS.workflow(name="run_failing_workflow")
+def run_failing_workflow(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
+    mark_failed_tx(task_id, contract_sha256, attempt_number)
+    raise RuntimeError("terminal-synthetic-failure")
 
 
 def _runtime_config(database_url: str) -> DBOSConfig:
@@ -141,17 +248,33 @@ def main() -> None:
     mode = os.environ.get("PANESTRIA_MODE", "run")
     _start(database_url)
     try:
+        workflow_id = os.environ["PANESTRIA_WORKFLOW_ID"]
         if mode == "recover":
-            report = RecoveryService().recover_pending(os.environ["PANESTRIA_WORKFLOW_ID"])
+            report = RecoveryService().recover_pending(workflow_id)
             if report.status != "SUCCESS":
                 raise SystemExit(2)
             return
-        workflow_id = os.environ["PANESTRIA_WORKFLOW_ID"]
         task_id = os.environ["PANESTRIA_TASK_ID"]
         digest = os.environ["PANESTRIA_CONTRACT_SHA256"]
         attempt = int(os.environ["PANESTRIA_ATTEMPT"])
+        if mode == "effect":
+            function = run_effect_workflow
+        elif mode == "fail":
+            function = run_failing_workflow
+        else:
+            function = run_task_workflow
         with SetWorkflowID(workflow_id, workflow_id_reuse_policy="return-existing"):
-            handle = DBOS.start_workflow(run_task_workflow, task_id, digest, attempt)
+            handle = DBOS.start_workflow(function, task_id, digest, attempt)
+        if mode == "fail":
+            try:
+                handle.get_result()
+            except Exception:
+                report = RecoveryService().recover_pending(workflow_id)
+            else:
+                raise SystemExit(4)
+            if report.status != "ERROR" or "terminal-synthetic-failure" not in report.error:
+                raise SystemExit(4)
+            return
         if mode == "duplicate":
             handle.get_result()
             with SetWorkflowID(workflow_id, workflow_id_reuse_policy="return-existing"):

@@ -17,6 +17,7 @@ import sqlalchemy as sa
 
 from panestria.execution.admission import AdmissionReceipt, DurableAdmission, SqlUnitOfWork
 from panestria.execution.dbos_runtime import QUEUE_NAME, open_client, probe_launch, sqlalchemy_url
+from panestria.execution.recovery import connect_for_admission
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 
@@ -49,7 +50,7 @@ def _properties(record_property: pytest.RecordProperty, case_id: str) -> None:
     record_property("gate_case_id", case_id)
     record_property("candidate_commit", commit)
     record_property("fixture_digest", hashlib.sha256(DIGEST.encode()).hexdigest())
-    record_property("lane", "integration" if case_id == "AOS-003-TC01" else "chaos")
+    record_property("lane", "chaos" if case_id in {"AOS-003-TC02", "AOS-003-TC03"} else "integration")
     record_property("execution_mode", "OS_BOUNDARY")
     record_property("worktree_state", "dirty" if dirty else "clean")
 
@@ -491,6 +492,288 @@ def test_before_after_commit(
         )
         _finish(duplicate)
         assert _task_state(engine, TASK_DUP) == ("VALIDATING", 1, 1)
+    finally:
+        engine.dispose()
+
+
+TASK_EFFECT = "00000000-0000-4000-8000-0000000000e7"
+TASK_FAIL = "00000000-0000-4000-8000-0000000000e9"
+TASK_RESTORE = "00000000-0000-4000-8000-0000000000eb"
+ATTEMPT_EFFECT = "00000000-0000-4000-8000-0000000000e8"
+ATTEMPT_FAIL = "00000000-0000-4000-8000-0000000000ea"
+ATTEMPT_RESTORE = "00000000-0000-4000-8000-0000000000ec"
+
+
+def _seed_task(engine: sa.Engine, task_id: str, attempt_id: str, name: str) -> None:
+    with engine.begin() as connection:
+        connection.execute(
+            sa.text(
+                "INSERT INTO panestria.principal (id, display_name) VALUES (:owner, 'owner')"
+                " ON CONFLICT (id) DO NOTHING"
+            ),
+            {"owner": OWNER},
+        )
+        connection.execute(
+            sa.text(
+                "INSERT INTO panestria.project (id, owner_id) VALUES (:project, :owner)"
+                " ON CONFLICT (id) DO NOTHING"
+            ),
+            {"project": PROJECT, "owner": OWNER},
+        )
+        connection.execute(
+            sa.text(
+                "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+                " VALUES (:goal, :owner, :project, 'synthetic', 'CREATED')"
+                " ON CONFLICT (id) DO NOTHING"
+            ),
+            {"goal": GOAL, "owner": OWNER, "project": PROJECT},
+        )
+        connection.execute(
+            sa.text(
+                "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+                " VALUES (:contract, :goal, 1, '{}'::jsonb, :digest)"
+                " ON CONFLICT (id) DO NOTHING"
+            ),
+            {"contract": CONTRACT, "goal": GOAL, "digest": DIGEST},
+        )
+        connection.execute(
+            sa.text(
+                "INSERT INTO panestria.task (id, goal_id, contract_id, name, state)"
+                " VALUES (:task, :goal, :contract, :name, 'CREATED')"
+            ),
+            {"task": task_id, "goal": GOAL, "contract": CONTRACT, "name": name},
+        )
+        connection.execute(
+            sa.text(
+                "INSERT INTO panestria.task_attempt"
+                " (id, task_id, attempt_number, lease_epoch, status, adapter)"
+                " VALUES (:attempt, :task, 1, 0, 'PENDING', 'synthetic')"
+            ),
+            {"attempt": attempt_id, "task": task_id},
+        )
+
+
+def _effect_row(engine: sa.Engine, task_id: str) -> tuple[int, str, str, str]:
+    with engine.connect() as connection:
+        count = connection.execute(
+            sa.text("SELECT count(*) FROM panestria.side_effect WHERE task_id = :task"),
+            {"task": task_id},
+        ).scalar_one()
+        row = connection.execute(
+            sa.text(
+                "SELECT state, external_ref, reconciliation_note FROM panestria.side_effect"
+                " WHERE task_id = :task AND effect_key = 'synthetic-observe'"
+            ),
+            {"task": task_id},
+        ).one()
+    return int(count), str(row[0]), str(row[1]), str(row[2])
+
+
+def _workflow_status(engine: sa.Engine, workflow_id: str) -> str:
+    with engine.connect() as connection:
+        status = connection.execute(
+            sa.text("SELECT status FROM dbos.workflow_status WHERE workflow_uuid = :workflow"),
+            {"workflow": workflow_id},
+        ).scalar_one()
+    return str(status)
+
+
+def _wait_database() -> None:
+    deadline = time.monotonic() + 30
+    while True:
+        try:
+            with psycopg.connect(DATABASE_URL, connect_timeout=2) as connection:
+                connection.execute("SELECT 1")
+            return
+        except psycopg.Error:
+            if time.monotonic() > deadline:
+                raise
+            time.sleep(0.5)
+
+
+def _snapshot(engine: sa.Engine, task_id: str, workflow_id: str) -> tuple[object, ...]:
+    with engine.connect() as connection:
+        task = connection.execute(
+            sa.text("SELECT id::text, state, row_version FROM panestria.task WHERE id = :task"),
+            {"task": task_id},
+        ).one()
+        effect = connection.execute(
+            sa.text(
+                "SELECT id::text, state, external_ref, reconciliation_note"
+                " FROM panestria.side_effect WHERE task_id = :task"
+            ),
+            {"task": task_id},
+        ).one()
+        event = connection.execute(
+            sa.text(
+                "SELECT count(*), coalesce(max(seq), 0) FROM panestria.task_event WHERE task_id = :task"
+            ),
+            {"task": task_id},
+        ).one()
+        workflow = connection.execute(
+            sa.text(
+                "SELECT workflow_uuid::text, status, name FROM dbos.workflow_status"
+                " WHERE workflow_uuid = :workflow"
+            ),
+            {"workflow": workflow_id},
+        ).one()
+    return (tuple(task), tuple(effect), tuple(event), tuple(workflow))
+
+
+def test_uncommitted_external_step(
+    database_url: str,
+    record_property: pytest.RecordProperty,
+    tmp_path: Path,
+) -> None:
+    _properties(record_property, "AOS-003-TC03")
+    engine = sa.create_engine(sqlalchemy_url(database_url))
+    try:
+        _seed_task(engine, TASK_EFFECT, ATTEMPT_EFFECT, "effect")
+        ready = tmp_path / "effect"
+        running = _spawn(
+            database_url,
+            mode="effect",
+            workflow_id="wf-effect-lost",
+            task_id=TASK_EFFECT,
+            crash_at="after-effect",
+            ready=ready,
+        )
+        _wait_ready(ready, running)
+        recorded = (1, "SUCCEEDED", f"synthetic:{TASK_EFFECT}", "recorded-before-checkpoint")
+        assert _effect_row(engine, TASK_EFFECT) == recorded
+        _kill(running)
+        assert _effect_row(engine, TASK_EFFECT) == recorded
+        recovered = _spawn(
+            database_url,
+            mode="recover",
+            workflow_id="wf-effect-lost",
+            task_id=TASK_EFFECT,
+            crash_at=None,
+            ready=None,
+        )
+        _finish(recovered)
+        assert _effect_row(engine, TASK_EFFECT) == recorded
+        assert _task_state(engine, TASK_EFFECT) == ("VALIDATING", 1, 1)
+        assert _workflow_status(engine, "wf-effect-lost") == "SUCCESS"
+
+        _seed_task(engine, TASK_FAIL, ATTEMPT_FAIL, "fail")
+        failed = _spawn(
+            database_url,
+            mode="fail",
+            workflow_id="wf-terminal-failure",
+            task_id=TASK_FAIL,
+            crash_at=None,
+            ready=None,
+        )
+        _finish(failed)
+        assert _task_state(engine, TASK_FAIL) == ("FAILED", 1, 1)
+        assert _workflow_status(engine, "wf-terminal-failure") == "ERROR"
+        again = _spawn(
+            database_url,
+            mode="fail",
+            workflow_id="wf-terminal-failure",
+            task_id=TASK_FAIL,
+            crash_at=None,
+            ready=None,
+        )
+        _finish(again)
+        assert _task_state(engine, TASK_FAIL) == ("FAILED", 1, 1)
+        assert _workflow_status(engine, "wf-terminal-failure") == "ERROR"
+    finally:
+        engine.dispose()
+
+
+def test_database_restore_and_reconnect(
+    database_url: str,
+    record_property: pytest.RecordProperty,
+    tmp_path: Path,
+) -> None:
+    _properties(record_property, "AOS-003-TC04")
+    engine = sa.create_engine(sqlalchemy_url(database_url))
+    try:
+        _seed_task(engine, TASK_RESTORE, ATTEMPT_RESTORE, "restore")
+        completed = _spawn(
+            database_url,
+            mode="effect",
+            workflow_id="wf-restore",
+            task_id=TASK_RESTORE,
+            crash_at=None,
+            ready=None,
+        )
+        _finish(completed)
+        before = _snapshot(engine, TASK_RESTORE, "wf-restore")
+    finally:
+        engine.dispose()
+
+    dumped = subprocess.run(
+        [
+            *COMPOSE,
+            "exec",
+            "-T",
+            "-e",
+            "PGPASSWORD=placeholder-not-a-secret",
+            "postgres",
+            "pg_dump",
+            "-U",
+            "panestria_synthetic",
+            "-d",
+            "panestria_synthetic",
+            "-Fc",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    assert dumped.returncode == 0, dumped.stderr
+    backup = tmp_path / "panestria.dump"
+    backup.write_bytes(dumped.stdout)
+
+    stopped = _run([*COMPOSE, "stop", "postgres"])
+    assert stopped.returncode == 0, stopped.stderr
+    try:
+        with pytest.raises(sa.exc.OperationalError):
+            connect_for_admission(database_url)
+    finally:
+        started = _run([*COMPOSE, "up", "-d", "--wait", "postgres"])
+        assert started.returncode == 0, started.stderr
+    _wait_database()
+    engine = sa.create_engine(sqlalchemy_url(database_url))
+    try:
+        assert _snapshot(engine, TASK_RESTORE, "wf-restore") == before
+    finally:
+        engine.dispose()
+
+    removed = _run([*COMPOSE, "down", "-v"])
+    assert removed.returncode == 0, removed.stderr
+    restored_up = _run([*COMPOSE, "up", "-d", "--wait", "postgres"])
+    assert restored_up.returncode == 0, restored_up.stderr
+    _wait_database()
+    payload = backup.read_bytes()
+    restored = subprocess.run(
+        [
+            *COMPOSE,
+            "exec",
+            "-T",
+            "-e",
+            "PGPASSWORD=placeholder-not-a-secret",
+            "postgres",
+            "pg_restore",
+            "-U",
+            "panestria_synthetic",
+            "-d",
+            "panestria_synthetic",
+            "--no-owner",
+            "--exit-on-error",
+        ],
+        cwd=ROOT,
+        input=payload,
+        capture_output=True,
+        check=False,
+    )
+    assert restored.returncode == 0, restored.stderr
+    engine = sa.create_engine(sqlalchemy_url(database_url))
+    try:
+        assert _snapshot(engine, TASK_RESTORE, "wf-restore") == before
     finally:
         engine.dispose()
 
