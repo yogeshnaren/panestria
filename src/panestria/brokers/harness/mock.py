@@ -178,6 +178,8 @@ class MockWorkerAdapter:
             return "CRASHED"
         if self.mode == "success" and returncode == 0 and not self._escaped():
             return "CANDIDATE"
+        if self.mode == "bad_test" and returncode == 0 and not self._escaped():
+            return "CANDIDATE"
         if self.mode == "verbose" and returncode == 0:
             return "CANDIDATE"
         return "REJECTED"
@@ -229,6 +231,13 @@ def main() -> None:
             sys.stdout.buffer.write(b"x" * 20000)
         else:
             sys.stdout.write("done\n")
+        return
+    if mode == "bad_test":
+        relative = os.environ.get("PANESTRIA_WORKER_RELATIVE", "allowed.txt")
+        target = _relative_file(worktree, relative)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("tests pass\n")
+        sys.stdout.write("tests pass\n")
         return
     if mode == "bad_path":
         (root / "outside.txt").write_text("escape\n")

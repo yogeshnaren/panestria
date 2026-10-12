@@ -151,6 +151,22 @@ def test_bad_path_and_tampered_checks(
     assert "other.txt" in off_scope.denied
     assert decide(off_scope, (result,), ("synthetic-required",), True).verdict == "FAIL"
 
+    claimed = WorktreeManager().create(tmp_path / "narrative", "attempt-narrative", SEED)
+    narrator = MockWorkerAdapter(claimed, "bad_test", SEED)
+    narrator.start()
+    narrative = narrator.collect()
+    assert narrative.status == "CANDIDATE"
+    assert narrative.accepted is False
+    assert narrative.checks == "NOT_RUN"
+    assert narrative.stdout_sha256 == hashlib.sha256(b"tests pass\n").hexdigest()
+    claimed_file = Path(claimed.worktree) / "allowed.txt"
+    assert claimed_file.read_text(encoding="utf-8") == "tests pass\n"
+    failed = TrustedCheckRunner(registry).run("synthetic-required", claimed_file, 5)
+    assert failed.verdict == "FAIL"
+    assert failed.reason == "exit_1"
+    narrative_diff = inspect_diff(Path(claimed.root), Path(claimed.worktree), ALLOWLIST)
+    assert decide(narrative_diff, (failed,), ("synthetic-required",), True).verdict == "FAIL"
+
     escaped = WorktreeManager().create(tmp_path / "escape", "attempt-escape", SEED)
     outside = MockWorkerAdapter(escaped, "bad_path", SEED)
     outside.start()
