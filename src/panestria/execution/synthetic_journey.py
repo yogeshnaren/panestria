@@ -278,22 +278,24 @@ class SyntheticJourney:
             return
         preview = load_preview(self._preview_body(connection, approval[0]))
         if "@" not in preview.destination:
-            self._reject_effect(connection, actor, goal_id, task_id, approval[2], "cas-rejected")
+            self._reject_effect(connection, actor, goal_id, task_id, approval[0], approval[2], "cas-rejected")
             return
         ref, candidate = preview.destination.split("@", 1)
         current = _read_ref(sandbox, ref)
         if current != candidate and not self._effect_allowed(
             connection, actor, task_id, approval[0], preview, sandbox / "store"
         ):
-            self._reject_effect(connection, actor, goal_id, task_id, approval[2], "authorization-stale")
+            self._reject_effect(
+                connection, actor, goal_id, task_id, approval[0], approval[2], "authorization-stale"
+            )
             return
         crash_gate("before-effect-dispatch")
         confirmed = current == candidate or _apply_ref(sandbox, preview.expected_base, ref, candidate)
         if not confirmed or (effect_id is None and snapshot.effect_state != "PREPARED"):
-            self._reject_effect(connection, actor, goal_id, task_id, approval[2], "cas-rejected")
+            self._reject_effect(connection, actor, goal_id, task_id, approval[0], approval[2], "cas-rejected")
             return
         crash_gate("before-effect-commit")
-        self._effect_state(connection, task_id, "SUCCEEDED", "cas-confirmed")
+        self._effect_state(connection, task_id, approval[0], "SUCCEEDED", "cas-confirmed")
         connection.execute(
             "UPDATE panestria.goal SET status = 'COMPLETED', updated_at = now() WHERE id = %s",
             (goal_id,),
@@ -317,10 +319,11 @@ class SyntheticJourney:
         actor: Actor,
         goal_id: str,
         task_id: str,
+        approval_id: str,
         digest: str,
         note: str,
     ) -> None:
-        self._effect_state(connection, task_id, "FAILED", note)
+        self._effect_state(connection, task_id, approval_id, "FAILED", note)
         append_event(
             connection_uow(connection),
             goal_id=goal_id,
@@ -608,11 +611,11 @@ class SyntheticJourney:
             return found
         return _insert_attempt(connection, str(uuid4()), task_id, epoch, "RUNNING", None)
 
-    def _effect_state(self, connection: Conn, task_id: str, state: str, note: str) -> None:
+    def _effect_state(self, connection: Conn, task_id: str, approval_id: str, state: str, note: str) -> None:
         connection.execute(
             "UPDATE panestria.side_effect SET state = %s, reconciliation_note = %s"
-            " WHERE task_id = %s AND state = 'PREPARED'",
-            (state, note, task_id),
+            " WHERE task_id = %s AND state = 'PREPARED' AND effect_key = %s",
+            (state, note, task_id, f"approval:{approval_id}"),
         )
 
     def _snapshot(self, connection: Conn, actor: Actor, goal_id: str) -> JourneySnapshot:
@@ -628,7 +631,11 @@ class SyntheticJourney:
         ).fetchone()
         artifact_sha = snapshot_artifact(connection, task_id)
         effect = connection.execute(
-            "SELECT state FROM panestria.side_effect WHERE task_id = %s",
+            "SELECT state FROM panestria.side_effect"
+            " WHERE task_id = %s AND starts_with(effect_key, 'approval:')"
+            " ORDER BY CASE state WHEN 'PREPARED' THEN 0 WHEN 'EXECUTING' THEN 1"
+            " WHEN 'UNKNOWN' THEN 2 WHEN 'RECONCILING' THEN 3 ELSE 4 END"
+            " LIMIT 1",
             (task_id,),
         ).fetchone()
         goal = connection.execute("SELECT status FROM panestria.goal WHERE id = %s", (goal_id,)).fetchone()

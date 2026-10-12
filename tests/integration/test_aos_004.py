@@ -902,6 +902,58 @@ def test_latest_approval_request_wins(record_property: pytest.RecordProperty) ->
         assert journey._decision(connection, snapshot) == "APPROVED"
 
 
+def test_observation_does_not_hide_a_prepared_effect(record_property: pytest.RecordProperty) -> None:
+    _properties(record_property, "AOS-005-TC04", "chaos")
+    _database()
+    goal = "00000000-0000-4000-8000-0000000001e0"
+    contract = "00000000-0000-4000-8000-0000000001e1"
+    task = "00000000-0000-4000-8000-0000000001e2"
+    approval = "00000000-0000-4000-8000-0000000001e3"
+    digest = "ab" * 32
+    actor = Actor(OWNER, PROJECT)
+    with psycopg.connect(DATABASE_URL) as connection:
+        connection.execute("INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'owner')", (OWNER,))
+        connection.execute("INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)", (PROJECT, OWNER))
+        connection.execute(
+            "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+            " VALUES (%s, %s, %s, 'synthetic', 'ACTIVE')",
+            (goal, OWNER, PROJECT),
+        )
+        connection.execute(
+            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+            " VALUES (%s, %s, 1, %s::jsonb, %s)",
+            (contract, goal, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', digest),
+        )
+        connection.execute(
+            "INSERT INTO panestria.task"
+            " (id, goal_id, contract_id, name, state, continuation_kind)"
+            " VALUES (%s, %s, %s, 'effect', 'WAITING_APPROVAL', 'MERGE')",
+            (task, goal, contract),
+        )
+        connection.execute(
+            "INSERT INTO panestria.side_effect"
+            " (id, task_id, effect_key, target, request_hash, state, external_ref)"
+            " VALUES (%s, %s, 'synthetic-observe', 'synthetic', %s, 'SUCCEEDED', %s)",
+            ("00000000-0000-4000-8000-0000000001e4", task, digest, f"synthetic:{task}"),
+        )
+        connection.commit()
+        journey = SyntheticJourney()
+        assert journey._snapshot(connection, actor, goal).effect_state is None
+        connection.execute(
+            "INSERT INTO panestria.side_effect"
+            " (id, task_id, effect_key, target, request_hash, state)"
+            " VALUES (%s, %s, %s, 'refs/heads/main', %s, 'PREPARED')",
+            ("00000000-0000-4000-8000-0000000001e5", task, f"approval:{approval}", digest),
+        )
+        connection.commit()
+        assert journey._snapshot(connection, actor, goal).effect_state == "PREPARED"
+        observed = connection.execute(
+            "SELECT state FROM panestria.side_effect WHERE effect_key = 'synthetic-observe' AND task_id = %s",
+            (task,),
+        ).fetchone()
+        assert observed is not None and observed[0] == "SUCCEEDED"
+
+
 def _assert_event_sequence(
     recorded: tuple[WorkerEvent, ...],
     attempt_id: str,
