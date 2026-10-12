@@ -1,6 +1,6 @@
 # AOS-005 — Minimal goal/approval API and CLI end-to-end synthetic slice: implementation plan
 
-**Release:** R0. **Format:** full; shared design supplies cross-component detail. **Implementation:** S1 routes and S2 locked decisions observed; the completed journey is not started. **Tests:** AOS-005-TC02 observed on disposable PostgreSQL; TC01, TC03, and TC04 remain NOT_RUN. **Depends on:** AOS-003, AOS-004. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R0. **Format:** full; shared design supplies cross-component detail. **Implementation:** S1 routes, S2 locked decisions, and S3 synthetic journey observed; the item awaits review. **Tests:** AOS-005-TC01 through TC04 observed on disposable PostgreSQL. G0 stays incomplete because AOS-001-TC04 remains NOT_RUN. **Depends on:** AOS-003, AOS-004. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-005.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 

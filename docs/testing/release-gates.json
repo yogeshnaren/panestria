@@ -35,7 +35,7 @@
       ],
       "requires_owner_mvp_acceptance": false,
       "trial_days_required": 0,
-      "status": "NOT_RUN"
+      "status": "INCOMPLETE"
     },
     {
       "id": "G1",

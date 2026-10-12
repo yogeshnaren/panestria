@@ -1,0 +1,76 @@
+{
+  "slice": "AOS-005-S3",
+  "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b",
+  "environment_manifest_sha256": "3020c90ee1e4fa3d4a42af78114698cb4b5a3f8ffe685ca34d4c3ddc349bdb88",
+  "cases": [
+    {
+      "case_id": "AOS-005-TC01",
+      "nodeid": "tests/e2e/test_aos_005.py::test_r0_positive_journey",
+      "lane": "e2e",
+      "execution_mode": "OS_BOUNDARY",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "AOS-005-TC02",
+      "nodeid": "tests/e2e/test_aos_005.py::test_approval_digest_actor_expiry",
+      "lane": "security",
+      "execution_mode": "OS_BOUNDARY",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "AOS-005-TC03",
+      "nodeid": "tests/e2e/test_aos_005.py::test_decision_race_idempotency",
+      "lane": "integration",
+      "execution_mode": "OS_BOUNDARY",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "AOS-005-TC04",
+      "nodeid": "tests/e2e/test_aos_005.py::test_wait_restart_continuation",
+      "lane": "chaos",
+      "execution_mode": "OS_BOUNDARY",
+      "verdict": "PASS"
+    }
+  ],
+  "release_gate": "INCOMPLETE",
+  "release_gate_reason": "AOS-005-TC01 through TC04 passed on disposable PostgreSQL for af3d431e775c2f3f23722d272dd00f2863689d5b. AOS-001-TC04 is not run. G0 is incomplete. The item is awaiting review.",
+  "not_run": [
+    {
+      "case_id": "AOS-001-TC04",
+      "reason": "fresh Ubuntu host not available"
+    }
+  ],
+  "checks": [
+    {
+      "command": ["uv", "lock", "--check", "--offline"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "ruff", "check", "src", "tests"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "mypy"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "lint-imports"],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-m",
+        "not live",
+        "--junitxml=evidence/AOS-005-S3.xml"
+      ],
+      "exit_code": 0,
+      "passed": 93,
+      "skipped": 0,
+      "failed": 0
+    }
+  ]
+}

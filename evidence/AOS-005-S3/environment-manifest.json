@@ -1,0 +1,59 @@
+{
+  "slice": "AOS-005-S3",
+  "observed_at": "2026-10-12T07:12:56.146966Z",
+  "candidate_commit": "af3d431e775c2f3f23722d272dd00f2863689d5b",
+  "candidate_contains_tested_source": true,
+  "worktree_state_at_test_start": "clean",
+  "junit_sha256": "bb8c48dd5ef87e2728ea73aaeea0735198ab8f524b88b0a5c028bb11bd9232ce",
+  "fixture_sha256": "9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283",
+  "fixture": "docs/fixtures/synthetic-goal-contract.json",
+  "execution_mode": "OS_BOUNDARY",
+  "database": "disposable_postgresql",
+  "executor": "fastapi-testclient-and-urllib-cli",
+  "catalog_case_aos_001_tc04": "NOT_RUN",
+  "cli_transport": "CLI functions built a urllib request and the test forwarded it into FastAPI TestClient. No separate TCP listener ran, and uvicorn is not installed.",
+  "hardware": {
+    "probed": false,
+    "verdict": "UNKNOWN",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "release_gate": "INCOMPLETE",
+  "components": [
+    {
+      "name": "synthetic-journey",
+      "resolved_version": "af3d431e775c2f3f23722d272dd00f2863689d5b",
+      "source": "src/panestria/execution/synthetic_journey.py",
+      "capability": "consent, one mock candidate, independent checks, and one CAS effect",
+      "outcome": "the approved journey completed with one attempt; a moved protected ref left the effect FAILED",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "postgresql",
+      "resolved_version": "postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d",
+      "source": "docker.io/library/postgres:16",
+      "capability": "decision race, continuation, and compare-and-swap",
+      "outcome": "one decision and one effect survived the race; deny and stale base did not complete the goal",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "dbos",
+      "resolved_version": "3.2.0",
+      "source": "https://pypi.org/simple",
+      "capability": "already proven in AOS-003; this slice does not enqueue the journey",
+      "outcome": "the journey uses kernel transactions and git update-ref, not a second workflow",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pytest",
+      "resolved_version": "9.1.1",
+      "source": "https://pypi.org/simple",
+      "capability": "non-live regression",
+      "outcome": "93 passed",
+      "mocked": false,
+      "live": false
+    }
+  ]
+}

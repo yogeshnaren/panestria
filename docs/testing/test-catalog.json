@@ -187,7 +187,7 @@
       "expected": "CLI submits and consents, observes task/evidence, approves exact candidate and sees completed synthetic goal after confirmed effect.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-005-TC02",
@@ -209,7 +209,7 @@
       "expected": "Approve/deny and duplicate consume races yield one decision/effect; repeated key with changed body conflicts.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-005-TC04",
@@ -220,7 +220,7 @@
       "expected": "Restart at contract wait dispatches only after consent; restart at merge wait resumes finalize, does not launch another worker.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-006-TC01",

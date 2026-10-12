@@ -65,3 +65,7 @@ Schema validation of the contract is not execution proof. The v0.1.0 skill valid
 ## Stopping condition
 
 Stop when the handoff lists ordered commits, the evidence matrix, known issues, setup/start/stop, rollback and backup, and a reproducible synthetic walkthrough with deliberate failures. Stop earlier if a required external setup is missing, after independent R0 work is committed and the gap is listed. Do not open R1.
+
+## Handoff
+
+The review package is [R0-HANDOFF.md](../reviews/R0-HANDOFF.md). G0 is `INCOMPLETE` because AOS-001-TC04 has no fresh Ubuntu host. This section is not an owner review.

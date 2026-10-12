@@ -1,0 +1,149 @@
+# R0 review handoff
+
+This package is ready for review. It is not an owner acceptance, a G0 pass, or permission to start R1.
+
+**Tested source:** `af3d431e775c2f3f23722d272dd00f2863689d5b` on `r0-kernel`.  
+**Integrated report:** `evidence/AOS-005-S3.xml`, SHA-256 `bb8c48dd5ef87e2728ea73aaeea0735198ab8f524b88b0a5c028bb11bd9232ce`.  
+**Gate:** `evidence/G0/evaluation.json` records G0 as `INCOMPLETE`. Nineteen of twenty required cases were collected on that source with a clean worktree. `AOS-001-TC04` is absent.
+
+The commit that adds this file is evidence. Its parent is the tested source. `git diff af3d431e775c2f3f23722d272dd00f2863689d5b -- src tests pyproject.toml uv.lock .importlinter migrations` is empty.
+
+## Ordered commits
+
+Commits are newest first, from the approved contract through the journey. Evidence commits name the preceding source commit inside their case results.
+
+| Commit | Reason |
+|---|---|
+| `af3d431` | Synthetic consent, one mock candidate, independent checks, and one CAS completion. |
+| `68592b6` | Evidence for the locked approval decisions. |
+| `eb5d6c3` | Migration regression follows the Alembic head and denies digest rebinding. |
+| `8f1feee` | Locked approval preview, decision, and continuation. |
+| `744bbce` | Evidence for the loopback routes. |
+| `44d30f0` | Keep the health factory signature and mount goal routes separately. |
+| `fc4827c` | Loopback goal submit, status, events, and CLI replay. |
+| `c616747` | Evidence for the watchdog. |
+| `c0ae53c` | Wall-clock timeout, cancellation, and orphan artifact cleanup. |
+| `50624b4` | Evidence for independent checks. |
+| `9f4b764` | Reviewed command bundle, diff inspection, and artifact ingress. |
+| `a39039f` | Evidence for the scripted worker. |
+| `abf45f8` | Seeded git worktree and mock worker. |
+| `effd7e9` | Evidence for crash restore. |
+| `cd2b6b4` | Lost external step, terminal failure, and schema restore. |
+| `971ded5` | Evidence for replay. |
+| `9a652c1` | Replay-deterministic task transition and step checkpoint. |
+| `915f85b` | Evidence for atomic admission. |
+| `655a0c5` | DBOS enqueue inside the caller transaction. |
+| `684ead8` | Evidence for scoped mutations. |
+| `5793500` | Scoped transitions, DAG checks, and cursor concurrency. |
+| `3bcbcd7` | Evidence for the kernel schema. |
+| `dee9dc2` | Kernel tables, immutability trigger, and constraint tests. |
+| `b518abb` | Evidence for strict contracts. |
+| `834ae35` | Canonical goal-contract hash and rejected legacy verifiers. |
+| `cd866cd` | Evidence for the PostgreSQL scaffold. |
+| `61d9e47` | Loopback Compose project and empty Alembic schema. |
+| `398dd04` | Evidence for the toolchain. |
+| `99afb1a` | Keep the synthetic key out of the scanner test source. |
+| `d2cca26` | Ruff, Mypy, Import Linter, CI pins, and boundary failures. |
+| `fba17d4` | Approved phase contract, stored separately from its approval record. |
+
+`main` remains at the AOS-001-S1 evidence commit `48e378ee2f03a98c2e637b1d4f3b6066a5d13eaf`. This branch has not been pushed.
+
+## Evidence matrix
+
+| Case | Integrated verdict on `af3d431` | Historical receipt |
+|---|---|---|
+| AOS-001-TC01 | PASS, hermetic | `evidence/AOS-001-S1/case-result.json` names `af6794e` |
+| AOS-001-TC02 | PASS, hermetic | `evidence/AOS-001-S2/case-result.json` names `99afb1a` |
+| AOS-001-TC03 | PASS, OS boundary | `evidence/AOS-001-S3/case-result.json` names `61d9e47` |
+| AOS-001-TC04 | NOT_RUN | No fresh Ubuntu host. Excluded by `-m "not live"`. |
+| AOS-002-TC01 | PASS, hermetic | `evidence/AOS-002-S1/case-result.json` names `834ae35` |
+| AOS-002-TC02 | PASS, OS boundary | `evidence/AOS-002-S2/case-result.json` names `dee9dc2` |
+| AOS-002-TC03 | PASS, OS boundary | `evidence/AOS-002-S3/case-result-TC03.json` names `5793500` |
+| AOS-002-TC04 | PASS, OS boundary | `evidence/AOS-002-S3/case-result-TC04.json` names `5793500` |
+| AOS-003-TC01 | PASS, OS boundary | `evidence/AOS-003-S1/case-result.json` names `655a0c5` |
+| AOS-003-TC02 | PASS, OS boundary | `evidence/AOS-003-S2/case-result.json` names `9a652c1` |
+| AOS-003-TC03 | PASS, OS boundary | `evidence/AOS-003-S3/case-result-TC03.json` names `cd2b6b4` |
+| AOS-003-TC04 | PASS, OS boundary | `evidence/AOS-003-S3/case-result-TC04.json` names `cd2b6b4` |
+| AOS-004-TC01 | PASS, OS boundary | `evidence/AOS-004-S1/case-result.json` names `abf45f8` |
+| AOS-004-TC02 | PASS, OS boundary | `evidence/AOS-004-S2/case-result.json` names `9f4b764` |
+| AOS-004-TC03 | PASS, OS boundary | `evidence/AOS-004-S3/case-result-TC03.json` names `c0ae53c` |
+| AOS-004-TC04 | PASS, OS boundary | `evidence/AOS-004-S3/case-result-TC04.json` names `c0ae53c` |
+| AOS-005-TC01 | PASS, OS boundary | `evidence/AOS-005-S3/case-result-TC01.json` |
+| AOS-005-TC02 | PASS, OS boundary | `evidence/AOS-005-S3/case-result-TC02.json`; earlier receipt names `eb5d6c3` |
+| AOS-005-TC03 | PASS, OS boundary | `evidence/AOS-005-S3/case-result-TC03.json` |
+| AOS-005-TC04 | PASS, OS boundary | `evidence/AOS-005-S3/case-result-TC04.json` |
+
+The integrated command was `uv run --frozen pytest -m "not live" --junitxml=evidence/AOS-005-S3.xml`. Exit 0. Suite totals: 93 tests, 0 failures, 0 errors, 0 skips. Static checks on the same source also exited 0: `uv lock --check --offline`, `uv run --frozen ruff check src tests`, `uv run --frozen mypy`, and `uv run --frozen lint-imports`.
+
+Catalog status for an observed case is `OS_BOUNDARY_OBSERVED_NOT_RELEASE` or `HERMETIC_OBSERVED_NOT_RELEASE`. That is not a release pass. AOS-001 through AOS-005 stay `IN_PROGRESS`.
+
+## Known issues
+
+- AOS-001-TC04 needs a separate Ubuntu host. G0 stays incomplete until that live case is actually run.
+- There is no Makefile, so `make r0-demo` does not exist. The reproducible demonstration is `tests/e2e/test_aos_005.py::test_r0_positive_journey`.
+- `GET /v1/artifacts/{id}`, `artifact show`, and `goal cancel` are not implemented. The journey observes the artifact SHA-256 in the `evidence.recorded` event payload.
+- CLI functions build a urllib request. Tests forward that request into FastAPI TestClient. No separate TCP listener ran, and uvicorn is not installed.
+- `/readyz` still reports the database as `not_probed`.
+- Hardware was not probed. Its verdict is `UNKNOWN`.
+- Contract approval in `contracts/phase/r0-phase.approval.json` authorizes this development phase. It is not this review and it does not authorize a product effect.
+- Two-worker proof, MVP-X01 through X06, and the six fault drills belong to later phases. R4 through R7 and SOTA are out of scope.
+
+## Setup, start, and stop
+
+From `/home/yogesh/Personal/panestria` on `r0-kernel`:
+
+```bash
+uv sync --frozen --group dev
+docker compose -f compose.yaml -p panestria-s3 up -d --wait
+export PANESTRIA_DATABASE_URL='postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55432/panestria_synthetic'
+uv run --frozen alembic -c migrations/alembic.ini upgrade head
+```
+
+The image is pinned in `compose.yaml` and is published only on `127.0.0.1:55432`. This machine used Docker 29.1.3 and Compose v5.6.0. The password is the documented placeholder.
+
+Stop and remove the disposable volume:
+
+```bash
+docker compose -f compose.yaml -p panestria-s3 down -v
+```
+
+`down -v` removes only `panestria_s3_pgdata`.
+
+## Rollback and backup
+
+Leave history intact. To inspect an earlier source, check out that commit without resetting the branch. Returning to `main` leaves this branch available. The phase contract hash stays `fbafb4171c4494228b23de00924b0ac882ab8404e4ff11a1ef0bd43dd83b608f`.
+
+The disposable database is rebuilt by `down -v` followed by `up -d --wait` and `upgrade head`. AOS-003-S3 already recorded `pg_dump` and `pg_restore` of the `panestria`, `dbos`, and `panestria_checkpoint` schemas on its own source commit. That drill is not a production backup, and this handoff does not run it again.
+
+## Walkthrough
+
+Expected integrated result, from a clean tree at the tested source:
+
+```bash
+uv run --frozen pytest -m "not live" --junitxml=/tmp/panestria-r0.xml -q
+```
+
+Expect `93 passed` and exit 0. The live fresh-host case is not in that command.
+
+Positive journey:
+
+```bash
+uv run --frozen pytest tests/e2e/test_aos_005.py::test_r0_positive_journey -q
+```
+
+Expect one passed test. The CLI submits `docs/fixtures/synthetic-goal-contract.json`, consent does not start a worker, the approved consent starts one mock worker, independent diff and command checks record one PASS artifact, the merge approval performs one `git update-ref` compare-and-swap, and the goal and task become `COMPLETED` with effect state `SUCCEEDED` and attempt count 1. A second resume does not add an attempt.
+
+Deliberate failures in `tests/e2e/test_aos_005.py::test_wait_restart_continuation`:
+
+- Resume before consent leaves the attempt count at 0 and the task at `WAITING_APPROVAL` with continuation `DISPATCH`.
+- Resume again at the merge wait leaves the attempt count at 1 and does not complete the goal.
+- A denied consent leaves the goal incomplete and the attempt count at 0.
+- Moving `refs/heads/main` in `sandbox/protected/dest.git` before finalize makes the compare-and-swap fail. The effect becomes `FAILED`, the goal stays incomplete, and the attempt count stays 1.
+
+Deliberate conflicts in `tests/e2e/test_aos_005.py::test_decision_race_idempotency`: concurrent approve and deny leave one terminal decision and one `approval.decided` event. Concurrent continuation leaves one prepared effect. The same idempotency key with the opposite decision raises `idempotency_conflict`.
+
+Deliberate denials in `tests/e2e/test_aos_005.py::test_approval_digest_actor_expiry`: a wrong digest, wrong actor, expired request, foreign owner, or `UNKNOWN` check prepares no effect. A non-loopback CLI base URL exits 2.
+
+## Stopping condition
+
+Review this package before any R1 work. A G0 pass requires the missing fresh-host case and your recorded review of an exact candidate. Neither is present.
