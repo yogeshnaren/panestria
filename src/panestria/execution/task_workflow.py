@@ -8,7 +8,7 @@ import time
 import uuid
 from collections.abc import Callable
 from pathlib import Path
-from typing import TypeVar
+from typing import NoReturn, TypeVar
 
 import sqlalchemy as sa
 from dbos import DBOS, DBOSConfig, SetWorkflowID, SQLAlchemyDatasource
@@ -173,7 +173,7 @@ def synthetic_effect(task_id: str, contract_sha256: str) -> str:
     return ref
 
 
-def _mark_failed_body(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
+def _mark_failed_body(task_id: str, contract_sha256: str, attempt_number: int, cause: str) -> dict[str, str]:
     session = get_datasource().sql_session()
     current = session.execute(
         sa.text(
@@ -211,14 +211,39 @@ def _mark_failed_body(task_id: str, contract_sha256: str, attempt_number: int) -
         task_id=task_id,
         kind="task.transition",
         actor="workflow",
-        payload={"from": str(state), "to": target, "cause": "terminal-synthetic-failure"},
+        payload={"from": str(state), "to": target, "cause": cause},
     )
     return {"task_id": task_id, "state": target, "row_version": str(int(updated))}
 
 
-def mark_failed_tx(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
+def mark_failed_tx(
+    task_id: str,
+    contract_sha256: str,
+    attempt_number: int,
+    cause: str = "terminal-synthetic-failure",
+) -> dict[str, str]:
     """Commit FAILED before the workflow exception. Replay does not append again."""
-    return _serializable("mark_failed_tx", _mark_failed_body, task_id, contract_sha256, attempt_number)
+    return _serializable(
+        "mark_failed_tx",
+        _mark_failed_body,
+        task_id,
+        contract_sha256,
+        attempt_number,
+        cause,
+    )
+
+
+def settle_serialization_limit(
+    exc: BaseException,
+    task_id: str,
+    contract_sha256: str,
+    attempt_number: int,
+    mark: Callable[..., object] = mark_failed_tx,
+) -> NoReturn:
+    """Record FAILED for a stopped serialization storm, then keep the failure."""
+    if isinstance(exc, KernelDenied) and exc.code == "serialization_retry_limit":
+        mark(task_id, contract_sha256, attempt_number, "serialization-retry-limit")
+    raise exc
 
 
 _PAST_READY = frozenset({"LEASED", "RUNNING", "VERIFYING", "WAITING_APPROVAL"})
@@ -310,20 +335,26 @@ def execute_admitted_attempt(task_id: str, attempt_number: int) -> str:
 
 @DBOS.workflow(name=WORKFLOW_NAME)
 def run_task_workflow(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
-    result = transition_task_tx(task_id, contract_sha256, attempt_number)
-    if result.get("skipped") == "true":
-        lease_attempt_tx(task_id, contract_sha256, attempt_number)
-        crash_gate("before-worker")
-        result["journey"] = execute_admitted_attempt(task_id, attempt_number)
+    try:
+        result = transition_task_tx(task_id, contract_sha256, attempt_number)
+        if result.get("skipped") == "true":
+            lease_attempt_tx(task_id, contract_sha256, attempt_number)
+            crash_gate("before-worker")
+            result["journey"] = execute_admitted_attempt(task_id, attempt_number)
+            return result
+        crash_gate("after-commit")
+        result["observed"] = synthetic_observe(task_id)
         return result
-    crash_gate("after-commit")
-    result["observed"] = synthetic_observe(task_id)
-    return result
+    except KernelDenied as exc:
+        settle_serialization_limit(exc, task_id, contract_sha256, attempt_number)
 
 
 @DBOS.workflow(name="run_effect_workflow")
 def run_effect_workflow(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
-    transition_task_tx(task_id, contract_sha256, attempt_number)
+    try:
+        transition_task_tx(task_id, contract_sha256, attempt_number)
+    except KernelDenied as exc:
+        settle_serialization_limit(exc, task_id, contract_sha256, attempt_number)
     ref = synthetic_effect(task_id, contract_sha256)
     return {"task_id": task_id, "external_ref": ref}
 

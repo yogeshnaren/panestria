@@ -21,7 +21,11 @@ import sqlalchemy as sa
 from panestria.execution.admission import AdmissionReceipt, DurableAdmission, SqlUnitOfWork
 from panestria.execution.dbos_runtime import QUEUE_NAME, open_client, probe_launch, sqlalchemy_url
 from panestria.execution.recovery import RecoveryReport, connect_for_admission, format_recovery_audit, recovery_instance
-from panestria.execution.task_workflow import SERIALIZATION_ATTEMPT_LIMIT, limit_serialization_attempts
+from panestria.execution.task_workflow import (
+    SERIALIZATION_ATTEMPT_LIMIT,
+    limit_serialization_attempts,
+    settle_serialization_limit,
+)
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 
@@ -132,6 +136,32 @@ def _seed(connection: sa.Connection) -> None:
 def _count(connection: sa.Connection, sql: str, params: dict[str, Any] | None = None) -> int:
     value = connection.execute(sa.text(sql), params or {}).scalar_one()
     return int(value)
+
+
+def test_serialization_limit_is_recorded_as_failed(record_property: pytest.RecordProperty) -> None:
+    _properties(record_property, "AOS-003-TC03")
+    recorded: list[str] = []
+
+    def mark(task_id: str, digest: str, attempt: int, cause: str) -> None:
+        recorded.append(cause)
+        assert task_id == "task"
+        assert digest == "ab" * 32
+        assert attempt == 1
+
+    with pytest.raises(KernelDenied) as caught:
+        settle_serialization_limit(
+            KernelDenied("serialization_retry_limit"),
+            "task",
+            "ab" * 32,
+            1,
+            mark,
+        )
+    assert caught.value.code == "serialization_retry_limit"
+    assert recorded == ["serialization-retry-limit"]
+    with pytest.raises(KernelDenied) as other:
+        settle_serialization_limit(KernelDenied("invalid_contract"), "task", "ab" * 32, 1, mark)
+    assert other.value.code == "invalid_contract"
+    assert recorded == ["serialization-retry-limit"]
 
 
 def test_serialization_attempts_stop(record_property: pytest.RecordProperty) -> None:
