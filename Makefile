@@ -42,6 +42,10 @@ dev-api:
 	uv run --frozen python -m panestria.api.serve
 
 r0-demo:
+	@PANESTRIA_DATABASE_URL="$(or $(PANESTRIA_DATABASE_URL),$(SYNTHETIC_URL))" \
+	PANESTRIA_TOKEN="$${PANESTRIA_TOKEN:-synthetic-loopback-token}" \
+	PANESTRIA_BIND_HOST="$${PANESTRIA_BIND_HOST:-127.0.0.1}" \
+	PANESTRIA_BIND_PORT="$${PANESTRIA_BIND_PORT:-8765}" \
 	uv run --frozen python -m panestria.demo
 
 reset-synthetic-data:

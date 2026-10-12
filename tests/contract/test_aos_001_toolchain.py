@@ -172,6 +172,17 @@ def test_reset_rejects_an_extra_path() -> None:
     assert "panestria_s3_pgdata" not in completed.stdout + completed.stderr
 
 
+def test_r0_demo_rejects_a_non_loopback_bind() -> None:
+    env = os.environ.copy()
+    env["PANESTRIA_BIND_HOST"] = "0.0.0.0"
+    completed = _run(["make", "r0-demo"], env=env)
+    text = completed.stdout + completed.stderr
+    assert completed.returncode != 0
+    assert "invalid_bind" in text
+    assert "placeholder-not-a-secret" not in text
+    assert "55432" not in text
+
+
 def test_dev_api_rejects_a_non_loopback_bind() -> None:
     env = os.environ.copy()
     env["PANESTRIA_BIND_HOST"] = "0.0.0.0"
