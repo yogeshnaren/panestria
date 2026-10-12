@@ -171,8 +171,8 @@ class SyntheticJourney:
         connection.execute(
             "INSERT INTO panestria.task_attempt"
             " (id, task_id, attempt_number, lease_epoch, status, adapter, external_ref)"
-            " VALUES (%s, %s, 1, 0, 'PENDING', 'mock', %s)",
-            (attempt_id, task_id, str(sandbox.resolve())),
+            " VALUES (%s, %s, 1, %s, 'PENDING', 'mock', %s)",
+            (attempt_id, task_id, _task_epoch(connection, task_id), str(sandbox.resolve())),
         )
         connection.commit()
         return attempt_id
@@ -303,7 +303,7 @@ class SyntheticJourney:
             actor,
             task_id,
             self._version(connection, task_id),
-            0,
+            _task_epoch(connection, task_id),
             "COMPLETED",
             "cas-confirmed",
             policy_version=self._policy(connection, task_id),
@@ -398,7 +398,8 @@ class SyntheticJourney:
             candidate_path=source,
         )
         passed = required_passed(reports)
-        published = ArtifactIngress(root / "store", Path(manifest.worktree)).finalize(source, actor.owner_id, 0)
+        epoch = _current_attempt_epoch(connection, task_id, attempt_id)
+        published = ArtifactIngress(root / "store", Path(manifest.worktree)).finalize(source, actor.owner_id, epoch)
         if published.digest != file_hash:
             raise KernelDenied("unknown_check")
         candidate_id = str(uuid4())
@@ -572,7 +573,7 @@ class SyntheticJourney:
             actor,
             task_id,
             current,
-            0,
+            _task_epoch(connection, task_id),
             target,
             cause,
             policy_version=self._policy(connection, task_id),
@@ -611,8 +612,8 @@ class SyntheticJourney:
         connection.execute(
             "INSERT INTO panestria.task_attempt"
             " (id, task_id, attempt_number, lease_epoch, status, adapter)"
-            " VALUES (%s, %s, 1, 0, 'RUNNING', 'mock')",
-            (attempt_id, task_id),
+            " VALUES (%s, %s, 1, %s, 'RUNNING', 'mock')",
+            (attempt_id, task_id, _task_epoch(connection, task_id)),
         )
         connection.commit()
         return attempt_id
@@ -891,6 +892,29 @@ def snapshot_artifact(connection: Conn, task_id: str) -> str | None:
     return str(row[0])
 
 
+def _task_epoch(connection: Conn, task_id: str) -> int:
+    row = connection.execute(
+        "SELECT lease_epoch FROM panestria.task WHERE id = %s FOR UPDATE",
+        (task_id,),
+    ).fetchone()
+    if row is None:
+        raise KernelDenied("not_found")
+    return int(row[0])
+
+
+def _current_attempt_epoch(connection: Conn, task_id: str, attempt_id: str) -> int:
+    row = connection.execute(
+        "SELECT attempt.lease_epoch FROM panestria.task_attempt AS attempt"
+        " JOIN panestria.task AS task ON task.id = attempt.task_id"
+        " WHERE attempt.id = %s AND attempt.task_id = %s AND attempt.lease_epoch = task.lease_epoch"
+        " FOR UPDATE OF attempt",
+        (attempt_id, task_id),
+    ).fetchone()
+    if row is None:
+        raise KernelDenied("version_conflict")
+    return int(row[0])
+
+
 def _check_id(connection: Conn, contract_id: str, check_key: str) -> str:
     row = connection.execute(
         "SELECT id::text FROM panestria.acceptance_check WHERE contract_id = %s AND check_key = %s",
@@ -920,7 +944,7 @@ def _record_report(
     artifact_id = str(uuid4())
     ingress.insert_authorized(
         connection,
-        ArtifactRef(digest, str(target), 0, actor.owner_id),
+        ArtifactRef(digest, str(target), _current_attempt_epoch(connection, task_id, attempt_id), actor.owner_id),
         artifact_id=artifact_id,
         task_id=task_id,
         attempt_id=attempt_id,

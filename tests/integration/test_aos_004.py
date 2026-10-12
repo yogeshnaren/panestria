@@ -14,10 +14,14 @@ import pytest
 from psycopg.errors import CheckViolation
 
 from panestria.brokers.harness.mock import OUTPUT_LIMIT, Candidate, MockWorkerAdapter, Observation, WorkerEvent
+from panestria.execution.synthetic_journey import SyntheticJourney, _record_report
+from panestria.kernel.errors import KernelDenied
+from panestria.kernel.goals import Actor
 from panestria.sandbox.artifact_ingress import ArtifactIngress, ArtifactRef
 from panestria.sandbox.worktree import CleanupReport, WorkspaceManifest, WorktreeManager
 from panestria.verification.artifacts import decide
 from panestria.verification.diff import inspect_diff
+from panestria.verification.nodes import NodeReport
 from panestria.verification.registry import CommandRegistry
 from panestria.verification.runner import TrustedCheckRunner
 
@@ -616,6 +620,86 @@ def test_scripted_events_name_the_attempt_and_stay_unaccepted(
     second.start()
     second.collect()
     assert [item.event_id for item in second.events()] == [item.event_id for item in recorded]
+
+
+def test_journey_publication_uses_the_stored_epoch(
+    record_property: pytest.RecordProperty, tmp_path: Path
+) -> None:
+    _properties(record_property, "AOS-004-TC04", "chaos")
+    _database()
+    goal = "00000000-0000-4000-8000-000000000196"
+    contract = "00000000-0000-4000-8000-000000000197"
+    task = "00000000-0000-4000-8000-000000000198"
+    digest = "cd" * 32
+    actor = Actor(OWNER, PROJECT)
+    with psycopg.connect(DATABASE_URL) as connection:
+        connection.execute("INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'owner')", (OWNER,))
+        connection.execute("INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)", (PROJECT, OWNER))
+        connection.execute(
+            "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+            " VALUES (%s, %s, %s, 'synthetic', 'CREATED')",
+            (goal, OWNER, PROJECT),
+        )
+        connection.execute(
+            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+            " VALUES (%s, %s, 1, %s::jsonb, %s)",
+            (contract, goal, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', digest),
+        )
+        connection.execute(
+            "INSERT INTO panestria.task (id, goal_id, contract_id, name, state, lease_epoch)"
+            " VALUES (%s, %s, %s, 'epoch', 'READY', 4)",
+            (task, goal, contract),
+        )
+        connection.commit()
+        journey = SyntheticJourney()
+        journey._advance(connection, actor, task, "LEASED", "worker")
+        attempt_id = journey._attempt(connection, task)
+        stored = connection.execute(
+            "SELECT lease_epoch, status FROM panestria.task_attempt WHERE id = %s",
+            (attempt_id,),
+        ).fetchone()
+        assert stored == (4, "RUNNING")
+        moved = connection.execute(
+            "SELECT state, lease_epoch FROM panestria.task WHERE id = %s",
+            (task,),
+        ).fetchone()
+        assert moved == ("LEASED", 4)
+        store = tmp_path / "epoch-store"
+        worktree = tmp_path / "work"
+        store.mkdir()
+        worktree.mkdir()
+        report = NodeReport(
+            check_id="synthetic-required",
+            verifier_type="trusted-command-ref",
+            required=True,
+            verdict="PASS",
+            reason="ok",
+            candidate_sha256=digest,
+            base_sha=digest,
+            attempt_id=attempt_id,
+            contract_sha256=digest,
+        )
+        artifact_id = _record_report(connection, ArtifactIngress(store, worktree), report, task, attempt_id, actor)
+        connection.commit()
+        saved = connection.execute(
+            "SELECT attempt_id::text FROM panestria.artifact WHERE id = %s",
+            (artifact_id,),
+        ).fetchone()
+        assert saved is not None and saved[0] == attempt_id
+        connection.execute("UPDATE panestria.task SET lease_epoch = 5 WHERE id = %s", (task,))
+        connection.commit()
+        before = connection.execute(
+            "SELECT count(*) FROM panestria.artifact WHERE task_id = %s",
+            (task,),
+        ).fetchone()
+        with pytest.raises(KernelDenied, match="version_conflict"):
+            _record_report(connection, ArtifactIngress(store, worktree), report, task, attempt_id, actor)
+        connection.rollback()
+        after = connection.execute(
+            "SELECT count(*) FROM panestria.artifact WHERE task_id = %s",
+            (task,),
+        ).fetchone()
+        assert before == after
 
 
 def _assert_event_sequence(

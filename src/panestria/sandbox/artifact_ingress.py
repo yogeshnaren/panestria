@@ -116,7 +116,7 @@ class ArtifactIngress:
             raise ValueError("blob does not match the ref")
         row = connection.execute(
             "SELECT attempt.lease_epoch, attempt.status, goal.owner_id::text, goal.project_id::text,"
-            " task.state"
+            " task.state, task.lease_epoch"
             " FROM panestria.task_attempt AS attempt"
             " JOIN panestria.task AS task ON task.id = attempt.task_id"
             " JOIN panestria.goal AS goal ON goal.id = task.goal_id"
@@ -126,10 +126,10 @@ class ArtifactIngress:
         ).fetchone()
         if row is None:
             raise ValueError("attempt not found")
-        epoch, status, owner, project, state = row
+        epoch, status, owner, project, state, task_epoch = row
         if str(owner) != owner_id or str(project) != project_id or ref.actor != owner_id:
             raise ValueError("scope mismatch")
-        if int(epoch) != ref.epoch:
+        if int(epoch) != ref.epoch or int(task_epoch) != int(epoch):
             raise ValueError("stale epoch")
         if str(status) not in _OPEN or str(state) in _TERMINAL_TASK:
             raise ValueError("terminal attempt")
