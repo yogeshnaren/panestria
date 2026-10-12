@@ -127,6 +127,24 @@ def test_repository_secret_scan_passes_and_sentinel_fails() -> None:
     assert dirty.stdout.strip() == "tests/fixtures/boundaries/secret_sentinel.txt: aws-access-key-id"
 
 
+_REVIEWED_CI_COMMANDS = (
+    "uv lock --check",
+    "uv sync --frozen --group dev",
+    "uv run --frozen ruff check .",
+    "uv run --frozen mypy src/panestria",
+    "uv run --frozen lint-imports --config .importlinter",
+    'uv run --frozen pytest -m "not live" --junitxml=evidence/ci.xml',
+    "uv run --frozen python tools/secret_scan.py",
+)
+
+
+def test_ci_executes_only_reviewed_commands() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "pull_request_target" not in workflow
+    commands = tuple(line.split("run:", 1)[1].strip() for line in workflow.splitlines() if "run:" in line)
+    assert commands == _REVIEWED_CI_COMMANDS
+
+
 def test_ci_does_not_inject_provider_credentials() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     for name in PROVIDER_NAMES:

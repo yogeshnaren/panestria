@@ -25,6 +25,21 @@ CONTRACT = "00000000-0000-4000-8000-000000000040"
 OTHER_CONTRACT = "00000000-0000-4000-8000-000000000041"
 TASK = "00000000-0000-4000-8000-000000000050"
 DIGEST = "ab" * 32
+FINGERPRINT = ROOT / "migrations" / "schema_fingerprint.txt"
+_FINGERPRINT_SQL = """
+SELECT 'column ' || table_name || ' ' || column_name || ' ' || udt_name || ' ' || is_nullable
+FROM information_schema.columns
+WHERE table_schema = 'panestria'
+UNION ALL
+SELECT 'constraint ' || conrelid::regclass::text || ' ' || contype::text || ' ' || pg_get_constraintdef(oid)
+FROM pg_constraint
+WHERE connamespace = 'panestria'::regnamespace
+UNION ALL
+SELECT 'index ' || indexdef
+FROM pg_indexes
+WHERE schemaname = 'panestria'
+ORDER BY 1
+"""
 
 
 def _run(argv: list[str], *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
@@ -141,6 +156,13 @@ def test_kernel_migration_rejects_bad_scope_and_reapplies() -> None:
             assert version is not None
             assert heads.returncode == 0
             assert version[0] == heads.stdout.strip().split()[0]
+            expected = FINGERPRINT.read_text(encoding="utf-8")
+            assert _schema_fingerprint(connection) == expected
+            with connection.transaction():
+                connection.execute("ALTER TABLE panestria.goal ADD COLUMN drift_probe text")
+                assert _schema_fingerprint(connection) != expected
+                connection.execute("ALTER TABLE panestria.goal DROP COLUMN drift_probe")
+            assert _schema_fingerprint(connection) == expected
         _alembic("downgrade 0001_scaffold", env)
         with psycopg.connect(DATABASE_URL) as connection:
             gone = connection.execute("SELECT to_regclass('panestria.goal')").fetchone()
@@ -161,8 +183,14 @@ def test_kernel_migration_rejects_bad_scope_and_reapplies() -> None:
                 (OWNER,),
             ).fetchone()
             assert found == ("again",)
+            assert _schema_fingerprint(connection) == FINGERPRINT.read_text(encoding="utf-8")
     finally:
         _run([*COMPOSE, "down", "-v"])
+
+
+def _schema_fingerprint(connection: psycopg.Connection[tuple[object, ...]]) -> str:
+    rows = connection.execute(_FINGERPRINT_SQL).fetchall()
+    return "".join(f"{row[0]}\n" for row in rows)
 
 
 def _seed(connection: psycopg.Connection[tuple[object, ...]]) -> None:
