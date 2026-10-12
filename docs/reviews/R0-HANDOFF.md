@@ -3,11 +3,11 @@
 The 2026-10-12 review did not accept R0. This file keeps that review record and the later correction. It is not an owner acceptance, a G0 pass, or permission to start R1.
 
 **Reviewed source:** `af3d431e775c2f3f23722d272dd00f2863689d5b`. Its report remains `evidence/AOS-005-S3.xml`.  
-**Corrected source:** `76259906fddb54bd71ed217ac25331b8243fe4a9` on `r0-kernel`.  
-**Correction report:** `evidence/R0-corrections.xml`, SHA-256 `e0033301088a71b88c5463093bd4138d6cbfc696cf03857564d6ec32229d03ac`. 137 tests, 0 failures, 0 errors, 0 skips. The live fresh-host test was deselected.  
+**Corrected source:** `04cce99d0be041412c206a8486672f35fe305724` on `r0-kernel`.  
+**Correction report:** `evidence/R0-corrections.xml`, SHA-256 `5743f1e8b4246c0a69814218c81dccee02c6f7088cd6c83ae7d283a7dd7aa1e4`. 138 tests, 0 failures, 0 errors, 0 skips. The live fresh-host test was deselected.  
 **Gate:** `evidence/G0/evaluation.json` records G0 as `INCOMPLETE`. Nineteen of twenty required cases were collected. `AOS-001-TC04` is `NOT_RUN`. A case-group PASS does not prove every source clause and is not owner acceptance.
 
-The original handoff commit recorded `af3d431`. This report's source parent is `76259906fddb54bd71ed217ac25331b8243fe4a9`. Older receipts are not rewritten.
+The original handoff commit recorded `af3d431`. This report's source parent is `04cce99d0be041412c206a8486672f35fe305724`. Older receipts are not rewritten.
 
 ## Ordered commits
 
@@ -15,6 +15,7 @@ Commits are newest first, from the approved contract through the journey. Eviden
 
 | Commit | Reason |
 |---|---|
+| `04cce99` | Reject an oversized loopback header before the body is kept. |
 | `7625990` | Close a denied approval as CANCELLED without starting work. |
 | `650d4b6` | Bind each task transition to the current policy and a correlation id. |
 | `dbf7047` | Reject a workflow body that calls the clock or direct I/O. |
@@ -176,7 +177,7 @@ Expected integrated result, from a clean tree at the tested source:
 uv run --frozen pytest -m "not live" --junitxml=/tmp/panestria-r0.xml -q
 ```
 
-On `76259906fddb54bd71ed217ac25331b8243fe4a9` the same command collected 137 passed tests, 0 failures, and 0 skips, and deselected the live fresh-host case. `make r0-demo` then completed two goals on the disposable database; the audit is `evidence/R0-demo-transcript.json`. `docs/design/schema-erd.md` was generated from that database. The historical `af3d431` report remains 93 passed and is not a result for the corrected tree.
+On `04cce99d0be041412c206a8486672f35fe305724` the same command collected 138 passed tests, 0 failures, and 0 skips, and deselected the live fresh-host case. `make r0-demo` then completed two goals on the disposable database; the audit is `evidence/R0-demo-transcript.json`. `docs/design/schema-erd.md` was generated from that database. The historical `af3d431` report remains 93 passed and is not a result for the corrected tree.
 
 Positive journey:
 
@@ -190,7 +191,7 @@ Deliberate failures in `tests/e2e/test_aos_005.py::test_wait_restart_continuatio
 
 - Resume before consent leaves the attempt count at 0 and the task at `WAITING_APPROVAL` with continuation `DISPATCH`.
 - Resume again at the merge wait leaves the attempt count at 1 and does not complete the goal.
-- A denied consent leaves the goal incomplete and the attempt count at 0.
+- A denied consent closes the goal and task as `CANCELLED` and leaves the attempt count at 0. A second resume stays `CANCELLED`.
 - Moving `refs/heads/main` in `sandbox/protected/dest.git` before finalize makes the compare-and-swap fail. The effect becomes `FAILED`, the goal stays incomplete, and the attempt count stays 1.
 
 Deliberate conflicts in `tests/e2e/test_aos_005.py::test_decision_race_idempotency`: concurrent approve and deny leave one terminal decision and one `approval.decided` event. Concurrent continuation leaves one prepared effect. The same idempotency key with the opposite decision raises `idempotency_conflict`.
