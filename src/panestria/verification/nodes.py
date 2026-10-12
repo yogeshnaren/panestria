@@ -86,6 +86,7 @@ def evaluate_checks(
     candidate_path: Path,
     artifacts: tuple[ArtifactFact, ...] = (),
     reviews: tuple[ReviewFact, ...] = (),
+    candidate_commit: str | None = None,
 ) -> tuple[NodeReport, ...]:
     digest = contract_sha256(contract)
     reports: list[NodeReport] = []
@@ -115,6 +116,7 @@ def evaluate_checks(
                 candidate_sha256,
                 attempt_id,
                 digest,
+                candidate_commit,
             )
         elif isinstance(spec, PolicyDecision):
             report = _policy(
@@ -267,6 +269,7 @@ def _diff(
     candidate_sha256: str,
     attempt_id: str,
     digest: str,
+    candidate_commit: str | None,
 ) -> NodeReport:
     report = inspect_diff(
         root,
@@ -275,6 +278,7 @@ def _diff(
         base_sha=base_sha,
         forbidden=frozenset([*spec.forbidden_paths, *contract.constraints.forbidden_paths]),
         also_allowed=frozenset(contract.constraints.allowed_paths),
+        candidate_commit=candidate_commit,
     )
     verdict = "PASS" if report.ok else "FAIL"
     reason = "paths" if report.ok else "path_denied"

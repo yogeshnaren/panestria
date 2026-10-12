@@ -382,6 +382,34 @@ def test_staged_index_change_is_not_hidden_by_a_clean_worktree(
     assert "README.txt" in report.denied
 
 
+def test_candidate_commit_is_not_hidden_by_a_clean_worktree(
+    tmp_path: Path, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
+    root, worktree, base = _tree(tmp_path, "commit-tree")
+    readme = worktree / "README.txt"
+    readme.write_text("hidden in the commit\n", encoding="utf-8")
+    _git(worktree, ["add", "README.txt"])
+    _git(worktree, ["-c", "core.hooksPath=/dev/null", "commit", "-m", "synthetic-candidate"])
+    bad = subprocess.run(
+        ["git", "-C", str(worktree), "rev-parse", "HEAD"],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert bad.returncode == 0
+    candidate = bad.stdout.strip()
+    _git(worktree, ["checkout", base, "--", "README.txt"])
+    (worktree / "allowed.txt").write_text("edit:alpha\n", encoding="utf-8")
+    visible = inspect_diff(root, worktree, ALLOWLIST, base_sha=base)
+    assert visible.ok is True
+    assert "README.txt" not in visible.denied
+    bound = inspect_diff(root, worktree, ALLOWLIST, base_sha=base, candidate_commit=candidate)
+    assert bound.ok is False
+    assert "README.txt" in bound.denied
+    assert bound.candidate_tree == candidate
+
+
 def _git(worktree: Path, args: list[str]) -> None:
     completed = subprocess.run(
         ["git", "-C", str(worktree), *args],

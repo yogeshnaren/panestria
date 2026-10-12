@@ -235,7 +235,7 @@ class SyntheticJourney:
         crash_gate("before-verify")
         file_hash = hashlib.sha256((Path(manifest.worktree) / _EDIT).read_bytes()).hexdigest()
         if snapshot_artifact(connection, task_id) is None:
-            proved = self._prove(connection, actor, task_id, attempt_id, manifest, file_hash)
+            proved = self._prove(connection, actor, task_id, attempt_id, manifest, file_hash, committed)
             if not proved:
                 return
         elif not _checks_passed(connection, task_id, file_hash):
@@ -378,6 +378,7 @@ class SyntheticJourney:
         attempt_id: str,
         manifest: WorkspaceManifest,
         file_hash: str,
+        committed: str,
     ) -> bool:
         root = Path(manifest.root)
         source = Path(manifest.worktree) / _EDIT
@@ -399,6 +400,7 @@ class SyntheticJourney:
             attempt_id=attempt_id,
             candidate_sha256=file_hash,
             candidate_path=source,
+            candidate_commit=committed,
         )
         passed = required_passed(reports)
         epoch = _current_attempt_epoch(connection, task_id, attempt_id)
