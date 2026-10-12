@@ -26,6 +26,11 @@ _EVENTS_GOAL = typer.Argument(...)
 _AFTER = typer.Option("0", "--after")
 _EVENTS_BASE = typer.Option(..., "--base-url")
 _EVENTS_TOKEN = typer.Option(..., "--token")
+_CANCEL_GOAL = typer.Argument(...)
+_CANCEL_VERSION = typer.Option(..., "--expected-version")
+_CANCEL_REASON = typer.Option(..., "--reason")
+_CANCEL_BASE = typer.Option(..., "--base-url")
+_CANCEL_TOKEN = typer.Option(..., "--token")
 Send = Callable[[Request], tuple[int, bytes]]
 
 
@@ -105,6 +110,44 @@ def read_events(
     return _finish(status, payload)
 
 
+def cancel_goal(
+    *,
+    base_url: str,
+    token: str,
+    goal_id: str,
+    expected_version: int,
+    reason: str,
+    send: Send = _default_send,
+) -> tuple[int, dict[str, object]]:
+    base = loopback_base(base_url)
+    body = json.dumps({"expected_version": expected_version, "reason": reason}, separators=(",", ":")).encode()
+    request = Request(
+        f"{base}/v1/goals/{goal_id}/cancel",
+        data=body,
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    status, payload = send(request)
+    return _finish(status, payload)
+
+
+def show_artifact(
+    *,
+    base_url: str,
+    token: str,
+    artifact_id: str,
+    send: Send = _default_send,
+) -> tuple[int, dict[str, object]]:
+    base = loopback_base(base_url)
+    request = Request(
+        f"{base}/v1/artifacts/{artifact_id}",
+        headers={"Authorization": f"Bearer {token}"},
+        method="GET",
+    )
+    status, payload = send(request)
+    return _finish(status, payload)
+
+
 def _finish(status: int, payload: bytes) -> tuple[int, dict[str, object]]:
     loaded = json.loads(payload)
     if not isinstance(loaded, dict):
@@ -152,4 +195,23 @@ def events_command(
 ) -> None:
     """Print events after a decimal sequence cursor."""
     _status, body = read_events(base_url=base_url, token=token, goal_id=goal_id, after=after)
+    typer.echo(json.dumps(body))
+
+
+@goal_app.command("cancel")
+def cancel_command(
+    goal_id: str = _CANCEL_GOAL,
+    expected_version: int = _CANCEL_VERSION,
+    reason: str = _CANCEL_REASON,
+    base_url: str = _CANCEL_BASE,
+    token: str = _CANCEL_TOKEN,
+) -> None:
+    """Cancel one scoped goal. A prepared effect stays unreconciled."""
+    _status, body = cancel_goal(
+        base_url=base_url,
+        token=token,
+        goal_id=goal_id,
+        expected_version=expected_version,
+        reason=reason,
+    )
     typer.echo(json.dumps(body))

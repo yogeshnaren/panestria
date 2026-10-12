@@ -54,6 +54,35 @@ def decide_approval(
     return _finish(status, payload)
 
 
+def list_approvals(
+    *,
+    base_url: str,
+    token: str,
+    send: Send = _default_send,
+) -> tuple[int, dict[str, object]]:
+    base = loopback_base(base_url)
+    request = Request(
+        f"{base}/v1/approvals",
+        headers={"Authorization": f"Bearer {token}"},
+        method="GET",
+    )
+    status, payload = send(request)
+    return _finish(status, payload)
+
+
+_LIST_BASE = typer.Option(..., "--base-url")
+_LIST_TOKEN = typer.Option(..., "--token")
+
+
+def list_command(
+    base_url: str = _LIST_BASE,
+    token: str = _LIST_TOKEN,
+) -> None:
+    """List pending approvals for this owner and project."""
+    _status, body = list_approvals(base_url=base_url, token=token)
+    typer.echo(json.dumps(body))
+
+
 def approve_command(
     approval_id: str = _APPROVE_ID,
     effect_digest: str = _APPROVE_DIGEST,

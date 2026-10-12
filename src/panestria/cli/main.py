@@ -15,14 +15,28 @@ from panestria.api.health import (
     default_readiness_probe,
     secret_rejection_body,
 )
-from panestria.cli.approvals import approve_command, deny_command
-from panestria.cli.goals import goal_app
+from panestria.cli.approvals import approve_command, deny_command, list_command
+from panestria.cli.goals import goal_app, show_artifact
 from panestria.config import ProfileRejected, load_settings
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
+artifact_app = typer.Typer(no_args_is_help=True)
 app.add_typer(goal_app, name="goal")
+app.add_typer(artifact_app, name="artifact")
 app.command("approve")(approve_command)
 app.command("deny")(deny_command)
+app.command("approvals")(list_command)
+
+
+@artifact_app.command("show")
+def artifact_show(
+    artifact_id: str = typer.Argument(...),
+    base_url: str = typer.Option(..., "--base-url"),
+    token: str = typer.Option(..., "--token"),
+) -> None:
+    """Print one artifact hash and its check verdicts."""
+    _status, body = show_artifact(base_url=base_url, token=token, artifact_id=artifact_id)
+    typer.echo(json.dumps(body))
 
 
 def _version_callback(value: bool) -> None:
@@ -76,3 +90,7 @@ def health_command() -> None:
     finally:
         if service is not None:
             service.shutdown()
+
+
+if __name__ == "__main__":
+    app()

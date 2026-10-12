@@ -5,12 +5,12 @@ from __future__ import annotations
 import json
 from typing import Any
 
-import psycopg
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
-from panestria.api.auth import MAX_BODY_BYTES, GoalApi, LoopbackDenied, authorize, error_body
-from panestria.api.routes.goals import _api
+from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body
+from panestria.api.db import DatabaseUnavailable, open_database
+from panestria.api.routes.goals import _api, _kick, _unavailable
 from panestria.kernel.approvals import ApprovalService, ApprovalView
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -35,6 +35,31 @@ def _denied(exc: KernelDenied) -> JSONResponse:
     return JSONResponse(status_code=_STATUSES.get(exc.code, 422), content=error_body(exc.code))
 
 
+@router.get("/v1/approvals")
+def list_approvals(request: Request, limit: int = 50) -> JSONResponse:
+    try:
+        api = _api(request)
+        actor = authorize(request, api)
+    except LoopbackDenied as exc:
+        return JSONResponse(status_code=exc.status_code, content=error_body(exc.code))
+    if not 1 <= limit <= 100:
+        return JSONResponse(status_code=422, content=error_body("invalid_limit"))
+    try:
+        connection = open_database(api.database_url)
+    except DatabaseUnavailable:
+        return _unavailable()
+    try:
+        try:
+            listed = _SERVICE.list_pending(UnitOfWork(connection), actor, limit)
+        except KernelDenied as exc:
+            connection.rollback()
+            return _denied(exc)
+        connection.rollback()
+    finally:
+        connection.close()
+    return JSONResponse(status_code=200, headers={"Cache-Control": "no-store"}, content={"approvals": listed})
+
+
 @router.get("/v1/approvals/{approval_id}")
 def read_approval(approval_id: str, request: Request) -> JSONResponse:
     try:
@@ -42,7 +67,10 @@ def read_approval(approval_id: str, request: Request) -> JSONResponse:
         actor = authorize(request, api)
     except LoopbackDenied as exc:
         return JSONResponse(status_code=exc.status_code, content=error_body(exc.code))
-    connection = psycopg.connect(api.database_url)
+    try:
+        connection = open_database(api.database_url)
+    except DatabaseUnavailable:
+        return _unavailable()
     try:
         try:
             view = _SERVICE.preview(UnitOfWork(connection), actor, approval_id)
@@ -62,9 +90,9 @@ async def decide_approval(approval_id: str, request: Request) -> JSONResponse:
         actor = authorize(request, api)
     except LoopbackDenied as exc:
         return JSONResponse(status_code=exc.status_code, content=error_body(exc.code))
-    raw = await request.body()
-    if len(raw) > MAX_BODY_BYTES:
-        return JSONResponse(status_code=413, content=error_body("body_too_large"))
+    raw = await read_capped_body(request)
+    if isinstance(raw, JSONResponse):
+        return raw
     key = request.headers.get("idempotency-key", "")
     if key == "" or len(key) > 128:
         return JSONResponse(status_code=400, content=error_body("missing_idempotency_key"))
@@ -74,10 +102,17 @@ async def decide_approval(approval_id: str, request: Request) -> JSONResponse:
         return JSONResponse(status_code=422, content=error_body("invalid_decision"))
     if not isinstance(document, dict):
         return JSONResponse(status_code=422, content=error_body("invalid_decision"))
-    return _decide(api, actor, approval_id, document, key)
+    return _decide(request, api, actor, approval_id, document, key)
 
 
-def _decide(api: GoalApi, actor: Actor, approval_id: str, document: dict[str, Any], key: str) -> JSONResponse:
+def _decide(
+    request: Request,
+    api: GoalApi,
+    actor: Actor,
+    approval_id: str,
+    document: dict[str, Any],
+    key: str,
+) -> JSONResponse:
     digest = document.get("effect_digest")
     version = document.get("expected_version")
     decision = document.get("decision")
@@ -85,16 +120,26 @@ def _decide(api: GoalApi, actor: Actor, approval_id: str, document: dict[str, An
         return JSONResponse(status_code=422, content=error_body("invalid_decision"))
     if not isinstance(decision, str):
         return JSONResponse(status_code=422, content=error_body("invalid_decision"))
-    connection = psycopg.connect(api.database_url)
+    found: tuple[object, ...] | None = None
+    try:
+        connection = open_database(api.database_url)
+    except DatabaseUnavailable:
+        return _unavailable()
     try:
         try:
             receipt = _SERVICE.decide(UnitOfWork(connection), actor, approval_id, digest, version, decision, key)
+            found = connection.execute(
+                "SELECT goal_id::text FROM panestria.approval_request WHERE id = %s",
+                (approval_id,),
+            ).fetchone()
         except KernelDenied as exc:
             connection.rollback()
             return _denied(exc)
         connection.commit()
     finally:
         connection.close()
+    if found is not None:
+        _kick(request, str(found[0]))
     return JSONResponse(
         status_code=200,
         content={

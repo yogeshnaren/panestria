@@ -6,6 +6,7 @@ import hmac
 from dataclasses import dataclass
 
 from fastapi import Request
+from fastapi.responses import JSONResponse
 
 from panestria.kernel.goals import Actor
 
@@ -46,4 +47,16 @@ def authorize(request: Request, api: GoalApi) -> Actor:
 
 
 def error_body(code: str) -> dict[str, object]:
-    return {"code": code, "message": code, "retryable": False}
+    return {"code": code, "message": code, "retryable": code == "database_unavailable"}
+
+
+async def read_capped_body(request: Request) -> bytes | JSONResponse:
+    """Stop once the body exceeds the cap. The extra bytes are not retained."""
+    total = 0
+    parts: list[bytes] = []
+    async for chunk in request.stream():
+        total += len(chunk)
+        if total > MAX_BODY_BYTES:
+            return JSONResponse(status_code=413, content=error_body("body_too_large"))
+        parts.append(chunk)
+    return b"".join(parts)

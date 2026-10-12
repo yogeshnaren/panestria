@@ -145,6 +145,32 @@ class ApprovalService:
         continuation, _phase = _WAIT[action_kind]
         return ApprovalView(request_id, str(digest), row_version, str(state), continuation, parsed)
 
+    def list_pending(self, uow: UnitOfWork, actor: Actor, limit: int) -> list[dict[str, object]]:
+        rows = uow.execute(
+            "SELECT approval_request.id::text, approval_request.goal_id::text,"
+            " approval_request.effect_digest, approval_request.action_kind,"
+            " approval_request.expires_at, task.row_version"
+            " FROM panestria.approval_request AS approval_request"
+            " JOIN panestria.task AS task ON task.id = approval_request.task_id"
+            " WHERE approval_request.owner_id = %s AND approval_request.project_id = %s"
+            " AND approval_request.state = 'PENDING' AND approval_request.expires_at > now()"
+            " ORDER BY approval_request.expires_at LIMIT %s",
+            (actor.owner_id, actor.project_id, limit),
+        ).fetchall()
+        listed: list[dict[str, object]] = []
+        for approval_id, goal_id, digest, action_kind, expires_at, row_version in rows:
+            listed.append(
+                {
+                    "approval_id": str(approval_id),
+                    "goal_id": str(goal_id),
+                    "effect_digest": str(digest).strip(),
+                    "action_kind": str(action_kind),
+                    "expected_version": int(row_version),
+                    "expires_at": expires_at.isoformat(),
+                }
+            )
+        return listed
+
     def decide(
         self,
         uow: UnitOfWork,

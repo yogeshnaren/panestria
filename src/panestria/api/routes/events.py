@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import psycopg
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body
+from panestria.api.db import DatabaseUnavailable, open_database
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import GoalService
 from panestria.kernel.uow import UnitOfWork
@@ -35,7 +35,10 @@ def read_events(goal_id: str, request: Request, after: str = "0", limit: int = 5
         return JSONResponse(status_code=422, content=error_body("invalid_cursor"))
     if not 1 <= limit <= 100:
         return JSONResponse(status_code=422, content=error_body("invalid_limit"))
-    connection = psycopg.connect(api.database_url)
+    try:
+        connection = open_database(api.database_url)
+    except DatabaseUnavailable:
+        return JSONResponse(status_code=503, content=error_body("database_unavailable"))
     try:
         try:
             rows = _SERVICE.events(UnitOfWork(connection), actor, goal_id, cursor, limit)

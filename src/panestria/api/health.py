@@ -420,11 +420,27 @@ def _overall(database_status: DependencyState) -> ReadinessState:
 
 
 def default_readiness_probe(deadline: datetime) -> ProbeObservation:
-    """Report the database as unobserved. This probe does not open a connection."""
-    del deadline
-    return ProbeObservation(
-        checks=[ProbeCheck(name="database", status="unavailable", reason="not_probed")]
-    )
+    """Open PostgreSQL when a URL is configured. The URL is not copied into the result."""
+    remaining = (deadline - datetime.now(timezone.utc)).total_seconds()
+    url = os.environ.get("PANESTRIA_DATABASE_URL", "").strip()
+    if url == "":
+        return ProbeObservation(
+            checks=[ProbeCheck(name="database", status="unavailable", reason="not_probed")]
+        )
+    if remaining <= 0:
+        return ProbeObservation(
+            checks=[ProbeCheck(name="database", status="unavailable", reason="deadline_exceeded")]
+        )
+    try:
+        import psycopg
+
+        with psycopg.connect(url, connect_timeout=max(1, int(remaining))) as connection:
+            connection.execute("SELECT 1")
+    except Exception:
+        return ProbeObservation(
+            checks=[ProbeCheck(name="database", status="unavailable", reason="database_unavailable")]
+        )
+    return ProbeObservation(checks=[ProbeCheck(name="database", status="ready", reason="ready")])
 
 
 def secret_rejection_body(correlation_id: str) -> ErrorBody:

@@ -98,7 +98,9 @@ class SyntheticJourney:
         """Continue from the durable wait. A merge wait never launches another worker."""
         self._require_connection(connection)
         snapshot = self._snapshot(connection, actor, goal_id)
-        if snapshot.task_state == "COMPLETED" or snapshot.effect_state in {"SUCCEEDED", "FAILED"}:
+        if snapshot.task_state in {"CANCELLING", "CANCELLED", "FAILED", "REJECTED", "COMPLETED"}:
+            return snapshot
+        if snapshot.effect_state in {"SUCCEEDED", "FAILED"}:
             return snapshot
         if snapshot.effect_state == "PREPARED":
             self._confirm(connection, actor, goal_id, sandbox, snapshot)
@@ -424,7 +426,11 @@ class SyntheticJourney:
             task_id=task_id,
             kind="evidence.recorded",
             actor=actor.owner_id,
-            payload={"artifact_sha256": published.digest, "verdict": "PASS" if passed else "FAIL"},
+            payload={
+                "artifact_id": candidate_id,
+                "artifact_sha256": published.digest,
+                "verdict": "PASS" if passed else "FAIL",
+            },
         )
         connection.commit()
         return passed

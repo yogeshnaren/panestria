@@ -181,7 +181,7 @@ def test_loopback_submit_scope_and_replay(record_property: pytest.RecordProperty
             assert hidden.status_code == 404
             status = client.get(f"/v1/goals/{first['goal_id']}", headers={"Authorization": f"Bearer {TOKEN}"})
             assert status.status_code == 200
-            assert status.json() == {"goal_id": first["goal_id"], "status": "CREATED"}
+            assert status.json() == {"goal_id": first["goal_id"], "status": "CREATED", "task_version": 0}
             absent = client.get(
                 "/v1/goals/00000000-0000-4000-8000-0000000000bb",
                 headers={"Authorization": f"Bearer {TOKEN}"},

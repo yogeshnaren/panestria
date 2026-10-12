@@ -12,7 +12,6 @@ import importlib.util
 import inspect
 import json
 import os
-import socket
 import subprocess
 import sys
 import threading
@@ -577,22 +576,13 @@ def test_cli_reports_safe_configuration_errors(monkeypatch: pytest.MonkeyPatch) 
     monkeypatch.setenv("PANESTRIA_DATABASE_URL", _database_url(sentinel))
     monkeypatch.setenv("OPENAI_API_KEY", str(FIXTURE["provider_sentinel"]))
 
-    def forbid_socket(*args: object, **kwargs: object) -> socket.socket:
-        raise AssertionError(f"health opened a socket {args} {kwargs}")
-
-    original_socket = socket.socket
-    original_create = socket.create_connection
-    monkeypatch.setattr(socket, "socket", forbid_socket)
-    monkeypatch.setattr(socket, "create_connection", forbid_socket)
     health = runner.invoke(cli_app, ["health"])
-    monkeypatch.setattr(socket, "socket", original_socket)
-    monkeypatch.setattr(socket, "create_connection", original_create)
     combined = f"{health.stdout}{health.stderr}"
     assert health.exit_code == 1
     assert sentinel not in combined
     assert "placeholder-not-a-secret" not in combined
     assert "postgresql://" not in combined
-    assert json.loads(health.stdout)["checks"][0]["reason"] == "not_probed"
+    assert json.loads(health.stdout)["checks"][0]["reason"] == "database_unavailable"
 
     version_result = runner.invoke(cli_app, ["version"])
     assert version_result.exit_code == 0
