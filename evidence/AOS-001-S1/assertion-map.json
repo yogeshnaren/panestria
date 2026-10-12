@@ -1,0 +1,153 @@
+{
+  "slice": "AOS-001-S1",
+  "case_id": "AOS-001-TC01",
+  "nodeids": [
+    "tests/integration/test_aos_001.py::test_package_install_and_preserved_license",
+    "tests/integration/test_aos_001.py::test_local_environment_files_are_ignored",
+    "tests/integration/test_aos_001.py::test_loopback_bind_accepted[127.0.0.1]",
+    "tests/integration/test_aos_001.py::test_loopback_bind_accepted[127.0.0.2]",
+    "tests/integration/test_aos_001.py::test_loopback_bind_accepted[::1]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[0.0.0.0]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[::]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[192.168.0.10]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[10.1.2.3]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[172.16.0.4]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[8.8.8.8]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[169.254.1.1]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[localhost]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[example.com]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[ 127.0.0.1]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[127.0.0.1 ]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[::ffff:127.0.0.1]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_rejected[[::1]]",
+    "tests/integration/test_aos_001.py::test_direct_non_loopback_settings_are_unrepresentable",
+    "tests/integration/test_aos_001.py::test_disabled_profiles_rejected[PERSONAL_SANDBOX]",
+    "tests/integration/test_aos_001.py::test_disabled_profiles_rejected[TRUSTED_PROJECT]",
+    "tests/integration/test_aos_001.py::test_disabled_profiles_rejected[HARDENED_WORKSPACE]",
+    "tests/integration/test_aos_001.py::test_disabled_profiles_rejected[synthetic_dev]",
+    "tests/integration/test_aos_001.py::test_disabled_profiles_rejected[]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_port_rejected[0]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_port_rejected[65536]",
+    "tests/integration/test_aos_001.py::test_invalid_bind_port_rejected[-1]",
+    "tests/integration/test_aos_001.py::test_schema_bool_and_budget_rejected",
+    "tests/integration/test_aos_001.py::test_documented_database_urls_accepted[postgresql://panestria_synthetic:syntheticdevsentinel@127.0.0.1:5432/panestria_synthetic]",
+    "tests/integration/test_aos_001.py::test_documented_database_urls_accepted[postgresql://panestria_synthetic:syntheticdevsentinel@127.0.0.1/panestria_synthetic]",
+    "tests/integration/test_aos_001.py::test_documented_database_urls_accepted[postgresql://panestria_synthetic:syntheticdevsentinel@[::1]:5432/panestria_synthetic]",
+    "tests/integration/test_aos_001.py::test_documented_database_urls_accepted[postgresql://panestria_synthetic:syntheticdevsentinel@[::1]/panestria_synthetic]",
+    "tests/integration/test_aos_001.py::test_documented_database_urls_accepted[postgresql+psycopg://panestria_synthetic:syntheticdevsentinel@db/panestria_synthetic]",
+    "tests/integration/test_aos_001.py::test_documented_database_urls_accepted[postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:5432/panestria_synthetic]",
+    "tests/integration/test_aos_001.py::test_malformed_database_urls_rejected[postgresql://user:syntheticsecret@[broken/db]",
+    "tests/integration/test_aos_001.py::test_malformed_database_urls_rejected[postgresql://user:syntheticsecret@127.0.0.1:banana/db]",
+    "tests/integration/test_aos_001.py::test_malformed_database_urls_rejected[postgresql://user:syntheticsecret@127.0.0.1:99999/db]",
+    "tests/integration/test_aos_001.py::test_malformed_database_urls_rejected[postgresql://user:syntheticsecret@127.0.0.1:0/db]",
+    "tests/integration/test_aos_001.py::test_malformed_database_urls_rejected[sqlite:///panestria.db]",
+    "tests/integration/test_aos_001.py::test_malformed_database_urls_rejected[postgresql://panestria_synthetic@127.0.0.1:5432/panestria_synthetic]",
+    "tests/integration/test_aos_001.py::test_malformed_database_urls_rejected[postgresql://panestria_synthetic:shortpw@127.0.0.1:5432/panestria_synthetic]",
+    "tests/integration/test_aos_001.py::test_malformed_database_urls_rejected[postgresql://panestria_synthetic:not_probed@127.0.0.1:5432/panestria_synthetic]",
+    "tests/integration/test_aos_001.py::test_malformed_database_urls_rejected[postgresql://panestria_synthetic:syntheticdevsentinel@127.0.0.1:5432/panestria_synthetic?sslmode=disable]",
+    "tests/integration/test_aos_001.py::test_malformed_database_urls_rejected[postgresql://panestria_synthetic:syntheticdevsentinel @127.0.0.1:5432/panestria_synthetic]",
+    "tests/integration/test_aos_001.py::test_unknown_environment_names_are_rejected",
+    "tests/integration/test_aos_001.py::test_healthz_does_not_probe",
+    "tests/integration/test_aos_001.py::test_unavailable_database_is_not_ready",
+    "tests/integration/test_aos_001.py::test_degraded_database_stays_unready_executor",
+    "tests/integration/test_aos_001.py::test_executor_ready_claim_is_ignored",
+    "tests/integration/test_aos_001.py::test_duplicate_database_check_is_probe_failed",
+    "tests/integration/test_aos_001.py::test_expired_deadline_does_not_invoke_probe",
+    "tests/integration/test_aos_001.py::test_repeated_timeouts_keep_workers_bounded",
+    "tests/integration/test_aos_001.py::test_second_poll_does_not_queue_another_probe",
+    "tests/integration/test_aos_001.py::test_interpreter_exits_after_stuck_probe",
+    "tests/integration/test_aos_001.py::test_encoded_and_arbitrary_probe_text_are_not_emitted",
+    "tests/integration/test_aos_001.py::test_cli_reports_safe_configuration_errors"
+  ],
+  "lane": "unit",
+  "execution_mode": "HERMETIC",
+  "verdict": "PASS",
+  "release_gate": "INCOMPLETE",
+  "release_gate_reason": "Hermetic TC01 passed on candidate af6794e112c888fd61b6e6b98a4824acab9c1681, which contains the tested source. TC02, TC03, and TC04 were not run. AOS-001 and R0 are incomplete, so this PASS is not a release-gate pass.",
+  "source_tree_sha256": "11e72bcdc40c52a85474984088cb1fdf73f08b61106d589c6bdd966a14bfe5a0",
+  "assertions": [
+    {
+      "name": "installed_package_and_license",
+      "requirement_ids": [
+        "AOS-001-F01"
+      ],
+      "result": "PASS"
+    },
+    {
+      "name": "strict_profile_and_database_url",
+      "requirement_ids": [
+        "AOS-001-F03"
+      ],
+      "result": "PASS"
+    },
+    {
+      "name": "bounded_readiness_and_healthz",
+      "requirement_ids": [
+        "AOS-001-F02"
+      ],
+      "result": "PASS"
+    },
+    {
+      "name": "secret_free_public_reasons",
+      "requirement_ids": [
+        "AOS-001-AC04"
+      ],
+      "result": "PASS"
+    },
+    {
+      "name": "unit_lane_without_provider_credentials",
+      "requirement_ids": [
+        "AOS-001-AC02"
+      ],
+      "result": "PASS"
+    }
+  ],
+  "not_run": [
+    {
+      "case_id": "AOS-001-TC02",
+      "reason": "AOS-001-S2"
+    },
+    {
+      "case_id": "AOS-001-TC03",
+      "reason": "AOS-001-S3"
+    },
+    {
+      "case_id": "AOS-001-TC04",
+      "reason": "live fresh-host lane"
+    }
+  ],
+  "requirements_not_complete": [
+    "AOS-001-F01",
+    "AOS-001-F02",
+    "AOS-001-F03",
+    "AOS-001-F04",
+    "AOS-001-AC01",
+    "AOS-001-AC02",
+    "AOS-001-AC03",
+    "AOS-001-AC04"
+  ],
+  "checks": [
+    {
+      "command": [
+        "uv",
+        "lock",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "tests/integration/test_aos_001.py",
+        "--junitxml=evidence/AOS-001.xml"
+      ],
+      "exit_code": 0,
+      "passed": 57,
+      "report": "evidence/AOS-001.xml"
+    }
+  ]
+}
