@@ -3,21 +3,21 @@
 **Phase:** R0, contract version 1 approved. The 2026-10-12 review did not accept R0. R1 has not started.  
 **Slice:** Corrections through the loopback server are committed. No further phase is authorized.  
 **Branch:** `r0-kernel`.  
-**Last verified source commit:** `fc359b02bece73de30d07e7bf60f6e0af3372438`.  
+**Last verified source commit:** `d6fb08f96141a8c95e6038c79bd722709e7bfcc4`.  
 **Evidence commit:** recorded after that source commit; this file is not part of the tested tree.  
 **Gate:** G0 is `INCOMPLETE`. Nineteen required cases were collected. AOS-001-TC04 is `NOT_RUN`. A collected case id is not a claim that every source clause passed, and it is not owner acceptance.
 
 ## Completed
 
-AOS-001-S1 through AOS-005-S3 and the review corrections are on `r0-kernel`. The non-live suite on `fc359b02bece73de30d07e7bf60f6e0af3372438` collected 109 tests, 0 failures, and 0 skips in `evidence/R0-corrections.xml`. That run includes the per-node verifier denials, latest-result selection, admitted DBOS restart, Git reconciliation, dispatch-time authorization, artifact epoch checks, stored-graph cycles, goal idempotency, malformed envelopes, body and database bounds, and a separate loopback process driven by the CLI. Items AOS-001 through AOS-005 remain `IN_PROGRESS`.
+AOS-001-S1 through AOS-005-S3 and the review corrections are on `r0-kernel`. The non-live suite on `d6fb08f96141a8c95e6038c79bd722709e7bfcc4` collected 110 tests, 0 failures, and 0 skips in `evidence/R0-corrections.xml`, and deselected the live fresh-host test. That run includes the per-node verifier denials, latest-result selection, admitted DBOS restart, Git reconciliation, dispatch-time authorization, artifact epoch checks, stored-graph cycles, goal idempotency, malformed envelopes, body and database bounds, and a separate loopback process driven by the CLI. Items AOS-001 through AOS-005 remain `IN_PROGRESS`.
 
 ## Failures and blockers
 
-AOS-001-TC04 is `tests/integration/test_aos_001.py::test_fresh_host_loopback` in `3d7bd27`. It is marked `live`. On this machine it failed with `fresh_host_not_attested`. That failure is not a gate pass. G0 cannot pass while the case is `NOT_RUN`. No owner review of the corrected candidate has been recorded. The earlier group PASS marks on `af3d431` did not exercise the review counterexamples; those receipts stay historical and are not rewritten. `tests/e2e/test_aos_005.py::test_loopback_submit_scope_and_replay` still has no `gate_case_id`. `make r0-demo` was run on this machine against the disposable database after `fc359b0` and printed one `COMPLETED` goal. That run is not AOS-001-TC04 and does not accept R0.
+AOS-001-TC04 is `tests/integration/test_aos_001.py::test_fresh_host_loopback` in `d6fb08f`. It is marked `live`. It reads RSS and `/proc/net/tcp`, then fails with `fresh_host_not_attested` because this machine is not a fresh Ubuntu host. That failure is not a gate pass. G0 cannot pass while the case is `NOT_RUN`. No owner review of the corrected candidate has been recorded. The earlier group PASS marks on `af3d431` did not exercise the review counterexamples; those receipts stay historical and are not rewritten. `tests/e2e/test_aos_005.py::test_loopback_submit_scope_and_replay` still has no `gate_case_id`. `make r0-demo` was run on this machine against the disposable database after `fc359b0` and printed one `COMPLETED` goal. That run is not AOS-001-TC04 and does not accept R0.
 
 ## Evidence
 
-`evidence/R0-corrections.xml` and `evidence/G0/evaluation.json` name `fc359b02bece73de30d07e7bf60f6e0af3372438`.  
+`evidence/R0-corrections.xml` and `evidence/G0/evaluation.json` name `d6fb08f96141a8c95e6038c79bd722709e7bfcc4`.  
 Earlier slice receipts remain under `evidence/AOS-001-S1/` through `evidence/AOS-005-S3/` and name their own source commits.  
 The review package is `docs/reviews/R0-HANDOFF.md`.
 
