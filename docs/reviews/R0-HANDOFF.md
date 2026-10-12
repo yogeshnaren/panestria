@@ -3,11 +3,11 @@
 The 2026-10-12 review did not accept R0. This file keeps that review record and the later correction. It is not an owner acceptance, a G0 pass, or permission to start R1.
 
 **Reviewed source:** `af3d431e775c2f3f23722d272dd00f2863689d5b`. Its report remains `evidence/AOS-005-S3.xml`.  
-**Corrected source:** `6f57ac18124c014224b7c1ac0883bc13112fa324` on `r0-kernel`.  
-**Correction report:** `evidence/R0-corrections.xml`, SHA-256 `314617bd81a7ef57aa3c914d2cf318bf23efe278193ad52baa05f0dafd4906e6`. 148 tests, 0 failures, 0 errors, 0 skips. The live fresh-host test was deselected.  
+**Corrected source:** `d550df5e507bf1b652dccf6c2954d420765d17e9` on `r0-kernel`.  
+**Correction report:** `evidence/R0-corrections.xml`, SHA-256 `ef08955b15976892cff3c73cf6ac7be868de27348fbb40b7e703b7fac06d47ff`. 149 tests, 0 failures, 0 errors, 0 skips. The live fresh-host test was deselected.  
 **Gate:** `evidence/G0/evaluation.json` records G0 as `INCOMPLETE`. Nineteen of twenty required cases were collected. `AOS-001-TC04` is `NOT_RUN`. A case-group PASS does not prove every source clause and is not owner acceptance.
 
-The original handoff commit recorded `af3d431`. This report's source parent is `6f57ac18124c014224b7c1ac0883bc13112fa324`. Older receipts are not rewritten.
+The original handoff commit recorded `af3d431`. This report's source parent is `d550df5e507bf1b652dccf6c2954d420765d17e9`. Older receipts are not rewritten.
 
 ## Ordered commits
 
@@ -15,6 +15,7 @@ Commits are newest first, from the approved contract through the journey. Eviden
 
 | Commit | Reason |
 |---|---|
+| `d550df5` | Refuse a merge when the stored pass belongs to a different commit. |
 | `6f57ac1` | Check the candidate commit even when the worktree no longer shows it. |
 | `46b0b21` | Read only the current approval's effect when resuming a wait. |
 | `e8b3a44` | Reject a staged index change that the worktree no longer shows. |
@@ -187,7 +188,7 @@ Expected integrated result, from a clean tree at the tested source:
 uv run --frozen pytest -m "not live" --junitxml=/tmp/panestria-r0.xml -q
 ```
 
-On `6f57ac18124c014224b7c1ac0883bc13112fa324` the same command collected 148 passed tests, 0 failures, and 0 skips, and deselected the live fresh-host case. `make r0-demo` then completed two goals on the disposable database; the audit is `evidence/R0-demo-transcript.json`. `docs/design/schema-erd.md` was generated from that database. The historical `af3d431` report remains 93 passed and is not a result for the corrected tree.
+On `d550df5e507bf1b652dccf6c2954d420765d17e9` the same command collected 149 passed tests, 0 failures, and 0 skips, and deselected the live fresh-host case. `make r0-demo` then completed two goals on the disposable database; the audit is `evidence/R0-demo-transcript.json`. `docs/design/schema-erd.md` was generated from that database. The historical `af3d431` report remains 93 passed and is not a result for the corrected tree.
 
 Positive journey:
 
