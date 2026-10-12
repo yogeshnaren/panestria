@@ -66,7 +66,7 @@
       "expected": "Migration applies and restore/reapply works; wrong project/owner/task-contract linkage, orphan attempts and invalid states rejected by SQL.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-002-TC03",
