@@ -57,9 +57,12 @@
             "evidence/AOS-002-S1.xml",
             "evidence/AOS-002-S1/case-result.json",
             "evidence/AOS-002-S2.xml",
-            "evidence/AOS-002-S2/case-result.json"
+            "evidence/AOS-002-S2/case-result.json",
+            "evidence/AOS-002-S3.xml",
+            "evidence/AOS-002-S3/case-result-TC03.json",
+            "evidence/AOS-002-S3/case-result-TC04.json"
           ],
-          "plan_status": "S2_SCHEMA_AWAITING_REVIEW",
+          "plan_status": "S3_SERVICES_AWAITING_REVIEW",
           "plan_ref": "plans/AOS-002-implementation-plan.md"
         },
         {

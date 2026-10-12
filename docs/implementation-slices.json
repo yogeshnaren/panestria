@@ -164,7 +164,12 @@
         "AOS-002-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
+      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "evidence_refs": [
+        "evidence/AOS-002-S3.xml",
+        "evidence/AOS-002-S3/case-result-TC03.json",
+        "evidence/AOS-002-S3/case-result-TC04.json"
+      ],
       "prompt_ref": "cursor/prompts/AOS-002-S3.md"
     },
     {

@@ -77,7 +77,7 @@
       "expected": "Two mutations with same row_version produce one winner; global task/goal cursor commit order and rollback gaps are safe.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-002-TC04",
@@ -88,7 +88,7 @@
       "expected": "Foreign goal/read/write returns scoped denial; client approved_by/policy booleans and unknown executable fields rejected.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-003-TC01",

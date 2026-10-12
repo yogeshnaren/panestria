@@ -1,0 +1,58 @@
+{
+  "slice": "AOS-002-S3",
+  "cases": [
+    {
+      "case_id": "AOS-002-TC03",
+      "nodeid": "tests/integration/test_aos_002_services.py::test_concurrent_transition_and_cursor",
+      "lane": "integration",
+      "execution_mode": "OS_BOUNDARY",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "AOS-002-TC04",
+      "nodeid": "tests/integration/test_aos_002_services.py::test_foreign_scope_and_mass_assignment",
+      "lane": "security",
+      "execution_mode": "OS_BOUNDARY",
+      "verdict": "PASS"
+    }
+  ],
+  "release_gate": "INCOMPLETE",
+  "release_gate_reason": "TC03 and TC04 passed on disposable PostgreSQL for 57935008ce22ae484bd5065b72e587736180e132. AOS-001-TC04 is not run. G0 is not a pass.",
+  "not_run": [
+    {
+      "case_id": "AOS-001-TC04",
+      "reason": "fresh Ubuntu host not available"
+    }
+  ],
+  "checks": [
+    {
+      "command": ["uv", "lock", "--check", "--offline"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "ruff", "check", "src", "tests"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "mypy"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "lint-imports"],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-m",
+        "not live",
+        "--junitxml=evidence/AOS-002-S3.xml"
+      ],
+      "exit_code": 0,
+      "passed": 80
+    }
+  ]
+}
