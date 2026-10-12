@@ -1,0 +1,25 @@
+{
+  "record_type": "phase-contract-approval",
+  "contract_path": "contracts/phase/r0-phase.contract.json",
+  "contract_sha256": "fbafb4171c4494228b23de00924b0ac882ab8404e4ff11a1ef0bd43dd83b608f",
+  "goal_id": "6f0e0001-0000-4000-8000-000000000001",
+  "contract_version": 1,
+  "approved_at": "2026-10-12T05:16:27Z",
+  "approver": "repository-owner",
+  "channel": "cursor-chat",
+  "decision": "approve",
+  "covers": [
+    "local branch r0-kernel",
+    "AOS-001-S2 through AOS-005-S3",
+    "uv sync --frozen and locked dependency updates required by those slices",
+    "one pinned PostgreSQL image pull for disposable tests"
+  ],
+  "does_not_cover": [
+    "provider-api-spend",
+    "push or protected merge",
+    "R1 or later implementation",
+    "G0 PASS while AOS-001-TC04 is NOT_RUN",
+    "R0-OWNER-HANDOFF human review",
+    "product effect authorization"
+  ]
+}

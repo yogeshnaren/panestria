@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "goal_id": "6f0e0001-0000-4000-8000-000000000001",
+  "contract_version": 1,
+  "owner_id": "6f0e0002-0000-4000-8000-000000000001",
+  "project_id": "6f0e0003-0000-4000-8000-000000000001",
+  "intent": "Finish the Panestria R0 synthetic kernel on the reviewed AOS-001-S1 baseline: complete AOS-001-S2 and S3, then AOS-002 through AOS-005 in dependency order, with small local commits, real tests, and candidate-bound evidence. Stop at the R0 review handoff. Cumulative G0 passes only when every required case has matching evidence; a missing live case keeps G0 incomplete.",
+  "privacy_class": "INTERNAL",
+  "trust_profile_id": "SYNTHETIC_DEV",
+  "autonomy_profile_ref": "synthetic-approve-first-v1",
+  "constraints": {
+    "allowed_paths": [
+      "src/panestria/**",
+      "tests/**",
+      "migrations/**",
+      "contracts/**",
+      "adr/**",
+      "docs/**",
+      "evidence/**",
+      ".github/**",
+      "pyproject.toml",
+      "uv.lock",
+      ".importlinter",
+      "compose.yaml",
+      "README.md",
+      ".env.example",
+      ".gitignore"
+    ],
+    "forbidden_paths": [
+      ".env",
+      "secrets/**",
+      ".git/**",
+      "docs/specification/originals/**",
+      "docs/specification/attachments/**",
+      "docs/specification/CHECKSUMS.sha256"
+    ],
+    "permitted_capabilities": [
+      "scoped-file-edit",
+      "local-git-commit",
+      "frozen-project-toolchain",
+      "disposable-postgresql",
+      "trusted-test-runner"
+    ],
+    "cloud_egress": "deny"
+  },
+  "budget": {
+    "max_attempts_per_task": 3,
+    "max_wall_seconds": 3600,
+    "max_api_usd": "0"
+  },
+  "acceptance": [
+    {
+      "id": "R0-PATH-SCOPE",
+      "description": "Edits stay inside the approved R0 paths and do not change frozen specification originals, the skills archive, or secret files.",
+      "required": true,
+      "verifier": {
+        "type": "git-diff-path-check",
+        "allowed_paths": [
+          "src/panestria/**",
+          "tests/**",
+          "migrations/**",
+          "contracts/**",
+          "adr/**",
+          "docs/**",
+          "evidence/**",
+          ".github/**",
+          "pyproject.toml",
+          "uv.lock",
+          ".importlinter",
+          "compose.yaml",
+          "README.md",
+          ".env.example",
+          ".gitignore"
+        ],
+        "forbidden_paths": [
+          ".env",
+          "secrets/**",
+          ".git/**",
+          "docs/specification/originals/**",
+          "docs/specification/attachments/**",
+          "docs/specification/CHECKSUMS.sha256"
+        ]
+      },
+      "evidence": {
+        "required": true,
+        "kind": "git-diff-path-check-report"
+      }
+    },
+    {
+      "id": "R0-NO-PROVIDER-SPEND",
+      "description": "Product runtime and application API spending stay denied. Development package and image setup is not product egress.",
+      "required": true,
+      "verifier": {
+        "type": "policy-decision",
+        "action": "provider-api-spend",
+        "expected": "deny"
+      },
+      "evidence": {
+        "required": true,
+        "kind": "policy-decision-report"
+      }
+    },
+    {
+      "id": "R0-HERMETIC-REGRESSION",
+      "description": "The reviewed non-live test command exits 0 within its bound and records a JUnit report. This check does not promote live or release-gate cases.",
+      "required": true,
+      "verifier": {
+        "type": "trusted-command-ref",
+        "command_ref": "dev.pytest-not-live",
+        "expected_exit_code": 0,
+        "timeout_seconds": 3600
+      },
+      "evidence": {
+        "required": true,
+        "kind": "trusted-command-ref-report"
+      }
+    },
+    {
+      "id": "R0-OWNER-HANDOFF",
+      "description": "R1 does not start until the repository owner reviews the R0 handoff for the exact candidate and evidence.",
+      "required": true,
+      "verifier": {
+        "type": "human-review",
+        "reviewer_ref": "repository-owner",
+        "evidence_requirements": [
+          "ordered local commits and reasons",
+          "evidence matrix bound to tested source commits",
+          "known issues and incomplete cases",
+          "setup start stop rollback and backup commands",
+          "reproducible synthetic kernel walkthrough with expected failure cases"
+        ]
+      },
+      "evidence": {
+        "required": true,
+        "kind": "human-review-record"
+      }
+    }
+  ],
+  "non_goals": [
+    "R1 through R7 implementation",
+    "Mission Control or a second worker",
+    "live provider, model, or account tests",
+    "push, protected merge, or publication",
+    "owner MVP acceptance or a fabricated G0 pass",
+    "editing frozen specification originals or the skills archive",
+    "reading login files or host secrets to discover credentials"
+  ]
+}
