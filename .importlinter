@@ -82,3 +82,22 @@ source_modules =
 forbidden_modules =
     panestria.api
     panestria.cli
+
+[importlinter:contract:workers-not-verifier]
+name = Workers cannot import the verifier
+type = forbidden
+source_modules =
+    panestria.brokers
+    panestria.sandbox
+forbidden_modules =
+    panestria.verification
+
+[importlinter:contract:verifier-not-worker]
+name = Verifiers do not import workers or presentation
+type = forbidden
+source_modules =
+    panestria.verification
+forbidden_modules =
+    panestria.brokers
+    panestria.api
+    panestria.cli
