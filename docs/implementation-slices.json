@@ -192,7 +192,11 @@
         "AOS-003-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
+      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "evidence_refs": [
+        "evidence/AOS-003-S1.xml",
+        "evidence/AOS-003-S1/case-result.json"
+      ],
       "prompt_ref": "cursor/prompts/AOS-003-S1.md"
     },
     {

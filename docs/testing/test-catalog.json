@@ -99,7 +99,7 @@
       "expected": "Concurrent duplicate requests produce one task/workflow; rollback of admission yields neither task nor enqueue.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-003-TC02",
