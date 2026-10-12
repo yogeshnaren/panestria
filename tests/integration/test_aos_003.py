@@ -25,6 +25,7 @@ from panestria.execution.task_workflow import (
     SERIALIZATION_ATTEMPT_LIMIT,
     limit_serialization_attempts,
     settle_serialization_limit,
+    settle_terminal_exception,
 )
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -162,6 +163,34 @@ def test_serialization_limit_is_recorded_as_failed(record_property: pytest.Recor
         settle_serialization_limit(KernelDenied("invalid_contract"), "task", "ab" * 32, 1, mark)
     assert other.value.code == "invalid_contract"
     assert recorded == ["serialization-retry-limit"]
+
+
+def test_terminal_workflow_error_is_recorded_as_failed(record_property: pytest.RecordProperty) -> None:
+    _properties(record_property, "AOS-003-TC03")
+    recorded: list[str] = []
+
+    def mark(task_id: str, digest: str, attempt: int, cause: str) -> None:
+        recorded.append(cause)
+        assert task_id == "task"
+        assert digest == "ab" * 32
+        assert attempt == 1
+
+    with pytest.raises(RuntimeError, match="worker-exited"):
+        settle_terminal_exception(RuntimeError("worker-exited"), "task", "ab" * 32, 1, mark)
+    with pytest.raises(KernelDenied) as rejected:
+        settle_terminal_exception(KernelDenied("candidate_rejected"), "task", "ab" * 32, 1, mark)
+    assert rejected.value.code == "candidate_rejected"
+    with pytest.raises(KernelDenied) as raced:
+        settle_terminal_exception(KernelDenied("version_conflict"), "task", "ab" * 32, 1, mark)
+    assert raced.value.code == "version_conflict"
+    assert recorded == ["terminal-synthetic-failure", "candidate_rejected"]
+
+    def blocked(task_id: str, digest: str, attempt: int, cause: str) -> None:
+        del task_id, digest, attempt, cause
+        raise KernelDenied("illegal_transition")
+
+    with pytest.raises(RuntimeError, match="worker-exited"):
+        settle_terminal_exception(RuntimeError("worker-exited"), "task", "ab" * 32, 1, blocked)
 
 
 def test_serialization_attempts_stop(record_property: pytest.RecordProperty) -> None:

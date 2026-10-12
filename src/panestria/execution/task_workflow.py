@@ -233,6 +233,26 @@ def mark_failed_tx(
     )
 
 
+_UNRECORDABLE = frozenset({"version_conflict", "illegal_transition", "invalid_contract"})
+
+
+def settle_terminal_exception(
+    exc: BaseException,
+    task_id: str,
+    contract_sha256: str,
+    attempt_number: int,
+    mark: Callable[..., object] = mark_failed_tx,
+) -> NoReturn:
+    """Record FAILED for a terminal workflow error, then keep that error."""
+    if isinstance(exc, KernelDenied) and exc.code == "serialization_retry_limit":
+        _record_failure(mark, task_id, contract_sha256, attempt_number, "serialization-retry-limit")
+    elif isinstance(exc, KernelDenied) and exc.code not in _UNRECORDABLE:
+        _record_failure(mark, task_id, contract_sha256, attempt_number, exc.code)
+    elif not isinstance(exc, KernelDenied):
+        _record_failure(mark, task_id, contract_sha256, attempt_number, "terminal-synthetic-failure")
+    raise exc
+
+
 def settle_serialization_limit(
     exc: BaseException,
     task_id: str,
@@ -241,9 +261,21 @@ def settle_serialization_limit(
     mark: Callable[..., object] = mark_failed_tx,
 ) -> NoReturn:
     """Record FAILED for a stopped serialization storm, then keep the failure."""
-    if isinstance(exc, KernelDenied) and exc.code == "serialization_retry_limit":
-        mark(task_id, contract_sha256, attempt_number, "serialization-retry-limit")
-    raise exc
+    settle_terminal_exception(exc, task_id, contract_sha256, attempt_number, mark)
+
+
+def _record_failure(
+    mark: Callable[..., object],
+    task_id: str,
+    contract_sha256: str,
+    attempt_number: int,
+    cause: str,
+) -> None:
+    try:
+        mark(task_id, contract_sha256, attempt_number, cause)
+    except KernelDenied as denied:
+        if denied.code == "serialization_retry_limit":
+            raise
 
 
 _PAST_READY = frozenset({"LEASED", "RUNNING", "VERIFYING", "WAITING_APPROVAL"})
@@ -345,17 +377,17 @@ def run_task_workflow(task_id: str, contract_sha256: str, attempt_number: int) -
         crash_gate("after-commit")
         result["observed"] = synthetic_observe(task_id)
         return result
-    except KernelDenied as exc:
-        settle_serialization_limit(exc, task_id, contract_sha256, attempt_number)
+    except Exception as exc:
+        settle_terminal_exception(exc, task_id, contract_sha256, attempt_number)
 
 
 @DBOS.workflow(name="run_effect_workflow")
 def run_effect_workflow(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
     try:
         transition_task_tx(task_id, contract_sha256, attempt_number)
-    except KernelDenied as exc:
-        settle_serialization_limit(exc, task_id, contract_sha256, attempt_number)
-    ref = synthetic_effect(task_id, contract_sha256)
+        ref = synthetic_effect(task_id, contract_sha256)
+    except Exception as exc:
+        settle_terminal_exception(exc, task_id, contract_sha256, attempt_number)
     return {"task_id": task_id, "external_ref": ref}
 
 
