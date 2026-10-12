@@ -1155,6 +1155,55 @@ def test_stored_pass_does_not_merge_a_different_commit(
         assert goal_status is not None and goal_status[0] == "CREATED"
 
 
+def test_journey_contract_follows_the_task_or_the_latest_version(
+    record_property: pytest.RecordProperty,
+) -> None:
+    _properties(record_property, "AOS-005-TC04", "chaos")
+    _database()
+    goal = "00000000-0000-4000-8000-000000000220"
+    older = "00000000-0000-4000-8000-000000000221"
+    newer = "00000000-0000-4000-8000-000000000222"
+    task = "00000000-0000-4000-8000-000000000223"
+    actor = Actor(OWNER, PROJECT)
+    with psycopg.connect(DATABASE_URL) as connection:
+        connection.execute("INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'owner')", (OWNER,))
+        connection.execute("INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)", (PROJECT, OWNER))
+        connection.execute(
+            "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+            " VALUES (%s, %s, %s, 'synthetic', 'CREATED')",
+            (goal, OWNER, PROJECT),
+        )
+        for contract_id, version, digest in (
+            (older, 1, "11" * 32),
+            (newer, 2, "22" * 32),
+        ):
+            connection.execute(
+                "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+                " VALUES (%s, %s, %s, %s::jsonb, %s)",
+                (
+                    contract_id,
+                    goal,
+                    version,
+                    '{"autonomy_profile_ref":"synthetic-approve-first-v1","contract_version":%s}' % version,
+                    digest,
+                ),
+            )
+        connection.commit()
+        journey = SyntheticJourney()
+        selected = journey._contract(connection, actor, goal)
+        assert selected[0] == newer
+        assert selected[2] == 2
+        connection.execute(
+            "INSERT INTO panestria.task (id, goal_id, contract_id, name, state)"
+            " VALUES (%s, %s, %s, 'bound', 'CREATED')",
+            (task, goal, older),
+        )
+        connection.commit()
+        bound = journey._contract(connection, actor, goal)
+        assert bound[0] == older
+        assert bound[2] == 1
+
+
 def _git_commit(worktree: Path, args: list[str]) -> None:
     completed = subprocess.run(
         ["git", "-C", str(worktree), *args],

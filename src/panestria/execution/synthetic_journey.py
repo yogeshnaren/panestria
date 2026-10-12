@@ -725,7 +725,8 @@ class SyntheticJourney:
             "SELECT task.id::text, task.state, task.row_version, task.continuation_kind"
             " FROM panestria.task AS task"
             " JOIN panestria.goal AS goal ON goal.id = task.goal_id"
-            " WHERE task.goal_id = %s AND goal.owner_id = %s AND goal.project_id = %s",
+            " WHERE task.goal_id = %s AND goal.owner_id = %s AND goal.project_id = %s"
+            " ORDER BY task.created_at DESC LIMIT 1",
             (goal_id, actor.owner_id, actor.project_id),
         ).fetchone()
         if row is None:
@@ -735,11 +736,22 @@ class SyntheticJourney:
     def _contract(self, connection: Conn, actor: Actor, goal_id: str) -> tuple[str, str, int, object]:
         row = connection.execute(
             "SELECT contract.id::text, contract.sha256, contract.version, contract.body"
-            " FROM panestria.goal_contract AS contract"
-            " JOIN panestria.goal AS goal ON goal.id = contract.goal_id"
-            " WHERE contract.goal_id = %s AND goal.owner_id = %s AND goal.project_id = %s",
+            " FROM panestria.task AS task"
+            " JOIN panestria.goal AS goal ON goal.id = task.goal_id"
+            " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
+            " WHERE task.goal_id = %s AND goal.owner_id = %s AND goal.project_id = %s"
+            " ORDER BY task.created_at DESC LIMIT 1",
             (goal_id, actor.owner_id, actor.project_id),
         ).fetchone()
+        if row is None:
+            row = connection.execute(
+                "SELECT contract.id::text, contract.sha256, contract.version, contract.body"
+                " FROM panestria.goal_contract AS contract"
+                " JOIN panestria.goal AS goal ON goal.id = contract.goal_id"
+                " WHERE contract.goal_id = %s AND goal.owner_id = %s AND goal.project_id = %s"
+                " ORDER BY contract.version DESC LIMIT 1",
+                (goal_id, actor.owner_id, actor.project_id),
+            ).fetchone()
         if row is None:
             raise KernelDenied("not_found")
         return str(row[0]), str(row[1]), int(row[2]), row[3]
