@@ -1,0 +1,254 @@
+column acceptance_check check_key text NO
+column acceptance_check contract_id uuid NO
+column acceptance_check description text NO
+column acceptance_check id uuid NO
+column acceptance_check required bool NO
+column acceptance_check verifier_spec jsonb NO
+column acceptance_check verifier_type text NO
+column approval_consumption approval_request_id uuid NO
+column approval_consumption consumed_at timestamptz NO
+column approval_consumption consumed_by uuid NO
+column approval_consumption effect_digest bpchar NO
+column approval_consumption side_effect_id uuid YES
+column approval_request action_kind text NO
+column approval_request decided_at timestamptz YES
+column approval_request decided_by uuid YES
+column approval_request effect_digest bpchar NO
+column approval_request expires_at timestamptz NO
+column approval_request goal_id uuid NO
+column approval_request id uuid NO
+column approval_request minimum_actor_id uuid NO
+column approval_request owner_id uuid NO
+column approval_request policy_version text NO
+column approval_request preview jsonb NO
+column approval_request project_id uuid NO
+column approval_request state text NO
+column approval_request task_id uuid YES
+column artifact attempt_id uuid YES
+column artifact created_at timestamptz NO
+column artifact id uuid NO
+column artifact kind text NO
+column artifact privacy_class text NO
+column artifact sha256 bpchar NO
+column artifact size_bytes int8 NO
+column artifact store_key text NO
+column artifact task_id uuid NO
+column check_run acceptance_check_id uuid NO
+column check_run attempt_id uuid NO
+column check_run candidate_sha256 bpchar YES
+column check_run checked_at timestamptz NO
+column check_run contract_id uuid NO
+column check_run evidence_artifact_id uuid YES
+column check_run id uuid NO
+column check_run task_id uuid NO
+column check_run verdict text NO
+column goal approved_contract_version int4 YES
+column goal created_at timestamptz NO
+column goal id uuid NO
+column goal intent text NO
+column goal owner_id uuid NO
+column goal project_id uuid NO
+column goal status text NO
+column goal updated_at timestamptz NO
+column goal_contract approved_at timestamptz YES
+column goal_contract approved_by uuid YES
+column goal_contract body jsonb NO
+column goal_contract created_at timestamptz NO
+column goal_contract goal_id uuid NO
+column goal_contract id uuid NO
+column goal_contract schema_version int4 NO
+column goal_contract sha256 bpchar NO
+column goal_contract version int4 NO
+column idempotency_record created_at timestamptz NO
+column idempotency_record operation text NO
+column idempotency_record owner_id uuid NO
+column idempotency_record project_id uuid NO
+column idempotency_record request_hash bpchar NO
+column idempotency_record request_key text NO
+column idempotency_record response_ref jsonb NO
+column principal created_at timestamptz NO
+column principal display_name text NO
+column principal id uuid NO
+column project created_at timestamptz NO
+column project id uuid NO
+column project owner_id uuid NO
+column project root_path text YES
+column project trust_profile_id text NO
+column project trust_profile_version int4 NO
+column side_effect approval_request_id uuid YES
+column side_effect effect_digest bpchar YES
+column side_effect effect_key text NO
+column side_effect external_ref text YES
+column side_effect id uuid NO
+column side_effect reconciliation_note text YES
+column side_effect request_hash bpchar NO
+column side_effect state text NO
+column side_effect target text NO
+column side_effect task_id uuid NO
+column task continuation_kind text YES
+column task contract_id uuid NO
+column task created_at timestamptz NO
+column task goal_id uuid NO
+column task id uuid NO
+column task lease_epoch int8 NO
+column task name text NO
+column task priority int4 NO
+column task resume_phase text YES
+column task row_version int8 NO
+column task state text NO
+column task updated_at timestamptz NO
+column task_attempt adapter text NO
+column task_attempt attempt_number int4 NO
+column task_attempt error_code text YES
+column task_attempt external_ref text YES
+column task_attempt finished_at timestamptz YES
+column task_attempt heartbeat_at timestamptz YES
+column task_attempt id uuid NO
+column task_attempt lease_epoch int8 NO
+column task_attempt started_at timestamptz YES
+column task_attempt status text NO
+column task_attempt task_id uuid NO
+column task_dependency depends_on uuid NO
+column task_dependency task_id uuid NO
+column task_event actor text NO
+column task_event attempt_id uuid YES
+column task_event goal_id uuid NO
+column task_event id uuid NO
+column task_event kind text NO
+column task_event occurred_at timestamptz NO
+column task_event payload jsonb NO
+column task_event seq int8 NO
+column task_event task_id uuid YES
+column task_event trace_id text YES
+column workflow_link attempt_id uuid NO
+column workflow_link dbos_workflow_id text NO
+column workflow_link task_id uuid NO
+constraint panestria.acceptance_check c CHECK (((jsonb_typeof(verifier_spec) = 'object'::text) AND (verifier_spec ? 'type'::text) AND ((verifier_spec ->> 'type'::text) = verifier_type)))
+constraint panestria.acceptance_check c CHECK ((verifier_type = ANY (ARRAY['trusted-command-ref'::text, 'git-diff-path-check'::text, 'policy-decision'::text, 'artifact-exists'::text, 'human-review'::text, 'citation-check'::text, 'rubric-review'::text])))
+constraint panestria.acceptance_check f FOREIGN KEY (contract_id) REFERENCES panestria.goal_contract(id)
+constraint panestria.acceptance_check p PRIMARY KEY (id)
+constraint panestria.acceptance_check u UNIQUE (contract_id, check_key)
+constraint panestria.acceptance_check u UNIQUE (id, contract_id)
+constraint panestria.approval_consumption c CHECK ((effect_digest ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.approval_consumption f FOREIGN KEY (approval_request_id) REFERENCES panestria.approval_request(id)
+constraint panestria.approval_consumption f FOREIGN KEY (consumed_by) REFERENCES panestria.principal(id)
+constraint panestria.approval_consumption f FOREIGN KEY (side_effect_id) REFERENCES panestria.side_effect(id)
+constraint panestria.approval_consumption p PRIMARY KEY (approval_request_id)
+constraint panestria.approval_consumption u UNIQUE (side_effect_id)
+constraint panestria.approval_request c CHECK (((state = 'PENDING'::text) OR (state = 'EXPIRED'::text) OR (decided_at IS NOT NULL)))
+constraint panestria.approval_request c CHECK ((effect_digest ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.approval_request c CHECK ((jsonb_typeof(preview) = 'object'::text))
+constraint panestria.approval_request c CHECK ((state = ANY (ARRAY['PENDING'::text, 'APPROVED'::text, 'DENIED'::text, 'EXPIRED'::text, 'REVOKED'::text])))
+constraint panestria.approval_request f FOREIGN KEY (decided_by) REFERENCES panestria.principal(id)
+constraint panestria.approval_request f FOREIGN KEY (goal_id, project_id, owner_id) REFERENCES panestria.goal(id, project_id, owner_id)
+constraint panestria.approval_request f FOREIGN KEY (minimum_actor_id) REFERENCES panestria.principal(id)
+constraint panestria.approval_request f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
+constraint panestria.approval_request f FOREIGN KEY (project_id) REFERENCES panestria.project(id)
+constraint panestria.approval_request f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
+constraint panestria.approval_request p PRIMARY KEY (id)
+constraint panestria.artifact c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.artifact c CHECK ((size_bytes >= 0))
+constraint panestria.artifact f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
+constraint panestria.artifact f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
+constraint panestria.artifact p PRIMARY KEY (id)
+constraint panestria.artifact u UNIQUE (id, task_id)
+constraint panestria.check_run c CHECK (((candidate_sha256 IS NULL) OR (candidate_sha256 ~ '^[0-9a-f]{64}$'::text)))
+constraint panestria.check_run c CHECK (((verdict <> 'PASS'::text) OR (candidate_sha256 IS NOT NULL)))
+constraint panestria.check_run c CHECK (((verdict <> 'PASS'::text) OR (evidence_artifact_id IS NOT NULL)))
+constraint panestria.check_run c CHECK ((verdict = ANY (ARRAY['PASS'::text, 'FAIL'::text, 'UNKNOWN'::text, 'ERROR'::text])))
+constraint panestria.check_run f FOREIGN KEY (acceptance_check_id, contract_id) REFERENCES panestria.acceptance_check(id, contract_id)
+constraint panestria.check_run f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
+constraint panestria.check_run f FOREIGN KEY (evidence_artifact_id, task_id) REFERENCES panestria.artifact(id, task_id)
+constraint panestria.check_run f FOREIGN KEY (task_id, contract_id) REFERENCES panestria.task(id, contract_id)
+constraint panestria.check_run p PRIMARY KEY (id)
+constraint panestria.goal c CHECK ((status = ANY (ARRAY['CREATED'::text, 'ACTIVE'::text, 'COMPLETED'::text, 'FAILED'::text, 'CANCELLED'::text])))
+constraint panestria.goal f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
+constraint panestria.goal f FOREIGN KEY (project_id) REFERENCES panestria.project(id)
+constraint panestria.goal f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.goal p PRIMARY KEY (id)
+constraint panestria.goal u UNIQUE (id, project_id, owner_id)
+constraint panestria.goal_contract c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.goal_contract c CHECK ((version > 0))
+constraint panestria.goal_contract f FOREIGN KEY (approved_by) REFERENCES panestria.principal(id)
+constraint panestria.goal_contract f FOREIGN KEY (goal_id) REFERENCES panestria.goal(id)
+constraint panestria.goal_contract p PRIMARY KEY (id)
+constraint panestria.goal_contract u UNIQUE (goal_id, version)
+constraint panestria.goal_contract u UNIQUE (id, goal_id)
+constraint panestria.idempotency_record c CHECK ((request_hash ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.idempotency_record f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
+constraint panestria.idempotency_record f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.idempotency_record p PRIMARY KEY (owner_id, project_id, operation, request_key)
+constraint panestria.principal p PRIMARY KEY (id)
+constraint panestria.project f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
+constraint panestria.project p PRIMARY KEY (id)
+constraint panestria.project u UNIQUE (id, owner_id)
+constraint panestria.side_effect c CHECK ((request_hash ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.side_effect c CHECK ((state = ANY (ARRAY['PREPARED'::text, 'EXECUTING'::text, 'SUCCEEDED'::text, 'FAILED'::text, 'UNKNOWN'::text, 'RECONCILING'::text])))
+constraint panestria.side_effect f FOREIGN KEY (approval_request_id) REFERENCES panestria.approval_request(id)
+constraint panestria.side_effect f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
+constraint panestria.side_effect p PRIMARY KEY (id)
+constraint panestria.side_effect u UNIQUE (task_id, effect_key)
+constraint panestria.task c CHECK ((continuation_kind = ANY (ARRAY['DISPATCH'::text, 'MERGE'::text, 'FINALIZE'::text])))
+constraint panestria.task c CHECK ((row_version >= 0))
+constraint panestria.task c CHECK ((state = ANY (ARRAY['CREATED'::text, 'VALIDATING'::text, 'READY'::text, 'LEASED'::text, 'RUNNING'::text, 'WAITING_APPROVAL'::text, 'VERIFYING'::text, 'RETRY_WAIT'::text, 'RECONCILING'::text, 'CANCELLING'::text, 'COMPLETED'::text, 'FAILED'::text, 'CANCELLED'::text, 'REJECTED'::text])))
+constraint panestria.task f FOREIGN KEY (contract_id, goal_id) REFERENCES panestria.goal_contract(id, goal_id)
+constraint panestria.task f FOREIGN KEY (goal_id) REFERENCES panestria.goal(id)
+constraint panestria.task p PRIMARY KEY (id)
+constraint panestria.task u UNIQUE (id, contract_id)
+constraint panestria.task u UNIQUE (id, goal_id)
+constraint panestria.task_attempt c CHECK ((attempt_number > 0))
+constraint panestria.task_attempt c CHECK ((lease_epoch >= 0))
+constraint panestria.task_attempt c CHECK ((status = ANY (ARRAY['PENDING'::text, 'RUNNING'::text, 'SUCCEEDED'::text, 'FAILED'::text, 'LOST'::text, 'CANCELLING'::text, 'CANCELLED'::text])))
+constraint panestria.task_attempt f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
+constraint panestria.task_attempt p PRIMARY KEY (id)
+constraint panestria.task_attempt u UNIQUE (id, task_id)
+constraint panestria.task_attempt u UNIQUE (task_id, attempt_number)
+constraint panestria.task_attempt u UNIQUE (task_id, lease_epoch)
+constraint panestria.task_dependency c CHECK ((task_id <> depends_on))
+constraint panestria.task_dependency f FOREIGN KEY (depends_on) REFERENCES panestria.task(id)
+constraint panestria.task_dependency f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
+constraint panestria.task_dependency p PRIMARY KEY (task_id, depends_on)
+constraint panestria.task_event f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
+constraint panestria.task_event f FOREIGN KEY (goal_id) REFERENCES panestria.goal(id)
+constraint panestria.task_event f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
+constraint panestria.task_event p PRIMARY KEY (id)
+constraint panestria.task_event u UNIQUE (seq)
+constraint panestria.workflow_link f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
+constraint panestria.workflow_link f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
+constraint panestria.workflow_link p PRIMARY KEY (task_id, attempt_id)
+constraint panestria.workflow_link u UNIQUE (dbos_workflow_id)
+index CREATE INDEX ix_approvals_owner_pending ON panestria.approval_request USING btree (owner_id, state, expires_at)
+index CREATE INDEX ix_event_goal_seq ON panestria.task_event USING btree (goal_id, seq)
+index CREATE INDEX ix_task_goal ON panestria.task USING btree (goal_id)
+index CREATE UNIQUE INDEX acceptance_check_contract_id_check_key_key ON panestria.acceptance_check USING btree (contract_id, check_key)
+index CREATE UNIQUE INDEX acceptance_check_id_contract_id_key ON panestria.acceptance_check USING btree (id, contract_id)
+index CREATE UNIQUE INDEX acceptance_check_pkey ON panestria.acceptance_check USING btree (id)
+index CREATE UNIQUE INDEX approval_consumption_pkey ON panestria.approval_consumption USING btree (approval_request_id)
+index CREATE UNIQUE INDEX approval_consumption_side_effect_id_key ON panestria.approval_consumption USING btree (side_effect_id)
+index CREATE UNIQUE INDEX approval_request_pkey ON panestria.approval_request USING btree (id)
+index CREATE UNIQUE INDEX artifact_id_task_id_key ON panestria.artifact USING btree (id, task_id)
+index CREATE UNIQUE INDEX artifact_pkey ON panestria.artifact USING btree (id)
+index CREATE UNIQUE INDEX check_run_pkey ON panestria.check_run USING btree (id)
+index CREATE UNIQUE INDEX goal_contract_goal_id_version_key ON panestria.goal_contract USING btree (goal_id, version)
+index CREATE UNIQUE INDEX goal_contract_id_goal_id_key ON panestria.goal_contract USING btree (id, goal_id)
+index CREATE UNIQUE INDEX goal_contract_pkey ON panestria.goal_contract USING btree (id)
+index CREATE UNIQUE INDEX goal_id_project_id_owner_id_key ON panestria.goal USING btree (id, project_id, owner_id)
+index CREATE UNIQUE INDEX goal_pkey ON panestria.goal USING btree (id)
+index CREATE UNIQUE INDEX idempotency_record_pkey ON panestria.idempotency_record USING btree (owner_id, project_id, operation, request_key)
+index CREATE UNIQUE INDEX principal_pkey ON panestria.principal USING btree (id)
+index CREATE UNIQUE INDEX project_id_owner_id_key ON panestria.project USING btree (id, owner_id)
+index CREATE UNIQUE INDEX project_pkey ON panestria.project USING btree (id)
+index CREATE UNIQUE INDEX side_effect_pkey ON panestria.side_effect USING btree (id)
+index CREATE UNIQUE INDEX side_effect_task_id_effect_key_key ON panestria.side_effect USING btree (task_id, effect_key)
+index CREATE UNIQUE INDEX task_attempt_id_task_id_key ON panestria.task_attempt USING btree (id, task_id)
+index CREATE UNIQUE INDEX task_attempt_pkey ON panestria.task_attempt USING btree (id)
+index CREATE UNIQUE INDEX task_attempt_task_id_attempt_number_key ON panestria.task_attempt USING btree (task_id, attempt_number)
+index CREATE UNIQUE INDEX task_attempt_task_id_lease_epoch_key ON panestria.task_attempt USING btree (task_id, lease_epoch)
+index CREATE UNIQUE INDEX task_dependency_pkey ON panestria.task_dependency USING btree (task_id, depends_on)
+index CREATE UNIQUE INDEX task_event_pkey ON panestria.task_event USING btree (id)
+index CREATE UNIQUE INDEX task_event_seq_key ON panestria.task_event USING btree (seq)
+index CREATE UNIQUE INDEX task_id_contract_id_key ON panestria.task USING btree (id, contract_id)
+index CREATE UNIQUE INDEX task_id_goal_id_key ON panestria.task USING btree (id, goal_id)
+index CREATE UNIQUE INDEX task_pkey ON panestria.task USING btree (id)
+index CREATE UNIQUE INDEX workflow_link_dbos_workflow_id_key ON panestria.workflow_link USING btree (dbos_workflow_id)
+index CREATE UNIQUE INDEX workflow_link_pkey ON panestria.workflow_link USING btree (task_id, attempt_id)

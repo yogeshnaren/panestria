@@ -26,6 +26,7 @@ OTHER_CONTRACT = "00000000-0000-4000-8000-000000000041"
 TASK = "00000000-0000-4000-8000-000000000050"
 DIGEST = "ab" * 32
 FINGERPRINT = ROOT / "migrations" / "schema_fingerprint.txt"
+SCHEMA_SNAPSHOT = ROOT / "docs" / "contracts" / "schema-snapshot.txt"
 _FINGERPRINT_SQL = """
 SELECT 'column ' || table_name || ' ' || column_name || ' ' || udt_name || ' ' || is_nullable
 FROM information_schema.columns
@@ -157,6 +158,7 @@ def test_kernel_migration_rejects_bad_scope_and_reapplies() -> None:
             assert heads.returncode == 0
             assert version[0] == heads.stdout.strip().split()[0]
             expected = FINGERPRINT.read_text(encoding="utf-8")
+            assert SCHEMA_SNAPSHOT.read_text(encoding="utf-8") == expected
             assert _schema_fingerprint(connection) == expected
             with connection.transaction():
                 connection.execute("ALTER TABLE panestria.goal ADD COLUMN drift_probe text")

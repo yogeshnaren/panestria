@@ -1,0 +1,97 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "action_kind": {
+      "enum": [
+        "contract_consent",
+        "merge",
+        "finalize"
+      ],
+      "title": "Action Kind",
+      "type": "string"
+    },
+    "candidate_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Sha256",
+      "type": "string"
+    },
+    "contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Contract Sha256",
+      "type": "string"
+    },
+    "contract_version": {
+      "minimum": 1,
+      "title": "Contract Version",
+      "type": "integer"
+    },
+    "destination": {
+      "maxLength": 512,
+      "minLength": 1,
+      "title": "Destination",
+      "type": "string"
+    },
+    "expected_base": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Expected Base",
+      "type": "string"
+    },
+    "expires_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?\\+00:00$",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "minimum_actor_id": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "title": "Minimum Actor Id",
+      "type": "string"
+    },
+    "owner_id": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "title": "Owner Id",
+      "type": "string"
+    },
+    "policy_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Policy Version",
+      "type": "string"
+    },
+    "project_id": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "title": "Project Id",
+      "type": "string"
+    },
+    "required_checks": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Required Checks",
+      "type": "array"
+    },
+    "task_id": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "title": "Task Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "action_kind",
+    "owner_id",
+    "project_id",
+    "task_id",
+    "contract_sha256",
+    "contract_version",
+    "policy_version",
+    "destination",
+    "expected_base",
+    "candidate_sha256",
+    "required_checks",
+    "minimum_actor_id",
+    "expires_at"
+  ],
+  "title": "ActionPreview",
+  "type": "object"
+}

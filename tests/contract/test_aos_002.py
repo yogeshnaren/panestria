@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from panestria.contracts import ContractRejected, contract_sha256, load_contract, revise
+from panestria.contracts.schema_export import rendered_schemas
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "docs" / "fixtures" / "synthetic-goal-contract.json"
@@ -34,6 +35,13 @@ def _case_metadata(record_property: pytest.RecordProperty) -> None:
 def _body() -> dict[str, object]:
     loaded: dict[str, object] = json.loads(FIXTURE.read_text(encoding="utf-8"))
     return loaded
+
+
+def test_exported_json_schemas_match_the_models() -> None:
+    directory = ROOT / "docs" / "contracts"
+    rendered = rendered_schemas()
+    stored = {path.name: path.read_text(encoding="utf-8") for path in directory.glob("*.schema.json")}
+    assert stored == rendered
 
 
 def test_canonical_hash_is_stable_across_key_order_and_money_spelling() -> None:
