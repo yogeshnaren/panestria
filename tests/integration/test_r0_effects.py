@@ -11,6 +11,7 @@ import time
 from pathlib import Path
 
 import psycopg
+import pytest
 
 from panestria.execution.synthetic_journey import SyntheticJourney
 from panestria.kernel.approvals import ApprovalService
@@ -160,7 +161,10 @@ def _effect(goal_id: str) -> tuple[str, str, int]:
     return str(row[0]), str(row[1]), int(row[2])
 
 
-def test_reconcile_applied_ref_and_refuse_stale_authorization(tmp_path: Path) -> None:
+def test_reconcile_applied_ref_and_refuse_stale_authorization(
+    tmp_path: Path, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-005-TC04")
     _database()
     try:
         with psycopg.connect(DATABASE_URL) as connection:

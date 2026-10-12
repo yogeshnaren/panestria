@@ -74,7 +74,9 @@ def _client() -> TestClient:
     return TestClient(application, base_url="http://127.0.0.1")
 
 
-def test_graph_idempotency_and_malformed_acceptance() -> None:
+def test_graph_idempotency_and_malformed_acceptance(record_property: pytest.RecordProperty) -> None:
+    record_property("gate_case_id", "AOS-002-TC03")
+    record_property("also_covers", "AOS-002-TC04")
     _database()
     actor = Actor(OWNER, PROJECT)
     goals = GoalService()

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 
+import pytest
 from fastapi.testclient import TestClient
 
 from panestria.api.auth import MAX_BODY_BYTES, GoalApi
@@ -30,7 +31,8 @@ def _client(database_url: str) -> TestClient:
     return TestClient(application, base_url="http://127.0.0.1")
 
 
-def test_submit_stops_reading_past_the_body_cap() -> None:
+def test_submit_stops_reading_past_the_body_cap(record_property: pytest.RecordProperty) -> None:
+    record_property("gate_case_id", "AOS-001-TC01")
     with _client(CLOSED) as client:
         response = client.post(
             "/v1/goals",
@@ -41,7 +43,8 @@ def test_submit_stops_reading_past_the_body_cap() -> None:
     assert response.json()["code"] == "body_too_large"
 
 
-def test_database_outage_is_unavailable() -> None:
+def test_database_outage_is_unavailable(record_property: pytest.RecordProperty) -> None:
+    record_property("gate_case_id", "AOS-001-TC01")
     with _client(CLOSED) as client:
         response = client.post(
             "/v1/goals",

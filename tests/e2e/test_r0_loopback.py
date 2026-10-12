@@ -26,7 +26,7 @@ OTHER = "00000000-0000-4000-8000-000000000099"
 BASE = "http://127.0.0.1:8766"
 
 
-def _properties(record_property: pytest.RecordProperty) -> None:
+def _properties(record_property: pytest.RecordProperty, case_id: str) -> None:
     commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False)
     dirty = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT, text=True, capture_output=True, check=False)
     record_property("slice_id", "AOS-005-S1")
@@ -36,6 +36,7 @@ def _properties(record_property: pytest.RecordProperty) -> None:
     record_property("execution_mode", "OS_BOUNDARY")
     record_property("worktree_state", "dirty" if dirty.stdout.strip() else "clean")
     record_property("aos_001_tc04", "NOT_RUN")
+    record_property("gate_case_id", case_id)
 
 
 @pytest.fixture(scope="module")
@@ -153,7 +154,7 @@ def test_cli_over_tcp_restarts_and_completes(
     tmp_path: Path,
 ) -> None:
     del database
-    _properties(record_property)
+    _properties(record_property, "AOS-005-TC01")
     sandbox = tmp_path / "sandbox"
     sandbox.mkdir()
     goal_id = "00000000-0000-4000-8000-0000000000c1"
@@ -235,7 +236,7 @@ def test_cancel_leaves_prepared_effect_and_git_unchanged(
     database: None, record_property: pytest.RecordProperty, tmp_path: Path
 ) -> None:
     del database
-    _properties(record_property)
+    _properties(record_property, "AOS-004-TC03")
     sandbox = tmp_path / "sandbox"
     sandbox.mkdir()
     repo = tmp_path / "protected"

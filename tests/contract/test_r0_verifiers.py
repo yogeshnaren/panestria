@@ -69,7 +69,8 @@ def _tree(tmp_path: Path, name: str) -> tuple[Path, Path, str]:
     return Path(manifest.root), Path(manifest.worktree), manifest.base_sha
 
 
-def test_distinct_command_specs_do_not_share_one_result(tmp_path: Path) -> None:
+def test_distinct_command_specs_do_not_share_one_result(tmp_path: Path, record_property: pytest.RecordProperty) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
     registry, runner, candidate = _bundle(tmp_path)
     candidate.write_text("edit:seed\n", encoding="utf-8")
     root, worktree, base = _tree(tmp_path, "commands")
@@ -128,7 +129,8 @@ def test_distinct_command_specs_do_not_share_one_result(tmp_path: Path) -> None:
     assert {item.contract_sha256 for item in reports} == {contract_sha256(contract)}
 
 
-def test_timeout_and_output_limit_fail_closed(tmp_path: Path) -> None:
+def test_timeout_and_output_limit_fail_closed(tmp_path: Path, record_property: pytest.RecordProperty) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
     registry, runner, candidate = _bundle(tmp_path)
     candidate.write_text("x\n", encoding="utf-8")
     timed = runner.run("sleeps", candidate, 1, expected_exit_code=0)
@@ -144,7 +146,10 @@ def test_timeout_and_output_limit_fail_closed(tmp_path: Path) -> None:
     assert expected.exit_code == 1
 
 
-def test_narrower_path_check_rejects_an_otherwise_allowed_edit(tmp_path: Path) -> None:
+def test_narrower_path_check_rejects_an_otherwise_allowed_edit(
+    tmp_path: Path, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
     root, worktree, base = _tree(tmp_path, "paths")
     target = worktree / "tests" / "synthetic.txt"
     target.parent.mkdir()
@@ -169,7 +174,10 @@ def test_narrower_path_check_rejects_an_otherwise_allowed_edit(tmp_path: Path) -
     assert "tests/synthetic.txt" in narrow.denied
 
 
-def test_policy_uses_the_action_not_the_requested_expectation(tmp_path: Path) -> None:
+def test_policy_uses_the_action_not_the_requested_expectation(
+    tmp_path: Path, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
     contract = _contract(
         [
             _check(
@@ -203,7 +211,10 @@ def test_policy_uses_the_action_not_the_requested_expectation(tmp_path: Path) ->
     assert reports[1].required is False
 
 
-def test_missing_artifact_and_human_review_are_not_pass(tmp_path: Path) -> None:
+def test_missing_artifact_and_human_review_are_not_pass(
+    tmp_path: Path, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
     digest = "cd" * 32
     contract = _contract(
         [
@@ -264,7 +275,10 @@ def test_missing_artifact_and_human_review_are_not_pass(tmp_path: Path) -> None:
     assert present[0].attempt_id == "attempt-9"
 
 
-def test_git_diff_sees_baseline_edits_deletions_renames_and_directory_symlinks(tmp_path: Path) -> None:
+def test_git_diff_sees_baseline_edits_deletions_renames_and_directory_symlinks(
+    tmp_path: Path, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
     root, worktree, base = _tree(tmp_path, "gitdiff")
     (worktree / "README.txt").write_text("changed baseline\n", encoding="utf-8")
     outside = tmp_path / "outside-tree"
@@ -303,7 +317,10 @@ def _git(worktree: Path, args: list[str]) -> None:
 
 
 @pytest.mark.contract
-def test_loaded_registry_keeps_the_required_command_separate(tmp_path: Path) -> None:
+def test_loaded_registry_keeps_the_required_command_separate(
+    tmp_path: Path, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
     bundle = tmp_path / "bundle"
     bundle.mkdir()
     script = bundle / "required_check.py"

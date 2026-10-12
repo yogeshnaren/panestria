@@ -80,7 +80,8 @@ def _seed_task(connection: psycopg.Connection[object], task_id: str, attempt_id:
     )
 
 
-def test_newer_failure_and_unbound_evidence_prepare_no_merge() -> None:
+def test_newer_failure_and_unbound_evidence_prepare_no_merge(record_property: pytest.RecordProperty) -> None:
+    record_property("gate_case_id", "AOS-005-TC02")
     _database()
     try:
         actor = Actor(OWNER, PROJECT)
@@ -224,7 +225,10 @@ def test_newer_failure_and_unbound_evidence_prepare_no_merge() -> None:
         subprocess.run([*COMPOSE, "down", "-v"], check=False)
 
 
-def test_unknown_command_and_narrow_paths_do_not_complete(tmp_path: Path) -> None:
+def test_unknown_command_and_narrow_paths_do_not_complete(
+    tmp_path: Path, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-004-TC02")
     _database()
     journey = SyntheticJourney()
     actor = Actor(OWNER, PROJECT)

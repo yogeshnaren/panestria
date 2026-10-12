@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 
 import psycopg
+import pytest
 
 from panestria.execution.dbos_runtime import QUEUE_NAME
 from panestria.execution.synthetic_journey import SyntheticJourney
@@ -94,7 +95,10 @@ def _finish(process: subprocess.Popen[str]) -> None:
         raise AssertionError(stderr or stdout)
 
 
-def test_admitted_queue_restarts_at_transaction_worker_and_verification(tmp_path: Path) -> None:
+def test_admitted_queue_restarts_at_transaction_worker_and_verification(
+    tmp_path: Path, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-003-TC02")
     _database()
     os.environ["PANESTRIA_DEFER_CONSUME"] = "1"
     journey = SyntheticJourney()
