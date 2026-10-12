@@ -148,6 +148,8 @@ class WorktreeManager:
         if record is None and attempt_id in live_attempts:
             return CleanupReport(attempt_id, "denied", owner, _disk_bytes(path), "unrecorded-live")
         measured = _disk_bytes(path)
+        if store is not None:
+            _copy_outputs(path, store, root)
         _remove_contained(path, root)
         _prune(root / "repo")
         _drop_record(root, attempt_id)
@@ -246,6 +248,39 @@ def _drop_record(root: Path, attempt_id: str) -> None:
     path = _record_path(root, attempt_id)
     if path.is_file() and not path.is_symlink():
         path.unlink()
+
+
+def _copy_outputs(worktree: Path, store: Path, root: Path) -> None:
+    """Copy regular files into the store before the worktree is removed."""
+    if store.is_symlink():
+        raise ValueError("store symlink")
+    store.mkdir(parents=True, exist_ok=True)
+    for dirpath, dirnames, filenames in os.walk(worktree, followlinks=False):
+        current = Path(dirpath)
+        if not current.resolve().is_relative_to(root):
+            raise ValueError("cleanup escapes the sandbox")
+        dirnames[:] = [
+            name for name in dirnames if name != ".git" and not (current / name).is_symlink()
+        ]
+        for name in filenames:
+            child = current / name
+            if name == ".git" or child.is_symlink():
+                continue
+            info = child.lstat()
+            if not stat.S_ISREG(info.st_mode) or not child.resolve().is_relative_to(root):
+                raise ValueError("cleanup escapes the sandbox")
+            data = child.read_bytes()
+            digest = hashlib.sha256(data).hexdigest()
+            destination = store / digest
+            if destination.is_symlink():
+                raise ValueError("store symlink")
+            if destination.is_file() and hashlib.sha256(destination.read_bytes()).hexdigest() == digest:
+                continue
+            temporary = store / f".{digest}.partial"
+            temporary.write_bytes(data)
+            temporary.replace(destination)
+            if hashlib.sha256(destination.read_bytes()).hexdigest() != digest:
+                raise ValueError("copied output mismatch")
 
 
 def _publish(store: Path | None, report: CleanupReport) -> None:

@@ -532,12 +532,19 @@ def test_expired_worktree_cleanup_does_not_follow_symlinks(
     )
     assert not worktree.exists()
     assert secret.read_text() == "stay\n"
-    evidence = [path for path in store.iterdir() if not path.name.startswith(".")]
-    assert len(evidence) == 1
-    body = evidence[0].read_bytes()
-    assert evidence[0].is_file() and not evidence[0].is_symlink()
-    assert hashlib.sha256(body).hexdigest() == evidence[0].name
-    assert b"owner-a" in body
+    readme = b"base:alpha\n"
+    readme_digest = hashlib.sha256(readme).hexdigest()
+    copied = store / readme_digest
+    assert copied.is_file() and not copied.is_symlink()
+    assert copied.read_bytes() == readme
+    assert hashlib.sha256(secret.read_bytes()).hexdigest() not in {item.name for item in store.iterdir()}
+    reports = [
+        item
+        for item in store.iterdir()
+        if item.is_file() and not item.name.startswith(".") and b"owner-a" in item.read_bytes()
+    ]
+    assert len(reports) == 1
+    assert hashlib.sha256(reports[0].read_bytes()).hexdigest() == reports[0].name
     rogue = root / "attempts" / "rogue-attempt"
     rogue.mkdir(parents=True)
     (rogue / "note.txt").write_text("orphan\n")
@@ -560,7 +567,18 @@ def test_expired_worktree_cleanup_does_not_follow_symlinks(
     assert not (root / "attempts" / "linked-attempt").exists()
     assert kept.read_text() == "kept\n"
     assert (live_dir / "keep.txt").read_text() == "keep\n"
+    assert (store / hashlib.sha256(b"orphan\n").hexdigest()).read_bytes() == b"orphan\n"
+    assert hashlib.sha256(b"keep\n").hexdigest() not in {item.name for item in store.iterdir()}
     assert (root / "repo" / "README.txt").read_text() == "base:alpha\n"
+    blocked_root = tmp_path / "blocked"
+    blocked = manager.create(blocked_root, "attempt-block", SEED, owner="owner-b", ttl_seconds=1, now=0)
+    blocked_store = tmp_path / "blocked-store"
+    blocked_store.mkdir()
+    (blocked_store / readme_digest).symlink_to(secret)
+    with pytest.raises(ValueError, match="store symlink"):
+        manager.cleanup(blocked_root, now=10, live_attempts=set(), store=blocked_store)
+    assert Path(blocked.worktree).exists()
+    assert secret.read_text() == "stay\n"
 
 
 def test_scripted_events_name_the_attempt_and_stay_unaccepted(
