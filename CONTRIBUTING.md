@@ -4,7 +4,7 @@ Panestria is a local synthetic kernel. R0 is not accepted, G0 is incomplete, and
 
 ## Setup
 
-Python 3.12 or newer and uv are required. Docker is required only for the disposable PostgreSQL tests.
+Python 3.12 or newer and uv are required. Docker is required only for the disposable PostgreSQL tests. The command sequence and the Ubuntu support note are in [docs/SETUP.md](docs/SETUP.md).
 
 ```bash
 make bootstrap

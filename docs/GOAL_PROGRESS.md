@@ -17,7 +17,7 @@ AOS-001-TC04 is `tests/integration/test_aos_001.py::test_fresh_host_loopback` in
 
 ## Evidence
 
-`evidence/R0-corrections.xml` and `evidence/G0/evaluation.json` name `47352ba5b05de2b1ccbcfe9e978ac2984d23140f`. `evidence/R0-demo-transcript.json` records two completed `make r0-demo` runs on the disposable database. `docs/design/schema-erd.md` is the diagram generated from that migrated schema. `evidence/R0-dbos-crash-transcript.txt` is a separate two-test restart run on that same source. `docs/ARCHITECTURE.md` describes that implementation. None of these artifacts is AOS-001-TC04.  
+`evidence/R0-corrections.xml` and `evidence/G0/evaluation.json` name `47352ba5b05de2b1ccbcfe9e978ac2984d23140f`. `evidence/R0-demo-transcript.json` records two completed `make r0-demo` runs on the disposable database. `docs/design/schema-erd.md` is the diagram generated from that migrated schema. `evidence/R0-dbos-crash-transcript.txt` is a separate two-test restart run on that same source. `docs/ARCHITECTURE.md` describes that implementation. None of these artifacts is AOS-001-TC04. `docs/SETUP.md` records the local install, database reset, and demo commands. It does not record a fresh-host startup time or idle RSS.  
 Earlier slice receipts remain under `evidence/AOS-001-S1/` through `evidence/AOS-005-S3/` and name their own source commits.  
 The review package is `docs/reviews/R0-HANDOFF.md`.
 

@@ -2,7 +2,7 @@
 
 Local synthetic kernel for R0. The scaffold, domain tables, DBOS admission, and loopback goal flow are present. R0 is not accepted, G0 is incomplete, and the R3 MVP has not started. This tree is not a release.
 
-The design guide is [docs/START_HERE.md](docs/START_HERE.md). Setup and local limits are in [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+The design guide is [docs/START_HERE.md](docs/START_HERE.md). Setup is [docs/SETUP.md](docs/SETUP.md). Local limits are in [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 
 ## Requirements
 
