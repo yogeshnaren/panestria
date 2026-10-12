@@ -111,9 +111,36 @@ def test_kernel_migration_rejects_bad_scope_and_reapplies() -> None:
                 ('{"changed":true}', CONTRACT),
             )
             _denied(connection, "DELETE FROM panestria.goal_contract WHERE id = %s", (CONTRACT,))
+            connection.execute(
+                "INSERT INTO panestria.approval_request ("
+                " id, goal_id, task_id, owner_id, project_id, minimum_actor_id, action_kind,"
+                " effect_digest, policy_version, state, expires_at, preview)"
+                " VALUES (%s, %s, %s, %s, %s, %s, 'merge', %s, 'synthetic-1', 'PENDING',"
+                " now() + interval '1 hour', %s::jsonb)",
+                (
+                    "00000000-0000-4000-8000-000000000070",
+                    GOAL,
+                    TASK,
+                    OWNER,
+                    PROJECT,
+                    OWNER,
+                    DIGEST,
+                    '{"action_kind":"merge"}',
+                ),
+            )
+            _denied(
+                connection,
+                "UPDATE panestria.approval_request SET effect_digest = %s WHERE id = %s",
+                ("cd" * 32, "00000000-0000-4000-8000-000000000070"),
+            )
             version = connection.execute("SELECT version_num FROM alembic_version").fetchone()
+            heads = _run(
+                ["uv", "run", "--frozen", "alembic", "-c", "migrations/alembic.ini", "heads"],
+                env=env,
+            )
             assert version is not None
-            assert version[0] == "0002_kernel"
+            assert heads.returncode == 0
+            assert version[0] == heads.stdout.strip().split()[0]
         _alembic("downgrade 0001_scaffold", env)
         with psycopg.connect(DATABASE_URL) as connection:
             gone = connection.execute("SELECT to_regclass('panestria.goal')").fetchone()
