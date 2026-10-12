@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from uuid import UUID
 
 import pytest
 from fastapi.testclient import TestClient
 
-from panestria.api.auth import MAX_BODY_BYTES, GoalApi
+from panestria.api.auth import MAX_BODY_BYTES, MAX_HEADER_LINE_BYTES, GoalApi
 from panestria.api.main import create_app, mount_goal_api
+from panestria.api.serve import _read_request
 from panestria.config import Settings
 
 TOKEN = "synthetic-loopback-token"
@@ -30,6 +32,36 @@ def _client(database_url: str) -> TestClient:
     application = create_app(settings, lambda _deadline: None)  # type: ignore[arg-type, return-value]
     mount_goal_api(application, GoalApi(TOKEN, OWNER, PROJECT, database_url))
     return TestClient(application, base_url="http://127.0.0.1")
+
+
+def _parse(raw: bytes) -> object:
+    async def _once() -> object:
+        reader = asyncio.StreamReader(limit=MAX_HEADER_LINE_BYTES)
+        reader.feed_data(raw)
+        reader.feed_eof()
+        return await _read_request(reader)
+
+    return asyncio.run(_once())
+
+
+def test_oversized_header_is_rejected_without_echo(record_property: pytest.RecordProperty) -> None:
+    record_property("gate_case_id", "AOS-001-TC01")
+    marker = b"A" * (MAX_HEADER_LINE_BYTES + 1)
+    oversized = _parse(b"GET /" + marker + b" HTTP/1.1\r\n\r\n")
+    negative = _parse(b"POST /v1/goals HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Length: -1\r\n\r\n")
+    chunked = _parse(b"POST /v1/goals HTTP/1.1\r\nHost: 127.0.0.1\r\nTransfer-Encoding: chunked\r\n\r\n")
+    repeated = _parse(
+        b"POST /v1/goals HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Length: 1\r\nContent-Length: 2\r\n\r\n"
+    )
+    healthy = _parse(b"GET /healthz HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n")
+    assert isinstance(oversized, bytes)
+    assert b"invalid_request" in oversized
+    assert marker not in oversized
+    assert isinstance(negative, bytes) and b"invalid_request" in negative
+    assert isinstance(chunked, bytes) and b"invalid_request" in chunked
+    assert isinstance(repeated, bytes) and b"invalid_request" in repeated
+    assert isinstance(healthy, tuple)
+    assert healthy[0] == "GET"
 
 
 def test_submit_stops_reading_past_the_body_cap(record_property: pytest.RecordProperty) -> None:

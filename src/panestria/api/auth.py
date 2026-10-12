@@ -12,6 +12,8 @@ from fastapi.responses import JSONResponse
 from panestria.kernel.goals import Actor
 
 MAX_BODY_BYTES = 65536
+MAX_HEADER_LINE_BYTES = 8192
+MAX_HEADER_BYTES = 32768
 _LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost"})
 
 

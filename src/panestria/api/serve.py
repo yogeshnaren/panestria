@@ -19,7 +19,7 @@ from urllib.parse import urlsplit
 
 import psycopg
 
-from panestria.api.auth import MAX_BODY_BYTES, GoalApi, error_body
+from panestria.api.auth import MAX_BODY_BYTES, MAX_HEADER_BYTES, MAX_HEADER_LINE_BYTES, GoalApi, error_body
 from panestria.api.health import default_readiness_probe
 from panestria.api.main import create_app, mount_goal_api
 from panestria.config import ProfileRejected, load_settings
@@ -109,8 +109,21 @@ def _seed(database_url: str, owner_id: str, project_id: str) -> None:
         connection.commit()
 
 
+async def _read_line(reader: asyncio.StreamReader) -> bytes | None:
+    """Read one header line. None means the line exceeded the cap."""
+    try:
+        line = await reader.readline()
+    except (asyncio.LimitOverrunError, ValueError):
+        return None
+    if len(line) > MAX_HEADER_LINE_BYTES:
+        return None
+    return line
+
+
 async def _read_request(reader: asyncio.StreamReader) -> tuple[str, str, list[tuple[bytes, bytes]], bytes] | bytes:
-    request_line = await reader.readline()
+    request_line = await _read_line(reader)
+    if request_line is None:
+        return _plain(400, "invalid_request")
     if not request_line:
         return b""
     try:
@@ -118,9 +131,13 @@ async def _read_request(reader: asyncio.StreamReader) -> tuple[str, str, list[tu
     except ValueError:
         return _plain(400, "invalid_request")
     headers: list[tuple[bytes, bytes]] = []
-    length = 0
+    length: int | None = None
+    total = len(request_line)
     while True:
-        line = await reader.readline()
+        line = await _read_line(reader)
+        if line is None or total + len(line) > MAX_HEADER_BYTES:
+            return _plain(400, "invalid_request")
+        total += len(line)
         if line in (b"\r\n", b"\n", b""):
             break
         if b":" not in line:
@@ -128,12 +145,19 @@ async def _read_request(reader: asyncio.StreamReader) -> tuple[str, str, list[tu
         name, value = line.decode("latin-1").split(":", 1)
         encoded_name = name.strip().lower().encode("latin-1")
         encoded_value = value.strip().encode("latin-1")
+        if encoded_name == b"transfer-encoding":
+            return _plain(400, "invalid_request")
         headers.append((encoded_name, encoded_value))
         if encoded_name == b"content-length":
             try:
-                length = int(encoded_value)
+                parsed = int(encoded_value)
             except ValueError:
                 return _plain(400, "invalid_request")
+            if parsed < 0 or (length is not None and parsed != length):
+                return _plain(400, "invalid_request")
+            length = parsed
+    if length is None:
+        length = 0
     if length > MAX_BODY_BYTES:
         return _plain(413, "body_too_large")
     body = await reader.readexactly(length) if length else b""
@@ -243,7 +267,7 @@ async def _listen(app: object, host: str, port: int) -> None:
     if lifespan is None:
         raise RuntimeError("application has no lifespan")
     async with lifespan(app):
-        tcp = await asyncio.start_server(connection, host, port)
+        tcp = await asyncio.start_server(connection, host, port, limit=MAX_HEADER_LINE_BYTES)
         async with tcp:
             await tcp.serve_forever()
 
