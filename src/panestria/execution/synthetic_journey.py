@@ -22,7 +22,7 @@ from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.tasks import TaskService
 from panestria.kernel.uow import UnitOfWork
-from panestria.sandbox.artifact_ingress import ArtifactIngress
+from panestria.sandbox.artifact_ingress import ArtifactIngress, ArtifactRef
 from panestria.sandbox.worktree import WorkspaceManifest, WorktreeManager
 from panestria.verification.nodes import NodeReport, evaluate_checks, required_passed
 from panestria.verification.registry import CommandRegistry
@@ -238,15 +238,18 @@ class SyntheticJourney:
             raise KernelDenied("unknown_check")
         candidate_id = str(uuid4())
         ingress = ArtifactIngress(root / "store", Path(manifest.worktree))
-        ingress.record_ref(
+        ingress.insert_authorized(
             connection,
             published,
             artifact_id=candidate_id,
             task_id=task_id,
             attempt_id=attempt_id,
+            owner_id=actor.owner_id,
+            project_id=actor.project_id,
+            kind="candidate",
         )
         for report in reports:
-            evidence_id = _record_report(connection, ingress, report, task_id, attempt_id)
+            evidence_id = _record_report(connection, ingress, report, task_id, attempt_id, actor)
             check_id = _check_id(connection, contract[0], report.check_id)
             connection.execute(
                 "INSERT INTO panestria.check_run"
@@ -264,6 +267,11 @@ class SyntheticJourney:
                     report.candidate_sha256,
                 ),
             )
+        connection.execute(
+            "UPDATE panestria.task_attempt SET status = %s, finished_at = now()"
+            " WHERE id = %s AND status = 'RUNNING'",
+            ("SUCCEEDED" if passed else "FAILED", attempt_id),
+        )
         append_event(
             connection_uow(connection),
             goal_id=self._goal_of(connection, task_id),
@@ -412,7 +420,7 @@ class SyntheticJourney:
         connection.execute(
             "INSERT INTO panestria.task_attempt"
             " (id, task_id, attempt_number, lease_epoch, status, adapter)"
-            " VALUES (%s, %s, 1, 0, 'SUCCEEDED', 'mock')",
+            " VALUES (%s, %s, 1, 0, 'RUNNING', 'mock')",
             (attempt_id, task_id),
         )
         connection.commit()
@@ -602,6 +610,7 @@ def _record_report(
     report: NodeReport,
     task_id: str,
     attempt_id: str,
+    actor: Actor,
 ) -> str:
     blob = ingress.store / f"report-{report.check_id}"
     blob.write_bytes(report.canonical_bytes())
@@ -611,12 +620,15 @@ def _record_report(
         blob.replace(target)
     else:
         blob.unlink()
-    size = target.stat().st_size
     artifact_id = str(uuid4())
-    connection.execute(
-        "INSERT INTO panestria.artifact"
-        " (id, task_id, attempt_id, kind, store_key, sha256, size_bytes)"
-        " VALUES (%s, %s, %s, 'check-report', %s, %s, %s)",
-        (artifact_id, task_id, attempt_id, digest, digest, size),
+    ingress.insert_authorized(
+        connection,
+        ArtifactRef(digest, str(target), 0, actor.owner_id),
+        artifact_id=artifact_id,
+        task_id=task_id,
+        attempt_id=attempt_id,
+        owner_id=actor.owner_id,
+        project_id=actor.project_id,
+        kind="check-report",
     )
     return artifact_id

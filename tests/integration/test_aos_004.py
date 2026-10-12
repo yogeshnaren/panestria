@@ -13,7 +13,7 @@ import pytest
 from psycopg.errors import CheckViolation
 
 from panestria.brokers.harness.mock import OUTPUT_LIMIT, Candidate, MockWorkerAdapter, Observation
-from panestria.sandbox.artifact_ingress import ArtifactIngress
+from panestria.sandbox.artifact_ingress import ArtifactIngress, ArtifactRef
 from panestria.sandbox.worktree import WorkspaceManifest, WorktreeManager
 from panestria.verification.artifacts import decide
 from panestria.verification.diff import inspect_diff
@@ -271,12 +271,13 @@ def _seed_store_task(connection: psycopg.Connection[object]) -> None:
         (CONTRACT, GOAL, digest),
     )
     connection.execute(
-        "INSERT INTO panestria.task (id, goal_id, contract_id, name, state) VALUES (%s, %s, %s, 'store', 'CREATED')",
+        "INSERT INTO panestria.task (id, goal_id, contract_id, name, state, lease_epoch)"
+        " VALUES (%s, %s, %s, 'store', 'CREATED', 1)",
         (TASK_STORE, GOAL, CONTRACT),
     )
     connection.execute(
         "INSERT INTO panestria.task_attempt (id, task_id, attempt_number, lease_epoch, status, adapter)"
-        " VALUES (%s, %s, 1, 0, 'PENDING', 'synthetic')",
+        " VALUES (%s, %s, 1, 1, 'RUNNING', 'synthetic')",
         (ATTEMPT_STORE, TASK_STORE),
     )
     connection.execute(
@@ -286,6 +287,52 @@ def _seed_store_task(connection: psycopg.Connection[object]) -> None:
         " '{\"type\":\"trusted-command-ref\"}'::jsonb)",
         (CHECK, CONTRACT),
     )
+
+
+def _race_epoch(ingress: ArtifactIngress, kept: ArtifactRef) -> None:
+    import threading
+    import time
+
+    held = threading.Event()
+    release = threading.Event()
+    errors: list[str] = []
+
+    def hold() -> None:
+        with psycopg.connect(DATABASE_URL) as locked:
+            locked.execute("SELECT id FROM panestria.task_attempt WHERE id = %s FOR UPDATE", (ATTEMPT_STORE,))
+            held.set()
+            assert release.wait(5)
+            locked.execute("UPDATE panestria.task_attempt SET lease_epoch = 2 WHERE id = %s", (ATTEMPT_STORE,))
+            locked.commit()
+
+    def publish() -> None:
+        assert held.wait(5)
+        with psycopg.connect(DATABASE_URL) as racing:
+            try:
+                ingress.record_ref(
+                    racing,
+                    kept,
+                    artifact_id="00000000-0000-4000-8000-0000000000fb",
+                    task_id=TASK_STORE,
+                    attempt_id=ATTEMPT_STORE,
+                    owner_id=OWNER,
+                    project_id=PROJECT,
+                )
+                racing.commit()
+            except ValueError as exc:
+                errors.append(str(exc))
+                racing.rollback()
+
+    holder = threading.Thread(target=hold)
+    racer = threading.Thread(target=publish)
+    holder.start()
+    assert held.wait(5)
+    racer.start()
+    time.sleep(0.2)
+    release.set()
+    holder.join(5)
+    racer.join(5)
+    assert errors == ["stale epoch"]
 
 
 def test_artifact_partial_publish(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
@@ -305,17 +352,75 @@ def test_artifact_partial_publish(record_property: pytest.RecordProperty, tmp_pa
         orphan = ingress.finalize(orphan_source, "synthetic-owner", 1)
         kept_source = worktree / "kept.txt"
         kept_source.write_bytes(b"kept\n")
-        kept = ingress.finalize(kept_source, "synthetic-owner", 1)
+        kept = ingress.finalize(kept_source, OWNER, 1)
+        foreign_source = worktree / "foreign.txt"
+        foreign_source.write_bytes(b"foreign\n")
+        foreign = ingress.finalize(foreign_source, "foreign-synthetic-actor", 0)
         with psycopg.connect(DATABASE_URL) as connection:
             _seed_store_task(connection)
+            connection.commit()
+            with pytest.raises(ValueError, match="scope mismatch"):
+                ingress.record_ref(
+                    connection,
+                    foreign,
+                    artifact_id="00000000-0000-4000-8000-0000000000f7",
+                    task_id=TASK_STORE,
+                    attempt_id=ATTEMPT_STORE,
+                    owner_id=OWNER,
+                    project_id=PROJECT,
+                )
+            with pytest.raises(ValueError, match="scope mismatch"):
+                ingress.record_ref(
+                    connection,
+                    kept,
+                    artifact_id="00000000-0000-4000-8000-0000000000fa",
+                    task_id=TASK_STORE,
+                    attempt_id=ATTEMPT_STORE,
+                    owner_id=OWNER,
+                    project_id="00000000-0000-4000-8000-000000000099",
+                )
+            stale = ArtifactRef(kept.digest, kept.path, 0, OWNER)
+            with pytest.raises(ValueError, match="stale epoch"):
+                ingress.record_ref(
+                    connection,
+                    stale,
+                    artifact_id="00000000-0000-4000-8000-0000000000f8",
+                    task_id=TASK_STORE,
+                    attempt_id=ATTEMPT_STORE,
+                    owner_id=OWNER,
+                    project_id=PROJECT,
+                )
+            connection.execute(
+                "UPDATE panestria.task_attempt SET status = 'SUCCEEDED' WHERE id = %s",
+                (ATTEMPT_STORE,),
+            )
+            with pytest.raises(ValueError, match="terminal attempt"):
+                ingress.record_ref(
+                    connection,
+                    kept,
+                    artifact_id="00000000-0000-4000-8000-0000000000f9",
+                    task_id=TASK_STORE,
+                    attempt_id=ATTEMPT_STORE,
+                    owner_id=OWNER,
+                    project_id=PROJECT,
+                )
+            connection.execute(
+                "UPDATE panestria.task_attempt SET status = 'RUNNING' WHERE id = %s",
+                (ATTEMPT_STORE,),
+            )
             ingress.record_ref(
                 connection,
                 kept,
                 artifact_id=ARTIFACT,
                 task_id=TASK_STORE,
                 attempt_id=ATTEMPT_STORE,
+                owner_id=OWNER,
+                project_id=PROJECT,
             )
             connection.commit()
+            _race_epoch(ingress, kept)
+            published = connection.execute("SELECT count(*) FROM panestria.artifact").fetchone()
+            assert published is not None and int(published[0]) == 1
             kept_path = Path(kept.path)
             kept_path.write_bytes(b"tampered\n")
             assert ingress.recheck(kept) is False
@@ -326,6 +431,8 @@ def test_artifact_partial_publish(record_property: pytest.RecordProperty, tmp_pa
                     artifact_id="00000000-0000-4000-8000-0000000000f5",
                     task_id=TASK_STORE,
                     attempt_id=ATTEMPT_STORE,
+                    owner_id=OWNER,
+                    project_id=PROJECT,
                 )
             with pytest.raises(CheckViolation):
                 connection.execute(

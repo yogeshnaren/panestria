@@ -10,6 +10,12 @@ from typing import Any
 
 import psycopg
 
+from panestria.kernel.repositories.tasks import append_event
+from panestria.kernel.uow import UnitOfWork
+
+_OPEN = frozenset({"PENDING", "RUNNING"})
+_TERMINAL_TASK = frozenset({"COMPLETED", "FAILED", "CANCELLED", "REJECTED"})
+
 
 @dataclass(frozen=True)
 class ArtifactRef:
@@ -66,16 +72,73 @@ class ArtifactIngress:
         artifact_id: str,
         task_id: str,
         attempt_id: str,
+        owner_id: str,
+        project_id: str,
+        kind: str = "candidate",
     ) -> None:
-        """Insert the database reference. The caller commits. A mismatch is not recorded."""
+        """Publish one reference and its event. The caller commits. A mismatch is not recorded."""
+        self.insert_authorized(
+            connection,
+            ref,
+            artifact_id=artifact_id,
+            task_id=task_id,
+            attempt_id=attempt_id,
+            owner_id=owner_id,
+            project_id=project_id,
+            kind=kind,
+        )
+        row = connection.execute("SELECT goal_id::text FROM panestria.task WHERE id = %s", (task_id,)).fetchone()
+        if row is None:
+            raise ValueError("attempt not found")
+        append_event(
+            UnitOfWork(connection),
+            goal_id=str(row[0]),
+            task_id=task_id,
+            kind="artifact.published",
+            actor=owner_id,
+            payload={"artifact_id": artifact_id, "epoch": ref.epoch, "sha256": ref.digest},
+        )
+
+    def insert_authorized(
+        self,
+        connection: psycopg.Connection[Any],
+        ref: ArtifactRef,
+        *,
+        artifact_id: str,
+        task_id: str,
+        attempt_id: str,
+        owner_id: str,
+        project_id: str,
+        kind: str,
+    ) -> None:
+        """Lock the current attempt and insert the reference. The caller emits the last event."""
         if not self.recheck(ref):
             raise ValueError("blob does not match the ref")
+        row = connection.execute(
+            "SELECT attempt.lease_epoch, attempt.status, goal.owner_id::text, goal.project_id::text,"
+            " task.state"
+            " FROM panestria.task_attempt AS attempt"
+            " JOIN panestria.task AS task ON task.id = attempt.task_id"
+            " JOIN panestria.goal AS goal ON goal.id = task.goal_id"
+            " WHERE attempt.id = %s AND attempt.task_id = %s"
+            " FOR UPDATE OF attempt",
+            (attempt_id, task_id),
+        ).fetchone()
+        if row is None:
+            raise ValueError("attempt not found")
+        epoch, status, owner, project, state = row
+        if str(owner) != owner_id or str(project) != project_id or ref.actor != owner_id:
+            raise ValueError("scope mismatch")
+        if int(epoch) != ref.epoch:
+            raise ValueError("stale epoch")
+        if str(status) not in _OPEN or str(state) in _TERMINAL_TASK:
+            raise ValueError("terminal attempt")
         size = Path(ref.path).stat().st_size
         connection.execute(
             "INSERT INTO panestria.artifact"
             " (id, task_id, attempt_id, kind, store_key, sha256, size_bytes)"
-            " VALUES (%s, %s, %s, 'candidate', %s, %s, %s)",
-            (artifact_id, task_id, attempt_id, ref.digest, ref.digest, size),
+            " VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (artifact_id, task_id, attempt_id, kind, ref.digest, ref.digest, size),
         )
 
     def cleanup_orphans(self, referenced: set[str]) -> tuple[str, ...]:
