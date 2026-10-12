@@ -5,9 +5,10 @@ from __future__ import annotations
 import json
 from collections.abc import Callable
 from pathlib import Path
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
+from uuid import uuid4
 
 import typer
 from pydantic import BaseModel, ValidationError
@@ -49,6 +50,14 @@ def _default_send(request: Request) -> tuple[int, bytes]:
             return int(response.status), response.read()
     except HTTPError as exc:
         return int(exc.code), exc.read()
+    except (URLError, TimeoutError):
+        payload = {
+            "code": "api_unavailable",
+            "correlation_id": str(uuid4()),
+            "message": "api_unavailable",
+            "retryable": True,
+        }
+        return 503, json.dumps(payload, separators=(",", ":")).encode()
 
 
 def submit_contract(

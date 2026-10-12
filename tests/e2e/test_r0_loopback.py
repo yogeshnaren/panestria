@@ -6,12 +6,13 @@ import hashlib
 import importlib.util
 import json
 import os
+import socket
 import subprocess
 import sys
 import time
 import urllib.request
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import psycopg
 import pytest
@@ -27,13 +28,13 @@ OTHER = "00000000-0000-4000-8000-000000000099"
 BASE = "http://127.0.0.1:8766"
 
 
-def _properties(record_property: pytest.RecordProperty, case_id: str) -> None:
+def _properties(record_property: pytest.RecordProperty, case_id: str, lane: str = "e2e") -> None:
     commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False)
     dirty = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT, text=True, capture_output=True, check=False)
     record_property("slice_id", "AOS-005-S1")
     record_property("candidate_commit", commit.stdout.strip())
     record_property("fixture_digest", hashlib.sha256(FIXTURE.read_bytes()).hexdigest())
-    record_property("lane", "e2e")
+    record_property("lane", lane)
     record_property("execution_mode", "OS_BOUNDARY")
     record_property("worktree_state", "dirty" if dirty.stdout.strip() else "clean")
     record_property("aos_001_tc04", "NOT_RUN")
@@ -375,3 +376,42 @@ def test_server_smoke_records_its_own_loopback_socket(database: None, record_pro
     assert ("127.0.0.1", 8767) in listens
     assert rss.isdigit() and int(rss) > 0
     assert startup > 0
+
+
+def test_cli_reports_retryable_error_when_the_api_is_down(
+    record_property: pytest.RecordProperty,
+) -> None:
+    _properties(record_property, "AOS-005-TC04", "chaos")
+    held = socket.socket()
+    held.bind(("127.0.0.1", 0))
+    port = held.getsockname()[1]
+    held.close()
+    goal_id = "00000000-0000-4000-8000-0000000000c1"
+    command = [
+        sys.executable,
+        "-m",
+        "panestria.cli.main",
+        "goal",
+        "status",
+        goal_id,
+        "--base-url",
+        f"http://127.0.0.1:{port}",
+        "--token",
+        TOKEN,
+    ]
+    first = subprocess.run(command, cwd=ROOT, text=True, capture_output=True, check=False)
+    second = subprocess.run(command, cwd=ROOT, text=True, capture_output=True, check=False)
+    assert first.returncode == 1
+    assert second.returncode == 1
+    assert first.stdout == ""
+    assert second.stdout == ""
+    first_body = json.loads(first.stderr)
+    second_body = json.loads(second.stderr)
+    assert first_body["code"] == "api_unavailable"
+    assert first_body["message"] == "api_unavailable"
+    assert first_body["retryable"] is True
+    assert UUID(str(first_body["correlation_id"])).version == 4
+    assert second_body["correlation_id"] != first_body["correlation_id"]
+    assert "Traceback" not in first.stderr
+    assert f"127.0.0.1:{port}" not in first.stderr
+    assert "Connection refused" not in first.stderr

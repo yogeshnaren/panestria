@@ -217,7 +217,7 @@
       "release": "R0",
       "lane": "chaos",
       "planned_nodeid": "tests/e2e/test_aos_005.py::test_wait_restart_continuation",
-      "expected": "Restart at contract wait dispatches only after consent; restart at merge wait resumes finalize, does not launch another worker.",
+      "expected": "Restart at contract wait dispatches only after consent; restart at merge wait resumes finalize, does not launch another worker. When the API process is down, the CLI exits nonzero with a retryable error and does not print success.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
       "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
