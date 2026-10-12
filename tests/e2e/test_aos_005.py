@@ -694,6 +694,100 @@ def test_r0_positive_journey(record_property: pytest.RecordProperty, tmp_path: P
         subprocess.run([*COMPOSE, "down", "-v"], check=False)
 
 
+def test_corrupted_check_report_prepares_no_merge(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
+    """A rewritten report file cannot prepare or execute the merge."""
+    _case(record_property, "AOS-005-TC02", "security")
+    _database()
+    journey = SyntheticJourney()
+    sandbox = tmp_path / "sandbox"
+    try:
+        with _app() as client:
+            sender = _send(client)
+            status, submitted = submit_contract(
+                base_url="http://127.0.0.1",
+                token=TOKEN,
+                contract_path=FIXTURE,
+                idempotency_key="corrupt-report",
+                send=sender,
+            )
+            assert status == 202
+            goal_id = str(submitted["goal_id"])
+            with psycopg.connect(DATABASE_URL) as connection:
+                opened = journey.open_contract_wait(connection, Actor(OWNER, PROJECT), goal_id, sandbox)
+            _approve(
+                sender,
+                opened.approval_id,
+                str(opened.effect_digest),
+                int(opened.expected_version or 0),
+                "consent",
+            )
+            with psycopg.connect(DATABASE_URL) as connection:
+                waiting = journey.resume(connection, Actor(OWNER, PROJECT), goal_id, sandbox)
+            assert waiting.continuation_kind == "MERGE"
+            protected = sandbox / "protected" / "dest.git"
+            before = subprocess.run(
+                ["git", "--git-dir", str(protected), "rev-parse", "refs/heads/main"],
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            with psycopg.connect(DATABASE_URL) as connection:
+                rows = connection.execute(
+                    "SELECT artifact.sha256 FROM panestria.artifact AS artifact"
+                    " JOIN panestria.task AS task ON task.id = artifact.task_id"
+                    " WHERE task.goal_id = %s AND artifact.kind = 'check-report'",
+                    (goal_id,),
+                ).fetchall()
+            assert rows
+            for (digest,) in rows:
+                path = sandbox / "store" / str(digest).strip()
+                assert path.is_file()
+                path.write_bytes(b"corrupted-report")
+            _approve(
+                sender,
+                str(waiting.approval_id),
+                str(waiting.effect_digest),
+                int(waiting.expected_version or 0),
+                "merge",
+            )
+            with psycopg.connect(DATABASE_URL) as connection:
+                done = journey.resume(connection, Actor(OWNER, PROJECT), goal_id, sandbox)
+                effects = connection.execute(
+                    "SELECT count(*) FROM panestria.side_effect AS effect"
+                    " JOIN panestria.task AS task ON task.id = effect.task_id"
+                    " WHERE task.goal_id = %s",
+                    (goal_id,),
+                ).fetchone()
+            assert done.goal_status != "COMPLETED"
+            assert done.effect_state != "SUCCEEDED"
+            assert effects is not None and int(effects[0]) == 0
+            after = subprocess.run(
+                ["git", "--git-dir", str(protected), "rev-parse", "refs/heads/main"],
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            assert after.stdout == before.stdout
+    finally:
+        subprocess.run([*COMPOSE, "down", "-v"], check=False)
+
+
+def _approve(sender: Any, approval_id: str | None, digest: str, version: int, key: str) -> None:
+    assert approval_id is not None
+    status, body = decide_approval(
+        base_url="http://127.0.0.1",
+        token=TOKEN,
+        approval_id=approval_id,
+        effect_digest=digest,
+        expected_version=version,
+        decision="approve",
+        idempotency_key=key,
+        send=sender,
+    )
+    assert status == 200
+    assert body["state"] == "APPROVED"
+
+
 def test_decision_race_idempotency(record_property: pytest.RecordProperty) -> None:
     """One racing decision and one racing consume survive. A changed repeat conflicts."""
     _case(record_property, "AOS-005-TC03", "integration")
