@@ -23,6 +23,14 @@ def render_report(report: dict[str, Any]) -> bytes:
         f"<tr><td>{escaped(item['check_key'])}</td><td>{escaped(item['verdict'])}</td></tr>"
         for item in artifact["verdicts"]
     )
+    if not rows:
+        verification = report.get("verification", {})
+        matches = (
+            verification.get("artifact_id") == artifact["artifact_id"]
+            and verification.get("artifact_sha256") == artifact["sha256"]
+        )
+        verdict = verification.get("verdict", "UNKNOWN") if matches else "UNKNOWN"
+        rows = "<tr><td>Combined required-check result</td><td>" + escaped(verdict) + "</td></tr>"
     approvals = "".join(
         "<article><h3>"
         + escaped(item["label"])

@@ -212,6 +212,8 @@ def run_demo() -> dict[str, object]:
         if not isinstance(payload, dict) or not isinstance(payload.get("artifact_id"), str):
             raise SystemExit("missing_evidence: demo will not approve a merge without its artifact")
         artifact = _cli(base, token, "artifact", "show", payload["artifact_id"])
+        if payload.get("verdict") != "PASS" or payload.get("artifact_sha256") != artifact.get("sha256"):
+            raise SystemExit("unverified_candidate: demo will not approve a merge without matching passing evidence")
         merge_receipt = _cli(
             base,
             token,
@@ -239,6 +241,7 @@ def run_demo() -> dict[str, object]:
                 report: dict[str, object] = {
                     "status": status,
                     "artifact": artifact,
+                    "verification": payload,
                     "approvals": [
                         {"label": "Contract consent", "request": consent, "receipt": consent_receipt},
                         {"label": "Synthetic merge", "request": merge, "receipt": merge_receipt},

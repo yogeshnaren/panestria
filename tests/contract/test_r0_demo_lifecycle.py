@@ -143,6 +143,20 @@ def test_browser_snapshot_is_escaped_and_cannot_write_or_serve_files() -> None:
             thread.join(timeout=5)
 
 
+def test_candidate_summary_requires_a_matching_recorded_hash() -> None:
+    report = _report()
+    report["artifact"]["verdicts"] = []
+    report["verification"] = {
+        "artifact_id": "synthetic-artifact",
+        "artifact_sha256": "a" * 64,
+        "verdict": "PASS",
+    }
+    assert b"<td>PASS</td>" in render_report(report)
+    report["verification"]["artifact_sha256"] = "b" * 64
+    assert b"<td>UNKNOWN</td>" in render_report(report)
+    assert b"<td>PASS</td>" not in render_report(report)
+
+
 @pytest.mark.parametrize("port", [0, -1, 65536])
 def test_review_port_validation(port: int) -> None:
     with pytest.raises(ValueError):
