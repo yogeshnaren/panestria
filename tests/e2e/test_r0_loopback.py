@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import os
 import subprocess
@@ -356,3 +357,21 @@ def _foreign_artifact() -> str:
         )
         connection.commit()
     return artifact_id
+
+
+def test_server_smoke_records_its_own_loopback_socket(database: None, record_property: pytest.RecordProperty) -> None:
+    """Prove the fresh-host measurement against this database. This is not AOS-001-TC04."""
+    del database
+    _properties(record_property, "AOS-001-TC03")
+    spec = importlib.util.spec_from_file_location(
+        "panestria_aos_001_measure",
+        ROOT / "tests" / "integration" / "test_aos_001.py",
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    listens, egress, rss, startup = module._measure_loopback_smoke()
+    assert module.smoke_denial(listens, egress, rss, startup) is None
+    assert ("127.0.0.1", 8767) in listens
+    assert rss.isdigit() and int(rss) > 0
+    assert startup > 0

@@ -15,6 +15,7 @@ import os
 import socket
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 import tomllib
@@ -724,6 +725,19 @@ def _fd_targets(pid: int) -> list[str]:
     return found
 
 
+def _fail_closed(log_path: Path) -> None:
+    lines = log_path.read_text(encoding="utf-8", errors="replace").splitlines()
+    code = lines[-1].strip() if lines else ""
+    known = {
+        "database_unavailable",
+        "invalid_bind",
+        "invalid_database_url",
+        "invalid_settings",
+        "missing_token",
+    }
+    pytest.fail(code if code in known else "fresh_host_server_exited")
+
+
 def _measure_loopback_smoke() -> tuple[list[tuple[str, int]], list[str], str, float]:
     database_url = os.environ.get("PANESTRIA_DATABASE_URL", "")
     if database_url == "":
@@ -743,38 +757,46 @@ def _measure_loopback_smoke() -> tuple[list[tuple[str, int]], list[str], str, fl
         }
     )
     started = time.perf_counter()
-    process = subprocess.Popen(
-        [sys.executable, "-m", "panestria.api.serve"],
-        cwd=ROOT,
-        env=env,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    try:
-        deadline = time.monotonic() + 20
-        while time.monotonic() < deadline:
-            if process.poll() is not None:
-                pytest.fail("fresh_host_server_exited")
-            try:
-                with urllib.request.urlopen(f"http://127.0.0.1:{_SMOKE_PORT}/healthz", timeout=1) as response:
-                    if response.status == 200:
-                        break
-            except OSError:
-                time.sleep(0.1)
-        else:
-            pytest.fail("fresh_host_startup_missing")
-        startup = time.perf_counter() - started
-        status = Path(f"/proc/{process.pid}/status").read_text(encoding="utf-8").splitlines()
-        rss = next((line.split()[1] for line in status if line.startswith("VmRSS:")), "")
-        listens, egress = owned_sockets(Path("/proc/net/tcp").read_text(encoding="utf-8"), _fd_targets(process.pid))
-        return [item for item in listens if item[1] == _SMOKE_PORT], egress, rss, startup
-    finally:
-        process.terminate()
+    with tempfile.TemporaryDirectory() as directory:
+        log_path = Path(directory) / "server.log"
+        log = log_path.open("a", encoding="utf-8")
+        process = subprocess.Popen(
+            [sys.executable, "-m", "panestria.api.serve"],
+            cwd=ROOT,
+            env=env,
+            stdout=log,
+            stderr=subprocess.STDOUT,
+        )
         try:
-            process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            process.kill()
-            process.wait(timeout=5)
+            deadline = time.monotonic() + 20
+            while time.monotonic() < deadline:
+                if process.poll() is not None:
+                    log.flush()
+                    _fail_closed(log_path)
+                try:
+                    with urllib.request.urlopen(f"http://127.0.0.1:{_SMOKE_PORT}/healthz", timeout=1) as response:
+                        if response.status == 200:
+                            break
+                except OSError:
+                    time.sleep(0.1)
+            else:
+                pytest.fail("fresh_host_startup_missing")
+            startup = time.perf_counter() - started
+            status = Path(f"/proc/{process.pid}/status").read_text(encoding="utf-8").splitlines()
+            rss = next((line.split()[1] for line in status if line.startswith("VmRSS:")), "")
+            table = Path("/proc/net/tcp").read_text(encoding="utf-8")
+            listens, egress = owned_sockets(table, _fd_targets(process.pid))
+            if ("127.0.0.1", _SMOKE_PORT) not in listens:
+                pytest.fail("fresh_host_listener_not_loopback")
+            return listens, egress, rss, startup
+        finally:
+            process.terminate()
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=5)
+            log.close()
 
 
 @pytest.mark.live
