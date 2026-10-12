@@ -88,7 +88,7 @@ Catalog status for an observed case is `OS_BOUNDARY_OBSERVED_NOT_RELEASE` or `HE
 
 ## Known issues
 
-- AOS-001-TC04 needs a separate Ubuntu host. G0 stays incomplete until that live case is actually run and an owner accepts the corrected candidate.
+- AOS-001-TC04 is `tests/integration/test_aos_001.py::test_fresh_host_loopback`, added in `3d7bd27` and marked `live`. On this machine it failed with `fresh_host_not_attested`. G0 stays incomplete until a fresh Ubuntu host records a pass and an owner accepts the candidate.
 - The review counterexamples are covered by new regressions on `fc359b0`. Their case-group PASS marks are not a statement that every source clause was asserted. `test_loopback_submit_scope_and_replay` still has no case id.
 - `make r0-demo` starts `python -m panestria.api.serve` and the real CLI. On 2026-10-12 it completed one synthetic goal on the disposable database at source `fc359b0`. That observation is not AOS-001-TC04.
 - `GET /v1/artifacts/{id}`, `panestria artifact show`, `panestria approvals`, and `panestria goal cancel` are implemented. A corrupted artifact hash and a foreign owner are denied. A prepared effect stays `CANCELLING` and is not merged.
