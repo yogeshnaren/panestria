@@ -1,0 +1,18 @@
+from pathlib import Path
+import subprocess,time,os,json,signal
+r=Path('/tmp/panestria-r0-completion/vm');pid=int((r/'qemu.pid').read_text())
+ssh=['ssh','-i',str(r/'ssh-key'),'-p','22283','-o','UserKnownHostsFile='+str(r/'known_hosts'),'-o','ConnectTimeout=8','ubuntu@127.0.0.1','sudo poweroff']
+p=subprocess.run(ssh,capture_output=True,timeout=30)
+for _ in range(10):
+ path=Path(f'/proc/{pid}/stat')
+ if not path.exists() or path.read_text().split()[2]=='Z':break
+ time.sleep(3)
+else:
+ cmd=Path(f'/proc/{pid}/cmdline').read_bytes()
+ assert str(r/'guest.qcow2').encode() in cmd
+ os.kill(pid,signal.SIGTERM)
+ time.sleep(2)
+path=Path(f'/proc/{pid}/stat');stopped=not path.exists() or path.read_text().split()[2]=='Z';assert stopped
+(r/'ssh-key').unlink();(r/'ssh-key.pub').unlink()
+(r/'cleanup.json').write_text(json.dumps({'vm_stopped':True,'temporary_operator_private_key_removed':True,'guest_database_reset_completed':True},indent=2)+'\n')
+print('Temporary VM stopped and its temporary SSH key removed.')

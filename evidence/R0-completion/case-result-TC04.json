@@ -1,0 +1,23 @@
+{
+  "case_id": "AOS-001-TC04",
+  "candidate_commit": "d457242e9e6ee2c54fbd99db99cb35319b1c8783",
+  "environment_manifest_sha256": "d1b2f595eb619c4d767fa9a68a77de884f5aeac00287b4b5fa9aa9880186bc53",
+  "lane": "live",
+  "execution_mode": "LIVE",
+  "verdict": "PASS",
+  "command": [
+    "uv",
+    "run",
+    "--frozen",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "tests/integration/test_aos_001.py::test_fresh_host_loopback",
+    "--junitxml=/home/ubuntu/r0-results/fresh-host.xml",
+    "-q"
+  ],
+  "exit_code": 0,
+  "report_artifact_ref": "evidence/R0-completion/fresh-host.xml",
+  "fixture_sha256": "b07042fc198f82f4b662495a8aae90dabdf07c4c31e1403510f65e847788baca",
+  "observed_at": "2026-10-12T19:17:08.569446+00:00"
+}

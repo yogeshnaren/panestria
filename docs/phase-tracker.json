@@ -23,14 +23,14 @@
       "track": "MVP",
       "outcome": "A synthetic goal runs through durable mock work, independent verification and exact approval; restart preserves state.",
       "gate": "G0",
-      "status": "IN_PROGRESS",
-      "gate_status": "INCOMPLETE",
+      "status": "AWAITING_OWNER_REVIEW",
+      "gate_status": "PASS",
       "items": [
         {
           "id": "AOS-001",
           "title": "Repository scaffold, developer toolchain, CI and local services",
           "dependencies": [],
-          "status": "IN_PROGRESS",
+          "status": "AWAITING_OWNER_REVIEW",
           "planning_format": "checklist",
           "slice_developer_days_target": 1,
           "evidence_refs": [
@@ -39,9 +39,10 @@
             "evidence/AOS-001-S2.xml",
             "evidence/AOS-001-S2/case-result.json",
             "evidence/AOS-001-S3.xml",
-            "evidence/AOS-001-S3/case-result.json"
+            "evidence/AOS-001-S3/case-result.json",
+            "evidence/R0-completion/"
           ],
-          "plan_status": "R0_CORRECTIONS_TC04_NOT_RUN",
+          "plan_status": "IMPLEMENTED_TECHNICALLY_VERIFIED",
           "plan_ref": "plans/AOS-001-implementation-plan.md"
         },
         {
@@ -50,7 +51,7 @@
           "dependencies": [
             "AOS-001"
           ],
-          "status": "IN_PROGRESS",
+          "status": "AWAITING_OWNER_REVIEW",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [
@@ -60,9 +61,10 @@
             "evidence/AOS-002-S2/case-result.json",
             "evidence/AOS-002-S3.xml",
             "evidence/AOS-002-S3/case-result-TC03.json",
-            "evidence/AOS-002-S3/case-result-TC04.json"
+            "evidence/AOS-002-S3/case-result-TC04.json",
+            "evidence/R0-completion/"
           ],
-          "plan_status": "R0_CORRECTIONS_NOT_ACCEPTED",
+          "plan_status": "IMPLEMENTED_TECHNICALLY_VERIFIED",
           "plan_ref": "plans/AOS-002-implementation-plan.md"
         },
         {
@@ -71,7 +73,7 @@
           "dependencies": [
             "AOS-002"
           ],
-          "status": "IN_PROGRESS",
+          "status": "AWAITING_OWNER_REVIEW",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [
@@ -81,9 +83,10 @@
             "evidence/AOS-003-S2/case-result.json",
             "evidence/AOS-003-S3.xml",
             "evidence/AOS-003-S3/case-result-TC03.json",
-            "evidence/AOS-003-S3/case-result-TC04.json"
+            "evidence/AOS-003-S3/case-result-TC04.json",
+            "evidence/R0-completion/"
           ],
-          "plan_status": "R0_CORRECTIONS_NOT_ACCEPTED",
+          "plan_status": "IMPLEMENTED_TECHNICALLY_VERIFIED",
           "plan_ref": "plans/AOS-003-implementation-plan.md"
         },
         {
@@ -92,7 +95,7 @@
           "dependencies": [
             "AOS-003"
           ],
-          "status": "IN_PROGRESS",
+          "status": "AWAITING_OWNER_REVIEW",
           "planning_format": "checklist",
           "slice_developer_days_target": 1,
           "evidence_refs": [
@@ -102,9 +105,10 @@
             "evidence/AOS-004-S2/case-result.json",
             "evidence/AOS-004-S3.xml",
             "evidence/AOS-004-S3/case-result-TC03.json",
-            "evidence/AOS-004-S3/case-result-TC04.json"
+            "evidence/AOS-004-S3/case-result-TC04.json",
+            "evidence/R0-completion/"
           ],
-          "plan_status": "R0_CORRECTIONS_NOT_ACCEPTED",
+          "plan_status": "IMPLEMENTED_TECHNICALLY_VERIFIED",
           "plan_ref": "plans/AOS-004-implementation-plan.md"
         },
         {
@@ -114,7 +118,7 @@
             "AOS-003",
             "AOS-004"
           ],
-          "status": "IN_PROGRESS",
+          "status": "AWAITING_OWNER_REVIEW",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [
@@ -127,12 +131,15 @@
             "evidence/AOS-005-S3/case-result-TC01.json",
             "evidence/AOS-005-S3/case-result-TC04.json",
             "evidence/G0/evaluation.json",
-            "evidence/R0-corrections.xml"
+            "evidence/R0-corrections.xml",
+            "evidence/R0-completion/"
           ],
-          "plan_status": "R0_CORRECTIONS_NOT_ACCEPTED",
+          "plan_status": "IMPLEMENTED_TECHNICALLY_VERIFIED",
           "plan_ref": "plans/AOS-005-implementation-plan.md"
         }
-      ]
+      ],
+      "candidate_commit": "d457242e9e6ee2c54fbd99db99cb35319b1c8783",
+      "gate_manifest": "evidence/G0/evaluation.json"
     },
     {
       "release": "R1",

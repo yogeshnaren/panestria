@@ -11,7 +11,8 @@
       "expected": "Valid SYNTHETIC_DEV config and unavailable DB produce truthful bounded health; invalid bind/secret-bearing output rejected. An oversized header line is rejected and is not echoed. A slow database call does not stop /healthz.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "HERMETIC_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-001-TC02",
@@ -22,7 +23,8 @@
       "expected": "A disposable forbidden import, stale lock, failing lint/type/unit each fail its gate; positive installed src imports pass.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "HERMETIC_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-001-TC03",
@@ -33,7 +35,8 @@
       "expected": "Fresh scoped DB is healthy, empty Alembic scaffold applies, wrong-volume/symlink cleanup denied.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-001-TC04",
@@ -44,7 +47,8 @@
       "expected": "Fresh supported Ubuntu bootstrap, dependency cache and no-egress runtime smoke require no AI credentials; record real sockets/startup/RSS.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": true,
-      "status": "NOT_RUN"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-002-TC01",
@@ -55,7 +59,8 @@
       "expected": "Canonical roundtrip hash stable; edited contract creates new version; raw command, legacy discriminator, bool budget and duplicate check IDs rejected.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "HERMETIC_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-002-TC02",
@@ -66,7 +71,8 @@
       "expected": "Migration applies and restore/reapply works; wrong project/owner/task-contract linkage, orphan attempts and invalid states rejected by SQL. Goal, event, and task lookups use their indexes, and the panestria relation footprint stays within the recorded ceiling.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-002-TC03",
@@ -77,7 +83,8 @@
       "expected": "Two mutations with same row_version produce one winner; global task/goal cursor commit order and rollback gaps are safe.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-002-TC04",
@@ -88,7 +95,8 @@
       "expected": "Foreign goal/read/write returns scoped denial; client approved_by/policy booleans and unknown executable fields rejected. A transition records the current policy and correlation id with the state change; a different policy or a malformed correlation writes neither.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-003-TC01",
@@ -99,7 +107,8 @@
       "expected": "Concurrent duplicate requests produce one task/workflow; rollback of admission yields neither task nor enqueue.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-003-TC02",
@@ -110,7 +119,8 @@
       "expected": "Kill before DB commit rolls back all app writes; kill after tracked commit before return replays one transition/event, no callback side effect. Unfinished workflows are listed with goal, task, workflow, and recovery attempts. A workflow body that calls the clock is rejected. An attempt whose lease epoch does not match the task does not move it or start the worker.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-003-TC03",
@@ -121,7 +131,8 @@
       "expected": "Synthetic effect completed but checkpoint response lost is observed/reconciled before repeat; FAILED not swallowed.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-003-TC04",
@@ -132,7 +143,8 @@
       "expected": "DB unavailable admits no speculative transitions; consistent app+DBOS restore resumes same IDs and correct authoritative status.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-004-TC01",
@@ -143,7 +155,8 @@
       "expected": "Same seeded fixture yields same verdict and hashes; worker done creates only a candidate until independent checks pass. Scripted events name the attempt and epoch and do not accept the candidate. An unknown mode starts no process.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-004-TC02",
@@ -154,7 +167,8 @@
       "expected": "Off-scope path/symlink or altered protected mandatory test bundle fails; new worker tests cannot replace required checks. An executable mode on an otherwise allowed path is denied. A staged index change is denied when the worktree copy matches the base. A candidate commit is denied when the worktree no longer shows its changes. A stored passing check does not authorize a different commit. A commit outside the global allowed paths is denied when the contract has no path check. Git push and a hook path other than `/dev/null` do not start. A false test claim that writes `README.md` fails, and the report keeps that path and the exit code.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-004-TC03",
@@ -165,7 +179,8 @@
       "expected": "Wall watchdog times out silent process, drains bounded streams and confirms process group termination or UNKNOWN.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-004-TC04",
@@ -176,7 +191,8 @@
       "expected": "Corrupt/partial blob denied; crash after finalize before DB ref leaves only a recoverable orphan, never passed evidence. Expired worktree cleanup records owner, TTL, and disk use, copies regular files into the store before deletion, and does not follow a directory symlink. A journey report is published at the stored lease epoch, and a later epoch publishes nothing. An older attempt is not reused. Its candidate and workflow link do not count for the current attempt.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-005-TC01",
@@ -187,7 +203,8 @@
       "expected": "CLI submits and consents, observes task/evidence, approves exact candidate and sees completed synthetic goal after confirmed effect.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-005-TC02",
@@ -198,7 +215,8 @@
       "expected": "Wrong actor/project/digest, expired request or changed payload cannot dispatch effect; unknown check prevents completion. A newer failed check is not hidden by an older report file. API denials include a generated correlation id and do not copy one from the request.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-005-TC03",
@@ -209,7 +227,8 @@
       "expected": "Approve/deny and duplicate consume races yield one decision/effect; repeated key with changed body conflicts.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-005-TC04",
@@ -220,7 +239,8 @@
       "expected": "Restart at contract wait dispatches only after consent; restart at merge wait resumes finalize, does not launch another worker. A denied approval closes the goal as CANCELLED and starts no worker. The latest approval request wins over an older decision. Before a task exists the journey uses the highest contract version, and afterward it uses that task's stored contract. A succeeded synthetic observation does not hide a prepared approval effect. An older approval effect does not count as the current approval's effect. A stale snapshot does not complete a goal for a different approval. When the API process is down, the CLI exits nonzero with a retryable error and does not print success.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
+      "status": "OBSERVED_PASS",
+      "evidence_ref": "evidence/R0-completion/"
     },
     {
       "id": "AOS-006-TC01",

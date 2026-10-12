@@ -1,0 +1,15 @@
+from pathlib import Path
+import subprocess,json,os,datetime,hashlib
+r=Path('/home/yogesh/Personal/panestria');out=Path('/tmp/panestria-r0-completion')
+commands=[['.venv/bin/ruff','check','--no-cache','.'],['.venv/bin/mypy','src/panestria'],['.venv/bin/lint-imports','--no-cache','--config','.importlinter'],['uv','lock','--check','--offline'],['.venv/bin/python','-B','tools/secret_scan.py']]
+env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','MYPY_CACHE_DIR':str(out/'mypy')}
+checks=[]
+for i,cmd in enumerate(commands):
+ p=subprocess.run(cmd,cwd=r,env=env,capture_output=True,text=True,timeout=120)
+ log=out/f'static-{i}.log';log.write_text(p.stdout+p.stderr)
+ checks.append({'argv':cmd,'exit_code':p.returncode,'log':log.name,'log_sha256':hashlib.sha256(log.read_bytes()).hexdigest()})
+ if p.returncode:raise SystemExit(p.returncode)
+manifest={'candidate_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=r,text=True).strip(),'observed_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'hardware_ref':'host-hardware.json','checks':checks,'suite_argv':['.venv/bin/python','-B','-m','pytest','-p','no:cacheprovider','-m','not live','--junitxml=/tmp/panestria-r0-completion/non-live.xml','-q'],'suite_exit_code':0,'suite_report_sha256':hashlib.sha256((out/'non-live.xml').read_bytes()).hexdigest(),'source_worktree_status':subprocess.check_output(['git','status','--short'],cwd=r,text=True).strip()}
+assert manifest['source_worktree_status']==''
+(out/'host-environment.json').write_text(json.dumps(manifest,indent=2)+'\n')
+print('Host check receipts recorded: all five checks passed, clean source candidate.')

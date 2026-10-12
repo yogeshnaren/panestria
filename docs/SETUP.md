@@ -4,7 +4,7 @@ R0 is not accepted. These steps start the synthetic kernel on a local Ubuntu mac
 
 ## Support
 
-The documented host is Ubuntu 22.04 with Python 3.12 and uv. Docker is used only for the disposable PostgreSQL service. macOS is not part of this setup. A fresh Ubuntu bootstrap, including startup time and idle RSS, is `AOS-001-TC04` and remains unrun.
+The documented host is Ubuntu 22.04 with Python 3.12 and uv. Docker is used only for the disposable PostgreSQL service. macOS is not part of this setup. AOS-001-TC04 passed in a fresh Ubuntu 22.04 VM; measured startup and RSS plus frozen/offline bootstrap evidence are linked in [technical completion](reviews/R0-TECHNICAL-COMPLETION.md).
 
 ## Install
 

@@ -66,7 +66,7 @@ This list is the inventory from before implementation. It is not the current sta
 
 ## Current status
 
-The phase contract is approved. DBOS, Ruff, Mypy, and Import Linter are installed and used. Domain tables, admission, and the synthetic journey are on `r0-kernel`. AOS-001-TC04 still has no fresh Ubuntu host. The 2026-10-12 review did not accept R0. G0 stays `INCOMPLETE`.
+The phase contract is approved. DBOS, Ruff, Mypy, and Import Linter are installed and used. Domain tables, admission, and the synthetic journey are on `r0-kernel`. AOS-001-TC04 passed in a fresh Ubuntu VM on the recorded candidate. G0 is `PASS`; R0 owner acceptance remains pending. See [technical completion](../reviews/R0-TECHNICAL-COMPLETION.md).
 
 ## Stopping condition
 
@@ -74,4 +74,8 @@ Stop when the handoff lists ordered commits, the evidence matrix, known issues, 
 
 ## Handoff
 
-The review package is [R0-HANDOFF.md](../reviews/R0-HANDOFF.md). G0 is `INCOMPLETE` because AOS-001-TC04 has no fresh Ubuntu host and the corrected candidate has no owner acceptance. This section is not an owner review.
+The review package is [R0-HANDOFF.md](../reviews/R0-HANDOFF.md). G0 is `PASS` with all required cases observed; the separate owner handoff remains pending. This section is not an owner review.
+
+## Technical completion update
+
+G0 now passes on the recorded fresh-VM candidate. Earlier NOT_RUN/INCOMPLETE status text is historical; see [completion](../reviews/R0-TECHNICAL-COMPLETION.md). R0-OWNER-HANDOFF remains pending and R1 has not started.

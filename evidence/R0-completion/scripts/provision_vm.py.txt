@@ -1,0 +1,17 @@
+from pathlib import Path
+import subprocess,time
+r=Path('/tmp/panestria-r0-completion'); v=r/'vm'
+ssh=['ssh','-i',str(v/'ssh-key'),'-p','22283','-o','StrictHostKeyChecking=accept-new','-o','UserKnownHostsFile='+str(v/'known_hosts'),'-o','ConnectTimeout=8','ubuntu@127.0.0.1']
+for _ in range(90):
+ try:p=subprocess.run(ssh+['true'],capture_output=True,timeout=12)
+ except subprocess.TimeoutExpired:p=None
+ if p is not None and p.returncode==0:break
+ time.sleep(5)
+else:raise SystemExit('VM SSH did not become ready')
+print('Fresh VM SSH ready; copying candidate bundle and probe.',flush=True)
+scp=['scp','-i',str(v/'ssh-key'),'-P','22283','-o','StrictHostKeyChecking=accept-new','-o','UserKnownHostsFile='+str(v/'known_hosts')]
+subprocess.run(scp+[str(v/'repo.bundle'),str(r/'hwprobe.py'),'ubuntu@127.0.0.1:'],check=True)
+with (r/'guest-bootstrap.log').open('wb') as log, (r/'guest-bootstrap.sh').open('rb') as script:
+ p=subprocess.run(ssh+['bash','-s'],stdin=script,stdout=log,stderr=subprocess.STDOUT,timeout=1800)
+print('Bootstrap exit:',p.returncode,flush=True)
+raise SystemExit(p.returncode)

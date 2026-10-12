@@ -1,0 +1,19 @@
+OS        Linux x86_64   AC power: True
+CPU       Intel(R) Core(TM) i7-14650HX  (16 physical / 24 logical)  flags: avx2, avx_vnni, fma
+RAM       29.1 GB (5.8 GB available)
+GPU       NVIDIA GeForce RTX 4060 Laptop GPU, 8.0 GB, ~256 GB/s (estimate by VRAM class)
+Disk free 85.1 GB
+
+Budgets   accelerator 6.5 GB, host offload 18.1 GB
+Engine    Ollama or llama.cpp (CUDA); vLLM/SGLang for models that fit fully in VRAM
+Assumes  4-bit weights, q8_0 KV cache (OLLAMA_KV_CACHE_TYPE=q8_0, OLLAMA_FLASH_ATTENTION=1)
+
+Role      Model                   Where     Mem GB  Est tok/s  Measured
+steward   qwen3:8b                gpu          6.2         27         -
+embedder  qwen3-embedding:0.6b    cpu          0.8          -         -
+stt       whisper-small           cpu          0.7          -         -
+heavy     gpt-oss:20b             offload     13.8         15         -
+
+Restricted work: reduced: Restricted coding and planning run locally, slower and weaker than frontier
+
+Manifest written to /tmp/panestria-r0-completion/host-hardware.json

@@ -19,10 +19,11 @@
         "AOS-001-TC01"
       ],
       "target_developer_days": 1,
-      "status": "CORRECTIONS_APPLIED_AWAITING_ACCEPTANCE",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-001.xml",
-        "evidence/AOS-001-S1/case-result.json"
+        "evidence/AOS-001-S1/case-result.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-001-S1.md"
     },
@@ -45,10 +46,11 @@
         "AOS-001-TC02"
       ],
       "target_developer_days": 1,
-      "status": "TOOLCHAIN_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-001-S2.xml",
-        "evidence/AOS-001-S2/case-result.json"
+        "evidence/AOS-001-S2/case-result.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-001-S2.md"
     },
@@ -74,10 +76,11 @@
         "AOS-001-TC04"
       ],
       "target_developer_days": 1,
-      "status": "SCAFFOLD_OBSERVED_TC04_NOT_RUN",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-001-S3.xml",
-        "evidence/AOS-001-S3/case-result.json"
+        "evidence/AOS-001-S3/case-result.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-001-S3.md"
     },
@@ -103,10 +106,11 @@
         "AOS-002-TC01"
       ],
       "target_developer_days": 1,
-      "status": "HERMETIC_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-002-S1.xml",
-        "evidence/AOS-002-S1/case-result.json"
+        "evidence/AOS-002-S1/case-result.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-002-S1.md"
     },
@@ -132,10 +136,11 @@
         "AOS-002-TC02"
       ],
       "target_developer_days": 1,
-      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-002-S2.xml",
-        "evidence/AOS-002-S2/case-result.json"
+        "evidence/AOS-002-S2/case-result.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-002-S2.md"
     },
@@ -164,11 +169,12 @@
         "AOS-002-TC04"
       ],
       "target_developer_days": 1,
-      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-002-S3.xml",
         "evidence/AOS-002-S3/case-result-TC03.json",
-        "evidence/AOS-002-S3/case-result-TC04.json"
+        "evidence/AOS-002-S3/case-result-TC04.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-002-S3.md"
     },
@@ -192,10 +198,11 @@
         "AOS-003-TC01"
       ],
       "target_developer_days": 1,
-      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-003-S1.xml",
-        "evidence/AOS-003-S1/case-result.json"
+        "evidence/AOS-003-S1/case-result.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-003-S1.md"
     },
@@ -219,10 +226,11 @@
         "AOS-003-TC02"
       ],
       "target_developer_days": 1,
-      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-003-S2.xml",
-        "evidence/AOS-003-S2/case-result.json"
+        "evidence/AOS-003-S2/case-result.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-003-S2.md"
     },
@@ -249,11 +257,12 @@
         "AOS-003-TC04"
       ],
       "target_developer_days": 1,
-      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-003-S3.xml",
         "evidence/AOS-003-S3/case-result-TC03.json",
-        "evidence/AOS-003-S3/case-result-TC04.json"
+        "evidence/AOS-003-S3/case-result-TC04.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-003-S3.md"
     },
@@ -278,10 +287,11 @@
         "AOS-004-TC01"
       ],
       "target_developer_days": 1,
-      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-004-S1.xml",
-        "evidence/AOS-004-S1/case-result.json"
+        "evidence/AOS-004-S1/case-result.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-004-S1.md"
     },
@@ -306,10 +316,11 @@
         "AOS-004-TC02"
       ],
       "target_developer_days": 1,
-      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-004-S2.xml",
-        "evidence/AOS-004-S2/case-result.json"
+        "evidence/AOS-004-S2/case-result.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-004-S2.md"
     },
@@ -337,11 +348,12 @@
         "AOS-004-TC04"
       ],
       "target_developer_days": 1,
-      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-004-S3.xml",
         "evidence/AOS-004-S3/case-result-TC03.json",
-        "evidence/AOS-004-S3/case-result-TC04.json"
+        "evidence/AOS-004-S3/case-result-TC04.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-004-S3.md"
     },
@@ -369,11 +381,12 @@
         "AOS-005-TC01"
       ],
       "target_developer_days": 1,
-      "status": "ROUTES_OBSERVED_TC01_NOT_RUN",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-005-S1.xml",
         "evidence/AOS-005-S1/assertion-map.json",
-        "evidence/AOS-005-S1/environment-manifest.json"
+        "evidence/AOS-005-S1/environment-manifest.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-005-S1.md"
     },
@@ -400,12 +413,13 @@
         "AOS-005-TC02"
       ],
       "target_developer_days": 1,
-      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-005-S2.xml",
         "evidence/AOS-005-S2/case-result-TC02.json",
         "evidence/AOS-005-S2/assertion-map.json",
-        "evidence/AOS-005-S2/environment-manifest.json"
+        "evidence/AOS-005-S2/environment-manifest.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-005-S2.md"
     },
@@ -435,7 +449,7 @@
         "AOS-005-TC04"
       ],
       "target_developer_days": 1,
-      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "status": "TECHNICALLY_VERIFIED",
       "evidence_refs": [
         "evidence/AOS-005-S3.xml",
         "evidence/AOS-005-S3/case-result-TC01.json",
@@ -443,7 +457,8 @@
         "evidence/AOS-005-S3/case-result-TC03.json",
         "evidence/AOS-005-S3/case-result-TC04.json",
         "evidence/AOS-005-S3/assertion-map.json",
-        "evidence/AOS-005-S3/environment-manifest.json"
+        "evidence/AOS-005-S3/environment-manifest.json",
+        "evidence/R0-completion/"
       ],
       "prompt_ref": "cursor/prompts/AOS-005-S3.md"
     },

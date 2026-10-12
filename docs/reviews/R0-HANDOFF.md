@@ -1,4 +1,10 @@
-# R0 review handoff
+# R0 handoff — current technical gate PASS
+
+See [technical completion](R0-TECHNICAL-COMPLETION.md) for the current candidate and evidence. Owner acceptance is pending. The following report is the preserved historical review/correction narrative; its INCOMPLETE/NOT_RUN statements are superseded by the new completion evidence.
+
+## Historical review and correction record
+
+### Previous handoff
 
 The 2026-10-12 review did not accept R0. This file keeps that review record and the later correction. It is not an owner acceptance, a G0 pass, or permission to start R1.
 

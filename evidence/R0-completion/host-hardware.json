@@ -1,0 +1,90 @@
+{
+  "generated_at": "2026-10-12T11:59:03-0700",
+  "simulated": false,
+  "hardware": {
+    "os": "Linux",
+    "arch": "x86_64",
+    "cpu": "Intel(R) Core(TM) i7-14650HX",
+    "physical_cores": 16,
+    "logical_cores": 24,
+    "cpu_flags": [
+      "avx2",
+      "avx_vnni",
+      "fma"
+    ],
+    "ram_gb": 29.1,
+    "ram_available_gb": 5.8,
+    "unified_memory": false,
+    "gpus": [
+      {
+        "vendor": "nvidia",
+        "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+        "vram_gb": 8.0,
+        "free_gb": 7.5,
+        "bandwidth_gbs": 256,
+        "bandwidth_source": "estimate by VRAM class",
+        "cores": null,
+        "compute_cap": "8.9",
+        "driver": "560.35.03"
+      }
+    ],
+    "cpu_bandwidth_gbs": 60.0,
+    "disk_free_gb": 85.1,
+    "on_ac_power": true,
+    "notes": []
+  },
+  "budgets": {
+    "accelerator_gb": 6.5,
+    "host_offload_gb": 18.1,
+    "accelerator_bandwidth_gbs": 256,
+    "cpu_bandwidth_gbs": 60.0
+  },
+  "engine": "Ollama or llama.cpp (CUDA); vLLM/SGLang for models that fit fully in VRAM",
+  "assignments": [
+    {
+      "role": "steward",
+      "model": "qwen3:8b",
+      "placement": "gpu",
+      "est_mem_gb": 6.2,
+      "est_tps": 27.1,
+      "measured_tps": null,
+      "ctx": 8192,
+      "degraded": false,
+      "reason": "tier 3, fits gpu, ~27 tok/s"
+    },
+    {
+      "role": "embedder",
+      "model": "qwen3-embedding:0.6b",
+      "placement": "cpu",
+      "est_mem_gb": 0.8,
+      "est_tps": null,
+      "measured_tps": null,
+      "ctx": null,
+      "degraded": false,
+      "reason": "runs on CPU"
+    },
+    {
+      "role": "stt",
+      "model": "whisper-small",
+      "placement": "cpu",
+      "est_mem_gb": 0.7,
+      "est_tps": null,
+      "measured_tps": null,
+      "ctx": null,
+      "degraded": false,
+      "reason": "runs on CPU"
+    },
+    {
+      "role": "heavy",
+      "model": "gpt-oss:20b",
+      "placement": "offload",
+      "est_mem_gb": 13.8,
+      "est_tps": 15.1,
+      "measured_tps": null,
+      "ctx": 16384,
+      "degraded": false,
+      "reason": "tier 4, fits offload, ~15 tok/s"
+    }
+  ],
+  "restricted_capability": "reduced: Restricted coding and planning run locally, slower and weaker than frontier"
+}

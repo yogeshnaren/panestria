@@ -1,6 +1,6 @@
 # panestria
 
-Local synthetic kernel for R0. The scaffold, domain tables, DBOS admission, and loopback goal flow are present. R0 is not accepted, G0 is incomplete, and the R3 MVP has not started. This tree is not a release.
+Local synthetic kernel for R0. The scaffold, domain tables, DBOS admission, and loopback goal flow are present. G0 passed on the recorded fresh-VM candidate; R0 owner acceptance is pending and the R3 MVP has not started. This tree is not a release.
 
 The design guide is [docs/START_HERE.md](docs/START_HERE.md). Setup is [docs/SETUP.md](docs/SETUP.md). Local limits are in [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 
@@ -47,4 +47,4 @@ Provider credentials are not required for these commands. CI uses the same froze
 
 ## Scope
 
-The package, `SYNTHETIC_DEV` settings, and typed `/healthz` and `/readyz` routes are in place. Ruff, Mypy, Import Linter, and provider-free CI are the toolchain. Compose publishes disposable PostgreSQL on `127.0.0.1:55432`. Alembic head is `0004_check_candidate`. Goal submit, events, approvals, artifact reads, and cancellation are mounted on the loopback API. Their generated description is [docs/api/openapi.json](docs/api/openapi.json). The fresh-host live case has not been run. R1 has not started. The license file is the repository MIT license.
+The package, `SYNTHETIC_DEV` settings, and typed `/healthz` and `/readyz` routes are in place. Ruff, Mypy, Import Linter, and provider-free CI are the toolchain. Compose publishes disposable PostgreSQL on `127.0.0.1:55432`. Alembic head is `0004_check_candidate`. Goal submit, events, approvals, artifact reads, and cancellation are mounted on the loopback API. Their generated description is [docs/api/openapi.json](docs/api/openapi.json). The fresh-host live case passed in a separate Ubuntu VM; see [technical completion](docs/reviews/R0-TECHNICAL-COMPLETION.md). R1 has not started. The license file is the repository MIT license.
