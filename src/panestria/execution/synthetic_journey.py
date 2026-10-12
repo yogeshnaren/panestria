@@ -21,13 +21,14 @@ from panestria.execution.crash_gate import crash_gate
 from panestria.kernel.approvals import ApprovalService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
-from panestria.kernel.repositories.approvals import required_verdicts
+from panestria.kernel.repositories.approvals import request_expired, required_verdicts
 from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.tasks import TaskService
 from panestria.kernel.uow import UnitOfWork
 from panestria.sandbox.artifact_ingress import ArtifactIngress, ArtifactRef
 from panestria.sandbox.worktree import WorkspaceManifest, WorktreeManager
 from panestria.verification.nodes import NodeReport, evaluate_checks, required_passed
+from panestria.verification.policy import decide_action
 from panestria.verification.registry import CommandRegistry
 from panestria.verification.runner import TrustedCheckRunner
 
@@ -264,19 +265,20 @@ class SyntheticJourney:
         if approval is None:
             return
         preview = load_preview(self._preview_body(connection, approval[0]))
-        confirmed = self._cas(sandbox, preview.expected_base, preview.destination)
-        if not confirmed or (effect_id is None and snapshot.effect_state != "PREPARED"):
-            self._effect_state(connection, task_id, "FAILED", "cas-rejected")
-            append_event(
-                connection_uow(connection),
-                goal_id=goal_id,
-                task_id=task_id,
-                kind="effect.rejected",
-                actor=actor.owner_id,
-                payload={"effect_digest": approval[2]},
-            )
-            connection.commit()
+        if "@" not in preview.destination:
+            self._reject_effect(connection, actor, goal_id, task_id, approval[2], "cas-rejected")
             return
+        ref, candidate = preview.destination.split("@", 1)
+        current = _read_ref(sandbox, ref)
+        if current != candidate and not self._effect_allowed(connection, actor, task_id, approval[0], preview):
+            self._reject_effect(connection, actor, goal_id, task_id, approval[2], "authorization-stale")
+            return
+        crash_gate("before-effect-dispatch")
+        confirmed = current == candidate or _apply_ref(sandbox, preview.expected_base, ref, candidate)
+        if not confirmed or (effect_id is None and snapshot.effect_state != "PREPARED"):
+            self._reject_effect(connection, actor, goal_id, task_id, approval[2], "cas-rejected")
+            return
+        crash_gate("before-effect-commit")
         self._effect_state(connection, task_id, "SUCCEEDED", "cas-confirmed")
         connection.execute(
             "UPDATE panestria.goal SET status = 'COMPLETED', updated_at = now() WHERE id = %s",
@@ -292,6 +294,59 @@ class SyntheticJourney:
             "cas-confirmed",
         )
         connection.commit()
+
+    def _reject_effect(
+        self,
+        connection: Conn,
+        actor: Actor,
+        goal_id: str,
+        task_id: str,
+        digest: str,
+        note: str,
+    ) -> None:
+        self._effect_state(connection, task_id, "FAILED", note)
+        append_event(
+            connection_uow(connection),
+            goal_id=goal_id,
+            task_id=task_id,
+            kind="effect.rejected",
+            actor=actor.owner_id,
+            payload={"effect_digest": digest, "note": note},
+        )
+        connection.commit()
+
+    def _effect_allowed(
+        self,
+        connection: Conn,
+        actor: Actor,
+        task_id: str,
+        approval_id: str,
+        preview: Any,
+    ) -> bool:
+        if request_expired(connection_uow(connection), approval_id):
+            return False
+        contract = self._contract(connection, actor, self._goal_of(connection, task_id))
+        if str(contract[1]).strip() != preview.contract_sha256:
+            return False
+        if preview.owner_id != actor.owner_id or preview.project_id != actor.project_id:
+            return False
+        loaded = load_contract(contract[3])
+        for item in loaded.acceptance:
+            verifier = item.verifier
+            if verifier.type != "policy-decision" or not item.required:
+                continue
+            if decide_action(loaded.autonomy_profile_ref, verifier.action) != verifier.expected:
+                return False
+        epoch = connection.execute(
+            "SELECT task.lease_epoch, attempt.lease_epoch FROM panestria.task AS task"
+            " JOIN panestria.task_attempt AS attempt ON attempt.task_id = task.id"
+            " WHERE task.id = %s ORDER BY attempt.attempt_number DESC LIMIT 1",
+            (task_id,),
+        ).fetchone()
+        if epoch is None or int(epoch[0]) != int(epoch[1]):
+            return False
+        verdicts = required_verdicts(connection_uow(connection), task_id, preview.candidate_sha256)
+        return bool(verdicts) and all(verdict == "PASS" for _check, verdict in verdicts)
 
     def _prove(
         self,
@@ -462,7 +517,7 @@ class SyntheticJourney:
             "candidate_sha256": candidate,
             "required_checks": sorted(item.id for item in loaded.acceptance),
             "minimum_actor_id": actor.owner_id,
-            "expires_at": _stamp(timedelta(hours=1)),
+            "expires_at": _stamp(timedelta(seconds=_approval_ttl())),
         }
         self.approvals.request(connection_uow(connection), actor, preview)
         connection.commit()
@@ -638,6 +693,23 @@ class SyntheticJourney:
             raise KernelDenied("not_found")
 
 
+def _read_ref(sandbox: Path, ref: str) -> str | None:
+    bare = sandbox / "protected" / "dest.git"
+    completed = _run(["git", "--git-dir", str(bare), "rev-parse", "--verify", ref], check=False)
+    if completed.returncode != 0:
+        return None
+    return completed.stdout.strip()
+
+
+def _apply_ref(sandbox: Path, expected_base: str, ref: str, candidate: str) -> bool:
+    current = _read_ref(sandbox, ref)
+    if current == candidate:
+        return True
+    if current != expected_base:
+        return False
+    return SyntheticJourney()._cas(sandbox, expected_base, f"{ref}@{candidate}")
+
+
 class _Existing:
     def __init__(self, path: Path) -> None:
         self.status = "CANDIDATE"
@@ -661,6 +733,15 @@ def _database_url(connection: Conn) -> str:
 def _checks_passed(connection: Conn, task_id: str, candidate_sha256: str) -> bool:
     verdicts = required_verdicts(connection_uow(connection), task_id, candidate_sha256)
     return bool(verdicts) and all(verdict == "PASS" for _check, verdict in verdicts)
+
+
+def _approval_ttl() -> int:
+    raw = os.environ.get("PANESTRIA_APPROVAL_TTL_SECONDS", "3600")
+    try:
+        seconds = int(raw)
+    except ValueError:
+        return 3600
+    return seconds if seconds > 0 else 3600
 
 
 def _stamp(delta: timedelta) -> str:
