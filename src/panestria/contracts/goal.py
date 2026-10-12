@@ -109,14 +109,18 @@ def contract_sha256(contract: GoalContract) -> str:
 
 def load_contract(data: object) -> GoalContract:
     """Validate a contract. Failures omit the submitted document."""
+    if isinstance(data, dict) and "acceptance" in data and not isinstance(data["acceptance"], list):
+        raise ContractRejected("invalid_contract")
     if isinstance(data, dict):
-        for check in data.get("acceptance", []):
-            if isinstance(check, dict):
-                verifier = check.get("verifier")
-                if isinstance(verifier, dict) and verifier.get("type") in LEGACY_VERIFIERS:
-                    raise ContractRejected("legacy_verifier")
-                if isinstance(verifier, dict) and ("run" in verifier or "command" in verifier):
-                    raise ContractRejected("legacy_verifier")
+        acceptance = data.get("acceptance", [])
+        if isinstance(acceptance, list):
+            for check in acceptance:
+                if isinstance(check, dict):
+                    verifier = check.get("verifier")
+                    if isinstance(verifier, dict) and verifier.get("type") in LEGACY_VERIFIERS:
+                        raise ContractRejected("legacy_verifier")
+                    if isinstance(verifier, dict) and ("run" in verifier or "command" in verifier):
+                        raise ContractRejected("legacy_verifier")
     try:
         return GoalContract.model_validate(data)
     except ContractRejected:

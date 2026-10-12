@@ -82,6 +82,10 @@ class GoalService:
         if contract.owner_id != actor.owner_id or contract.project_id != actor.project_id:
             raise KernelDenied("not_found")
         digest = contract_sha256(contract)
+        uow.execute(
+            "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+            (f"{actor.owner_id}:{actor.project_id}:{idempotency_key}",),
+        )
         existing = lock_idempotency(uow, actor.owner_id, actor.project_id, idempotency_key)
         if existing is not None:
             return _replay(existing, digest)
@@ -92,6 +96,8 @@ class GoalService:
             insert_contract(uow, str(uuid4()), str(contract.goal_id), contract.contract_version, body, digest)
         except ForeignKeyViolation:
             raise KernelDenied("not_found") from None
+        except UniqueViolation:
+            raise KernelDenied("idempotency_conflict") from None
         response = json.dumps(
             {
                 "contract_sha256": digest,

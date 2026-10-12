@@ -59,7 +59,9 @@ class TaskService:
         actor: Actor,
         edges: list[tuple[str, str]],
     ) -> None:
-        """Validate the DAG, then persist edges. The event append is the last write."""
+        """Validate the stored graph plus these edges, then add the new ones."""
+        if not edges:
+            return
         endpoints = sorted({task_id for edge in edges for task_id in edge})
         goal_id: str | None = None
         for task_id in endpoints:
@@ -71,13 +73,34 @@ class TaskService:
                 goal_id = locked_goal
             elif locked_goal != goal_id:
                 raise KernelDenied("not_found")
-        validate_dag(endpoints, edges)
-        for task_id, depends_on in edges:
+        assert goal_id is not None
+        locked = uow.execute(
+            "SELECT id::text FROM panestria.task WHERE goal_id = %s ORDER BY id FOR UPDATE",
+            (goal_id,),
+        ).fetchall()
+        nodes = [str(row[0]) for row in locked]
+        stored = uow.execute(
+            "SELECT dependency.task_id::text, dependency.depends_on::text"
+            " FROM panestria.task_dependency AS dependency"
+            " JOIN panestria.task AS task ON task.id = dependency.task_id"
+            " WHERE task.goal_id = %s",
+            (goal_id,),
+        ).fetchall()
+        existing = {(str(source), str(target)) for source, target in stored}
+        proposed: list[tuple[str, str]] = []
+        seen: set[tuple[str, str]] = set()
+        for edge in edges:
+            if edge not in seen:
+                proposed.append(edge)
+                seen.add(edge)
+        validate_dag(nodes, list(existing | seen))
+        fresh = [edge for edge in proposed if edge not in existing]
+        for task_id, depends_on in fresh:
             uow.execute(
                 "INSERT INTO panestria.task_dependency (task_id, depends_on) VALUES (%s, %s)",
                 (task_id, depends_on),
             )
-        if goal_id is None:
+        if not fresh:
             return
         append_event(
             uow,
@@ -85,7 +108,7 @@ class TaskService:
             task_id=None,
             kind="task.dependencies",
             actor=actor.owner_id,
-            payload={"edges": [[source, target] for source, target in edges]},
+            payload={"edges": [[source, target] for source, target in fresh]},
         )
 
     def transition(
