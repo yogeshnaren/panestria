@@ -107,7 +107,7 @@
       "release": "R0",
       "lane": "chaos",
       "planned_nodeid": "tests/integration/test_aos_003.py::test_before_after_commit",
-      "expected": "Kill before DB commit rolls back all app writes; kill after tracked commit before return replays one transition/event, no callback side effect. Unfinished workflows are listed with goal, task, workflow, and recovery attempts.",
+      "expected": "Kill before DB commit rolls back all app writes; kill after tracked commit before return replays one transition/event, no callback side effect. Unfinished workflows are listed with goal, task, workflow, and recovery attempts. A workflow body that calls the clock is rejected.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
       "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"

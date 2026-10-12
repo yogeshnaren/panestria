@@ -22,6 +22,7 @@ from panestria.execution.dbos_runtime import (
     WORKFLOW_NAME,
     sqlalchemy_url,
 )
+from panestria.execution.determinism import workflow_body_violations
 from panestria.execution.recovery import RecoveryService, format_recovery_audit, workflow_scope
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.repositories.events import append_domain_event
@@ -396,6 +397,12 @@ def run_effect_workflow(task_id: str, contract_sha256: str, attempt_number: int)
 def run_failing_workflow(task_id: str, contract_sha256: str, attempt_number: int) -> dict[str, str]:
     mark_failed_tx(task_id, contract_sha256, attempt_number)
     raise RuntimeError("terminal-synthetic-failure")
+
+
+for _workflow in (run_task_workflow, run_effect_workflow, run_failing_workflow):
+    _violations = workflow_body_violations(_workflow)
+    if _violations:
+        raise RuntimeError(f"workflow body is not deterministic: {_violations}")
 
 
 def _runtime_config(database_url: str) -> DBOSConfig:

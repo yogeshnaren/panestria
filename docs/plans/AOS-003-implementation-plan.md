@@ -57,7 +57,7 @@ These groups are planned obligations, not observed coverage. Actual assertions/p
 | Case | Lane | Planned node | Expected passing behavior |
 |---|---|---|---|
 | AOS-003-TC01 | integration | `tests/integration/test_aos_003.py::test_atomic_enqueue_and_duplicate` | Concurrent duplicate requests produce one task/workflow; rollback of admission yields neither task nor enqueue. |
-| AOS-003-TC02 | chaos | `tests/integration/test_aos_003.py::test_before_after_commit` | Kill before DB commit rolls back all app writes; kill after tracked commit before return replays one transition/event, no callback side effect. Unfinished workflows are listed with goal, task, workflow, and recovery attempts. |
+| AOS-003-TC02 | chaos | `tests/integration/test_aos_003.py::test_before_after_commit` | Kill before DB commit rolls back all app writes; kill after tracked commit before return replays one transition/event, no callback side effect. Unfinished workflows are listed with goal, task, workflow, and recovery attempts. A workflow body that calls the clock is rejected. |
 | AOS-003-TC03 | chaos | `tests/integration/test_aos_003.py::test_uncommitted_external_step` | Synthetic effect completed but checkpoint response lost is observed/reconciled before repeat; FAILED not swallowed. |
 | AOS-003-TC04 | integration | `tests/integration/test_aos_003.py::test_database_restore_and_reconnect` | DB unavailable admits no speculative transitions; consistent app+DBOS restore resumes same IDs and correct authoritative status. |
 

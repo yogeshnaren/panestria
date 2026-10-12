@@ -20,6 +20,7 @@ import sqlalchemy as sa
 
 from panestria.execution.admission import AdmissionReceipt, DurableAdmission, SqlUnitOfWork
 from panestria.execution.dbos_runtime import QUEUE_NAME, open_client, probe_launch, sqlalchemy_url
+from panestria.execution.determinism import workflow_body_violations
 from panestria.execution.recovery import (
     RecoveryReport,
     connect_for_admission,
@@ -31,6 +32,9 @@ from panestria.execution.recovery import (
 from panestria.execution.task_workflow import (
     SERIALIZATION_ATTEMPT_LIMIT,
     limit_serialization_attempts,
+    run_effect_workflow,
+    run_failing_workflow,
+    run_task_workflow,
     settle_serialization_limit,
     settle_terminal_exception,
 )
@@ -1043,4 +1047,15 @@ def test_unfinished_workflow_names_goal_and_task(database_url: str, record_prope
     finally:
         client.destroy()
         engine.dispose()
+
+
+def _clock_in_the_body() -> str:
+    return str(time.time())
+
+
+def test_workflow_body_rejects_a_clock(record_property: pytest.RecordProperty) -> None:
+    _properties(record_property, "AOS-003-TC02")
+    assert workflow_body_violations(_clock_in_the_body) == ("time.time",)
+    for workflow in (run_task_workflow, run_effect_workflow, run_failing_workflow):
+        assert workflow_body_violations(workflow) == ()
 
