@@ -27,7 +27,7 @@ from panestria.kernel.tasks import TaskService
 from panestria.kernel.uow import UnitOfWork
 from panestria.sandbox.artifact_ingress import ArtifactIngress, ArtifactRef
 from panestria.sandbox.worktree import WorkspaceManifest, WorktreeManager
-from panestria.verification.nodes import NodeReport, evaluate_checks, required_passed
+from panestria.verification.nodes import NodeReport, evaluate_checks, report_output_consistent, required_passed
 from panestria.verification.policy import decide_action
 from panestria.verification.registry import CommandRegistry
 from panestria.verification.runner import TrustedCheckRunner
@@ -242,6 +242,8 @@ class SyntheticJourney:
         approval = self._approval(connection, task_id, "merge")
         if approval is None or approval[1] != "APPROVED":
             return
+        if not _evidence_files_match(connection, task_id, sandbox / "store"):
+            return
         receipt = self.approvals.continue_after_approval(
             connection_uow(connection),
             actor,
@@ -272,7 +274,9 @@ class SyntheticJourney:
             return
         ref, candidate = preview.destination.split("@", 1)
         current = _read_ref(sandbox, ref)
-        if current != candidate and not self._effect_allowed(connection, actor, task_id, approval[0], preview):
+        if current != candidate and not self._effect_allowed(
+            connection, actor, task_id, approval[0], preview, sandbox / "store"
+        ):
             self._reject_effect(connection, actor, goal_id, task_id, approval[2], "authorization-stale")
             return
         crash_gate("before-effect-dispatch")
@@ -324,6 +328,7 @@ class SyntheticJourney:
         task_id: str,
         approval_id: str,
         preview: Any,
+        store: Path,
     ) -> bool:
         if request_expired(connection_uow(connection), approval_id):
             return False
@@ -348,7 +353,9 @@ class SyntheticJourney:
         if epoch is None or int(epoch[0]) != int(epoch[1]):
             return False
         verdicts = required_verdicts(connection_uow(connection), task_id, preview.candidate_sha256)
-        return bool(verdicts) and all(verdict == "PASS" for _check, verdict in verdicts)
+        if not verdicts or any(verdict != "PASS" for _check, verdict in verdicts):
+            return False
+        return _evidence_files_match(connection, task_id, store)
 
     def _prove(
         self,
@@ -775,6 +782,45 @@ def _run(argv: list[str], check: bool = True, extra: dict[str, str] | None = Non
     if check and completed.returncode != 0:
         raise RuntimeError(completed.stderr.strip() or completed.stdout.strip())
     return completed
+
+
+def _evidence_files_match(connection: Conn, task_id: str, store: Path) -> bool:
+    """A PASS row counts only when its report file matches the stored hash and output."""
+    root = store.resolve()
+    if not root.is_dir():
+        return False
+    rows = connection.execute(
+        "SELECT artifact.sha256, artifact.size_bytes, artifact.kind"
+        " FROM panestria.acceptance_check AS check_row"
+        " JOIN panestria.task AS task ON task.contract_id = check_row.contract_id"
+        " JOIN LATERAL ("
+        " SELECT attempt.id FROM panestria.task_attempt AS attempt"
+        " WHERE attempt.task_id = task.id AND attempt.lease_epoch = task.lease_epoch"
+        " ORDER BY attempt.attempt_number DESC LIMIT 1"
+        " ) AS current_attempt ON true"
+        " JOIN LATERAL ("
+        " SELECT run.evidence_artifact_id FROM panestria.check_run AS run"
+        " WHERE run.acceptance_check_id = check_row.id"
+        " AND run.attempt_id = current_attempt.id AND run.verdict = 'PASS'"
+        " ORDER BY run.checked_at DESC LIMIT 1"
+        " ) AS latest ON true"
+        " JOIN panestria.artifact AS artifact ON artifact.id = latest.evidence_artifact_id"
+        " WHERE task.id = %s AND check_row.required",
+        (task_id,),
+    ).fetchall()
+    if not rows:
+        return False
+    for digest, size, kind in rows:
+        name = str(digest).strip()
+        path = (root / name).resolve()
+        if path.parent != root or not path.is_file():
+            return False
+        data = path.read_bytes()
+        if len(data) != int(size) or hashlib.sha256(data).hexdigest() != name:
+            return False
+        if str(kind) == "check-report" and not report_output_consistent(data):
+            return False
+    return True
 
 
 def snapshot_artifact(connection: Conn, task_id: str) -> str | None:

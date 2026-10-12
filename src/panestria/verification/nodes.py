@@ -163,6 +163,27 @@ def evaluate_checks(
     return tuple(reports)
 
 
+def report_output_consistent(data: bytes) -> bool:
+    """A claimed output hash must match the output bytes kept in the report."""
+    try:
+        payload = json.loads(data)
+    except json.JSONDecodeError:
+        return False
+    if not isinstance(payload, dict):
+        return False
+    encoded = payload.get("output_b64", "")
+    digest = payload.get("output_sha256", "")
+    if not isinstance(encoded, str) or not isinstance(digest, str):
+        return False
+    if encoded == "" and digest == "":
+        return True
+    try:
+        raw = base64.b64decode(encoded, validate=True)
+    except ValueError:
+        return False
+    return hashlib.sha256(raw).hexdigest() == digest
+
+
 def required_passed(reports: tuple[NodeReport, ...]) -> bool:
     required = [item for item in reports if item.required]
     return bool(required) and all(item.verdict == "PASS" for item in required)
@@ -258,7 +279,7 @@ def _diff(
         report.base_sha or base_sha,
         attempt_id,
         digest,
-        hashlib.sha256(report.candidate_tree.encode()).hexdigest() if report.candidate_tree else "",
+        "",
         report.denied,
         report.candidate_tree,
         report.changed,

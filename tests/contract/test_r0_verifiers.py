@@ -14,7 +14,13 @@ import pytest
 from panestria.contracts.goal import GoalContract, contract_sha256, load_contract
 from panestria.sandbox.worktree import WorktreeManager
 from panestria.verification.diff import inspect_diff
-from panestria.verification.nodes import ArtifactFact, ReviewFact, evaluate_checks, required_passed
+from panestria.verification.nodes import (
+    ArtifactFact,
+    ReviewFact,
+    evaluate_checks,
+    report_output_consistent,
+    required_passed,
+)
 from panestria.verification.registry import CommandRegistry, RegisteredCommand
 from panestria.verification.runner import OUTPUT_LIMIT, TrustedCheckRunner
 
@@ -125,6 +131,10 @@ def test_distinct_command_specs_do_not_share_one_result(tmp_path: Path, record_p
     retained = json.loads(by_id["pass-zero"].canonical_bytes())
     assert base64.b64decode(retained["output_b64"]) == b""
     assert retained["output_sha256"] == hashlib.sha256(b"").hexdigest()
+    assert report_output_consistent(by_id["pass-zero"].canonical_bytes()) is True
+    mutated = json.loads(by_id["pass-zero"].canonical_bytes())
+    mutated["output_sha256"] = "ab" * 32
+    assert report_output_consistent(json.dumps(mutated).encode()) is False
     assert by_id["want-one"].verdict == "FAIL"
     assert by_id["want-one"].reason == "exit_0"
     assert by_id["unknown"].verdict == "FAIL"
