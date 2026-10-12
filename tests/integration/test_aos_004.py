@@ -15,7 +15,7 @@ import pytest
 from psycopg.errors import CheckViolation
 
 from panestria.brokers.harness.mock import OUTPUT_LIMIT, Candidate, MockWorkerAdapter, Observation, WorkerEvent
-from panestria.execution.synthetic_journey import SyntheticJourney, _record_report, snapshot_artifact
+from panestria.execution.synthetic_journey import JourneySnapshot, SyntheticJourney, _record_report, snapshot_artifact
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.sandbox.artifact_ingress import ArtifactIngress, ArtifactRef
@@ -1202,6 +1202,125 @@ def test_journey_contract_follows_the_task_or_the_latest_version(
         bound = journey._contract(connection, actor, goal)
         assert bound[0] == older
         assert bound[2] == 1
+
+
+def test_stale_snapshot_does_not_complete_a_different_approval(
+    record_property: pytest.RecordProperty,
+    tmp_path: Path,
+) -> None:
+    _properties(record_property, "AOS-005-TC04", "chaos")
+    _database()
+    goal = "00000000-0000-4000-8000-000000000240"
+    contract = "00000000-0000-4000-8000-000000000241"
+    task = "00000000-0000-4000-8000-000000000242"
+    older = "00000000-0000-4000-8000-000000000243"
+    newer = "00000000-0000-4000-8000-000000000245"
+    digest = "ab" * 32
+    actor = Actor(OWNER, PROJECT)
+    sha = _bare_ref(tmp_path)
+    preview = json.dumps(
+        {
+            "action_kind": "merge",
+            "owner_id": OWNER,
+            "project_id": PROJECT,
+            "task_id": task,
+            "contract_sha256": digest,
+            "contract_version": 1,
+            "policy_version": "synthetic-approve-first-v1",
+            "destination": f"refs/heads/main@{sha}",
+            "expected_base": sha,
+            "candidate_sha256": "cd" * 32,
+            "required_checks": ["synthetic-required"],
+            "minimum_actor_id": OWNER,
+            "expires_at": "2027-01-01T00:00:00+00:00",
+        }
+    )
+    with psycopg.connect(DATABASE_URL) as connection:
+        connection.execute("INSERT INTO panestria.principal (id, display_name) VALUES (%s, 'owner')", (OWNER,))
+        connection.execute("INSERT INTO panestria.project (id, owner_id) VALUES (%s, %s)", (PROJECT, OWNER))
+        connection.execute(
+            "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+            " VALUES (%s, %s, %s, 'synthetic', 'CREATED')",
+            (goal, OWNER, PROJECT),
+        )
+        connection.execute(
+            "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
+            " VALUES (%s, %s, 1, %s::jsonb, %s)",
+            (contract, goal, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', digest),
+        )
+        connection.execute(
+            "INSERT INTO panestria.task"
+            " (id, goal_id, contract_id, name, state, continuation_kind)"
+            " VALUES (%s, %s, %s, 'effect', 'VERIFYING', 'MERGE')",
+            (task, goal, contract),
+        )
+        for request_id, event_id, body in (
+            (older, "00000000-0000-4000-8000-000000000244", '{"action_kind":"merge"}'),
+            (newer, "00000000-0000-4000-8000-000000000246", preview),
+        ):
+            connection.execute(
+                "INSERT INTO panestria.approval_request"
+                " (id, goal_id, task_id, owner_id, project_id, minimum_actor_id, action_kind,"
+                " effect_digest, policy_version, state, expires_at, decided_at, decided_by, preview)"
+                " VALUES (%s, %s, %s, %s, %s, %s, 'merge', %s,"
+                " 'synthetic-approve-first-v1', 'APPROVED', now() + interval '1 hour', now(), %s, %s::jsonb)",
+                (request_id, goal, task, OWNER, PROJECT, OWNER, digest, OWNER, body),
+            )
+            connection.execute(
+                "INSERT INTO panestria.task_event (id, goal_id, task_id, kind, actor, payload)"
+                " VALUES (%s, %s, %s, 'approval.requested', %s, %s::jsonb)",
+                (event_id, goal, task, OWNER, '{"approval_id":"%s"}' % request_id),
+            )
+        connection.execute(
+            "INSERT INTO panestria.side_effect"
+            " (id, task_id, effect_key, target, request_hash, state)"
+            " VALUES (%s, %s, %s, 'refs/heads/main', %s, 'PREPARED')",
+            ("00000000-0000-4000-8000-000000000247", task, f"approval:{older}", digest),
+        )
+        connection.commit()
+        journey = SyntheticJourney()
+        stale = JourneySnapshot("CREATED", "VERIFYING", "MERGE", older, digest, 0, 0, None, "PREPARED")
+        journey._confirm(connection, actor, goal, tmp_path, stale)
+        goal_status = connection.execute("SELECT status FROM panestria.goal WHERE id = %s", (goal,)).fetchone()
+        task_state = connection.execute("SELECT state FROM panestria.task WHERE id = %s", (task,)).fetchone()
+        effect = connection.execute(
+            "SELECT state FROM panestria.side_effect WHERE effect_key = %s",
+            (f"approval:{older}",),
+        ).fetchone()
+        assert goal_status is not None and goal_status[0] == "CREATED"
+        assert task_state is not None and task_state[0] == "VERIFYING"
+        assert effect is not None and effect[0] == "PREPARED"
+        assert _git_commit_sha(tmp_path / "protected" / "dest.git") == sha
+
+
+def _bare_ref(sandbox: Path) -> str:
+    seed = sandbox / "seed"
+    seed.mkdir()
+    _git_commit(seed, ["init", "-b", "main"])
+    (seed / "README.txt").write_text("base\n")
+    _git_commit(seed, ["add", "README.txt"])
+    _git_commit(seed, ["commit", "-m", "base"])
+    bare = sandbox / "protected" / "dest.git"
+    bare.parent.mkdir()
+    completed = subprocess.run(
+        ["git", "clone", "--bare", str(seed), str(bare)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    return _git_commit_sha(bare)
+
+
+def _git_commit_sha(bare: Path) -> str:
+    completed = subprocess.run(
+        ["git", "--git-dir", str(bare), "rev-parse", "refs/heads/main"],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    return completed.stdout.strip()
 
 
 def _git_commit(worktree: Path, args: list[str]) -> None:

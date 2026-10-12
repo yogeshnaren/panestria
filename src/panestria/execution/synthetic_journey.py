@@ -278,7 +278,9 @@ class SyntheticJourney:
     ) -> None:
         task_id, _version = self._identity(connection, actor, goal_id)
         approval = self._approval(connection, task_id, "merge")
-        if approval is None:
+        if approval is None or approval[0] != snapshot.approval_id:
+            return
+        if not self._prepared_effect(connection, task_id, approval[0]):
             return
         preview = load_preview(self._preview_body(connection, approval[0]))
         if "@" not in preview.destination:
@@ -299,7 +301,9 @@ class SyntheticJourney:
             self._reject_effect(connection, actor, goal_id, task_id, approval[0], approval[2], "cas-rejected")
             return
         crash_gate("before-effect-commit")
-        self._effect_state(connection, task_id, approval[0], "SUCCEEDED", "cas-confirmed")
+        if self._effect_state(connection, task_id, approval[0], "SUCCEEDED", "cas-confirmed") != 1:
+            connection.rollback()
+            return
         connection.execute(
             "UPDATE panestria.goal SET status = 'COMPLETED', updated_at = now() WHERE id = %s",
             (goal_id,),
@@ -647,12 +651,23 @@ class SyntheticJourney:
             return found
         return _insert_attempt(connection, str(uuid4()), task_id, epoch, "RUNNING", None)
 
-    def _effect_state(self, connection: Conn, task_id: str, approval_id: str, state: str, note: str) -> None:
-        connection.execute(
+    def _prepared_effect(self, connection: Conn, task_id: str, approval_id: str) -> bool:
+        row = connection.execute(
+            "SELECT id FROM panestria.side_effect"
+            " WHERE task_id = %s AND effect_key = %s AND state = 'PREPARED'"
+            " FOR UPDATE",
+            (task_id, f"approval:{approval_id}"),
+        ).fetchone()
+        return row is not None
+
+    def _effect_state(self, connection: Conn, task_id: str, approval_id: str, state: str, note: str) -> int:
+        row = connection.execute(
             "UPDATE panestria.side_effect SET state = %s, reconciliation_note = %s"
-            " WHERE task_id = %s AND state = 'PREPARED' AND effect_key = %s",
+            " WHERE task_id = %s AND state = 'PREPARED' AND effect_key = %s"
+            " RETURNING id",
             (state, note, task_id, f"approval:{approval_id}"),
-        )
+        ).fetchone()
+        return 0 if row is None else 1
 
     def _snapshot(self, connection: Conn, actor: Actor, goal_id: str) -> JourneySnapshot:
         task = self._task(connection, actor, goal_id)
