@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from uuid import UUID
 
 import pytest
 from fastapi.testclient import TestClient
@@ -53,7 +54,35 @@ def test_database_outage_is_unavailable(record_property: pytest.RecordProperty) 
         )
     assert response.status_code == 503
     body = response.json()
-    assert body == {"code": "database_unavailable", "message": "database_unavailable", "retryable": True}
+    assert set(body) == {"code", "correlation_id", "message", "retryable"}
+    assert body["code"] == "database_unavailable"
+    assert body["message"] == "database_unavailable"
+    assert body["retryable"] is True
+    assert UUID(str(body["correlation_id"])).version == 4
     encoded = json.dumps(body)
     assert "postgresql://" not in encoded
     assert "placeholder-not-a-secret" not in encoded
+
+
+def test_denial_correlation_id_is_not_taken_from_the_request(record_property: pytest.RecordProperty) -> None:
+    record_property("gate_case_id", "AOS-005-TC02")
+    forged = "11111111-1111-4111-8111-111111111111"
+    with _client(CLOSED) as client:
+        headers = {
+            "Authorization": "Bearer not-the-token",
+            "Idempotency-Key": "forged",
+            "X-Correlation-Id": forged,
+        }
+        first = client.post("/v1/goals", content=b"{}", headers=headers)
+        second = client.post("/v1/goals", content=b"{}", headers=headers)
+    assert first.status_code == 401
+    assert second.status_code == 401
+    one = first.json()
+    two = second.json()
+    assert one["code"] == "unauthorized"
+    assert one["retryable"] is False
+    assert one["correlation_id"] != forged
+    assert two["correlation_id"] != forged
+    assert one["correlation_id"] != two["correlation_id"]
+    assert UUID(str(one["correlation_id"])).version == 4
+    assert "postgresql://" not in json.dumps(one)

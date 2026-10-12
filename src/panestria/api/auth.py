@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hmac
 from dataclasses import dataclass
+from uuid import uuid4
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -47,7 +48,13 @@ def authorize(request: Request, api: GoalApi) -> Actor:
 
 
 def error_body(code: str) -> dict[str, object]:
-    return {"code": code, "message": code, "retryable": code == "database_unavailable"}
+    """Stable denial shape. The correlation id is generated here and is not taken from the request."""
+    return {
+        "code": code,
+        "correlation_id": str(uuid4()),
+        "message": code,
+        "retryable": code == "database_unavailable",
+    }
 
 
 async def read_capped_body(request: Request) -> bytes | JSONResponse:

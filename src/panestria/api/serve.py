@@ -9,6 +9,7 @@ other interface.
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 import queue
 import sys
@@ -18,7 +19,7 @@ from urllib.parse import urlsplit
 
 import psycopg
 
-from panestria.api.auth import MAX_BODY_BYTES, GoalApi
+from panestria.api.auth import MAX_BODY_BYTES, GoalApi, error_body
 from panestria.api.health import default_readiness_probe
 from panestria.api.main import create_app, mount_goal_api
 from panestria.config import ProfileRejected, load_settings
@@ -140,7 +141,7 @@ async def _read_request(reader: asyncio.StreamReader) -> tuple[str, str, list[tu
 
 
 def _plain(status: int, code: str) -> bytes:
-    payload = f'{{"code":"{code}","message":"{code}","retryable":false}}'.encode()
+    payload = json.dumps(error_body(code), separators=(",", ":")).encode()
     reason = {400: "Bad Request", 413: "Payload Too Large"}.get(status, "Error")
     header = (
         f"HTTP/1.1 {status} {reason}\r\nContent-Type: application/json\r\n"

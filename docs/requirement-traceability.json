@@ -708,6 +708,19 @@
       "status": "NOT_IMPLEMENTED"
     },
     {
+      "id": "AOS-005-IF01",
+      "aos_id": "AOS-005",
+      "source_kind": "IF",
+      "source_clause": "Canonical JSON errors {code,message,correlation_id,retryable}.",
+      "slice_ids": [
+        "AOS-005-S1"
+      ],
+      "case_ids": [
+        "AOS-005-TC02"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
       "id": "AOS-006-F01",
       "aos_id": "AOS-006",
       "source_kind": "F",

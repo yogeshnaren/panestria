@@ -44,6 +44,7 @@ Repositories use the supplied UnitOfWork/session and never commit independently.
 | AOS-005-AC02 | Kill API before approval, restart, decide once: exact action executes once in mock; altered effect_digest/expired request denied. Wrong project/owner/task linkage fails the database constraints and service guards; an unauthorized minimum actor cannot decide or consume the request. | AOS-005-S1, AOS-005-S2, AOS-005-S3; owning files/interfaces above | AOS-005-TC01, AOS-005-TC02, AOS-005-TC03, AOS-005-TC04; parameterize every condition in this clause |
 | AOS-005-AC03 | HTTP from unauthorized origin and wrong Host denied in basic test; AOS-009 later completes browser/DNS rebinding adversarial matrix. | AOS-005-S1, AOS-005-S2, AOS-005-S3; owning files/interfaces above | AOS-005-TC01, AOS-005-TC02, AOS-005-TC03, AOS-005-TC04; parameterize every condition in this clause |
 | AOS-005-AC04 | CLI sees correct state after reconnect, including canonical event cursor and artifact SHA256. | AOS-005-S1, AOS-005-S2, AOS-005-S3; owning files/interfaces above | AOS-005-TC01, AOS-005-TC02, AOS-005-TC03, AOS-005-TC04; parameterize every condition in this clause |
+| AOS-005-IF01 | Canonical JSON errors `{code,message,correlation_id,retryable}`. | `src/panestria/api/auth.py` | AOS-005-TC02 generates a fresh correlation id and does not copy one from the request. |
 
 These groups are planned obligations, not observed coverage. Actual assertions/parameters must map each clause ID; split a broad scenario group when needed. A multi-condition clause cannot pass from only one happy-path assertion.
 
@@ -60,7 +61,7 @@ These groups are planned obligations, not observed coverage. Actual assertions/p
 | Case | Lane | Planned node | Expected passing behavior |
 |---|---|---|---|
 | AOS-005-TC01 | e2e | `tests/e2e/test_aos_005.py::test_r0_positive_journey` | CLI submits and consents, observes task/evidence, approves exact candidate and sees completed synthetic goal after confirmed effect. |
-| AOS-005-TC02 | security | `tests/e2e/test_aos_005.py::test_approval_digest_actor_expiry` | Wrong actor/project/digest, expired request or changed payload cannot dispatch effect; unknown check prevents completion. |
+| AOS-005-TC02 | security | `tests/e2e/test_aos_005.py::test_approval_digest_actor_expiry` | Wrong actor/project/digest, expired request or changed payload cannot dispatch effect; unknown check prevents completion. API denials include a generated correlation id and do not copy one from the request. |
 | AOS-005-TC03 | integration | `tests/e2e/test_aos_005.py::test_decision_race_idempotency` | Approve/deny and duplicate consume races yield one decision/effect; repeated key with changed body conflicts. |
 | AOS-005-TC04 | chaos | `tests/e2e/test_aos_005.py::test_wait_restart_continuation` | Restart at contract wait dispatches only after consent; restart at merge wait resumes finalize, does not launch another worker. |
 
