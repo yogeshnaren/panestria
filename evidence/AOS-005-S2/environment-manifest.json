@@ -1,0 +1,50 @@
+{
+  "slice": "AOS-005-S2",
+  "observed_at": "2026-10-12T06:57:27.696016Z",
+  "candidate_commit": "eb5d6c333fef26abd1daad9ca46563e2128f3c21",
+  "candidate_contains_tested_source": true,
+  "worktree_state_at_test_start": "clean",
+  "junit_sha256": "fa5f8f0155ddff22f6bfc504df802a319e9c5adfb1e10d7ab26b49233452807a",
+  "fixture_sha256": "9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283",
+  "fixture": "docs/fixtures/synthetic-goal-contract.json",
+  "execution_mode": "OS_BOUNDARY",
+  "database": "disposable_postgresql",
+  "executor": "fastapi-testclient-and-urllib-cli",
+  "catalog_case_aos_005_tc01": "NOT_RUN",
+  "cli_transport": "CLI functions built a urllib request and the test forwarded it into FastAPI TestClient. No separate TCP listener ran, and uvicorn is not installed.",
+  "hardware": {
+    "probed": false,
+    "verdict": "UNKNOWN",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "release_gate": "INCOMPLETE",
+  "components": [
+    {
+      "name": "approval-binding",
+      "resolved_version": "0003_approval_preview",
+      "source": "migrations/versions/0003_approval_preview.py",
+      "capability": "immutable preview and one decision",
+      "outcome": "a changed digest, wrong actor, expired request, and denied request prepared no effect",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "postgresql",
+      "resolved_version": "postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d",
+      "source": "docker.io/library/postgres:16",
+      "capability": "locked decision, check evidence, and one prepared effect",
+      "outcome": "an UNKNOWN check left the task waiting; a PASS with evidence prepared one effect and did not add an attempt",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pytest",
+      "resolved_version": "9.1.1",
+      "source": "https://pypi.org/simple",
+      "capability": "non-live regression",
+      "outcome": "90 passed",
+      "mocked": false,
+      "live": false
+    }
+  ]
+}

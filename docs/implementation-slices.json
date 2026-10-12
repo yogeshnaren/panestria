@@ -400,7 +400,13 @@
         "AOS-005-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
+      "status": "OS_BOUNDARY_OBSERVED_AWAITING_REVIEW",
+      "evidence_refs": [
+        "evidence/AOS-005-S2.xml",
+        "evidence/AOS-005-S2/case-result-TC02.json",
+        "evidence/AOS-005-S2/assertion-map.json",
+        "evidence/AOS-005-S2/environment-manifest.json"
+      ],
       "prompt_ref": "cursor/prompts/AOS-005-S2.md"
     },
     {

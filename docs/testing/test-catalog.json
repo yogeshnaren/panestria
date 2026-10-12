@@ -198,7 +198,7 @@
       "expected": "Wrong actor/project/digest, expired request or changed payload cannot dispatch effect; unknown check prevents completion.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
-      "status": "NOT_RUN"
+      "status": "OS_BOUNDARY_OBSERVED_NOT_RELEASE"
     },
     {
       "id": "AOS-005-TC03",
