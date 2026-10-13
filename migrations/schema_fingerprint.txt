@@ -33,6 +33,14 @@ column artifact sha256 bpchar NO
 column artifact size_bytes int8 NO
 column artifact store_key text NO
 column artifact task_id uuid NO
+column budget_reservation actual_microusd int8 YES
+column budget_reservation amount_microusd int8 NO
+column budget_reservation created_at timestamptz NO
+column budget_reservation goal_id uuid NO
+column budget_reservation id uuid NO
+column budget_reservation request_key text NO
+column budget_reservation state text NO
+column budget_reservation task_id uuid NO
 column check_run acceptance_check_id uuid NO
 column check_run attempt_id uuid NO
 column check_run candidate_sha256 bpchar YES
@@ -56,6 +64,10 @@ column goal owner_id uuid NO
 column goal project_id uuid NO
 column goal status text NO
 column goal updated_at timestamptz NO
+column goal_budget cash_cap_microusd int8 YES
+column goal_budget goal_id uuid NO
+column goal_budget row_version int8 NO
+column goal_budget settled_microusd int8 NO
 column goal_contract approved_at timestamptz YES
 column goal_contract approved_by uuid YES
 column goal_contract body jsonb NO
@@ -165,6 +177,14 @@ constraint panestria.artifact f FOREIGN KEY (attempt_id, task_id) REFERENCES pan
 constraint panestria.artifact f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.artifact p PRIMARY KEY (id)
 constraint panestria.artifact u UNIQUE (id, task_id)
+constraint panestria.budget_reservation c CHECK (((state = 'SETTLED'::text) = (actual_microusd IS NOT NULL)))
+constraint panestria.budget_reservation c CHECK ((actual_microusd >= 0))
+constraint panestria.budget_reservation c CHECK ((amount_microusd >= 0))
+constraint panestria.budget_reservation c CHECK ((state = ANY (ARRAY['RESERVED'::text, 'SETTLED'::text, 'RELEASED'::text, 'UNKNOWN'::text])))
+constraint panestria.budget_reservation f FOREIGN KEY (goal_id) REFERENCES panestria.goal_budget(goal_id)
+constraint panestria.budget_reservation f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
+constraint panestria.budget_reservation p PRIMARY KEY (id)
+constraint panestria.budget_reservation u UNIQUE (goal_id, request_key)
 constraint panestria.check_run c CHECK (((candidate_sha256 IS NULL) OR (candidate_sha256 ~ '^[0-9a-f]{64}$'::text)))
 constraint panestria.check_run c CHECK (((verdict <> 'PASS'::text) OR (candidate_sha256 IS NOT NULL)))
 constraint panestria.check_run c CHECK (((verdict <> 'PASS'::text) OR (evidence_artifact_id IS NOT NULL)))
@@ -183,6 +203,11 @@ constraint panestria.goal f FOREIGN KEY (project_id) REFERENCES panestria.projec
 constraint panestria.goal f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.goal p PRIMARY KEY (id)
 constraint panestria.goal u UNIQUE (id, project_id, owner_id)
+constraint panestria.goal_budget c CHECK ((cash_cap_microusd >= 0))
+constraint panestria.goal_budget c CHECK ((row_version >= 0))
+constraint panestria.goal_budget c CHECK ((settled_microusd >= 0))
+constraint panestria.goal_budget f FOREIGN KEY (goal_id) REFERENCES panestria.goal(id)
+constraint panestria.goal_budget p PRIMARY KEY (goal_id)
 constraint panestria.goal_contract c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.goal_contract c CHECK ((version > 0))
 constraint panestria.goal_contract f FOREIGN KEY (approved_by) REFERENCES panestria.principal(id)
@@ -249,8 +274,11 @@ index CREATE UNIQUE INDEX approval_consumption_side_effect_id_key ON panestria.a
 index CREATE UNIQUE INDEX approval_request_pkey ON panestria.approval_request USING btree (id)
 index CREATE UNIQUE INDEX artifact_id_task_id_key ON panestria.artifact USING btree (id, task_id)
 index CREATE UNIQUE INDEX artifact_pkey ON panestria.artifact USING btree (id)
+index CREATE UNIQUE INDEX budget_reservation_goal_id_request_key_key ON panestria.budget_reservation USING btree (goal_id, request_key)
+index CREATE UNIQUE INDEX budget_reservation_pkey ON panestria.budget_reservation USING btree (id)
 index CREATE UNIQUE INDEX check_run_pkey ON panestria.check_run USING btree (id)
 index CREATE UNIQUE INDEX effect_outbox_pkey ON panestria.effect_outbox USING btree (effect_id)
+index CREATE UNIQUE INDEX goal_budget_pkey ON panestria.goal_budget USING btree (goal_id)
 index CREATE UNIQUE INDEX goal_contract_goal_id_version_key ON panestria.goal_contract USING btree (goal_id, version)
 index CREATE UNIQUE INDEX goal_contract_id_goal_id_key ON panestria.goal_contract USING btree (id, goal_id)
 index CREATE UNIQUE INDEX goal_contract_pkey ON panestria.goal_contract USING btree (id)
