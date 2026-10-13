@@ -36,11 +36,11 @@ class DispatchClaim:
 
 class SideEffectService:
     def prepare(self, uow: UnitOfWork, actor: Actor, intent: EffectIntent, approval_id: str | None) -> EffectRef:
+        require_current_policy(uow, actor, intent.policy_version)
         locked = lock_task(uow, actor.owner_id, actor.project_id, intent.task_id)
         if locked is None:
             raise KernelDenied("not_found")
         goal_id, task_state, _version, _epoch = locked
-        require_current_policy(uow, actor, intent.policy_version)
         existing = uow.execute(
             "SELECT id::text,state,request_hash FROM panestria.side_effect"
             " WHERE task_id=%s AND effect_key=%s FOR UPDATE",
@@ -158,12 +158,14 @@ class SideEffectService:
         if hint is None:
             raise KernelDenied("not_found")
         task_id = str(hint[0])
+        project = uow.execute(
+            "SELECT id FROM panestria.project WHERE id=%s AND owner_id=%s FOR SHARE", (actor.project_id, actor.owner_id)
+        ).fetchone()
+        if project is None:
+            raise KernelDenied("not_found")
         task = lock_task(uow, actor.owner_id, actor.project_id, task_id)
         if task is None:
             raise KernelDenied("not_found")
-        uow.execute(
-            "SELECT id FROM panestria.project WHERE id=%s AND owner_id=%s FOR SHARE", (actor.project_id, actor.owner_id)
-        )
         row = uow.execute(
             "SELECT e.state,e.dispatch_epoch,e.target,e.request_ref,e.request_hash,e.classification,"
             " o.state,o.due_at<=clock_timestamp(),o.claim_expires_at<=clock_timestamp(),"
