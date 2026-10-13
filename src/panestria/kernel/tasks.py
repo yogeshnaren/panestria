@@ -130,6 +130,14 @@ class TaskService:
         goal_id, state, row_version, lease_epoch = current
         if row_version != expected_version or lease_epoch != epoch:
             raise KernelDenied("version_conflict")
+        if state in {"LEASED", "RUNNING"} and target not in {"CANCELLING", "FAILED"}:
+            live = uow.execute(
+                "SELECT lease_expires_at, lease_expires_at > clock_timestamp(), status"
+                " FROM panestria.task_attempt WHERE task_id=%s AND lease_epoch=%s",
+                (task_id, epoch),
+            ).fetchone()
+            if live is not None and live[0] is not None and (live[1] is not True or live[2] != "RUNNING"):
+                raise KernelDenied("stale_lease")
         stored = uow.execute(
             "SELECT contract.body->>'autonomy_profile_ref'"
             " FROM panestria.task AS task"

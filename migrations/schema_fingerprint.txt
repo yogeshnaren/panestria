@@ -91,9 +91,11 @@ column task created_at timestamptz NO
 column task goal_id uuid NO
 column task id uuid NO
 column task lease_epoch int8 NO
+column task max_attempts int4 NO
 column task name text NO
 column task priority int4 NO
 column task resume_phase text YES
+column task retry_at timestamptz YES
 column task row_version int8 NO
 column task state text NO
 column task updated_at timestamptz NO
@@ -105,6 +107,7 @@ column task_attempt finished_at timestamptz YES
 column task_attempt heartbeat_at timestamptz YES
 column task_attempt id uuid NO
 column task_attempt lease_epoch int8 NO
+column task_attempt lease_expires_at timestamptz YES
 column task_attempt started_at timestamptz YES
 column task_attempt status text NO
 column task_attempt task_id uuid NO
@@ -188,6 +191,7 @@ constraint panestria.side_effect f FOREIGN KEY (approval_request_id) REFERENCES 
 constraint panestria.side_effect f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.side_effect p PRIMARY KEY (id)
 constraint panestria.side_effect u UNIQUE (task_id, effect_key)
+constraint panestria.task c CHECK (((max_attempts >= 1) AND (max_attempts <= 20)))
 constraint panestria.task c CHECK ((continuation_kind = ANY (ARRAY['DISPATCH'::text, 'MERGE'::text, 'FINALIZE'::text])))
 constraint panestria.task c CHECK ((row_version >= 0))
 constraint panestria.task c CHECK ((state = ANY (ARRAY['CREATED'::text, 'VALIDATING'::text, 'READY'::text, 'LEASED'::text, 'RUNNING'::text, 'WAITING_APPROVAL'::text, 'VERIFYING'::text, 'RETRY_WAIT'::text, 'RECONCILING'::text, 'CANCELLING'::text, 'COMPLETED'::text, 'FAILED'::text, 'CANCELLED'::text, 'REJECTED'::text])))
@@ -218,6 +222,7 @@ constraint panestria.workflow_link f FOREIGN KEY (task_id) REFERENCES panestria.
 constraint panestria.workflow_link p PRIMARY KEY (task_id, attempt_id)
 constraint panestria.workflow_link u UNIQUE (dbos_workflow_id)
 index CREATE INDEX ix_approvals_owner_pending ON panestria.approval_request USING btree (owner_id, state, expires_at)
+index CREATE INDEX ix_attempt_expiry ON panestria.task_attempt USING btree (lease_expires_at) WHERE (status = ANY (ARRAY['PENDING'::text, 'RUNNING'::text]))
 index CREATE INDEX ix_event_goal_seq ON panestria.task_event USING btree (goal_id, seq)
 index CREATE INDEX ix_task_goal ON panestria.task USING btree (goal_id)
 index CREATE UNIQUE INDEX acceptance_check_contract_id_check_key_key ON panestria.acceptance_check USING btree (contract_id, check_key)
