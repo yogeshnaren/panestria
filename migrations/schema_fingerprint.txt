@@ -143,6 +143,21 @@ column memory_item row_version int8 NO
 column memory_item status text NO
 column memory_item valid_from timestamptz NO
 column memory_item valid_until timestamptz YES
+column memory_review created_at timestamptz NO
+column memory_review decided_at timestamptz YES
+column memory_review decided_by uuid YES
+column memory_review effect_digest bpchar NO
+column memory_review expected_version int8 NO
+column memory_review expires_at timestamptz NO
+column memory_review id uuid NO
+column memory_review item_id uuid NO
+column memory_review old_label text NO
+column memory_review old_sha256 bpchar NO
+column memory_review owner_id uuid NO
+column memory_review policy_ref text NO
+column memory_review project_id uuid NO
+column memory_review proposed jsonb NO
+column memory_review state text NO
 column memory_revision body text NO
 column memory_revision created_at timestamptz NO
 column memory_revision id uuid NO
@@ -160,6 +175,7 @@ column memory_source id uuid NO
 column memory_source owner_id uuid NO
 column memory_source privacy_label text NO
 column memory_source project_id uuid NO
+column memory_source review_id uuid YES
 column memory_source sha256 bpchar NO
 column memory_source source_uri text NO
 column memory_use_event confidence float8 YES
@@ -394,6 +410,12 @@ constraint panestria.memory_item f FOREIGN KEY (id, current_revision) REFERENCES
 constraint panestria.memory_item f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.memory_item p PRIMARY KEY (id)
 constraint panestria.memory_item u UNIQUE (id, owner_id, project_id)
+constraint panestria.memory_review c CHECK (((decided_by IS NULL) OR (decided_by = owner_id)))
+constraint panestria.memory_review c CHECK ((effect_digest ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.memory_review c CHECK ((state = ANY (ARRAY['PENDING'::text, 'APPROVED'::text, 'DENIED'::text, 'CONSUMED'::text])))
+constraint panestria.memory_review f FOREIGN KEY (item_id, owner_id, project_id) REFERENCES panestria.memory_item(id, owner_id, project_id)
+constraint panestria.memory_review p PRIMARY KEY (id)
+constraint panestria.memory_review u UNIQUE (id, owner_id, project_id)
 constraint panestria.memory_revision c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.memory_revision c CHECK ((version > 0))
 constraint panestria.memory_revision f FOREIGN KEY (item_id, owner_id, project_id) REFERENCES panestria.memory_item(id, owner_id, project_id)
@@ -405,6 +427,7 @@ constraint panestria.memory_source c CHECK ((privacy_label = ANY (ARRAY['PUBLIC'
 constraint panestria.memory_source c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.memory_source f FOREIGN KEY (consented_by) REFERENCES panestria.principal(id)
 constraint panestria.memory_source f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.memory_source f FOREIGN KEY (review_id, owner_id, project_id) REFERENCES panestria.memory_review(id, owner_id, project_id)
 constraint panestria.memory_source p PRIMARY KEY (id)
 constraint panestria.memory_source u UNIQUE (id, owner_id, project_id)
 constraint panestria.memory_use_event c CHECK (((confidence >= (0)::double precision) AND (confidence <= (1)::double precision)))
@@ -524,6 +547,8 @@ index CREATE UNIQUE INDEX learning_record_id_owner_id_project_id_key ON panestri
 index CREATE UNIQUE INDEX learning_record_pkey ON panestria.learning_record USING btree (id)
 index CREATE UNIQUE INDEX memory_item_id_owner_id_project_id_key ON panestria.memory_item USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX memory_item_pkey ON panestria.memory_item USING btree (id)
+index CREATE UNIQUE INDEX memory_review_id_owner_id_project_id_key ON panestria.memory_review USING btree (id, owner_id, project_id)
+index CREATE UNIQUE INDEX memory_review_pkey ON panestria.memory_review USING btree (id)
 index CREATE UNIQUE INDEX memory_revision_id_item_id_owner_id_project_id_key ON panestria.memory_revision USING btree (id, item_id, owner_id, project_id)
 index CREATE UNIQUE INDEX memory_revision_item_id_version_key ON panestria.memory_revision USING btree (item_id, version)
 index CREATE UNIQUE INDEX memory_revision_pkey ON panestria.memory_revision USING btree (id)

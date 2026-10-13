@@ -11,6 +11,7 @@ from panestria.contracts.policy import DataLabel
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.uow import UnitOfWork
+from panestria.memory.reclassification import consume_review, guard_review_policy
 
 _LABELS: dict[str, int] = {"PUBLIC": 0, "PRIVATE": 1, "RESTRICTED": 2}
 
@@ -47,13 +48,15 @@ class MemoryService:
         ):
             raise KernelDenied("not_found")
 
-    def _source(self, uow: UnitOfWork, actor: Actor, document: MemorySubmission) -> tuple[str, str]:
+    def _source(
+        self, uow: UnitOfWork, actor: Actor, document: MemorySubmission, review_id: str | None = None
+    ) -> tuple[str, str]:
         source_id = str(uuid4())
         digest = hashlib.sha256(document.body.encode()).hexdigest()
         uow.execute(
             "INSERT INTO panestria.memory_source"
-            " (id,owner_id,project_id,source_uri,body,sha256,privacy_label,consented_by)"
-            " VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
+            " (id,owner_id,project_id,source_uri,body,sha256,privacy_label,consented_by,review_id)"
+            " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
             (
                 source_id,
                 actor.owner_id,
@@ -63,14 +66,21 @@ class MemoryService:
                 digest,
                 document.label,
                 actor.owner_id,
+                review_id,
             ),
         )
         return source_id, digest
 
     def _revision(
-        self, uow: UnitOfWork, actor: Actor, item_id: str, version: int, document: MemorySubmission
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        item_id: str,
+        version: int,
+        document: MemorySubmission,
+        review_id: str | None = None,
     ) -> MemoryRef:
-        source_id, digest = self._source(uow, actor, document)
+        source_id, digest = self._source(uow, actor, document, review_id)
         revision_id = str(uuid4())
         uow.execute(
             "INSERT INTO panestria.memory_revision"
@@ -101,10 +111,19 @@ class MemoryService:
         return self._revision(uow, actor, item_id, 1, document)
 
     def correct(
-        self, uow: UnitOfWork, actor: Actor, item_id: str, expected_version: int, document: MemorySubmission
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        item_id: str,
+        expected_version: int,
+        document: MemorySubmission,
+        *,
+        review_id: str | None = None,
     ) -> MemoryRef:
+        if review_id is not None:
+            guard_review_policy(uow, actor, review_id)
         row = uow.execute(
-            "SELECT i.current_revision,i.row_version,s.privacy_label,i.kind FROM panestria.memory_item i"
+            "SELECT i.current_revision,i.row_version,s.privacy_label,i.kind,r.sha256 FROM panestria.memory_item i"
             " JOIN panestria.memory_revision r ON r.item_id=i.id AND r.version=i.current_revision"
             " JOIN panestria.memory_source s ON s.id=r.source_id"
             " WHERE i.id=%s AND i.owner_id=%s AND i.project_id=%s FOR UPDATE OF i",
@@ -115,10 +134,14 @@ class MemoryService:
         if row[1] != expected_version:
             raise KernelDenied("version_conflict")
         if _LABELS[document.label] < _LABELS[str(row[2])]:
-            raise KernelDenied("privacy_downgrade_requires_review")
+            if review_id is None:
+                raise KernelDenied("privacy_downgrade_requires_review")
+            consume_review(uow, actor, review_id, item_id, expected_version, str(row[4]), document)
+        elif review_id is not None:
+            raise KernelDenied("privacy_review_not_required")
         if document.kind != row[3]:
             raise KernelDenied("memory_kind_conflict")
-        ref = self._revision(uow, actor, item_id, int(row[0]) + 1, document)
+        ref = self._revision(uow, actor, item_id, int(row[0]) + 1, document, review_id)
         uow.execute(
             "UPDATE panestria.memory_item SET current_revision=%s,row_version=row_version+1,status='ACTIVE',"
             " pinned=%s,conflict_key=%s,valid_from=COALESCE(%s,clock_timestamp()),valid_until=%s,retain_until=%s"
