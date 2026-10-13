@@ -1,9 +1,7 @@
-# Current R0 progress
+# Current phase progress
 
-Technical G0 PASS on `f161193ed31918592015ec9e68163d31d77cb0ae`: 160 non-live tests plus the fresh-Ubuntu live case. All 20 required groups observed. Owner handoff remains PENDING; R1 has not started.
+R0 is COMPLETE and owner-accepted on 2026-10-13. Tested source: `f161193ed31918592015ec9e68163d31d77cb0ae`; evidence commit: `ecdb57412e5ab790c95e2e7f87574f1844f1419b`. G0 PASS: 160 non-live tests plus the fresh Ubuntu live case, all 20 case groups. The owner acceptance is recorded in [r0-phase.acceptance.json](../contracts/phase/r0-phase.acceptance.json).
 
-The dev-api/r0-demo port conflict is repaired. The demo reuses an authenticated running API or owns and cleans up a temporary API. The read-only browser snapshot is running at http://127.0.0.1:8870/. See [current review](reviews/R0-DEMO-REVIEW.md) and [gate](../evidence/G0/evaluation.json).
+The owner authorized R1 implementation and requested separate, intuitive commits. First push the intact R0 branch under the owner's existing Git identity, then work on a separate R1 branch. R1 remains unimplemented until its code and live evidence exist; G1 is NOT_RUN. R2/R3 and SOTA are not started by this instruction.
 
-Original specs, skills ZIP and hardware probe inventories are preserved. The current full regression ran natively after a verified review-database backup. All review data was restored and checked, and the existing API process was resumed. The separate fresh VM passed the live startup case and demo.
-
-Review this candidate and its evidence before recording owner acceptance. R1 and the R3 MVP remain separate work.
+Preserve original specs and skills, R0 reports, review data and rollback receipts. R1 handoff must explain included capabilities, actual test results, setup/test instructions and expected behavior. No mock, skip or missing live evidence is a release PASS.

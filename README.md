@@ -1,6 +1,6 @@
 # panestria
 
-Local synthetic kernel for R0. The scaffold, domain tables, DBOS admission, and loopback goal flow are present. G0 passed on the recorded fresh-VM candidate; R0 owner acceptance is pending and the R3 MVP has not started. This tree is not a release.
+Local synthetic kernel for R0. The scaffold, domain tables, DBOS admission, and loopback goal flow are present. R0 is complete and owner-accepted; G0 passed on the recorded candidate. R1 implementation is authorized, and the complete MVP remains the R3 milestone. This tree is not a release.
 
 The design guide is [docs/START_HERE.md](docs/START_HERE.md). Setup is [docs/SETUP.md](docs/SETUP.md). Local limits are in [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 

@@ -1111,7 +1111,7 @@
       ]
     }
   ],
-  "owner_acceptance": "PENDING",
+  "owner_acceptance": "ACCEPTED",
   "observed_at": "2026-10-12T20:40:58.471284+00:00",
   "report_artifact_refs": [
     "evidence/R0-demo-fix/non-live.xml",
@@ -1121,5 +1121,7 @@
     "evidence/R0-demo-fix/environment-manifest.json",
     "evidence/R0-demo-fix/native-validation.json"
   ],
-  "vm_provenance_ref": "evidence/R0-demo-fix/vm-provenance.json"
+  "vm_provenance_ref": "evidence/R0-demo-fix/vm-provenance.json",
+  "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json",
+  "owner_accepted_at": "2026-10-13T07:41:20.037638+00:00"
 }

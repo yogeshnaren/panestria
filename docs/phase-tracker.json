@@ -9,7 +9,7 @@
     "boundary": "R3",
     "owner_confirmed_boundary": true,
     "aos_item_count": 31,
-    "state": "NOT_STARTED",
+    "state": "IN_PROGRESS",
     "candidate_commit": null,
     "gate_manifest": null,
     "trial_days_required": 14,
@@ -23,14 +23,14 @@
       "track": "MVP",
       "outcome": "A synthetic goal runs through durable mock work, independent verification and exact approval; restart preserves state.",
       "gate": "G0",
-      "status": "AWAITING_OWNER_REVIEW",
+      "status": "COMPLETE",
       "gate_status": "PASS",
       "items": [
         {
           "id": "AOS-001",
           "title": "Repository scaffold, developer toolchain, CI and local services",
           "dependencies": [],
-          "status": "AWAITING_OWNER_REVIEW",
+          "status": "COMPLETE",
           "planning_format": "checklist",
           "slice_developer_days_target": 1,
           "evidence_refs": [
@@ -40,9 +40,10 @@
             "evidence/AOS-001-S2/case-result.json",
             "evidence/AOS-001-S3.xml",
             "evidence/AOS-001-S3/case-result.json",
-            "evidence/R0-completion/"
+            "evidence/R0-completion/",
+            "evidence/R0-demo-fix/"
           ],
-          "plan_status": "IMPLEMENTED_TECHNICALLY_VERIFIED",
+          "plan_status": "IMPLEMENTED_ACCEPTED",
           "plan_ref": "plans/AOS-001-implementation-plan.md"
         },
         {
@@ -51,7 +52,7 @@
           "dependencies": [
             "AOS-001"
           ],
-          "status": "AWAITING_OWNER_REVIEW",
+          "status": "COMPLETE",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [
@@ -62,9 +63,10 @@
             "evidence/AOS-002-S3.xml",
             "evidence/AOS-002-S3/case-result-TC03.json",
             "evidence/AOS-002-S3/case-result-TC04.json",
-            "evidence/R0-completion/"
+            "evidence/R0-completion/",
+            "evidence/R0-demo-fix/"
           ],
-          "plan_status": "IMPLEMENTED_TECHNICALLY_VERIFIED",
+          "plan_status": "IMPLEMENTED_ACCEPTED",
           "plan_ref": "plans/AOS-002-implementation-plan.md"
         },
         {
@@ -73,7 +75,7 @@
           "dependencies": [
             "AOS-002"
           ],
-          "status": "AWAITING_OWNER_REVIEW",
+          "status": "COMPLETE",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [
@@ -84,9 +86,10 @@
             "evidence/AOS-003-S3.xml",
             "evidence/AOS-003-S3/case-result-TC03.json",
             "evidence/AOS-003-S3/case-result-TC04.json",
-            "evidence/R0-completion/"
+            "evidence/R0-completion/",
+            "evidence/R0-demo-fix/"
           ],
-          "plan_status": "IMPLEMENTED_TECHNICALLY_VERIFIED",
+          "plan_status": "IMPLEMENTED_ACCEPTED",
           "plan_ref": "plans/AOS-003-implementation-plan.md"
         },
         {
@@ -95,7 +98,7 @@
           "dependencies": [
             "AOS-003"
           ],
-          "status": "AWAITING_OWNER_REVIEW",
+          "status": "COMPLETE",
           "planning_format": "checklist",
           "slice_developer_days_target": 1,
           "evidence_refs": [
@@ -106,9 +109,10 @@
             "evidence/AOS-004-S3.xml",
             "evidence/AOS-004-S3/case-result-TC03.json",
             "evidence/AOS-004-S3/case-result-TC04.json",
-            "evidence/R0-completion/"
+            "evidence/R0-completion/",
+            "evidence/R0-demo-fix/"
           ],
-          "plan_status": "IMPLEMENTED_TECHNICALLY_VERIFIED",
+          "plan_status": "IMPLEMENTED_ACCEPTED",
           "plan_ref": "plans/AOS-004-implementation-plan.md"
         },
         {
@@ -118,7 +122,7 @@
             "AOS-003",
             "AOS-004"
           ],
-          "status": "AWAITING_OWNER_REVIEW",
+          "status": "COMPLETE",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [
@@ -132,14 +136,17 @@
             "evidence/AOS-005-S3/case-result-TC04.json",
             "evidence/G0/evaluation.json",
             "evidence/R0-corrections.xml",
-            "evidence/R0-completion/"
+            "evidence/R0-completion/",
+            "evidence/R0-demo-fix/"
           ],
-          "plan_status": "IMPLEMENTED_TECHNICALLY_VERIFIED",
+          "plan_status": "IMPLEMENTED_ACCEPTED",
           "plan_ref": "plans/AOS-005-implementation-plan.md"
         }
       ],
       "candidate_commit": "f161193ed31918592015ec9e68163d31d77cb0ae",
-      "gate_manifest": "evidence/G0/evaluation.json"
+      "gate_manifest": "evidence/G0/evaluation.json",
+      "owner_acceptance": "ACCEPTED",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "release": "R1",
@@ -147,7 +154,7 @@
       "track": "MVP",
       "outcome": "A useful private local assistant and one hardened Claude Code worker with scoped memory, evidence and approvals.",
       "gate": "G1",
-      "status": "DRAFT",
+      "status": "IMPLEMENTATION_AUTHORIZED",
       "gate_status": "NOT_RUN",
       "items": [
         {
@@ -331,7 +338,8 @@
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-018-implementation-plan.md"
         }
-      ]
+      ],
+      "authorization_source": "direct owner instruction, 2026-10-13"
     },
     {
       "release": "R2",

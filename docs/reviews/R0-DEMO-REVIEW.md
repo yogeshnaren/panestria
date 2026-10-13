@@ -1,3 +1,5 @@
+> R0 owner acceptance was recorded on 2026-10-13 in [the acceptance record](../../contracts/phase/r0-phase.acceptance.json). Earlier pending-status text below is preserved as the technical handoff history.
+
 # R0 demo repair and current validation — 2026-10-12
 
 **Demo fixed and running. Technical G0: PASS. Owner acceptance: PENDING.**

@@ -1,3 +1,5 @@
+> R0 owner acceptance was recorded on 2026-10-13 in [the acceptance record](../../contracts/phase/r0-phase.acceptance.json). Earlier pending-status text below is preserved as the technical handoff history.
+
 > Current tested candidate and runnable browser review: [R0-DEMO-REVIEW.md](R0-DEMO-REVIEW.md). Older candidate/status text below is preserved history.
 
 # R0 handoff — current technical gate PASS

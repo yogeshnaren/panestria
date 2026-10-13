@@ -19,14 +19,15 @@
         "AOS-001-TC01"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-001.xml",
         "evidence/AOS-001-S1/case-result.json",
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-001-S1.md"
+      "prompt_ref": "cursor/prompts/AOS-001-S1.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-001-S2",
@@ -47,14 +48,15 @@
         "AOS-001-TC02"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-001-S2.xml",
         "evidence/AOS-001-S2/case-result.json",
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-001-S2.md"
+      "prompt_ref": "cursor/prompts/AOS-001-S2.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-001-S3",
@@ -78,14 +80,15 @@
         "AOS-001-TC04"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-001-S3.xml",
         "evidence/AOS-001-S3/case-result.json",
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-001-S3.md"
+      "prompt_ref": "cursor/prompts/AOS-001-S3.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-002-S1",
@@ -109,14 +112,15 @@
         "AOS-002-TC01"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-002-S1.xml",
         "evidence/AOS-002-S1/case-result.json",
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-002-S1.md"
+      "prompt_ref": "cursor/prompts/AOS-002-S1.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-002-S2",
@@ -140,14 +144,15 @@
         "AOS-002-TC02"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-002-S2.xml",
         "evidence/AOS-002-S2/case-result.json",
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-002-S2.md"
+      "prompt_ref": "cursor/prompts/AOS-002-S2.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-002-S3",
@@ -174,7 +179,7 @@
         "AOS-002-TC04"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-002-S3.xml",
         "evidence/AOS-002-S3/case-result-TC03.json",
@@ -182,7 +187,8 @@
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-002-S3.md"
+      "prompt_ref": "cursor/prompts/AOS-002-S3.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-003-S1",
@@ -204,14 +210,15 @@
         "AOS-003-TC01"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-003-S1.xml",
         "evidence/AOS-003-S1/case-result.json",
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-003-S1.md"
+      "prompt_ref": "cursor/prompts/AOS-003-S1.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-003-S2",
@@ -233,14 +240,15 @@
         "AOS-003-TC02"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-003-S2.xml",
         "evidence/AOS-003-S2/case-result.json",
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-003-S2.md"
+      "prompt_ref": "cursor/prompts/AOS-003-S2.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-003-S3",
@@ -265,7 +273,7 @@
         "AOS-003-TC04"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-003-S3.xml",
         "evidence/AOS-003-S3/case-result-TC03.json",
@@ -273,7 +281,8 @@
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-003-S3.md"
+      "prompt_ref": "cursor/prompts/AOS-003-S3.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-004-S1",
@@ -296,14 +305,15 @@
         "AOS-004-TC01"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-004-S1.xml",
         "evidence/AOS-004-S1/case-result.json",
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-004-S1.md"
+      "prompt_ref": "cursor/prompts/AOS-004-S1.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-004-S2",
@@ -326,14 +336,15 @@
         "AOS-004-TC02"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-004-S2.xml",
         "evidence/AOS-004-S2/case-result.json",
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-004-S2.md"
+      "prompt_ref": "cursor/prompts/AOS-004-S2.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-004-S3",
@@ -359,7 +370,7 @@
         "AOS-004-TC04"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-004-S3.xml",
         "evidence/AOS-004-S3/case-result-TC03.json",
@@ -367,7 +378,8 @@
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-004-S3.md"
+      "prompt_ref": "cursor/prompts/AOS-004-S3.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-005-S1",
@@ -393,7 +405,7 @@
         "AOS-005-TC01"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-005-S1.xml",
         "evidence/AOS-005-S1/assertion-map.json",
@@ -401,7 +413,8 @@
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-005-S1.md"
+      "prompt_ref": "cursor/prompts/AOS-005-S1.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-005-S2",
@@ -426,7 +439,7 @@
         "AOS-005-TC02"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-005-S2.xml",
         "evidence/AOS-005-S2/case-result-TC02.json",
@@ -435,7 +448,8 @@
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-005-S2.md"
+      "prompt_ref": "cursor/prompts/AOS-005-S2.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-005-S3",
@@ -463,7 +477,7 @@
         "AOS-005-TC04"
       ],
       "target_developer_days": 1,
-      "status": "TECHNICALLY_VERIFIED",
+      "status": "COMPLETE",
       "evidence_refs": [
         "evidence/AOS-005-S3.xml",
         "evidence/AOS-005-S3/case-result-TC01.json",
@@ -475,7 +489,8 @@
         "evidence/R0-completion/",
         "evidence/R0-demo-fix/"
       ],
-      "prompt_ref": "cursor/prompts/AOS-005-S3.md"
+      "prompt_ref": "cursor/prompts/AOS-005-S3.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
     },
     {
       "id": "AOS-006-S1",
