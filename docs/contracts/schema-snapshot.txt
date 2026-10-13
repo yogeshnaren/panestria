@@ -84,15 +84,36 @@ column idempotency_record project_id uuid NO
 column idempotency_record request_hash bpchar NO
 column idempotency_record request_key text NO
 column idempotency_record response_ref jsonb NO
+column policy_review decided_at timestamptz YES
+column policy_review decided_by uuid YES
+column policy_review effect_digest bpchar NO
+column policy_review expected_version int8 NO
+column policy_review expires_at timestamptz NO
+column policy_review id uuid NO
+column policy_review owner_id uuid NO
+column policy_review project_id uuid NO
+column policy_review proposed_body jsonb NO
+column policy_review state text NO
+column policy_review task_id uuid NO
 column principal created_at timestamptz NO
 column principal display_name text NO
 column principal id uuid NO
 column project created_at timestamptz NO
 column project id uuid NO
 column project owner_id uuid NO
+column project policy_version int8 NO
 column project root_path text YES
 column project trust_profile_id text NO
 column project trust_profile_version int4 NO
+column project_policy_revision autonomy_version int8 NO
+column project_policy_revision body jsonb NO
+column project_policy_revision created_at timestamptz NO
+column project_policy_revision owner_id uuid NO
+column project_policy_revision privacy_version int8 NO
+column project_policy_revision project_id uuid NO
+column project_policy_revision sha256 bpchar NO
+column project_policy_revision trust_version int8 NO
+column project_policy_revision version int8 NO
 column side_effect approval_request_id uuid YES
 column side_effect classification text YES
 column side_effect dispatch_attempts int4 NO
@@ -219,10 +240,26 @@ constraint panestria.idempotency_record c CHECK ((request_hash ~ '^[0-9a-f]{64}$
 constraint panestria.idempotency_record f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
 constraint panestria.idempotency_record f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.idempotency_record p PRIMARY KEY (owner_id, project_id, operation, request_key)
+constraint panestria.policy_review c CHECK (((state = 'PENDING'::text) OR (decided_at IS NOT NULL)))
+constraint panestria.policy_review c CHECK ((effect_digest ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.policy_review c CHECK ((expected_version > 0))
+constraint panestria.policy_review c CHECK ((state = ANY (ARRAY['PENDING'::text, 'APPROVED'::text, 'DENIED'::text, 'APPLIED'::text])))
+constraint panestria.policy_review f FOREIGN KEY (decided_by) REFERENCES panestria.principal(id)
+constraint panestria.policy_review f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.policy_review f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
+constraint panestria.policy_review p PRIMARY KEY (id)
 constraint panestria.principal p PRIMARY KEY (id)
+constraint panestria.project c CHECK ((policy_version >= 0))
 constraint panestria.project f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
 constraint panestria.project p PRIMARY KEY (id)
 constraint panestria.project u UNIQUE (id, owner_id)
+constraint panestria.project_policy_revision c CHECK ((autonomy_version > 0))
+constraint panestria.project_policy_revision c CHECK ((privacy_version > 0))
+constraint panestria.project_policy_revision c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.project_policy_revision c CHECK ((trust_version > 0))
+constraint panestria.project_policy_revision c CHECK ((version > 0))
+constraint panestria.project_policy_revision f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.project_policy_revision p PRIMARY KEY (project_id, version)
 constraint panestria.side_effect c CHECK ((classification = ANY (ARRAY['read-only'::text, 'idempotent-with-key'::text, 'reconcile-by-query'::text, 'compensatable'::text, 'non-retryable'::text])))
 constraint panestria.side_effect c CHECK ((request_hash ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.side_effect c CHECK ((state = ANY (ARRAY['PREPARED'::text, 'EXECUTING'::text, 'SUCCEEDED'::text, 'FAILED'::text, 'UNKNOWN'::text, 'RECONCILING'::text])))
@@ -285,9 +322,11 @@ index CREATE UNIQUE INDEX goal_contract_pkey ON panestria.goal_contract USING bt
 index CREATE UNIQUE INDEX goal_id_project_id_owner_id_key ON panestria.goal USING btree (id, project_id, owner_id)
 index CREATE UNIQUE INDEX goal_pkey ON panestria.goal USING btree (id)
 index CREATE UNIQUE INDEX idempotency_record_pkey ON panestria.idempotency_record USING btree (owner_id, project_id, operation, request_key)
+index CREATE UNIQUE INDEX policy_review_pkey ON panestria.policy_review USING btree (id)
 index CREATE UNIQUE INDEX principal_pkey ON panestria.principal USING btree (id)
 index CREATE UNIQUE INDEX project_id_owner_id_key ON panestria.project USING btree (id, owner_id)
 index CREATE UNIQUE INDEX project_pkey ON panestria.project USING btree (id)
+index CREATE UNIQUE INDEX project_policy_revision_pkey ON panestria.project_policy_revision USING btree (project_id, version)
 index CREATE UNIQUE INDEX side_effect_id_task_unique ON panestria.side_effect USING btree (id, task_id)
 index CREATE UNIQUE INDEX side_effect_pkey ON panestria.side_effect USING btree (id)
 index CREATE UNIQUE INDEX side_effect_task_id_effect_key_key ON panestria.side_effect USING btree (task_id, effect_key)
