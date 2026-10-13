@@ -117,7 +117,8 @@ class AskService:
     def claim(self, uow: UnitOfWork, actor: Actor, prepared: PreparedAsk) -> InferenceRequest:
         require_current_policy(uow, actor, prepared.policy_ref)
         row = uow.execute(
-            "SELECT state,request_sha256,deadline_at>clock_timestamp(),context_pack_id::text,trace_id"
+            "SELECT state,request_sha256,deadline_at>clock_timestamp(),context_pack_id::text,trace_id,"
+            " EXTRACT(EPOCH FROM deadline_at-clock_timestamp())"
             " FROM panestria.ask_request"
             " WHERE id=%s AND owner_id=%s AND project_id=%s FOR UPDATE",
             (prepared.submission.request_id, actor.owner_id, actor.project_id),
@@ -149,7 +150,14 @@ class AskService:
             "UPDATE panestria.ask_request SET state='RUNNING' WHERE id=%s AND owner_id=%s AND project_id=%s",
             (prepared.submission.request_id, actor.owner_id, actor.project_id),
         )
-        return prepared.inference
+        remaining = float(row[5])
+        if remaining < 0.1:
+            raise KernelDenied("ask_not_admissible")
+        return prepared.inference.model_copy(
+            update={
+                "deadline_seconds": min(prepared.inference.deadline_seconds, remaining),
+            }
+        )
 
     def finish(self, uow: UnitOfWork, actor: Actor, request_id: str, result: InferenceResult) -> None:
         row = uow.execute(

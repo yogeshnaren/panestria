@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import TypeVar
@@ -80,10 +81,18 @@ async def ask_question(request: Request) -> JSONResponse:
             return JSONResponse(status_code=422, content=error_body("invalid_ask"))
         prepared = await asyncio.to_thread(_transaction, request, api, lambda u: _SERVICE.prepare(u, actor, submission))
         ticket = await ask.governor.acquire(wait_seconds=min(5.0, submission.deadline_seconds))
-        snapshot = await asyncio.to_thread(ask.probe)
-        admission = admit(snapshot, gpu=ask.provider.gpu)
-        if admission.decision != "PERMIT":
-            raise InferenceUnavailable(admission.reasons[0])
+        resource_deadline = time.monotonic() + min(5.0, submission.deadline_seconds)
+        while True:
+            snapshot = await asyncio.to_thread(ask.probe)
+            admission = admit(snapshot, gpu=ask.provider.gpu)
+            if admission.decision == "PERMIT":
+                break
+            if admission.decision == "UNAVAILABLE" or time.monotonic() >= resource_deadline:
+                raise InferenceUnavailable(admission.reasons[0])
+            if await request.is_disconnected():
+                client_disconnected = True
+                raise asyncio.CancelledError()
+            await asyncio.sleep(0.2)
         inference = await asyncio.to_thread(_transaction, request, api, lambda u: _SERVICE.claim(u, actor, prepared))
         model_task = asyncio.create_task(ask.provider.agenerate(inference))
         ask.active[submission.request_id] = model_task
