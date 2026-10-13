@@ -144,6 +144,8 @@ class LocalProvider:
                     raise InferenceUnavailable("model_usage_invalid")
                 if counts[1] > request.max_output_tokens or counts[0] > request.context_tokens:
                     raise InferenceUnavailable("model_token_limit_exceeded")
+                eval_ns = terminal.get("eval_duration")
+                tps = counts[1] * 1e9 / eval_ns if type(eval_ns) is int and eval_ns > 0 else None
                 yield InferenceResult(
                     MODEL,
                     text,
@@ -151,6 +153,7 @@ class LocalProvider:
                     time.monotonic() - began,
                     first,
                     finish_reason=terminal["done_reason"],
+                    decode_tokens_per_second=tps,
                 )
         except (TimeoutError, httpx.HTTPError):
             raise InferenceUnavailable("model_timeout_or_response_unknown") from None
