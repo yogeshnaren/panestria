@@ -259,3 +259,40 @@ class MemoryService:
             ),
         )
         return event_id
+
+    def history(self, uow: UnitOfWork, actor: Actor, item_id: str, *, after_revision: int = 0) -> dict[str, object]:
+        if after_revision < 0:
+            raise KernelDenied("invalid_revision")
+        row = uow.execute(
+            "SELECT status,row_version,current_revision FROM panestria.memory_item"
+            " WHERE id=%s AND owner_id=%s AND project_id=%s",
+            (item_id, actor.owner_id, actor.project_id),
+        ).fetchone()
+        if row is None:
+            raise KernelDenied("not_found")
+        revisions = uow.execute(
+            "SELECT r.id::text,r.version,r.source_id::text,r.body,r.sha256,s.privacy_label,"
+            " s.source_uri,s.review_id::text"
+            " FROM panestria.memory_revision r JOIN panestria.memory_source s ON s.id=r.source_id"
+            " WHERE r.item_id=%s AND r.owner_id=%s AND r.project_id=%s AND r.version>%s ORDER BY r.version LIMIT 100",
+            (item_id, actor.owner_id, actor.project_id, after_revision),
+        ).fetchall()
+        return {
+            "item_id": item_id,
+            "state": row[0],
+            "row_version": row[1],
+            "current_revision": row[2],
+            "revisions": [
+                dict(
+                    revision_id=r[0],
+                    revision=r[1],
+                    source_id=r[2],
+                    body=r[3],
+                    sha256=r[4],
+                    label=r[5],
+                    source_uri=r[6],
+                    review_id=r[7],
+                )
+                for r in revisions
+            ],
+        }
