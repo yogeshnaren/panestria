@@ -138,3 +138,158 @@ def test_lease_migration_roundtrip_preserves_r0_rows(r1_task: dict[str, str]) ->
             assert c.execute("SELECT state FROM panestria.task WHERE id=%s", (r1_task["task"],)).fetchone() == (
                 "READY",
             )
+
+
+def _approved_intent(task: dict[str, str], *, classification: str = "reconcile-by-query") -> tuple[object, str]:
+    import json
+    from datetime import UTC, datetime, timedelta
+
+    from panestria.contracts.approval import ActionPreview, effect_digest
+    from panestria.contracts.effects import EffectIntent
+
+    approval_id = str(uuid4())
+    preview = ActionPreview(
+        action_kind="merge",
+        owner_id=task["owner"],
+        project_id=task["project"],
+        task_id=task["task"],
+        contract_sha256="ab" * 32,
+        contract_version=1,
+        policy_version="test-policy-v1",
+        destination="mock:pr",
+        expected_base="base",
+        candidate_sha256="cd" * 32,
+        required_checks=["test"],
+        minimum_actor_id=task["owner"],
+        expires_at=(datetime.now(UTC) + timedelta(minutes=10)).isoformat(),
+    )
+    digest = effect_digest(preview)
+    with psycopg.connect(task["dsn"]) as c:
+        attempt, artifact = str(uuid4()), str(uuid4())
+        c.execute(
+            "INSERT INTO panestria.task_attempt(id,task_id,attempt_number,lease_epoch,status,adapter)"
+            " VALUES (%s,%s,1,0,'SUCCEEDED','synthetic')",
+            (attempt, task["task"]),
+        )
+        c.execute(
+            "INSERT INTO panestria.artifact(id,task_id,attempt_id,kind,store_key,sha256,size_bytes)"
+            " VALUES (%s,%s,%s,'test','test',%s,1)",
+            (artifact, task["task"], attempt, "ef" * 32),
+        )
+        c.execute(
+            "INSERT INTO panestria.check_run"
+            " (id,acceptance_check_id,contract_id,task_id,attempt_id,verdict,evidence_artifact_id,candidate_sha256)"
+            " VALUES (%s,%s,%s,%s,%s,'PASS',%s,%s)",
+            (str(uuid4()), task["check"], task["contract"], task["task"], attempt, artifact, "cd" * 32),
+        )
+        c.execute(
+            "INSERT INTO panestria.approval_request"
+            " (id,goal_id,task_id,owner_id,project_id,minimum_actor_id,action_kind,effect_digest,policy_version,"
+            " state,expires_at,decided_at,decided_by,preview)"
+            " VALUES (%s,%s,%s,%s,%s,%s,'merge',%s,'test-policy-v1','APPROVED',%s,now(),%s,%s::jsonb)",
+            (
+                approval_id,
+                task["goal"],
+                task["task"],
+                task["owner"],
+                task["project"],
+                task["owner"],
+                digest,
+                preview.expires_at,
+                task["owner"],
+                json.dumps(preview.model_dump()),
+            ),
+        )
+    return EffectIntent(
+        task_id=task["task"],
+        effect_key="create-pr",
+        target="mock:pr",
+        request_ref=f"approval:{approval_id}",
+        classification=classification,
+        policy_version="test-policy-v1",
+        effect_digest=digest,
+    ), approval_id
+
+
+def test_effect_response_loss(r1_task: dict[str, str], record_property: pytest.RecordProperty) -> None:
+    from panestria.execution.outbox import Confirmed, EffectExecutor
+    from panestria.kernel.effects import SideEffectService
+
+    record_property("gate_case_id", "AOS-006-TC02")
+    record_property("source_clauses", "AOS-006-F02,AOS-006-F03,AOS-006-AC02,AOS-006-AC03")
+    actor = Actor(r1_task["owner"], r1_task["project"])
+    intent, approval_id = _approved_intent(r1_task)
+    service = SideEffectService()
+    with psycopg.connect(r1_task["dsn"]) as c:
+        ref = service.prepare(UnitOfWork(c), actor, intent, approval_id)
+    with psycopg.connect(r1_task["dsn"]) as c:
+        assert service.prepare(UnitOfWork(c), actor, intent, approval_id).replayed
+
+    class Target:
+        def __init__(self) -> None:
+            self.created: dict[str, str] = {}
+            self.calls = 0
+
+        def dispatch(self, claim: object) -> str:
+            self.calls += 1
+            self.created[claim.fingerprint] = "mock-pr-1"
+            raise TimeoutError("receipt was lost after successful creation")
+
+        def query(self, claim: object) -> Confirmed:
+            assert claim.fingerprint in self.created
+            return Confirmed(self.created[claim.fingerprint])
+
+    target = Target()
+    executor = EffectExecutor(lambda: psycopg.connect(r1_task["dsn"]), target)
+    executor.dispatch(actor, ref.effect_id)
+    with pytest.raises(KernelDenied, match="effect_not_dispatchable"):
+        executor.dispatch(actor, ref.effect_id)
+    assert executor.reconcile(actor, ref.effect_id).state == "SUCCEEDED"
+    assert target.calls == 1 and len(target.created) == 1
+    with psycopg.connect(r1_task["dsn"]) as c:
+        assert c.execute(
+            "SELECT state,external_ref FROM panestria.side_effect WHERE id=%s", (ref.effect_id,)
+        ).fetchone() == ("SUCCEEDED", "mock-pr-1")
+        assert c.execute(
+            "SELECT state FROM panestria.effect_outbox WHERE effect_id=%s", (ref.effect_id,)
+        ).fetchone() == ("DONE",)
+
+
+def test_approval_consume_and_unknown_effect(r1_task: dict[str, str], record_property: pytest.RecordProperty) -> None:
+    from panestria.kernel.effects import SideEffectService
+
+    record_property("gate_case_id", "AOS-006-TC03")
+    record_property("source_clauses", "AOS-006-F02,AOS-006-F03,AOS-006-AC02,AOS-006-AC03")
+    actor = Actor(r1_task["owner"], r1_task["project"])
+    intent, approval_id = _approved_intent(r1_task, classification="non-retryable")
+    service = SideEffectService()
+    with psycopg.connect(r1_task["dsn"]) as c:
+        with pytest.raises(KernelDenied, match="approval_mismatch"), c.transaction():
+            service.prepare(UnitOfWork(c), actor, intent.model_copy(update={"target": "other"}), approval_id)
+        ref = service.prepare(UnitOfWork(c), actor, intent, approval_id)
+        c.commit()
+        with pytest.raises(KernelDenied, match="approval_consumed"), c.transaction():
+            service.prepare(UnitOfWork(c), actor, intent.model_copy(update={"effect_key": "another"}), approval_id)
+        claim = service.claim(UnitOfWork(c), actor, ref.effect_id)
+        c.commit()
+        with pytest.raises(KernelDenied, match="dispatch_active"), c.transaction():
+            service.begin_reconciliation(UnitOfWork(c), actor, ref.effect_id)
+        service.finish(UnitOfWork(c), actor, claim, None)
+        c.commit()
+        reconciling = service.begin_reconciliation(UnitOfWork(c), actor, ref.effect_id)
+        c.commit()
+        assert service.reconciled(UnitOfWork(c), actor, reconciling, None).state == "RECONCILING"
+        c.commit()
+        with pytest.raises(KernelDenied, match="stale_dispatch"), c.transaction():
+            service.finish(UnitOfWork(c), actor, claim, "late-receipt")
+        with pytest.raises(KernelDenied, match="effect_not_dispatchable"), c.transaction():
+            service.claim(UnitOfWork(c), actor, ref.effect_id)
+        assert c.execute("SELECT state FROM panestria.task WHERE id=%s", (r1_task["task"],)).fetchone() == (
+            "RECONCILING",
+        )
+        assert c.execute(
+            "SELECT count(*) FROM panestria.approval_consumption WHERE approval_request_id=%s", (approval_id,)
+        ).fetchone() == (1,)
+        assert c.execute(
+            "SELECT state FROM panestria.effect_outbox WHERE effect_id=%s", (ref.effect_id,)
+        ).fetchone() == ("PAUSED",)
