@@ -44,12 +44,11 @@ from panestria.execution.task_workflow import (
 )
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
+from stack_support import COMPOSE, DATABASE_URL
 
 ROOT = Path(__file__).resolve().parents[2]
-COMPOSE = ["docker", "compose", "-f", str(ROOT / "compose.yaml"), "-p", "panestria-s3"]
-DATABASE_URL = (
-    "postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55432/panestria_synthetic"
-)
+
+
 OWNER = "00000000-0000-4000-8000-000000000002"
 OTHER = "00000000-0000-4000-8000-000000000099"
 PROJECT = "00000000-0000-4000-8000-000000000003"

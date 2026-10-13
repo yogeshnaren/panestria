@@ -25,6 +25,7 @@ from panestria.verification.diff import inspect_diff
 from panestria.verification.nodes import NodeReport
 from panestria.verification.registry import CommandRegistry
 from panestria.verification.runner import TrustedCheckRunner
+from stack_support import COMPOSE, DATABASE_URL
 
 ROOT = Path(__file__).resolve().parents[2]
 SEED = "alpha"
@@ -268,8 +269,8 @@ def test_hung_process_and_output(record_property: pytest.RecordProperty, tmp_pat
     assert flooded.stdout_sha256 == hashlib.sha256(b"x" * OUTPUT_LIMIT).hexdigest()
 
 
-COMPOSE = ["docker", "compose", "-f", str(ROOT / "compose.yaml"), "-p", "panestria-s3"]
-DATABASE_URL = "postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55432/panestria_synthetic"
+
+
 OWNER = "00000000-0000-4000-8000-000000000002"
 PROJECT = "00000000-0000-4000-8000-000000000003"
 GOAL = "00000000-0000-4000-8000-000000000001"
