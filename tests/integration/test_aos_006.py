@@ -293,3 +293,119 @@ def test_approval_consume_and_unknown_effect(r1_task: dict[str, str], record_pro
         assert c.execute(
             "SELECT state FROM panestria.effect_outbox WHERE effect_id=%s", (ref.effect_id,)
         ).fetchone() == ("PAUSED",)
+
+
+def test_retry_and_reservation_limits(r1_task: dict[str, str], record_property: pytest.RecordProperty) -> None:
+    from panestria.kernel.budgets import BudgetService
+    from panestria.kernel.retries import RetryService, retry_delay
+
+    record_property("gate_case_id", "AOS-006-TC04")
+    record_property("source_clauses", "AOS-006-F04,AOS-006-AC03")
+    actor = Actor(r1_task["owner"], r1_task["project"])
+    leases, retries, budgets = LeaseService(), RetryService(), BudgetService()
+    with psycopg.connect(r1_task["dsn"]) as c:
+        budgets.configure(UnitOfWork(c), actor, r1_task["task"], None)
+        c.commit()
+        with pytest.raises(KernelDenied, match="cash_cap_unknown"), c.transaction():
+            budgets.reserve(UnitOfWork(c), actor, r1_task["task"], "unknown-cap", 1)
+        with pytest.raises(KernelDenied, match="budget_not_authorized"), c.transaction():
+            budgets.configure(UnitOfWork(c), actor, r1_task["task"], 1_000_001, expected_version=1)
+        budgets.configure(UnitOfWork(c), actor, r1_task["task"], 1_000_000, expected_version=1)
+        c.commit()
+        with pytest.raises(KernelDenied, match="cost_unknown_approval_required"), c.transaction():
+            budgets.reserve(UnitOfWork(c), actor, r1_task["task"], "unknown-cost", None)
+        with pytest.raises(KernelDenied, match="invalid_money"), c.transaction():
+            budgets.reserve(UnitOfWork(c), actor, r1_task["task"], "boolean", True)
+        second_task = str(uuid4())
+        c.execute(
+            "INSERT INTO panestria.task(id,goal_id,contract_id,name,state) VALUES (%s,%s,%s,'other','READY')",
+            (second_task, r1_task["goal"], r1_task["contract"]),
+        )
+        c.commit()
+
+    def reserve(task_id: str) -> str:
+        try:
+            with psycopg.connect(r1_task["dsn"]) as c:
+                return budgets.reserve(UnitOfWork(c), actor, task_id, task_id, 750_000).reservation_id
+        except KernelDenied as exc:
+            return exc.code
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(reserve, [r1_task["task"], second_task]))
+    assert results.count("cash_cap_exceeded") == 1
+    reservation = next(value for value in results if value != "cash_cap_exceeded")
+    with psycopg.connect(r1_task["dsn"]) as c:
+        budgets.settle(UnitOfWork(c), actor, reservation, None)
+        c.commit()
+        with pytest.raises(KernelDenied, match="cash_cap_exceeded"), c.transaction():
+            budgets.reserve(UnitOfWork(c), actor, r1_task["task"], "unknown-exposure", 250_001)
+        with pytest.raises(KernelDenied, match="not_found"), c.transaction():
+            budgets.settle(UnitOfWork(c), Actor(str(uuid4()), actor.project_id), reservation, 0)
+        with pytest.raises(KernelDenied, match="reservation_exceeded"), c.transaction():
+            budgets.settle(UnitOfWork(c), actor, reservation, 750_001)
+        budgets.settle(UnitOfWork(c), actor, reservation, 400_000)
+        c.commit()
+        budgets.settle(UnitOfWork(c), actor, reservation, 400_000)  # exact duplicate is idempotent
+        c.commit()
+        new = budgets.reserve(UnitOfWork(c), actor, r1_task["task"], "remaining", 600_000)
+        c.commit()
+        assert budgets.reserve(UnitOfWork(c), actor, r1_task["task"], "remaining", 600_000).replayed
+        c.commit()
+        with pytest.raises(KernelDenied, match="idempotency_conflict"), c.transaction():
+            budgets.reserve(UnitOfWork(c), actor, r1_task["task"], "remaining", 599_999)
+        with pytest.raises(KernelDenied, match="cash_cap_exceeded"), c.transaction():
+            budgets.reserve(UnitOfWork(c), actor, second_task, "one-more", 1)
+        budgets.settle(UnitOfWork(c), actor, new.reservation_id, None, confirmed_no_effect=True)
+        c.commit()
+        for attempt_number in range(1, 4):
+            version = c.execute("SELECT row_version FROM panestria.task WHERE id=%s", (r1_task["task"],)).fetchone()[0]
+            lease = leases.acquire(UnitOfWork(c), actor, r1_task["task"], "mock", version)
+            c.commit()
+            assert lease.attempt_number == attempt_number
+            retry_at = retries.schedule(
+                UnitOfWork(c), actor, lease.attempt_id, lease.epoch, "rate_limited", jitter=0.5, retry_after_seconds=30
+            )
+            c.commit()
+            if attempt_number < 3:
+                assert retry_at is not None
+                version = c.execute(
+                    "SELECT row_version FROM panestria.task WHERE id=%s", (r1_task["task"],)
+                ).fetchone()[0]
+                with pytest.raises(KernelDenied, match="retry_not_due"), c.transaction():
+                    leases.acquire(UnitOfWork(c), actor, r1_task["task"], "mock", version)
+                c.execute(
+                    "UPDATE panestria.task SET retry_at=clock_timestamp()-interval '1 second' WHERE id=%s",
+                    (r1_task["task"],),
+                )
+                c.commit()
+            else:
+                assert retry_at is None
+                assert c.execute("SELECT state FROM panestria.task WHERE id=%s", (r1_task["task"],)).fetchone() == (
+                    "FAILED",
+                )
+            with pytest.raises(KernelDenied, match="stale_lease"), c.transaction():
+                leases.require_current(UnitOfWork(c), actor, lease.attempt_id, lease.epoch)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.task_attempt WHERE task_id=%s", (r1_task["task"],)
+        ).fetchone() == (3,)
+    assert all(1 <= retry_delay(number, jitter=1) <= 60 for number in range(1, 21))
+    assert retry_delay(1, jitter=0, retry_after_seconds=30) == 30
+    for jitter in (-1, 2, float("nan")):
+        with pytest.raises(KernelDenied, match="invalid_retry"):
+            retry_delay(1, jitter=jitter)
+
+
+@pytest.mark.parametrize("failure", ["policy_denied", "auth_invalid", "invalid_scope", "unrecognized"])
+def test_denials_do_not_retry(r1_task: dict[str, str], failure: str) -> None:
+    from panestria.kernel.retries import RetryService
+
+    actor = Actor(r1_task["owner"], r1_task["project"])
+    with psycopg.connect(r1_task["dsn"]) as c:
+        lease = LeaseService().acquire(UnitOfWork(c), actor, r1_task["task"], "mock", 0)
+        c.commit()
+        assert RetryService().schedule(UnitOfWork(c), actor, lease.attempt_id, lease.epoch, failure, jitter=0) is None
+        c.commit()
+        assert c.execute("SELECT state,retry_at FROM panestria.task WHERE id=%s", (r1_task["task"],)).fetchone() == (
+            "FAILED",
+            None,
+        )

@@ -55,7 +55,9 @@ class LeaseService:
             raise KernelDenied("illegal_transition")
         number, maximum, ready = uow.execute(
             "SELECT COALESCE((SELECT max(attempt_number) FROM panestria.task_attempt WHERE task_id = t.id),0)+1,"
-            " max_attempts, retry_at IS NULL OR retry_at <= clock_timestamp() FROM panestria.task t WHERE id = %s",
+            " LEAST(max_attempts,COALESCE((c.body->'budget'->>'max_attempts_per_task')::integer,max_attempts)),"
+            " retry_at IS NULL OR retry_at <= clock_timestamp() FROM panestria.task t"
+            " JOIN panestria.goal_contract c ON c.id=t.contract_id WHERE t.id = %s",
             (task_id,),
         ).fetchone() or (0, 0, False)
         if number > maximum:

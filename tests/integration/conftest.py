@@ -83,7 +83,17 @@ def r1_task(r1_database: str) -> dict[str, str]:
         )
         c.execute(
             "INSERT INTO panestria.goal_contract(id,goal_id,version,body,sha256) VALUES (%s,%s,1,%s::jsonb,%s)",
-            (ids["contract"], ids["goal"], json.dumps({"autonomy_profile_ref": "test-policy-v1"}), "ab" * 32),
+            (
+                ids["contract"],
+                ids["goal"],
+                json.dumps(
+                    {
+                        "autonomy_profile_ref": "test-policy-v1",
+                        "budget": {"max_api_usd": "1.000000", "max_attempts_per_task": 3},
+                    }
+                ),
+                "ab" * 32,
+            ),
         )
         c.execute(
             "INSERT INTO panestria.task(id,goal_id,contract_id,name,state) VALUES (%s,%s,%s,'test','READY')",
