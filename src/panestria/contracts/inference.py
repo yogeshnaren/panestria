@@ -53,6 +53,7 @@ class InferenceResult:
     elapsed_seconds: float
     first_token_seconds: float | None
     completion: Literal["COMPLETED"] = "COMPLETED"
+    finish_reason: Literal["stop", "length"] = "stop"
 
 
 class InferenceUnavailable(Exception):
