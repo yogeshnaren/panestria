@@ -1,6 +1,6 @@
 # R1 detailed sequence and gate
 
-**Status:** NOT_STARTED / NOT_RUN. **Gate:** G1. Detailed planning through R3 is authorized; code/live conformance remain pending.
+**Status:** IN_PROGRESS / NOT_RUN. **Gate:** G1. R0 is accepted and R1 implementation is authorized. See [execution control](R1-EXECUTION-CONTROL.md); live conformance remains pending.
 
 | Step | Plan | Slices | Dependencies |
 |---|---|---|---|
