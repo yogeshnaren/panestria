@@ -15,12 +15,11 @@ import pytest
 
 from panestria.kernel.repositories.goals import EVENT_LOOKUP_SQL, GOAL_LOOKUP_SQL
 from panestria.kernel.repositories.tasks import TASKS_BY_GOAL_SQL
+from stack_support import COMPOSE, DATABASE_URL
 
 ROOT = Path(__file__).resolve().parents[2]
-COMPOSE = ["docker", "compose", "-f", str(ROOT / "compose.yaml"), "-p", "panestria-s3"]
-DATABASE_URL = (
-    "postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55432/panestria_synthetic"
-)
+
+
 OWNER = "00000000-0000-4000-8000-000000000010"
 OTHER = "00000000-0000-4000-8000-000000000011"
 PROJECT = "00000000-0000-4000-8000-000000000020"

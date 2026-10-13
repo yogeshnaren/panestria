@@ -17,15 +17,17 @@ from uuid import UUID, uuid4
 import psycopg
 import pytest
 
+from stack_support import COMPOSE, DATABASE_URL
+
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "docs" / "fixtures" / "synthetic-goal-contract.json"
-COMPOSE = ["docker", "compose", "-f", str(ROOT / "compose.yaml"), "-p", "panestria-s3"]
-DATABASE_URL = "postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55432/panestria_synthetic"
+
+
 TOKEN = "synthetic-loopback-token"
 OWNER = "00000000-0000-4000-8000-000000000002"
 PROJECT = "00000000-0000-4000-8000-000000000003"
 OTHER = "00000000-0000-4000-8000-000000000099"
-BASE = "http://127.0.0.1:8766"
+BASE = "http://127.0.0.1:18766"
 
 
 def _properties(record_property: pytest.RecordProperty, case_id: str, lane: str = "e2e") -> None:
@@ -72,7 +74,7 @@ def _server(sandbox: Path) -> subprocess.Popen[str]:
             "PANESTRIA_SCHEMA_VERSION": "1",
             "PANESTRIA_PROFILE": "SYNTHETIC_DEV",
             "PANESTRIA_BIND_HOST": "127.0.0.1",
-            "PANESTRIA_BIND_PORT": "8766",
+            "PANESTRIA_BIND_PORT": "18766",
             "PANESTRIA_READINESS_BUDGET_MS": "1000",
         }
     )

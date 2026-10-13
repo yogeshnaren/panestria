@@ -1,0 +1,21 @@
+# Disposable regression database; no production port or volume is shared.
+services:
+  postgres:
+    image: postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d
+    labels:
+      panestria.purpose: r0-test
+    environment:
+      POSTGRES_USER: panestria_synthetic
+      POSTGRES_PASSWORD: placeholder-not-a-secret
+      POSTGRES_DB: panestria_synthetic
+    ports:
+      - "127.0.0.1:55440:5432"
+    volumes:
+      - regression_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U panestria_synthetic -d panestria_synthetic"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+volumes:
+  regression_data:

@@ -19,12 +19,11 @@ from panestria.kernel.goals import Actor, GoalService
 from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.tasks import DagRejected, TaskService, validate_dag
 from panestria.kernel.uow import UnitOfWork
+from stack_support import COMPOSE, DATABASE_URL
 
 ROOT = Path(__file__).resolve().parents[2]
-COMPOSE = ["docker", "compose", "-f", str(ROOT / "compose.yaml"), "-p", "panestria-s3"]
-DATABASE_URL = (
-    "postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55432/panestria_synthetic"
-)
+
+
 FIXTURE = ROOT / "docs" / "fixtures" / "synthetic-goal-contract.json"
 OWNER = "00000000-0000-4000-8000-000000000002"
 OTHER = "00000000-0000-4000-8000-000000000099"

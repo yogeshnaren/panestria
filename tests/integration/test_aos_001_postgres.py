@@ -15,14 +15,12 @@ from pathlib import Path
 import psycopg
 import pytest
 
-from panestria.ops import EXPECTED_VOLUME, HOST_PORT, LOOPBACK_BIND, CleanupDenied, reset_volume_directory
+from panestria.ops import EXPECTED_VOLUME, LOOPBACK_BIND, CleanupDenied, reset_volume_directory
+from stack_support import COMPOSE, DATABASE_URL, TEST_DATABASE_PORT
 
 ROOT = Path(__file__).resolve().parents[2]
-COMPOSE = ["docker", "compose", "-f", str(ROOT / "compose.yaml"), "-p", "panestria-s3"]
-DATABASE_URL = (
-    "postgresql://panestria_synthetic:placeholder-not-a-secret"
-    f"@{LOOPBACK_BIND}:{HOST_PORT}/panestria_synthetic"
-)
+
+
 
 
 @pytest.fixture(autouse=True)
@@ -105,7 +103,7 @@ def test_scoped_database_is_healthy_and_scaffold_is_empty() -> None:
         bindings = json.loads(ports.stdout)["5432/tcp"]
         assert len(bindings) == 1
         assert bindings[0]["HostIp"] == LOOPBACK_BIND
-        assert int(bindings[0]["HostPort"]) == HOST_PORT
+        assert int(bindings[0]["HostPort"]) == TEST_DATABASE_PORT
         deadline = time.monotonic() + 30
         last_error = ""
         while time.monotonic() < deadline:
