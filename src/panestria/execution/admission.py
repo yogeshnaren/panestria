@@ -8,6 +8,8 @@ from typing import Any, cast
 
 import sqlalchemy as sa
 from dbos import DBOSClient, EnqueueOptions, WorkflowHandle
+from opentelemetry import context as otel_context
+from opentelemetry import trace
 from sqlalchemy.exc import IntegrityError
 
 from panestria.execution.dbos_runtime import ADMISSION_LOCK, QUEUE_NAME, WORKFLOW_NAME
@@ -121,6 +123,8 @@ class DurableAdmission:
             "workflow_id": workflow_id,
             "workflow_id_reuse_policy": "reject",
         }
+        if trace.get_current_span().get_span_context().is_valid:
+            options["otel_context"] = otel_context.get_current()
         handle: WorkflowHandle[Any] = self._client.enqueue_in_transaction(
             connection, options, task_id, contract_sha256, int(attempt_number)
         )
