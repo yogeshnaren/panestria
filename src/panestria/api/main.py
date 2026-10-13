@@ -84,3 +84,17 @@ def mount_goal_api(app: FastAPI, goal_api: GoalApi) -> None:
     app.include_router(events_router)
     app.include_router(approvals_router)
     app.include_router(artifacts_router)
+
+
+def mount_browser_api(app: FastAPI, access: object) -> None:
+    from panestria.api.routes.sessions import router
+    from panestria.api.security import BrowserSecurity
+    from panestria.api.sessions import BrowserAccess
+
+    if not isinstance(access, BrowserAccess) or not isinstance(app.state.goal_api, GoalApi):
+        raise TypeError("browser API requires configured actor scope")
+    if access.database_url != app.state.goal_api.database_url:
+        raise ValueError("browser_database_scope_mismatch")
+    app.state.browser_access = access
+    app.add_middleware(BrowserSecurity, access=access)
+    app.include_router(router)
