@@ -86,6 +86,9 @@ column effect_outbox due_at timestamptz NO
 column effect_outbox effect_id uuid NO
 column effect_outbox state text NO
 column effect_outbox task_id uuid NO
+column event_retention floor_seq int8 NO
+column event_retention goal_id uuid NO
+column event_retention row_version int8 NO
 column goal approved_contract_version int4 YES
 column goal created_at timestamptz NO
 column goal id uuid NO
@@ -255,7 +258,10 @@ column task_event id uuid NO
 column task_event kind text NO
 column task_event occurred_at timestamptz NO
 column task_event payload jsonb NO
+column task_event privacy_label text NO
+column task_event schema_version int4 NO
 column task_event seq int8 NO
+column task_event sha256 text YES
 column task_event task_id uuid YES
 column task_event trace_id text YES
 column user_correction body text NO
@@ -341,6 +347,10 @@ constraint panestria.context_pack u UNIQUE (id, owner_id, project_id)
 constraint panestria.effect_outbox c CHECK ((state = ANY (ARRAY['PENDING'::text, 'CLAIMED'::text, 'DONE'::text, 'PAUSED'::text])))
 constraint panestria.effect_outbox f FOREIGN KEY (effect_id, task_id) REFERENCES panestria.side_effect(id, task_id)
 constraint panestria.effect_outbox p PRIMARY KEY (effect_id)
+constraint panestria.event_retention c CHECK ((floor_seq >= 0))
+constraint panestria.event_retention c CHECK ((row_version >= 0))
+constraint panestria.event_retention f FOREIGN KEY (goal_id) REFERENCES panestria.goal(id)
+constraint panestria.event_retention p PRIMARY KEY (goal_id)
 constraint panestria.goal c CHECK ((status = ANY (ARRAY['CREATED'::text, 'ACTIVE'::text, 'COMPLETED'::text, 'FAILED'::text, 'CANCELLED'::text])))
 constraint panestria.goal f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
 constraint panestria.goal f FOREIGN KEY (project_id) REFERENCES panestria.project(id)
@@ -457,6 +467,8 @@ constraint panestria.task_dependency c CHECK ((task_id <> depends_on))
 constraint panestria.task_dependency f FOREIGN KEY (depends_on) REFERENCES panestria.task(id)
 constraint panestria.task_dependency f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.task_dependency p PRIMARY KEY (task_id, depends_on)
+constraint panestria.task_event c CHECK ((privacy_label = ANY (ARRAY['PUBLIC'::text, 'PRIVATE'::text, 'RESTRICTED'::text, 'UNKNOWN'::text])))
+constraint panestria.task_event c CHECK ((schema_version = 1))
 constraint panestria.task_event f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
 constraint panestria.task_event f FOREIGN KEY (goal_id) REFERENCES panestria.goal(id)
 constraint panestria.task_event f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
@@ -500,6 +512,7 @@ index CREATE UNIQUE INDEX check_run_pkey ON panestria.check_run USING btree (id)
 index CREATE UNIQUE INDEX context_pack_id_owner_id_project_id_key ON panestria.context_pack USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX context_pack_pkey ON panestria.context_pack USING btree (id)
 index CREATE UNIQUE INDEX effect_outbox_pkey ON panestria.effect_outbox USING btree (effect_id)
+index CREATE UNIQUE INDEX event_retention_pkey ON panestria.event_retention USING btree (goal_id)
 index CREATE UNIQUE INDEX goal_budget_pkey ON panestria.goal_budget USING btree (goal_id)
 index CREATE UNIQUE INDEX goal_contract_goal_id_version_key ON panestria.goal_contract USING btree (goal_id, version)
 index CREATE UNIQUE INDEX goal_contract_id_goal_id_key ON panestria.goal_contract USING btree (id, goal_id)
