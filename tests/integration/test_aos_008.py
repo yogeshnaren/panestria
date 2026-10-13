@@ -233,3 +233,75 @@ def test_sandbox_failure_cleanup(tmp_path: Path, record_property: pytest.RecordP
         ).returncode
         != 0
     )
+
+
+def test_network_gateway_escape(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, record_property: pytest.RecordProperty
+) -> None:
+    import socket
+
+    from panestria.sandbox.egress import EgressDenied, EgressGateway, resolve_destination
+
+    record_property("gate_case_id", "AOS-008-TC02")
+    record_property("source_clauses", "AOS-008-F02,AOS-008-F03,AOS-008-AC02")
+    allowed = frozenset({"api.anthropic.com"})
+    for authority in [
+        "127.0.0.1:443",
+        "169.254.169.254:443",
+        "[::1]:443",
+        "evil.example:443",
+        "api.anthropic.com:80",
+        "api.anthropic.com.evil:443",
+        "user@api.anthropic.com:443",
+    ]:
+        with pytest.raises(EgressDenied, match="destination_denied"):
+            resolve_destination(authority, allowed)
+    for private in ["127.0.0.1", "169.254.169.254", "10.0.0.1", "100.64.0.1", "::1", "::ffff:127.0.0.1"]:
+        monkeypatch.setattr(
+            socket,
+            "getaddrinfo",
+            lambda *args, value=private, **kwargs: [(socket.AF_INET, socket.SOCK_STREAM, 6, "", (value, 443))],
+        )
+        with pytest.raises(EgressDenied, match="private_destination_denied"):
+            resolve_destination("api.anthropic.com:443", allowed)
+    calls = []
+
+    def public(host: str, port: int, **kwargs: object) -> object:
+        calls.append(host)
+        return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("104.18.0.1", port))]
+
+    monkeypatch.setattr(socket, "getaddrinfo", public)
+    assert resolve_destination("api.anthropic.com:443", allowed) == ("104.18.0.1", 443)
+    assert calls == ["api.anthropic.com"]
+    with EgressGateway(tmp_path / "gateway", allowed) as gateway:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as connection:
+            connection.connect(str(gateway.path))
+            connection.sendall(b"CONNECT 169.254.169.254:443 HTTP/1.1\r\n\r\n")
+            assert connection.recv(256).startswith(b"HTTP/1.1 403")
+        assert all(entry[1] == "DENIED" for entry in gateway.server.audit)
+    assert not (tmp_path / "gateway").exists()
+
+
+@pytest.mark.live
+def test_provider_gateway_live_tls(tmp_path: Path, record_property: pytest.RecordProperty) -> None:
+    import socket
+    import ssl
+
+    from panestria.sandbox.egress import EgressGateway
+
+    record_property("gate_case_id", "AOS-008-TC02")
+    record_property("execution_mode", "OS_BOUNDARY")
+    # No auth or model request: prove the allowlisted TLS channel itself.
+    with EgressGateway(tmp_path / "gateway", frozenset({"api.anthropic.com"})) as gateway:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as connection:
+            connection.settimeout(10)
+            connection.connect(str(gateway.path))
+            connection.sendall(b"CONNECT api.anthropic.com:443 HTTP/1.1\r\n\r\n")
+            header = bytearray()
+            while not header.endswith(b"\r\n\r\n"):
+                header.extend(connection.recv(1))
+            assert header.startswith(b"HTTP/1.1 200")
+            with ssl.create_default_context().wrap_socket(connection, server_hostname="api.anthropic.com") as secure:
+                secure.sendall(b"HEAD / HTTP/1.1\r\nHost: api.anthropic.com\r\nConnection: close\r\n\r\n")
+                assert secure.recv(1024).startswith(b"HTTP/1.1 ")
+        assert ("api.anthropic.com:443", "ALLOWED") in gateway.server.audit
