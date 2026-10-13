@@ -61,7 +61,7 @@ def test_routing_replay_restart(
         uow = UnitOfWork(c)
         prepared = ask.prepare(uow, actor, submission)
         c.commit()
-        recorder.route(
+        route_id = recorder.route(
             uow,
             actor,
             submission.request_id,
@@ -83,7 +83,9 @@ def test_routing_replay_restart(
             )
     # No in-process route cache is needed after restart.
     with psycopg.connect(r1_task["dsn"]) as c:
-        record = LearningRecorder().export(UnitOfWork(c), actor, submission.request_id)[0]
+        record = next(
+            r for r in LearningRecorder().export(UnitOfWork(c), actor, submission.request_id) if r["id"] == route_id
+        )
         body = record["body"]
         assert body["selected_route"] == "local-ollama"
         denied = body["candidates"][0]
@@ -142,7 +144,7 @@ def test_correction_is_not_authority(
             c.execute("DELETE FROM panestria.user_correction WHERE request_id=%s", (submission.request_id,))
         recorder.outcome(uow, actor, submission.request_id)
         c.commit()
-        outcome = recorder.export(uow, actor, submission.request_id)[0]["body"]
+        outcome = [r["body"] for r in recorder.export(uow, actor, submission.request_id) if r["kind"] == "outcome"][-1]
         assert outcome["execution_state"] == "COMPLETED" and outcome["quality"] == "unknown"
         assert outcome["owner_acceptance"] is None and outcome["verifier_acceptance"] is None
     with pytest.raises(ValidationError):
@@ -185,7 +187,11 @@ def test_exposure_three_dimensions(
                 ),
             )
         c.commit()
-        rows = recorder.export(uow, actor, submission.request_id)
+        rows = [
+            r
+            for r in recorder.export(uow, actor, submission.request_id)
+            if r["kind"] == "exposure" and r["body"]["destination"] == "claude-code"
+        ]
         assert {r["body"]["dimension"]: r["body"]["value"] for r in rows} == {
             "authorized": "no",
             "accessible": "yes",
