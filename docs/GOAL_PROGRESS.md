@@ -32,3 +32,17 @@ and sign in later. Native CLI/profile and verified live merge work, the final
 paid SDK smoke (USD 1 total cap), several integration/lifecycle obligations,
 review demo/runbooks and cumulative G1 evaluation still remain. No paid SDK
 request has been made. R2/R3/SOTA implementation has not begun.
+
+
+Additional local R1 checks now cover exact one-use privacy reclassification,
+owner memory history/HTTP lifecycle, one primary model across processes and
+reclaiming a model whose identified controller died. Independent verifiers run
+in a readonly OS sandbox; the protected Git target atomically updates its branch
+and an effect witness so lost replies can be reconciled. The latter components
+still require native-worker/kernel wiring and end-to-end approval validation;
+component PASS is not AOS-027a or G1 completion.
+
+Current non-live baseline: 241 PASS / 15 live deselected at `58432df`, with the
+owner's R0 table hashes unchanged. Later targeted privacy, lock-order, verifier,
+primary-recovery and protected-Git checks passed. New tests/cases still need one
+fresh final candidate and full coverage reconciliation before release promotion.
