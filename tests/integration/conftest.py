@@ -129,6 +129,7 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_aos_007.py",
         "test_aos_008.py",
         "test_aos_009.py",
+        "test_aos_010.py",
         "test_aos_011.py",
         "test_aos_012.py",
         "test_aos_014.py",
