@@ -19,7 +19,6 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.policy import PolicyService
 from panestria.kernel.repositories.policy import require_current_policy
-from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.engine import PolicyEngine
 from panestria.policy.profiles import CertificateStore
@@ -45,6 +44,9 @@ class VerifiedGitTarget(ProtectedGitTarget):
             registry,
             certificates,
         )
+        expected_repository = protected_root.resolve() / actor.owner_id / actor.project_id / "destination.git"
+        if repository.is_symlink() or repository.resolve() != expected_repository:
+            raise KernelDenied("merge_repository_scope_mismatch")
         super().__init__(protected_root, repository, self._authorize, self._historical)
 
     def _spec(self, claim: DispatchClaim, bundle: BuildEvidenceBundle) -> MergeSpec:
@@ -112,20 +114,17 @@ def prepare_merge(uow: UnitOfWork, actor: Actor, approval_id: str) -> EffectRef:
         policy_version=str(body["policy_version"]),
         effect_digest=preview.effect_digest,
     )
-    ref = SideEffectService().prepare(uow, actor, intent, approval_id)
-    if not ref.replayed:
-        task = uow.execute("SELECT goal_id::text,state FROM panestria.task WHERE id=%s", (intent.task_id,)).fetchone()
-        if task is None or task[1] != "WAITING_APPROVAL":
+    # Complete application writes before SideEffectService appends the last
+    # event and acquires the global sequence lock. Task serialization makes the
+    # existing-effect test stable until this caller commits.
+    task = uow.execute("SELECT state FROM panestria.task WHERE id=%s", (intent.task_id,)).fetchone()
+    existing = uow.execute(
+        "SELECT 1 FROM panestria.side_effect WHERE task_id=%s AND effect_key=%s", (intent.task_id, intent.effect_key)
+    ).fetchone()
+    if existing is None:
+        if task is None or task[0] != "WAITING_APPROVAL":
             raise KernelDenied("illegal_transition")
         uow.execute(
             "UPDATE panestria.task SET state='VERIFYING',row_version=row_version+1 WHERE id=%s", (intent.task_id,)
         )
-        append_event(
-            uow,
-            goal_id=str(task[0]),
-            task_id=intent.task_id,
-            actor=actor.owner_id,
-            kind="build.merge_prepared",
-            payload={"effect_id": ref.effect_id, "effect_digest": preview.effect_digest},
-        )
-    return ref
+    return SideEffectService().prepare(uow, actor, intent, approval_id)
