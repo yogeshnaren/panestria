@@ -45,9 +45,9 @@ class PolicyService:
         return task[0]
 
     def initialize(self, uow: UnitOfWork, actor: Actor, task_id: str) -> PolicyContext:
-        goal = self._task(uow, actor, task_id)
         if lock_project(uow, actor) != 0:
             raise KernelDenied("policy_already_configured")
+        goal = self._task(uow, actor, task_id)
         actions: dict[Action, Autonomy] = {
             action: "approve-first"
             for action in ("read", "edit", "tool-install", "external-send", "spend", "merge", "delete", "policy-change")
@@ -73,8 +73,8 @@ class PolicyService:
         return policy
 
     def propose(self, uow: UnitOfWork, actor: Actor, task_id: str, proposed: PolicyContext) -> PolicyReview:
-        goal = self._task(uow, actor, task_id)
         version = lock_project(uow, actor)
+        goal = self._task(uow, actor, task_id)
         old = current_policy(uow, actor)
         if (proposed.owner_id, proposed.project_id) != (actor.owner_id, actor.project_id):
             raise KernelDenied("not_found")
@@ -118,8 +118,8 @@ class PolicyService:
         if hint is None:
             raise KernelDenied("not_found")
         task_id = str(hint[0])
-        goal_id = self._task(uow, actor, task_id)
         lock_project(uow, actor)
+        goal_id = self._task(uow, actor, task_id)
         row = uow.execute(
             "SELECT state,effect_digest,expected_version,proposed_body,expires_at>clock_timestamp()"
             " FROM panestria.policy_review WHERE id=%s FOR UPDATE",
