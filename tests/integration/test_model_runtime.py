@@ -61,3 +61,37 @@ print(json.dumps(observations))
     asyncio.run(denied())
     record_property("effective_network", "none")
     record_property("model_runtime_identity", runtime.identity)
+
+
+@pytest.mark.live
+def test_dead_owner_model_is_reclaimed(offline_model: ModelRuntime, tmp_path: Path) -> None:
+    import subprocess
+    import sys
+
+    offline_model.stop()
+    code = """
+import json,os,sys
+from pathlib import Path
+from panestria.inference.runtime import ModelRuntime
+runtime=ModelRuntime(Path(sys.argv[1]),Path(sys.argv[2]),gpu=True)
+runtime.start()
+print(json.dumps({'id':runtime.id}),flush=True)
+os._exit(0)
+"""
+    try:
+        child = subprocess.run(
+            [sys.executable, "-c", code, str(offline_model.models), str(tmp_path / "orphan-socket")],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        assert child.returncode == 0, child.stderr
+        orphan = json.loads(child.stdout)["id"]
+        offline_model.start()
+        actual = offline_model._docker(
+            ["ps", "-a", "-q", "--no-trunc", "--filter", "label=panestria.purpose=local-model"]
+        )
+        assert orphan not in actual and offline_model.id in actual
+    finally:
+        if offline_model.id is None:
+            offline_model.start()
