@@ -139,6 +139,7 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_aos_018.py",
         "test_aos_027a.py",
         "test_build_evidence.py",
+        "test_approval_revocation.py",
         "test_build_snapshot.py",
         "test_memory_context.py",
         "test_local_provider.py",
@@ -162,8 +163,10 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
     candidate = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True)
     fixture_bytes = path.read_bytes() + (ROOT / "uv.lock").read_bytes()
-    if path.name in {"test_aos_027a.py", "test_build_evidence.py"}:
+    if path.name in {"test_aos_027a.py", "test_build_evidence.py", "test_approval_revocation.py"}:
         fixture_bytes += path.with_name("build_support.py").read_bytes()
+    if path.name == "test_approval_revocation.py":
+        fixture_bytes += path.with_name("test_aos_027a.py").read_bytes()
     fingerprint = hashlib.sha256(fixture_bytes).hexdigest()
     record_property("candidate_commit", candidate)
     record_property("fixture_digest", fingerprint)
