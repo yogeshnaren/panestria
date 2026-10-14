@@ -99,3 +99,14 @@ and the total deadline, discards account/credential fields, and refuses unsafe
 or changed config references. Installed CLI metadata and empty private-directory
 checks are observed; these do not certify startup profiles. See [native
 preflight](../testing/NATIVE_PREFLIGHT.md) for commands and remaining obligations.
+
+The reviewed command gateway component is implemented in
+`sandbox/native_tool_gateway.py`, with strict input/scope contracts and a
+digest-checking container launcher. It snapshots reviewed scripts and data
+outside candidates, requires controller dispatch authority, enforces read/edit
+profiles and observes cancellation/deadlines/authority loss. The authority seam
+is tested synthetically; seven actual Docker cases exercise OS isolation and
+digest rechecks. See [the gateway runbook](../testing/NATIVE_TOOL_GATEWAY.md).
+Durable controller/outbox wiring, native transport, allowed MCP/parser bindings,
+startup/hostile-repository conformance and authenticated generation/merge remain
+pending. No user-facing native profile is enabled by this component.

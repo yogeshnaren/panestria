@@ -100,3 +100,15 @@ cases prove running/closed-output cancellation, closed-output timeout and refusa
 to start after inspected creation; two hermetic cases cover pre-cancelled
 allocation and a detached attachment. See [sandbox cancellation](testing/SANDBOX_CANCELLATION.md).
 Native gateway/controller and lease-revocation wiring remain pending.
+
+The next focused task implements the native reviewed-command gateway component,
+strict bounded request/scope contracts, isolated snapshots, in-container digest
+rechecks and scoped read/edit dispatch. It requires a controller authority
+dependency and preserves unknown outcomes for reconciliation. Tests include
+every scope field, script/registry/request mutation, staging/profile guards and
+seven actual Docker isolation/cancellation/deadline cases. The test authority is
+synthetic; durable kernel/outbox authority, native transport and live startup/
+generation/merge still require implementation and evidence. This task makes no
+native inference or paid SDK call, and leaves private Claude profile setup to
+the owner. See [native tool gateway](testing/NATIVE_TOOL_GATEWAY.md).
+R1 remains IN_PROGRESS and G1 NOT_RUN.

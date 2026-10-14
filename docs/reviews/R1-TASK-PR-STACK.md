@@ -33,6 +33,13 @@ R1 PRs are drafts because implementation and required live validation remain unf
 | 22 | [#24](https://github.com/yogeshnaren/panestria/pull/24) | R1 / AOS-007: revoke approvals while preserving original decisions | [#23](https://github.com/yogeshnaren/panestria/pull/23) |
 | 23 | [#25](https://github.com/yogeshnaren/panestria/pull/25) | R1 / AOS-027a: scope protected repositories and resume confirmed effects | [#24](https://github.com/yogeshnaren/panestria/pull/24) |
 | 24 | [#26](https://github.com/yogeshnaren/panestria/pull/26) | R1: retain development evidence and index task PRs | [#25](https://github.com/yogeshnaren/panestria/pull/25) |
+| 25 | [#27](https://github.com/yogeshnaren/panestria/pull/27) | R1 / AOS-010: pinned CLI and private login metadata preflight | [#26](https://github.com/yogeshnaren/panestria/pull/26) |
+| 26 | [#28](https://github.com/yogeshnaren/panestria/pull/28) | R1 / AOS-008: cancel workers and handle attachment EOF | [#27](https://github.com/yogeshnaren/panestria/pull/27) |
+| 27 | [#29](https://github.com/yogeshnaren/panestria/pull/29) | R1 / AOS-010: reviewed native tool gateway component | [#28](https://github.com/yogeshnaren/panestria/pull/28) |
+
+Rows 25–27 are subsequent focused implementation tasks. They preserve the
+original extracted stack and keep native startup/controller/live obligations
+explicit in their descriptions and runbooks.
 
 ## Source preservation
 
