@@ -32,6 +32,7 @@ from panestria.kernel.repositories.approvals import (
     request_expired,
     required_verdicts,
 )
+from panestria.kernel.repositories.policy import require_current_policy
 from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.uow import UnitOfWork
 
@@ -97,6 +98,7 @@ class ApprovalService:
         if locked is None:
             raise KernelDenied("not_found")
         goal_id, state, row_version, contract_id = locked
+        require_current_policy(uow, actor, preview.policy_version)
         self._bound_contract(uow, contract_id, preview)
         continuation, phase = _WAIT[preview.action_kind]
         if (state, "WAITING_APPROVAL") not in ALLOWED_TRANSITIONS:
@@ -136,6 +138,13 @@ class ApprovalService:
         if task_id is None:
             raise KernelDenied("not_found")
         locked = lock_task_row(uow, actor.owner_id, actor.project_id, task_id)
+        project_ref = uow.execute(
+            "SELECT contract.body->>'autonomy_profile_ref' FROM panestria.task task"
+            " JOIN panestria.goal_contract contract ON contract.id=task.contract_id WHERE task.id=%s",
+            (task_id,),
+        ).fetchone()
+        if project_ref is not None:
+            require_current_policy(uow, actor, str(project_ref[0]))
         row = lock_request(uow, actor.owner_id, actor.project_id, request_id)
         if locked is None or row is None:
             raise KernelDenied("not_found")
@@ -187,6 +196,13 @@ class ApprovalService:
         if task_id is None:
             raise KernelDenied("not_found")
         locked = lock_task_row(uow, actor.owner_id, actor.project_id, task_id)
+        project_ref = uow.execute(
+            "SELECT contract.body->>'autonomy_profile_ref' FROM panestria.task task"
+            " JOIN panestria.goal_contract contract ON contract.id=task.contract_id WHERE task.id=%s",
+            (task_id,),
+        ).fetchone()
+        if project_ref is not None:
+            require_current_policy(uow, actor, str(project_ref[0]))
         row = lock_request(uow, actor.owner_id, actor.project_id, request_id)
         if locked is None or row is None:
             raise KernelDenied("not_found")
@@ -263,6 +279,13 @@ class ApprovalService:
         if task_id is None:
             raise KernelDenied("not_found")
         locked = lock_task_row(uow, actor.owner_id, actor.project_id, task_id)
+        project_ref = uow.execute(
+            "SELECT contract.body->>'autonomy_profile_ref' FROM panestria.task task"
+            " JOIN panestria.goal_contract contract ON contract.id=task.contract_id WHERE task.id=%s",
+            (task_id,),
+        ).fetchone()
+        if project_ref is not None:
+            require_current_policy(uow, actor, str(project_ref[0]))
         row = lock_request(uow, actor.owner_id, actor.project_id, request_id)
         if locked is None or row is None:
             raise KernelDenied("not_found")
