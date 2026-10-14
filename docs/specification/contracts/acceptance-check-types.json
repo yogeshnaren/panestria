@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "revision": "planning-fixes-1",
+  "discriminator": "acceptance[].verifier.type",
+  "types": [
+    {
+      "name": "trusted-command-ref",
+      "first_release": "R0",
+      "required_fields": [
+        "command_ref",
+        "expected_exit_code",
+        "timeout_seconds"
+      ]
+    },
+    {
+      "name": "git-diff-path-check",
+      "first_release": "R0",
+      "required_fields": [
+        "allowed_paths",
+        "forbidden_paths"
+      ]
+    },
+    {
+      "name": "policy-decision",
+      "first_release": "R0",
+      "required_fields": [
+        "action",
+        "expected"
+      ]
+    },
+    {
+      "name": "artifact-exists",
+      "first_release": "R0",
+      "required_fields": [
+        "artifact_ref",
+        "expected_sha256"
+      ]
+    },
+    {
+      "name": "human-review",
+      "first_release": "R0",
+      "required_fields": [
+        "reviewer_ref",
+        "evidence_requirements"
+      ]
+    },
+    {
+      "name": "citation-check",
+      "first_release": "R2",
+      "required_fields": [
+        "source_manifest_ref",
+        "claims_ref"
+      ]
+    },
+    {
+      "name": "rubric-review",
+      "first_release": "R2",
+      "required_fields": [
+        "rubric_ref",
+        "calibration_set_ref",
+        "reviewer_ref"
+      ]
+    }
+  ]
+}

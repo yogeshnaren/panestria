@@ -1,0 +1,74 @@
+{
+  "candidate_commit": "d457242e9e6ee2c54fbd99db99cb35319b1c8783",
+  "observed_at": "2026-10-12T19:08:59.681113+00:00",
+  "hardware_ref": "host-hardware.json",
+  "checks": [
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "."
+      ],
+      "exit_code": 0,
+      "log": "static-0.log",
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "argv": [
+        ".venv/bin/mypy",
+        "src/panestria"
+      ],
+      "exit_code": 0,
+      "log": "static-1.log",
+      "log_sha256": "0f5e2c0f274fe3238699ff97fc09737970ee01e440d6d8f78a8522bdc43ee59b"
+    },
+    {
+      "argv": [
+        ".venv/bin/lint-imports",
+        "--no-cache",
+        "--config",
+        ".importlinter"
+      ],
+      "exit_code": 0,
+      "log": "static-2.log",
+      "log_sha256": "1b9778a139f6019fa762f817dfb95e5dd891cf9a1cfb638e51278d3aa990a6c7"
+    },
+    {
+      "argv": [
+        "uv",
+        "lock",
+        "--check",
+        "--offline"
+      ],
+      "exit_code": 0,
+      "log": "static-3.log",
+      "log_sha256": "e62299989cef8f583995ca2d766c53d93bdf1b94d0334a4437934795878e6132"
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-B",
+        "tools/secret_scan.py"
+      ],
+      "exit_code": 0,
+      "log": "static-4.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "suite_argv": [
+    ".venv/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-m",
+    "not live",
+    "--junitxml=/tmp/panestria-r0-completion/non-live.xml",
+    "-q"
+  ],
+  "suite_exit_code": 0,
+  "suite_report_sha256": "4c20ae556dbfeaed5b399391ce8e07e6f0d4c7c759a88755b69e99e9633554f2",
+  "source_worktree_status": ""
+}

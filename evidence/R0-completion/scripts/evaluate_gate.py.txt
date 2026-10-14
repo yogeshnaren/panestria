@@ -1,0 +1,42 @@
+from pathlib import Path
+import datetime,hashlib,json,xml.etree.ElementTree as ET
+ROOT=Path('/home/yogesh/Personal/panestria');RUN=Path('/tmp/panestria-r0-completion')
+CANDIDATE='d457242e9e6ee2c54fbd99db99cb35319b1c8783'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def evaluate(required,reports,candidate):
+ grouped={};summaries=[]
+ for report in reports:
+  tree=ET.parse(report);root=tree.getroot();suites=list(root.iter('testsuite'))
+  if not suites or sum(int(s.get('tests','0'))for s in suites)==0:raise ValueError('empty suite')
+  summary={'file':report.name,'sha256':sha(report),'tests':0,'failures':0,'errors':0,'skipped':0}
+  for s in suites:
+   for key in ['tests','failures','errors','skipped']:summary[key]+=int(s.get(key,'0'))
+  for tc in root.iter('testcase'):
+   p={v.get('name'):v.get('value')for v in tc.findall('./properties/property')}
+   case=p.get('gate_case_id')
+   if not case:raise ValueError('unmapped test')
+   if p.get('candidate_commit') not in [None,candidate]:raise ValueError('candidate mismatch')
+   verdict='FAIL' if tc.find('failure') is not None or tc.find('error') is not None else 'SKIP' if tc.find('skipped') is not None else 'PASS'
+   grouped.setdefault(case,[]).append({'nodeid':tc.get('classname')+'::'+tc.get('name'),'verdict':verdict,'execution_mode':p.get('execution_mode'),'report':report.name})
+  summaries.append(summary)
+ missing=sorted(set(required)-set(grouped))
+ failed=sorted(case for case,nodes in grouped.items()if any(n['verdict']=='FAIL'for n in nodes))
+ skipped=sorted(case for case,nodes in grouped.items()if any(n['verdict']=='SKIP'for n in nodes))
+ live=grouped.get('AOS-001-TC04',[])
+ live_ok=len(live)==1 and live[0]['execution_mode']=='LIVE' and live[0]['verdict']=='PASS'
+ verdict='FAIL' if failed else 'INCOMPLETE' if missing or skipped or not live_ok else 'PASS'
+ return {'gate':'G0','verdict':verdict,'candidate_commit':candidate,'reason':'All required G0 groups observed; fresh-host identity, bootstrap/offline reinstall and live measurements verified. Owner handoff acceptance remains separate.'if verdict=='PASS'else'Missing or failed required evidence','missing_case_ids':missing,'failed_case_ids':failed,'reports':summaries,'cases':[{'case_id':case,'verdict':'PASS'if all(n['verdict']=='PASS'for n in nodes)else'FAIL','nodes':nodes}for case,nodes in sorted(grouped.items())],'owner_acceptance':'PENDING','observed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+if __name__=='__main__':
+ required=json.loads((ROOT/'docs/testing/release-gates.json').read_text())['gates'][0]['required_case_ids']
+ host=json.loads((RUN/'host-environment.json').read_text());guest=json.loads((RUN/'guest-results/environment-manifest.json').read_text());provenance=json.loads((RUN/'vm/provenance.json').read_text())
+ assert host['candidate_commit']==guest['candidate_commit']==CANDIDATE
+ assert host['source_worktree_status']==guest['git_status']==''
+ assert sha(RUN/'non-live.xml')==host['suite_report_sha256']
+ assert guest['boot_id']!=Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+ assert guest['instance_id']==provenance['instance_id']
+ assert guest['offline_cache_reinstall_passed'] and guest['venv_created_this_boot']
+ assert guest['lock_sha256']==sha(ROOT/'uv.lock')
+ result=evaluate(required,[RUN/'non-live.xml',RUN/'guest-results/fresh-host.xml'],CANDIDATE)
+ assert result['verdict']=='PASS',result
+ (RUN/'gate-evaluation.json').write_text(json.dumps(result,indent=2)+'\n')
+ print(json.dumps({'G0':result['verdict'],'required_groups':len(required),'nodes':sum(r['tests']for r in result['reports'])}))

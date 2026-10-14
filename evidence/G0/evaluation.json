@@ -1,0 +1,1127 @@
+{
+  "gate": "G0",
+  "verdict": "PASS",
+  "candidate_commit": "f161193ed31918592015ec9e68163d31d77cb0ae",
+  "reason": "All required G0 groups observed; fresh-host identity, bootstrap/offline reinstall and live measurements verified. Owner handoff acceptance remains separate.",
+  "missing_case_ids": [],
+  "failed_case_ids": [],
+  "reports": [
+    {
+      "file": "non-live.xml",
+      "sha256": "161c2eb6eedf2384e35f9f7adc243b4e08941f6a239bf3c4d2960c1f6204881d",
+      "tests": 160,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "fresh-host.xml",
+      "sha256": "e9c4c7a0a38fa340a52a743b86ca3514950d1c217a7bcf7958ba6a3fce921948",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "AOS-001-TC01",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.integration.test_aos_001::test_package_install_and_preserved_license",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_contributor_and_security_notes_have_no_secrets",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_local_environment_files_are_ignored",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_loopback_bind_accepted[127.0.0.1]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_loopback_bind_accepted[127.0.0.2]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_loopback_bind_accepted[::1]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[0.0.0.0]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[::]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[192.168.0.10]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[10.1.2.3]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[172.16.0.4]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[8.8.8.8]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[169.254.1.1]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[localhost]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[example.com]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[ 127.0.0.1]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[127.0.0.1 ]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[::ffff:127.0.0.1]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_rejected[[::1]]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_direct_non_loopback_settings_are_unrepresentable",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_disabled_profiles_rejected[PERSONAL_SANDBOX]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_disabled_profiles_rejected[TRUSTED_PROJECT]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_disabled_profiles_rejected[HARDENED_WORKSPACE]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_disabled_profiles_rejected[synthetic_dev]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_disabled_profiles_rejected[]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_port_rejected[0]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_port_rejected[65536]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_invalid_bind_port_rejected[-1]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_schema_bool_and_budget_rejected",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_documented_database_urls_accepted[postgresql://panestria_synthetic:syntheticdevsentinel@127.0.0.1:5432/panestria_synthetic]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_documented_database_urls_accepted[postgresql://panestria_synthetic:syntheticdevsentinel@127.0.0.1/panestria_synthetic]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_documented_database_urls_accepted[postgresql://panestria_synthetic:syntheticdevsentinel@[::1]:5432/panestria_synthetic]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_documented_database_urls_accepted[postgresql://panestria_synthetic:syntheticdevsentinel@[::1]/panestria_synthetic]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_documented_database_urls_accepted[postgresql+psycopg://panestria_synthetic:syntheticdevsentinel@db/panestria_synthetic]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_documented_database_urls_accepted[postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:5432/panestria_synthetic]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_malformed_database_urls_rejected[postgresql://user:syntheticsecret@[broken/db]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_malformed_database_urls_rejected[postgresql://user:syntheticsecret@127.0.0.1:banana/db]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_malformed_database_urls_rejected[postgresql://user:syntheticsecret@127.0.0.1:99999/db]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_malformed_database_urls_rejected[postgresql://user:syntheticsecret@127.0.0.1:0/db]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_malformed_database_urls_rejected[sqlite:///panestria.db]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_malformed_database_urls_rejected[postgresql://panestria_synthetic@127.0.0.1:5432/panestria_synthetic]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_malformed_database_urls_rejected[postgresql://panestria_synthetic:shortpw@127.0.0.1:5432/panestria_synthetic]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_malformed_database_urls_rejected[postgresql://panestria_synthetic:not_probed@127.0.0.1:5432/panestria_synthetic]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_malformed_database_urls_rejected[postgresql://panestria_synthetic:syntheticdevsentinel@127.0.0.1:5432/panestria_synthetic?sslmode=disable]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_malformed_database_urls_rejected[postgresql://panestria_synthetic:syntheticdevsentinel @127.0.0.1:5432/panestria_synthetic]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_unknown_environment_names_are_rejected",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_healthz_does_not_probe",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_unavailable_database_is_not_ready",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_degraded_database_stays_unready_executor",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_executor_ready_claim_is_ignored",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_duplicate_database_check_is_probe_failed",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_expired_deadline_does_not_invoke_probe",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_repeated_timeouts_keep_workers_bounded",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_second_poll_does_not_queue_another_probe",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_interpreter_exits_after_stuck_probe",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_encoded_and_arbitrary_probe_text_are_not_emitted",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_cli_reports_safe_configuration_errors",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_owned_listen_ignores_other_processes_and_rejects_egress",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001::test_this_process_listen_socket_is_attributed",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_http::test_oversized_header_is_rejected_without_echo",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_http::test_submit_stops_reading_past_the_body_cap",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_http::test_slow_database_call_leaves_health_responsive",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_http::test_database_outage_is_unavailable",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-001-TC02",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_installed_package_imports",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_production_import_boundary_passes",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_forbidden_import_fails_boundary_gate",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_allowed_import_passes_boundary_gate",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_current_lock_matches_metadata",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_stale_lock_fails",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_production_lint_and_types_pass",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_disposable_lint_and_type_failures",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_disposable_failing_unit_test",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_repository_secret_scan_passes_and_sentinel_fails",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_ci_executes_only_reviewed_commands",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_ci_does_not_inject_provider_credentials",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_make_bootstrap_uses_the_frozen_cache",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_make_test_excludes_the_live_case",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_reset_rejects_an_extra_path",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_r0_demo_rejects_a_non_loopback_bind",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_001_toolchain::test_dev_api_rejects_a_non_loopback_bind",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_existing_api_requires_health_and_bearer_identity",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_closed_port_is_the_only_reason_to_start_an_api",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_browser_snapshot_is_escaped_and_cannot_write_or_serve_files",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_candidate_summary_requires_a_matching_recorded_hash",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_review_port_validation[0]",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_review_port_validation[-1]",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_demo_lifecycle::test_review_port_validation[65536]",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-001-TC03",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.e2e.test_r0_loopback::test_server_smoke_records_its_own_loopback_socket",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001_postgres::test_wrong_volume_and_symlink_cleanup_are_denied",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001_postgres::test_expected_directory_reset_removes_only_children",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_001_postgres::test_scoped_database_is_healthy_and_scaffold_is_empty",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-001-TC04",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.integration.test_aos_001::test_fresh_host_loopback",
+          "verdict": "PASS",
+          "execution_mode": "LIVE",
+          "report": "fresh-host.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-002-TC01",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.contract.test_aos_002::test_exported_json_schemas_match_the_models",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_002::test_canonical_hash_is_stable_across_key_order_and_money_spelling",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_002::test_edited_contract_creates_a_new_version",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_002::test_legacy_raw_command_bool_budget_and_duplicate_ids_are_rejected",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_002::test_r2_runners_are_not_admitted[citation-check]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_002::test_r2_runners_are_not_admitted[rubric-review]",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_aos_002::test_unknown_approval_field_and_restricted_egress_are_rejected",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-002-TC02",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.integration.test_aos_002_migration::test_kernel_migration_rejects_bad_scope_and_reapplies",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-002-TC03",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.integration.test_aos_002_services::test_concurrent_transition_and_cursor",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_kernel::test_graph_idempotency_and_malformed_acceptance",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-002-TC04",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.integration.test_aos_002_services::test_foreign_scope_and_mass_assignment",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_002_services::test_transition_binds_policy_and_correlation",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-003-TC01",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.integration.test_aos_003::test_atomic_enqueue_and_duplicate",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-003-TC02",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.integration.test_aos_003::test_serialization_attempts_stop",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_003::test_recovery_instance_is_stable_for_the_process",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_003::test_before_after_commit",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_003::test_unfinished_workflow_names_goal_and_task",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_003::test_stale_attempt_epoch_does_not_move_the_task",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_003::test_workflow_body_rejects_a_clock",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_admission::test_admitted_queue_restarts_at_transaction_worker_and_verification",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-003-TC03",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.integration.test_aos_003::test_serialization_limit_is_recorded_as_failed",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_003::test_terminal_workflow_error_is_recorded_as_failed",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_003::test_uncommitted_external_step",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_admission::test_repeated_recovery_stops_and_fails_the_task",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-003-TC04",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.integration.test_aos_003::test_database_restore_and_reconnect",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-004-TC01",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.integration.test_aos_004::test_mock_success_and_repeat",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_scripted_events_name_the_attempt_and_stay_unaccepted",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-004-TC02",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.contract.test_r0_verifiers::test_distinct_command_specs_do_not_share_one_result",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_verifiers::test_timeout_and_output_limit_fail_closed",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_verifiers::test_narrower_path_check_rejects_an_otherwise_allowed_edit",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_verifiers::test_policy_uses_the_action_not_the_requested_expectation",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_verifiers::test_missing_artifact_and_human_review_are_not_pass",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_verifiers::test_git_diff_sees_baseline_edits_deletions_renames_and_directory_symlinks",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_verifiers::test_staged_index_change_is_not_hidden_by_a_clean_worktree",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_verifiers::test_candidate_commit_is_not_hidden_by_a_clean_worktree",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_verifiers::test_loaded_registry_keeps_the_required_command_separate",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_verifiers::test_git_commands_reject_push_and_hook_changes",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.contract.test_r0_verifiers::test_false_pass_records_readme_path_and_exit_code",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_bad_path_and_tampered_checks",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_stored_pass_does_not_merge_a_different_commit",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_global_scope_denies_a_commit_without_a_path_check",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_checks::test_unknown_command_and_narrow_paths_do_not_complete",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-004-TC03",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.e2e.test_r0_loopback::test_cancel_leaves_prepared_effect_and_git_unchanged",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_hung_process_and_output",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-004-TC04",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.integration.test_aos_004::test_artifact_partial_publish",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_expired_worktree_cleanup_does_not_follow_symlinks",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_journey_publication_uses_the_stored_epoch",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_stale_attempt_is_not_reused",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_old_candidate_does_not_stand_in_for_the_current_attempt",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-005-TC01",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.e2e.test_aos_005::test_loopback_submit_scope_and_replay",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.e2e.test_aos_005::test_r0_positive_journey",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.e2e.test_aos_005::test_openapi_matches_the_mounted_routes",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.e2e.test_aos_005::test_cli_rejects_a_status_body_outside_the_published_model",
+          "verdict": "PASS",
+          "execution_mode": "HERMETIC",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.e2e.test_r0_loopback::test_cli_over_tcp_restarts_and_completes",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-005-TC02",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.e2e.test_aos_005::test_approval_digest_actor_expiry",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.e2e.test_aos_005::test_corrupted_check_report_prepares_no_merge",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_checks::test_newer_failure_and_unbound_evidence_prepare_no_merge",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_checks::test_newer_failure_hides_an_older_report_file",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_http::test_denial_correlation_id_is_not_taken_from_the_request",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-005-TC03",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.e2e.test_aos_005::test_decision_race_idempotency",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        }
+      ]
+    },
+    {
+      "case_id": "AOS-005-TC04",
+      "verdict": "PASS",
+      "nodes": [
+        {
+          "nodeid": "tests.e2e.test_aos_005::test_wait_restart_continuation",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.e2e.test_r0_loopback::test_cli_reports_retryable_error_when_the_api_is_down",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_latest_approval_request_wins",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_observation_does_not_hide_a_prepared_effect",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_old_effect_does_not_stand_in_for_the_current_approval",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_journey_contract_follows_the_task_or_the_latest_version",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_aos_004::test_stale_snapshot_does_not_complete_a_different_approval",
+          "verdict": "PASS",
+          "execution_mode": "OS_BOUNDARY",
+          "report": "non-live.xml"
+        },
+        {
+          "nodeid": "tests.integration.test_r0_effects::test_reconcile_applied_ref_and_refuse_stale_authorization",
+          "verdict": "PASS",
+          "execution_mode": null,
+          "report": "non-live.xml"
+        }
+      ]
+    }
+  ],
+  "owner_acceptance": "ACCEPTED",
+  "observed_at": "2026-10-12T20:40:58.471284+00:00",
+  "report_artifact_refs": [
+    "evidence/R0-demo-fix/non-live.xml",
+    "evidence/R0-demo-fix/fresh-host.xml"
+  ],
+  "environment_refs": [
+    "evidence/R0-demo-fix/environment-manifest.json",
+    "evidence/R0-demo-fix/native-validation.json"
+  ],
+  "vm_provenance_ref": "evidence/R0-demo-fix/vm-provenance.json",
+  "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json",
+  "owner_accepted_at": "2026-10-13T07:41:20.037638+00:00"
+}

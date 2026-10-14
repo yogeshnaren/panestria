@@ -1,0 +1,18 @@
+{
+  "record_type": "phase-owner-acceptance",
+  "release": "R0",
+  "decision": "accept",
+  "accepted_at": "2026-10-13T07:41:20.037638+00:00",
+  "approver": "repository-owner",
+  "channel": "codex-chat",
+  "authorization_source": "direct user message",
+  "user_instruction": "Okay please mark R0 as complete and please proceed to R1 and complete that. Once it is completed, provide what is included in this run, what was built, how can I test this properly with instructions and what must be expected!",
+  "candidate_commit": "f161193ed31918592015ec9e68163d31d77cb0ae",
+  "evidence_commit": "ecdb57412e5ab790c95e2e7f87574f1844f1419b",
+  "gate_manifest": "evidence/G0/evaluation.json",
+  "accepted_gate_manifest_sha256": "fff03d2671a877c05baafff32b2055e9830b4cc7d03fe4d3a1cf93fab792da85",
+  "report_ref": "docs/reviews/R0-DEMO-REVIEW.md",
+  "r1_implementation_authorized": true,
+  "mvp_r3_acceptance": false,
+  "r2_r3_or_sota_implementation_authorized": false
+}

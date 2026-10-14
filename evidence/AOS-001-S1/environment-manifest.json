@@ -1,0 +1,130 @@
+{
+  "slice": "AOS-001-S1",
+  "observed_at": "2026-10-12T03:54:46.839152Z",
+  "candidate_commit": "af6794e112c888fd61b6e6b98a4824acab9c1681",
+  "candidate_contains_tested_source": true,
+  "worktree_state_at_test_start": "clean",
+  "source_tree_sha256": "11e72bcdc40c52a85474984088cb1fdf73f08b61106d589c6bdd966a14bfe5a0",
+  "license_git_blob": "a27ac1f735903cf88ceaf03a4bc923bdc29ab59d",
+  "junit_sha256": "72827bb0c6e2b98b1c21f396a2dc33927a97a5b7b119b9038c8535cb1ba90028",
+  "fixture_sha256": "d4f51cd4e732216a922a34e85adecc18335e9619b1726c26b5a15c24e2a7c444",
+  "execution_mode": "HERMETIC",
+  "database": "mocked_probe",
+  "executor": "not_implemented",
+  "hardware": {
+    "probed": false,
+    "verdict": "UNKNOWN",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "release_gate": "INCOMPLETE",
+  "components": [
+    {
+      "name": "python",
+      "resolved_version": "3.12.4",
+      "source": "/home/yogesh/anaconda3/bin/python3",
+      "capability": "interpreter",
+      "outcome": "observed",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "uv",
+      "resolved_version": "0.12.3",
+      "source": "https://docs.astral.sh/uv/",
+      "capability": "frozen install and test run",
+      "outcome": "uv lock --check exit 0",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "panestria",
+      "resolved_version": "0.0.0",
+      "source": "file:///home/yogesh/Personal/panestria",
+      "capability": "installed package and CLI",
+      "outcome": "covered by the hermetic lane",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "fastapi",
+      "resolved_version": "0.143.0",
+      "source": "https://pypi.org/simple",
+      "capability": "HTTP app",
+      "outcome": "used by hermetic TestClient",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pydantic",
+      "resolved_version": "2.14.1",
+      "source": "https://pypi.org/simple",
+      "capability": "strict settings and response models",
+      "outcome": "used",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pydantic-settings",
+      "resolved_version": "2.15.0",
+      "source": "https://pypi.org/simple",
+      "capability": "process environment settings",
+      "outcome": "used; .env file is not loaded",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "typer",
+      "resolved_version": "0.27.3",
+      "source": "https://pypi.org/simple",
+      "capability": "CLI",
+      "outcome": "version and health commands",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "starlette",
+      "resolved_version": "1.7.0",
+      "source": "https://pypi.org/simple",
+      "capability": "ASGI",
+      "outcome": "used via FastAPI",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pytest",
+      "resolved_version": "9.1.1",
+      "source": "https://pypi.org/simple",
+      "capability": "unit lane",
+      "outcome": "57 passed",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "httpx2",
+      "resolved_version": "2.13.1",
+      "source": "https://pypi.org/simple",
+      "capability": "ASGI test client",
+      "outcome": "dev dependency only",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "postgresql",
+      "resolved_version": null,
+      "source": "not provisioned",
+      "capability": "readiness dependency",
+      "outcome": "injected probe; no connection",
+      "mocked": true,
+      "live": false
+    },
+    {
+      "name": "executor",
+      "resolved_version": null,
+      "source": "not implemented",
+      "capability": "durable worker",
+      "outcome": "forced not_configured/not_implemented",
+      "mocked": true,
+      "live": false
+    }
+  ]
+}

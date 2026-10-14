@@ -1,0 +1,57 @@
+{
+  "slice": "AOS-002-S1",
+  "observed_at": "2026-10-12T05:31:24.507780Z",
+  "candidate_commit": "834ae35db83126e9c96e8e9e320d0514ee39077a",
+  "candidate_contains_tested_source": true,
+  "worktree_state_at_test_start": "clean",
+  "junit_sha256": "656e59dd0c08de84b9416b3a06254ca6477e75e950f5f87ee7dc87c6b71db4ee",
+  "fixture_sha256": "9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283",
+  "fixture": "docs/fixtures/synthetic-goal-contract.json",
+  "execution_mode": "HERMETIC",
+  "database": "not_used",
+  "executor": "not_implemented",
+  "hardware": {
+    "probed": false,
+    "verdict": "UNKNOWN",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "release_gate": "INCOMPLETE",
+  "components": [
+    {
+      "name": "python",
+      "resolved_version": "3.12.4",
+      "source": "/home/yogesh/anaconda3/bin/python3",
+      "capability": "interpreter",
+      "outcome": "observed",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pydantic",
+      "resolved_version": "2.14.1",
+      "source": "https://pypi.org/simple",
+      "capability": "strict contract models",
+      "outcome": "used",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pytest",
+      "resolved_version": "9.1.1",
+      "source": "https://pypi.org/simple",
+      "capability": "non-live regression",
+      "outcome": "77 passed",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "postgresql",
+      "resolved_version": null,
+      "source": "not used by this case",
+      "capability": "persistence",
+      "outcome": "TC02-TC04 not run",
+      "mocked": false,
+      "live": false
+    }
+  ]
+}

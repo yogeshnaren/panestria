@@ -1,0 +1,48 @@
+{
+  "slice": "AOS-004-S2",
+  "observed_at": "2026-10-12T06:27:56.578753Z",
+  "candidate_commit": "9f4b764cbe0e32eaf22eccb7463bcac84ae57cae",
+  "candidate_contains_tested_source": true,
+  "worktree_state_at_test_start": "clean",
+  "junit_sha256": "47b413a0fd58841eef2f134439080dd85bb331a69c76d9e70869986d1a23782c",
+  "fixture_sha256": "8ed3f6ad685b959ead7022518e1af76cd816f8e8ec7ccdda1ed4018e8f2223f8",
+  "fixture": "synthetic seed alpha",
+  "execution_mode": "OS_BOUNDARY",
+  "database": "not_used",
+  "executor": "reviewed-argv-and-content-addressed-store",
+  "hardware": {
+    "probed": false,
+    "verdict": "UNKNOWN",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "release_gate": "INCOMPLETE",
+  "components": [
+    {
+      "name": "git",
+      "resolved_version": "2.34.1",
+      "source": "local executable",
+      "capability": "attempt worktree for the candidate file",
+      "outcome": "the reviewed check read the ingress blob, not a worker-supplied test",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "artifact-ingress",
+      "resolved_version": "panestria-0.0.0",
+      "source": "repository source",
+      "capability": "atomic copy outside the worker worktree with a hash recheck",
+      "outcome": "a symlink source was refused and the published digest matched the candidate",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pytest",
+      "resolved_version": "9.1.1",
+      "source": "https://pypi.org/simple",
+      "capability": "non-live regression",
+      "outcome": "86 passed",
+      "mocked": false,
+      "live": false
+    }
+  ]
+}

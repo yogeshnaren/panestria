@@ -1,0 +1,48 @@
+{
+  "slice": "AOS-004-S1",
+  "observed_at": "2026-10-12T06:21:29.840470Z",
+  "candidate_commit": "abf45f8634ebd326a0ce692ef8e0a0665e0905ea",
+  "candidate_contains_tested_source": true,
+  "worktree_state_at_test_start": "clean",
+  "junit_sha256": "f3df237cab2edd785f79381fe1fd41e266eeeb931eefa05da7c1ecd09a98a550",
+  "fixture_sha256": "8ed3f6ad685b959ead7022518e1af76cd816f8e8ec7ccdda1ed4018e8f2223f8",
+  "fixture": "synthetic seed alpha",
+  "execution_mode": "OS_BOUNDARY",
+  "database": "not_used",
+  "executor": "git-worktree-and-process-group",
+  "hardware": {
+    "probed": false,
+    "verdict": "UNKNOWN",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "release_gate": "INCOMPLETE",
+  "components": [
+    {
+      "name": "git",
+      "resolved_version": "2.34.1",
+      "source": "local executable",
+      "capability": "toy repository and detached attempt worktree",
+      "outcome": "the same seed produced the same base sha and the same allowed.txt hash",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "worker-process",
+      "resolved_version": "CPython 3.12",
+      "source": "project interpreter",
+      "capability": "scripted success, escape, hang, crash, and bounded stdout",
+      "outcome": "success stayed a candidate; escape, crash, and cancel did not accept the result",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pytest",
+      "resolved_version": "9.1.1",
+      "source": "https://pypi.org/simple",
+      "capability": "non-live regression",
+      "outcome": "85 passed",
+      "mocked": false,
+      "live": false
+    }
+  ]
+}

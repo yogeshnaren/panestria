@@ -1,0 +1,84 @@
+{
+  "slice": "AOS-001-S3",
+  "observed_at": "2026-10-12T05:26:56.431134Z",
+  "candidate_commit": "61d9e4729ded8e39d7a5ebc1048d803a6cdcab2b",
+  "candidate_contains_tested_source": true,
+  "worktree_state_at_test_start": "clean",
+  "junit_sha256": "871ea5f05ca1d9c4a1d56df36cebbe6b7b3e2c9ac972bb0d9d41a592a18b54c8",
+  "fixture_sha256": "25639ee7dd54478214c4cf8ec76f93b21678a199d1a00feb4a966cf2460cc0b7",
+  "fixture": "compose.yaml",
+  "execution_mode": "OS_BOUNDARY",
+  "database": "disposable_postgresql",
+  "executor": "not_implemented",
+  "hardware": {
+    "probed": false,
+    "verdict": "UNKNOWN",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "release_gate": "INCOMPLETE",
+  "components": [
+    {
+      "name": "python",
+      "resolved_version": "3.12.4",
+      "source": "/home/yogesh/anaconda3/bin/python3",
+      "capability": "interpreter",
+      "outcome": "observed",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "uv",
+      "resolved_version": "0.12.3",
+      "source": "https://docs.astral.sh/uv/",
+      "capability": "frozen commands",
+      "outcome": "uv lock --check --offline exit 0",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "docker",
+      "resolved_version": "29.1.3",
+      "source": "/usr/bin/docker",
+      "capability": "container runtime",
+      "outcome": "used for disposable postgres",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "docker-compose",
+      "resolved_version": "v5.6.0",
+      "source": "user cli plugin",
+      "capability": "compose",
+      "outcome": "up --wait and down -v",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "postgresql",
+      "resolved_version": "postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d",
+      "source": "docker.io/library/postgres:16",
+      "capability": "disposable database",
+      "outcome": "healthy; empty panestria schema; revision 0001_scaffold",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "alembic",
+      "resolved_version": "1.20.0",
+      "source": "https://pypi.org/simple",
+      "capability": "migration scaffold",
+      "outcome": "upgrade head exit 0",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "psycopg",
+      "resolved_version": "3.3.6",
+      "source": "https://pypi.org/simple",
+      "capability": "SQL check",
+      "outcome": "connected to loopback",
+      "mocked": false,
+      "live": false
+    }
+  ]
+}

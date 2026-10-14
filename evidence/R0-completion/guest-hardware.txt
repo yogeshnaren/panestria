@@ -1,0 +1,19 @@
+OS        Linux x86_64   AC power: None
+CPU       QEMU TCG CPU version 2.5+  (2 physical / 2 logical)
+RAM       1.9 GB (1.5 GB available)
+GPU       none detected
+Disk free 8.8 GB
+
+Budgets   accelerator 0.0 GB, host offload 0.9 GB
+Engine    llama.cpp (CPU)
+Assumes  4-bit weights, q8_0 KV cache (OLLAMA_KV_CACHE_TYPE=q8_0, OLLAMA_FLASH_ATTENTION=1)
+
+Role      Model                   Where     Mem GB  Est tok/s  Measured
+steward   -                       none         0.0          -         -
+embedder  qwen3-embedding:0.6b    cpu          0.8          -         -
+stt       -                       none         0.0          -         -
+heavy     -                       none         0.0          -         -
+
+Restricted work: none: no usable local model; Restricted work is refused
+
+Manifest written to /home/ubuntu/r0-results/guest-hardware.json

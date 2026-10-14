@@ -1,0 +1,61 @@
+{
+  "slice": "AOS-004-S1",
+  "case_id": "AOS-004-TC01",
+  "nodeids": [
+    "tests/integration/test_aos_004.py::test_mock_success_and_repeat"
+  ],
+  "lane": "integration",
+  "execution_mode": "OS_BOUNDARY",
+  "verdict": "PASS",
+  "release_gate": "INCOMPLETE",
+  "release_gate_reason": "TC01 passed on a real Git worktree and process group for abf45f8634ebd326a0ce692ef8e0a0665e0905ea. TC02, TC03, and TC04 are not run. AOS-001-TC04 is not run. G0 is not a pass.",
+  "not_run": [
+    {
+      "case_id": "AOS-004-TC02",
+      "reason": "AOS-004-S2"
+    },
+    {
+      "case_id": "AOS-004-TC03",
+      "reason": "AOS-004-S3"
+    },
+    {
+      "case_id": "AOS-004-TC04",
+      "reason": "AOS-004-S3"
+    },
+    {
+      "case_id": "AOS-001-TC04",
+      "reason": "fresh Ubuntu host not available"
+    }
+  ],
+  "checks": [
+    {
+      "command": ["uv", "lock", "--check", "--offline"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "ruff", "check", "src", "tests"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "mypy"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "lint-imports"],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-m",
+        "not live",
+        "--junitxml=evidence/AOS-004-S1.xml"
+      ],
+      "exit_code": 0,
+      "passed": 85
+    }
+  ]
+}

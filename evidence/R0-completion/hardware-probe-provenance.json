@@ -1,0 +1,13 @@
+{
+  "archive_ref": "docs/specification/attachments/agentos-skills-v0.1.0.zip",
+  "archive_sha256": "bf9178cbd7800852e0167452900659f5a8238eb71754aa3b7944117ef35ceba6",
+  "script_member": "agentos-skills/skills/hardware-probe/scripts/hwprobe.py",
+  "script_sha256": "21bf9a12aa2fa499bc09a47b30430a86284aaada5a5bf1c573b9435759500b99",
+  "archive_integrity": "PASS",
+  "original_upload_unchanged": true,
+  "mode": "read-only inventory; no pull or benchmark flags",
+  "outputs": {
+    "host-hardware.json": "26c7cc2ed7f7370cfdaf053e19823e40f36125f33f7c23fc1e1e599dc7878f0c",
+    "guest-hardware.json": "acd88a5d5e150900efddf868218b8a7630528cd318e6abb1b252b1f89d407372"
+  }
+}

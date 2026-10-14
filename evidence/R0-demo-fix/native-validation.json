@@ -1,0 +1,284 @@
+{
+  "candidate_commit": "f161193ed31918592015ec9e68163d31d77cb0ae",
+  "api_pid": 1359588,
+  "api_suspended_during_test": true,
+  "observed_at": "2026-10-12T20:27:51.926558+00:00",
+  "backup_sha256": "63175581841132eddd05fe5d4aee23c5f5608eb337a08b9093016f76da0c509a",
+  "before": {
+    "dbos.application_versions": {
+      "rows": 1,
+      "sha256": "8fcdf2208908eac02873cf418fb5a4a4b34ede8f2e465c2daefe68191206447e"
+    },
+    "dbos.dbos_migrations": {
+      "rows": 1,
+      "sha256": "c7dfc67ec67e018306deec0d6de82824a1d86980fa1f73978f8f9c82eca3b851"
+    },
+    "dbos.event_dispatch_kv": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.notifications": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.operation_outputs": {
+      "rows": 18,
+      "sha256": "eb5a535de2e96c79da4895c8c689660aa7e364c31234245df4056706e656ed08"
+    },
+    "dbos.queues": {
+      "rows": 1,
+      "sha256": "2c1a4ee4e9b5c429e8af470fdbf555a168fcbd0caf3b8626163c41bcbd2cfa8b"
+    },
+    "dbos.streams": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.workflow_events": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.workflow_events_history": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.workflow_input": {
+      "rows": 6,
+      "sha256": "e42dda8952ec585191cb06a6288964e6705e19566b658e725dd43bf01c2c2054"
+    },
+    "dbos.workflow_output": {
+      "rows": 6,
+      "sha256": "7089a24e0a778841d9b2d1c635f8f37305a3d776955990f39e88fb37f1b34ef9"
+    },
+    "dbos.workflow_schedules": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.workflow_status": {
+      "rows": 6,
+      "sha256": "9225e472fa7ddd5bfc8b99bf776ec414691ff107064c30e633e61a07c93f275a"
+    },
+    "panestria.acceptance_check": {
+      "rows": 18,
+      "sha256": "6a35d625e147c5930eeb5059700aa88291805c11f149d3908f277b746b4d9731"
+    },
+    "panestria.approval_consumption": {
+      "rows": 12,
+      "sha256": "5ea8ba3878849454796d7f35eb64b63c94c3636e81755d1a8e7a5715e48c296e"
+    },
+    "panestria.approval_request": {
+      "rows": 12,
+      "sha256": "2426aa55d2a610df0e71e15644c332f4ac2d1d4e8915df5131141215ed202291"
+    },
+    "panestria.artifact": {
+      "rows": 24,
+      "sha256": "fd7b707fa20ca4fd6154059fe8620166b973fdb2937e1f6ac387e9e138d8662f"
+    },
+    "panestria.check_run": {
+      "rows": 18,
+      "sha256": "1925a6d227e33b3d1ed38543b311c5b5ac1178640957953f38b45e2bff9cdc44"
+    },
+    "panestria.goal": {
+      "rows": 6,
+      "sha256": "71b4ac4600c0836081cc72716f771af36170160e93556714352a33de87540fff"
+    },
+    "panestria.goal_contract": {
+      "rows": 6,
+      "sha256": "7addedcc6068134c76f139e710b6f54a1925dbbe6652d4e7bdfd93e9185a7853"
+    },
+    "panestria.idempotency_record": {
+      "rows": 24,
+      "sha256": "343a72c9b5dbad735f730dc6c5c60f8a67d0752149ad39971f35e3d8f64cc2ef"
+    },
+    "panestria.principal": {
+      "rows": 1,
+      "sha256": "cddc21a977277f8642977ec4c37cbcbc25a717ff3347e489fce1729d3b04b25f"
+    },
+    "panestria.project": {
+      "rows": 1,
+      "sha256": "a662b5f56853cb0c0ae25e64c62b7d24eb1577790bd7d5bae196fe65577c358a"
+    },
+    "panestria.side_effect": {
+      "rows": 6,
+      "sha256": "67b3cd7b3574f123e8848d5e4918123a67e0dc3e64340fe12aeeca11cb6ef8f8"
+    },
+    "panestria.task": {
+      "rows": 6,
+      "sha256": "8e89a95b245aed1191eb7f9abf2c0bd26286d9a3a36274596f85fc7e024c83e2"
+    },
+    "panestria.task_attempt": {
+      "rows": 6,
+      "sha256": "13bdee9ecbb3b767fcf33152fcde24513f686d9c034d1cf78d5578d2b258403e"
+    },
+    "panestria.task_dependency": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "panestria.task_event": {
+      "rows": 84,
+      "sha256": "ebff0f65befe65f9b908c37141c943d425d072e6bb7f225ed8d868355c0a2d93"
+    },
+    "panestria.workflow_link": {
+      "rows": 6,
+      "sha256": "5857940427f96a5d88c0374d64cd4f89d20d92af785729454ca09ac6b6dace9b"
+    },
+    "panestria_checkpoint.datasource_outputs": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "panestria_checkpoint.dbos_datasource_migrations": {
+      "rows": 1,
+      "sha256": "2430f1a2ad2982d0067885488a4c89e21ad1d7c83b115ba8f1b20acc88dfaea8"
+    },
+    "public.alembic_version": {
+      "rows": 1,
+      "sha256": "2848ba443e7cce06e58027d58d09af4840059998e9b721b527d1a30bee206cc2"
+    }
+  },
+  "suite_argv": [
+    "/home/yogesh/Personal/panestria/.venv/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-m",
+    "not live",
+    "--junitxml=/tmp/panestria-demo-fix/non-live.xml",
+    "-q"
+  ],
+  "suite_exit_code": 0,
+  "suite_report_sha256": "161c2eb6eedf2384e35f9f7adc243b4e08941f6a239bf3c4d2960c1f6204881d",
+  "after": {
+    "dbos.application_versions": {
+      "rows": 1,
+      "sha256": "8fcdf2208908eac02873cf418fb5a4a4b34ede8f2e465c2daefe68191206447e"
+    },
+    "dbos.dbos_migrations": {
+      "rows": 1,
+      "sha256": "c7dfc67ec67e018306deec0d6de82824a1d86980fa1f73978f8f9c82eca3b851"
+    },
+    "dbos.event_dispatch_kv": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.notifications": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.operation_outputs": {
+      "rows": 18,
+      "sha256": "eb5a535de2e96c79da4895c8c689660aa7e364c31234245df4056706e656ed08"
+    },
+    "dbos.queues": {
+      "rows": 1,
+      "sha256": "2c1a4ee4e9b5c429e8af470fdbf555a168fcbd0caf3b8626163c41bcbd2cfa8b"
+    },
+    "dbos.streams": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.workflow_events": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.workflow_events_history": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.workflow_input": {
+      "rows": 6,
+      "sha256": "e42dda8952ec585191cb06a6288964e6705e19566b658e725dd43bf01c2c2054"
+    },
+    "dbos.workflow_output": {
+      "rows": 6,
+      "sha256": "7089a24e0a778841d9b2d1c635f8f37305a3d776955990f39e88fb37f1b34ef9"
+    },
+    "dbos.workflow_schedules": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dbos.workflow_status": {
+      "rows": 6,
+      "sha256": "9225e472fa7ddd5bfc8b99bf776ec414691ff107064c30e633e61a07c93f275a"
+    },
+    "panestria.acceptance_check": {
+      "rows": 18,
+      "sha256": "6a35d625e147c5930eeb5059700aa88291805c11f149d3908f277b746b4d9731"
+    },
+    "panestria.approval_consumption": {
+      "rows": 12,
+      "sha256": "5ea8ba3878849454796d7f35eb64b63c94c3636e81755d1a8e7a5715e48c296e"
+    },
+    "panestria.approval_request": {
+      "rows": 12,
+      "sha256": "2426aa55d2a610df0e71e15644c332f4ac2d1d4e8915df5131141215ed202291"
+    },
+    "panestria.artifact": {
+      "rows": 24,
+      "sha256": "fd7b707fa20ca4fd6154059fe8620166b973fdb2937e1f6ac387e9e138d8662f"
+    },
+    "panestria.check_run": {
+      "rows": 18,
+      "sha256": "1925a6d227e33b3d1ed38543b311c5b5ac1178640957953f38b45e2bff9cdc44"
+    },
+    "panestria.goal": {
+      "rows": 6,
+      "sha256": "71b4ac4600c0836081cc72716f771af36170160e93556714352a33de87540fff"
+    },
+    "panestria.goal_contract": {
+      "rows": 6,
+      "sha256": "7addedcc6068134c76f139e710b6f54a1925dbbe6652d4e7bdfd93e9185a7853"
+    },
+    "panestria.idempotency_record": {
+      "rows": 24,
+      "sha256": "343a72c9b5dbad735f730dc6c5c60f8a67d0752149ad39971f35e3d8f64cc2ef"
+    },
+    "panestria.principal": {
+      "rows": 1,
+      "sha256": "cddc21a977277f8642977ec4c37cbcbc25a717ff3347e489fce1729d3b04b25f"
+    },
+    "panestria.project": {
+      "rows": 1,
+      "sha256": "a662b5f56853cb0c0ae25e64c62b7d24eb1577790bd7d5bae196fe65577c358a"
+    },
+    "panestria.side_effect": {
+      "rows": 6,
+      "sha256": "67b3cd7b3574f123e8848d5e4918123a67e0dc3e64340fe12aeeca11cb6ef8f8"
+    },
+    "panestria.task": {
+      "rows": 6,
+      "sha256": "8e89a95b245aed1191eb7f9abf2c0bd26286d9a3a36274596f85fc7e024c83e2"
+    },
+    "panestria.task_attempt": {
+      "rows": 6,
+      "sha256": "13bdee9ecbb3b767fcf33152fcde24513f686d9c034d1cf78d5578d2b258403e"
+    },
+    "panestria.task_dependency": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "panestria.task_event": {
+      "rows": 84,
+      "sha256": "ebff0f65befe65f9b908c37141c943d425d072e6bb7f225ed8d868355c0a2d93"
+    },
+    "panestria.workflow_link": {
+      "rows": 6,
+      "sha256": "5857940427f96a5d88c0374d64cd4f89d20d92af785729454ca09ac6b6dace9b"
+    },
+    "panestria_checkpoint.datasource_outputs": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "panestria_checkpoint.dbos_datasource_migrations": {
+      "rows": 1,
+      "sha256": "2430f1a2ad2982d0067885488a4c89e21ad1d7c83b115ba8f1b20acc88dfaea8"
+    },
+    "public.alembic_version": {
+      "rows": 1,
+      "sha256": "2848ba443e7cce06e58027d58d09af4840059998e9b721b527d1a30bee206cc2"
+    }
+  },
+  "database_restored_and_verified": true,
+  "api_resumed": true,
+  "source_worktree_status": ""
+}

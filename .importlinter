@@ -1,0 +1,103 @@
+[importlinter]
+root_packages =
+    panestria
+
+[importlinter:contract:root-not-presentation]
+name = Package root does not import API or CLI
+type = forbidden
+source_modules =
+    panestria
+forbidden_modules =
+    panestria.api
+    panestria.cli
+as_packages = False
+
+[importlinter:contract:config-not-presentation]
+name = Config does not import API or CLI
+type = forbidden
+source_modules =
+    panestria.config
+forbidden_modules =
+    panestria.api
+    panestria.cli
+as_packages = False
+
+[importlinter:contract:api-not-cli]
+name = API does not import CLI
+type = forbidden
+source_modules =
+    panestria.api
+forbidden_modules =
+    panestria.cli
+
+[importlinter:contract:ops-not-presentation]
+name = Local operations do not import API or CLI
+type = forbidden
+source_modules =
+    panestria.ops
+forbidden_modules =
+    panestria.api
+    panestria.cli
+
+[importlinter:contract:contracts-independent]
+name = Contracts do not import application packages
+type = forbidden
+source_modules =
+    panestria.contracts
+forbidden_modules =
+    panestria.api
+    panestria.cli
+    panestria.execution
+    panestria.kernel
+    panestria.ops
+    panestria.config
+
+[importlinter:contract:kernel-not-presentation]
+name = Kernel does not import API, CLI, execution, or local operations
+type = forbidden
+source_modules =
+    panestria.kernel
+forbidden_modules =
+    panestria.api
+    panestria.cli
+    panestria.execution
+    panestria.ops
+
+[importlinter:contract:execution-not-presentation]
+name = Execution does not import API, CLI, or local operations
+type = forbidden
+source_modules =
+    panestria.execution
+forbidden_modules =
+    panestria.api
+    panestria.cli
+    panestria.ops
+
+[importlinter:contract:workers-not-presentation]
+name = Workers and sandbox do not import API or CLI
+type = forbidden
+source_modules =
+    panestria.brokers
+    panestria.sandbox
+forbidden_modules =
+    panestria.api
+    panestria.cli
+
+[importlinter:contract:workers-not-verifier]
+name = Workers cannot import the verifier
+type = forbidden
+source_modules =
+    panestria.brokers
+    panestria.sandbox
+forbidden_modules =
+    panestria.verification
+
+[importlinter:contract:verifier-not-worker]
+name = Verifiers do not import workers or presentation
+type = forbidden
+source_modules =
+    panestria.verification
+forbidden_modules =
+    panestria.brokers
+    panestria.api
+    panestria.cli

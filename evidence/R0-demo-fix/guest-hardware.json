@@ -1,0 +1,74 @@
+{
+  "generated_at": "2026-10-12T20:13:52+0000",
+  "simulated": false,
+  "hardware": {
+    "os": "Linux",
+    "arch": "x86_64",
+    "cpu": "QEMU TCG CPU version 2.5+",
+    "physical_cores": 4,
+    "logical_cores": 4,
+    "cpu_flags": [],
+    "ram_gb": 3.8,
+    "ram_available_gb": 3.3,
+    "unified_memory": false,
+    "gpus": [],
+    "cpu_bandwidth_gbs": 60.0,
+    "disk_free_gb": 8.8,
+    "on_ac_power": null,
+    "notes": []
+  },
+  "budgets": {
+    "accelerator_gb": 0.0,
+    "host_offload_gb": 1.9,
+    "accelerator_bandwidth_gbs": 60.0,
+    "cpu_bandwidth_gbs": 60.0
+  },
+  "engine": "llama.cpp (CPU)",
+  "assignments": [
+    {
+      "role": "steward",
+      "model": null,
+      "placement": "none",
+      "est_mem_gb": 0.0,
+      "est_tps": null,
+      "measured_tps": null,
+      "ctx": null,
+      "degraded": false,
+      "reason": "nothing fits at a usable speed; route this role to the cloud"
+    },
+    {
+      "role": "embedder",
+      "model": "qwen3-embedding:0.6b",
+      "placement": "cpu",
+      "est_mem_gb": 0.8,
+      "est_tps": null,
+      "measured_tps": null,
+      "ctx": null,
+      "degraded": false,
+      "reason": "runs on CPU"
+    },
+    {
+      "role": "stt",
+      "model": "whisper-small",
+      "placement": "cpu",
+      "est_mem_gb": 0.7,
+      "est_tps": null,
+      "measured_tps": null,
+      "ctx": null,
+      "degraded": false,
+      "reason": "runs on CPU"
+    },
+    {
+      "role": "heavy",
+      "model": null,
+      "placement": "none",
+      "est_mem_gb": 0.0,
+      "est_tps": null,
+      "measured_tps": null,
+      "ctx": null,
+      "degraded": false,
+      "reason": "nothing stronger than the steward fits; heavy work goes to the cloud or waits"
+    }
+  ],
+  "restricted_capability": "none: no usable local model; Restricted work is refused"
+}

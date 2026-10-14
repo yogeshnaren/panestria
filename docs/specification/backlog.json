@@ -1,0 +1,567 @@
+{
+  "version": "v0.6.1",
+  "spec_count": 38,
+  "items": [
+    {
+      "id": "001",
+      "title": "Repository scaffold, developer toolchain, CI and local services",
+      "release": "R0",
+      "deps": [],
+      "outcome": "An unassisted developer can clone, bootstrap and test a modular-monolith project on supported Ubuntu without a cloud account or real model subscription.",
+      "status": "READY_FOR_PLANNING",
+      "planning_format": "checklist",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "002",
+      "title": "Goal contracts, tasks, attempts and database migration v1",
+      "release": "R0",
+      "deps": [
+        "001"
+      ],
+      "outcome": "A goal is represented by an immutable, structured, validated contract, with a persisted task DAG and attempt history supporting optimistic concurrency and executable acceptance criteria.",
+      "status": "READY_FOR_PLANNING",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "003",
+      "title": "DBOS-backed durable single-task execution and recovery",
+      "release": "R0",
+      "deps": [
+        "002"
+      ],
+      "outcome": "An accepted synthetic goal runs through a DBOS workflow and recovers after sudden process death while preserving authoritative task state and auditable events.",
+      "status": "READY_FOR_PLANNING",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "004",
+      "title": "Synthetic worker, isolated Git workspace and deterministic verification",
+      "release": "R0",
+      "deps": [
+        "003"
+      ],
+      "outcome": "A single mock worker edits only synthetic test files, emits normalized events, and generates immutable diff/test evidence verified without model judgment.",
+      "status": "READY_FOR_PLANNING",
+      "planning_format": "checklist",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "005",
+      "title": "Minimal goal/approval API and CLI end-to-end synthetic slice",
+      "release": "R0",
+      "deps": [
+        "003",
+        "004"
+      ],
+      "outcome": "A user can submit a synthetic goal, observe authoritative progress, review exact evidence, approve or deny a bound action, and recover across server restart.",
+      "status": "READY_FOR_PLANNING",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "006",
+      "title": "Lease fencing, retry bounds, outbox and external-action reconciliation",
+      "release": "R1",
+      "deps": [
+        "003"
+      ],
+      "outcome": "A lost or stale worker cannot publish results, and ambiguous remote effects are reconciled instead of blindly retried.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "007",
+      "title": "Independent project trust, data privacy and autonomy policy model",
+      "release": "R1",
+      "deps": [
+        "002"
+      ],
+      "outcome": "Effective authority is the intersection of three independently versioned policy axes, with a denied axis always taking precedence.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "008",
+      "title": "Sandbox profiles, mount validation and enforceable outbound controls",
+      "release": "R1",
+      "deps": [
+        "004",
+        "007"
+      ],
+      "outcome": "Worker filesystem, process, resource and network access are constrained at OS boundaries before any real repository or vendor account is used.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "009",
+      "title": "Loopback API authentication, host/origin hardening and approvals",
+      "release": "R1",
+      "deps": [
+        "005",
+        "007"
+      ],
+      "outcome": "Even local browser pages or untrusted network content cannot submit AgentOS actions, invoke approvals or hijack a localhost API.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "010",
+      "title": "Hardened Claude Code worker adapter and hostile-repository tests",
+      "release": "R1",
+      "deps": [
+        "004",
+        "008",
+        "009"
+      ],
+      "outcome": "One official Claude Code worker can perform a bounded, authorized code task without executing hostile repository-provided hooks, MCP servers, or plugin initialization.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "011",
+      "title": "Source-linked personal memory schema and five-stage use events",
+      "release": "R1",
+      "deps": [
+        "002"
+      ],
+      "outcome": "Offline Ask can retrieve owner/project-scoped memory with provenance, while every retrieval stage creates audit-ready data for later measurable personalization.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "012",
+      "title": "Routing outcomes, corrections and cloud-exposure event contracts",
+      "release": "R1",
+      "deps": [
+        "002",
+        "007"
+      ],
+      "outcome": "Every future routing/personalization decision has minimally sufficient evidence from the earliest real tasks, without claiming unavailable cost/quota data.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "013",
+      "title": "Research source snapshots, hashes, passage spans and claim evidence",
+      "release": "R2",
+      "deps": [
+        "002",
+        "008"
+      ],
+      "outcome": "A research claim is traceable to an actual retained and fetched source, with exact text offset and source content hash, not just a URL in generated prose.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "014",
+      "title": "OpenTelemetry correlation, canonical event replay and SSE",
+      "release": "R1",
+      "deps": [
+        "003",
+        "012"
+      ],
+      "outcome": "Trace and UI streams explain every decision without becoming the source of task truth; disconnected clients can replay missed events reliably.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "015",
+      "title": "Hardware probe integration and versioned capability manifest",
+      "release": "R1",
+      "deps": [
+        "001"
+      ],
+      "outcome": "AgentOS accurately measures installed CPU/GPU/RAM/disk/power and chooses feasible local model candidates without treating simulated specs as real.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "016",
+      "title": "Local inference adapter and warm/cold/pressure benchmarking",
+      "release": "R1",
+      "deps": [
+        "011",
+        "015"
+      ],
+      "outcome": "A user can invoke an offline steward locally, measure response speed and memory use on the actual GPU, and fail conservatively when inference is unavailable.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "017",
+      "title": "Offline Ask and source-scoped memory interaction",
+      "release": "R1",
+      "deps": [
+        "011",
+        "016"
+      ],
+      "outcome": "A user can quickly ask the primary local AI offline and retrieve previously approved project memory without leaking information across scopes.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "018",
+      "title": "Offline, degraded-mode and foreground-resource safety tests",
+      "release": "R1",
+      "deps": [
+        "015",
+        "016",
+        "017"
+      ],
+      "outcome": "Offline Ask remains useful without cloud/network, while CPU/GPU pressure does not cause resource starvation or corrupt task state.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "019",
+      "title": "Search abstraction and SSRF-safe web retrieval broker",
+      "release": "R2",
+      "deps": [
+        "008",
+        "009",
+        "013"
+      ],
+      "outcome": "AgentOS can search approved public web sources and fetch URLs without resolving or redirecting into internal endpoints, exposing secrets, or mixing reader and actor privileges.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "020",
+      "title": "Quarantined web reader and immutable source provenance",
+      "release": "R2",
+      "deps": [
+        "013",
+        "019"
+      ],
+      "outcome": "Every Delegate result is grounded in immutable fetched source snapshots processed by a sandboxed reader that has no privileged outbound-action tools.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "021",
+      "title": "Deterministic source citation and exact quotation verifier",
+      "release": "R2",
+      "deps": [
+        "020"
+      ],
+      "outcome": "A research brief cannot mark a factual claim evidenced unless every cited source actually exists and quoted passages exactly match the retained source text under documented normalization.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "022",
+      "title": "Claim-support adjudication, contradiction and uncertainty labeling",
+      "release": "R2",
+      "deps": [
+        "021",
+        "016"
+      ],
+      "outcome": "A separately validated verifier distinguishes source presence from actual evidential support, flags conflicts, and refuses false certainty.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "023",
+      "title": "Bounded Delegate planner, research brief output and R2 gate",
+      "release": "R2",
+      "deps": [
+        "019",
+        "020",
+        "021",
+        "022"
+      ],
+      "outcome": "A user can delegate a specific public-web research brief, inspect evidence and limitations, and obtain deterministic security guarantees around source retrieval.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "024",
+      "title": "Codex supported CLI adapter and contract suite",
+      "release": "R3",
+      "deps": [
+        "004",
+        "008",
+        "010"
+      ],
+      "outcome": "A second approved vendor harness can perform bounded work under exactly the same AgentOS worker contract and sandbox permissions as the first.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "025",
+      "title": "Build task DAG and bounded LangGraph reasoning/replan",
+      "release": "R3",
+      "deps": [
+        "003",
+        "016"
+      ],
+      "outcome": "A user intent is converted into an executable acyclic work plan with dependencies, acceptance checks and conservative bounded replanning.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "026",
+      "title": "Concurrent two-worker scheduler, worktree conflict control and admission",
+      "release": "R3",
+      "deps": [
+        "006",
+        "010",
+        "024",
+        "025"
+      ],
+      "outcome": "Two authorized workers execute independent plan steps concurrently without overwriting each other or exceeding CPU/GPU/provider/budget limits.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "027a",
+      "title": "Single-worker verification and protected merge approval",
+      "release": "R1",
+      "deps": [
+        "004",
+        "009",
+        "010"
+      ],
+      "outcome": "One worker candidate is independently verified and can merge only with an exact scoped effect_digest-bound approval.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "027b",
+      "title": "Integrated multi-worker verification and protected merge",
+      "release": "R3",
+      "deps": [
+        "027a",
+        "026"
+      ],
+      "outcome": "Concurrent worker results are integrated, re-verified on the final tree and merged only with fresh exact approval.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "028",
+      "title": "React Mission Control task views, approvals and event replay",
+      "release": "R3",
+      "deps": [
+        "005",
+        "014",
+        "017",
+        "023",
+        "027b"
+      ],
+      "outcome": "A locally served dashboard shows Ask, Delegate and Build intake, real task state, source evidence, worker fleet and exact pending approvals without creating a second state machine.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "029",
+      "title": "OTel/Phoenix tracing, cost/usage confidence and exposure dashboard",
+      "release": "R3",
+      "deps": [
+        "012",
+        "014",
+        "028"
+      ],
+      "outcome": "A user can trace every relevant model/tool decision and inspect what data was authorized or accessible to cloud workers versus observed network traffic, without leaking secrets.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "030",
+      "title": "A-1/D-1/B-1 acceptance, chaos and two-week dogfood gate",
+      "release": "R3",
+      "deps": [
+        "017",
+        "018",
+        "019",
+        "020",
+        "021",
+        "022",
+        "023",
+        "024",
+        "025",
+        "026",
+        "027b",
+        "028",
+        "029"
+      ],
+      "outcome": "AgentOS proves three independent end-user workflows and its security/recovery invariants over a recorded two-week trial before claiming complete initial MVP.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "031",
+      "title": "Provider subscription entitlement telemetry and consented quota-aware routing",
+      "release": "R4",
+      "deps": [
+        "012",
+        "026",
+        "029"
+      ],
+      "outcome": "An eligible route is selected with explicit user consent and observed quota confidence, never by assuming an AI subscription can supply arbitrary backend tokens.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "032",
+      "title": "Controlled inference engine comparison: Ollama, vLLM and SGLang",
+      "release": "R4",
+      "deps": [
+        "015",
+        "016",
+        "031"
+      ],
+      "outcome": "Local runtime selection is based on measured task quality, throughput, latency, power and memory\u2014not universal claims that one inference engine is always faster.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "033",
+      "title": "Adaptive quota/resource governor and optional secure API gateway",
+      "release": "R4",
+      "deps": [
+        "026",
+        "031",
+        "032"
+      ],
+      "outcome": "AgentOS continuously admits jobs under real CPU/GPU and provider constraints, selects economically justified eligible routes and protects foreground computing.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "034",
+      "title": "Provenance-aware context compiler, hybrid RAG, voice and quick desktop UX",
+      "release": "R5",
+      "deps": [
+        "011",
+        "017",
+        "029"
+      ],
+      "outcome": "AgentOS becomes a genuinely useful daily personal assistant: context follows tasks across agents, memory stays provenance-aware, and opt-in voice/desktop capture is governed by privacy controls.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "035",
+      "title": "Sandboxed computer use and authorized desktop/browser integrations",
+      "release": "R5",
+      "deps": [
+        "008",
+        "019",
+        "034"
+      ],
+      "outcome": "AgentOS can operate authorized desktop and browser tools under scoped identity, action approvals, and observability without granting raw screen content unfettered agent authority.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "036",
+      "title": "Offline evaluation, gated improvement, skill registry and memory lifecycle",
+      "release": "R6",
+      "deps": [
+        "012",
+        "013",
+        "021",
+        "022",
+        "034"
+      ],
+      "outcome": "AgentOS measurably improves task outcomes through approved, reversible candidate changes while detecting unsafe or non-causal personalization and memory deletion.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    },
+    {
+      "id": "037",
+      "title": "Portable open-source release, multi-machine evaluation and sustained operations",
+      "release": "R7",
+      "deps": [
+        "001",
+        "002",
+        "003",
+        "004",
+        "005",
+        "006",
+        "007",
+        "008",
+        "009",
+        "010",
+        "011",
+        "012",
+        "013",
+        "014",
+        "015",
+        "016",
+        "017",
+        "018",
+        "019",
+        "020",
+        "021",
+        "022",
+        "023",
+        "024",
+        "025",
+        "026",
+        "027b",
+        "028",
+        "029",
+        "030",
+        "031",
+        "032",
+        "033",
+        "034",
+        "035",
+        "036"
+      ],
+      "outcome": "Users can install AgentOS on supported hardware, migrate safely, enforce privacy offline, recover tasks across restarts and maintain versioned plugins as an auditable open-source project.",
+      "status": "DRAFT",
+      "planning_format": "full",
+      "target_slice_developer_days": 1
+    }
+  ],
+  "revision": "planning-fixes-1",
+  "original_spec_count": 37,
+  "release_status": {
+    "R0": "READY_FOR_PLANNING",
+    "R1": "DRAFT",
+    "R2": "DRAFT",
+    "R3": "DRAFT",
+    "R4": "DRAFT",
+    "R5": "DRAFT",
+    "R6": "DRAFT",
+    "R7": "DRAFT"
+  }
+}

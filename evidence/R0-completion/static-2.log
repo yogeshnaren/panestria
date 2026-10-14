@@ -1,0 +1,30 @@
+
+╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐
+╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │
+ ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗
+ ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝
+╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║
+╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝
+  └──▶║║                    ▲ 
+      ╚╝────────────────────┘
+
+
+---------
+Contracts
+---------
+
+Analyzed 63 files, 148 dependencies.
+------------------------------------
+
+Package root does not import API or CLI KEPT
+Config does not import API or CLI KEPT
+API does not import CLI KEPT
+Local operations do not import API or CLI KEPT
+Contracts do not import application packages KEPT
+Kernel does not import API, CLI, execution, or local operations KEPT
+Execution does not import API, CLI, or local operations KEPT
+Workers and sandbox do not import API or CLI KEPT
+Workers cannot import the verifier KEPT
+Verifiers do not import workers or presentation KEPT
+
+Contracts: 10 kept, 0 broken.

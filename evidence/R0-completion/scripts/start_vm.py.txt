@@ -1,0 +1,16 @@
+from pathlib import Path
+import hashlib,json,subprocess,uuid
+r=Path('/tmp/panestria-r0-completion/vm')
+expected=next(line.split()[0]for line in (r/'SHA256SUMS').read_text().splitlines()if line.split()[-1].lstrip('*')=='jammy-server-cloudimg-amd64.img')
+actual=hashlib.file_digest((r/'ubuntu.img').open('rb'),'sha256').hexdigest();assert actual==expected
+key=r/'ssh-key'
+if not key.exists():subprocess.run(['ssh-keygen','-q','-t','ed25519','-N','','-C','panestria-r0-fresh-host','-f',str(key)],check=True)
+instance='panestria-r0-'+str(uuid.uuid4());pub=(r/'ssh-key.pub').read_text().strip()
+(r/'user-data').write_text('#cloud-config\nssh_pwauth: false\ndisable_root: true\nssh_authorized_keys:\n  - '+pub+'\n')
+(r/'meta-data').write_text('instance-id: '+instance+'\nlocal-hostname: panestria-r0-fresh\n')
+subprocess.run(['genisoimage','-quiet','-output',str(r/'seed.iso'),'-volid','cidata','-joliet','-rock',str(r/'user-data'),str(r/'meta-data')],check=True)
+subprocess.run(['qemu-img','create','-f','qcow2','-F','qcow2','-b',str(r/'ubuntu.img'),str(r/'guest.qcow2'),'12G'],check=True)
+argv=['qemu-system-x86_64','-accel','tcg,thread=multi','-machine','q35','-cpu','max','-m','2048','-smp','2','-drive',f'file={r}/guest.qcow2,if=virtio,format=qcow2','-drive',f'file={r}/seed.iso,media=cdrom,readonly=on','-netdev','user,id=n0,hostfwd=tcp:127.0.0.1:22283-:22','-device','virtio-net-pci,netdev=n0','-display','none','-serial',f'file:{r}/console.log','-monitor','none','-daemonize','-pidfile',str(r/'qemu.pid')]
+subprocess.run(argv,check=True)
+(r/'provenance.json').write_text(json.dumps({'instance_id':instance,'image_url':'https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img','image_sha256':actual,'hypervisor_argv':argv,'virtual_cpu_count':2,'memory_mb':2048,'disk_virtual_gb':12,'host_mounts':[],'accelerator':'TCG','operator_key_temporary':True},indent=2)+'\n')
+print('Fresh Ubuntu VM booting; image SHA256 verified; SSH forwarded on loopback only.')

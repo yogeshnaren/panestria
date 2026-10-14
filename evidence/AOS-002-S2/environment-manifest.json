@@ -1,0 +1,57 @@
+{
+  "slice": "AOS-002-S2",
+  "observed_at": "2026-10-12T05:35:39.129916Z",
+  "candidate_commit": "dee9dc2a316e46411e57efabaad01821b92a4d9e",
+  "candidate_contains_tested_source": true,
+  "worktree_state_at_test_start": "clean",
+  "junit_sha256": "98c8bc8cd62b8af7d30e2d4317773d4570bc1a54c71e7d2a17d9abcce6e3caf5",
+  "fixture_sha256": "9fe0d3ddac2344bebd284e8a1f59194d36c732ce3335ac6ac928fe67c095c37f",
+  "fixture": "migrations/versions/0002_kernel.py",
+  "execution_mode": "OS_BOUNDARY",
+  "database": "disposable_postgresql",
+  "executor": "not_implemented",
+  "hardware": {
+    "probed": false,
+    "verdict": "UNKNOWN",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "release_gate": "INCOMPLETE",
+  "components": [
+    {
+      "name": "postgresql",
+      "resolved_version": "postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d",
+      "source": "docker.io/library/postgres:16",
+      "capability": "disposable database",
+      "outcome": "upgrade, constraint denials, downgrade, reapply",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "alembic",
+      "resolved_version": "1.20.0",
+      "source": "https://pypi.org/simple",
+      "capability": "0002_kernel",
+      "outcome": "upgrade head and downgrade 0001_scaffold exit 0",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "docker",
+      "resolved_version": "29.1.3",
+      "source": "/usr/bin/docker",
+      "capability": "container runtime",
+      "outcome": "compose up --wait and down -v",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pytest",
+      "resolved_version": "9.1.1",
+      "source": "https://pypi.org/simple",
+      "capability": "non-live regression",
+      "outcome": "78 passed",
+      "mocked": false,
+      "live": false
+    }
+  ]
+}

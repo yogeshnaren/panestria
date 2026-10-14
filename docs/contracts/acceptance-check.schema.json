@@ -1,0 +1,313 @@
+{
+  "$defs": {
+    "ArtifactExists": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_ref": {
+          "minLength": 1,
+          "title": "Artifact Ref",
+          "type": "string"
+        },
+        "expected_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Sha256",
+          "type": "string"
+        },
+        "type": {
+          "const": "artifact-exists",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "artifact_ref",
+        "expected_sha256"
+      ],
+      "title": "ArtifactExists",
+      "type": "object"
+    },
+    "CitationCheck": {
+      "additionalProperties": false,
+      "description": "Canonical R2 verifier. R0 admits the type and refuses to run it.",
+      "properties": {
+        "claims_ref": {
+          "minLength": 1,
+          "title": "Claims Ref",
+          "type": "string"
+        },
+        "source_manifest_ref": {
+          "minLength": 1,
+          "title": "Source Manifest Ref",
+          "type": "string"
+        },
+        "type": {
+          "const": "citation-check",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "source_manifest_ref",
+        "claims_ref"
+      ],
+      "title": "CitationCheck",
+      "type": "object"
+    },
+    "EvidenceSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "required": {
+          "const": true,
+          "title": "Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "required",
+        "kind"
+      ],
+      "title": "EvidenceSpec",
+      "type": "object"
+    },
+    "GitDiffPathCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_paths": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Allowed Paths",
+          "type": "array"
+        },
+        "forbidden_paths": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Forbidden Paths",
+          "type": "array"
+        },
+        "type": {
+          "const": "git-diff-path-check",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "allowed_paths",
+        "forbidden_paths"
+      ],
+      "title": "GitDiffPathCheck",
+      "type": "object"
+    },
+    "HumanReview": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_requirements": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Requirements",
+          "type": "array"
+        },
+        "reviewer_ref": {
+          "minLength": 1,
+          "title": "Reviewer Ref",
+          "type": "string"
+        },
+        "type": {
+          "const": "human-review",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "reviewer_ref",
+        "evidence_requirements"
+      ],
+      "title": "HumanReview",
+      "type": "object"
+    },
+    "PolicyDecision": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "minLength": 1,
+          "title": "Action",
+          "type": "string"
+        },
+        "expected": {
+          "enum": [
+            "allow",
+            "deny",
+            "approval-required"
+          ],
+          "title": "Expected",
+          "type": "string"
+        },
+        "type": {
+          "const": "policy-decision",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "action",
+        "expected"
+      ],
+      "title": "PolicyDecision",
+      "type": "object"
+    },
+    "RubricReview": {
+      "additionalProperties": false,
+      "description": "Canonical R2 verifier. R0 admits the type and refuses to run it.",
+      "properties": {
+        "calibration_set_ref": {
+          "minLength": 1,
+          "title": "Calibration Set Ref",
+          "type": "string"
+        },
+        "reviewer_ref": {
+          "minLength": 1,
+          "title": "Reviewer Ref",
+          "type": "string"
+        },
+        "rubric_ref": {
+          "minLength": 1,
+          "title": "Rubric Ref",
+          "type": "string"
+        },
+        "type": {
+          "const": "rubric-review",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "rubric_ref",
+        "calibration_set_ref",
+        "reviewer_ref"
+      ],
+      "title": "RubricReview",
+      "type": "object"
+    },
+    "TrustedCommandRef": {
+      "additionalProperties": false,
+      "properties": {
+        "command_ref": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Command Ref",
+          "type": "string"
+        },
+        "expected_exit_code": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Expected Exit Code",
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "maximum": 3600,
+          "minimum": 1,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "type": {
+          "const": "trusted-command-ref",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "command_ref",
+        "expected_exit_code",
+        "timeout_seconds"
+      ],
+      "title": "TrustedCommandRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "evidence": {
+      "$ref": "#/$defs/EvidenceSpec"
+    },
+    "id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "required": {
+      "title": "Required",
+      "type": "boolean"
+    },
+    "verifier": {
+      "discriminator": {
+        "mapping": {
+          "artifact-exists": "#/$defs/ArtifactExists",
+          "citation-check": "#/$defs/CitationCheck",
+          "git-diff-path-check": "#/$defs/GitDiffPathCheck",
+          "human-review": "#/$defs/HumanReview",
+          "policy-decision": "#/$defs/PolicyDecision",
+          "rubric-review": "#/$defs/RubricReview",
+          "trusted-command-ref": "#/$defs/TrustedCommandRef"
+        },
+        "propertyName": "type"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/TrustedCommandRef"
+        },
+        {
+          "$ref": "#/$defs/GitDiffPathCheck"
+        },
+        {
+          "$ref": "#/$defs/PolicyDecision"
+        },
+        {
+          "$ref": "#/$defs/ArtifactExists"
+        },
+        {
+          "$ref": "#/$defs/HumanReview"
+        },
+        {
+          "$ref": "#/$defs/CitationCheck"
+        },
+        {
+          "$ref": "#/$defs/RubricReview"
+        }
+      ],
+      "title": "Verifier"
+    }
+  },
+  "required": [
+    "id",
+    "description",
+    "required",
+    "verifier",
+    "evidence"
+  ],
+  "title": "AcceptanceCheck",
+  "type": "object"
+}

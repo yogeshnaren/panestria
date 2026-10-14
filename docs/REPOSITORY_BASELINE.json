@@ -1,0 +1,33 @@
+{
+  "url": "https://github.com/yogeshnaren/panestria",
+  "default_branch": "main",
+  "visibility": "public",
+  "head_sha": "4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917",
+  "tree_sha": "f1522421fd6bd7344bf2f5696d7362e1f0099918",
+  "tree": {
+    "sha": "f1522421fd6bd7344bf2f5696d7362e1f0099918",
+    "url": "https://api.github.com/repos/yogeshnaren/panestria/git/trees/f1522421fd6bd7344bf2f5696d7362e1f0099918",
+    "tree": [
+      {
+        "path": "LICENSE",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a27ac1f735903cf88ceaf03a4bc923bdc29ab59d",
+        "size": 1076,
+        "url": "https://api.github.com/repos/yogeshnaren/panestria/git/blobs/a27ac1f735903cf88ceaf03a4bc923bdc29ab59d"
+      },
+      {
+        "path": "README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d15f7257c0ebeb385e98178b3426f0bd5bbfc5e3",
+        "size": 11,
+        "url": "https://api.github.com/repos/yogeshnaren/panestria/git/blobs/d15f7257c0ebeb385e98178b3426f0bd5bbfc5e3"
+      }
+    ],
+    "truncated": false
+  },
+  "inspected_on": "2026-10-11",
+  "license": "MIT",
+  "inspection_method": "GitHub connector metadata, root contents, README/LICENSE and complete commit tree"
+}

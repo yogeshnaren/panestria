@@ -1,0 +1,79 @@
+# AOS-010 — Hardened Claude Code worker adapter and hostile-repository tests: implementation plan
+
+**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-004, AOS-008, AOS-009. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+
+Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-010.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
+
+## Outcome and scope
+
+One official Claude Code worker can perform a bounded, authorized code task without executing hostile repository-provided hooks, MCP servers, or plugin initialization.
+
+Keep the release scope and dependencies above. Implement only the selected slice; other clauses remain pending until their work/tests complete. Models/UI cannot declare completion. Apply strict scopes, typed errors, transactions, limits and compatibility spikes from the global design.
+
+## Exact files and interfaces
+
+- `src/panestria/brokers/harness/claude.py` — owning implementation file; reconcile existing code before creating it.
+- `src/panestria/brokers/harness/event_parser.py` — owning implementation file; reconcile existing code before creating it.
+- `src/panestria/brokers/harness/process_runner.py` — owning implementation file; reconcile existing code before creating it.
+- `src/panestria/sandbox/native_tool_gateway.py` — owning implementation file; reconcile existing code before creating it.
+- `src/panestria/memory/context.py` — owning implementation file; reconcile existing code before creating it.
+
+Typed signatures; model contracts live in contracts, with actor/project scope on service calls:
+
+- `ClaudeCodeAdapter.validate/start/events/observe/cancel/collect(job)`
+- `CliProfileProbe.inspect(binary_ref, auth_handle, effective_config) -> CompatibilityManifest`
+- `NativeToolGateway.execute(reviewed_request, scope, deadline) -> ToolReceipt`
+
+**Migration ownership:** Adapter/version/profile/auth-mode/consent metadata; no token serialization or credential table.
+
+Repositories use the supplied UnitOfWork/session and never commit independently. UI/adapters create no second task store. Migration/locking tests use disposable real PostgreSQL; SQLite does not prove JSON/identity/transaction behavior.
+
+## Source requirement traceability
+
+| ID | Exact source clause | Slices/ownership | Required scenario groups |
+|---|---|---|---|
+| AOS-010-F01 | Inventory and validate any existing `claude-code-worker` skill. Pin Claude CLI version and auto-updater policy; probe `claude auth status` without extracting credentials. | AOS-010-S1, AOS-010-S2, AOS-010-S3; owning files/interfaces above | AOS-010-TC01, AOS-010-TC02, AOS-010-TC03, AOS-010-TC04; parameterize every condition in this clause |
+| AOS-010-F02 | Implement subscription-compatible startup profiles. Test `--safe-mode` for disabling project customizations; it may ignore `CLAUDE.md`, so trusted context enters via documented prompt-file interface. Evaluate `--restricted` against the pinned build and explicit tool list; fallback to controlled `--setting-sources`, `--settings`, `--strict-mcp-config` only if behavior proven. `--bare` is API-only; do not imply subscription access. | AOS-010-S1, AOS-010-S2, AOS-010-S3; owning files/interfaces above | AOS-010-TC01, AOS-010-TC02, AOS-010-TC03, AOS-010-TC04; parameterize every condition in this clause |
+| AOS-010-F03 | Use dedicated Claude config directory owned by user; worker sees only scope-necessary CLI state; sandbox-protect from repo contents. Explicit permission mode, no interactive prompt expectation, max turns/wall time, runtime cancel/status semantics. | AOS-010-S1, AOS-010-S2, AOS-010-S3; owning files/interfaces above | AOS-010-TC01, AOS-010-TC02, AOS-010-TC03, AOS-010-TC04; parameterize every condition in this clause |
+| AOS-010-F04 | Parse versioned streamed JSON defensively; normalize events; fail closed on unknown event/privilege request or missing auth. Disable auto-execution from `.claude/`, `.mcp.json` and `.claude/settings.json` on test fixture. | AOS-010-S1, AOS-010-S2, AOS-010-S3; owning files/interfaces above | AOS-010-TC01, AOS-010-TC02, AOS-010-TC03, AOS-010-TC04; parameterize every condition in this clause |
+| AOS-010-AC01 | Malicious `SessionStart` and `PreToolUse` hooks and MCP definitions with exfil sentinel never execute. | AOS-010-S1, AOS-010-S2, AOS-010-S3; owning files/interfaces above | AOS-010-TC01, AOS-010-TC02, AOS-010-TC03, AOS-010-TC04; parameterize every condition in this clause |
+| AOS-010-AC02 | Safe-mode context comes through approved prompt file, not ignored workspace `CLAUDE.md`; scope of safe/restricted modes confirmed against installed CLI. | AOS-010-S1, AOS-010-S2, AOS-010-S3; owning files/interfaces above | AOS-010-TC01, AOS-010-TC02, AOS-010-TC03, AOS-010-TC04; parameterize every condition in this clause |
+| AOS-010-AC03 | No-tools mode cannot call shell; Build profile explicitly permits bounded Bash inside sandbox; auth-required and quota errors handled without retry storm. | AOS-010-S1, AOS-010-S2, AOS-010-S3; owning files/interfaces above | AOS-010-TC01, AOS-010-TC02, AOS-010-TC03, AOS-010-TC04; parameterize every condition in this clause |
+| AOS-010-AC04 | Cancel/timeout produces correct status; structured-output schema fixture tests cover partial/truncated JSON. | AOS-010-S1, AOS-010-S2, AOS-010-S3; owning files/interfaces above | AOS-010-TC01, AOS-010-TC02, AOS-010-TC03, AOS-010-TC04; parameterize every condition in this clause |
+
+These groups are planned obligations, not observed coverage. Actual assertions/parameters must map each clause ID; split a broad scenario group when needed. A multi-condition clause cannot pass from only one happy-path assertion.
+
+## Ordered coding slices
+
+| Slice | Prerequisites | Concrete work | Exit evidence |
+|---|---|---|---|
+| [AOS-010-S1](../cursor/prompts/AOS-010-S1.md) | AOS-004, AOS-008, AOS-009 | Inspect original skill, pin/probe official CLI/auth/config/profile semantics and sanitized event fixture parser; no live auth provisioning. | AOS-010-TC01; command/report/exit, immutable evidence and diff |
+| [AOS-010-S2](../cursor/prompts/AOS-010-S2.md) | AOS-010-S1 | Bounded process lifecycle/context-file launch with edited workspace and tested credential/tool separation; shell-tier spike remains explicit. | AOS-010-TC02; command/report/exit, immutable evidence and diff |
+| [AOS-010-S3](../cursor/prompts/AOS-010-S3.md) | AOS-010-S2 | Hostile hooks/MCP/config, silent timeout/cancel/partial JSON fixtures plus separately consented synthetic live compatibility smoke. | AOS-010-TC01, AOS-010-TC02, AOS-010-TC03, AOS-010-TC04; command/report/exit, immutable evidence and diff |
+
+## Planned scenarios
+
+| Case | Lane | Planned node | Expected passing behavior |
+|---|---|---|---|
+| AOS-010-TC01 | contract | `tests/integration/test_aos_010.py::test_claude_json_errors` | Sanitized success/auth/quota/truncated/malformed/unknown state-bearing events normalize or fail safely; candidate is never kernel completion. |
+| AOS-010-TC02 | security | `tests/integration/test_aos_010.py::test_hostile_repo_configs` | Malicious SessionStart/PreToolUse/settings/MCP sentinels never run; inherited/managed unexpected configuration refuses certification. |
+| AOS-010-TC03 | live | `tests/integration/test_aos_010.py::test_claude_modes_auth_tool_isolation` | Exact CLI/auth/profile combination supports scoped task/context; synthetic credential outside tool scope unreadable; enabled Bash tier requires OS gateway proof. |
+| AOS-010-TC04 | chaos | `tests/integration/test_aos_010.py::test_claude_silent_timeout_cancel` | Watchdog fires even with no stdout, bounded process group shutdown reported accurately and lost start receipt reconciled. |
+
+After tests exist, baseline command is `uv run --frozen pytest tests/integration/test_aos_010.py --junitxml=evidence/AOS-010.xml`. Register lane markers and gate_case_id in pytest user_properties; default CI excludes live. Release promotion still needs separately observed live cases. Missing future nodes remain pending. Test collection, scenario assertion outcomes and candidate/version consistency must be checked by the gate evaluator, not inferred from exit 0.
+
+## Failure, operations and rollback
+
+Unsafe scope/config/version/malformed evidence is non-retryable denial; transient safe I/O uses bounded retry; ambiguous external effects pause in RECONCILING. Mutations check current owner/project/contract/epoch and append events atomically. Timeouts/cancellation preserve durable state; diagnostics redact sensitive content. No generic retry can create exactly-once external effects.
+
+Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Roll out behind this capability gate. On regression stop affected admissions, retain history/receipts/evidence and revert code/config; migrations use tested restore/forward repair. Never blindly delete history or compensate a confirmed effect. Implement setup/diagnosis, stuck-state and scoped cleanup runbook steps with this item.
+
+## Item completion
+
+- [ ] Every source clause maps to actual assertions and observed evidence.
+- [ ] Required scenarios PASS for one recorded candidate/environment; missing/skipped/unknown/live gaps remain blockers.
+- [ ] Migration/API/adapters match the approved design; material changes have an ADR.
+- [ ] Applicable live/compatibility, runbook and rollback/restore evidence complete.
+- [ ] User-visible results are verifiable; worker narrative grants no authority.
+
+Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.

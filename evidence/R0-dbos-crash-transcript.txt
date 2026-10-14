@@ -1,0 +1,20 @@
+# DBOS crash and replay log
+
+Source commit: 53785d552a94386f54b0176525571a211b3360df
+Command: uv run --frozen pytest -p no:cacheprovider -vv --tb=short tests/integration/test_r0_admission.py::test_admitted_queue_restarts_at_transaction_worker_and_verification tests/integration/test_r0_effects.py::test_reconcile_applied_ref_and_refuse_stale_authorization
+This isolated run is not the 120-test suite and it is not a fresh-host result. R0 is not accepted.
+The tests removed the disposable panestria-s3 database when they finished.
+
+The admission test kills the worker at before-commit, before-worker, and before-verify, then starts the same queued workflow again. The effect test kills after update-ref and before dispatch, then resumes. The pytest log below is the run output.
+
+============================= test session starts ==============================
+platform linux -- Python 3.12.4, pytest-9.1.1, pluggy-1.6.0 -- /home/yogesh/Personal/panestria/.venv/bin/python
+rootdir: /home/yogesh/Personal/panestria
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/integration/test_r0_admission.py::test_admitted_queue_restarts_at_transaction_worker_and_verification PASSED [ 50%]
+tests/integration/test_r0_effects.py::test_reconcile_applied_ref_and_refuse_stale_authorization PASSED [100%]
+
+============================== 2 passed in 36.51s ==============================

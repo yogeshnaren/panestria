@@ -1,0 +1,20 @@
+{
+  "case_id": "AOS-001-TC01",
+  "candidate_commit": "af6794e112c888fd61b6e6b98a4824acab9c1681",
+  "environment_manifest_sha256": "47a6a54324865a4dbe41117ef1b85ef672442e1ef029f76c5e62b7f4c3b8ce13",
+  "lane": "unit",
+  "execution_mode": "HERMETIC",
+  "verdict": "PASS",
+  "command": [
+    "uv",
+    "run",
+    "--frozen",
+    "pytest",
+    "tests/integration/test_aos_001.py",
+    "--junitxml=evidence/AOS-001.xml"
+  ],
+  "exit_code": 0,
+  "report_artifact_ref": "evidence/AOS-001.xml",
+  "fixture_sha256": "d4f51cd4e732216a922a34e85adecc18335e9619b1726c26b5a15c24e2a7c444",
+  "observed_at": "2026-10-12T03:54:46.839152Z"
+}

@@ -1,0 +1,2398 @@
+{
+  "schema_version": 1,
+  "scope": "R0-R3",
+  "slices": [
+    {
+      "id": "AOS-001-S1",
+      "aos_id": "AOS-001",
+      "release": "R0",
+      "depends_on": [],
+      "title": "One installed src/panestria package, strict settings and typed health with unit fixtures; preserve MIT/license and write naming ADR.",
+      "planned_files": [
+        "src/panestria/config.py",
+        "src/panestria/api/main.py",
+        "src/panestria/api/health.py",
+        "src/panestria/cli/main.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_001.py",
+      "case_ids": [
+        "AOS-001-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-001.xml",
+        "evidence/AOS-001-S1/case-result.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-001-S1.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-001-S2",
+      "aos_id": "AOS-001",
+      "release": "R0",
+      "depends_on": [
+        "AOS-001-S1"
+      ],
+      "title": "Frozen dependency/bootstrap commands, Ruff/Mypy/Import Linter, provider-free CI and deliberately failing boundary fixtures.",
+      "planned_files": [
+        "src/panestria/config.py",
+        "src/panestria/api/main.py",
+        "src/panestria/api/health.py",
+        "src/panestria/cli/main.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_001.py",
+      "case_ids": [
+        "AOS-001-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-001-S2.xml",
+        "evidence/AOS-001-S2/case-result.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-001-S2.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-001-S3",
+      "aos_id": "AOS-001",
+      "release": "R0",
+      "depends_on": [
+        "AOS-001-S2"
+      ],
+      "title": "Scoped PostgreSQL Compose/migration scaffold, fresh-machine/offline-cache/loopback/reset proof and setup runbook.",
+      "planned_files": [
+        "src/panestria/config.py",
+        "src/panestria/api/main.py",
+        "src/panestria/api/health.py",
+        "src/panestria/cli/main.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_001.py",
+      "case_ids": [
+        "AOS-001-TC01",
+        "AOS-001-TC02",
+        "AOS-001-TC03",
+        "AOS-001-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-001-S3.xml",
+        "evidence/AOS-001-S3/case-result.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-001-S3.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-002-S1",
+      "aos_id": "AOS-002",
+      "release": "R0",
+      "depends_on": [
+        "AOS-001"
+      ],
+      "title": "Strict GoalContract and seven canonical acceptance variants; canonical monetary/hash serialization and legacy rejection fixtures.",
+      "planned_files": [
+        "src/panestria/contracts/goal.py",
+        "src/panestria/contracts/acceptance.py",
+        "src/panestria/contracts/task.py",
+        "src/panestria/kernel/goals.py",
+        "src/panestria/kernel/tasks.py",
+        "src/panestria/kernel/repositories/goals.py",
+        "src/panestria/kernel/repositories/tasks.py"
+      ],
+      "planned_test_file": "tests/contract/test_aos_002.py",
+      "case_ids": [
+        "AOS-002-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-002-S1.xml",
+        "evidence/AOS-002-S1/case-result.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-002-S1.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-002-S2",
+      "aos_id": "AOS-002",
+      "release": "R0",
+      "depends_on": [
+        "AOS-002-S1"
+      ],
+      "title": "Alembic domain schema, composite owner/project/task/contract constraints, closed states, optimistic versions and append-only contract guards.",
+      "planned_files": [
+        "src/panestria/contracts/goal.py",
+        "src/panestria/contracts/acceptance.py",
+        "src/panestria/contracts/task.py",
+        "src/panestria/kernel/goals.py",
+        "src/panestria/kernel/tasks.py",
+        "src/panestria/kernel/repositories/goals.py",
+        "src/panestria/kernel/repositories/tasks.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_002.py",
+      "case_ids": [
+        "AOS-002-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-002-S2.xml",
+        "evidence/AOS-002-S2/case-result.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-002-S2.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-002-S3",
+      "aos_id": "AOS-002",
+      "release": "R0",
+      "depends_on": [
+        "AOS-002-S2"
+      ],
+      "title": "Scoped repository/service mutations, DAG validation, idempotency conflict handling and state/event concurrency tests.",
+      "planned_files": [
+        "src/panestria/contracts/goal.py",
+        "src/panestria/contracts/acceptance.py",
+        "src/panestria/contracts/task.py",
+        "src/panestria/kernel/goals.py",
+        "src/panestria/kernel/tasks.py",
+        "src/panestria/kernel/repositories/goals.py",
+        "src/panestria/kernel/repositories/tasks.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_002_services.py",
+      "case_ids": [
+        "AOS-002-TC01",
+        "AOS-002-TC02",
+        "AOS-002-TC03",
+        "AOS-002-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-002-S3.xml",
+        "evidence/AOS-002-S3/case-result-TC03.json",
+        "evidence/AOS-002-S3/case-result-TC04.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-002-S3.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-003-S1",
+      "aos_id": "AOS-003",
+      "release": "R0",
+      "depends_on": [
+        "AOS-002"
+      ],
+      "title": "Pin/probe datasource session/isolation/launch and client enqueue-in-transaction; commit admission atomically with app request and scoped workflow ID.",
+      "planned_files": [
+        "src/panestria/execution/dbos_runtime.py",
+        "src/panestria/execution/task_workflow.py",
+        "src/panestria/execution/recovery.py",
+        "src/panestria/execution/admission.py",
+        "src/panestria/kernel/repositories/events.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_003.py",
+      "case_ids": [
+        "AOS-003-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-003-S1.xml",
+        "evidence/AOS-003-S1/case-result.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-003-S1.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-003-S2",
+      "aos_id": "AOS-003",
+      "release": "R0",
+      "depends_on": [
+        "AOS-003-S1"
+      ],
+      "title": "Replay-deterministic task workflow with tracked state/event callbacks and separate external-effect steps; duplicate starts resolve existing identity.",
+      "planned_files": [
+        "src/panestria/execution/dbos_runtime.py",
+        "src/panestria/execution/task_workflow.py",
+        "src/panestria/execution/recovery.py",
+        "src/panestria/execution/admission.py",
+        "src/panestria/kernel/repositories/events.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_003.py",
+      "case_ids": [
+        "AOS-003-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-003-S2.xml",
+        "evidence/AOS-003-S2/case-result.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-003-S2.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-003-S3",
+      "aos_id": "AOS-003",
+      "release": "R0",
+      "depends_on": [
+        "AOS-003-S2"
+      ],
+      "title": "Signal-barrier crash/recovery harness and app+DBOS backup/restore drill; publish recovered/failed diagnostics without speculative completion.",
+      "planned_files": [
+        "src/panestria/execution/dbos_runtime.py",
+        "src/panestria/execution/task_workflow.py",
+        "src/panestria/execution/recovery.py",
+        "src/panestria/execution/admission.py",
+        "src/panestria/kernel/repositories/events.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_003.py",
+      "case_ids": [
+        "AOS-003-TC01",
+        "AOS-003-TC02",
+        "AOS-003-TC03",
+        "AOS-003-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-003-S3.xml",
+        "evidence/AOS-003-S3/case-result-TC03.json",
+        "evidence/AOS-003-S3/case-result-TC04.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-003-S3.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-004-S1",
+      "aos_id": "AOS-004",
+      "release": "R0",
+      "depends_on": [
+        "AOS-003"
+      ],
+      "title": "Synthetic repo/worktree adapter lifecycle and scripted success/bad-path/hung/crash modes; bounded process handle/output.",
+      "planned_files": [
+        "src/panestria/brokers/harness/mock.py",
+        "src/panestria/sandbox/artifact_ingress.py",
+        "src/panestria/verification/registry.py",
+        "src/panestria/verification/runner.py",
+        "src/panestria/verification/diff.py",
+        "src/panestria/verification/artifacts.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_004.py",
+      "case_ids": [
+        "AOS-004-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-004-S1.xml",
+        "evidence/AOS-004-S1/case-result.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-004-S1.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-004-S2",
+      "aos_id": "AOS-004",
+      "release": "R0",
+      "depends_on": [
+        "AOS-004-S1"
+      ],
+      "title": "Reviewed command registry and independent required test bundle; exact diff checks and immutable artifact ingress outside worker write scope.",
+      "planned_files": [
+        "src/panestria/brokers/harness/mock.py",
+        "src/panestria/sandbox/artifact_ingress.py",
+        "src/panestria/verification/registry.py",
+        "src/panestria/verification/runner.py",
+        "src/panestria/verification/diff.py",
+        "src/panestria/verification/artifacts.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_004.py",
+      "case_ids": [
+        "AOS-004-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-004-S2.xml",
+        "evidence/AOS-004-S2/case-result.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-004-S2.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-004-S3",
+      "aos_id": "AOS-004",
+      "release": "R0",
+      "depends_on": [
+        "AOS-004-S2"
+      ],
+      "title": "False-done/tampered evidence/symlink/timeout/cancel/orphan cleanup fixtures and repeatable synthetic demo receipt.",
+      "planned_files": [
+        "src/panestria/brokers/harness/mock.py",
+        "src/panestria/sandbox/artifact_ingress.py",
+        "src/panestria/verification/registry.py",
+        "src/panestria/verification/runner.py",
+        "src/panestria/verification/diff.py",
+        "src/panestria/verification/artifacts.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_004.py",
+      "case_ids": [
+        "AOS-004-TC01",
+        "AOS-004-TC02",
+        "AOS-004-TC03",
+        "AOS-004-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-004-S3.xml",
+        "evidence/AOS-004-S3/case-result-TC03.json",
+        "evidence/AOS-004-S3/case-result-TC04.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-004-S3.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-005-S1",
+      "aos_id": "AOS-005",
+      "release": "R0",
+      "depends_on": [
+        "AOS-003",
+        "AOS-004"
+      ],
+      "title": "Minimal authenticated loopback routes and schema-derived CLI; safe errors/body limits/scoped reads and typed replay.",
+      "planned_files": [
+        "src/panestria/api/auth.py",
+        "src/panestria/api/routes/goals.py",
+        "src/panestria/api/routes/approvals.py",
+        "src/panestria/api/routes/events.py",
+        "src/panestria/api/routes/artifacts.py",
+        "src/panestria/cli/goals.py",
+        "src/panestria/cli/approvals.py",
+        "src/panestria/kernel/approvals.py"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_005.py",
+      "case_ids": [
+        "AOS-005-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-005-S1.xml",
+        "evidence/AOS-005-S1/assertion-map.json",
+        "evidence/AOS-005-S1/environment-manifest.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-005-S1.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-005-S2",
+      "aos_id": "AOS-005",
+      "release": "R0",
+      "depends_on": [
+        "AOS-005-S1"
+      ],
+      "title": "Immutable action preview/digest, locked approve/deny/expire decisions and continuation_kind contract-vs-merge waits.",
+      "planned_files": [
+        "src/panestria/api/auth.py",
+        "src/panestria/api/routes/goals.py",
+        "src/panestria/api/routes/approvals.py",
+        "src/panestria/api/routes/events.py",
+        "src/panestria/api/routes/artifacts.py",
+        "src/panestria/cli/goals.py",
+        "src/panestria/cli/approvals.py",
+        "src/panestria/kernel/approvals.py"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_005.py",
+      "case_ids": [
+        "AOS-005-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-005-S2.xml",
+        "evidence/AOS-005-S2/case-result-TC02.json",
+        "evidence/AOS-005-S2/assertion-map.json",
+        "evidence/AOS-005-S2/environment-manifest.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-005-S2.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-005-S3",
+      "aos_id": "AOS-005",
+      "release": "R0",
+      "depends_on": [
+        "AOS-005-S2"
+      ],
+      "title": "Full R0 journey through contract consent, mock candidate, independent evidence and approved synthetic CAS effect; restart/deny/stale paths.",
+      "planned_files": [
+        "src/panestria/api/auth.py",
+        "src/panestria/api/routes/goals.py",
+        "src/panestria/api/routes/approvals.py",
+        "src/panestria/api/routes/events.py",
+        "src/panestria/api/routes/artifacts.py",
+        "src/panestria/cli/goals.py",
+        "src/panestria/cli/approvals.py",
+        "src/panestria/kernel/approvals.py"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_005.py",
+      "case_ids": [
+        "AOS-005-TC01",
+        "AOS-005-TC02",
+        "AOS-005-TC03",
+        "AOS-005-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "COMPLETE",
+      "evidence_refs": [
+        "evidence/AOS-005-S3.xml",
+        "evidence/AOS-005-S3/case-result-TC01.json",
+        "evidence/AOS-005-S3/case-result-TC02.json",
+        "evidence/AOS-005-S3/case-result-TC03.json",
+        "evidence/AOS-005-S3/case-result-TC04.json",
+        "evidence/AOS-005-S3/assertion-map.json",
+        "evidence/AOS-005-S3/environment-manifest.json",
+        "evidence/R0-completion/",
+        "evidence/R0-demo-fix/"
+      ],
+      "prompt_ref": "cursor/prompts/AOS-005-S3.md",
+      "owner_acceptance_ref": "contracts/phase/r0-phase.acceptance.json"
+    },
+    {
+      "id": "AOS-006-S1",
+      "aos_id": "AOS-006",
+      "release": "R1",
+      "depends_on": [
+        "AOS-003"
+      ],
+      "title": "CAS epoch/attempt leases with DB-clock expiry and heartbeat; release/reclaim fences all stale writes.",
+      "planned_files": [
+        "src/panestria/kernel/leases.py",
+        "src/panestria/kernel/effects.py",
+        "src/panestria/kernel/budgets.py",
+        "src/panestria/execution/outbox.py",
+        "src/panestria/execution/recovery.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_006.py",
+      "case_ids": [
+        "AOS-006-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-006-S1.md"
+    },
+    {
+      "id": "AOS-006-S2",
+      "aos_id": "AOS-006",
+      "release": "R1",
+      "depends_on": [
+        "AOS-006-S1"
+      ],
+      "title": "Transactional effect intent/outbox and single-use approval consumption; fixed classification/idempotency/receipt interfaces.",
+      "planned_files": [
+        "src/panestria/kernel/leases.py",
+        "src/panestria/kernel/effects.py",
+        "src/panestria/kernel/budgets.py",
+        "src/panestria/execution/outbox.py",
+        "src/panestria/execution/recovery.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_006.py",
+      "case_ids": [
+        "AOS-006-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-006-S2.md"
+    },
+    {
+      "id": "AOS-006-S3",
+      "aos_id": "AOS-006",
+      "release": "R1",
+      "depends_on": [
+        "AOS-006-S2"
+      ],
+      "title": "Bounded retry/durable backoff and response-loss reconciliation drills; cancelling cannot invent a no-effect receipt.",
+      "planned_files": [
+        "src/panestria/kernel/leases.py",
+        "src/panestria/kernel/effects.py",
+        "src/panestria/kernel/budgets.py",
+        "src/panestria/execution/outbox.py",
+        "src/panestria/execution/recovery.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_006.py",
+      "case_ids": [
+        "AOS-006-TC01",
+        "AOS-006-TC02",
+        "AOS-006-TC03",
+        "AOS-006-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-006-S3.md"
+    },
+    {
+      "id": "AOS-007-S1",
+      "aos_id": "AOS-007",
+      "release": "R1",
+      "depends_on": [
+        "AOS-002"
+      ],
+      "title": "Pure closed trust/privacy/autonomy contracts and per-project versioned records; explicit unknown classification.",
+      "planned_files": [
+        "src/panestria/contracts/policy.py",
+        "src/panestria/policy/engine.py",
+        "src/panestria/policy/labels.py",
+        "src/panestria/policy/profiles.py",
+        "src/panestria/kernel/repositories/policy.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_007.py",
+      "case_ids": [
+        "AOS-007-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-007-S1.md"
+    },
+    {
+      "id": "AOS-007-S2",
+      "aos_id": "AOS-007",
+      "release": "R1",
+      "depends_on": [
+        "AOS-007-S1"
+      ],
+      "title": "Deterministic intersection/derived-label propagation and action/destination enforcement outputs; cache keyed by all versions.",
+      "planned_files": [
+        "src/panestria/contracts/policy.py",
+        "src/panestria/policy/engine.py",
+        "src/panestria/policy/labels.py",
+        "src/panestria/policy/profiles.py",
+        "src/panestria/kernel/repositories/policy.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_007.py",
+      "case_ids": [
+        "AOS-007-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-007-S2.md"
+    },
+    {
+      "id": "AOS-007-S3",
+      "aos_id": "AOS-007",
+      "release": "R1",
+      "depends_on": [
+        "AOS-007-S2"
+      ],
+      "title": "Axis/property and cross-project fixtures, stale-approval invalidation and promotion manifest evidence.",
+      "planned_files": [
+        "src/panestria/contracts/policy.py",
+        "src/panestria/policy/engine.py",
+        "src/panestria/policy/labels.py",
+        "src/panestria/policy/profiles.py",
+        "src/panestria/kernel/repositories/policy.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_007.py",
+      "case_ids": [
+        "AOS-007-TC01",
+        "AOS-007-TC02",
+        "AOS-007-TC03",
+        "AOS-007-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-007-S3.md"
+    },
+    {
+      "id": "AOS-008-S1",
+      "aos_id": "AOS-008",
+      "release": "R1",
+      "depends_on": [
+        "AOS-004",
+        "AOS-007"
+      ],
+      "title": "Concrete Linux Docker profiles and capability probe; non-root/read-only root/caps/process/resource ceilings, explicit mount containment.",
+      "planned_files": [
+        "src/panestria/sandbox/profiles.py",
+        "src/panestria/sandbox/docker_runtime.py",
+        "src/panestria/sandbox/mounts.py",
+        "src/panestria/sandbox/network.py",
+        "src/panestria/sandbox/processes.py",
+        "src/panestria/sandbox/artifact_ingress.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_008.py",
+      "case_ids": [
+        "AOS-008-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-008-S1.md"
+    },
+    {
+      "id": "AOS-008-S2",
+      "aos_id": "AOS-008",
+      "release": "R1",
+      "depends_on": [
+        "AOS-008-S1"
+      ],
+      "title": "Default-deny egress gateway/pinned destination and separate verifier/reader profiles; fail closed on startup/enforcement gaps.",
+      "planned_files": [
+        "src/panestria/sandbox/profiles.py",
+        "src/panestria/sandbox/docker_runtime.py",
+        "src/panestria/sandbox/mounts.py",
+        "src/panestria/sandbox/network.py",
+        "src/panestria/sandbox/processes.py",
+        "src/panestria/sandbox/artifact_ingress.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_008.py",
+      "case_ids": [
+        "AOS-008-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-008-S2.md"
+    },
+    {
+      "id": "AOS-008-S3",
+      "aos_id": "AOS-008",
+      "release": "R1",
+      "depends_on": [
+        "AOS-008-S2"
+      ],
+      "title": "Effective in-sandbox filesystem/network/credential/process attacks and cleanup/conformance report on actual OS.",
+      "planned_files": [
+        "src/panestria/sandbox/profiles.py",
+        "src/panestria/sandbox/docker_runtime.py",
+        "src/panestria/sandbox/mounts.py",
+        "src/panestria/sandbox/network.py",
+        "src/panestria/sandbox/processes.py",
+        "src/panestria/sandbox/artifact_ingress.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_008.py",
+      "case_ids": [
+        "AOS-008-TC01",
+        "AOS-008-TC02",
+        "AOS-008-TC03",
+        "AOS-008-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-008-S3.md"
+    },
+    {
+      "id": "AOS-009-S1",
+      "aos_id": "AOS-009",
+      "release": "R1",
+      "depends_on": [
+        "AOS-005",
+        "AOS-007"
+      ],
+      "title": "CLI token/actor storage and exact Host/Origin/body/media/rate middleware; safe same-origin API semantics.",
+      "planned_files": [
+        "src/panestria/api/auth.py",
+        "src/panestria/api/sessions.py",
+        "src/panestria/api/csrf.py",
+        "src/panestria/api/middleware.py",
+        "src/panestria/kernel/approvals.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_009.py",
+      "case_ids": [
+        "AOS-009-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-009-S1.md"
+    },
+    {
+      "id": "AOS-009-S2",
+      "aos_id": "AOS-009",
+      "release": "R1",
+      "depends_on": [
+        "AOS-009-S1"
+      ],
+      "title": "One-use pairing, scoped cookie/session/CSRF and expiry/revoke; no URL tokens or wildcard CORS.",
+      "planned_files": [
+        "src/panestria/api/auth.py",
+        "src/panestria/api/sessions.py",
+        "src/panestria/api/csrf.py",
+        "src/panestria/api/middleware.py",
+        "src/panestria/kernel/approvals.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_009.py",
+      "case_ids": [
+        "AOS-009-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-009-S2.md"
+    },
+    {
+      "id": "AOS-009-S3",
+      "aos_id": "AOS-009",
+      "release": "R1",
+      "depends_on": [
+        "AOS-009-S2"
+      ],
+      "title": "Actual browser/cookie/SSE and stale-decision races with bounded failure/error audit.",
+      "planned_files": [
+        "src/panestria/api/auth.py",
+        "src/panestria/api/sessions.py",
+        "src/panestria/api/csrf.py",
+        "src/panestria/api/middleware.py",
+        "src/panestria/kernel/approvals.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_009.py",
+      "case_ids": [
+        "AOS-009-TC01",
+        "AOS-009-TC02",
+        "AOS-009-TC03",
+        "AOS-009-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-009-S3.md"
+    },
+    {
+      "id": "AOS-010-S1",
+      "aos_id": "AOS-010",
+      "release": "R1",
+      "depends_on": [
+        "AOS-004",
+        "AOS-008",
+        "AOS-009"
+      ],
+      "title": "Inspect original skill, pin/probe official CLI/auth/config/profile semantics and sanitized event fixture parser; no live auth provisioning.",
+      "planned_files": [
+        "src/panestria/brokers/harness/claude.py",
+        "src/panestria/brokers/harness/event_parser.py",
+        "src/panestria/brokers/harness/process_runner.py",
+        "src/panestria/sandbox/native_tool_gateway.py",
+        "src/panestria/memory/context.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_010.py",
+      "case_ids": [
+        "AOS-010-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-010-S1.md"
+    },
+    {
+      "id": "AOS-010-S2",
+      "aos_id": "AOS-010",
+      "release": "R1",
+      "depends_on": [
+        "AOS-010-S1"
+      ],
+      "title": "Bounded process lifecycle/context-file launch with edited workspace and tested credential/tool separation; shell-tier spike remains explicit.",
+      "planned_files": [
+        "src/panestria/brokers/harness/claude.py",
+        "src/panestria/brokers/harness/event_parser.py",
+        "src/panestria/brokers/harness/process_runner.py",
+        "src/panestria/sandbox/native_tool_gateway.py",
+        "src/panestria/memory/context.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_010.py",
+      "case_ids": [
+        "AOS-010-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-010-S2.md"
+    },
+    {
+      "id": "AOS-010-S3",
+      "aos_id": "AOS-010",
+      "release": "R1",
+      "depends_on": [
+        "AOS-010-S2"
+      ],
+      "title": "Hostile hooks/MCP/config, silent timeout/cancel/partial JSON fixtures plus separately consented synthetic live compatibility smoke.",
+      "planned_files": [
+        "src/panestria/brokers/harness/claude.py",
+        "src/panestria/brokers/harness/event_parser.py",
+        "src/panestria/brokers/harness/process_runner.py",
+        "src/panestria/sandbox/native_tool_gateway.py",
+        "src/panestria/memory/context.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_010.py",
+      "case_ids": [
+        "AOS-010-TC01",
+        "AOS-010-TC02",
+        "AOS-010-TC03",
+        "AOS-010-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-010-S3.md"
+    },
+    {
+      "id": "AOS-027a-S1",
+      "aos_id": "AOS-027a",
+      "release": "R1",
+      "depends_on": [
+        "AOS-004",
+        "AOS-009",
+        "AOS-010"
+      ],
+      "title": "Independent protected command/check bundle on exact single-worker candidate; allowed/forbidden diff and artifact/verifier hashes.",
+      "planned_files": [
+        "src/panestria/verification/runner.py",
+        "src/panestria/verification/diff.py",
+        "src/panestria/verification/merge.py",
+        "src/panestria/kernel/approvals.py",
+        "src/panestria/kernel/effects.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_027a.py",
+      "case_ids": [
+        "AOS-027a-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-027a-S1.md"
+    },
+    {
+      "id": "AOS-027a-S2",
+      "aos_id": "AOS-027a",
+      "release": "R1",
+      "depends_on": [
+        "AOS-027a-S1"
+      ],
+      "title": "Effect_digest preview includes owner/project/base/destination/check/policy/expiry; one-use consumption and protected ref CAS.",
+      "planned_files": [
+        "src/panestria/verification/runner.py",
+        "src/panestria/verification/diff.py",
+        "src/panestria/verification/merge.py",
+        "src/panestria/kernel/approvals.py",
+        "src/panestria/kernel/effects.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_027a.py",
+      "case_ids": [
+        "AOS-027a-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-027a-S2.md"
+    },
+    {
+      "id": "AOS-027a-S3",
+      "aos_id": "AOS-027a",
+      "release": "R1",
+      "depends_on": [
+        "AOS-027a-S2"
+      ],
+      "title": "False done, tampered tests, changed base/rebase, lost merge response and single-worker gate report.",
+      "planned_files": [
+        "src/panestria/verification/runner.py",
+        "src/panestria/verification/diff.py",
+        "src/panestria/verification/merge.py",
+        "src/panestria/kernel/approvals.py",
+        "src/panestria/kernel/effects.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_027a.py",
+      "case_ids": [
+        "AOS-027a-TC01",
+        "AOS-027a-TC02",
+        "AOS-027a-TC03",
+        "AOS-027a-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-027a-S3.md"
+    },
+    {
+      "id": "AOS-011-S1",
+      "aos_id": "AOS-011",
+      "release": "R1",
+      "depends_on": [
+        "AOS-002"
+      ],
+      "title": "Normalized source-linked memory/revisions with immutable provenance and explicit owner-approved writes.",
+      "planned_files": [
+        "src/panestria/memory/store.py",
+        "src/panestria/memory/search.py",
+        "src/panestria/memory/use_events.py",
+        "src/panestria/memory/context.py",
+        "src/panestria/memory/lifecycle.py",
+        "src/panestria/kernel/repositories/memory.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_011.py",
+      "case_ids": [
+        "AOS-011-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-011-S1.md"
+    },
+    {
+      "id": "AOS-011-S2",
+      "aos_id": "AOS-011",
+      "release": "R1",
+      "depends_on": [
+        "AOS-011-S1"
+      ],
+      "title": "Scoped FTS retrieval/validity/conflict ranking and minimal hashed context packs with bounded tokens; unknown stages remain unknown.",
+      "planned_files": [
+        "src/panestria/memory/store.py",
+        "src/panestria/memory/search.py",
+        "src/panestria/memory/use_events.py",
+        "src/panestria/memory/context.py",
+        "src/panestria/memory/lifecycle.py",
+        "src/panestria/kernel/repositories/memory.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_011.py",
+      "case_ids": [
+        "AOS-011-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-011-S2.md"
+    },
+    {
+      "id": "AOS-011-S3",
+      "aos_id": "AOS-011",
+      "release": "R1",
+      "depends_on": [
+        "AOS-011-S2"
+      ],
+      "title": "Five-stage telemetry, correction/export/suppression/retention baseline and cross-project/injection/stale-memory fixtures.",
+      "planned_files": [
+        "src/panestria/memory/store.py",
+        "src/panestria/memory/search.py",
+        "src/panestria/memory/use_events.py",
+        "src/panestria/memory/context.py",
+        "src/panestria/memory/lifecycle.py",
+        "src/panestria/kernel/repositories/memory.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_011.py",
+      "case_ids": [
+        "AOS-011-TC01",
+        "AOS-011-TC02",
+        "AOS-011-TC03",
+        "AOS-011-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-011-S3.md"
+    },
+    {
+      "id": "AOS-012-S1",
+      "aos_id": "AOS-012",
+      "release": "R1",
+      "depends_on": [
+        "AOS-002",
+        "AOS-007"
+      ],
+      "title": "Versioned eligible/denied route and normalized usage/outcome schemas linked to task/policy/correlation.",
+      "planned_files": [
+        "src/panestria/telemetry/usage.py",
+        "src/panestria/telemetry/exposure.py",
+        "src/panestria/kernel/repositories/routing.py",
+        "src/panestria/memory/use_events.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_012.py",
+      "case_ids": [
+        "AOS-012-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-012-S1.md"
+    },
+    {
+      "id": "AOS-012-S2",
+      "aos_id": "AOS-012",
+      "release": "R1",
+      "depends_on": [
+        "AOS-012-S1"
+      ],
+      "title": "Separate authorized/accessible/observed disclosure records, corrected output versions and consent/retention boundaries.",
+      "planned_files": [
+        "src/panestria/telemetry/usage.py",
+        "src/panestria/telemetry/exposure.py",
+        "src/panestria/kernel/repositories/routing.py",
+        "src/panestria/memory/use_events.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_012.py",
+      "case_ids": [
+        "AOS-012-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-012-S2.md"
+    },
+    {
+      "id": "AOS-012-S3",
+      "aos_id": "AOS-012",
+      "release": "R1",
+      "depends_on": [
+        "AOS-012-S2"
+      ],
+      "title": "Restart reconstruction, unknown-value and poisoned-correction fixtures; secret-safe API/report views.",
+      "planned_files": [
+        "src/panestria/telemetry/usage.py",
+        "src/panestria/telemetry/exposure.py",
+        "src/panestria/kernel/repositories/routing.py",
+        "src/panestria/memory/use_events.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_012.py",
+      "case_ids": [
+        "AOS-012-TC01",
+        "AOS-012-TC02",
+        "AOS-012-TC03",
+        "AOS-012-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-012-S3.md"
+    },
+    {
+      "id": "AOS-014-S1",
+      "aos_id": "AOS-014",
+      "release": "R1",
+      "depends_on": [
+        "AOS-003",
+        "AOS-012"
+      ],
+      "title": "Propagate goal/task/attempt/epoch/trace IDs and redacted local spans through transactions/adapters/verifiers.",
+      "planned_files": [
+        "src/panestria/telemetry/events.py",
+        "src/panestria/telemetry/tracing.py",
+        "src/panestria/telemetry/redaction.py",
+        "src/panestria/api/routes/events.py",
+        "src/panestria/kernel/repositories/events.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_014.py",
+      "case_ids": [
+        "AOS-014-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-014-S1.md"
+    },
+    {
+      "id": "AOS-014-S2",
+      "aos_id": "AOS-014",
+      "release": "R1",
+      "depends_on": [
+        "AOS-014-S1"
+      ],
+      "title": "Post-commit event notification with DB-backed paginated SSE replay, expiry checks, bounded buffers and decimal cursors.",
+      "planned_files": [
+        "src/panestria/telemetry/events.py",
+        "src/panestria/telemetry/tracing.py",
+        "src/panestria/telemetry/redaction.py",
+        "src/panestria/api/routes/events.py",
+        "src/panestria/kernel/repositories/events.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_014.py",
+      "case_ids": [
+        "AOS-014-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-014-S2.md"
+    },
+    {
+      "id": "AOS-014-S3",
+      "aos_id": "AOS-014",
+      "release": "R1",
+      "depends_on": [
+        "AOS-014-S2"
+      ],
+      "title": "Disconnect/duplicate/retention/>2^53/redaction fixtures and exporter-outage correctness proof.",
+      "planned_files": [
+        "src/panestria/telemetry/events.py",
+        "src/panestria/telemetry/tracing.py",
+        "src/panestria/telemetry/redaction.py",
+        "src/panestria/api/routes/events.py",
+        "src/panestria/kernel/repositories/events.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_014.py",
+      "case_ids": [
+        "AOS-014-TC01",
+        "AOS-014-TC02",
+        "AOS-014-TC03",
+        "AOS-014-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-014-S3.md"
+    },
+    {
+      "id": "AOS-015-S1",
+      "aos_id": "AOS-015",
+      "release": "R1",
+      "depends_on": [
+        "AOS-001"
+      ],
+      "title": "Inventory original hwprobe source/license/presets and adapt typed uncertainty/probe-method manifest without installing drivers.",
+      "planned_files": [
+        "src/panestria/resources/probe.py",
+        "src/panestria/resources/catalog.py",
+        "src/panestria/resources/benchmark.py",
+        "src/panestria/cli/hardware.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_015.py",
+      "case_ids": [
+        "AOS-015-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-015-S1.md"
+    },
+    {
+      "id": "AOS-015-S2",
+      "aos_id": "AOS-015",
+      "release": "R1",
+      "depends_on": [
+        "AOS-015-S1"
+      ],
+      "title": "Read-only physical probes and candidate memory estimates distinguish unsupported/missing from zero capacity.",
+      "planned_files": [
+        "src/panestria/resources/probe.py",
+        "src/panestria/resources/catalog.py",
+        "src/panestria/resources/benchmark.py",
+        "src/panestria/cli/hardware.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_015.py",
+      "case_ids": [
+        "AOS-015-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-015-S2.md"
+    },
+    {
+      "id": "AOS-015-S3",
+      "aos_id": "AOS-015",
+      "release": "R1",
+      "depends_on": [
+        "AOS-015-S2"
+      ],
+      "title": "Preset/low-memory fixtures plus explicit real-machine manifest and measured placement proposal.",
+      "planned_files": [
+        "src/panestria/resources/probe.py",
+        "src/panestria/resources/catalog.py",
+        "src/panestria/resources/benchmark.py",
+        "src/panestria/cli/hardware.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_015.py",
+      "case_ids": [
+        "AOS-015-TC01",
+        "AOS-015-TC02",
+        "AOS-015-TC03",
+        "AOS-015-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-015-S3.md"
+    },
+    {
+      "id": "AOS-016-S1",
+      "aos_id": "AOS-016",
+      "release": "R1",
+      "depends_on": [
+        "AOS-011",
+        "AOS-015"
+      ],
+      "title": "Typed provider protocol, Ollama adapter and fake transport fixtures with deadlines/deltas/unknown usage.",
+      "planned_files": [
+        "src/panestria/brokers/inference/base.py",
+        "src/panestria/brokers/inference/ollama.py",
+        "src/panestria/brokers/inference/api.py",
+        "src/panestria/brokers/inference/model_manager.py",
+        "src/panestria/resources/benchmark.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_016.py",
+      "case_ids": [
+        "AOS-016-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-016-S1.md"
+    },
+    {
+      "id": "AOS-016-S2",
+      "aos_id": "AOS-016",
+      "release": "R1",
+      "depends_on": [
+        "AOS-016-S1"
+      ],
+      "title": "Measured model admission/warm-cold/load/unload/pressure path and local-only policy; no silent cloud fallback.",
+      "planned_files": [
+        "src/panestria/brokers/inference/base.py",
+        "src/panestria/brokers/inference/ollama.py",
+        "src/panestria/brokers/inference/api.py",
+        "src/panestria/brokers/inference/model_manager.py",
+        "src/panestria/resources/benchmark.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_016.py",
+      "case_ids": [
+        "AOS-016-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-016-S2.md"
+    },
+    {
+      "id": "AOS-016-S3",
+      "aos_id": "AOS-016",
+      "release": "R1",
+      "depends_on": [
+        "AOS-016-S2"
+      ],
+      "title": "Baseline opt-in one API SDK adapter contract (MVP-X01), credential-handle separation and independently scoped live compatibility plus physical local benchmark.",
+      "planned_files": [
+        "src/panestria/brokers/inference/base.py",
+        "src/panestria/brokers/inference/ollama.py",
+        "src/panestria/brokers/inference/api.py",
+        "src/panestria/brokers/inference/model_manager.py",
+        "src/panestria/resources/benchmark.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_016.py",
+      "case_ids": [
+        "AOS-016-TC01",
+        "AOS-016-TC02",
+        "AOS-016-TC03",
+        "AOS-016-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-016-S3.md"
+    },
+    {
+      "id": "AOS-017-S1",
+      "aos_id": "AOS-017",
+      "release": "R1",
+      "depends_on": [
+        "AOS-011",
+        "AOS-016"
+      ],
+      "title": "Local-only Ask handler/CLI with project/label bounds, FTS recall and context source hashes.",
+      "planned_files": [
+        "src/panestria/api/routes/ask.py",
+        "src/panestria/cli/ask.py",
+        "src/panestria/memory/context.py",
+        "src/panestria/memory/search.py",
+        "src/panestria/kernel/ask.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_017.py",
+      "case_ids": [
+        "AOS-017-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-017-S1.md"
+    },
+    {
+      "id": "AOS-017-S2",
+      "aos_id": "AOS-017",
+      "release": "R1",
+      "depends_on": [
+        "AOS-017-S1"
+      ],
+      "title": "Streaming terminal status/timeout/degraded UI and separate explicit correction/memory write path.",
+      "planned_files": [
+        "src/panestria/api/routes/ask.py",
+        "src/panestria/cli/ask.py",
+        "src/panestria/memory/context.py",
+        "src/panestria/memory/search.py",
+        "src/panestria/kernel/ask.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_017.py",
+      "case_ids": [
+        "AOS-017-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-017-S2.md"
+    },
+    {
+      "id": "AOS-017-S3",
+      "aos_id": "AOS-017",
+      "release": "R1",
+      "depends_on": [
+        "AOS-017-S2"
+      ],
+      "title": "A-1 ten-prompt source/scope/no-cloud fixtures and actual network-disabled quality/latency measurements.",
+      "planned_files": [
+        "src/panestria/api/routes/ask.py",
+        "src/panestria/cli/ask.py",
+        "src/panestria/memory/context.py",
+        "src/panestria/memory/search.py",
+        "src/panestria/kernel/ask.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_017.py",
+      "case_ids": [
+        "AOS-017-TC01",
+        "AOS-017-TC02",
+        "AOS-017-TC03",
+        "AOS-017-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-017-S3.md"
+    },
+    {
+      "id": "AOS-018-S1",
+      "aos_id": "AOS-018",
+      "release": "R1",
+      "depends_on": [
+        "AOS-015",
+        "AOS-016",
+        "AOS-017"
+      ],
+      "title": "Explicit conservative process/CPU/RAM/VRAM/disk caps and observed/battery/degraded states.",
+      "planned_files": [
+        "src/panestria/resources/admission.py",
+        "src/panestria/resources/probe.py",
+        "src/panestria/execution/task_workflow.py",
+        "src/panestria/cli/doctor.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_018.py",
+      "case_ids": [
+        "AOS-018-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-018-S1.md"
+    },
+    {
+      "id": "AOS-018-S2",
+      "aos_id": "AOS-018",
+      "release": "R1",
+      "depends_on": [
+        "AOS-018-S1"
+      ],
+      "title": "No-network harness, model restart/OOM/unload and foreground-priority fixtures with clear queue-vs-hang diagnostics.",
+      "planned_files": [
+        "src/panestria/resources/admission.py",
+        "src/panestria/resources/probe.py",
+        "src/panestria/execution/task_workflow.py",
+        "src/panestria/cli/doctor.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_018.py",
+      "case_ids": [
+        "AOS-018-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-018-S2.md"
+    },
+    {
+      "id": "AOS-018-S3",
+      "aos_id": "AOS-018",
+      "release": "R1",
+      "depends_on": [
+        "AOS-018-S2"
+      ],
+      "title": "Actual physical resource/offline/cancellation recovery run and observed incident/latency evidence.",
+      "planned_files": [
+        "src/panestria/resources/admission.py",
+        "src/panestria/resources/probe.py",
+        "src/panestria/execution/task_workflow.py",
+        "src/panestria/cli/doctor.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_018.py",
+      "case_ids": [
+        "AOS-018-TC01",
+        "AOS-018-TC02",
+        "AOS-018-TC03",
+        "AOS-018-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-018-S3.md"
+    },
+    {
+      "id": "AOS-013-S1",
+      "aos_id": "AOS-013",
+      "release": "R2",
+      "depends_on": [
+        "AOS-002",
+        "AOS-008"
+      ],
+      "title": "Immutable source/claim/Pydantic schema and Alembic metadata, protected raw/text artifact refs.",
+      "planned_files": [
+        "src/panestria/contracts/research.py",
+        "src/panestria/research/sources.py",
+        "src/panestria/research/extract.py",
+        "src/panestria/research/claims.py",
+        "src/panestria/kernel/repositories/research.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_013.py",
+      "case_ids": [
+        "AOS-013-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-013-S1.md"
+    },
+    {
+      "id": "AOS-013-S2",
+      "aos_id": "AOS-013",
+      "release": "R2",
+      "depends_on": [
+        "AOS-013-S1"
+      ],
+      "title": "Canonical NFC UTF-8 text and half-open byte passage offsets; explicit charset/truncation/version semantics.",
+      "planned_files": [
+        "src/panestria/contracts/research.py",
+        "src/panestria/research/sources.py",
+        "src/panestria/research/extract.py",
+        "src/panestria/research/claims.py",
+        "src/panestria/kernel/repositories/research.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_013.py",
+      "case_ids": [
+        "AOS-013-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-013-S2.md"
+    },
+    {
+      "id": "AOS-013-S3",
+      "aos_id": "AOS-013",
+      "release": "R2",
+      "depends_on": [
+        "AOS-013-S2"
+      ],
+      "title": "Hash/source/scope/offset fabrication fixtures and offline stored-evidence reconstruction.",
+      "planned_files": [
+        "src/panestria/contracts/research.py",
+        "src/panestria/research/sources.py",
+        "src/panestria/research/extract.py",
+        "src/panestria/research/claims.py",
+        "src/panestria/kernel/repositories/research.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_013.py",
+      "case_ids": [
+        "AOS-013-TC01",
+        "AOS-013-TC02",
+        "AOS-013-TC03",
+        "AOS-013-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-013-S3.md"
+    },
+    {
+      "id": "AOS-019-S1",
+      "aos_id": "AOS-019",
+      "release": "R2",
+      "depends_on": [
+        "AOS-008",
+        "AOS-009",
+        "AOS-013"
+      ],
+      "title": "Configured search adapter with quotas/query-disclosure ledger and explicit JSON/setup errors; no automatic provider choice.",
+      "planned_files": [
+        "src/panestria/brokers/search/base.py",
+        "src/panestria/brokers/search/searxng.py",
+        "src/panestria/brokers/search/configured_api.py",
+        "src/panestria/research/fetch.py",
+        "src/panestria/sandbox/network.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_019.py",
+      "case_ids": [
+        "AOS-019-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-019-S1.md"
+    },
+    {
+      "id": "AOS-019-S2",
+      "aos_id": "AOS-019",
+      "release": "R2",
+      "depends_on": [
+        "AOS-019-S1"
+      ],
+      "title": "Trusted HTTPS/IP pin/redirect/TLS/byte/deadline broker plus OS gateway policy; no ambient cookie/proxy/auth leakage.",
+      "planned_files": [
+        "src/panestria/brokers/search/base.py",
+        "src/panestria/brokers/search/searxng.py",
+        "src/panestria/brokers/search/configured_api.py",
+        "src/panestria/research/fetch.py",
+        "src/panestria/sandbox/network.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_019.py",
+      "case_ids": [
+        "AOS-019-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-019-S2.md"
+    },
+    {
+      "id": "AOS-019-S3",
+      "aos_id": "AOS-019",
+      "release": "R2",
+      "depends_on": [
+        "AOS-019-S2"
+      ],
+      "title": "Resolver/connector and actual network denial fixtures for private/mixed/encoded/DNS-rebind URLs; live search only separately scoped.",
+      "planned_files": [
+        "src/panestria/brokers/search/base.py",
+        "src/panestria/brokers/search/searxng.py",
+        "src/panestria/brokers/search/configured_api.py",
+        "src/panestria/research/fetch.py",
+        "src/panestria/sandbox/network.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_019.py",
+      "case_ids": [
+        "AOS-019-TC01",
+        "AOS-019-TC02",
+        "AOS-019-TC03",
+        "AOS-019-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-019-S3.md"
+    },
+    {
+      "id": "AOS-020-S1",
+      "aos_id": "AOS-020",
+      "release": "R2",
+      "depends_on": [
+        "AOS-013",
+        "AOS-019"
+      ],
+      "title": "Read-only no-network reader process and bounded HTML/plain-text extractor; separate privileged fetch/synthesis principals.",
+      "planned_files": [
+        "src/panestria/research/reader.py",
+        "src/panestria/research/extract.py",
+        "src/panestria/sandbox/profiles.py",
+        "src/panestria/sandbox/artifact_ingress.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_020.py",
+      "case_ids": [
+        "AOS-020-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-020-S1.md"
+    },
+    {
+      "id": "AOS-020-S2",
+      "aos_id": "AOS-020",
+      "release": "R2",
+      "depends_on": [
+        "AOS-020-S1"
+      ],
+      "title": "Sanitized immutable text/provenance output through ingress, no arbitrary file writes/JS/actor tools.",
+      "planned_files": [
+        "src/panestria/research/reader.py",
+        "src/panestria/research/extract.py",
+        "src/panestria/sandbox/profiles.py",
+        "src/panestria/sandbox/artifact_ingress.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_020.py",
+      "case_ids": [
+        "AOS-020-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-020-S2.md"
+    },
+    {
+      "id": "AOS-020-S3",
+      "aos_id": "AOS-020",
+      "release": "R2",
+      "depends_on": [
+        "AOS-020-S2"
+      ],
+      "title": "Injection/parser/bomb/duplicate/truncation fixtures and offline replay with exact source-hash trace.",
+      "planned_files": [
+        "src/panestria/research/reader.py",
+        "src/panestria/research/extract.py",
+        "src/panestria/sandbox/profiles.py",
+        "src/panestria/sandbox/artifact_ingress.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_020.py",
+      "case_ids": [
+        "AOS-020-TC01",
+        "AOS-020-TC02",
+        "AOS-020-TC03",
+        "AOS-020-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-020-S3.md"
+    },
+    {
+      "id": "AOS-021-S1",
+      "aos_id": "AOS-021",
+      "release": "R2",
+      "depends_on": [
+        "AOS-020"
+      ],
+      "title": "Port inspected citation skill to canonical source hashes/byte offsets and typed claim manifests; reject legacy unsafe source IDs.",
+      "planned_files": [
+        "src/panestria/verification/citations.py",
+        "src/panestria/research/claims.py",
+        "src/panestria/cli/evidence.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_021.py",
+      "case_ids": [
+        "AOS-021-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-021-S1.md"
+    },
+    {
+      "id": "AOS-021-S2",
+      "aos_id": "AOS-021",
+      "release": "R2",
+      "depends_on": [
+        "AOS-021-S1"
+      ],
+      "title": "Case-sensitive NFC/whitespace quote matcher with source/text boundary verification and explicit diagnostics.",
+      "planned_files": [
+        "src/panestria/verification/citations.py",
+        "src/panestria/research/claims.py",
+        "src/panestria/cli/evidence.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_021.py",
+      "case_ids": [
+        "AOS-021-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-021-S2.md"
+    },
+    {
+      "id": "AOS-021-S3",
+      "aos_id": "AOS-021",
+      "release": "R2",
+      "depends_on": [
+        "AOS-021-S2"
+      ],
+      "title": "Offline rerunnable positive/fabrication/Unicode/laundering fixtures and CLI evidence report separate from support.",
+      "planned_files": [
+        "src/panestria/verification/citations.py",
+        "src/panestria/research/claims.py",
+        "src/panestria/cli/evidence.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_021.py",
+      "case_ids": [
+        "AOS-021-TC01",
+        "AOS-021-TC02",
+        "AOS-021-TC03",
+        "AOS-021-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-021-S3.md"
+    },
+    {
+      "id": "AOS-022-S1",
+      "aos_id": "AOS-022",
+      "release": "R2",
+      "depends_on": [
+        "AOS-021",
+        "AOS-016"
+      ],
+      "title": "Human-labeled supported/contradicted/insufficient/ambiguous/opinion corpus with explicit rubric and deterministic prerequisites.",
+      "planned_files": [
+        "src/panestria/verification/support.py",
+        "src/panestria/research/claims.py",
+        "src/panestria/brokers/inference/base.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_022.py",
+      "case_ids": [
+        "AOS-022-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-022-S1.md"
+    },
+    {
+      "id": "AOS-022-S2",
+      "aos_id": "AOS-022",
+      "release": "R2",
+      "depends_on": [
+        "AOS-022-S1"
+      ],
+      "title": "Separately configured support model/role with safe local scheduling or consented eligible route; abstention and duplicate-source correlation.",
+      "planned_files": [
+        "src/panestria/verification/support.py",
+        "src/panestria/research/claims.py",
+        "src/panestria/brokers/inference/base.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_022.py",
+      "case_ids": [
+        "AOS-022-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-022-S2.md"
+    },
+    {
+      "id": "AOS-022-S3",
+      "aos_id": "AOS-022",
+      "release": "R2",
+      "depends_on": [
+        "AOS-022-S2"
+      ],
+      "title": "Calibration/conflict/unavailable fixtures and owner-visible uncertainty review; preserve separation of model verdict and required human rubric-review.",
+      "planned_files": [
+        "src/panestria/verification/support.py",
+        "src/panestria/research/claims.py",
+        "src/panestria/brokers/inference/base.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_022.py",
+      "case_ids": [
+        "AOS-022-TC01",
+        "AOS-022-TC02",
+        "AOS-022-TC03",
+        "AOS-022-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-022-S3.md"
+    },
+    {
+      "id": "AOS-023-S1",
+      "aos_id": "AOS-023",
+      "release": "R2",
+      "depends_on": [
+        "AOS-019",
+        "AOS-020",
+        "AOS-021",
+        "AOS-022"
+      ],
+      "title": "Distinct Delegate request/admission with configured provider/consent and strict subquery/source/byte/time/budget bounds.",
+      "planned_files": [
+        "src/panestria/research/delegate.py",
+        "src/panestria/api/routes/research.py",
+        "src/panestria/cli/delegate.py",
+        "src/panestria/research/claims.py"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_023.py",
+      "case_ids": [
+        "AOS-023-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-023-S1.md"
+    },
+    {
+      "id": "AOS-023-S2",
+      "aos_id": "AOS-023",
+      "release": "R2",
+      "depends_on": [
+        "AOS-023-S1"
+      ],
+      "title": "Fetch→read→claim→cite→support pipeline with complete errors/truncation/uncertainty and deterministic offline fixture mode.",
+      "planned_files": [
+        "src/panestria/research/delegate.py",
+        "src/panestria/api/routes/research.py",
+        "src/panestria/cli/delegate.py",
+        "src/panestria/research/claims.py"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_023.py",
+      "case_ids": [
+        "AOS-023-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-023-S2.md"
+    },
+    {
+      "id": "AOS-023-S3",
+      "aos_id": "AOS-023",
+      "release": "R2",
+      "depends_on": [
+        "AOS-023-S2"
+      ],
+      "title": "D-1 adversarial briefs and separately authorized live public brief; disable Delegate without changing offline Ask/Build.",
+      "planned_files": [
+        "src/panestria/research/delegate.py",
+        "src/panestria/api/routes/research.py",
+        "src/panestria/cli/delegate.py",
+        "src/panestria/research/claims.py"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_023.py",
+      "case_ids": [
+        "AOS-023-TC01",
+        "AOS-023-TC02",
+        "AOS-023-TC03",
+        "AOS-023-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-023-S3.md"
+    },
+    {
+      "id": "AOS-024-S1",
+      "aos_id": "AOS-024",
+      "release": "R3",
+      "depends_on": [
+        "AOS-004",
+        "AOS-008",
+        "AOS-010"
+      ],
+      "title": "Current supported exec/JSONL/login-status interface pinned and mapped with sanitized fixture protocol; no model/kernel field coupling.",
+      "planned_files": [
+        "src/panestria/brokers/harness/codex.py",
+        "src/panestria/brokers/harness/event_parser.py",
+        "src/panestria/brokers/harness/process_runner.py",
+        "src/panestria/sandbox/native_tool_gateway.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_024.py",
+      "case_ids": [
+        "AOS-024-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-024-S1.md"
+    },
+    {
+      "id": "AOS-024-S2",
+      "aos_id": "AOS-024",
+      "release": "R3",
+      "depends_on": [
+        "AOS-024-S1"
+      ],
+      "title": "Scoped config/workspace/native+OS permissions and bounded process/credential-tool isolation; no untested resume or approval bypass.",
+      "planned_files": [
+        "src/panestria/brokers/harness/codex.py",
+        "src/panestria/brokers/harness/event_parser.py",
+        "src/panestria/brokers/harness/process_runner.py",
+        "src/panestria/sandbox/native_tool_gateway.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_024.py",
+      "case_ids": [
+        "AOS-024-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-024-S2.md"
+    },
+    {
+      "id": "AOS-024-S3",
+      "aos_id": "AOS-024",
+      "release": "R3",
+      "depends_on": [
+        "AOS-024-S2"
+      ],
+      "title": "Hostile repo/cancel/auth/quota/truncation fixtures plus consented synthetic live adapter parity evidence.",
+      "planned_files": [
+        "src/panestria/brokers/harness/codex.py",
+        "src/panestria/brokers/harness/event_parser.py",
+        "src/panestria/brokers/harness/process_runner.py",
+        "src/panestria/sandbox/native_tool_gateway.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_024.py",
+      "case_ids": [
+        "AOS-024-TC01",
+        "AOS-024-TC02",
+        "AOS-024-TC03",
+        "AOS-024-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-024-S3.md"
+    },
+    {
+      "id": "AOS-025-S1",
+      "aos_id": "AOS-025",
+      "release": "R3",
+      "depends_on": [
+        "AOS-003",
+        "AOS-016"
+      ],
+      "title": "Typed bounded plan schema and deterministic DAG/capability/scope/budget validator with synthetic proposal fixtures.",
+      "planned_files": [
+        "src/panestria/contracts/plan.py",
+        "src/panestria/kernel/plans.py",
+        "src/panestria/execution/build_plan.py",
+        "src/panestria/memory/context.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_025.py",
+      "case_ids": [
+        "AOS-025-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-025-S1.md"
+    },
+    {
+      "id": "AOS-025-S2",
+      "aos_id": "AOS-025",
+      "release": "R3",
+      "depends_on": [
+        "AOS-025-S1"
+      ],
+      "title": "Direct structured local inference proposal and milestone handoff context; kernel commits approved plan/task refs only.",
+      "planned_files": [
+        "src/panestria/contracts/plan.py",
+        "src/panestria/kernel/plans.py",
+        "src/panestria/execution/build_plan.py",
+        "src/panestria/memory/context.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_025.py",
+      "case_ids": [
+        "AOS-025-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-025-S2.md"
+    },
+    {
+      "id": "AOS-025-S3",
+      "aos_id": "AOS-025",
+      "release": "R3",
+      "depends_on": [
+        "AOS-025-S2"
+      ],
+      "title": "Bounded repair/replan and optional small LangGraph interface parity; scope/cost/privacy changes require new contract consent.",
+      "planned_files": [
+        "src/panestria/contracts/plan.py",
+        "src/panestria/kernel/plans.py",
+        "src/panestria/execution/build_plan.py",
+        "src/panestria/memory/context.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_025.py",
+      "case_ids": [
+        "AOS-025-TC01",
+        "AOS-025-TC02",
+        "AOS-025-TC03",
+        "AOS-025-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-025-S3.md"
+    },
+    {
+      "id": "AOS-026-S1",
+      "aos_id": "AOS-026",
+      "release": "R3",
+      "depends_on": [
+        "AOS-006",
+        "AOS-010",
+        "AOS-024",
+        "AOS-025"
+      ],
+      "title": "Ready-node dependency query with atomic claim/epoch/resource/cash reservation and bounded priority ordering.",
+      "planned_files": [
+        "src/panestria/kernel/scheduler.py",
+        "src/panestria/kernel/leases.py",
+        "src/panestria/kernel/budgets.py",
+        "src/panestria/resources/admission.py",
+        "src/panestria/execution/build_plan.py",
+        "src/panestria/verification/merge.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_026.py",
+      "case_ids": [
+        "AOS-026-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-026-S1.md"
+    },
+    {
+      "id": "AOS-026-S2",
+      "aos_id": "AOS-026",
+      "release": "R3",
+      "depends_on": [
+        "AOS-026-S1"
+      ],
+      "title": "Two independent adapter/worktree orchestration with common-ancestor receipts; cancel/failure propagation and foreground no-new-admissions.",
+      "planned_files": [
+        "src/panestria/kernel/scheduler.py",
+        "src/panestria/kernel/leases.py",
+        "src/panestria/kernel/budgets.py",
+        "src/panestria/resources/admission.py",
+        "src/panestria/execution/build_plan.py",
+        "src/panestria/verification/merge.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_026.py",
+      "case_ids": [
+        "AOS-026-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-026-S2.md"
+    },
+    {
+      "id": "AOS-026-S3",
+      "aos_id": "AOS-026",
+      "release": "R3",
+      "depends_on": [
+        "AOS-026-S2"
+      ],
+      "title": "Eight-job concurrency stress, stale writes/dependency failure/unknown quota/conflict fixtures and actual two-worker footprint.",
+      "planned_files": [
+        "src/panestria/kernel/scheduler.py",
+        "src/panestria/kernel/leases.py",
+        "src/panestria/kernel/budgets.py",
+        "src/panestria/resources/admission.py",
+        "src/panestria/execution/build_plan.py",
+        "src/panestria/verification/merge.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_026.py",
+      "case_ids": [
+        "AOS-026-TC01",
+        "AOS-026-TC02",
+        "AOS-026-TC03",
+        "AOS-026-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-026-S3.md"
+    },
+    {
+      "id": "AOS-027b-S1",
+      "aos_id": "AOS-027b",
+      "release": "R3",
+      "depends_on": [
+        "AOS-027a",
+        "AOS-026"
+      ],
+      "title": "Fenced results integrated from exact base with deterministic conflict report and no last-writer-wins.",
+      "planned_files": [
+        "src/panestria/verification/merge.py",
+        "src/panestria/verification/runner.py",
+        "src/panestria/kernel/approvals.py",
+        "src/panestria/execution/build_plan.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_027b.py",
+      "case_ids": [
+        "AOS-027b-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-027b-S1.md"
+    },
+    {
+      "id": "AOS-027b-S2",
+      "aos_id": "AOS-027b",
+      "release": "R3",
+      "depends_on": [
+        "AOS-027b-S1"
+      ],
+      "title": "Independent complete required suite on final tree and fresh effect_digest approval via existing 027a service.",
+      "planned_files": [
+        "src/panestria/verification/merge.py",
+        "src/panestria/verification/runner.py",
+        "src/panestria/kernel/approvals.py",
+        "src/panestria/execution/build_plan.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_027b.py",
+      "case_ids": [
+        "AOS-027b-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-027b-S2.md"
+    },
+    {
+      "id": "AOS-027b-S3",
+      "aos_id": "AOS-027b",
+      "release": "R3",
+      "depends_on": [
+        "AOS-027b-S2"
+      ],
+      "title": "Individually-passing/combined-failing, changed-base/stale approval/lost receipt fixtures and B-1 final-tree evidence.",
+      "planned_files": [
+        "src/panestria/verification/merge.py",
+        "src/panestria/verification/runner.py",
+        "src/panestria/kernel/approvals.py",
+        "src/panestria/execution/build_plan.py"
+      ],
+      "planned_test_file": "tests/integration/test_aos_027b.py",
+      "case_ids": [
+        "AOS-027b-TC01",
+        "AOS-027b-TC02",
+        "AOS-027b-TC03",
+        "AOS-027b-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-027b-S3.md"
+    },
+    {
+      "id": "AOS-028-S1",
+      "aos_id": "AOS-028",
+      "release": "R3",
+      "depends_on": [
+        "AOS-005",
+        "AOS-014",
+        "AOS-017",
+        "AOS-023",
+        "AOS-027b"
+      ],
+      "title": "React/TypeScript/Vite same-origin shell, generated API types and accessible Ask/Delegate/Build intake with authoritative snapshot views.",
+      "planned_files": [
+        "src/panestria/api/openapi_export.py",
+        "apps/mission-control/src/api/client.ts",
+        "apps/mission-control/src/hooks/useTaskEvents.ts",
+        "apps/mission-control/src/views/Intake.tsx",
+        "apps/mission-control/src/views/GoalDetail.tsx",
+        "apps/mission-control/src/views/Approvals.tsx"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_028.py",
+      "case_ids": [
+        "AOS-028-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-028-S1.md"
+    },
+    {
+      "id": "AOS-028-S2",
+      "aos_id": "AOS-028",
+      "release": "R3",
+      "depends_on": [
+        "AOS-028-S1"
+      ],
+      "title": "Task/fleet/timeline/evidence/approval UI and decimal-cursor SSE reducer with bounded reconnect/retention resync.",
+      "planned_files": [
+        "src/panestria/api/openapi_export.py",
+        "apps/mission-control/src/api/client.ts",
+        "apps/mission-control/src/hooks/useTaskEvents.ts",
+        "apps/mission-control/src/views/Intake.tsx",
+        "apps/mission-control/src/views/GoalDetail.tsx",
+        "apps/mission-control/src/views/Approvals.tsx"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_028.py",
+      "case_ids": [
+        "AOS-028-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-028-S2.md"
+    },
+    {
+      "id": "AOS-028-S3",
+      "aos_id": "AOS-028",
+      "release": "R3",
+      "depends_on": [
+        "AOS-028-S2"
+      ],
+      "title": "Synthetic browser E2E for stale approvals/errors/auth/redaction/markdown/keyboard and operator UX evidence.",
+      "planned_files": [
+        "src/panestria/api/openapi_export.py",
+        "apps/mission-control/src/api/client.ts",
+        "apps/mission-control/src/hooks/useTaskEvents.ts",
+        "apps/mission-control/src/views/Intake.tsx",
+        "apps/mission-control/src/views/GoalDetail.tsx",
+        "apps/mission-control/src/views/Approvals.tsx"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_028.py",
+      "case_ids": [
+        "AOS-028-TC01",
+        "AOS-028-TC02",
+        "AOS-028-TC03",
+        "AOS-028-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-028-S3.md"
+    },
+    {
+      "id": "AOS-029-S1",
+      "aos_id": "AOS-029",
+      "release": "R3",
+      "depends_on": [
+        "AOS-012",
+        "AOS-014",
+        "AOS-028"
+      ],
+      "title": "Local OTel/Phoenix transport with explicit privacy/redaction/sampling and task/attempt/policy/check/effect correlation.",
+      "planned_files": [
+        "src/panestria/telemetry/tracing.py",
+        "src/panestria/telemetry/redaction.py",
+        "src/panestria/telemetry/usage.py",
+        "src/panestria/telemetry/exposure.py",
+        "src/panestria/api/routes/usage.py",
+        "src/panestria/api/routes/audit.py",
+        "apps/mission-control/src/views/Usage.tsx",
+        "apps/mission-control/src/views/Exposure.tsx"
+      ],
+      "planned_test_file": "tests/integration/test_aos_029.py",
+      "case_ids": [
+        "AOS-029-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-029-S1.md"
+    },
+    {
+      "id": "AOS-029-S2",
+      "aos_id": "AOS-029",
+      "release": "R3",
+      "depends_on": [
+        "AOS-029-S1"
+      ],
+      "title": "Known/estimated/unknown cash/native-plan summaries and authorized/accessible/observed exposure UI/API.",
+      "planned_files": [
+        "src/panestria/telemetry/tracing.py",
+        "src/panestria/telemetry/redaction.py",
+        "src/panestria/telemetry/usage.py",
+        "src/panestria/telemetry/exposure.py",
+        "src/panestria/api/routes/usage.py",
+        "src/panestria/api/routes/audit.py",
+        "apps/mission-control/src/views/Usage.tsx",
+        "apps/mission-control/src/views/Exposure.tsx"
+      ],
+      "planned_test_file": "tests/integration/test_aos_029.py",
+      "case_ids": [
+        "AOS-029-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-029-S2.md"
+    },
+    {
+      "id": "AOS-029-S3",
+      "aos_id": "AOS-029",
+      "release": "R3",
+      "depends_on": [
+        "AOS-029-S2"
+      ],
+      "title": "Synthetic secret/exception payload/exporter-down fixtures, trace linkage across restart and actual local footprint report.",
+      "planned_files": [
+        "src/panestria/telemetry/tracing.py",
+        "src/panestria/telemetry/redaction.py",
+        "src/panestria/telemetry/usage.py",
+        "src/panestria/telemetry/exposure.py",
+        "src/panestria/api/routes/usage.py",
+        "src/panestria/api/routes/audit.py",
+        "apps/mission-control/src/views/Usage.tsx",
+        "apps/mission-control/src/views/Exposure.tsx"
+      ],
+      "planned_test_file": "tests/integration/test_aos_029.py",
+      "case_ids": [
+        "AOS-029-TC01",
+        "AOS-029-TC02",
+        "AOS-029-TC03",
+        "AOS-029-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-029-S3.md"
+    },
+    {
+      "id": "AOS-030-S1",
+      "aos_id": "AOS-030",
+      "release": "R3",
+      "depends_on": [
+        "AOS-017",
+        "AOS-018",
+        "AOS-019",
+        "AOS-020",
+        "AOS-021",
+        "AOS-022",
+        "AOS-023",
+        "AOS-024",
+        "AOS-025",
+        "AOS-026",
+        "AOS-027b",
+        "AOS-028",
+        "AOS-029"
+      ],
+      "title": "Immutable release evidence manifest and strict required-case evaluator; no missing/skipped/mock-live outcome can green a gate.",
+      "planned_files": [
+        "testing/gates.py",
+        "testing/manifests.py",
+        "testing/dogfood.py",
+        "src/panestria/cli/gates.py",
+        "operations/release_review.py"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_030.py",
+      "case_ids": [
+        "AOS-030-TC01"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-030-S1.md"
+    },
+    {
+      "id": "AOS-030-S2",
+      "aos_id": "AOS-030",
+      "release": "R3",
+      "depends_on": [
+        "AOS-030-S1"
+      ],
+      "title": "A-1/D-1/B-1 suites, six fault drills, axis/security/reboot/restore matrix against one pinned MVP candidate.",
+      "planned_files": [
+        "testing/gates.py",
+        "testing/manifests.py",
+        "testing/dogfood.py",
+        "src/panestria/cli/gates.py",
+        "operations/release_review.py"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_030.py",
+      "case_ids": [
+        "AOS-030-TC02"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-030-S2.md"
+    },
+    {
+      "id": "AOS-030-S3",
+      "aos_id": "AOS-030",
+      "release": "R3",
+      "depends_on": [
+        "AOS-030-S2"
+      ],
+      "title": "Fourteen-day consented owner trial, incident regressions/revalidated candidate, explicit accept/reject and separate SOTA decision.",
+      "planned_files": [
+        "testing/gates.py",
+        "testing/manifests.py",
+        "testing/dogfood.py",
+        "src/panestria/cli/gates.py",
+        "operations/release_review.py"
+      ],
+      "planned_test_file": "tests/e2e/test_aos_030.py",
+      "case_ids": [
+        "AOS-030-TC01",
+        "AOS-030-TC02",
+        "AOS-030-TC03",
+        "AOS-030-TC04"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "prompt_ref": "cursor/prompts/AOS-030-S3.md"
+    }
+  ]
+}

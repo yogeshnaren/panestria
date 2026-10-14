@@ -1,0 +1,75 @@
+{
+  "slice": "AOS-005-S1",
+  "candidate_commit": "44d30f0c159f0bc154da65f3497dffe617d1d5d9",
+  "environment_manifest_sha256": "b59eaa0dc7d52431ec44f0b330bbfc0f0d6986354dd37d67c5e862e122a44eab",
+  "observed_nodes": [
+    {
+      "nodeid": "tests/e2e/test_aos_005.py::test_loopback_submit_scope_and_replay",
+      "lane": "e2e",
+      "execution_mode": "OS_BOUNDARY",
+      "verdict": "PASS",
+      "catalog_case": null
+    }
+  ],
+  "release_gate": "INCOMPLETE",
+  "release_gate_reason": "Loopback submit, scoped reads, and typed replay passed on disposable PostgreSQL for 44d30f0c159f0bc154da65f3497dffe617d1d5d9. AOS-005-TC01 through TC04 were not collected. AOS-001-TC04 is not run. G0 is not a pass.",
+  "not_run": [
+    {
+      "case_id": "AOS-005-TC01",
+      "planned_nodeid": "tests/e2e/test_aos_005.py::test_r0_positive_journey",
+      "reason": "the completed synthetic journey is AOS-005-S3"
+    },
+    {
+      "case_id": "AOS-005-TC02",
+      "planned_nodeid": "tests/e2e/test_aos_005.py::test_approval_digest_actor_expiry",
+      "reason": "approval decisions are AOS-005-S2"
+    },
+    {
+      "case_id": "AOS-005-TC03",
+      "planned_nodeid": "tests/e2e/test_aos_005.py::test_decision_race_idempotency",
+      "reason": "decision races are AOS-005-S3"
+    },
+    {
+      "case_id": "AOS-005-TC04",
+      "planned_nodeid": "tests/e2e/test_aos_005.py::test_wait_restart_continuation",
+      "reason": "restart continuation is AOS-005-S3"
+    },
+    {
+      "case_id": "AOS-001-TC04",
+      "reason": "fresh Ubuntu host not available"
+    }
+  ],
+  "checks": [
+    {
+      "command": ["uv", "lock", "--check", "--offline"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "ruff", "check", "src", "tests"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "mypy"],
+      "exit_code": 0
+    },
+    {
+      "command": ["uv", "run", "--frozen", "lint-imports"],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-m",
+        "not live",
+        "--junitxml=evidence/AOS-005-S1.xml"
+      ],
+      "exit_code": 0,
+      "passed": 89,
+      "skipped": 0,
+      "failed": 0
+    }
+  ]
+}

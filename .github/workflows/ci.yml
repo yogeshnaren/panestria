@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The license-preservation check compares against the original commit.
+          fetch-depth: 0
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.12.3"
+          python-version: "3.12"
+      - name: Check lock
+        run: uv lock --check
+      - name: Install frozen dependencies
+        run: uv sync --frozen --group dev
+      - name: Ruff
+        run: uv run --frozen ruff check .
+      - name: Mypy
+        run: uv run --frozen mypy src/panestria
+      - name: Import boundaries
+        run: uv run --frozen lint-imports --config .importlinter
+      - name: Tests
+        run: uv run --frozen pytest -m "not live" --junitxml=evidence/ci.xml
+      - name: Secret scan
+        run: uv run --frozen python tools/secret_scan.py

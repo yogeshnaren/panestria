@@ -1,0 +1,21 @@
+{
+  "case_id": "AOS-004-TC03",
+  "candidate_commit": "c0ae53c634b1de8345e4a0901e2b46dfc9637e58",
+  "environment_manifest_sha256": "c2d617dcc82c164a3bb772f030def54c76cada13efbfd5b503cf4dbfeab8ba0c",
+  "lane": "chaos",
+  "execution_mode": "OS_BOUNDARY",
+  "verdict": "PASS",
+  "command": [
+    "uv",
+    "run",
+    "--frozen",
+    "pytest",
+    "-m",
+    "not live",
+    "--junitxml=evidence/AOS-004-S3.xml"
+  ],
+  "exit_code": 0,
+  "report_artifact_ref": "evidence/AOS-004-S3.xml",
+  "fixture_sha256": "8ed3f6ad685b959ead7022518e1af76cd816f8e8ec7ccdda1ed4018e8f2223f8",
+  "observed_at": "2026-10-12T06:34:03.334625Z"
+}

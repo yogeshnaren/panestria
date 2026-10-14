@@ -1,0 +1,118 @@
+{
+  "source_commit": "53785d552a94386f54b0176525571a211b3360df",
+  "command": "make r0-demo",
+  "alembic_head": "0004_check_candidate",
+  "runs": [
+    {
+      "goal_id": "f66b5e28-d022-4534-9198-bf244680571f",
+      "status": "COMPLETED",
+      "task_version": 11
+    },
+    {
+      "goal_id": "3b5054a3-957e-4d0b-851d-dd965a5c7f73",
+      "status": "COMPLETED",
+      "task_version": 11
+    }
+  ],
+  "audited_goal_id": "3b5054a3-957e-4d0b-851d-dd965a5c7f73",
+  "tasks": [
+    {
+      "id": "173bb422-e81b-470c-93e0-8ce46d5ae1bb",
+      "state": "COMPLETED",
+      "row_version": 11
+    }
+  ],
+  "events": [
+    {
+      "seq": "29",
+      "kind": "goal.submitted",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "30",
+      "kind": "task.transition",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "31",
+      "kind": "approval.requested",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "32",
+      "kind": "approval.decided",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "33",
+      "kind": "approval.continued",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "34",
+      "kind": "task.admitted",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "35",
+      "kind": "task.transition",
+      "actor": "workflow"
+    },
+    {
+      "seq": "36",
+      "kind": "evidence.recorded",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "37",
+      "kind": "task.transition",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "38",
+      "kind": "task.transition",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "39",
+      "kind": "approval.requested",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "40",
+      "kind": "approval.decided",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "41",
+      "kind": "approval.continued",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "seq": "42",
+      "kind": "task.transition",
+      "actor": "00000000-0000-4000-8000-000000000002"
+    }
+  ],
+  "approvals": [
+    {
+      "action_kind": "contract_consent",
+      "state": "APPROVED",
+      "effect_digest": "cb3cc74a36786266c64aea98e565bfe6d3a31a06dd7b87318daa84c5b57e21ee"
+    },
+    {
+      "action_kind": "merge",
+      "state": "APPROVED",
+      "effect_digest": "71585cda66390488550d0de06752c8a8e46fff74f455b3c9280c76015a344a4a"
+    }
+  ],
+  "effects": [
+    {
+      "state": "SUCCEEDED",
+      "note": "cas-confirmed",
+      "target": "refs/heads/main@b8f5dca0a22dec517b4e66c009b656a51d1aca8b"
+    }
+  ],
+  "not_a_fresh_host_result": true,
+  "r0_accepted": false
+}

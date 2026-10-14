@@ -1,0 +1,21 @@
+{
+  "case_id": "AOS-002-TC01",
+  "candidate_commit": "834ae35db83126e9c96e8e9e320d0514ee39077a",
+  "environment_manifest_sha256": "7c0308007fd3744b8c5652d4b939ccde28d99122e00538bbfc732bc8e143286e",
+  "lane": "contract",
+  "execution_mode": "HERMETIC",
+  "verdict": "PASS",
+  "command": [
+    "uv",
+    "run",
+    "--frozen",
+    "pytest",
+    "-m",
+    "not live",
+    "--junitxml=evidence/AOS-002-S1.xml"
+  ],
+  "exit_code": 0,
+  "report_artifact_ref": "evidence/AOS-002-S1.xml",
+  "fixture_sha256": "9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283",
+  "observed_at": "2026-10-12T05:31:24.507780Z"
+}

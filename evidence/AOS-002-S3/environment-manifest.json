@@ -1,0 +1,66 @@
+{
+  "slice": "AOS-002-S3",
+  "observed_at": "2026-10-12T05:47:42.432480Z",
+  "candidate_commit": "57935008ce22ae484bd5065b72e587736180e132",
+  "candidate_contains_tested_source": true,
+  "worktree_state_at_test_start": "clean",
+  "junit_sha256": "af6e25d21785aee8b4345608e8c4bfa3482c324dd4445cc0cafcc8681fa094dd",
+  "fixture_sha256": "9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283",
+  "fixture": "docs/fixtures/synthetic-goal-contract.json",
+  "execution_mode": "OS_BOUNDARY",
+  "database": "disposable_postgresql",
+  "executor": "not_implemented",
+  "hardware": {
+    "probed": false,
+    "verdict": "UNKNOWN",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "release_gate": "INCOMPLETE",
+  "components": [
+    {
+      "name": "postgresql",
+      "resolved_version": "postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d",
+      "source": "docker.io/library/postgres:16",
+      "capability": "disposable database",
+      "outcome": "row-version race, commit-ordered cursor, rollback gap, scoped denial",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "psycopg",
+      "resolved_version": "3.3.6",
+      "source": "https://pypi.org/simple",
+      "capability": "caller-owned transactions",
+      "outcome": "service writes visible only after the caller commits",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "alembic",
+      "resolved_version": "1.20.0",
+      "source": "https://pypi.org/simple",
+      "capability": "0002_kernel",
+      "outcome": "upgrade head before the service tests",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "docker",
+      "resolved_version": "29.1.3",
+      "source": "/usr/bin/docker",
+      "capability": "container runtime",
+      "outcome": "compose v5.6.0 up --wait and down -v",
+      "mocked": false,
+      "live": false
+    },
+    {
+      "name": "pytest",
+      "resolved_version": "9.1.1",
+      "source": "https://pypi.org/simple",
+      "capability": "non-live regression",
+      "outcome": "80 passed",
+      "mocked": false,
+      "live": false
+    }
+  ]
+}

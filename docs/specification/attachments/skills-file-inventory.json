@@ -1,0 +1,157 @@
+[
+  {
+    "path": "MANIFEST.md",
+    "bytes": 1981,
+    "sha256": "e897247a48faed465bbf8211fd948ac1ab539921fb0b597c4f46156255890924"
+  },
+  {
+    "path": "README.md",
+    "bytes": 2677,
+    "sha256": "44d2145c93e9ee6f3788a0387b41697a5d24d42db55be7f1c2d8289169a9baef"
+  },
+  {
+    "path": "SHA256SUMS",
+    "bytes": 3290,
+    "sha256": "7e9e68ef6312aa34aec69857a36646787a87d76ff01dae715d23f5747e552e79"
+  },
+  {
+    "path": "skills/capture-learning/SKILL.md",
+    "bytes": 2599,
+    "sha256": "56f94fdb91ac073423183346717a720a1a421809c448d3a69e13460e38b645e0"
+  },
+  {
+    "path": "skills/capture-learning/assets/candidate.examples.jsonl",
+    "bytes": 1956,
+    "sha256": "6edc5cf2cf0ac0d981b12c53947bff67d3eb60d7a3062f4fb6056e5012005305"
+  },
+  {
+    "path": "skills/capture-learning/scripts/validate_candidates.py",
+    "bytes": 2740,
+    "sha256": "40b507a8e3d10667f5e1affdf865f612b64c9b73e0647336c7e65fd5286d7ea7"
+  },
+  {
+    "path": "skills/claude-code-worker/SKILL.md",
+    "bytes": 3068,
+    "sha256": "26f2379722d31f6103fe754361f1473fa97aad8f6f53724652ffaa9524345c4b"
+  },
+  {
+    "path": "skills/claude-code-worker/references/flag-profile.md",
+    "bytes": 2665,
+    "sha256": "dec4b7a48a1ae33e5b70f72cc052706f8c058db91cec70893176c1de5d2dd09b"
+  },
+  {
+    "path": "skills/claude-code-worker/scripts/prepare_worktree.py",
+    "bytes": 3224,
+    "sha256": "34b77e28ffbbc9439f3c17f5b598c9c2f95b5a7737e3bfbe84c1da64c8802eb4"
+  },
+  {
+    "path": "skills/claude-code-worker/scripts/run_worker.py",
+    "bytes": 4385,
+    "sha256": "860f2a8abebc67b3911f23f30494fe6acf7785f6961a4cc8c5b09b2d4860829b"
+  },
+  {
+    "path": "skills/egress-preflight/SKILL.md",
+    "bytes": 2405,
+    "sha256": "f4ee05ed191164f2bccc80f7856f4a58f0d5ecda36256aa6be5708c5c35a3a14"
+  },
+  {
+    "path": "skills/egress-preflight/assets/egress-policy.example.json",
+    "bytes": 644,
+    "sha256": "4425b318e863c6c1e8dd3c62dc37a59b22b6ca38e2515c246e72257e3a6f7611"
+  },
+  {
+    "path": "skills/egress-preflight/scripts/egress_manifest.py",
+    "bytes": 6210,
+    "sha256": "133b80b3f9762fda47ad4fba4d3ad53c2d9ddc7b2579d5379a984604dbf2a377"
+  },
+  {
+    "path": "skills/goal-contract/SKILL.md",
+    "bytes": 2755,
+    "sha256": "586276d5334508b7a9adcc2543f06630c2249510be53e710ef505b002ae2ac5a"
+  },
+  {
+    "path": "skills/goal-contract/assets/goal-contract.template.yaml",
+    "bytes": 1038,
+    "sha256": "421ef442523884d6b9eb869e90d9f69c244a6e6816ed441c44d5fa3aa5d6d11d"
+  },
+  {
+    "path": "skills/goal-contract/scripts/validate_contract.py",
+    "bytes": 4815,
+    "sha256": "c7d78c89633faad20c0459c4edede0fa999f6a461ef3483293ec3a635740fbad"
+  },
+  {
+    "path": "skills/hardware-probe/SKILL.md",
+    "bytes": 2902,
+    "sha256": "057f54bb50b9c75bdda610c9c3d58da5ff5f22689a5a19fea8c49a932079d524"
+  },
+  {
+    "path": "skills/hardware-probe/scripts/hwprobe.py",
+    "bytes": 28487,
+    "sha256": "21bf9a12aa2fa499bc09a47b30430a86284aaada5a5bf1c573b9435759500b99"
+  },
+  {
+    "path": "skills/milestone-handoff/SKILL.md",
+    "bytes": 2596,
+    "sha256": "97e20f009f614780a666d89db011259992de50b7372aeebc7e87fa1d86a29283"
+  },
+  {
+    "path": "skills/milestone-handoff/assets/HANDOFF.template.md",
+    "bytes": 482,
+    "sha256": "21e32be8b17890377469a3bc20da47af8140e55e1cc15f22991eec2833b2f668"
+  },
+  {
+    "path": "skills/milestone-handoff/assets/features.template.json",
+    "bytes": 607,
+    "sha256": "a85aad79e4cccb514b8765639b1f96f81e0028239092749fd4f2cdc5ec5138f5"
+  },
+  {
+    "path": "skills/milestone-handoff/scripts/check_features.py",
+    "bytes": 2254,
+    "sha256": "a547779014c5155398c76ebc9710ca626f68b99c604291fe1efba5bba214d492"
+  },
+  {
+    "path": "skills/verified-research-brief/SKILL.md",
+    "bytes": 2698,
+    "sha256": "f08e2fa8f5d76a0b3198cd00119ad4157d670db3a27f689bc76e66bc8c4db6f9"
+  },
+  {
+    "path": "skills/verified-research-brief/assets/example/brief.md",
+    "bytes": 713,
+    "sha256": "79a4f253e13f9016db3033d142fe8d651290c8c5617570b231daa736957f0e86"
+  },
+  {
+    "path": "skills/verified-research-brief/assets/example/sources/S1.txt",
+    "bytes": 295,
+    "sha256": "a946ed5467aa398c1d3c336831bf6504cf59cf462a6f9e0c72c20600a5304feb"
+  },
+  {
+    "path": "skills/verified-research-brief/assets/example/sources/S2.txt",
+    "bytes": 254,
+    "sha256": "bf0232c73e388ebcb55d08be41cd7aa7a72cd60c6c00bb6f96ce393c1eb65890"
+  },
+  {
+    "path": "skills/verified-research-brief/assets/example/sources.json",
+    "bytes": 499,
+    "sha256": "6984cabbdc3924b3a1c9cc305bf5f5e13d70f8149c813cdded6a636e48bcb7d3"
+  },
+  {
+    "path": "skills/verified-research-brief/references/format.md",
+    "bytes": 1208,
+    "sha256": "4e3be568fc94e872dba5a85922b82916ba53269459974030b83e0c5e42800edf"
+  },
+  {
+    "path": "skills/verified-research-brief/scripts/verify_citations.py",
+    "bytes": 3666,
+    "sha256": "3b82e93ee6ea721d2d1fc758b3a501861756ada441ba0128b0ea03d8e32fca6e"
+  },
+  {
+    "path": "tools/install_skills.sh",
+    "bytes": 1566,
+    "sha256": "e7b74f025026aba5382361e4028966fa6eafad40b2e3635dd8ebb48831190b2a"
+  },
+  {
+    "path": "tools/test_skills.sh",
+    "bytes": 4095,
+    "sha256": "a2558de7ca53a2c2d38fefbb8628412c80f56fb4977adff28406143003485089"
+  }
+]
