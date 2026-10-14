@@ -84,3 +84,12 @@ R1 remains IN_PROGRESS and G1 NOT_RUN. Native Claude/profile/tool-gateway and
 DBOS/API integration, successful native generation/verified merge, the permitted
 SDK smoke, review demo/runbooks, remaining clause/lifecycle coverage and final
 cumulative G1 evaluation remain. These development checks do not promote R1.
+
+On 2026-10-14 the next focused task adds checksum-verified skill inventory,
+fd-bound CLI/version/help inspection, redacted native login metadata and the
+`panestria native inspect` command. Actual installed CLI metadata checks match
+the 2.1.273 pin. The everyday config directory fails the owner-private-directory
+guard; an empty private directory correctly reports AUTH_REQUIRED. No native
+inference or paid SDK call is made by this inspection. Private auth setup and
+native tool-gateway/startup conformance remain live integration dependencies;
+independent implementation continues. See [the preflight runbook](testing/NATIVE_PREFLIGHT.md).
