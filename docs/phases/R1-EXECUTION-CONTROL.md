@@ -39,3 +39,9 @@ The owner expects Claude quota to reset within about 24 hours. Keep successful
 native inference/conformance cases pending while continuing all independent
 local work. This dependency does not suspend R1 implementation or authorize
 raising account limits, changing credentials or substituting mocks for live proof.
+
+On 2026-10-14 the owner requested task-based branches and PRs instead of an
+aggregate R1 PR. The original `r1-alpha` history is preserved as a reference;
+current work is submitted through the [task PR stack](../reviews/R1-TASK-PR-STACK.md).
+Use a focused task branch and PR for subsequent changes, preserve author identity
+and source-bound evidence, and report pending live checks explicitly.
