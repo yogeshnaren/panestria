@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "DEVELOPMENT_CHECKS_PASS_NOT_G1",
+  "candidate_commit": "ddd10418a4038b4f104c602b5dec4231d9bb6924",
+  "branch": "r1-alpha",
+  "worktree_state_during_tests": "clean",
+  "reports": [
+    {
+      "path": "default-suite.xml",
+      "lane": "non-live",
+      "counts": {
+        "tests": 297,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sha256": "0808cf24d73cf4bfcbf138a9f9225dcace9cfafc52d79c1c6ffa114302782a9f",
+      "source_report_sha256": "1319025927057592a43f4ed7809ea936346d9404ffbb2c826b915b1354bf4c22"
+    },
+    {
+      "path": "independent-verifier-os.xml",
+      "lane": "live-os",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sha256": "2a625ee0916b1ef04fab993ce71b464e99be7388953f00e2b1764a445a8795c5",
+      "source_report_sha256": "023b270ef106d5e408a6c85d19e659eace7d8ce2143d930847ae4d4a7816a454"
+    }
+  ],
+  "r0_table_count": 16,
+  "r0_before_after_identical": true,
+  "r0_database_digest": "87a54e10059809c853b15c7b30eeb98c9cf19763017ac74e58860482a2fe3ddb",
+  "paid_sdk_requests_made": false,
+  "paid_sdk_spend_usd": "0.000000",
+  "native_claude_inference_this_run": false,
+  "g1_promoted": false,
+  "remaining": [
+    "native Claude/profile/tool gateway and workflow/API integration",
+    "successful native generation and exact verified merge live cases",
+    "allowed-provider paid SDK smoke within the existing USD 1 cap",
+    "review demo/runbooks and remaining clause/lifecycle coverage",
+    "final cumulative same-candidate G1 evaluation"
+  ],
+  "report_normalization": "Removed machine hostname only; source report digests retained."
+}

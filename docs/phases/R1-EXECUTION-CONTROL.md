@@ -34,3 +34,8 @@ implementation uses forward migrations rather than rewriting applied history.
 G1 remains incomplete until actual OS, Claude, paid SDK, hardware, local model,
 offline and resource-pressure cases pass. No mock substitutes for a live case.
 R1 owner review is separate from G1 evidence. R2/R3 implementation is not started.
+
+The owner expects Claude quota to reset within about 24 hours. Keep successful
+native inference/conformance cases pending while continuing all independent
+local work. This dependency does not suspend R1 implementation or authorize
+raising account limits, changing credentials or substituting mocks for live proof.
