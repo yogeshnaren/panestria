@@ -151,6 +151,7 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_telemetry.py",
         "test_memory_api.py",
         "test_memory_review.py",
+        "test_memory_restore.py",
         "test_primary_lease.py",
         "test_sandboxed_verifier.py",
         "test_protected_merge.py",
