@@ -175,9 +175,11 @@ class PolicyService:
         insert_revision(uow, proposed)
         uow.execute("UPDATE panestria.policy_review SET state='APPLIED' WHERE id=%s", (review_id,))
         uow.execute(
-            "UPDATE panestria.approval_request SET state='REVOKED',decided_at=clock_timestamp(),decided_by=%s"
+            "UPDATE panestria.approval_request SET state='REVOKED',"
+            " decided_at=COALESCE(decided_at,clock_timestamp()),decided_by=COALESCE(decided_by,%s),"
+            " revoked_at=clock_timestamp(),revoked_by=%s,revocation_policy_version=%s"
             " WHERE owner_id=%s AND project_id=%s AND state IN ('PENDING','APPROVED')",
-            (actor.owner_id, actor.owner_id, actor.project_id),
+            (actor.owner_id, actor.owner_id, proposed.version, actor.owner_id, actor.project_id),
         )
         append_event(
             uow,
