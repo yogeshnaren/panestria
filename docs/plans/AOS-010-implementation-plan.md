@@ -1,6 +1,6 @@
 # AOS-010 — Hardened Claude Code worker adapter and hostile-repository tests: implementation plan
 
-**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-004, AOS-008, AOS-009. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS. **Tests:** PARTIAL; live CLI conformance pending. **Depends on:** AOS-004, AOS-008, AOS-009. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-010.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -77,3 +77,17 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Observed local implementation progress
+
+The pinned stream parser and process supervisor are implemented in
+`brokers/harness/event_parser.py` and `process_runner.py`. Synthetic checks cover
+quota/auth failures, unknown/malformed/truncated streams, unauthorized tool
+capabilities, terminal/exit consistency, output bounds, silent timeout,
+cancellation after pipe EOF, and terminating a child retaining a pipe. Results
+remain unaccepted candidates; no stream text completes a kernel task. This
+supervisor requires an approved isolated launch and is not an OS boundary.
+
+No provider request is made by these tests. Native profile, dedicated auth
+principal, tool gateway, malicious repository configuration and successful live
+conformance remain pending; synthetic PASS does not certify those capabilities.
