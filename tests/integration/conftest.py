@@ -106,3 +106,15 @@ def r1_task(r1_database: str) -> dict[str, str]:
             (ids["check"], ids["contract"], json.dumps({"type": "artifact-exists"})),
         )
     return ids
+
+
+@pytest.fixture(scope="session")
+def offline_model(tmp_path_factory: pytest.TempPathFactory) -> Iterator[object]:
+    from panestria.inference.runtime import ModelRuntime
+
+    runtime = ModelRuntime(ROOT / ".panestria-runtime/models", tmp_path_factory.mktemp("model-socket"), gpu=True)
+    try:
+        runtime.start()
+        yield runtime
+    finally:
+        runtime.stop()
