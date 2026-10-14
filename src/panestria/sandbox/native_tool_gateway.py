@@ -182,7 +182,9 @@ class NativeToolGateway:
             permit.profile.validate()
         except SandboxRejected:
             raise GatewayRejected("invalid_tool_profile") from None
-        if (command.access == "read") != permit.profile.workspace_readonly:
+        if (command.access == "read" and permit.profile.name not in {"read-only-research", "restricted-offline"}) or (
+            command.access == "edit" and permit.profile.name != "scoped-code-edit"
+        ):
             raise GatewayRejected("command_access_mismatch")
         remaining = permit.deadline_monotonic - time.monotonic()
         if not math.isfinite(remaining) or not 0.1 <= remaining <= 900:
@@ -194,7 +196,8 @@ class NativeToolGateway:
         # Snapshot only the reviewed script and data, never a whole host bundle.
         # The host directory is private; each individually mounted file is
         # readable by the configured nonroot container UID and mounted readonly.
-        with tempfile.TemporaryDirectory(prefix="panestria-native-call-") as directory:
+        # Ignore inherited TMPDIR: it could point into an editable candidate.
+        with tempfile.TemporaryDirectory(prefix="panestria-native-call-", dir="/tmp") as directory:
             stage = Path(directory)
             script = stage / "command.py"
             payload = stage / "request.json"

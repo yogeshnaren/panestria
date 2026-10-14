@@ -133,6 +133,33 @@ def test_reviewed_input_is_snapshotted_and_claimed_before_execution(tmp_path: Pa
         gateway.execute(request, permit)
 
 
+def test_private_staging_cannot_be_redirected_into_the_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    registry, request, permit, authority = setup(tmp_path)
+    monkeypatch.setattr("tempfile.tempdir", str(permit.workspace))
+
+    def factory(root: Path, mounts: tuple[ReadOnlyMount, ...]) -> DockerSandbox:
+        assert all(not mount.source.is_relative_to(permit.workspace) for mount in mounts)
+        return FakeRunner(root, mounts)
+
+    receipt = NativeToolGateway(permit.workspace.parent, registry, authority, runner_factory=factory).execute(
+        request, permit
+    )
+    assert receipt.outcome == "completed"
+    assert list(permit.workspace.iterdir()) == []
+
+
+@pytest.mark.parametrize("name", ["mock-no-network", "read-only-research", "restricted-offline"])
+def test_edit_commands_require_the_scoped_edit_profile(tmp_path: Path, name: str) -> None:
+    registry, request, permit, authority = setup(tmp_path, edit=True)
+    wrong = replace(permit, profile=replace(permit.profile, name=name))  # type: ignore[arg-type]
+    gateway = NativeToolGateway(permit.workspace.parent, registry, authority, runner_factory=FakeRunner)
+    with pytest.raises(GatewayRejected, match="command_access_mismatch"):
+        gateway.execute(request, wrong)
+    assert not authority.claimed
+
+
 @pytest.mark.parametrize(
     "raw",
     [
