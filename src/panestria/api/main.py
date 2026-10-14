@@ -98,3 +98,12 @@ def mount_browser_api(app: FastAPI, access: object) -> None:
     app.state.browser_access = access
     app.add_middleware(BrowserSecurity, access=access)
     app.include_router(router)
+
+
+def mount_ask_api(app: FastAPI, ask: object) -> None:
+    from panestria.api.routes.ask import AskApi, router
+
+    if not isinstance(ask, AskApi) or not isinstance(app.state.goal_api, GoalApi):
+        raise TypeError("Ask requires configured scope and a local provider")
+    app.state.ask_api = ask
+    app.include_router(router)
