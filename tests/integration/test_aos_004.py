@@ -1311,7 +1311,13 @@ def test_journey_contract_follows_the_task_or_the_latest_version(
 def test_stale_snapshot_does_not_complete_a_different_approval(
     record_property: pytest.RecordProperty,
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    # Reproduce a fresh CI runner: no global identity or inherited author values.
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", os.devnull)
+    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+    for name in ("GIT_AUTHOR_NAME", "GIT_AUTHOR_EMAIL", "GIT_COMMITTER_NAME", "GIT_COMMITTER_EMAIL", "EMAIL"):
+        monkeypatch.delenv(name, raising=False)
     _properties(record_property, "AOS-005-TC04", "chaos")
     _database()
     goal = "00000000-0000-4000-8000-000000000240"
@@ -1401,9 +1407,11 @@ def _bare_ref(sandbox: Path) -> str:
     seed = sandbox / "seed"
     seed.mkdir()
     _git_commit(seed, ["init", "-b", "main"])
+    _git_commit(seed, ["config", "user.name", "Panestria Synthetic Test"])
+    _git_commit(seed, ["config", "user.email", "synthetic@panestria.invalid"])
     (seed / "README.txt").write_text("base\n")
     _git_commit(seed, ["add", "README.txt"])
-    _git_commit(seed, ["commit", "-m", "base"])
+    _git_commit(seed, ["-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false", "commit", "-m", "base"])
     bare = sandbox / "protected" / "dest.git"
     bare.parent.mkdir()
     completed = subprocess.run(
