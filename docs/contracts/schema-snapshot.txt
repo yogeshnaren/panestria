@@ -33,6 +33,14 @@ column artifact sha256 bpchar NO
 column artifact size_bytes int8 NO
 column artifact store_key text NO
 column artifact task_id uuid NO
+column budget_reservation actual_microusd int8 YES
+column budget_reservation amount_microusd int8 NO
+column budget_reservation created_at timestamptz NO
+column budget_reservation goal_id uuid NO
+column budget_reservation id uuid NO
+column budget_reservation request_key text NO
+column budget_reservation state text NO
+column budget_reservation task_id uuid NO
 column check_run acceptance_check_id uuid NO
 column check_run attempt_id uuid NO
 column check_run candidate_sha256 bpchar YES
@@ -42,6 +50,12 @@ column check_run evidence_artifact_id uuid YES
 column check_run id uuid NO
 column check_run task_id uuid NO
 column check_run verdict text NO
+column effect_outbox claim_expires_at timestamptz YES
+column effect_outbox created_at timestamptz NO
+column effect_outbox due_at timestamptz NO
+column effect_outbox effect_id uuid NO
+column effect_outbox state text NO
+column effect_outbox task_id uuid NO
 column goal approved_contract_version int4 YES
 column goal created_at timestamptz NO
 column goal id uuid NO
@@ -50,6 +64,10 @@ column goal owner_id uuid NO
 column goal project_id uuid NO
 column goal status text NO
 column goal updated_at timestamptz NO
+column goal_budget cash_cap_microusd int8 YES
+column goal_budget goal_id uuid NO
+column goal_budget row_version int8 NO
+column goal_budget settled_microusd int8 NO
 column goal_contract approved_at timestamptz YES
 column goal_contract approved_by uuid YES
 column goal_contract body jsonb NO
@@ -76,12 +94,16 @@ column project root_path text YES
 column project trust_profile_id text NO
 column project trust_profile_version int4 NO
 column side_effect approval_request_id uuid YES
+column side_effect classification text YES
+column side_effect dispatch_attempts int4 NO
+column side_effect dispatch_epoch int8 NO
 column side_effect effect_digest bpchar YES
 column side_effect effect_key text NO
 column side_effect external_ref text YES
 column side_effect id uuid NO
 column side_effect reconciliation_note text YES
 column side_effect request_hash bpchar NO
+column side_effect request_ref text YES
 column side_effect state text NO
 column side_effect target text NO
 column side_effect task_id uuid NO
@@ -91,9 +113,11 @@ column task created_at timestamptz NO
 column task goal_id uuid NO
 column task id uuid NO
 column task lease_epoch int8 NO
+column task max_attempts int4 NO
 column task name text NO
 column task priority int4 NO
 column task resume_phase text YES
+column task retry_at timestamptz YES
 column task row_version int8 NO
 column task state text NO
 column task updated_at timestamptz NO
@@ -105,6 +129,7 @@ column task_attempt finished_at timestamptz YES
 column task_attempt heartbeat_at timestamptz YES
 column task_attempt id uuid NO
 column task_attempt lease_epoch int8 NO
+column task_attempt lease_expires_at timestamptz YES
 column task_attempt started_at timestamptz YES
 column task_attempt status text NO
 column task_attempt task_id uuid NO
@@ -152,6 +177,14 @@ constraint panestria.artifact f FOREIGN KEY (attempt_id, task_id) REFERENCES pan
 constraint panestria.artifact f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.artifact p PRIMARY KEY (id)
 constraint panestria.artifact u UNIQUE (id, task_id)
+constraint panestria.budget_reservation c CHECK (((state = 'SETTLED'::text) = (actual_microusd IS NOT NULL)))
+constraint panestria.budget_reservation c CHECK ((actual_microusd >= 0))
+constraint panestria.budget_reservation c CHECK ((amount_microusd >= 0))
+constraint panestria.budget_reservation c CHECK ((state = ANY (ARRAY['RESERVED'::text, 'SETTLED'::text, 'RELEASED'::text, 'UNKNOWN'::text])))
+constraint panestria.budget_reservation f FOREIGN KEY (goal_id) REFERENCES panestria.goal_budget(goal_id)
+constraint panestria.budget_reservation f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
+constraint panestria.budget_reservation p PRIMARY KEY (id)
+constraint panestria.budget_reservation u UNIQUE (goal_id, request_key)
 constraint panestria.check_run c CHECK (((candidate_sha256 IS NULL) OR (candidate_sha256 ~ '^[0-9a-f]{64}$'::text)))
 constraint panestria.check_run c CHECK (((verdict <> 'PASS'::text) OR (candidate_sha256 IS NOT NULL)))
 constraint panestria.check_run c CHECK (((verdict <> 'PASS'::text) OR (evidence_artifact_id IS NOT NULL)))
@@ -161,12 +194,20 @@ constraint panestria.check_run f FOREIGN KEY (attempt_id, task_id) REFERENCES pa
 constraint panestria.check_run f FOREIGN KEY (evidence_artifact_id, task_id) REFERENCES panestria.artifact(id, task_id)
 constraint panestria.check_run f FOREIGN KEY (task_id, contract_id) REFERENCES panestria.task(id, contract_id)
 constraint panestria.check_run p PRIMARY KEY (id)
+constraint panestria.effect_outbox c CHECK ((state = ANY (ARRAY['PENDING'::text, 'CLAIMED'::text, 'DONE'::text, 'PAUSED'::text])))
+constraint panestria.effect_outbox f FOREIGN KEY (effect_id, task_id) REFERENCES panestria.side_effect(id, task_id)
+constraint panestria.effect_outbox p PRIMARY KEY (effect_id)
 constraint panestria.goal c CHECK ((status = ANY (ARRAY['CREATED'::text, 'ACTIVE'::text, 'COMPLETED'::text, 'FAILED'::text, 'CANCELLED'::text])))
 constraint panestria.goal f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
 constraint panestria.goal f FOREIGN KEY (project_id) REFERENCES panestria.project(id)
 constraint panestria.goal f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.goal p PRIMARY KEY (id)
 constraint panestria.goal u UNIQUE (id, project_id, owner_id)
+constraint panestria.goal_budget c CHECK ((cash_cap_microusd >= 0))
+constraint panestria.goal_budget c CHECK ((row_version >= 0))
+constraint panestria.goal_budget c CHECK ((settled_microusd >= 0))
+constraint panestria.goal_budget f FOREIGN KEY (goal_id) REFERENCES panestria.goal(id)
+constraint panestria.goal_budget p PRIMARY KEY (goal_id)
 constraint panestria.goal_contract c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.goal_contract c CHECK ((version > 0))
 constraint panestria.goal_contract f FOREIGN KEY (approved_by) REFERENCES panestria.principal(id)
@@ -182,12 +223,15 @@ constraint panestria.principal p PRIMARY KEY (id)
 constraint panestria.project f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
 constraint panestria.project p PRIMARY KEY (id)
 constraint panestria.project u UNIQUE (id, owner_id)
+constraint panestria.side_effect c CHECK ((classification = ANY (ARRAY['read-only'::text, 'idempotent-with-key'::text, 'reconcile-by-query'::text, 'compensatable'::text, 'non-retryable'::text])))
 constraint panestria.side_effect c CHECK ((request_hash ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.side_effect c CHECK ((state = ANY (ARRAY['PREPARED'::text, 'EXECUTING'::text, 'SUCCEEDED'::text, 'FAILED'::text, 'UNKNOWN'::text, 'RECONCILING'::text])))
 constraint panestria.side_effect f FOREIGN KEY (approval_request_id) REFERENCES panestria.approval_request(id)
 constraint panestria.side_effect f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.side_effect p PRIMARY KEY (id)
+constraint panestria.side_effect u UNIQUE (id, task_id)
 constraint panestria.side_effect u UNIQUE (task_id, effect_key)
+constraint panestria.task c CHECK (((max_attempts >= 1) AND (max_attempts <= 20)))
 constraint panestria.task c CHECK ((continuation_kind = ANY (ARRAY['DISPATCH'::text, 'MERGE'::text, 'FINALIZE'::text])))
 constraint panestria.task c CHECK ((row_version >= 0))
 constraint panestria.task c CHECK ((state = ANY (ARRAY['CREATED'::text, 'VALIDATING'::text, 'READY'::text, 'LEASED'::text, 'RUNNING'::text, 'WAITING_APPROVAL'::text, 'VERIFYING'::text, 'RETRY_WAIT'::text, 'RECONCILING'::text, 'CANCELLING'::text, 'COMPLETED'::text, 'FAILED'::text, 'CANCELLED'::text, 'REJECTED'::text])))
@@ -218,7 +262,9 @@ constraint panestria.workflow_link f FOREIGN KEY (task_id) REFERENCES panestria.
 constraint panestria.workflow_link p PRIMARY KEY (task_id, attempt_id)
 constraint panestria.workflow_link u UNIQUE (dbos_workflow_id)
 index CREATE INDEX ix_approvals_owner_pending ON panestria.approval_request USING btree (owner_id, state, expires_at)
+index CREATE INDEX ix_attempt_expiry ON panestria.task_attempt USING btree (lease_expires_at) WHERE (status = ANY (ARRAY['PENDING'::text, 'RUNNING'::text]))
 index CREATE INDEX ix_event_goal_seq ON panestria.task_event USING btree (goal_id, seq)
+index CREATE INDEX ix_outbox_due ON panestria.effect_outbox USING btree (due_at) WHERE (state = 'PENDING'::text)
 index CREATE INDEX ix_task_goal ON panestria.task USING btree (goal_id)
 index CREATE UNIQUE INDEX acceptance_check_contract_id_check_key_key ON panestria.acceptance_check USING btree (contract_id, check_key)
 index CREATE UNIQUE INDEX acceptance_check_id_contract_id_key ON panestria.acceptance_check USING btree (id, contract_id)
@@ -228,7 +274,11 @@ index CREATE UNIQUE INDEX approval_consumption_side_effect_id_key ON panestria.a
 index CREATE UNIQUE INDEX approval_request_pkey ON panestria.approval_request USING btree (id)
 index CREATE UNIQUE INDEX artifact_id_task_id_key ON panestria.artifact USING btree (id, task_id)
 index CREATE UNIQUE INDEX artifact_pkey ON panestria.artifact USING btree (id)
+index CREATE UNIQUE INDEX budget_reservation_goal_id_request_key_key ON panestria.budget_reservation USING btree (goal_id, request_key)
+index CREATE UNIQUE INDEX budget_reservation_pkey ON panestria.budget_reservation USING btree (id)
 index CREATE UNIQUE INDEX check_run_pkey ON panestria.check_run USING btree (id)
+index CREATE UNIQUE INDEX effect_outbox_pkey ON panestria.effect_outbox USING btree (effect_id)
+index CREATE UNIQUE INDEX goal_budget_pkey ON panestria.goal_budget USING btree (goal_id)
 index CREATE UNIQUE INDEX goal_contract_goal_id_version_key ON panestria.goal_contract USING btree (goal_id, version)
 index CREATE UNIQUE INDEX goal_contract_id_goal_id_key ON panestria.goal_contract USING btree (id, goal_id)
 index CREATE UNIQUE INDEX goal_contract_pkey ON panestria.goal_contract USING btree (id)
@@ -238,6 +288,7 @@ index CREATE UNIQUE INDEX idempotency_record_pkey ON panestria.idempotency_recor
 index CREATE UNIQUE INDEX principal_pkey ON panestria.principal USING btree (id)
 index CREATE UNIQUE INDEX project_id_owner_id_key ON panestria.project USING btree (id, owner_id)
 index CREATE UNIQUE INDEX project_pkey ON panestria.project USING btree (id)
+index CREATE UNIQUE INDEX side_effect_id_task_unique ON panestria.side_effect USING btree (id, task_id)
 index CREATE UNIQUE INDEX side_effect_pkey ON panestria.side_effect USING btree (id)
 index CREATE UNIQUE INDEX side_effect_task_id_effect_key_key ON panestria.side_effect USING btree (task_id, effect_key)
 index CREATE UNIQUE INDEX task_attempt_id_task_id_key ON panestria.task_attempt USING btree (id, task_id)
