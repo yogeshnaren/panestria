@@ -279,7 +279,12 @@ def test_real_metadata_process_deadline_and_output_caps(pin: BinaryPin, tmp_path
         os.close(descriptor)
 
 
-def test_config_replaced_or_permissions_widened_during_auth_is_denied(pin: BinaryPin, config: Path) -> None:
+@pytest.mark.parametrize("change", ["permissions", "replacement"])
+def test_config_replaced_or_permissions_widened_during_auth_is_denied(
+    pin: BinaryPin,
+    config: Path,
+    change: str,
+) -> None:
     transport = FakeMetadata()
 
     def widen(
@@ -292,7 +297,11 @@ def test_config_replaced_or_permissions_widened_during_auth_is_denied(pin: Binar
     ) -> MetadataOutput:
         result = transport(binary_fd, args, cwd, env, deadline, config_fd)
         if config_fd is not None:
-            config.chmod(0o775)
+            if change == "permissions":
+                config.chmod(0o775)
+            else:
+                config.rename(config.with_name("old-config"))
+                config.mkdir(mode=0o700)
         return result
 
     with pytest.raises(NativeProbeUnavailable, match="config_reference_changed"):
@@ -355,3 +364,7 @@ def test_config_symlink_loop_is_not_an_auth_handle(pin: BinaryPin, tmp_path: Pat
     transport = FakeMetadata()
     assert CliProfileProbe(ARCHIVE, runner=transport).inspect(pin, path).status == "CONFIG_UNSAFE"
     assert len(transport.calls) == 2
+
+
+def test_unrecognized_diagnostic_text_cannot_escape_error_codes() -> None:
+    assert str(NativeProbeUnavailable(SENTINEL)) == "metadata_unavailable"

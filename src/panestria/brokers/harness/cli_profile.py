@@ -52,10 +52,34 @@ VISIBLE_CONTROLS = frozenset(
 PROBE_PREFIX = ("--safe-mode", "--restricted")
 MAX_OUTPUT = 128 * 1024
 MAX_BINARY = 512 * 1024**2
+ERROR_CODES = frozenset(
+    {
+        "metadata_timeout",
+        "metadata_output_limit",
+        "metadata_unavailable",
+        "invalid_probe_reference",
+        "skill_archive_invalid",
+        "skill_archive_mismatch",
+        "skill_member_invalid",
+        "skill_member_mismatch",
+        "binary_size_or_deadline",
+        "binary_pin_changed",
+        "binary_reference_unsafe",
+        "auth_metadata_invalid",
+        "auth_metadata_exit_mismatch",
+        "cli_version_mismatch",
+        "advertised_controls_missing",
+        "config_reference_changed",
+    }
+)
 
 
 class NativeProbeUnavailable(Exception):
     """Messages are static codes, never raw CLI output, paths or auth metadata."""
+
+    def __init__(self, code: str) -> None:
+        self.code = code if code in ERROR_CODES else "metadata_unavailable"
+        super().__init__(self.code)
 
 
 @dataclass(frozen=True)
