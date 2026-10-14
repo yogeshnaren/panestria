@@ -5,7 +5,8 @@ from __future__ import annotations
 import asyncio
 import json
 import time
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator, AsyncIterator
+from contextlib import aclosing
 from dataclasses import dataclass
 from pathlib import Path
 from threading import BoundedSemaphore
@@ -15,6 +16,7 @@ import httpx2 as httpx
 
 from panestria.contracts.inference import InferenceRequest, InferenceResult, InferenceUnavailable, Usage
 from panestria.inference.runtime import MODEL, MODEL_DIGEST
+from panestria.telemetry.tracing import metadata_span
 
 
 @dataclass(frozen=True)
@@ -64,6 +66,20 @@ class LocalProvider:
             raise InferenceUnavailable("model_missing_or_digest_mismatch")
 
     async def stream(self, request: InferenceRequest) -> AsyncIterator[InferenceDelta | InferenceResult]:
+        with metadata_span(
+            "inference.local",
+            **{
+                "panestria.owner_id": request.owner_id,
+                "panestria.project_id": request.project_id,
+                "panestria.privacy_label": request.label,
+                "panestria.provider": "local-ollama",
+            },
+        ):
+            async with aclosing(self._stream(request)) as stream:
+                async for event in stream:
+                    yield event
+
+    async def _stream(self, request: InferenceRequest) -> AsyncGenerator[InferenceDelta | InferenceResult, None]:
         if request.model_ref != MODEL:
             raise InferenceUnavailable("model_not_pinned")
         if request.label == "UNKNOWN":

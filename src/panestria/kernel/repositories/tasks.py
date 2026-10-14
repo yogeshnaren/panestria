@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from panestria.kernel.repositories.events import EVENT_LOCK
 from panestria.kernel.uow import UnitOfWork
+from panestria.telemetry.tracing import current_trace_id
 
 _EVENT_LOCK = EVENT_LOCK
 TASKS_BY_GOAL_SQL = "SELECT id::text FROM panestria.task WHERE goal_id = %s ORDER BY id FOR UPDATE"
@@ -44,6 +45,7 @@ def append_event(
     trace_id: str | None = None,
 ) -> int:
     """Allocate the next global seq and insert one event. Callers must not write afterward."""
+    trace_id = current_trace_id() or trace_id
     uow.execute("SELECT pg_advisory_xact_lock(%s, %s)", _EVENT_LOCK)
     event_id = str(uuid4())
     body = json.dumps(payload, sort_keys=True)

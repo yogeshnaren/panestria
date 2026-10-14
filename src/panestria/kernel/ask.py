@@ -20,6 +20,7 @@ from panestria.learning.recorder import LearningRecorder
 from panestria.memory.context import ContextCompiler, ContextPack
 from panestria.policy.engine import PolicyEngine
 from panestria.resources.catalog import STEWARD
+from panestria.telemetry.tracing import current_trace_id
 
 
 @dataclass(frozen=True)
@@ -84,7 +85,7 @@ class AskService:
         )
         if decision.outcome != "PERMIT":
             raise KernelDenied("ask_policy_denied")
-        trace = uuid4().hex
+        trace = current_trace_id() or uuid4().hex
         inference = InferenceRequest(
             owner_id=actor.owner_id,
             project_id=actor.project_id,
