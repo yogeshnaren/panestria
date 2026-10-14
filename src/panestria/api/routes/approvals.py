@@ -8,7 +8,7 @@ from typing import Any
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
-from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body
+from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body, reauthorize_mutation
 from panestria.api.db import DatabaseUnavailable, open_database, run_database
 from panestria.api.routes.goals import _api, _kick, _unavailable
 from panestria.api.views import ApprovalList, ApprovalPreviewBody, DecisionReceipt
@@ -21,6 +21,11 @@ router = APIRouter()
 _SERVICE = ApprovalService()
 _STATUSES = {
     "not_found": 404,
+    "unauthorized": 401,
+    "csrf_denied": 403,
+    "origin_required": 403,
+    "origin_denied": 403,
+    "policy_mismatch": 409,
     "actor_mismatch": 403,
     "idempotency_conflict": 409,
     "digest_mismatch": 409,
@@ -114,6 +119,8 @@ def _decide(
     document: dict[str, Any],
     key: str,
 ) -> JSONResponse:
+    if set(document) != {"effect_digest", "expected_version", "decision"}:
+        return JSONResponse(status_code=422, content=error_body("invalid_decision"))
     digest = document.get("effect_digest")
     version = document.get("expected_version")
     decision = document.get("decision")
@@ -128,6 +135,7 @@ def _decide(
         return _unavailable()
     try:
         try:
+            reauthorize_mutation(request, api, connection)
             receipt = _SERVICE.decide(UnitOfWork(connection), actor, approval_id, digest, version, decision, key)
             found = connection.execute(
                 "SELECT goal_id::text FROM panestria.approval_request WHERE id = %s",
