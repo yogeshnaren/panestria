@@ -107,7 +107,9 @@ def build(r1_task: dict[str, str], tmp_path: Path) -> BuildFixture:
     candidate = _git(source, "rev-parse", "HEAD")
     protected = tmp_path / "protected"
     protected.mkdir(mode=0o700)
-    bare = protected / "destination.git"
+    repository_scope = protected / actor.owner_id / actor.project_id
+    repository_scope.mkdir(parents=True, mode=0o700)
+    bare = repository_scope / "destination.git"
     subprocess.run(["git", "clone", "--bare", str(source), str(bare)], check=True, capture_output=True)
     subprocess.run(["git", "--git-dir", str(bare), "update-ref", "refs/heads/main", base], check=True)
     snapshot = materialize(bare, base, candidate, tmp_path / "snapshots" / "one")

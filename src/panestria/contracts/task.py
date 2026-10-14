@@ -49,6 +49,7 @@ ALLOWED_TRANSITIONS: frozenset[tuple[str, str]] = frozenset(
         ("VERIFYING", "WAITING_APPROVAL"),
         ("VERIFYING", "COMPLETED"),
         ("VERIFYING", "RECONCILING"),
+        ("RECONCILING", "VERIFYING"),
         ("VERIFYING", "RETRY_WAIT"),
         ("WAITING_APPROVAL", "READY"),
         ("WAITING_APPROVAL", "VERIFYING"),

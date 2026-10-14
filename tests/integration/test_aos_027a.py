@@ -125,7 +125,10 @@ def test_failed_checks_cannot_request_merge(build: BuildFixture) -> None:
             build.service.request_merge(UnitOfWork(c), build.actor, build.task["task"], digest, "refs/heads/main")
 
 
-def test_merge_receipt_loss(build: BuildFixture, record_property: pytest.RecordProperty) -> None:
+@pytest.mark.parametrize("cancel_after_cas", [False, True])
+def test_merge_receipt_loss(
+    build: BuildFixture, cancel_after_cas: bool, record_property: pytest.RecordProperty
+) -> None:
     record_property("gate_case_id", "AOS-027a-TC03")
     record_property("source_clauses", "AOS-027a-F03,AOS-027a-AC03")
     digest = _publish(build)
@@ -148,15 +151,22 @@ def test_merge_receipt_loss(build: BuildFixture, record_property: pytest.RecordP
         assert c.execute("SELECT state FROM panestria.side_effect WHERE id=%s", (effect,)).fetchone() == ("UNKNOWN",)
         # Even if the owner cancels after the CAS, reconciliation must report the
         # historical action rather than perform another merge or hide its receipt.
-        c.execute("UPDATE panestria.task SET state='CANCELLING' WHERE id=%s", (build.task["task"],))
+        if cancel_after_cas:
+            c.execute("UPDATE panestria.task SET state='CANCELLING' WHERE id=%s", (build.task["task"],))
     assert executor.reconcile(build.actor, effect).state == "SUCCEEDED"
     assert len(calls) == 1 and _git(build.bare, "rev-parse", "refs/heads/main") == build.candidate
     with psycopg.connect(build.task["dsn"]) as c:
-        assert c.execute("SELECT state FROM panestria.task WHERE id=%s", (build.task["task"],)).fetchone() == (
-            "CANCELLING",
-        )
-        with pytest.raises(KernelDenied, match="illegal_transition"), c.transaction():
+        if cancel_after_cas:
+            assert c.execute("SELECT state FROM panestria.task WHERE id=%s", (build.task["task"],)).fetchone() == (
+                "CANCELLING",
+            )
+            with pytest.raises(KernelDenied, match="illegal_transition"), c.transaction():
+                build.service.complete_confirmed(UnitOfWork(c), build.actor, build.task["task"], digest, effect)
+        else:
             build.service.complete_confirmed(UnitOfWork(c), build.actor, build.task["task"], digest, effect)
+            assert c.execute("SELECT state FROM panestria.task WHERE id=%s", (build.task["task"],)).fetchone() == (
+                "COMPLETED",
+            )
 
 
 @pytest.mark.live
@@ -218,3 +228,49 @@ def test_snapshot_rejects_secrets_links_and_repo_configuration(build: BuildFixtu
     )
     with pytest.raises(SnapshotRejected):
         materialize(build.bare, build.base, candidate, build.snapshot.directory.parent / "unsafe")
+
+
+def test_identical_git_objects_do_not_authorize_a_different_repository(build: BuildFixture) -> None:
+    other = build.protected / "another-destination.git"
+    subprocess.run(["git", "clone", "--bare", str(build.bare), str(other)], check=True, capture_output=True)
+    with pytest.raises(KernelDenied, match="merge_repository_scope_mismatch"):
+        VerifiedGitTarget(
+            build.protected,
+            other,
+            lambda: psycopg.connect(build.task["dsn"]),
+            build.actor,
+            build.service,
+            build.registry,
+            build.certificates,
+        )
+    assert _git(other, "rev-parse", "refs/heads/main") == build.base
+
+
+def test_expiry_is_rechecked_after_dispatch_claim(build: BuildFixture) -> None:
+    import time
+
+    digest = _publish(build)
+    with psycopg.connect(build.task["dsn"]) as c:
+        uow = UnitOfWork(c)
+        view = build.service.request_merge(
+            uow, build.actor, build.task["task"], digest, "refs/heads/main", ttl_seconds=1
+        )
+        c.commit()
+        ApprovalService().decide(
+            uow, build.actor, view.approval_id, view.effect_digest, view.expected_version, "approve", str(uuid4())
+        )
+        c.commit()
+        effect = prepare_merge(uow, build.actor, view.approval_id)
+        c.commit()
+        claim = SideEffectService().claim(uow, build.actor, effect.effect_id)
+        c.commit()
+        deadline = time.monotonic() + 3
+        while c.execute(
+            "SELECT expires_at>clock_timestamp() FROM panestria.approval_request WHERE id=%s", (view.approval_id,)
+        ).fetchone()[0]:
+            c.commit()
+            assert time.monotonic() < deadline, "expiry fixture did not expire"
+            time.sleep(0.02)
+    with pytest.raises(KernelDenied, match="approval_mismatch"):
+        _target(build).dispatch(claim)
+    assert _git(build.bare, "rev-parse", "refs/heads/main") == build.base
