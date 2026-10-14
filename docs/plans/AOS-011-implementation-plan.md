@@ -1,6 +1,6 @@
 # AOS-011 — Source-linked personal memory schema and five-stage use events: implementation plan
 
-**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-002. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS. **Tests:** PARTIAL; scoped recall and real DB restore observed. **Depends on:** AOS-002. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-011.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -78,3 +78,17 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Observed backup/restore check
+
+`tests/integration/test_memory_restore.py::test_revision_suppression_restore`
+uses actual `pg_dump` and `pg_restore` against the uniquely identified R1 test
+container on port 55439. It restores into a new temporary database, checks source
+and revision history, privacy labels, owner pins, suppression, all five explicitly
+recorded observation stages, scope denial and restored immutability constraints,
+then removes only that temporary database. It does not touch the R0 review
+service/database/volume or interpret unknown confidence as proof of causality.
+
+This is a database memory restore proof. A full application backup must also
+retain its protected artifact/evidence files, model/config pins and runtime
+receipts; this test does not establish complete application disaster recovery.
