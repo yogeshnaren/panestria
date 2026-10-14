@@ -544,7 +544,7 @@
       "aos_id": "AOS-011",
       "release": "R1",
       "lane": "integration",
-      "planned_nodeid": "tests/integration/test_aos_011.py::test_revision_suppression_restore",
+      "planned_nodeid": "tests/integration/test_memory_restore.py::test_revision_suppression_restore",
       "expected": "Correction creates new revision; pins retained; suppression blocks new contexts and DB restore retains lineage/suppression metadata.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,
@@ -1337,7 +1337,7 @@
       "release": "R3",
       "lane": "live",
       "planned_nodeid": "tests/integration/test_aos_029.py::test_local_trace_resource_footprint",
-      "expected": "Goal→task→worker→verifier→approval trace linkage across restart in pinned local Phoenix; report actual idle/peak footprint.",
+      "expected": "Goal\u2192task\u2192worker\u2192verifier\u2192approval trace linkage across restart in pinned local Phoenix; report actual idle/peak footprint.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": true,
       "status": "NOT_RUN"

@@ -219,11 +219,11 @@
             "AOS-008",
             "AOS-009"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-010-implementation-plan.md"
         },
         {
@@ -234,11 +234,11 @@
             "AOS-009",
             "AOS-010"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-027a-implementation-plan.md"
         },
         {
