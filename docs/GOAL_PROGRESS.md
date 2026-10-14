@@ -7,10 +7,14 @@ The owner authorized R1 implementation and requested separate, intuitive commits
 Preserve original specs and skills, R0 reports, review data and rollback receipts. R1 handoff must explain included capabilities, actual test results, setup/test instructions and expected behavior. No mock, skip or missing live evidence is a release PASS.
 
 
-R1 current dependency: the installed Claude CLI rejected its existing login with
-`OAuth session expired and could not be refreshed`. The owner has been asked to
-run `claude auth login`; no token extraction or automated login is part of the
-worker integration. Continue local work while this live-test dependency is open.
+R1 current live dependency (2026-10-13): the owner completed `claude auth login`.
+A tools-disabled synthetic check from an empty temporary directory no longer
+returned the expired OAuth error; it returned `You've hit your monthly spend
+limit` instead. Successful authenticated inference is still unverified and
+blocked by the account usage/spend limit. The message also mentions a weekly
+reset, which does not establish that the monthly cap will clear then. Do not
+change account spending settings or use a different credential to bypass it.
+Continue independent local work; no project context or paid SDK request was sent.
 
 
 R1 local work now includes immutable source-linked memory/FTS and hashed context
@@ -27,11 +31,14 @@ active Ask/SSE cancellation/revocation. R0 regression: 160 PASS on a separate
 port/project/volume; the owner's review database row hashes were unchanged.
 These incremental reports are not a same-candidate G1 promotion manifest.
 
-Claude remains a live-test dependency; the owner chose to continue local work
-and sign in later. Native CLI/profile and verified live merge work, the final
-paid SDK smoke (USD 1 total cap), several integration/lifecycle obligations,
-review demo/runbooks and cumulative G1 evaluation still remain. No paid SDK
-request has been made. R2/R3/SOTA implementation has not begun.
+Claude remains a live-test dependency because of the account usage/spend limit.
+The owner confirmed that local Claude Code with Anthropic inference is allowed;
+Panestria's runtime work and approvals must be handled locally, independently of
+this development chat. OpenAI provider calls remain held under this boundary.
+Native CLI/profile and verified live merge work, the final paid SDK smoke
+(USD 1 total cap, provider to follow the allowed boundary), several integration/
+lifecycle obligations, review demo/runbooks and cumulative G1 evaluation still
+remain. No paid SDK request has been made. R2/R3/SOTA implementation has not begun.
 
 
 Additional local R1 checks now cover exact one-use privacy reclassification,

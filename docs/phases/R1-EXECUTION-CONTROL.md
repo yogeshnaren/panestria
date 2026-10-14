@@ -15,6 +15,15 @@ with only synthetic content sent and a total paid SDK test cap of USD 1.
 This does not authorize extracting Claude OAuth credentials as API keys or
 sending project secrets. Keep API credentials out of workers, Git and reports.
 
+On 2026-10-13 the owner clarified the runtime boundary: local Claude Code with
+Anthropic inference is allowed; tasks, approvals and runtime records belong in
+Panestria's local UI/CLI and database. The runtime must operate independently of
+this development chat. Hold OpenAI live calls and automatic provider fallback;
+do not interpret local execution as offline inference. Credentials stay in the
+native local authentication store. Remote telemetry is disabled by default.
+The renewed login check currently returns an account monthly spend-limit error;
+no account-limit changes or credential substitution are authorized by that check.
+
 Use disposable R1 test databases on a separate loopback port/container. Preserve
 the existing R0 review database, service, evidence and original skill archive.
 
