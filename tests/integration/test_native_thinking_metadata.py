@@ -173,9 +173,9 @@ def result_metadata():
             "spawned_by_subagents": 0,
             "completed": 0,
             "failed": 0,
-            "requested": {},
-            "killed": {},
-            "refused": {},
+            "requested": {"background": 0, "foreground": 0, "unset": 0},
+            "killed": {"parent": 0, "user": 0, "system": 0},
+            "refused": {"depth_limit": 0, "concurrency_limit": 0, "budget": 0},
             "by_type": {},
         },
     }

@@ -86,12 +86,22 @@ def _result_metadata(body: dict[str, Any], *, failed: bool) -> None:
     if "subagent_stats" in body:
         stats = body["subagent_stats"]
         counters = {"spawned", "started_in_background", "max_depth", "spawned_by_subagents", "completed", "failed"}
-        maps = {"requested", "killed", "refused", "by_type"}
+        maps = {
+            "requested": {"background", "foreground", "unset"},
+            "killed": {"parent", "user", "system"},
+            "refused": {"depth_limit", "concurrency_limit", "budget"},
+            "by_type": set(),
+        }
         if (
             not isinstance(stats, dict)
-            or set(stats) != counters | maps
+            or set(stats) != counters | maps.keys()
             or any(type(stats[key]) is not int or stats[key] != 0 for key in counters)
-            or any(type(stats[key]) is not dict or stats[key] != {} for key in maps)
+            or any(
+                type(stats[key]) is not dict
+                or set(stats[key]) != fields
+                or any(type(value) is not int or value != 0 for value in stats[key].values())
+                for key, fields in maps.items()
+            )
         ):
             raise ProtocolRejected("unexpected_native_subagents")
 
