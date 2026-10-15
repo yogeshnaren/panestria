@@ -37,6 +37,8 @@ def upgrade() -> None:
         DEFERRABLE INITIALLY DEFERRED""")
     op.execute("""CREATE TABLE panestria.profile_event (
         id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        seq bigint NOT NULL UNIQUE DEFAULT
+            nextval(pg_get_serial_sequence('panestria.task_event','seq')::regclass),
         profile_id uuid NOT NULL, owner_id uuid NOT NULL, project_id uuid NOT NULL,
         row_version integer NOT NULL, current_revision integer NOT NULL,
         kind text NOT NULL CHECK(kind IN ('CREATED','REVISED','SUPPRESSED')),

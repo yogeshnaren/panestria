@@ -250,6 +250,7 @@ column profile_event owner_id uuid NO
 column profile_event profile_id uuid NO
 column profile_event project_id uuid NO
 column profile_event row_version int4 NO
+column profile_event seq int8 NO
 column profile_event status text NO
 column profile_revision algorithm text NO
 column profile_revision ciphertext bytea NO
@@ -550,6 +551,7 @@ constraint panestria.profile_event c CHECK ((status = ANY (ARRAY['ACTIVE'::text,
 constraint panestria.profile_event f FOREIGN KEY (profile_id, owner_id, project_id, current_revision) REFERENCES panestria.profile_revision(profile_id, owner_id, project_id, version) DEFERRABLE INITIALLY DEFERRED
 constraint panestria.profile_event p PRIMARY KEY (id)
 constraint panestria.profile_event u UNIQUE (profile_id, row_version)
+constraint panestria.profile_event u UNIQUE (seq)
 constraint panestria.profile_revision c CHECK (((octet_length(ciphertext) >= 17) AND (octet_length(ciphertext) <= 32784)))
 constraint panestria.profile_revision c CHECK (((version >= 1) AND (version <= 1024)))
 constraint panestria.profile_revision c CHECK ((algorithm = 'A256GCM'::text))
@@ -688,6 +690,7 @@ index CREATE UNIQUE INDEX policy_review_pkey ON panestria.policy_review USING bt
 index CREATE UNIQUE INDEX principal_pkey ON panestria.principal USING btree (id)
 index CREATE UNIQUE INDEX profile_event_pkey ON panestria.profile_event USING btree (id)
 index CREATE UNIQUE INDEX profile_event_profile_id_row_version_key ON panestria.profile_event USING btree (profile_id, row_version)
+index CREATE UNIQUE INDEX profile_event_seq_key ON panestria.profile_event USING btree (seq)
 index CREATE UNIQUE INDEX profile_id_owner_id_project_id_key ON panestria.profile USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX profile_pkey ON panestria.profile USING btree (id)
 index CREATE UNIQUE INDEX profile_revision_owner_id_project_id_profile_id_key_id_nonc_key ON panestria.profile_revision USING btree (owner_id, project_id, profile_id, key_id, nonce)

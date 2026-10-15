@@ -354,3 +354,19 @@ def test_scope_metadata_in_corrupt_backup_is_authenticated(profile, change_owner
         with pytest.raises(KernelDenied, match="^profile_integrity_failed$"):
             vault.read(UnitOfWork(c), Actor(new_owner, new_project), handle.profile_id)
         c.rollback()
+
+
+def test_lifecycle_uses_existing_global_event_counter(profile):
+    dsn, actor, handle, keys, vault = profile
+    with psycopg.connect(dsn) as c:
+        before = c.execute("SELECT nextval(pg_get_serial_sequence('panestria.task_event','seq')::regclass)").fetchone()[
+            0
+        ]
+        ref = vault.create(UnitOfWork(c), actor, handle, document(), consent_ref=str(uuid4()))
+        observed = c.execute(
+            "SELECT seq FROM panestria.profile_event WHERE profile_id=%s", (ref.profile_id,)
+        ).fetchone()[0]
+        after = c.execute("SELECT nextval(pg_get_serial_sequence('panestria.task_event','seq')::regclass)").fetchone()[
+            0
+        ]
+        assert before < observed < after

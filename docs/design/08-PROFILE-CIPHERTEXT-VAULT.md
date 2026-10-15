@@ -16,7 +16,9 @@ One profile header points at immutable ciphertext revisions with optimistic
 row-version checks. Composite foreign keys preserve scope and a deferred
 current-revision foreign key prevents dangling committed pointers. Lifecycle
 events append atomically through a database trigger; they contain identifiers
-and state only. Corrections/rotation append rather than modifying old encrypted
+and state only. They allocate from the existing kernel event counter, preserving
+one global sequence (allocation order, with gaps; not a wall-clock/commit-order
+guarantee). Corrections/rotation append rather than modifying old encrypted
 rows. Suppression denies new reads; revisions and old backups remain until an
 explicit future purge/retention operation accounts for their dependencies.
 
