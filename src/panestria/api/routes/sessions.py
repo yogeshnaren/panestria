@@ -83,8 +83,10 @@ def _pair(access: BrowserAccess, actor: Actor, code: str) -> JSONResponse:
             "expires_at": tokens.expires_at.isoformat(),
         }
     )
+    # Remove the legacy path to avoid two same-name cookies on /v1 requests.
+    response.delete_cookie(COOKIE_NAME, path="/v1", httponly=True, secure=access.secure, samesite="strict")
     response.set_cookie(
-        COOKIE_NAME, tokens.token, max_age=8 * 3600, httponly=True, secure=access.secure, samesite="strict", path="/v1"
+        COOKIE_NAME, tokens.token, max_age=8 * 3600, httponly=True, secure=access.secure, samesite="strict", path="/"
     )
     return response
 
@@ -108,5 +110,6 @@ def logout(request: Request) -> JSONResponse:
     except (DatabaseUnavailable, psycopg.Error):
         return JSONResponse(status_code=503, content=error_body("database_unavailable"))
     response = JSONResponse(content={"state": "REVOKED"})
+    response.delete_cookie(COOKIE_NAME, path="/", httponly=True, secure=access.secure, samesite="strict")
     response.delete_cookie(COOKIE_NAME, path="/v1", httponly=True, secure=access.secure, samesite="strict")
     return response
