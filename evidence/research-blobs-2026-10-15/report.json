@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "source_commit": "bdfca986de58749bf8a82063a3aff2ae82b71cea",
+  "result": "PASS",
+  "checks": 113,
+  "protected_filesystem_checks": 34,
+  "contract_text_checks": 79,
+  "scope": "actual Linux protected files, subprocess interruption and process/thread locking plus hermetic contracts/text; no fetched source or citation authority",
+  "observed": [
+    "private owner/project namespaces and capped 2 MiB byte input/read",
+    "regular 0400 one-link artifacts and exact hash/size checks",
+    "unsafe root/symlink/hardlink/FIFO/mode/scope/corruption denied",
+    "held directory descriptors survive pathname replacement without writing replacement tree",
+    "actual child exit before and after hard-link publication; exact-byte retry preserves finalized inode",
+    "cooperating concurrent threads/processes publish one finalized artifact",
+    "actual child-held directory lock and same-instance thread contention deny within configured test deadline",
+    "only the requested digest pending name is recovered; unrelated notes and published targets preserved"
+  ],
+  "limitations": [
+    "protected plaintext only, no encryption/profile-vault/retention grant",
+    "trusted local Linux filesystem; kernel/filesystem stall interruption not guaranteed",
+    "no protected artifact database lookup, successful fetch/reader/semantic support",
+    "no full AOS-013/G2/R3 or owner trial promotion"
+  ],
+  "source_sha256": {
+    "src/panestria/kernel/research_blobs.py": "bac764eb41ac898723f08ed80a340ae1284fd3d638741f0d3ae0708e31df7be2",
+    "tests/integration/test_research_blobs.py": "0b838287f46eeb3e22a47d616e62acc7b39e1fb90dc0b14217c51df8b2c2e09d",
+    "src/panestria/kernel/build.py": "51e863b1cde6d99d6d46c7632faaad1614dc6e2156be0ee07d8fb79aec92c523",
+    "src/panestria/contracts/research.py": "5f7307bc04132cd463582fae9d047abaa7e7623172234c53fb3685795a66df0c",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "junit_sha256": {
+    "existing-build-regression.xml": "1c1bdf10a001ba9d60e0386091840e18dbf14157b4f7487fece7bdba3a640100",
+    "initial-worktree-31.xml": "a5423510680be858191030e70e5a5176142422b7c77e1198b2b8420499beb89d",
+    "qualified-112.xml": "7585767517b1f84bc614350ef46b141246e565a6858613ade6ff2b9dbe1d720c",
+    "final-113.xml": "ae7737713c73ce2aeb5231eae1d4f6174f5bff9296956f59225bf1a025170ea7"
+  },
+  "earlier_checks": [
+    {
+      "report": "initial-worktree-31.xml",
+      "worktree_state": "DIRTY_WITH_UNTRACKED_TEST",
+      "qualification": false
+    },
+    {
+      "report": "qualified-112.xml",
+      "source_commit": "aebede99742a005a2c72e09551794583aae87405",
+      "qualification": "component checks before final scope/child-lock review"
+    }
+  ],
+  "provider_calls": 0,
+  "existing_build_regression_checks": 3
+}
