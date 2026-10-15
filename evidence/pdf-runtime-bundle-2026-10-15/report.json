@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "source_commit": "3bc45faf6c6e64336e92113e7c48fa2e5c690c99",
+  "result": "PASS",
+  "checks": 13,
+  "filesystem_dependency_guards": 12,
+  "actual_readonly_container_import": 1,
+  "pdf_input_parsing_or_extraction_checks": 0,
+  "provider_inference_calls": 0,
+  "version": "6.20.1",
+  "license": "BSD-3-Clause",
+  "wheel_sha256": "aa5a55ddcffdc5e5ab291d5decb23f6383f4e56f8e3263dc39af41fff03885ad",
+  "bundle_sha256": "ee7677af7c459d97f4d1ee9a715e5b4d19fecb3295d2d596b6d4a6ac076b6c5a",
+  "bundle_files": 61,
+  "bundle_bytes": 1736355,
+  "scope": "new private pin-verified dependency snapshot and actual readonly Docker import/configuration only, PDF still UNSUPPORTED",
+  "observed": [
+    "frozen wheel/version and complete source/license manifest before staging, no vendored source",
+    "minimal new 0700 directories/0400 regular files with BSD license and manifest, no bytecode/cache/other host packages",
+    "changed installed/staged bytes/links/FIFO/modes/extra/missing files/receipt/manifest refuse",
+    "pre-existing owner data stays intact, corrupt dependency refuses before creating destination",
+    "actual nonroot/read-only/network-none Docker imports only staged pypdf and instantiates constrained Configuration with no external decoder",
+    "staged tree unchanged after actual import, no bytecode created"
+  ],
+  "source_sha256": {
+    "src/panestria/brokers/research/pdf_bundle.py": "345cc1cb5954697e13225a69898f32869939bd464df06739eb94be4c54645e6c",
+    "tests/unit/test_pdf_runtime_bundle.py": "0c5a8cf0bfe73d49cc5410eaf43d9677a8e209c700310c01429927789ad93d24",
+    "tests/integration/test_pdf_bundle_container.py": "e441151662d1fa88fbc59c53b36cb63fb9f484ac81391fbcb3d00665e65952ec",
+    "pyproject.toml": "51bb953a36e78a1139b5334ad8e76e847d87ef323f02ff05c20183d18cf8f95f",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d"
+  },
+  "junit_sha256": "cec7858e5bae4e729ac056c6e15162345475294c2b8a0c0e1dd6fb9685ce40eb",
+  "validation": [
+    "Ruff PASS",
+    "mypy 181 files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "development_observations": [
+    "initial 9 failed/3 passed because upstream installed package files have mode664; do not chmod shared uvcache. Snapshot only complete pin-verified once-read bytes, allowing installed input group-write and denying world-write; staged files remain0400 strict. Corrupt bytes still refuse.",
+    "test module basename collision prevented unit/integration collection; distinct integration filename fixed before clean13 qualification. Earlier failed development runs are not source-bound passes."
+  ],
+  "limitations": [
+    "no PDF input parsed by host or container in this component",
+    "isolated PDF parser integration, strict/capped PdfReader/Configuration and malformed/encrypted/active/embedded/scanned/OCR/table cases remain next work",
+    "existing reader still returns PDF UNSUPPORTED; no source/citation/policy/G2/R3/owner acceptance promotion",
+    "trusted local installer/controller and immutable pin are prerequisites; not a hostile host/same-user filesystem guarantee"
+  ],
+  "references": [
+    "https://pypi.org/project/pypdf/6.20.1/",
+    "https://pypdf.readthedocs.io/en/stable/user/extract-text.html"
+  ]
+}
