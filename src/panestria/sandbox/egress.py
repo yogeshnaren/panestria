@@ -28,8 +28,9 @@ def _public_unicast(value: str) -> ipaddress.IPv4Address | ipaddress.IPv6Address
         (address.is_multicast, address.is_reserved, address.is_unspecified, address.is_loopback, address.is_link_local)
     ):
         return None
-    if isinstance(address, ipaddress.IPv6Address) and any(
-        item is not None for item in (address.ipv4_mapped, address.sixtofour, address.teredo)
+    if isinstance(address, ipaddress.IPv6Address) and (
+        address.is_site_local
+        or any(item is not None for item in (address.ipv4_mapped, address.sixtofour, address.teredo))
     ):
         return None
     return address
