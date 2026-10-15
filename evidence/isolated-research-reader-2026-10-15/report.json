@@ -113,5 +113,11 @@
     "no durable SourceStore/artifact/fetch metadata, policy admission, stable source IDs or claim/citation authority",
     "injected receipt guards are parser tests, not actual OS security proof; no full AOS013/G2/R3 gate/owner acceptance",
     "initial untracked 18 and later dirty 31+134 development observations not relabeled as clean-source qualification; final source qualification rerun after Ruff correction"
-  ]
+  ],
+  "ci_observation": {
+    "run_id": 38823630594,
+    "head": "a977bd8e80134c53bb9475b1e1dc1f1eb0a5c053",
+    "result": "12 failed, 1132 passed, 44 excluded",
+    "diagnosis": "Fresh CI had not prepared the pinned Python image before reader tests; the existing later proposal-demo fixture prepared it only after these tests. Actual reader correctly returned UNKNOWN for missing runtime. Move the same trusted setup into CI before all tests; workers still pull=never. No assertions weakened."
+  }
 }
