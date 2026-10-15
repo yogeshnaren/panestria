@@ -119,6 +119,22 @@ def test_request_and_event_rollback_together(research):
         assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == (0,)
 
 
+def test_autocommit_cannot_split_receipt_from_event_but_explicit_transaction_works(research):
+    dsn, actor, request = research
+    with psycopg.connect(dsn, autocommit=True) as c:
+        with pytest.raises(KernelDenied, match="research_caller_transaction_required"):
+            ResearchRequestService().prepare(UnitOfWork(c), actor, request)
+        assert c.execute("SELECT count(*) FROM panestria.research_request").fetchone() == (0,)
+        with pytest.raises(RuntimeError, match="synthetic failure"), c.transaction():
+            ResearchRequestService().prepare(UnitOfWork(c), actor, request)
+            raise RuntimeError("synthetic failure")
+        assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == (0,)
+        with c.transaction():
+            assert not ResearchRequestService().prepare(UnitOfWork(c), actor, request).replayed
+        assert c.execute("SELECT count(*) FROM panestria.research_request").fetchone() == (1,)
+        assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == (1,)
+
+
 @pytest.mark.parametrize(
     "change", [{"sha256": "cd" * 32}, {"size_bytes": 5}, {"artifact_id": str(uuid4())}, {"privacy_label": "PUBLIC"}]
 )

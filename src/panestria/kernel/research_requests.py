@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 
 from psycopg.errors import ForeignKeyViolation
+from psycopg.pq import TransactionStatus
 from pydantic import ValidationError
 
 from panestria.contracts.build import canonical_sha256
@@ -23,6 +24,8 @@ class ResearchRequestReceipt:
 
 class ResearchRequestService:
     def prepare(self, uow: UnitOfWork, actor: Actor, request: ResearchRequestRecord) -> ResearchRequestReceipt:
+        if uow.connection.autocommit and uow.connection.info.transaction_status != TransactionStatus.INTRANS:
+            raise KernelDenied("research_caller_transaction_required")
         try:
             request = ResearchRequestRecord.model_validate(request)
         except ValidationError:
