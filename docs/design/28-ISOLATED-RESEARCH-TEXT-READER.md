@@ -10,9 +10,10 @@ Support strict UTF-8 text/plain and text/html. Pin Unicode 15.0.0 NFC and exact
 raw SHA/length; use Python's standard HTMLParser as a tokenizer, never execute
 HTML/JavaScript, resolve external entities, fetch embedded resources or open
 source-selected paths. Skip script/style/head/template/noscript content, comments,
-forms and embedded objects. Preserve visible text and explicit block boundaries;
+forms and embedded objects. Preserve tokenizer text and explicit block boundaries;
 record extractor and normalization versions. HTML offsets refer to normalized
-text only; no raw-byte mapping or rendered-table interpretation is claimed.
+text only. CSS visibility/layout is not interpreted: hidden CSS text can remain.
+No browser-rendered visibility, raw-byte mapping or table interpretation is claimed.
 
 Raw input is at most 2 MiB. Declared normalized text is at most 512 KiB for this
 reader profile; output exceeding that cap is explicitly TRUNCATED and cannot be

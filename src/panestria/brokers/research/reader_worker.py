@@ -96,7 +96,7 @@ def main() -> None:
                     parser.close()
                     if parser.hidden:
                         raise ValueError("unclosed_hidden_markup")
-                    text, extractor = "".join(parser.parts), "htmlparser-visible-v1"
+                    text, extractor = "".join(parser.parts), "htmlparser-text-v1"
                 canonical = unicodedata.normalize("NFC", text).encode("utf-8", errors="strict")
                 if len(canonical) > maximum:
                     result = {"outcome": "TRUNCATED", "reason": "text_byte_limit"}

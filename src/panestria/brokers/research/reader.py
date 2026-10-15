@@ -32,6 +32,7 @@ class ReaderObservation:
     tokenizer_sha256: str | None = None
     sandbox_profile_sha256: str | None = None
     reader_program_sha256: str | None = None
+    effective_config_sha256: str | None = None
 
 
 def _closed_pairs(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -154,7 +155,7 @@ class IsolatedTextReader:
                     raise ValueError
                 text_bytes = base64.b64decode(body["text_b64"], validate=True)
                 text = text_bytes.decode("utf-8", errors="strict")
-                extractor = "strict-utf8-v1" if content_type == "text/plain" else "htmlparser-visible-v1"
+                extractor = "strict-utf8-v1" if content_type == "text/plain" else "htmlparser-text-v1"
                 if (
                     body["reason"] != "extracted_text_only"
                     or body["raw_sha256"] != expected_sha256
@@ -182,6 +183,7 @@ class IsolatedTextReader:
                     body["tokenizer_sha256"],
                     profile.sha256(),
                     program_sha,
+                    receipt.effective_config_sha256,
                 )
         except Exception:
             return ReaderObservation("UNKNOWN", "reader_unavailable")
