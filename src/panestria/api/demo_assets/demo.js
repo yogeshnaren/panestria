@@ -1,5 +1,5 @@
 'use strict';
-let csrf = null, state = null, busy = false;
+let csrf = null, state = null, busy = false, refreshFailed = false;
 const el = id => document.getElementById(id);
 const message = text => { el('message').textContent = text; };
 async function api(path, body) {
@@ -35,7 +35,10 @@ function render(s) {
 }
 async function refresh() {
   if (!csrf || busy) return;
-  try { render(await api('/v1/demo')); } catch (error) { message(error.message); }
+  try {
+    render(await api('/v1/demo'));
+    if (refreshFailed) { message('Connection restored.'); refreshFailed = false; }
+  } catch (error) { refreshFailed = true; message(error.message); }
 }
 async function act(fn) {
   if (busy) return;
