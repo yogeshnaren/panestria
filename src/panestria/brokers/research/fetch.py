@@ -232,6 +232,12 @@ class PublicHttpsFetcher:
                     cast(socket.socket, _HttpSocket(connection, deadline, cancel)), method="GET"
                 ) as response:
                     response.begin()
+                    if response.headers.defects or any(
+                        re.fullmatch(r"[!#$%&'*+.^_`|~0-9A-Za-z-]+", name) is None
+                        or any(ord(char) < 32 or ord(char) == 127 for char in value)
+                        for name, value in response.getheaders()
+                    ):
+                        raise FetchDenied("invalid_http_headers")
                     hop = FetchHop(
                         hashlib.sha256(url.encode()).hexdigest(),
                         address,
@@ -312,7 +318,12 @@ class PublicHttpsFetcher:
                 )
                 hops.append(hop)
                 if hop.status in {301, 302, 303, 307, 308}:
-                    if index >= limits.max_redirects or location is None or not 1 <= len(location.encode()) <= 2048:
+                    if (
+                        index >= limits.max_redirects
+                        or location is None
+                        or not 1 <= len(location.encode()) <= 2048
+                        or any(ord(char) <= 32 or ord(char) == 127 or char == "\\" for char in location)
+                    ):
                         raise FetchDenied("redirect_denied")
                     current = urljoin(current, location)
                     continue

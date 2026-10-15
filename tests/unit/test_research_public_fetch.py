@@ -333,3 +333,19 @@ def test_actual_slow_socket_trickle_obeys_overall_deadline_and_cancellation():
         left.close()
         right.close()
         worker.join(timeout=1)
+
+
+@pytest.mark.parametrize(
+    "headers",
+    [
+        b"Location: /one\r\nLocation: /two\r\n",
+        b"Location: /next\r\n folded\r\n",
+        b"Location: \t/next\tbad\r\n",
+        b"X-No-Colon\r\n",
+        b"Bad Header: value\r\n",
+    ],
+)
+def test_duplicate_folded_control_or_malformed_headers_cannot_redirect(wire, headers):
+    wire[0].append(b"HTTP/1.1 302 Found\r\n" + headers + b"\r\n")
+    result = PublicHttpsFetcher().fetch("https://example.org/", limits())
+    assert result.outcome == "ERROR" and len(wire[1]) == 1
