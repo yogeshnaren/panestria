@@ -17,6 +17,29 @@ from jeepney.io.blocking import Proxy
 from panestria.memory.keys import KeyStoreUnavailable, ProfileKeyHandle, SecretServiceProfileKeys, _BoundedConnection
 
 
+def stop(daemon: subprocess.Popen[bytes]) -> None:
+    if daemon.poll() is None:
+        daemon.terminate()
+        try:
+            daemon.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            daemon.kill()
+            daemon.wait(timeout=3)
+
+
+def wait_name(expected: bool) -> None:
+    deadline = time.monotonic() + 8
+    while True:
+        # NameHasOwner does not activate a competing Secret Service daemon.
+        with _BoundedConnection(time.monotonic() + 1) as connection:
+            ready = Proxy(message_bus, connection).NameHasOwner("org.freedesktop.secrets")[0]
+        if bool(ready) == expected:
+            return
+        if time.monotonic() >= deadline:
+            raise AssertionError("isolated_keyring_lifecycle_failed")
+        time.sleep(0.05)
+
+
 def main() -> None:
     root = Path(sys.argv[1]).resolve(strict=True)
     # The launcher provides a new bus and these private directories. Refuse an
@@ -27,29 +50,31 @@ def main() -> None:
         target = root / directory
         assert os.environ.get(name) == str(target)
         assert target.stat().st_mode & 0o077 == 0
-    daemon = subprocess.Popen(
-        [sys.argv[2], "--foreground", "--unlock", "--components=secrets", f"--control-directory={root / 'control'}"],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    try:
+    password = secrets.token_bytes(32).hex().encode() + b"\n"
+
+    def start() -> subprocess.Popen[bytes]:
+        daemon = subprocess.Popen(
+            [
+                sys.argv[2],
+                "--foreground",
+                "--unlock",
+                "--components=secrets",
+                f"--control-directory={root / 'control'}",
+            ],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         assert daemon.stdin is not None
-        daemon.stdin.write(secrets.token_bytes(32).hex().encode() + b"\n")
+        daemon.stdin.write(password)
         daemon.stdin.close()
+        return daemon
+
+    daemon = start()
+    try:
         store = SecretServiceProfileKeys(timeout_seconds=1)
         reference = ProfileKeyHandle(**{field: str(uuid4()) for field in ProfileKeyHandle.model_fields})
-        deadline = time.monotonic() + 8
-        while True:
-            # NameHasOwner does not activate a competing Secret Service daemon.
-            with _BoundedConnection(time.monotonic() + 1) as connection:
-                ready = Proxy(message_bus, connection).NameHasOwner("org.freedesktop.secrets")[0]
-            if ready:
-                break
-            assert daemon.poll() is None, "isolated_daemon_exited"
-            if time.monotonic() >= deadline:
-                raise AssertionError("isolated_keyring_start_failed")
-            time.sleep(0.05)
+        wait_name(True)
         store.provision(reference)
         key = store.load(reference)
         store.provision(reference)
@@ -79,15 +104,25 @@ def main() -> None:
             assert exc.code == "key_store_locked"
         else:
             raise AssertionError("locked_keyring_key_visible")
-        print(json.dumps({"status": "PASS", "scopes": 4, "persistent_test_keyring": True, "locked_denied": True}))
+        stop(daemon)
+        wait_name(False)
+        daemon = start()
+        wait_name(True)
+        assert store.load(reference).get_secret_value() == key.get_secret_value()
+        assert store.load(other).get_secret_value() != key.get_secret_value()
+        print(
+            json.dumps(
+                {
+                    "status": "PASS",
+                    "scopes": 4,
+                    "persistent_test_keyring": True,
+                    "locked_denied": True,
+                    "daemon_restart_preserved_keys": True,
+                }
+            )
+        )
     finally:
-        if daemon.poll() is None:
-            daemon.terminate()
-            try:
-                daemon.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                daemon.kill()
-                daemon.wait(timeout=3)
+        stop(daemon)
 
 
 if __name__ == "__main__":

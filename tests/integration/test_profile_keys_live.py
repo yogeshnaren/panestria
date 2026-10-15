@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import json
 import os
-import signal
 import shutil
+import signal
 import subprocess
 import sys
 from pathlib import Path
@@ -38,7 +38,7 @@ def test_isolated_secret_service_backend(tmp_path: Path, record_property: pytest
         start_new_session=True,
     )
     try:
-        stdout, stderr = process.communicate(timeout=20)
+        stdout, stderr = process.communicate(timeout=35)
     except subprocess.TimeoutExpired:
         # Only this newly created child group contains the disposable bus/daemon.
         os.killpg(process.pid, signal.SIGKILL)
@@ -50,6 +50,7 @@ def test_isolated_secret_service_backend(tmp_path: Path, record_property: pytest
         "scopes": 4,
         "persistent_test_keyring": True,
         "locked_denied": True,
+        "daemon_restart_preserved_keys": True,
     }
     record_property("execution_mode", "ACTUAL_ISOLATED_OS_SECRET_SERVICE")
     record_property("qualification_scope", "profile-key-backend-only; full-vault-case-not-claimed")

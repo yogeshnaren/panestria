@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import socket
 from types import SimpleNamespace
 from uuid import uuid4
 
@@ -209,3 +210,17 @@ def test_connection_initialization_failure_closes_socket(monkeypatch):
     with pytest.raises(TimeoutError):
         keys._BoundedConnection(keys.time.monotonic() + 1)
     assert closed == ["socket"]
+
+
+def test_real_stalled_bus_authentication_is_bounded(tmp_path):
+    address = str(tmp_path / "bus")
+    with socket.socket(socket.AF_UNIX) as listener:
+        listener.bind(address)
+        listener.listen(1)
+        # A connected socket that never completes authentication must time out.
+        from unittest.mock import patch
+
+        started = keys.time.monotonic()
+        with patch.object(keys, "get_bus", return_value=address), pytest.raises(TimeoutError):
+            keys._BoundedConnection(started + 0.2)
+        assert keys.time.monotonic() - started < 1

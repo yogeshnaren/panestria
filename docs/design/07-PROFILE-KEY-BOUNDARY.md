@@ -30,6 +30,12 @@ duplicate race fails closed rather than selecting one secret. No key deletion,
 keyring unlock, collection creation, file/env fallback or unrelated secret
 enumeration is part of this adapter.
 
+Live investigation on GNOME Keyring 40.0 found that omitting `xdg:schema` can
+intermittently add the generic schema after creation. Declare the explicit
+`org.panestria.ProfileKey.v1` attribute on both creation and lookup, retaining
+exact attribute equality instead of ignoring unexpected fields. This follows
+the [Secret Service schema convention](https://gnome.pages.gitlab.gnome.org/libsecret/struct.Schema.html).
+
 Test fake transports for negative paths, but use actual cryptography. Required
 OS conformance will use an isolated D-Bus/keyring session, synthetic secret and
 temporary XDG directories, with no modification to the owner's collection.

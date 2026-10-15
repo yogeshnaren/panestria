@@ -30,7 +30,12 @@ class ProfileKeyHandle(BaseModel):
     key_id: str = Field(pattern=_UUID)
 
     def attributes(self) -> dict[str, str]:
-        return {"application": "panestria", "purpose": "profile-key-v1", **self.model_dump()}
+        return {
+            "xdg:schema": "org.panestria.ProfileKey.v1",
+            "application": "panestria",
+            "purpose": "profile-key-v1",
+            **self.model_dump(),
+        }
 
 
 class ProfileKeyStore(Protocol):
