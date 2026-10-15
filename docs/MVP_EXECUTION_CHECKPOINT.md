@@ -160,6 +160,18 @@ Next: trusted local profile setup/API admission and an ephemeral Ask overlay
 that preserves restrictive labels without storing its clear text, followed by
 whole profile-boundary qualification and remaining revision-3 MVP work.
 
+## Latest checkpoint: browser API-version compatibility
+
+PR #56 merged as `24f1dc0c79fc5c660ae59022b070697c6066ea7e` after exact-head CI
+passed 567 default tests, 35 live deselected (run 38735519516). Profile-owner API
+testing then exposed that the existing `/v1` cookie path prevented browser
+authentication on `/v2`, including canonical memory. A focused branch
+`task/browser-v2-session` starts from this verified main to correct the path,
+clear legacy cookies on re-pair/logout and retain all existing scope/CSRF checks.
+Seventeen targeted cookie/session/canonical-memory checks pass; full exact-head
+CI/review remain required before merge. The owner API is independent work in
+`task/profile-owner-api` and will incorporate this verified fix before handoff.
+
 ## Latest checkpoint: canonical memory version 2
 
 PR #52 merged as `2f8c983` after CI run 38727911700 passed 471 default tests, 34 live deselected. The dependent canonical branch incorporated that verified main merge before final CI. Separate commits cover design, canonical domain/migration, v2 API and execution tracking.

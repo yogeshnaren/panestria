@@ -6,6 +6,14 @@ project, Host/Origin, CSRF and transaction reauthorization still apply. No
 provider call is needed for memory operations. The old running demo does not
 automatically gain routes from a newer source checkout.
 
+Pairing now installs one HttpOnly, SameSite=Strict application-path cookie so
+the same scoped session reaches both API versions. Re-pair a browser that still
+has the older `/v1`-only cookie to use `/v2`. Pairing removes that legacy path;
+logout revokes the database session and clears both current and legacy paths.
+Exact Host/Origin, CSRF, expiry and owner/project checks still apply at each API
+route. Test with `uv run --frozen pytest tests/integration/test_browser_v2_session.py`;
+it uses a real cookie jar and synthetic PostgreSQL, without inference.
+
 POST `/v2/memory` accepts the normal bounded memory fields plus an explicit
 integer `schema_version: 2`. `label` must be PUBLIC, INTERNAL, CONFIDENTIAL or
 RESTRICTED. PRIVATE and UNKNOWN are rejected. The response gives the new item,
