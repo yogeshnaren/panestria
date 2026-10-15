@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from dataclasses import asdict
+from pathlib import Path
 
 import psycopg
 import typer
@@ -12,11 +13,43 @@ from pydantic import ValidationError
 
 from panestria.api.db import DatabaseUnavailable, open_database
 from panestria.config import ProfileRejected, Settings
+from panestria.config_local import LocalApplicationRejected, create_local_token
+from panestria.contracts.inference import InferenceUnavailable
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.local_setup import LocalSetupIntent, LocalSetupService
 from panestria.kernel.uow import UnitOfWork
 
 local_app = typer.Typer(no_args_is_help=True)
+_TOKEN_FILE = typer.Option(..., "--token-file")
+_CONFIG_FILE = typer.Option(..., "--config")
+
+
+@local_app.command("token-create")
+def token_create(token_file: Path = _TOKEN_FILE) -> None:
+    """Create local loopback authentication only, without displaying its value."""
+    try:
+        create_local_token(token_file)
+    except LocalApplicationRejected as exc:
+        typer.echo(json.dumps({"code": exc.code}), err=True)
+        raise typer.Exit(2) from None
+    typer.echo(json.dumps({"schema_version": 1, "status": "LOCAL_TOKEN_CREATED"}))
+
+
+@local_app.command("serve")
+def serve(config: Path = _CONFIG_FILE) -> None:
+    """Run the foreground local Ask process; Ctrl+C stops its owned model."""
+    from panestria.api.local_server import serve_local
+
+    try:
+        serve_local(config)
+    except (LocalApplicationRejected, ProfileRejected, KernelDenied, InferenceUnavailable) as exc:
+        code = exc.code
+    except (DatabaseUnavailable, psycopg.Error, OSError, ValueError):
+        code = "local_startup_failed"
+    else:
+        return
+    typer.echo(json.dumps({"code": code}), err=True)
+    raise typer.Exit(2)
 
 
 @local_app.command("setup")
