@@ -488,14 +488,25 @@ class BuildEvidenceService:
             raise KernelDenied("merge_not_confirmed")
         if task[1] == "COMPLETED":
             return
-        if task[1] != "VERIFYING":
+        if task[1] not in {"VERIFYING", "RECONCILING"}:
             raise KernelDenied("illegal_transition")
         outstanding = uow.execute(
             "SELECT count(*) FROM panestria.side_effect WHERE task_id=%s AND state!='SUCCEEDED'", (task_id,)
         ).fetchone()
         if outstanding is None or outstanding[0] != 0:
             raise KernelDenied("effects_unconfirmed")
+        if task[1] == "RECONCILING":
+            uow.execute("UPDATE panestria.task SET state='VERIFYING',row_version=row_version+1 WHERE id=%s", (task_id,))
         uow.execute("UPDATE panestria.task SET state='COMPLETED',row_version=row_version+1 WHERE id=%s", (task_id,))
+        if task[1] == "RECONCILING":
+            append_event(
+                uow,
+                goal_id=task[0],
+                task_id=task_id,
+                actor=actor.owner_id,
+                kind="build.verification_resumed",
+                payload={"from": "RECONCILING", "to": "VERIFYING", "evidence_sha256": digest, "effect_id": effect_id},
+            )
         append_event(
             uow,
             goal_id=task[0],
