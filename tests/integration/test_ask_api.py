@@ -161,3 +161,30 @@ def test_http_ledger_and_explicit_correction(r1_task: dict[str, str], tmp_path: 
         client.get(f"/v1/ask/{payload['request_id']}", headers=CLI).json()["response_sha256"]
         == answer["response_sha256"]
     )
+
+
+def test_ask_receipt_uses_server_trace(r1_task: dict[str, str], tmp_path: Path) -> None:
+    from panestria.api.tracing import TraceRequests
+    from panestria.telemetry.tracing import Telemetry
+
+    actor, _ = initialize(r1_task, tmp_path)
+    mocked, _ = transport(valid_frames())
+    client = _client(r1_task)
+    telemetry = Telemetry()
+    client.app.add_middleware(TraceRequests, telemetry=telemetry)
+    mount_ask_api(
+        client.app,
+        AskApi(
+            LocalProvider(Path("/synthetic"), transport=mocked),
+            lambda: HardwareProbe(ARCHIVE).collect(preset="omen-8gb"),
+        ),
+    )
+    response = client.post(
+        "/v1/ask",
+        json={"request_id": str(uuid4()), "project_id": actor.project_id, "question": "Say READY"},
+        headers={**CLI, "traceparent": f"00-{'ab' * 16}-{'cd' * 8}-01"},
+    )
+    assert response.status_code == 200
+    assert response.json()["trace_id"] == response.headers["x-panestria-trace-id"]
+    assert response.json()["trace_id"] != "ab" * 16
+    telemetry.shutdown()

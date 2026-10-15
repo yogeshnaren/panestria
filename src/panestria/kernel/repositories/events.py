@@ -8,6 +8,8 @@ from uuid import uuid4
 
 import sqlalchemy as sa
 
+from panestria.telemetry.tracing import current_trace_id
+
 EVENT_LOCK = (106971, 1)
 
 
@@ -22,6 +24,7 @@ def append_domain_event(
     trace_id: str | None = None,
 ) -> int:
     """Allocate the next global seq. Callers must not write afterward."""
+    trace_id = current_trace_id() or trace_id
     connection.execute(
         sa.text("SELECT pg_advisory_xact_lock(:classid, :objid)"),
         {"classid": EVENT_LOCK[0], "objid": EVENT_LOCK[1]},
