@@ -125,7 +125,6 @@ def test_http_cancel_closes_active_model_and_preserves_terminal(r1_task: dict[st
         recovered = client.post("/v1/ask", json={**payload, "request_id": str(uuid4())}, headers=CLI)
         assert recovered.status_code == 200 and recovered.json()["text"] == "READY"
 
-
 def test_http_ledger_and_explicit_correction(r1_task: dict[str, str], tmp_path: Path) -> None:
     actor, _ = initialize(r1_task, tmp_path)
     mocked, _ = transport(valid_frames())
