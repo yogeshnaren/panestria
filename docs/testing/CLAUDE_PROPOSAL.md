@@ -29,9 +29,21 @@ PANESTRIA_ALLOW_NATIVE_LIVE=1 uv run pytest tests/integration/test_claude_propos
 ```
 
 On 2026-10-14 the installed profile passed redacted login inspection, but actual
-inference reported `rate_limit_info.status: rejected`. Successful candidate
-generation remains unverified. No runtime security certificate or R1/G1 PASS was
+inference reported `rate_limit_info.status: rejected`. Candidate generation was
+unverified at that source. No runtime security certificate or R1/G1 PASS was
 issued. Hermetic parser and transport tests are not evidence of live inference.
+
+On 2026-10-15 the unchanged pinned CLI emitted additional closed metadata and an
+exact JSON presentation fence. [The scoped compatibility correction](../design/16-NATIVE-THINKING-ESTIMATES.md)
+validates those shapes without treating token estimates/correlation/timing as
+authority, refuses queued/background/subagent work, and preserves unknown-field,
+overage, session, schema and AST denial. The fixed-public actual native test
+passed at source f67e0c5 (5.32s); 116 related hermetic checks also passed.
+[Source-bound failed and passing observations](../../evidence/native-compatibility-2026-10-15/report.json)
+are preserved. The model still only proposes candidate data with `accepted=false`.
+No arbitrary repository/native tool, Cursor orchestration or complete G1 pass is
+claimed. This changes code on main after its task merges; the preserved demo on
+8871 continues running its historical source until explicitly upgraded.
 
 Official CLI semantics: [CLI reference](https://code.claude.com/docs/en/cli-reference)
 and [security](https://code.claude.com/docs/en/security). Managed policy hooks can

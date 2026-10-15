@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="3.900" timestamp="2026-10-15T10:32:37.063435-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_claude_proposal" name="test_installed_claude_proposes_without_tools_or_hostile_hooks" file="tests/integration/test_claude_proposal.py" line="198" time="3.792"><properties><property name="candidate_commit" value="fa1b7b9c7aefffc730349e902ff953b8e4e73ee9" /><property name="fixture_digest" value="4682dab842ad0c4990a6c7214e131af089137c11dfaad38cc25c02506ba1d371" /><property name="worktree_state" value="clean" /><property name="lane" value="live" /><property name="native_status" value="REJECTED" /><property name="native_reason" value="unknown_field" /><property name="execution_mode" value="NATIVE_CLI_NO_TOOLS" /><property name="prompt_sha256" value="f035d83127bf4f72a166b2d041ae559e1dc32002499d2dbdd405e76ecdf2e1a5" /><property name="stdout_sha256" value="4a264001789d394cf22a182f7a153150195d22293d0464ec4c88b7c01424c253" /></properties><failure message="AssertionError: unknown_field&#10;assert 'REJECTED' == 'CANDIDATE'&#10;  &#10;  - CANDIDATE&#10;  + REJECTED">tests/integration/test_claude_proposal.py:243: in test_installed_claude_proposes_without_tools_or_hostile_hooks
+    assert receipt.status == "CANDIDATE", receipt.reason
+E   AssertionError: unknown_field
+E   assert 'REJECTED' == 'CANDIDATE'
+E     
+E     - CANDIDATE
+E     + REJECTED</failure></testcase></testsuite></testsuites>

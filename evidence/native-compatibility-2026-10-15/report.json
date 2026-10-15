@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "source_commit": "f67e0c52c5ef4db226e722ff58c416d496148f30",
+  "observed_at": "2026-10-15T18:04:14.351614+00:00",
+  "scope": "actual pinned Claude Code fixed public proposal, no native tools; hostile project customization fixture",
+  "result": "PASS",
+  "default_targeted_checks": 116,
+  "actual_native_checks": 1,
+  "cli_version": "2.1.273",
+  "binary_sha256": "6c752e2cc7c110c9df15f26d8d134d438c5ae95dbd610efc1a308bf7f9c5f6c1",
+  "requested_model_alias": "haiku",
+  "resolved_inference_model_version": "UNKNOWN_NOT_RETAINED",
+  "prompt_sha256": "f035d83127bf4f72a166b2d041ae559e1dc32002499d2dbdd405e76ecdf2e1a5",
+  "source_sha256": {
+    "src/panestria/brokers/harness/event_parser.py": "066480f2ad4edf7137537c66608219b199c6f08a31a1a4601126d6c4eca15b78",
+    "src/panestria/brokers/harness/claude_proposal.py": "e668014944af7d197eaee8e36fd93fca5c26a6200812ae0b12b751792aa49203",
+    "src/panestria/brokers/harness/process_runner.py": "9701734a0afbc330cdac26157bf93df946dc682b28cd59d2b8f84455b1bd8146",
+    "src/panestria/contracts/native_proposal.py": "4d7ad9c3d1030300c7c25a2f340a4fc39e9b082d9298a31ecff6d2a8fa07d252",
+    "tests/integration/test_native_thinking_metadata.py": "177d7a45f72994938fc51f8ef2e535ec6288a46bc23814b5c36645d0ea908991",
+    "tests/integration/test_claude_proposal.py": "0006da92ad3ec4fdd3b1061cd55e7accf719d84250605fc72c4912cbdb58b27e",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "observations": [
+    {
+      "report": "01-original-unknown-field.xml",
+      "sha256": "b1e351186013cf5059a81b647e8901c147f7415b98a2b8c7ae80bb3531851680",
+      "source_commit": "fa1b7b9c7aefffc730349e902ff953b8e4e73ee9",
+      "failures": 1,
+      "native_status": "REJECTED",
+      "reason": "unknown_field"
+    },
+    {
+      "report": "02-assistant-metadata-rejected.xml",
+      "sha256": "fef9ad4b3818eda34a4dec39de40c9bb25a47c134917a2de0993056731a1528c",
+      "source_commit": "54cc0967dbc3d5e123ca3a9d7d856ea07537593c",
+      "failures": 1,
+      "native_status": "REJECTED",
+      "reason": "unknown_field"
+    },
+    {
+      "report": "03-rate-metadata-rejected.xml",
+      "sha256": "8dc65d3d79365a6539300e756ae489099bcffa24b1803988be4fe26b613189e9",
+      "source_commit": "0a022f7ac2edd75783c5072b672daa953f45b1b7",
+      "failures": 1,
+      "native_status": "REJECTED",
+      "reason": "unknown_field"
+    },
+    {
+      "report": "04-result-metadata-rejected.xml",
+      "sha256": "397723761b902db9cde67ad74e3f07ec175258ab65c458d21d1030d23376a9b7",
+      "source_commit": "f16122ae17d1721a1fedaab3835c174ab388bc57",
+      "failures": 1,
+      "native_status": "REJECTED",
+      "reason": "unknown_field"
+    },
+    {
+      "report": "05-nested-counters-rejected.xml",
+      "sha256": "46eb49d1946374bc24b74e3535a36a1a61701be0df38acbb8ac2a676ca7c8ac2",
+      "source_commit": "48b91afbf586d79866a399f00971cd6cebffb88c",
+      "failures": 1,
+      "native_status": "REJECTED",
+      "reason": "unexpected_native_subagents"
+    },
+    {
+      "report": "06-candidate-format-rejected.xml",
+      "sha256": "4e2028ecea400afd017145629b6f94b6667333c5ca82ca973185c2ceb1470e88",
+      "source_commit": "d9b08e53dd3169b3a2600661e4de32a88faaca72",
+      "failures": 1,
+      "native_status": "REJECTED",
+      "reason": "invalid_candidate_data"
+    },
+    {
+      "report": "07-actual-native-pass.xml",
+      "sha256": "98cff99ec6617acbb8b0a1d7ead7e6be66e3e7e42f26fa8a4d3a24db24e61b81",
+      "source_commit": "f67e0c52c5ef4db226e722ff58c416d496148f30",
+      "failures": 0,
+      "native_status": "CANDIDATE",
+      "reason": "independent_checks_required"
+    }
+  ],
+  "unknown_fields_accepted_generically": false,
+  "native_tools_or_mcp_enabled": false,
+  "native_subagent_or_background_activity_allowed": false,
+  "task_accepted_by_model": false,
+  "direct_paid_sdk_calls": 0,
+  "native_cash_measurement": "UNKNOWN; native budget flag is only an estimate; subscription/auth route unchanged",
+  "provider_or_credential_or_overage_fallback": false,
+  "release_gate": "NOT_EVALUATED",
+  "limitations": [
+    "narrow fixed public candidate data, not arbitrary native workspace/tool certification",
+    "no full G1/release/owner acceptance or Cursor orchestration claim",
+    "requested model alias is retained; resolved model ID was not retained by this version",
+    "provider cost/quota observations are not exact billing or remaining usable capacity",
+    "Native/provider/account retention outside this evidence was not qualified; no-session-persistence remains a configured flag, not universal erasure proof."
+  ],
+  "raw_thinking_native_output_or_credentials_in_this_evidence": false
+}

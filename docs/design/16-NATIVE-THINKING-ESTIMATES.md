@@ -19,6 +19,14 @@ reason, zero queued turns/result index and zero/empty subagent counters. Accept
 only those bounded timings, exact off/disabled fast mode and no native background
 or subagent activity. A successful result cannot carry an API error or incomplete
 terminal reason. This metadata never changes the kernel's own deadline/identity.
+The pinned executable's stats initializer defines the nested requested/killed/
+refused counter names. Validate all as exact integer zero and require empty
+by_type. A zero aggregate cannot hide an unknown/nonzero nested activity field.
+
+Actual native generation also returned one exact JSON Markdown fence. Normalize
+only that complete wrapper before the existing duplicate/nonfinite JSON, closed
+schema and bounded AST guards. Never scan arbitrary prose for a plausible object.
+The no-tools launch flags and fixed prompt hash remain unchanged.
 
 The official [headless guide](https://code.claude.com/docs/en/headless) describes
 newline JSON events. The exact auxiliary shape here is based on the installed
