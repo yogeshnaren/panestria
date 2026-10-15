@@ -1,10 +1,20 @@
 # R1 task PR review index
 
-Created 2026-10-14. R0 PR #1 is already merged. The remaining development work is organized as 24 R1 task PRs plus one review-workflow PR. All original R1 commits are retained in the stack; their source hashes and historical evidence are preserved.
+The table records the original task review order. The implementation stack is
+integrated into `main` with individual merge commits and original source hashes
+preserved. PRs #4–17 had previously been merged into task branches; their work
+reaches main through the task-sized follow-ups documented in the
+[main integration audit](MAIN-INTEGRATION-2026-10-14.md).
 
-Review from the first row downward. Each PR targets its prerequisite branch, so its diff shows only its own task. After merging a prerequisite with ancestry preserved, retarget the next PR to `main` and verify its diff and CI again. Do not squash or automatically merge the stack. See [the task workflow](../TASK_PR_WORKFLOW.md).
+The prerequisite column is historical context for the original stacked reviews.
+Completed PRs should not be treated as open work or merged again. Future tasks
+start from current main, or an explicitly named unmerged prerequisite, and follow
+[the task workflow](../TASK_PR_WORKFLOW.md).
 
-R1 PRs are drafts because implementation and required live validation remain unfinished. R1 is IN_PROGRESS, G1 is NOT_RUN, and this index does not establish MVP completion. Default CI excludes live provider, GPU and OS conformance cases. Each PR lists its specific remaining work.
+Implementation integration does not complete R1/G1 acceptance. R1 remains
+IN_PROGRESS and G1 remains NOT_RUN until required live validation and owner
+acceptance are recorded. Default CI and development evidence do not substitute
+for that release gate. Native Claude quota remains an external live-test issue.
 
 | Order | PR | Task | Prerequisite |
 | --- | --- | --- | --- |
