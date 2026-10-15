@@ -111,6 +111,18 @@ class ClaudeEventParser:
             raise ProtocolRejected("invalid_event")
         digest = hashlib.sha256(raw).hexdigest()
         kind = body.get("type")
+        if kind == "system" and body.get("subtype") == "thinking_tokens":
+            _keys(body, {"type", "subtype", "session_id", "uuid", "estimated_tokens", "estimated_tokens_delta"})
+            self._session(body)
+            if not isinstance(body.get("session_id"), str):
+                raise ProtocolRejected("invalid_session")
+            for field in ("estimated_tokens", "estimated_tokens_delta"):
+                value = body.get(field)
+                if type(value) is not int or not 0 <= value <= 1_000_000:
+                    raise ProtocolRejected("invalid_thinking_estimate")
+            # UI estimates carry no completion, usage-billing or quota authority.
+            # Do not retain or expose chain-of-thought content or numeric values.
+            return NativeEvent("thinking_estimate", digest, "unverified_estimate")
         if kind == "system":
             _keys(
                 body,
