@@ -2414,24 +2414,26 @@
       ],
       "title": "Resolve classification compatibility with an audited forward migration and fail-closed legacy handling.",
       "planned_files": [
+        "src/panestria/contracts/classification.py",
         "src/panestria/contracts/policy.py",
+        "src/panestria/contracts/memory.py",
         "src/panestria/policy/labels.py",
-        "src/panestria/memory/profile.py",
-        "src/panestria/memory/vault.py",
-        "migrations/versions/"
+        "src/panestria/memory/classification.py",
+        "src/panestria/memory/canonical.py",
+        "src/panestria/memory/context.py",
+        "src/panestria/api/routes/memory_v2.py",
+        "migrations/versions/0018_memory_classification.py",
+        "migrations/versions/0019_canonical_labels.py"
       ],
-      "planned_test_file": "tests/e2e/test_mvp_x07.py",
+      "planned_test_file": "tests/integration/test_canonical_memory_v2.py",
       "case_ids": [
-        "AOS-011-TC05",
-        "AOS-011-TC06",
-        "AOS-011-TC07",
-        "AOS-011-TC08"
+        "AOS-011-TC05"
       ],
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "evidence_refs": [],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+      "scope_note": "Guard, immutable source ledger and v2 canonical memory/derived contexts implemented in focused PRs. Full release evidence remains pending; profile/vault cases belong to S5/S6 and do not create a circular S4 prerequisite."
     },
     {
       "id": "AOS-011-S5",
@@ -2452,10 +2454,7 @@
       ],
       "planned_test_file": "tests/e2e/test_mvp_x07.py",
       "case_ids": [
-        "AOS-011-TC05",
-        "AOS-011-TC06",
-        "AOS-011-TC07",
-        "AOS-011-TC08"
+        "AOS-011-TC06"
       ],
       "target_developer_days": 1,
       "status": "NOT_STARTED",
@@ -2481,7 +2480,6 @@
       ],
       "planned_test_file": "tests/e2e/test_mvp_x07.py",
       "case_ids": [
-        "AOS-011-TC05",
         "AOS-011-TC06",
         "AOS-011-TC07",
         "AOS-011-TC08"

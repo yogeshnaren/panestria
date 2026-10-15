@@ -101,3 +101,13 @@ interfaces and canonical derived labels with conservative cloud defaults,
 keeping old API/history/active-attempt compatibility explicit. Complete the
 whole class/source/context/destination matrix before completing S4/TC05.
 Profile encryption remains disabled and later MVP work remains pending.
+
+## Latest checkpoint: canonical memory version 2
+
+PR #52 merged as `2f8c983` after CI run 38727911700 passed 471 default tests, 34 live deselected. The dependent canonical branch incorporated that verified main merge before final CI. Separate commits cover design, canonical domain/migration, v2 API and execution tracking.
+
+Migration 0019 accepts canonical labels without rewriting records. New contexts use effective canonical labels; v1 history and old pending pack identities remain compatible. V2 memory requires integer schema_version 2, canonical labels and exact version-bound owner reviews. Non-public cloud requests remain denied; missing classification or falsely public contexts stop before dispatch. Profiles are not enabled.
+
+All 41 affected tests passed locally, including the class/action/destination matrix, actual PostgreSQL upgrade/restore, v1/v2 review isolation, scope, suppression and legacy context identity. Ruff, strict mypy, all 10 import contracts and secret scan passed. The active schema snapshot was generated from isolated actual PostgreSQL. Full exact-head CI/review is still required before merge. TC05 node mapping now points to the implemented integration file; formal G3 evidence and the full MVP remain pending.
+
+Next: verify/merge the canonical PR, then implement the bounded encrypted profile broker/vault and fail-closed OS secret-store adapter under S5/S6, with actual key-store conformance separate from fake fixtures. Keep new sensitive-profile use disabled until that boundary is verified. Continue independent R1 and other MVP work while live prerequisites wait.
