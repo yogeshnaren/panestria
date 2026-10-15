@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "source_commit": "ed0d63c885cab7e6d03e2a9ff0b77a7fa7159cc6",
+  "result": "PASS",
+  "targeted_checks": 139,
+  "new_actual_authority_checks": 27,
+  "existing_invocation_checks": 17,
+  "protocol_transport_checks": 95,
+  "provider_calls": 0,
+  "execution": "ACTUAL_POSTGRES_DOCKER_PRIVATE_UNIX_AND_SUBPROCESS_PIPES_WITH_SYNTHETIC_DATA",
+  "scope": "one required read-only registered check from exact scoped canonical contract, current lease/policy and deterministic durable invocation; protected report readback before receipt",
+  "observed": [
+    "actual private stdio call drives PostgreSQL prepare/committed claim, readonly Docker and verified protected report/RETURNED row",
+    "metadata-only receipt never completes RUNNING task, creates approval or asserts independent verification",
+    "required reviewed command, fixed candidate manifest/tree and actor/contract/epoch/policy refuse binding drift",
+    "current observe/approve-first/trust-denied read policy refuses before preparing any invocation",
+    "candidate/script changes and revoked lease/policy refuse before dispatch",
+    "reconstruction and two concurrent controllers yield one actual claim; duplicates cannot finish the winning invocation",
+    "nonzero process_failed exit records completed execution with failed check exit rather than unknown",
+    "actual readonly mount and blocked socket call prevent candidate edits and egress",
+    "full bounded output stays only in protected 0400 report, including RESTRICTED synthetic local case",
+    "missing/corrupt report, output cap or revocation after report storage produces no completion",
+    "actual running Docker container stops and is removed after lease release or cancellation, checked by exact test-owned label"
+  ],
+  "source_sha256": {
+    "src/panestria/execution/registered_checks.py": "b31ff5c16e1a8a4a78448eea9688c0bbad4e12bb7191b7e442ae87bdb57f87b2",
+    "tests/integration/test_registered_check_authority.py": "4ea4a480535258adbabe7171fadb6d7bc5051994c90175a393eda0c16df26c1e",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "junit_sha256": "5ceb69440de8309830319be47ac5d26a26eca0c7d44786ba3a7319bca605eafc",
+  "checks": [
+    "Ruff PASS",
+    "mypy 175 files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "development_observations": [
+    {
+      "file": "development-fixture-invalid-contract.xml",
+      "binding": "DIRTY_UNTRACKED_FIXTURE_NONQUALIFICATION",
+      "result": "1 setup error: strict synthetic contract fixture omitted required evidence field; fixture corrected"
+    },
+    {
+      "file": "development-nonzero-failure.xml",
+      "binding": "DIRTY_UNTRACKED_FIXTURE_NONQUALIFICATION",
+      "result": "11 passed, 1 failed: controller required completed reason and rejected actual process_failed exit; corrected to accept coherent nonzero execution receipt without task acceptance"
+    },
+    {
+      "file": "earlier-139-f748269.xml",
+      "source_commit": "f7482699253d37d2d00faa69f569900456da50d4",
+      "result": "139 passed; Ruff import separation still failed; fixed in separate commit before final qualification"
+    }
+  ],
+  "limitations": [
+    "synthetic local policy setup/review decisions and synthetic candidates; no real owner acceptance",
+    "internal component only, not an enabled or actual native inference/tool profile",
+    "snapshot materialization and host/controller are trusted; same-user hostile OS process or universal privacy/retention guarantee not certified",
+    "existing bounded BuildEvidenceStore, policy/certificate and invocation mechanisms reused; no new schema or general artifact/source authority",
+    "actual native MCP/config/parser/hostile-project tests and full AOS010/G1/R3 gates remain pending"
+  ]
+}
