@@ -126,8 +126,10 @@ ui.logout.addEventListener("click", async () => {
     await api("/v1/session/logout", {body: {}});
     csrf = null;
     ui.connection.textContent = "Disconnected. The session was revoked and current text cleared.";
+    ui.status.textContent = "Disconnected. Pair again to ask.";
   } catch (error) {
     ui.connection.textContent = `Text cleared; session revocation failed: ${reason(error)}. Retry Disconnect.`;
+    ui.status.textContent = "Text cleared. Retry Disconnect to revoke the session.";
   }
   ui.scope.textContent = "No project loaded.";
   controls();
