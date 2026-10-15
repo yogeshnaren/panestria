@@ -145,3 +145,33 @@ def test_actual_short_runtime_deadline_is_not_a_completed_extraction(monkeypatch
     monkeypatch.setattr(module, "SandboxProfile", lambda **kwargs: replace(SandboxProfile(**kwargs), wall_seconds=0.1))
     result = read(b"<p>data</p>" * 100000, "text/html")
     assert result.outcome == "UNKNOWN" and result.text is None
+
+
+@pytest.mark.live
+def test_actual_public_https_bytes_feed_only_the_isolated_reader(record_property):
+    from panestria.brokers.research.fetch import PublicHttpsFetcher
+    from panestria.contracts.research import ResearchLimits
+
+    fetched = PublicHttpsFetcher().fetch(
+        "https://www.example.org/", ResearchLimits(max_source_bytes=128 * 1024, deadline_seconds=20.0)
+    )
+    assert fetched.outcome == "COMPLETE" and fetched.content_type == "text/html"
+    extracted = IsolatedTextReader().extract(
+        fetched.body, expected_sha256=fetched.retained_sha256, content_type=fetched.content_type
+    )
+    assert extracted.outcome == "COMPLETE" and len(extracted.text.get_secret_value()) > 0
+    record_property(
+        "fetch_reader_observation",
+        json.dumps(
+            {
+                "fetch_sha256": fetched.retained_sha256,
+                "fetch_bytes": len(fetched.body),
+                "text_sha256": extracted.text_sha256,
+                "extractor": extracted.extractor_version,
+                "profile_sha256": extracted.sandbox_profile_sha256,
+                "tokenizer_sha256": extracted.tokenizer_sha256,
+                "scope": "public TLS to isolated Docker text; memory-only, no source/citation/policy authority",
+            },
+            sort_keys=True,
+        ),
+    )
