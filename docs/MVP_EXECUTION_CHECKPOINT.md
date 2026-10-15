@@ -224,3 +224,28 @@ PR #57 merged as 999251ee8e45e7e5c4d67caee83b57df7661608a after CI passed
 verified merges before its final qualification and task PR. Owner checkouts,
 services, databases, keyring and original evidence remain unchanged. The actual
 key CLI test uses an isolated child daemon and synthetic encryption material.
+
+## Latest checkpoint: restricted profile Ask
+
+PR #59 merged as `d545fdbf9afab2b4517f9e7832bde376ea6bb6fd` after exact-head CI
+passed 591 default tests, 35 live deselected (run 38738565476). Branch
+`task/profile-ask-overlay` started from the explicit owner API prerequisite and
+incorporated verified current main before qualification. Migration 0021 binds
+profile Ask to immutable scoped ciphertext and adds an immutable receipt mode
+that omits unkeyed profile-answer hashes while preserving every v1 invariant.
+
+Source inspection corrected an earlier design assumption: ContextCompiler
+persists metadata/digests, not the prompt body. Profile fields still bypass its
+search/fingerprint path. They join only the in-memory local prompt, with current
+selection, stored source/manifest and complete inference checks at claim. The
+version-2 route shares the existing admission/resource/cancel pipeline and does
+not enable the default profile configuration. Known probe failure now records
+UNAVAILABLE; database loss leaves durable admission for reconciliation.
+
+Thirty-nine targeted crypto/database/HTTP/restore/schema and legacy Ask checks
+pass. Active snapshots were generated from actual isolated PostgreSQL. Ruff,
+strict mypy (157 files) and 11 import contracts pass. Full exact-head CI/review
+and actual OS/local-model privacy qualification remain required. Next: collect
+that real runtime evidence, complete explicit opt-in setup and whole privacy
+cases, then continue the remaining original and extension MVP scope. No release
+gate, complete profile slice or 14-day owner acceptance is promoted here.
