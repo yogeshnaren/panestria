@@ -127,7 +127,10 @@ class RegisteredCheckController:
 
     def authorize(self, connection: psycopg.Connection[Any]) -> None:
         policy = PolicyService(self.certificates).get(UnitOfWork(connection), self.actor)
-        if f"project-policy:{policy.version}:{policy.sha256()}" != self.scope.policy_ref:
+        if (
+            f"project-policy:{policy.version}:{policy.sha256()}" != self.scope.policy_ref
+            or policy.trust.profile != self.contract.trust_profile_id
+        ):
             raise KernelDenied("policy_changed")
         row = connection.execute(
             "SELECT c.body,c.sha256 FROM panestria.task t JOIN panestria.goal_contract c ON c.id=t.contract_id"
@@ -189,8 +192,9 @@ class RegisteredCheckController:
             if (
                 result.outcome not in {"completed", "failed"}
                 or sandbox is None
-                or sandbox.reason != "completed"
+                or sandbox.reason not in {"completed", "process_failed"}
                 or sandbox.exit_code is None
+                or (sandbox.reason == "completed") != (sandbox.exit_code == 0)
                 or sandbox.oom_killed
                 or cancel.is_set()
                 or len(sandbox.output) > 8192
@@ -213,6 +217,8 @@ class RegisteredCheckController:
                     "candidate_ref": self.candidate_ref,
                     "candidate_tree": self.snapshot.tree,
                     "privacy_class": self.contract.privacy_class,
+                    "execution_outcome": result.outcome,
+                    "sandbox_reason": sandbox.reason,
                     "exit_code": sandbox.exit_code,
                     "output_base64": base64.b64encode(sandbox.output).decode("ascii"),
                     "output_sha256": hashlib.sha256(sandbox.output).hexdigest(),
@@ -230,7 +236,11 @@ class RegisteredCheckController:
                 self.authorize(connection)
                 service = InvocationService()
                 service.check(UnitOfWork(connection), self.actor, binding, identity)
+                if cancel.is_set():
+                    raise RegisteredCheckUnavailable("cancelled_before_receipt")
                 service.finish(UnitOfWork(connection), self.actor, binding, identity, digest)
+            if cancel.is_set():
+                return RegisteredCheckReceipt(outcome="CANCELLED")
             return RegisteredCheckReceipt(outcome="COMPLETED", exit_code=sandbox.exit_code, report_sha256=digest)
         except Exception:
             if authority is not None and authority.claimed and binding is not None and identity is not None:

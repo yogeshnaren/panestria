@@ -16,7 +16,8 @@ Use a deterministic request/key for the session so a reconstructed controller
 cannot rerun a CLAIMED/UNKNOWN/RETURNED invocation. Prepare/claim/current checks
 and events commit through the existing InvocationService and same database. The
 claim and periodic checks must reauthorize read policy, lease and cancellation;
-no Docker or filesystem work occurs inside those transactions.
+no Docker or candidate/report mutation occurs inside those transactions. Trust
+certificate validation reads the existing protected certificate store.
 
 Verify the protected Git snapshot before and after the run. Mount it read-only,
 with reviewed script outside candidate scope, no network and nonroot resource
