@@ -33,6 +33,14 @@ column artifact sha256 bpchar NO
 column artifact size_bytes int8 NO
 column artifact store_key text NO
 column artifact task_id uuid NO
+column browser_session created_at timestamptz NO
+column browser_session csrf_hash bpchar NO
+column browser_session expires_at timestamptz NO
+column browser_session id uuid NO
+column browser_session owner_id uuid NO
+column browser_session project_id uuid NO
+column browser_session revoked_at timestamptz YES
+column browser_session token_hash bpchar NO
 column budget_reservation actual_microusd int8 YES
 column budget_reservation amount_microusd int8 NO
 column budget_reservation created_at timestamptz NO
@@ -84,6 +92,11 @@ column idempotency_record project_id uuid NO
 column idempotency_record request_hash bpchar NO
 column idempotency_record request_key text NO
 column idempotency_record response_ref jsonb NO
+column pairing_challenge code_hash bpchar NO
+column pairing_challenge expires_at timestamptz NO
+column pairing_challenge owner_id uuid NO
+column pairing_challenge project_id uuid NO
+column pairing_challenge used_at timestamptz YES
 column policy_review decided_at timestamptz YES
 column policy_review decided_by uuid YES
 column policy_review effect_digest bpchar NO
@@ -198,6 +211,11 @@ constraint panestria.artifact f FOREIGN KEY (attempt_id, task_id) REFERENCES pan
 constraint panestria.artifact f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.artifact p PRIMARY KEY (id)
 constraint panestria.artifact u UNIQUE (id, task_id)
+constraint panestria.browser_session c CHECK ((csrf_hash ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.browser_session c CHECK ((token_hash ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.browser_session f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.browser_session p PRIMARY KEY (id)
+constraint panestria.browser_session u UNIQUE (token_hash)
 constraint panestria.budget_reservation c CHECK (((state = 'SETTLED'::text) = (actual_microusd IS NOT NULL)))
 constraint panestria.budget_reservation c CHECK ((actual_microusd >= 0))
 constraint panestria.budget_reservation c CHECK ((amount_microusd >= 0))
@@ -240,6 +258,9 @@ constraint panestria.idempotency_record c CHECK ((request_hash ~ '^[0-9a-f]{64}$
 constraint panestria.idempotency_record f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
 constraint panestria.idempotency_record f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.idempotency_record p PRIMARY KEY (owner_id, project_id, operation, request_key)
+constraint panestria.pairing_challenge c CHECK ((code_hash ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.pairing_challenge f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.pairing_challenge p PRIMARY KEY (code_hash)
 constraint panestria.policy_review c CHECK (((state = 'PENDING'::text) OR (decided_at IS NOT NULL)))
 constraint panestria.policy_review c CHECK ((effect_digest ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.policy_review c CHECK ((expected_version > 0))
@@ -311,6 +332,8 @@ index CREATE UNIQUE INDEX approval_consumption_side_effect_id_key ON panestria.a
 index CREATE UNIQUE INDEX approval_request_pkey ON panestria.approval_request USING btree (id)
 index CREATE UNIQUE INDEX artifact_id_task_id_key ON panestria.artifact USING btree (id, task_id)
 index CREATE UNIQUE INDEX artifact_pkey ON panestria.artifact USING btree (id)
+index CREATE UNIQUE INDEX browser_session_pkey ON panestria.browser_session USING btree (id)
+index CREATE UNIQUE INDEX browser_session_token_hash_key ON panestria.browser_session USING btree (token_hash)
 index CREATE UNIQUE INDEX budget_reservation_goal_id_request_key_key ON panestria.budget_reservation USING btree (goal_id, request_key)
 index CREATE UNIQUE INDEX budget_reservation_pkey ON panestria.budget_reservation USING btree (id)
 index CREATE UNIQUE INDEX check_run_pkey ON panestria.check_run USING btree (id)
@@ -322,6 +345,7 @@ index CREATE UNIQUE INDEX goal_contract_pkey ON panestria.goal_contract USING bt
 index CREATE UNIQUE INDEX goal_id_project_id_owner_id_key ON panestria.goal USING btree (id, project_id, owner_id)
 index CREATE UNIQUE INDEX goal_pkey ON panestria.goal USING btree (id)
 index CREATE UNIQUE INDEX idempotency_record_pkey ON panestria.idempotency_record USING btree (owner_id, project_id, operation, request_key)
+index CREATE UNIQUE INDEX pairing_challenge_pkey ON panestria.pairing_challenge USING btree (code_hash)
 index CREATE UNIQUE INDEX policy_review_pkey ON panestria.policy_review USING btree (id)
 index CREATE UNIQUE INDEX principal_pkey ON panestria.principal USING btree (id)
 index CREATE UNIQUE INDEX project_id_owner_id_key ON panestria.project USING btree (id, owner_id)

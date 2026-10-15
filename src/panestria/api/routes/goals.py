@@ -9,7 +9,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
-from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body
+from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body, reauthorize_mutation
 from panestria.api.db import DatabaseUnavailable, open_database, run_database
 from panestria.api.views import CancelResult, GoalStatus, GoalSubmission
 from panestria.kernel.cancellation import CancellationService
@@ -54,19 +54,20 @@ async def submit_goal(request: Request) -> JSONResponse:
         return JSONResponse(status_code=422, content=error_body("invalid_contract"))
     if not isinstance(document, dict):
         return JSONResponse(status_code=422, content=error_body("invalid_contract"))
-    response = await run_database(_submit, api, actor, document, key)
+    response = await run_database(_submit, request, api, actor, document, key)
     if response.status_code == 202:
         _kick(request, str(json.loads(bytes(response.body))["goal_id"]))
     return response
 
 
-def _submit(api: GoalApi, actor: Actor, document: dict[str, Any], key: str) -> JSONResponse:
+def _submit(request: Request, api: GoalApi, actor: Actor, document: dict[str, Any], key: str) -> JSONResponse:
     try:
         connection = open_database(api.database_url)
     except DatabaseUnavailable:
         return _unavailable()
     try:
         try:
+            reauthorize_mutation(request, api, connection)
             receipt = _SERVICE.submit(UnitOfWork(connection), actor, document, key)
         except KernelDenied as exc:
             connection.rollback()
@@ -132,20 +133,23 @@ async def cancel_goal(goal_id: str, request: Request) -> JSONResponse:
         return JSONResponse(status_code=422, content=error_body("invalid_contract"))
     if not isinstance(document, dict):
         return JSONResponse(status_code=422, content=error_body("invalid_contract"))
+    if set(document) != {"expected_version", "reason"}:
+        return JSONResponse(status_code=422, content=error_body("invalid_contract"))
     version = document.get("expected_version")
     reason = document.get("reason")
     if not isinstance(version, int) or isinstance(version, bool) or not isinstance(reason, str):
         return JSONResponse(status_code=422, content=error_body("invalid_contract"))
-    return await run_database(_cancel, api, actor, goal_id, version, reason)
+    return await run_database(_cancel, request, api, actor, goal_id, version, reason)
 
 
-def _cancel(api: GoalApi, actor: Actor, goal_id: str, version: int, reason: str) -> JSONResponse:
+def _cancel(request: Request, api: GoalApi, actor: Actor, goal_id: str, version: int, reason: str) -> JSONResponse:
     try:
         connection = open_database(api.database_url)
     except DatabaseUnavailable:
         return _unavailable()
     try:
         try:
+            reauthorize_mutation(request, api, connection)
             receipt = _CANCEL.cancel(
                 UnitOfWork(connection),
                 actor,
