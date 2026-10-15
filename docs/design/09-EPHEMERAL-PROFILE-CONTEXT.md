@@ -1,9 +1,10 @@
 # Approved profile context is an ephemeral local overlay
 
 This task builds on PR #55's opt-in ciphertext vault. The existing general
-ContextCompiler stores its body in PostgreSQL. Passing clear profile fields to
-that compiler would defeat profile encryption, so use a separate in-memory
-overlay and persist only revision/ciphertext/policy/request references later.
+ContextCompiler stores source metadata and unkeyed prompt/question digests in
+PostgreSQL, not the prompt body. Passing clear profile fields through that path
+would disclose profile-derived search inputs/fingerprints, so use a separate
+in-memory overlay and persist only revision/ciphertext/policy/request references.
 No Ask/API/worker dispatch is enabled by this foundation.
 
 An explicit request binds a profile, exact row version, purpose, selected fields,
