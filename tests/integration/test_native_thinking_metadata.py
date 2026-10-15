@@ -120,3 +120,35 @@ def test_assistant_correlation_metadata_is_bounded_text(field, value):
                 }
             )
         )
+
+
+@pytest.mark.parametrize("value", [0, 0.4, 1.0])
+def test_utilization_is_only_bounded_metadata_not_usable_quota(value):
+    parser = ClaudeEventParser()
+    init(parser)
+    event = {
+        "type": "rate_limit_event",
+        "session_id": "synthetic-native-session",
+        "rate_limit_info": {"status": "allowed", "utilization": value, "isUsingOverage": False},
+    }
+    assert parser.feed(line(event))[0].kind == "rate_limit" and parser.result is None
+    with pytest.raises(ProtocolRejected, match="unapproved_overage"):
+        parser.feed(line({**event, "rate_limit_info": {**event["rate_limit_info"], "isUsingOverage": True}}))
+    with pytest.raises(ProtocolRejected, match="quota_unavailable"):
+        parser.feed(line({**event, "rate_limit_info": {**event["rate_limit_info"], "status": "rejected"}}))
+
+
+@pytest.mark.parametrize("value", [None, True, -0.1, 1.1, "0.4", float("inf")])
+def test_malformed_utilization_never_grants_capacity(value):
+    parser = ClaudeEventParser()
+    init(parser)
+    with pytest.raises(ProtocolRejected, match="invalid_rate_limit|invalid_number"):
+        parser.feed(
+            line(
+                {
+                    "type": "rate_limit_event",
+                    "session_id": "synthetic-native-session",
+                    "rate_limit_info": {"status": "allowed", "utilization": value},
+                }
+            )
+        )

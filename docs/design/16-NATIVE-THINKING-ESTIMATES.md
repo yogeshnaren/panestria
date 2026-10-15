@@ -10,6 +10,10 @@ A later rejected assistant envelope exposed string `request_id` and `timestamp`.
 Accept only bounded opaque strings on assistant messages. They never replace
 the initialized session, trusted kernel task identity or monotonic deadline;
 they are neither persisted as metadata values nor interpreted as a clock.
+Rate-limit metadata also includes optional finite `utilization` in [0,1]. Treat
+it only as an opaque provider observation here; no quota amount, window identity,
+spend, reset prediction or routing decision is derived. Rejected status and
+unapproved overage still terminate the process, regardless of this value.
 
 The official [headless guide](https://code.claude.com/docs/en/headless) describes
 newline JSON events. The exact auxiliary shape here is based on the installed

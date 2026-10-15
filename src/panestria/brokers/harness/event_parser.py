@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from typing import Any
 
@@ -210,10 +211,19 @@ class ClaudeEventParser:
                     "overageStatus",
                     "overageDisabledReason",
                     "unifiedWindows",
+                    "utilization",
                 },
             )
             if info.get("status") not in ("allowed", "allowed_warning", "rejected"):
                 raise ProtocolRejected("invalid_rate_limit")
+            if "utilization" in info:
+                utilization = info["utilization"]
+                if (
+                    type(utilization) not in {int, float}
+                    or not math.isfinite(utilization)
+                    or not 0 <= utilization <= 1
+                ):
+                    raise ProtocolRejected("invalid_rate_limit")
             if "isUsingOverage" in info and info["isUsingOverage"] is not False:
                 raise ProtocolRejected("unapproved_overage")
             if info["status"] == "rejected":
