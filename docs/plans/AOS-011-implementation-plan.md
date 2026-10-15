@@ -103,6 +103,12 @@ The [active personal-platform contract](../specification/architecture/05-PERSONA
 | AOS-011-S5 | Implement bounded encrypted profile read/write through the local broker and safe context selection. | AOS-011-S4, AOS-009-S3 |
 | AOS-011-S6 | Complete key lifecycle, restore, correction/suppression and cross-scope boundary checks. | AOS-011-S5 |
 
+Implementation checkpoints: the [key adapter](../testing/PROFILE_KEYS.md) and
+[ciphertext storage](../testing/PROFILE_VAULT.md) are bounded foundations.
+Source-bound component results do not complete these slice envelopes. Profile
+API/context dispatch stays disabled until its exact admission and runtime
+privacy boundary is qualified; old memory does not migrate silently into profiles.
+
 Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the selected manifest entry. File ownership candidates are in implementation-slices.json; record an ADR for a material change. Existing shared transaction/security/API requirements still apply.
 
 | Added case | Lane | Required passing behavior |
