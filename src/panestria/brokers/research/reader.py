@@ -116,6 +116,7 @@ class IsolatedTextReader:
                     or receipt.exit_code != 0
                     or receipt.oom_killed
                     or receipt.profile_sha256 != profile.sha256()
+                    or not re.fullmatch(r"[0-9a-f]{64}", receipt.effective_config_sha256)
                     or len(receipt.output) > 1024 * 1024
                     or hashlib.sha256(source.read_bytes()).hexdigest() != expected_sha256
                     or hashlib.sha256(script.read_bytes()).hexdigest() != program_sha
@@ -137,7 +138,11 @@ class IsolatedTextReader:
                     if reason != expected and (not isinstance(expected, set) or reason not in expected):
                         raise ValueError
                     return ReaderObservation(
-                        outcome, reason, sandbox_profile_sha256=profile.sha256(), reader_program_sha256=program_sha
+                        outcome,
+                        reason,
+                        sandbox_profile_sha256=profile.sha256(),
+                        reader_program_sha256=program_sha,
+                        effective_config_sha256=receipt.effective_config_sha256,
                     )
                 if set(body) != {
                     "outcome",
