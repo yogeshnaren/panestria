@@ -219,3 +219,11 @@ def test_disabled_context_never_queries_policy_or_keys(context):
     with pytest.raises(KernelDenied, match="profile_disabled"):
         compiler.select(None, actor, request)
     assert keys.loads == []
+
+
+def test_truthy_numeric_offline_flag_is_not_authority(context):
+    dsn, actor, handle, keys, vault, compiler, request, document = context
+    with psycopg.connect(dsn) as c:
+        selection = compiler.select(UnitOfWork(c), actor, request)
+        with pytest.raises(KernelDenied, match="profile_context_stale"):
+            compiler.revalidate(UnitOfWork(c), actor, selection.model_copy(update={"offline": 1}))

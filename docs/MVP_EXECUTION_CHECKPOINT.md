@@ -152,7 +152,7 @@ a bounded offline local purpose, checks current policy and revalidates protected
 bytes/source/policy before a later dispatch. It does not persist a plaintext
 overlay or enable a provider/API route. Sensitive profiles remain disabled.
 
-Twenty-one targeted real ciphertext/database context checks pass, including
+Twenty-two targeted real ciphertext/database context checks pass, including
 policy/lifecycle invalidation and forgery rejection. Ruff, strict mypy (154 files)
 and 11 import contracts pass. See PROFILE_CONTEXT.md and component evidence;
 full exact-head CI/review and actual runtime qualification remain required.
