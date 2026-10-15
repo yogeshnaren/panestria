@@ -79,7 +79,7 @@ def build_local_app(config: LocalApplicationSettings, settings: ValidatedSetting
     provider = LocalProvider(model.socket_path)
     archive = Path(__file__).resolve().parents[3] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
     probe = HardwareProbe(archive)
-    ask = AskApi(provider, probe.collect)
+    ask = AskApi(provider, probe.collect_cpu)
     app = create_app(settings, default_readiness_probe)
     # Scope without exposing unrelated synthetic goal/merge/tool routes.
     api = GoalApi(token, actor.owner_id, actor.project_id, settings.database_url.get_secret_value())
@@ -99,7 +99,7 @@ def build_local_app(config: LocalApplicationSettings, settings: ValidatedSetting
             info = config.runtime_directory.stat()
             if config.runtime_directory.is_symlink() or info.st_uid != os.getuid() or info.st_mode & 0o077:
                 raise LocalApplicationRejected("local_runtime_directory_not_private")
-            admission = admit(await asyncio.to_thread(probe.collect), gpu=False)
+            admission = admit(await asyncio.to_thread(probe.collect_cpu), gpu=False)
             if admission.decision != "PERMIT":
                 raise InferenceUnavailable(admission.reasons[0])
             await asyncio.to_thread(model.start)
