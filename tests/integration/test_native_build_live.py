@@ -36,7 +36,11 @@ class ObservedNativeAdapter(ClaudeProposalAdapter):
     def propose(self, *, wall_seconds: float = 90, cancel: threading.Event | None = None) -> ProposalReceipt:
         receipt = super().propose(wall_seconds=wall_seconds, cancel=cancel)
         self.observations.append(
-            (receipt.status, bool(receipt.process.result and receipt.process.result.accepted), receipt.process.stdout_sha256)
+            (
+                receipt.status,
+                bool(receipt.process.result and receipt.process.result.accepted),
+                receipt.process.stdout_sha256,
+            )
         )
         return receipt
 
