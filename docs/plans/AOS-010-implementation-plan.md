@@ -119,3 +119,12 @@ checks pass at 309bfa5. The callback is explicitly a controller fixture. No nati
 profile/service is enabled; durable current-scope authority, private transport,
 registry access, finalized report proof and actual CLI/tool conformance remain
 pending. It is not a replacement for those boundaries or full AOS-010 cases.
+
+The [private transport](../design/24-NATIVE-CHECK-PRIVATE-TRANSPORT.md) adds a
+one-connection Linux Unix socket and subprocess stdio relay. At c5818c0, 169
+targeted checks passed (47 new transport/dispatch, 48 protocol, 74 existing;
+seven live gateway cases excluded). Actual pipes exercise deadlines, cancellation,
+identity, output pressure and owned cleanup. Callbacks are labeled fixtures, not
+durable execution authority or native CLI qualification. Profiles remain disabled
+until the current lease/policy/registry/protected-report binding and actual native
+MCP conformance are verified. Evidence: evidence/native-command-transport-2026-10-15.

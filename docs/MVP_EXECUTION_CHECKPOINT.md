@@ -48,9 +48,10 @@ remain unchanged except additive active-schema/migration/interface updates.
 | #70 | Immutable scoped request metadata, atomic event and corrected retry race | 810 / 38 | 5ca8fbc |
 | #71 | Public-unicast provider gateway and exact peer/scope checks | 854 / 38 | d987e6c |
 | #72 | Scoped protected bytes, actual process interruption and bounded locks | 888 / 38 | 62765d0 |
+| #73 | Internal bounded MCP registered-check protocol, fixture authority only | 936 / 38 | 0e01e82 |
 
-Current verified main: 62765d037c72761e430b8fe4e64bcdd6fb623d1a; latest CI
-run 38814690617 at exact head e7e1af2. PR #62's earlier run exposed an older Ask
+Current verified main: 0e01e8222bf1539cb149f7795cec782ed415cd53; latest CI
+run 38816626188 at exact head e8c36a5. PR #62's earlier run exposed an older Ask
 downgrade test sharing newer audit data; a schema-only restored isolated guard
 test fixed it without weakening audit-loss protection. PR #61 attempt 1 failed one proposal-demo
 approval-flow test; isolated actual-PG/Docker reproduction and exact-head retry
@@ -76,15 +77,16 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
 ## Exact next work
 
-1. Finish `task/native-command-protocol` with exact-head CI/review. The internal
-   MCP 2025-06-18 registered-check session exposes only reviewed references and
-   bounded metadata, with no arbitrary shell/path or authority fields. At 309bfa5,
-   122 targeted checks passed (48 new protocol + 74 existing). The executor is a
-   labeled callback fixture; private transport, actual durable gateway/registry/
-   report binding, native CLI permission/config/hostile-project conformance and
-   shell-tier qualification remain pending before enabling a profile. Its evidence
-   is in evidence/native-command-protocol-2026-10-15. Native MCP is an internal
-   bounded command bridge for MVP, not the R4 external-agent API.
+1. Finish `task/native-command-transport` with exact-head CI/review. The merged
+   internal MCP 2025-06-18 session exposes only reviewed references and metadata.
+   The private Unix socket/stdio relay adds ordered acceptance and responsive
+   cancellation with bounded frames, buffers and deadlines; 169 targeted checks
+   pass at c5818c0 (47 new actual transport/dispatch, 48 protocol, 74 existing).
+   Evidence: evidence/native-command-transport-2026-10-15. Callback fixtures do
+   not establish current lease/policy/registry access or protected report proof.
+   Implement that durable binding, then actual native configuration/tool and
+   hostile-project conformance before enabling a native profile. Internal MCP
+   is an MVP command bridge; the R4 external-agent API remains outside scope.
    Protected research bytes are merged, with 34 actual filesystem/process and 79
    contract/text checks plus three existing Build checks. Source/claim metadata,
    actual retained-fetch/reader/SourceStore authority remain next R2 obligations.
