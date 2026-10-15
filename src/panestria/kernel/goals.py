@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections.abc import Mapping
 from uuid import uuid4
@@ -117,7 +118,7 @@ class GoalService:
             task_id=None,
             kind="goal.submitted",
             actor=actor.owner_id,
-            payload={"idempotency_key": idempotency_key},
+            payload={"idempotency_key_sha256": hashlib.sha256(idempotency_key.encode()).hexdigest()},
         )
         return receipt
 

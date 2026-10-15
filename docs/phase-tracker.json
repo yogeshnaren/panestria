@@ -247,11 +247,11 @@
           "dependencies": [
             "AOS-002"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-011-implementation-plan.md"
         },
         {
@@ -261,11 +261,11 @@
             "AOS-002",
             "AOS-007"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-012-implementation-plan.md"
         },
         {
@@ -275,11 +275,11 @@
             "AOS-003",
             "AOS-012"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-014-implementation-plan.md"
         },
         {
@@ -288,11 +288,11 @@
           "dependencies": [
             "AOS-001"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-015-implementation-plan.md"
         },
         {
@@ -302,11 +302,11 @@
             "AOS-011",
             "AOS-015"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-016-implementation-plan.md"
         },
         {
@@ -316,11 +316,11 @@
             "AOS-011",
             "AOS-016"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-017-implementation-plan.md"
         },
         {
@@ -331,11 +331,11 @@
             "AOS-016",
             "AOS-017"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
+          "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-018-implementation-plan.md"
         }
       ],

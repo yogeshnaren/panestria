@@ -118,3 +118,41 @@ def offline_model(tmp_path_factory: pytest.TempPathFactory) -> Iterator[object]:
         yield runtime
     finally:
         runtime.stop()
+
+
+@pytest.fixture(autouse=True)
+def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest.RecordProperty) -> None:
+    import hashlib
+
+    names = {
+        "test_aos_006.py",
+        "test_aos_007.py",
+        "test_aos_008.py",
+        "test_aos_009.py",
+        "test_aos_011.py",
+        "test_aos_012.py",
+        "test_aos_014.py",
+        "test_aos_015.py",
+        "test_aos_016.py",
+        "test_aos_017.py",
+        "test_aos_018.py",
+        "test_memory_context.py",
+        "test_local_provider.py",
+        "test_local_benchmark.py",
+        "test_model_runtime.py",
+        "test_ask_kernel.py",
+        "test_ask_api.py",
+        "test_ask_cli.py",
+        "test_resource_admission.py",
+        "test_telemetry.py",
+    }
+    path = Path(str(request.node.path))
+    if path.name not in names:
+        return
+    candidate = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    dirty = subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True)
+    fingerprint = hashlib.sha256(path.read_bytes() + (ROOT / "uv.lock").read_bytes()).hexdigest()
+    record_property("candidate_commit", candidate)
+    record_property("fixture_digest", fingerprint)
+    record_property("worktree_state", "dirty" if dirty.strip() else "clean")
+    record_property("lane", "live" if request.node.get_closest_marker("live") else "integration")
