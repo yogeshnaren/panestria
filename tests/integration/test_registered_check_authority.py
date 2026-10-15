@@ -424,6 +424,7 @@ def test_actual_output_limit_cannot_complete(configured):
 @pytest.mark.parametrize("revoke", ["lease", "cancel"])
 def test_actual_running_container_stops_after_authority_loss(configured, monkeypatch, revoke):
     import time
+
     from panestria.sandbox.runner import DockerSandbox
 
     task, args = configured
