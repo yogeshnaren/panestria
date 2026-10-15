@@ -10,11 +10,13 @@ from psycopg.types.json import Jsonb
 
 from panestria.contracts.ask import AskSubmission
 from panestria.contracts.inference import InferenceRequest, InferenceResult
+from panestria.contracts.learning import ExposureObservation, Observation, RouteCandidate
 from panestria.contracts.policy import PolicyRequest
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.policy import active_policy_ref, current_policy, require_current_policy
 from panestria.kernel.uow import UnitOfWork
+from panestria.learning.recorder import LearningRecorder
 from panestria.memory.context import ContextCompiler, ContextPack
 from panestria.policy.engine import PolicyEngine
 from panestria.resources.catalog import STEWARD
@@ -112,6 +114,53 @@ class AskService:
                 submission.deadline_seconds,
             ),
         )
+        # Registry availability is a configured capability, not a prediction that
+        # the model process will answer. The outcome records actual failure/success.
+        candidates = tuple(
+            RouteCandidate(
+                provider=provider,
+                model_ref=STEWARD.model_ref if provider == "local-ollama" else "not-enabled-for-ask",
+                capability="chat",
+                available=provider == "local-ollama",
+                expected_cash=Observation(status="known", value=0, unit="cash_microusd")
+                if provider == "local-ollama"
+                else Observation(status="unknown", unit="cash_microusd"),
+                quota_remaining=Observation(status="unknown", unit="requests"),
+            )
+            for provider in ("local-ollama", "openai-api", "claude-code")
+        )
+        LearningRecorder().route(
+            uow,
+            actor,
+            submission.request_id,
+            candidates,
+            offline=True,
+            label=pack.label,
+            request_sha256=submission.sha256(),
+        )
+        evidence_prefix = {"authorized": "policy", "accessible": "context", "observed": "unobserved"}
+        for dimension, value, source_kind, evidence in (
+            ("authorized", "yes", "policy", current_policy(uow, actor).sha256()),
+            ("accessible", "yes", "scope_manifest", pack.sha256),
+            ("observed", "unknown", "os_network", pack.sha256),
+        ):
+            LearningRecorder().exposure(
+                uow,
+                actor,
+                submission.request_id,
+                ExposureObservation.model_validate(
+                    {
+                        "dimension": dimension,
+                        "destination": "local",
+                        "label": pack.label,
+                        "payload_manifest_sha256": pack.sha256,
+                        "value": value,
+                        "source_kind": source_kind,
+                        "content_visible": False,
+                        "evidence_ref": f"{evidence_prefix[dimension]}:{evidence}",
+                    }
+                ),
+            )
         return PreparedAsk(submission, pack, inference, ref)
 
     def claim(self, uow: UnitOfWork, actor: Actor, prepared: PreparedAsk) -> InferenceRequest:
@@ -190,6 +239,8 @@ class AskService:
             ),
         )
 
+        LearningRecorder().outcome(uow, actor, request_id)
+
     def stop(self, uow: UnitOfWork, actor: Actor, request_id: str, *, cancelled: bool, code: str) -> str:
         if len(code) > 80 or not all(c.islower() or c.isdigit() or c == "_" for c in code):
             raise ValueError("diagnostic_code_invalid")
@@ -206,6 +257,7 @@ class AskService:
             "UPDATE panestria.ask_request SET state=%s,code=%s WHERE id=%s AND owner_id=%s AND project_id=%s",
             (state, code, request_id, actor.owner_id, actor.project_id),
         )
+        LearningRecorder().outcome(uow, actor, request_id)
         return state
 
     def receipt(self, uow: UnitOfWork, actor: Actor, request_id: str) -> dict[str, object]:

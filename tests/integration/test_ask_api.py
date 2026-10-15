@@ -124,3 +124,40 @@ def test_http_cancel_closes_active_model_and_preserves_terminal(r1_task: dict[st
         assert receipt["state"] == "CANCELLED" and receipt["response_sha256"] is None
         recovered = client.post("/v1/ask", json={**payload, "request_id": str(uuid4())}, headers=CLI)
         assert recovered.status_code == 200 and recovered.json()["text"] == "READY"
+
+def test_http_ledger_and_explicit_correction(r1_task: dict[str, str], tmp_path: Path) -> None:
+    actor, _ = initialize(r1_task, tmp_path)
+    mocked, _ = transport(valid_frames())
+    client = _client(r1_task)
+    mount_ask_api(
+        client.app,
+        AskApi(
+            LocalProvider(Path("/synthetic"), transport=mocked),
+            lambda: HardwareProbe(ARCHIVE).collect(preset="omen-8gb"),
+        ),
+    )
+    payload = dict(request_id=str(uuid4()), project_id=actor.project_id, question="Say READY")
+    answer = client.post("/v1/ask", json=payload, headers=CLI).json()
+    ledger = client.get(f"/v1/ask/{payload['request_id']}/ledger", headers=CLI)
+    assert ledger.status_code == 200
+    records = ledger.json()["records"]
+    assert sum(r["kind"] == "route" for r in records) == 1 and sum(r["kind"] == "outcome" for r in records) == 1
+    assert {r["body"]["dimension"] for r in records if r["kind"] == "exposure"} == {
+        "authorized",
+        "accessible",
+        "observed",
+    }
+    correction = dict(
+        request_id=payload["request_id"],
+        output_sha256=answer["response_sha256"],
+        kind="explicit_text",
+        body="Please use PostgreSQL",
+        label="PRIVATE",
+    )
+    assert client.post("/v1/corrections", json={**correction, "approved": True}, headers=CLI).status_code == 422
+    accepted = client.post("/v1/corrections", json=correction, headers=CLI)
+    assert accepted.status_code == 201 and accepted.json()["correction_id"]
+    assert (
+        client.get(f"/v1/ask/{payload['request_id']}", headers=CLI).json()["response_sha256"]
+        == answer["response_sha256"]
+    )
