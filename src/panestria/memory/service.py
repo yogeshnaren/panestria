@@ -176,9 +176,11 @@ class MemoryService:
             " AND i.valid_from<=clock_timestamp() AND (i.valid_until IS NULL OR i.valid_until>clock_timestamp())"
             " AND (i.retain_until IS NULL OR i.retain_until>clock_timestamp()) AND s.privacy_label=ANY(%s))"
             " SELECT id::text,revision_id::text,current_revision,row_version,source_id::text,sha256,body,"
-            " privacy_label,pinned,ts_rank_cd(search_document,websearch_to_tsquery('english',%s)),"
+            " privacy_label,pinned,ts_rank_cd(search_document,websearch_to_tsquery('english',"
+            " array_to_string(tsvector_to_array(to_tsvector('english',%s)),' OR '))),"
             " conflict_key,source_uri,count(*) FILTER (WHERE pinned) OVER ()"
-            " FROM scoped WHERE pinned OR search_document @@ websearch_to_tsquery('english',%s)"
+            " FROM scoped WHERE pinned OR search_document @@ websearch_to_tsquery('english',"
+            " array_to_string(tsvector_to_array(to_tsvector('english',%s)),' OR '))"
             " ORDER BY pinned DESC,10 DESC,id LIMIT %s",
             (actor.owner_id, actor.project_id, list(allowed_labels), query, query, limit),
         ).fetchall()

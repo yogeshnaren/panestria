@@ -36,6 +36,9 @@ def test_scoped_valid_fact_recall(r1_task: dict[str, str], record_property: pyte
         assert [h.ref for h in hits] == [pin, preference]
         assert hits[0].explanation == "owner_pin" and hits[1].explanation == "project_fts_match"
         assert hits[1].source_uri == "user-submitted" and hits[1].label == "PRIVATE"
+        assert preference in [
+            h.ref for h in service.search(uow, actor, "Which storage do I prefer? Answer using just its name.")
+        ]
         assert [h.ref for h in service.search(uow, actor, "PostgreSQL", allowed_labels=("PUBLIC",))] == [pin]
         c.commit()
         service.add(
