@@ -59,7 +59,7 @@ These groups are planned obligations, not observed coverage. Actual assertions/p
 | AOS-011-TC01 | integration | `tests/integration/test_aos_011.py::test_scoped_valid_fact_recall` | Project preference returns exact source/current revision; expired, superseded and suppressed facts absent before ranking. |
 | AOS-011-TC02 | security | `tests/integration/test_aos_011.py::test_cross_project_injection` | Other owner/project data never appears; memory content cannot change policy, provider route or standing rules. |
 | AOS-011-TC03 | contract | `tests/integration/test_aos_011.py::test_five_stages_unknown_attribution` | Five distinct stages persist with observer/confidence; inclusion/success never invent used/helped causality. |
-| AOS-011-TC04 | integration | `tests/integration/test_aos_011.py::test_revision_suppression_restore` | Correction creates new revision; pins retained; suppression blocks new contexts and DB restore retains lineage/suppression metadata. |
+| AOS-011-TC04 | integration | `tests/integration/test_memory_restore.py::test_revision_suppression_restore` | Correction creates new revision; pins retained; suppression blocks new contexts and DB restore retains lineage/suppression metadata. |
 
 After tests exist, baseline command is `uv run --frozen pytest tests/integration/test_aos_011.py --junitxml=evidence/AOS-011.xml`. Register lane markers and gate_case_id in pytest user_properties; default CI excludes live. Release promotion still needs separately observed live cases. Missing future nodes remain pending. Test collection, scenario assertion outcomes and candidate/version consistency must be checked by the gate evaluator, not inferred from exit 0.
 

@@ -53,3 +53,34 @@ Current non-live baseline: 241 PASS / 15 live deselected at `58432df`, with the
 owner's R0 table hashes unchanged. Later targeted privacy, lock-order, verifier,
 primary-recovery and protected-Git checks passed. New tests/cases still need one
 fresh final candidate and full coverage reconciliation before release promotion.
+
+
+## Local continuation while Claude quota resets
+
+The owner expects the account limit to reset within about 24 hours and asked
+that it not stop other work. This is a live-inference dependency, not a global
+implementation blocker. Continue provider-free coding and validation; no
+spending-setting changes, credential substitution or quota retry loop is used.
+
+The continuation adds pinned native stream validation and responsive bounded
+process supervision, protected final Git snapshots, independent OS verification,
+immutable scope/contract/epoch/check/report-bound Build evidence, exact approval
+and protected Git/outbox integration, and real memory backup/restore proof.
+Policy changes now revoke approved actions through forward migration
+`0016_approval_revocation` while preserving their original decision and recording
+separate scoped revocation metadata. A confirmed lost merge reply can resume
+verification and complete; cancellation is preserved. Protected repositories are
+mapped to owner/project identity, even when another repository has identical Git
+objects. All work is split into user-authored commits on `r1-alpha`.
+
+The clean code candidate `ddd10418a4038b4f104c602b5dec4231d9bb6924` passed 297 default
+(non-live) tests and four real Docker independent-verifier cases. Ruff, strict
+mypy (127 source files) and all 10 import contracts passed. The 16 accepted R0
+review tables retained identical row counts/hashes before and after the full
+runs. Retained evidence: [local continuation summary](../evidence/R1-local-continuation/summary.json).
+No paid SDK request or native Claude inference was made in this continuation.
+
+R1 remains IN_PROGRESS and G1 NOT_RUN. Native Claude/profile/tool-gateway and
+DBOS/API integration, successful native generation/verified merge, the permitted
+SDK smoke, review demo/runbooks, remaining clause/lifecycle coverage and final
+cumulative G1 evaluation remain. These development checks do not promote R1.
