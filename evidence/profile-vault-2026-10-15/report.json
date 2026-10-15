@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "scope": "component-only: encrypted profile storage, lifecycle and restore",
+  "source_commit": "b1aeafc64206a590f26ea1a3dc0db5aa066d290b",
+  "observed_at": "2026-10-15T12:24:53.501498+00:00",
+  "result": "PASS",
+  "tests": {
+    "vault_and_actual_restore": 29,
+    "schema_round_trip_drift": 1,
+    "failed": 0
+  },
+  "source_sha256": {
+    "src/panestria/contracts/profile.py": "9293f83239fd137ac2ec96ef24c3767cc017051a3f0224c9a0e5ffe6dd13787e",
+    "src/panestria/memory/vault.py": "8ce0dbdbb1cb34616ba21fa5eba07263f553f182dddc7085dca2cdf9619e531d",
+    "src/panestria/memory/keys.py": "cc65dd77ff699c0c7adfae6e979183d25f5a53aee2943df11857b55a63ac6193",
+    "migrations/versions/0020_profile_vault.py": "ba54697049962318648450ae9ec5e18b6f7ae57ab1dffb8841121b2a15cf3461",
+    "tests/integration/test_profile_vault.py": "b94ca1356837622eaa61c85f28e6e667c67d18059a25e9212fbc65b74687d4cb",
+    "tests/integration/test_profile_vault_restore.py": "8cb365e47ec25c281f0545268860d6ce899fdd930a982d493c0357af9d7e1bca",
+    "tests/integration/test_aos_002_migration.py": "b789e6efbaf77f10c5bf23ce961a2f6cc8d51b704b67a0911b9df1e640d1ad16",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e",
+    ".importlinter": "bc75998b077f693591daffc90a4672f50965ab3750e1c8e4d9346895cdea7bb8"
+  },
+  "junit_sha256": "77339b303e66ba9b66a1c7137c74ed66e03f5404c32ca981be84ffd07e045056",
+  "crypto": "actual pinned AES-GCM-256",
+  "database": "actual isolated PostgreSQL; actual pg_dump/pg_restore",
+  "keys": "synthetic test-only memory implementation; OS adapter qualified separately",
+  "owner_data_or_services_touched": false,
+  "provider_calls": 0,
+  "release_gate_result": "NOT_EVALUATED",
+  "limitations": [
+    "Profile runtime/API/context dispatch disabled",
+    "No complete TC06/TC07 or release acceptance claim",
+    "No real personal profile or owner keyring used",
+    "No host administrator protection or full-database rollback guarantee"
+  ]
+}
