@@ -101,3 +101,15 @@ forbidden_modules =
     panestria.brokers
     panestria.api
     panestria.cli
+
+[importlinter:contract:profile-secret-boundary]
+name = Workers, inference and verifiers cannot load profile vault keys
+type = forbidden
+source_modules =
+    panestria.brokers
+    panestria.sandbox
+    panestria.inference
+    panestria.verification
+forbidden_modules =
+    panestria.memory.keys
+    panestria.memory.vault
