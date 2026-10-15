@@ -140,3 +140,15 @@ no receipt completes a task or creates approval. Source-bound report and earlier
 failed development observations: evidence/native-check-authority-2026-10-15.
 Actual native MCP/settings/parser/hostile-project conformance remains pending;
 this component does not enable or certify a native shell tier or full G1 case.
+
+The [separate PUBLIC synthetic MCP profile](../design/26-NATIVE-MCP-READ-PROFILE.md)
+uses the existing pinned Claude subscription principal with restricted/explicit
+settings and only the private registered-check tool. At f67b647, 172 targeted
+checks and two actual native checks pass, including empty-auth zero-turn hostile
+configuration startup and an actual subscription call through PostgreSQL, Docker
+and protected report. Six earlier native rejections stay recorded as failures.
+No credentials were read/copied, paid SDK or provider fallback used. Native cash
+is unknown; the budget flag is an estimate. Bare mode was excluded because it
+skips subscription credentials; safe-mode no-tool proposals remain unchanged.
+No general owner task/native shell profile or full AOS010/G1/R3 case is enabled
+or promoted. Evidence and limits: evidence/native-mcp-profile-2026-10-15.

@@ -6,6 +6,7 @@ import argparse
 import json
 import math
 import os
+import resource
 import selectors
 import socket
 import sys
@@ -150,6 +151,13 @@ def _pump(connection: socket.socket, input_fd: int, output_fd: int, deadline: fl
 
 
 def main() -> None:
+    # A native launcher owns auth/config handles. They are not part of the shim
+    # protocol, even when its runtime happens to inherit extra descriptors.
+    os.environ.clear()
+    maximum = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
+    if maximum == resource.RLIM_INFINITY:
+        maximum = os.sysconf("SC_OPEN_MAX")
+    os.closerange(3, maximum)
     parser = argparse.ArgumentParser(description="Internal Panestria registered-check stdio relay")
     parser.add_argument("--endpoint", type=Path, required=True)
     parser.add_argument("--device", type=int, required=True)
