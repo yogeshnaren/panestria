@@ -7,6 +7,7 @@ import json
 import os
 import selectors
 import subprocess
+import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -49,9 +50,17 @@ class DockerSandbox:
         return result
 
     def run(
-        self, workspace: Path, argv: tuple[str, ...], profile: SandboxProfile, *, attempt_id: str | None = None
+        self,
+        workspace: Path,
+        argv: tuple[str, ...],
+        profile: SandboxProfile,
+        *,
+        attempt_id: str | None = None,
+        cancel: threading.Event | None = None,
     ) -> SandboxReceipt:
         profile.validate()
+        if cancel is not None and cancel.is_set():
+            raise SandboxRejected("cancelled_before_start")
         if workspace.is_symlink() or not workspace.is_dir():
             raise SandboxRejected("invalid_workspace")
         workspace = workspace.resolve()
@@ -77,6 +86,8 @@ class DockerSandbox:
         name = f"panestria-worker-{identity.hex}"
         image = json.loads(self._docker(["image", "inspect", profile.image]).stdout)[0]
         image_id = str(image["Id"])
+        if cancel is not None and cancel.is_set():
+            raise SandboxRejected("cancelled_before_start")
         args = [
             "create",
             "--name",
@@ -138,7 +149,7 @@ class DockerSandbox:
             config_hash = hashlib.sha256(
                 json.dumps(effective, sort_keys=True, separators=(",", ":")).encode()
             ).hexdigest()
-            return self._execute(container_id, profile, config_hash)
+            return self._execute(container_id, profile, config_hash, cancel=cancel)
         finally:
             # No task-provided process ID or container name is accepted for cleanup.
             current = self._inspect(container_id)
@@ -207,8 +218,26 @@ class DockerSandbox:
         if any(entry["Type"] == "volume" for entry in actual["Mounts"]):
             raise SandboxRejected("implicit_volume_denied")
 
-    def _execute(self, container_id: str, profile: SandboxProfile, config_hash: str) -> SandboxReceipt:
+    def _execute(
+        self,
+        container_id: str,
+        profile: SandboxProfile,
+        config_hash: str,
+        *,
+        cancel: threading.Event | None = None,
+    ) -> SandboxReceipt:
         started = time.monotonic()
+        if cancel is not None and cancel.is_set():
+            return SandboxReceipt(
+                container_id,
+                profile.sha256(),
+                config_hash,
+                None,
+                "cancelled",
+                b"",
+                0,
+                False,
+            )
         process = subprocess.Popen(
             ["docker", "start", "--attach", container_id], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
@@ -220,6 +249,9 @@ class DockerSandbox:
         selector.register(process.stdout, selectors.EVENT_READ)
         try:
             while True:
+                if cancel is not None and cancel.is_set():
+                    reason = "cancelled"
+                    break
                 remaining = profile.wall_seconds - (time.monotonic() - started)
                 if remaining <= 0:
                     reason = "deadline_exceeded"
@@ -235,8 +267,15 @@ class DockerSandbox:
                             break
                     else:
                         selector.unregister(process.stdout)
-                if reason != "completed" or not selector.get_map():
+                if reason != "completed":
                     break
+                if not selector.get_map():
+                    # An attachment EOF does not prove the worker has exited.
+                    # Continue checking cancellation/deadline until its state is
+                    # stopped; otherwise a worker can close output and linger.
+                    if not self._inspect(container_id)["State"]["Running"]:
+                        break
+                    time.sleep(min(0.05, max(0, remaining)))
             if reason != "completed" and self._inspect(container_id)["State"]["Running"]:
                 try:
                     self._docker(["kill", container_id])

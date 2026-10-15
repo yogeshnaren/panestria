@@ -93,3 +93,10 @@ guard; an empty private directory correctly reports AUTH_REQUIRED. No native
 inference or paid SDK call is made by this inspection. Private auth setup and
 native tool-gateway/startup conformance remain live integration dependencies;
 independent implementation continues. See [the preflight runbook](testing/NATIVE_PREFLIGHT.md).
+
+The subsequent sandbox lifecycle task adds trusted cancellation events and
+continues deadline/termination checks after attachment EOF. Four actual Docker
+cases prove running/closed-output cancellation, closed-output timeout and refusal
+to start after inspected creation; two hermetic cases cover pre-cancelled
+allocation and a detached attachment. See [sandbox cancellation](testing/SANDBOX_CANCELLATION.md).
+Native gateway/controller and lease-revocation wiring remain pending.
