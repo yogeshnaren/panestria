@@ -454,7 +454,10 @@ class ClaudeEventParser:
                         text = _text(value, maximum=4096)
                         # The CLI can flatten the MCP content array/result, rather
                         # than just its text. Normalize one strict JSON layer only.
-                        value = json.loads(canonical_payload('{"value":' + text + "}"))["value"]
+                        wrapper = json.loads(canonical_payload('{"value":' + text + "}"))
+                        if set(wrapper) != {"value"}:
+                            raise ValueError
+                        value = wrapper["value"]
                         if isinstance(value, dict) and "outcome" in value:
                             RegisteredCheckReceipt.model_validate(value)
                             return
