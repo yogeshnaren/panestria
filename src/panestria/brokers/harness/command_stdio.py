@@ -121,6 +121,8 @@ def _pump(connection: socket.socket, input_fd: int, output_fd: int, deadline: fl
                             input_eof = True
                         else:
                             for frame in input_frames.feed(data):
+                                if len(inbound) + len(frame) + 1 > _BUFFER_BYTES:
+                                    raise CommandTransportUnavailable("shim_buffer_limit")
                                 inbound.extend(frame + b"\n")
                             input_partial = (input_partial or now) if input_frames.pending else None
                     else:
@@ -137,6 +139,8 @@ def _pump(connection: socket.socket, input_fd: int, output_fd: int, deadline: fl
                                     body = json.loads(canonical_payload(frame.decode("utf-8")))
                                     if body.get("jsonrpc") != "2.0":
                                         raise CommandTransportUnavailable("invalid_controller_frame")
+                                    if len(outbound) + len(frame) + 1 > _BUFFER_BYTES:
+                                        raise CommandTransportUnavailable("shim_buffer_limit")
                                     outbound.extend(frame + b"\n")
                                 output_partial = (output_partial or now) if output_frames.pending else None
                 except BlockingIOError:
