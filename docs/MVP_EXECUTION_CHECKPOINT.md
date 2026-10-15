@@ -51,9 +51,10 @@ remain unchanged except additive active-schema/migration/interface updates.
 | #73 | Internal bounded MCP registered-check protocol, fixture authority only | 936 / 38 | 0e01e82 |
 | #74 | Actual private bounded Unix socket and stdio relay, fixture authority only | 983 / 38 | 435d95f |
 | #75 | Actual durable required read check, policy/lease fencing and report proof | 1010 / 38 | 848414b |
+| #76 | Actual pinned PUBLIC subscription MCP read conformance | 1059 / 40 | f933999 |
 
-Current verified main: 848414b261aaaeacf356e4068abb6048febf021d; latest CI
-run 38819495931 at exact head 9be5584. PR #62's earlier run exposed an older Ask
+Current verified main: f93399970c623915fecfc774fc0401a7ea405575; latest CI
+run 38821747993 at exact head 4b0726c. PR #62's earlier run exposed an older Ask
 downgrade test sharing newer audit data; a schema-only restored isolated guard
 test fixed it without weakening audit-loss protection. PR #61 attempt 1 failed one proposal-demo
 approval-flow test; isolated actual-PG/Docker reproduction and exact-head retry
@@ -79,18 +80,17 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
 ## Exact next work
 
-1. Finish `task/native-mcp-profile` with exact-head CI/review. The separate PUBLIC
-   synthetic restricted subscription profile now actually connects to one private
-   MCP server and invokes the reviewed check through PostgreSQL/Docker/protected
-   report. At f67b647, 172 targeted default checks and two actual native checks
-   pass. Evidence: evidence/native-mcp-profile-2026-10-15. Six earlier rejected
-   native observations stay failed with their source hashes. Only the final
-   candidate has the observed pass; native cash remains unknown and no direct
-   paid SDK call/new credentials/fallback were used. Task remains RUNNING for
-   independent verification; this does not enable a general user/native profile
-   or complete AOS010/G1/R3. Full case, scope/privacy and native startup/OS-boundary
-   obligations remain. Next complete R2 actual retained fetch/reader/source/claim
-   authority and the remaining original R1/R3 and extension requirements.
+1. Finish `task/research-public-fetch` with exact-head CI/review. The internal
+   PUBLIC HTTPS443 transport pins all-public DNS/actual TLS peers and bounds every
+   redirect, response framing/body, resolver slot and overall receive deadline.
+   At ecf564f, 178 targeted checks pass; at 3c1b3a2, three actual public TLS cases
+   pass with identical fetch code. Example.org/IANA bytes are hashed; an actual
+   IANA HTTP downgrade is refused. The initial wrong test expectation stays failed.
+   Evidence: evidence/research-public-fetch-2026-10-15. Returned bytes remain in
+   memory: durable scoped fetch/source/claim metadata, protected SourceStore,
+   isolated extraction and claim/citation authority remain next R2 obligations.
+   The merged native PUBLIC synthetic MCP component passed actual subscription
+   read checks, but does not enable a general native user/shell profile or G1.
    Protected research bytes are merged, with 34 actual filesystem/process and 79
    contract/text checks plus three existing Build checks. Source/claim metadata,
    actual retained-fetch/reader/SourceStore authority remain next R2 obligations.

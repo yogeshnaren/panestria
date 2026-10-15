@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "source_commit": "ecf564f40c6d132adfe0de795c1fb56ddeb8a176",
+  "result": "PASS",
+  "targeted_checks": 178,
+  "new_fetch_checks": 55,
+  "shared_address_checks": 44,
+  "research_contract_text_checks": 79,
+  "actual_public_tls_checks": 3,
+  "provider_inference_calls": 0,
+  "scope": "internal trusted-controller transport for already-authorized PUBLIC HTTPS443 URLs, returning memory-only bounded bytes; no policy/source/citation authority",
+  "observed": [
+    "HTTPS URL/host/credential/fragment/control/port validation; no cookie/auth/custom-header/proxy/decompression/implicit retry",
+    "all resolved addresses public unicast including no mapped/tunnel/site-local/3fff/scope; one numeric peer pinned before/after hostname-verified certificate-required TLS",
+    "fresh validation and DNS for every redirect; relative/crosshost redirects, cycles/budget/private/downgrade/duplicate/folded/control denial",
+    "fixed secret-free GET headers and private URL/body repr",
+    "bounded four admission/four DNS workers; timed-out OS resolver retains its own slot until actual completion",
+    "per-receive overall deadline and cancellation polling; 32KiB total header/chunk-framing bound and body cap",
+    "length ambiguity, incomplete fixed/chunked bodies, encoding/compression and malformed headers cannot complete",
+    "unknown-length over-cap response returns explicit TRUNCATED capped bytes",
+    "actual public TLS Example.org/IANA content hashes and pinned peer/certificate hashes retained, not source text",
+    "actual IANA example URL HTTP downgrade denied before following; initial expectation failure retained"
+  ],
+  "observations": [
+    {
+      "file": "initial-public-tls-one-pass-one-denial.xml",
+      "source_commit": "5252571ad7440a912e567a15361ba6d0d5f4d15d",
+      "result": "1 passed, 1 failed: IANA example URL redirects to HTTP, which transport correctly refused; test expectation corrected without following downgrade",
+      "sha256": "6b2e65b4e4f960fefb5a0537894ed7d8378699ea646cc28403a6e5c56cfc9b50"
+    },
+    {
+      "file": "fetch-55.xml",
+      "source_commit": "3c1b3a2f4f79cc65f7e015236fac416993d07dc4",
+      "result": "55 protocol/SSRF checks passed; injected DNS/TLS and actual local trickle reader are not external TLS proof",
+      "sha256": "cefa0a7393a7c0d2458e310f2f96474a05716e886222ebee7c7b97d7b5e3af4f"
+    },
+    {
+      "file": "actual-public-tls-3.xml",
+      "source_commit": "3c1b3a2f4f79cc65f7e015236fac416993d07dc4",
+      "result": "3 actual public TLS checks passed: Example.org and IANA reserved pages; actual IANA HTTP downgrade refused",
+      "sha256": "e4fe0134c62168e5d6764a4811bb358fb92d4006ef1a3336a6e5e88f7860f1bb"
+    },
+    {
+      "file": "expanded-178.xml",
+      "source_commit": "ecf564f40c6d132adfe0de795c1fb56ddeb8a176",
+      "result": "178 fetch/address/research contract/text checks passed after verified main merge",
+      "sha256": "1898cce3261b4921afa1b4476c97017e50e6be54d0c53cf0d762b325e8d2a739"
+    }
+  ],
+  "source_sha256": {
+    "src/panestria/brokers/research/fetch.py": "0d3bb2ab23778733d18bb8fcc158a7527743c65d928e67bd31450bdc3994bd43",
+    "src/panestria/sandbox/egress.py": "465b9276c73f7e35abc4b0a1100ed801de425410cf614b0c32243ad67bf2e030",
+    "tests/unit/test_research_public_fetch.py": "3201ae7d8309560e6b79053159bcff8a19f2b9cc7251c4a8f124e824b750ace1",
+    "tests/integration/test_research_public_fetch_live.py": "8ef86bbedb6a23c566e24b940465dfb757deff07174855becd6df56da7739df9",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "checks": [
+    "Ruff PASS",
+    "mypy 178 files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "references": [
+    "https://docs.python.org/3.12/library/http.client.html",
+    "https://docs.python.org/3.12/library/ssl.html"
+  ],
+  "reuse": "existing gateway public-unicast/exact-peer predicates reused without widening provider CONNECT allowlist; stdlib HTTP/TLS framing inspected and bounded reader added, no vendor implementation copied",
+  "limitations": [
+    "network bytes are in memory only; durable scoped fetch/source/claim artifacts and receipt authority remain pending",
+    "injected HTTP/DNS/TLS fixtures are not evidence of real DNS rebinding/TLS failures or public DNS ownership",
+    "actual public pages do not establish extraction, canonical text, usable passages or claim support",
+    "HTTPS443 only; HTTP/nonstandard ports/compression remain refused",
+    "no API/controller policy/classification admission or source ID/citation/status promotion is enabled",
+    "connect/handshake cancellation is bounded by at most five seconds; receive polls at 0.2 seconds; no universal kernel/FS/DNS stall interruption claim",
+    "one-fetch limit only; aggregate multi-source request budget must be enforced by the later orchestrator",
+    "no full AOS008/AOS013/G2/R3 release gate or owner acceptance"
+  ]
+}
