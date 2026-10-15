@@ -165,6 +165,8 @@ class RegisteredCheckSession:
 
     def handle(self, raw: bytes) -> bytes | None:
         with self._lock:
+            if self.closed:
+                return None
             self._frames += 1
             if self._frames > self._max_frames:
                 self.close()
@@ -197,8 +199,13 @@ class RegisteredCheckSession:
             previous = self._responses.get(key)
             if previous:
                 return previous[1] if previous[0] == digest else _error(identity, -32600, "request_id_reused")
-            if key in self._active:
-                return _error(identity, -32000, "request_in_progress")
+            pending = self._active.get(key)
+            if pending:
+                return (
+                    _error(identity, -32000, "request_in_progress")
+                    if pending[0] == digest
+                    else _error(identity, -32600, "request_id_reused")
+                )
             method, signal, command = body["method"], None, None
             try:
                 if method == "initialize":
@@ -240,7 +247,11 @@ class RegisteredCheckSession:
                 self._responses[key] = (digest, response)
                 return response
         try:
-            receipt = RegisteredCheckReceipt.model_validate(self._executor(command, self._candidate, signal))
+            receipt = (
+                RegisteredCheckReceipt(outcome="CANCELLED")
+                if signal.is_set() or self.closed
+                else RegisteredCheckReceipt.model_validate(self._executor(command, self._candidate, signal))
+            )
         except Exception:
             receipt = RegisteredCheckReceipt(outcome="UNKNOWN")
         payload = receipt.model_dump()
