@@ -37,9 +37,12 @@ remain unchanged except additive active-schema/migration/interface updates.
 | #59 | Explicit local key setup/reconciliation | 591 / 35 | d545fdb |
 | #60 | Restricted Ask overlay/private receipt mode | 619 / 35 | e51df70 |
 | #61 | Actual isolated OS-key/local-model qualification | 619 / 36 | edc1bb9 |
+| #62 | Explicit audited local-read project setup | 626 / 36 | d5e9068 |
 
-Current verified main: edc1bb908fdd49ba24e26d27085a5c9d53fd503a; latest CI
-run 38743000168 attempt 2 at head adeee1a. Attempt 1 failed one proposal-demo
+Current verified main: d5e9068f70b58d4ef36c876a6eff18eb3e327e35; latest CI
+run 38773471378 at head fa61b93. PR #62's earlier run exposed an older Ask
+downgrade test sharing newer audit data; a schema-only restored isolated guard
+test fixed it without weakening audit-loss protection. PR #61 attempt 1 failed one proposal-demo
 approval-flow test; isolated actual-PG/Docker reproduction and exact-head retry
 passed. Root cause remains unconfirmed and is an R1/G1 follow-up, not a claimed
 fix. Query Git/GitHub before continuing. Keep previous
@@ -63,12 +66,14 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
 ## Exact next work
 
-1. Finish `task/local-owner-setup`: explicit local-read policy plus immutable
-   project receipt without fabricated tasks. Eight actual PostgreSQL checks,
-   including concurrency, restore and migration reapply, passed locally. Finish
-   exact-head CI/review/merge; then add the supported local Ask listener/model
-   lifecycle and pairing. Tests currently mount Ask programmatically; the R0
-   launcher and preserved demo do not expose these new APIs.
+1. Finish `task/local-ask-server` exact-head CI/review/merge. It includes verified
+   main and a supported private-config/loopback CLI launch, paired sessions,
+   bounded HTTP and exact owned constrained-model lifecycle. Twenty local server
+   checks and actual CLI/TCP/local-model Ask/restart/shutdown qualification passed;
+   source-bound evidence is in evidence/local-server-2026-10-15. Profiles remain
+   off, no Build routes, no release pass. Then compose the usable browser Ask
+   surface and remaining explicit profile setup/boundaries. The old R0 launcher
+   and preserved proposal demo remain separate.
 2. Complete explicit opt-in local profile setup/launcher, full key lifecycle and
    encrypted restore/forgetting/grant boundaries and whole privacy cases. The
    ordinary ContextCompiler stores metadata/digests, not prompt bodies; profile

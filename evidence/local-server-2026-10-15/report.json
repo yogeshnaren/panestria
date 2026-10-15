@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "scope": "synthetic actual CLI/TCP HTTP/PostgreSQL/offline CPU local model",
+  "source_commit": "5469fbd4d6c277c58e990e71c26b14995ebd8a7f",
+  "observed_at": "2026-10-15T17:06:39.931948+00:00",
+  "result": "PASS",
+  "test_count": 1,
+  "source_sha256": {
+    "src/panestria/api/local_server.py": "6884d22228ef84fbe44f820dedba6f15aca8554b8dd0342df663829968e4d4de",
+    "src/panestria/api/local_protocol.py": "5831c1553f3920bcbb312fdafdc9a48a795d0be1143d103966d08003fe3d7852",
+    "src/panestria/config_local.py": "9c9115f9dbe25ce4efae8b3cafb988285807f7449d3fc51262411d8354805242",
+    "src/panestria/cli/local.py": "01b2e51fcf16fb282b0256cbf7826dbc27b13fea32145cb0195ce5d4cfc9adfc",
+    "src/panestria/inference/runtime.py": "0cfed95c3a988af5bc5f7527207c8497560a074674c63655003e2dac3a5bc0d7",
+    "tests/integration/test_local_server.py": "f31fcf087b10648cc7414829e36988b1dc9261904f22042173f6cf44c838bc2f",
+    "tests/integration/test_local_server_live.py": "cb9672fd4ffe1d64d087480955a917b8922c6a9c4edf5603c1187b904176b99a",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "runtime": {
+    "model": "qwen2.5:1.5b-instruct",
+    "model_digest": "65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "cpu": 2,
+    "memory_limit_bytes": 2684354560,
+    "network": "none",
+    "read_only_public_cache": true
+  },
+  "assertions": [
+    "real TCP HTTP local-model Ask completed",
+    "cookie/CSRF enforcement",
+    "existing-listener preserved on second-launch conflict",
+    "stable local-token-derived session survives restart",
+    "replay returns receipt without re-running model",
+    "revocation denies subsequent request",
+    "disabled profile routes",
+    "owned model/socket removed on both shutdowns",
+    "prompt/token/database URL absent captured process output",
+    "prompt body absent Ask/context/learning database rows"
+  ],
+  "paid_provider_calls": 0,
+  "mock_provider_or_model": false,
+  "owner_database_keyring_or_services_modified": false,
+  "release_gate": "NOT_EVALUATED",
+  "limitations": [
+    "synthetic local component, not full A-1 or release acceptance",
+    "no actual browser/phone UI in this test",
+    "profiles remain disabled",
+    "configured runtime caps are not measured peak resource statistics",
+    "existing DB schema/setup prerequisite is explicit; no auto migration/provider fallback"
+  ],
+  "junit_sha256": "e44e2a02a078200bffaccca7825fbf90c6c37ec183e6edd6c4daa3db17c44f10",
+  "reuse": {
+    "name": "uvicorn",
+    "version": "0.54.0",
+    "license": "BSD-3-Clause",
+    "route": "REA direct source; installed relevant modules and actual runtime conformance",
+    "source_sha256": {
+      "server.py": "c1be9d133467a42ab88d7168e408ef5a90257661a901899426214a3d1fc2d026",
+      "config.py": "cf91c6ffae283a2b2020da954b4cc4ed47d3246cb062afd09fb77d98e4c5ca87",
+      "protocols/http/h11_impl.py": "a3154a6c2cfaaaebe19ac7aa255dfe9b6b7b490de1da95274c033aa093e8c322",
+      "lifespan/on.py": "8844cf163e921613c33dc75e1b17dae372ca226254ecc2398bb41451ea4170f1"
+    }
+  },
+  "working_tree": "documentation and untracked evidence only; all referenced source matches commit",
+  "prior_observation": "initial-report.json preserves the earlier source before listener reservation correction"
+}

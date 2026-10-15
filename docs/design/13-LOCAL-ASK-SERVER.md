@@ -20,6 +20,9 @@ occurs after that lifespan. Model cleanup therefore belongs inside lifespan, wit
 an outer finally for startup failures. Disable access/ASGI/error log handlers,
 proxy headers, reload, multiple workers, websocket transport and core dumps.
 Set concurrency/backlog/header/keepalive/graceful-shutdown bounds explicitly.
+The parser's keepalive timer does not bound incomplete first/subsequent headers;
+a narrow `LocalHttpProtocol` timer closes those after five seconds while the
+pinned h11 implementation still handles parsing, framing and flow control.
 Middleware still enforces full body/header/exact Host/Origin/CSRF limits. No global
 logging/exception text, prompt, token or database URL goes to process output.
 
@@ -33,7 +36,8 @@ must be dedicated public model data, not an owner home/project mounted wholesale
 
 Bind the exact port before starting a model. Refuse conflicts and preserve other
 listeners. Verify schema/current read-only policy/setup audit, actual hardware
-headroom and pinned local model catalog. Acquire the existing global primary
+headroom and pinned model cache; catalog identity is rechecked per inference.
+Acquire the existing global primary
 lease; preserve every pre-existing model container, even stale ones. Start only
 the owned network-none constrained runtime and stop only that exact identity.
 Never reap owner services during this launcher. Startup failure is redacted and
