@@ -8,13 +8,12 @@ from uuid import uuid4
 
 from psycopg.types.json import Jsonb
 
+from panestria.contracts.classification import classification_rank
 from panestria.contracts.memory import MemorySubmission
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.policy import active_policy_ref, require_current_policy
 from panestria.kernel.uow import UnitOfWork
-
-_RANK = {"PUBLIC": 0, "PRIVATE": 1, "RESTRICTED": 2}
 
 
 def fingerprint(
@@ -86,7 +85,7 @@ class ReclassificationService:
             raise KernelDenied("not_found")
         if row[0] != expected_version:
             raise KernelDenied("version_conflict")
-        if _RANK[document.label] >= _RANK[row[2]]:
+        if classification_rank(document.label) >= classification_rank(row[2]):
             raise KernelDenied("privacy_review_not_required")
         identity = str(uuid4())
         digest = fingerprint(actor, item_id, expected_version, str(row[1]), ref, document)

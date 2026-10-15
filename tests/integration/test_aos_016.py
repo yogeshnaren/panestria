@@ -64,7 +64,9 @@ def test_sdk_privacy_and_exact_request() -> None:
 
     provider, permission = _provider(request, handle)
     try:
-        for overrides in [dict(label="PRIVATE"), dict(label="RESTRICTED"), dict(label="UNKNOWN"), dict(offline=True)]:
+        for overrides in [
+            dict(label=label) for label in ("PRIVATE", "INTERNAL", "CONFIDENTIAL", "RESTRICTED", "UNKNOWN")
+        ] + [dict(offline=True)]:
             with pytest.raises(InferenceUnavailable, match="cloud_privacy_denied"):
                 provider.generate(request.model_copy(update=overrides))
         with pytest.raises(InferenceUnavailable, match="exact_request_not_approved"):

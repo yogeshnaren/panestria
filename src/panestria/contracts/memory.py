@@ -5,8 +5,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from panestria.contracts.classification import CanonicalClass
 from panestria.contracts.policy import DataLabel
 
 
@@ -32,6 +33,18 @@ class MemorySubmission(BaseModel):
         if self.valid_from and self.valid_until and self.valid_from >= self.valid_until:
             raise ValueError("invalid_validity")
         return self
+
+
+class MemorySubmissionV2(MemorySubmission):
+    schema_version: Literal[2]
+    label: CanonicalClass
+
+    @field_validator("schema_version", mode="before")
+    @classmethod
+    def explicit_version(cls, value: object) -> object:
+        if type(value) is not int or value != 2:
+            raise ValueError("invalid_memory_schema_version")
+        return value
 
 
 MemoryStage = Literal["retrieved", "included", "used_by_worker", "judged_unused", "candidate_helped"]

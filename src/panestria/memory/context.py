@@ -9,11 +9,13 @@ from uuid import UUID, uuid4
 
 from psycopg.types.json import Jsonb
 
+from panestria.contracts.classification import derive_classification, resolve_classification
 from panestria.contracts.memory import MemoryObservation
 from panestria.contracts.policy import DataLabel
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.uow import UnitOfWork
+from panestria.memory.classification import MemoryClassificationService, SourceClassification
 from panestria.memory.service import MemoryHit, MemoryRef, MemoryService
 from panestria.policy.labels import LabelService
 
@@ -38,6 +40,15 @@ class ContextCompiler:
     def __init__(self, memory: MemoryService | None = None) -> None:
         self.memory = memory or MemoryService()
 
+    def _classification(self, uow: UnitOfWork, actor: Actor, ref: MemoryRef) -> SourceClassification:
+        try:
+            record = MemoryClassificationService().get(uow, actor, ref.source_id)
+        except KernelDenied:
+            raise KernelDenied("memory_classification_invalid") from None
+        if record.source_sha256 != ref.sha256:
+            raise KernelDenied("memory_classification_invalid")
+        return record
+
     def _verify(self, uow: UnitOfWork, actor: Actor, hit: MemoryHit) -> None:
         # Lock the current item through compilation/commit. Later admissions revalidate
         # before dispatch; suppression cannot erase text already sent to a running model.
@@ -56,6 +67,8 @@ class ContextCompiler:
         digest = hashlib.sha256(hit.body.encode()).hexdigest()
         if row[:5] != (digest, hit.body, digest, hit.body, hit.label) or row[5] != hit.pinned:
             raise KernelDenied("memory_integrity_failed")
+        if self._classification(uow, actor, hit.ref).original_label != hit.label:
+            raise KernelDenied("memory_classification_invalid")
 
     def compose(
         self,
@@ -160,6 +173,7 @@ class ContextCompiler:
         ]
         if persisted_refs != [(s.item_id, s.revision_id, s.source_id, s.sha256) for s in pack.sources]:
             raise KernelDenied("context_integrity_failed")
+        labels: list[object] = [row[2].get("question_label")]
         for ref in pack.sources:
             current = uow.execute(
                 "SELECT r.sha256 FROM panestria.memory_item i JOIN panestria.memory_revision r"
@@ -171,3 +185,7 @@ class ContextCompiler:
             ).fetchone()
             if current is None or current[0] != ref.sha256:
                 raise KernelDenied("memory_stale")
+            labels.append(self._classification(uow, actor, ref).effective_label)
+        expected = derive_classification(labels).effective
+        if expected is None or resolve_classification(pack.label).effective != expected:
+            raise KernelDenied("context_classification_invalid")

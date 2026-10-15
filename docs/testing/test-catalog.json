@@ -1392,7 +1392,7 @@
       "extension_id": "MVP-X07",
       "release": "R3",
       "lane": "security",
-      "planned_nodeid": "tests/e2e/test_mvp_x07.py",
+      "planned_nodeid": "tests/integration/test_canonical_memory_v2.py",
       "expected": "Goal, policy, source and derived classifications use PUBLIC/INTERNAL/CONFIDENTIAL/RESTRICTED consistently; UNKNOWN denies; legacy PRIVATE remains restricted pending an audited explicit resolution.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": false,

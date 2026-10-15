@@ -68,7 +68,7 @@ class SdkProvider:
         return asyncio.run(self.agenerate(request))
 
     async def agenerate(self, request: InferenceRequest) -> InferenceResult:
-        if request.offline or resolve_classification(request.label).effective in {None, "RESTRICTED"}:
+        if request.offline or resolve_classification(request.label).effective != "PUBLIC":
             raise InferenceUnavailable("cloud_privacy_denied")
         if request.model_ref != self.tariff.model_ref:
             raise InferenceUnavailable("model_not_pinned")

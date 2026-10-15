@@ -6,6 +6,7 @@ from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from panestria.contracts.classification import resolve_classification
 from panestria.contracts.policy import DataLabel
 
 
@@ -50,7 +51,7 @@ class ExposureObservation(BaseModel):
             raise ValueError("exposure_source_mismatch")
         if (
             self.destination != "local"
-            and self.label in {"RESTRICTED", "UNKNOWN"}
+            and resolve_classification(self.label).effective != "PUBLIC"
             and self.dimension == "authorized"
             and self.value == "yes"
         ):

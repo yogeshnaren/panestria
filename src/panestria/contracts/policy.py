@@ -9,7 +9,9 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 Action = Literal["read", "edit", "tool-install", "external-send", "spend", "merge", "delete", "policy-change"]
-DataLabel = Literal["PUBLIC", "PRIVATE", "RESTRICTED", "UNKNOWN"]
+# Compatibility transport: PRIVATE is legacy and UNKNOWN is deny-only.
+# Canonical authorized classes are defined in contracts.classification.
+DataLabel = Literal["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED", "PRIVATE", "UNKNOWN"]
 TrustProfile = Literal["SYNTHETIC_DEV", "PERSONAL_SANDBOX", "TRUSTED_PROJECT", "HARDENED_WORKSPACE"]
 Autonomy = Literal["observe", "suggest", "approve-first", "act-and-report", "act-silently"]
 

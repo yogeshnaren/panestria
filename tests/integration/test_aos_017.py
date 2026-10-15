@@ -44,7 +44,8 @@ def test_ten_prompt_ask_fixture(
                 AskSubmission(request_id=str(uuid4()), project_id=actor.project_id, question=item["question"]),
             )
             c.commit()
-            assert prepared.inference.offline and prepared.inference.label == "PRIVATE"
+            assert prepared.submission.privacy_label == "PRIVATE"
+            assert prepared.inference.offline and prepared.inference.label == "RESTRICTED"
             assert (
                 prepared.context.token_upper_bound + prepared.inference.max_output_tokens + 128
                 <= prepared.inference.context_tokens
