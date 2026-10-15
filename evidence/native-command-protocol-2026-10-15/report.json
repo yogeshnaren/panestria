@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "source_commit": "309bfa52dce072ab20d80c12daeeb4da2a71ce62",
+  "result": "PASS",
+  "targeted_checks": 122,
+  "new_protocol_checks": 48,
+  "live_checks": 0,
+  "controller": "LABELED_SYNTHETIC_CALLBACK_FIXTURE_ONLY",
+  "scope": "closed MCP 2025-06-18 JSON-RPC lifecycle, check arguments, replay cache, bounded counts and concurrent cancellation; no transport/native runtime authority",
+  "observed": [
+    "server exposes only registered command and fixed candidate references",
+    "no client owner/project/permit/approval/path/shell/credential fields reach callback",
+    "duplicate request IDs do not replay commands and changed IDs deny",
+    "call/frame budgets and closed lifecycle prevent additional dispatch",
+    "active cancellation and close request cancellation without claiming OS reaping",
+    "fixed result metadata has no raw stdout or task-acceptance verdict",
+    "unknown callback or malformed receipt stays UNKNOWN and diagnostics redact input"
+  ],
+  "source_sha256": {
+    "src/panestria/contracts/native_command.py": "cde66fd1b935e93e00d62abe34c3fe2006004596793cba6a53f52d5a2ea7572d",
+    "src/panestria/brokers/harness/command_protocol.py": "49fab62aa136dbf4e4296b840d7145a34e73587cad5ed10610b3cb469c8acb0f",
+    "tests/unit/test_native_command_protocol.py": "b4bec1687da7af8b459e98aab53c1e185a7c19e747ba49b07a3543a9682d9e07",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "junit_sha256": "51a8afffc3a4faf52494458abe4bcb791c75261b6c39de0dcf37768a09b15620",
+  "references": [
+    "https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle",
+    "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+    "https://modelcontextprotocol.io/specification/2025-06-18/basic/utilities/cancellation"
+  ],
+  "limitations": [
+    "not a running MCP service",
+    "no durable authority/approved-registry or stored report existence proof from a callback fixture",
+    "actual transport/native tools/config/auth/hostile-project conformance remain pending",
+    "no full AOS010/G1/R3 gate or owner acceptance"
+  ],
+  "provider_calls": 0
+}

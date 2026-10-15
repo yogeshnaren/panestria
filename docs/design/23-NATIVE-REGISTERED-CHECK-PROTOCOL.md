@@ -9,7 +9,7 @@ Pin the wire dialect to MCP 2025-06-18 and JSON-RPC 2.0. Support initialization,
 initialized notification, ping, tools/list, tools/call and cancellation. Advertise
 only one `run_registered_check` tool. The trusted constructor fixes reviewed command
 references, opaque candidate reference, call/request limits and a callback that
-must recheck the current kernel scope/lease/policy before using NativeToolGateway.
+must recheck current kernel scope/lease/policy and read-only registry access before using NativeToolGateway. A completed report reference must exist in protected storage before return.
 Clients supply only command_ref/candidate_ref, never paths, shell text, owner,
 project, approval, policy, permit, authentication or budget fields.
 

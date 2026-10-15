@@ -110,3 +110,12 @@ digest rechecks. See [the gateway runbook](../testing/NATIVE_TOOL_GATEWAY.md).
 Durable controller/outbox wiring, native transport, allowed MCP/parser bindings,
 startup/hostile-repository conformance and authenticated generation/merge remain
 pending. No user-facing native profile is enabled by this component.
+
+
+The internal [registered-check MCP session](../design/23-NATIVE-REGISTERED-CHECK-PROTOCOL.md)
+adds closed lifecycle/tool schemas, fixed references, replay prevention, bounded
+counts and cancellation signals. Its 48 hermetic checks plus 74 related existing
+checks pass at 309bfa5. The callback is explicitly a controller fixture. No native
+profile/service is enabled; durable current-scope authority, private transport,
+registry access, finalized report proof and actual CLI/tool conformance remain
+pending. It is not a replacement for those boundaries or full AOS-010 cases.
