@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from typing import Any
 
@@ -63,6 +64,48 @@ def _reason(text: str) -> str:
     return "native_error"
 
 
+def _result_metadata(body: dict[str, Any], *, failed: bool) -> None:
+    for field in ("first_content_frame_ms", "time_to_request_ms", "ttft_ms", "ttft_stream_ms"):
+        if field in body and (type(body[field]) is not int or not 0 <= body[field] <= 900_000):
+            raise ProtocolRejected("invalid_result_metadata")
+    for field in ("queued_turn_count", "result_index"):
+        if field in body and (type(body[field]) is not int or body[field] != 0):
+            raise ProtocolRejected("unexpected_native_background_work")
+    if body.get("fast_mode_state", "off") != "off" or body.get("fast_mode_disabled_reason") not in (
+        None,
+        "sdk_opt_in_required",
+    ):
+        raise ProtocolRejected("unexpected_fast_mode")
+    if "terminal_reason" in body:
+        terminal = _text(body["terminal_reason"], maximum=128)
+        if not failed and terminal != "completed":
+            raise ProtocolRejected("incomplete_execution")
+    status = body.get("api_error_status")
+    if status is not None and (not failed or type(status) is not int or not 400 <= status <= 599):
+        raise ProtocolRejected("invalid_result_metadata")
+    if "subagent_stats" in body:
+        stats = body["subagent_stats"]
+        counters = {"spawned", "started_in_background", "max_depth", "spawned_by_subagents", "completed", "failed"}
+        maps = {
+            "requested": {"background", "foreground", "unset"},
+            "killed": {"parent", "user", "system"},
+            "refused": {"depth_limit", "concurrency_limit", "budget"},
+            "by_type": set(),
+        }
+        if (
+            not isinstance(stats, dict)
+            or set(stats) != counters | maps.keys()
+            or any(type(stats[key]) is not int or stats[key] != 0 for key in counters)
+            or any(
+                type(stats[key]) is not dict
+                or set(stats[key]) != fields
+                or any(type(value) is not int or value != 0 for value in stats[key].values())
+                for key, fields in maps.items()
+            )
+        ):
+            raise ProtocolRejected("unexpected_native_subagents")
+
+
 class ClaudeEventParser:
     def __init__(self, allowed_tools: frozenset[str] = frozenset(), *, capture_candidate: bool = False) -> None:
         self.allowed_tools = allowed_tools
@@ -111,6 +154,18 @@ class ClaudeEventParser:
             raise ProtocolRejected("invalid_event")
         digest = hashlib.sha256(raw).hexdigest()
         kind = body.get("type")
+        if kind == "system" and body.get("subtype") == "thinking_tokens":
+            _keys(body, {"type", "subtype", "session_id", "uuid", "estimated_tokens", "estimated_tokens_delta"})
+            self._session(body)
+            if not isinstance(body.get("session_id"), str):
+                raise ProtocolRejected("invalid_session")
+            for field in ("estimated_tokens", "estimated_tokens_delta"):
+                value = body.get(field)
+                if type(value) is not int or not 0 <= value <= 1_000_000:
+                    raise ProtocolRejected("invalid_thinking_estimate")
+            # UI estimates carry no completion, usage-billing or quota authority.
+            # Do not retain or expose chain-of-thought content or numeric values.
+            return NativeEvent("thinking_estimate", digest, "unverified_estimate")
         if kind == "system":
             _keys(
                 body,
@@ -198,10 +253,15 @@ class ClaudeEventParser:
                     "overageStatus",
                     "overageDisabledReason",
                     "unifiedWindows",
+                    "utilization",
                 },
             )
             if info.get("status") not in ("allowed", "allowed_warning", "rejected"):
                 raise ProtocolRejected("invalid_rate_limit")
+            if "utilization" in info:
+                utilization = info["utilization"]
+                if type(utilization) not in {int, float} or not 0 <= utilization <= 1 or not math.isfinite(utilization):
+                    raise ProtocolRejected("invalid_rate_limit")
             if "isUsingOverage" in info and info["isUsingOverage"] is not False:
                 raise ProtocolRejected("unapproved_overage")
             if info["status"] == "rejected":
@@ -210,11 +270,18 @@ class ClaudeEventParser:
                 raise ProtocolRejected("quota_unavailable")
             return NativeEvent("rate_limit", digest)
         if kind in {"assistant", "user"}:
+            metadata = {"request_id", "timestamp"} if kind == "assistant" else set()
             _keys(
                 body,
-                {"type", "message", "session_id", "parent_tool_use_id", "uuid", "error", "isSynthetic", "isReplay"},
+                {"type", "message", "session_id", "parent_tool_use_id", "uuid", "error", "isSynthetic", "isReplay"}
+                | metadata,
             )
             self._session(body)
+            for field in metadata:
+                if field in body:
+                    # Correlation strings are bounded opaque transport metadata,
+                    # never trusted task identity, timing or authorization.
+                    _text(body[field], maximum=128 if field == "request_id" else 64)
             message = body.get("message")
             if (
                 not isinstance(message, dict)
@@ -247,6 +314,17 @@ class ClaudeEventParser:
                     "stop_reason",
                     "errors",
                     "structured_output",
+                    "api_error_status",
+                    "fast_mode_disabled_reason",
+                    "fast_mode_state",
+                    "first_content_frame_ms",
+                    "queued_turn_count",
+                    "result_index",
+                    "subagent_stats",
+                    "terminal_reason",
+                    "time_to_request_ms",
+                    "ttft_ms",
+                    "ttft_stream_ms",
                 },
             )
             self._session(body, allow_before_init=True)
@@ -260,6 +338,7 @@ class ClaudeEventParser:
                 "error_max_structured_output_retries",
             }:
                 raise ProtocolRejected("unknown_result_state")
+            _result_metadata(body, failed=failed)
             if body.get("permission_denials"):
                 raise ProtocolRejected("privilege_request_denied")
             text = _text(body.get("result", ""))

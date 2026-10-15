@@ -21,8 +21,9 @@ from panestria.contracts.native_proposal import PROMPT, PROMPT_SHA256, CodePropo
 ROOT = Path(__file__).resolve().parents[2]
 
 
+@pytest.mark.parametrize("fenced", [False, True])
 def test_transport_keeps_auth_and_prompt_out_of_model_tool_scope(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fenced: bool
 ) -> None:
     binary = tmp_path / "approved"
     binary.write_text("synthetic pinned executable")
@@ -61,12 +62,13 @@ def test_transport_keeps_auth_and_prompt_out_of_model_tool_scope(
             "mcp_servers": [],
             "claude_code_version": "2.1.273",
         }
+        candidate = json.dumps({"path": "calculator.py", "content": "def add(a, b):\n    return a + b\n"})
         result = {
             "type": "result",
             "subtype": "success",
             "is_error": False,
             "session_id": session,
-            "result": json.dumps({"path": "calculator.py", "content": "def add(a, b):\n    return a + b\n"}),
+            "result": "```json\n" + candidate + "\n```" if fenced else candidate,
         }
         parser.feed((json.dumps(init) + "\n" + json.dumps(result) + "\n").encode())
         finished = parser.finish(0)
