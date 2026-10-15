@@ -493,7 +493,9 @@ class ClaudeEventParser:
             _keys(block, {"type", "thinking", "signature"})
             _text(block.get("thinking"))
         elif kind == "tool_use" and role == "assistant":
-            _keys(block, {"type", "id", "name", "input"})
+            _keys(block, {"type", "id", "name", "input"} | ({"caller"} if self.allowed_mcp_servers else set()))
+            if "caller" in block and block["caller"] != {"type": "direct"}:
+                raise ProtocolRejected("unapproved_tool_caller")
             tool_id = _text(block.get("id"), maximum=128)
             if block.get("name") not in self.allowed_tools or not isinstance(block.get("input"), dict):
                 raise ProtocolRejected("unapproved_tool")

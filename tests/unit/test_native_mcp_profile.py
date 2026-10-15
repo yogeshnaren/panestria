@@ -246,3 +246,18 @@ def test_non_execution_metadata_stops_instead_of_claiming_approval():
     state.feed(tool_message("assistant"))
     with pytest.raises(ProtocolRejected, match="native_tool_not_executed"):
         state.feed(tool_message("user", tool_result_meta=[{"id": "tool:one", "non_execution_kind": "permission-rule"}]))
+
+
+def test_direct_native_caller_is_metadata_only_and_code_execution_stays_denied():
+    for caller in [{"type": "code_execution_20250825", "tool_id": "x"}, {}, None, {"type": "direct", "approved": True}]:
+        state = parser()
+        state.feed(init())
+        body = json.loads(tool_message("assistant"))
+        body["message"]["content"][0]["caller"] = caller
+        with pytest.raises(ProtocolRejected, match="unapproved_tool_caller"):
+            state.feed(json.dumps(body).encode() + b"\n")
+    state = parser()
+    state.feed(init())
+    body = json.loads(tool_message("assistant"))
+    body["message"]["content"][0]["caller"] = {"type": "direct"}
+    assert state.feed(json.dumps(body).encode() + b"\n")[0].kind == "message"

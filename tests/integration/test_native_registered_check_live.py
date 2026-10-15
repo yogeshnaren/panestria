@@ -65,6 +65,16 @@ def test_actual_subscription_native_check_reaches_durable_read_gateway(configure
                         "message_keys": sorted(body.get("message", {}))
                         if isinstance(body.get("message"), dict)
                         else [],
+                        "block_keys": [
+                            sorted(block)
+                            for block in body.get("message", {}).get("content", [])
+                            if isinstance(block, dict)
+                        ]
+                        if isinstance(body.get("message"), dict)
+                        else [],
+                        "tool_result_shape": sorted(body["tool_use_result"])
+                        if isinstance(body.get("tool_use_result"), dict)
+                        else type(body.get("tool_use_result")).__name__,
                         "sha256": hashlib.sha256(raw).hexdigest(),
                     }
                 )
