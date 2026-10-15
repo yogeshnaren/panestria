@@ -143,7 +143,7 @@ this component does not enable or certify a native shell tier or full G1 case.
 
 The [separate PUBLIC synthetic MCP profile](../design/26-NATIVE-MCP-READ-PROFILE.md)
 uses the existing pinned Claude subscription principal with restricted/explicit
-settings and only the private registered-check tool. At 0413fee, 171 targeted
+settings and only the private registered-check tool. At f67b647, 172 targeted
 checks and two actual native checks pass, including empty-auth zero-turn hostile
 configuration startup and an actual subscription call through PostgreSQL, Docker
 and protected report. Six earlier native rejections stay recorded as failures.

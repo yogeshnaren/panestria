@@ -82,7 +82,7 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 1. Finish `task/native-mcp-profile` with exact-head CI/review. The separate PUBLIC
    synthetic restricted subscription profile now actually connects to one private
    MCP server and invokes the reviewed check through PostgreSQL/Docker/protected
-   report. At 0413fee, 171 targeted default checks and two actual native checks
+   report. At f67b647, 172 targeted default checks and two actual native checks
    pass. Evidence: evidence/native-mcp-profile-2026-10-15. Six earlier rejected
    native observations stay failed with their source hashes. Only the final
    candidate has the observed pass; native cash remains unknown and no direct

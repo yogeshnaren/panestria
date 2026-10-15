@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "source_commit": "0413fee113ccf219fd4f6a9d229c421de80425c6",
+  "source_commit": "f67b6470ae058a9e385a3e8dd36171a779ebacba",
   "result": "PASS",
-  "targeted_default_checks": 171,
-  "new_profile_checks": 48,
+  "targeted_default_checks": 172,
+  "new_profile_checks": 49,
   "actual_native_checks": 2,
-  "actual_native_cli_inference_invocations_during_development": 7,
+  "actual_native_cli_inference_invocations_during_development": 8,
   "earlier_native_failed_observations": 6,
   "native_requested_alias": "haiku",
   "native_init_model": "claude-haiku-4-5-20251001",
@@ -27,7 +27,8 @@
     "only direct native caller, exact connected server/tool, requested/resolved Haiku, default permissions and inert pinned agent inventory admitted; no Agent tool",
     "receipt string, array or structured wrapper remains closed bounded JSON; mismatched output/approval/unknown shape rejected",
     "stdio shim starts with env-i and clears inherited environment/extra descriptors before protocol connection",
-    "config identity, private modes, binary and explicit settings/MCP/prompt hashes checked before/after; managed policy refuses"
+    "config identity, private modes, binary and explicit settings/MCP/prompt hashes checked before/after; managed policy refuses",
+    "final review rejects extra fields attempting to escape the flattened JSON normalization wrapper"
   ],
   "observations": [
     {
@@ -83,14 +84,26 @@
       "source_commit": "0413fee113ccf219fd4f6a9d229c421de80425c6",
       "observation": "actual startup and subscription PG/Docker/check report 2 PASS",
       "sha256": "2704064746aab00f78df613ac6c8fe92cf4f4d670e4fba546a3d968316e4b34c"
+    },
+    {
+      "file": "targeted-final-172.xml",
+      "source_commit": "f67b6470ae058a9e385a3e8dd36171a779ebacba",
+      "observation": "172 targeted PASS including trailing-wrapper injection denial",
+      "sha256": "5bfb0f4d7a96c22ea182b6189bdf52d4260f802ab565d42ae78db61d599f48b8"
+    },
+    {
+      "file": "native-hardened-final-2.xml",
+      "source_commit": "f67b6470ae058a9e385a3e8dd36171a779ebacba",
+      "observation": "2 actual startup/subscription checks PASS on corrected parser",
+      "sha256": "919c07f6c3150a94198174e217dd126cec251b2e4d961982505a222473612a85"
     }
   ],
   "source_sha256": {
     "src/panestria/brokers/harness/claude_check.py": "e8f04dcc11f7ceb8539030f0c407b48b3e2b6cca87c8835f4e0b641af1826cbf",
-    "src/panestria/brokers/harness/event_parser.py": "a2fab27b49f09c1ddc4d09e4dd41685154b2f70ae4c98b21ca3fb56cec3c29ca",
+    "src/panestria/brokers/harness/event_parser.py": "51d8967d553f13f5b9193ecbfb1b0d5d8e73265f15b9049069dfe56dadf2a23a",
     "src/panestria/brokers/harness/command_protocol.py": "aec45ab23e2b2a0b3e110a5f9d17f24ffe4942ca8203aefeba1dd0093b4d4883",
     "src/panestria/brokers/harness/command_stdio.py": "cbc18bf9ddc76ac81fa314f2faa48935ab87f712d6c4aab6728dda93d0c3841c",
-    "tests/unit/test_native_mcp_profile.py": "383744ddbe702d5637efde2bd21b56855ad93572d3754b2a43ec629b11627544",
+    "tests/unit/test_native_mcp_profile.py": "26a3d48fee95f4fd1cb02da577460d004934d469737f5c4a6e0e9c016f72fea5",
     "tests/integration/test_native_registered_check_live.py": "19c40a0f082fa8a674b8c4781d15bf5f1cf8caa38bed24d89024d9fb007ecb62",
     "tests/integration/test_registered_check_authority.py": "af72a009e88a1b72edd35a386abafeeb627c4d0f6181d1e85915a0003ab8769b",
     "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
