@@ -449,6 +449,12 @@ class ClaudeEventParser:
                 raise ProtocolRejected("native_tool_not_executed")
             if "tool_use_result" in body:
                 value = body["tool_use_result"]
+                if type(value) is str:
+                    try:
+                        RegisteredCheckReceipt.model_validate_json(canonical_payload(_text(value, maximum=4096)))
+                    except (ValueError, TypeError):
+                        raise ProtocolRejected("invalid_registered_check_metadata") from None
+                    return
                 content = value.get("content") if isinstance(value, dict) else value
                 if (
                     not isinstance(content, list)
