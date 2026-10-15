@@ -163,6 +163,14 @@ class ProfileVault:
         ).fetchone()
         if project is None:
             raise KernelDenied("not_found")
+        if (
+            uow.execute(
+                "SELECT id FROM panestria.profile WHERE id=%s AND owner_id=%s AND project_id=%s",
+                (handle.profile_id, actor.owner_id, actor.project_id),
+            ).fetchone()
+            is not None
+        ):
+            raise KernelDenied("version_conflict")
         count = uow.execute(
             "SELECT count(*) FROM panestria.profile WHERE owner_id=%s AND project_id=%s",
             (actor.owner_id, actor.project_id),
@@ -208,7 +216,9 @@ class ProfileVault:
         )
         return self._ref(envelope, expected_version + 1)
 
-    def read(self, uow: UnitOfWork, actor: Actor, profile_id: str) -> tuple[ProfileRef, ProfileDocument]:
+    def read(
+        self, uow: UnitOfWork, actor: Actor, profile_id: str, *, expected_version: int | None = None
+    ) -> tuple[ProfileRef, ProfileDocument]:
         self._enabled()
         row = uow.execute(
             "SELECT h.row_version,h.status,r.id::text,r.profile_id::text,r.owner_id::text,r.project_id::text,"
@@ -223,6 +233,8 @@ class ProfileVault:
             raise KernelDenied("not_found")
         if row[1] != "ACTIVE":
             raise KernelDenied("profile_suppressed")
+        if expected_version is not None and row[0] != expected_version:
+            raise KernelDenied("version_conflict")
         fields = (
             "revision_id",
             "profile_id",
