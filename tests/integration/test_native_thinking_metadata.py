@@ -6,6 +6,7 @@ import json
 
 import pytest
 
+from panestria.brokers.harness.claude_proposal import _decode_candidate
 from panestria.brokers.harness.event_parser import ClaudeEventParser, ProtocolRejected
 
 
@@ -230,3 +231,20 @@ def test_any_native_subagent_activity_or_unknown_stats_fails_closed(field):
     stats[field] = 1 if type(stats[field]) is int else {"unknown": 0}
     with pytest.raises(ProtocolRejected, match="unexpected_native_subagents"):
         parser.feed(line(terminal(subagent_stats=stats)))
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        'prose {"path":"calculator.py","content":"def add(a,b): return a+b"}',
+        '```json\n{"path":"calculator.py","content":"def add(a,b): return a+b"}\n``` extra',
+        '```json\n{"path":"calculator.py","content":"def add(a,b): return a+b"}\n```\n```json\n{}\n```',
+        '```python\n{"path":"calculator.py","content":"def add(a,b): return a+b"}\n```',
+        '```json\n{"path":"calculator.py","path":"calculator.py","content":"def add(a,b): return a+b"}\n```',
+        '```json\n{"path":"calculator.py","content":"import os"}\n```',
+        '```json\n{"path":"calculator.py","content":"def add(a,b): return a+b","approved":true}\n```',
+    ],
+)
+def test_presentation_normalization_never_extracts_arbitrary_prose_or_weakens_candidate_guards(text):
+    with pytest.raises((ValueError, ProtocolRejected)):
+        _decode_candidate(text)

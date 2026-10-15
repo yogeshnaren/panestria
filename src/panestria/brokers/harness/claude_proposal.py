@@ -8,6 +8,7 @@ This profile does not certify native file, shell, MCP or arbitrary repository wo
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import stat
 import tempfile
@@ -33,6 +34,16 @@ MANAGED_PATHS = (
 
 class ProposalUnavailable(Exception):
     pass
+
+
+def _decode_candidate(text: str) -> CodeProposal:
+    # Normalize one exact wrapper, never search prose for plausible JSON.
+    # All original duplicate/nonfinite, schema and AST guards still apply.
+    text = text.strip()
+    if text.startswith("```json\n") and text.endswith("\n```"):
+        text = text[len("```json\n") : -len("\n```")]
+    raw = json.loads(text, object_pairs_hook=_pairs, parse_constant=_invalid_constant)
+    return CodeProposal.model_validate(raw)
 
 
 @dataclass(frozen=True)
@@ -142,13 +153,8 @@ class ClaudeProposalAdapter:
                     raise ProposalUnavailable("native_prompt_changed")
                 candidate = None
                 if receipt.status == "CANDIDATE" and parser.candidate_text is not None:
-                    import json
-
                     try:
-                        raw = json.loads(
-                            parser.candidate_text, object_pairs_hook=_pairs, parse_constant=_invalid_constant
-                        )
-                        candidate = CodeProposal.model_validate(raw)
+                        candidate = _decode_candidate(parser.candidate_text)
                     except (ValueError, ValidationError, RecursionError, ProtocolRejected):
                         return ProposalReceipt("REJECTED", "invalid_candidate_data", None, receipt)
                 return ProposalReceipt(receipt.status, receipt.reason, candidate, receipt)
