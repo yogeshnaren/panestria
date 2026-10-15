@@ -214,3 +214,13 @@ scope, locking and restart. This run does not rewrite older source-bound OS
 evidence. Full exact-head CI/review and verified main incorporation are required
 before merge. Continue scoped setup/API and actual local Ask/runtime privacy
 work; full MVP cases and the owner trial remain pending.
+
+## Verified owner API prerequisite and current key CLI
+
+PR #57 merged as 999251ee8e45e7e5c4d67caee83b57df7661608a after CI passed
+568 default tests, 35 live deselected (run 38736557047). PR #58 then merged as
+26343a514a04bb0211d35d9a1867b41ab539755c after CI passed 585 default tests,
+35 live deselected (run 38737392366). The key-setup branch incorporated both
+verified merges before its final qualification and task PR. Owner checkouts,
+services, databases, keyring and original evidence remain unchanged. The actual
+key CLI test uses an isolated child daemon and synthetic encryption material.
