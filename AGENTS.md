@@ -18,3 +18,10 @@
   database and services. Keep credentials and model caches out of Git.
 
 See [the task PR workflow](docs/TASK_PR_WORKFLOW.md) for commands and review rules.
+
+## Active build plan and reuse
+
+- Start with `docs/PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md` (revision 3), its linked active specification and the selected current slice/evidence. Old starter prompts do not reopen accepted R0 work.
+- Use the Reverse Engineer Anything (`morluto/rea`) investigation workflow for material borrowing/recreation: inspect complete source directly per its skill, use artifact/runtime analysis when needed, retain pinned evidence/limits/rights and verify the smallest compatible integration. Tool installation or target execution still needs actual task scope; a plan name alone grants neither.
+- Basic quota-aware useful work and offline validated-result/eligible-example capture belong to R3. Provider/owner/estimated/unknown observations remain distinct; unknown precision can allow bounded authorized work. Enforce foreground reserves, no-extra-spend eligibility, privacy and independent training-purpose rights.
+- A multi-slice MVP goal may continue through authorized ready slices with reviewable task PRs and actual checks. A single-slice request stops there. Do not cross R3 trial/owner acceptance or begin R4-R7 implementation without the corresponding owner decision.
