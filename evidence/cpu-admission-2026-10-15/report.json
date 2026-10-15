@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "source_commit": "2158afde9dfb075e147957ff3cba09f097a91201",
+  "observed_at": "2026-10-15T17:23:52.711224+00:00",
+  "scope": "synthetic actual CLI/PostgreSQL/TCP/CPU-model restart qualification with real CPU admission",
+  "result": "PASS",
+  "tests": {
+    "focused_probe_server_compatibility": 26,
+    "actual_cli_runtime": 1
+  },
+  "source_sha256": {
+    "src/panestria/resources/hardware.py": "fed93a0ea9234abe98868f0553298d76aa0ed805dd154ee3b85714dcaf19c7f2",
+    "src/panestria/contracts/hardware.py": "fb1a9a928dd51cf97ddeeec6d8cf0c53adf67db02d8262163e0126f7a96446ea",
+    "src/panestria/api/local_server.py": "0e3cb1cb6c1ead7c39c3b5a6ea83ce1bd7ca40bc9a94cef5600e90323910af51",
+    "tests/integration/test_cpu_probe.py": "dd37acc7b0084647139930858dfd096922b73101bd18a5d78d463bef0f87f4f1",
+    "tests/integration/test_local_server_live.py": "cb9672fd4ffe1d64d087480955a917b8922c6a9c4edf5603c1187b904176b99a"
+  },
+  "junit_sha256": "fd4aa192d17780e425353f9254262573aa9e7165aa1a9606331593b53412f16c",
+  "gpu_status": "NOT_PROBED_CPU_ONLY",
+  "simulated": false,
+  "original_probe_and_archive_unchanged": true,
+  "paid_provider_calls": 0,
+  "release_gate": "NOT_EVALUATED",
+  "observed_failure": "Earlier browser request stopped UNAVAILABLE when full probe timed out; direct CPU/RAM/power helper timings were immediate while optional probe_nvidia did not return. GPU-stage cause/recovery unconfirmed.",
+  "limitations": [
+    "CPU-only observations do not qualify GPU capacity or full accelerator inventory",
+    "not full A-1/G1/R3 acceptance or peak resource measurement",
+    "kernel-uninterruptible descendants cannot be guaranteed reaped; ordinary sleeping descendant timeout cleanup tested",
+    "no owner GPU reset/app/service/database changes"
+  ]
+}
