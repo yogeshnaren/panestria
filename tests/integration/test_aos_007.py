@@ -217,3 +217,53 @@ def test_project_versions_and_revocation(
                 "UPDATE panestria.project_policy_revision SET sha256=%s WHERE project_id=%s AND version=1",
                 ("00" * 32, actor.project_id),
             )
+
+
+def test_policy_wait_does_not_hold_task_before_project(r1_task: dict[str, str], tmp_path: object) -> None:
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+    from pathlib import Path
+    from threading import Event
+
+    import psycopg
+
+    from panestria.kernel.goals import Actor
+    from panestria.kernel.policy import PolicyService
+    from panestria.kernel.uow import UnitOfWork
+    from panestria.policy.profiles import CertificateStore
+
+    actor = Actor(r1_task["owner"], r1_task["project"])
+    service = PolicyService(CertificateStore(Path(str(tmp_path)), {}))
+    with psycopg.connect(r1_task["dsn"]) as c:
+        first = service.initialize(UnitOfWork(c), actor, r1_task["task"])
+    actions = dict(first.autonomy.actions)
+    actions["edit"] = "observe"
+    proposed = first.model_copy(update={"version": 2, "autonomy": AutonomyAxis(version=2, actions=actions)})
+    entered, backend = Event(), []
+
+    def propose() -> object:
+        with psycopg.connect(r1_task["dsn"], options="-c lock_timeout=2500 -c statement_timeout=3000") as c:
+            backend.append(c.execute("SELECT pg_backend_pid()").fetchone()[0])
+            c.commit()
+            entered.set()
+            return service.propose(UnitOfWork(c), actor, r1_task["task"], proposed)
+
+    with ThreadPoolExecutor(max_workers=1) as pool, psycopg.connect(r1_task["dsn"]) as dispatcher:
+        dispatcher.execute("SET LOCAL lock_timeout='1500ms'")
+        dispatcher.execute("SELECT id FROM panestria.project WHERE id=%s FOR SHARE", (actor.project_id,))
+        reviewing = pool.submit(propose)
+        assert entered.wait(2)
+        deadline = time.monotonic() + 2
+        while True:
+            waiting = dispatcher.execute(
+                "SELECT wait_event_type FROM pg_stat_activity WHERE pid=%s", (backend[0],)
+            ).fetchone()
+            if waiting and waiting[0] == "Lock":
+                break
+            assert time.monotonic() < deadline
+            time.sleep(0.02)
+        # This must succeed while the policy writer is waiting for the project.
+        # Taking task then project would create a real lock cycle with dispatch.
+        dispatcher.execute("SELECT id FROM panestria.task WHERE id=%s FOR UPDATE", (r1_task["task"],))
+        dispatcher.commit()
+        assert reviewing.result(timeout=3).state == "PENDING"
