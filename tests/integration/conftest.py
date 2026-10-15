@@ -145,6 +145,11 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_ask_cli.py",
         "test_resource_admission.py",
         "test_telemetry.py",
+        "test_memory_api.py",
+        "test_memory_review.py",
+        "test_primary_lease.py",
+        "test_sandboxed_verifier.py",
+        "test_protected_merge.py",
     }
     path = Path(str(request.node.path))
     if path.name not in names:
