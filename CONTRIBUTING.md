@@ -1,6 +1,6 @@
 # Contributing
 
-Panestria is a local synthetic kernel. R0 is not accepted, G0 is incomplete, and R1 has not started. Do not describe a change as a release, a fresh-host pass, or an owner review.
+Panestria has an accepted R0 synthetic kernel; R1 is in progress and the complete R3 MVP is not accepted. Consult the source-bound status and evidence in [the phase tracker](docs/phase-tracker.json). A merged change or default CI pass does not establish release acceptance, a fresh-host pass or an owner review. Use [the active build plan](docs/PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md) for current scope and sequencing.
 
 ## Setup
 
@@ -22,7 +22,7 @@ make typecheck
 make test
 ```
 
-`make test` runs `pytest -m "not live"`. That command deselects `AOS-001-TC04`. A failure of that live test on this machine is not a pass, and a missing fresh Ubuntu host is not a result you should invent.
+`make test` runs `pytest -m "not live"`. That command deselects live checks, including `AOS-001-TC04`. A failed, missing or deselected live check is not a pass; collect the exact required host/provider evidence separately.
 
 `make db-up`, `make db-migrate`, and `make reset-synthetic-data` act only on the `panestria-s3` Compose project. Reset removes that named volume and accepts no filesystem path.
 

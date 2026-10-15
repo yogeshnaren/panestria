@@ -8,7 +8,7 @@ Report vulnerabilities privately to the repository owner. Share a synthetic repr
 
 ## Current boundaries
 
-The API binds loopback by default with scoped authentication, Host/Origin/session/CSRF controls on the relevant flows. Workers use reviewed pinned profiles and separate no-secret verification; each enabled harness needs its exact OS/tool/auth compatibility proof. The native demo is a fixed public isolated exercise, not unrestricted app orchestration. Provider credentials remain in the approved local authentication boundary, not worker mounts, Git, URLs or logs. Preserve owner databases/services and use disposable test projects.
+The API binds loopback (127.0.0.1) by default with scoped authentication, Host/Origin/session/CSRF controls on the relevant flows. Workers use reviewed pinned profiles and separate no-secret verification; each enabled harness needs its exact OS/tool/auth compatibility proof. The native demo is a fixed public isolated exercise, not unrestricted app orchestration. Provider credentials remain in the approved local authentication boundary, not worker mounts, Git, URLs or logs. Preserve owner databases/services and use disposable test projects.
 
 Existing memory filtering/provenance is not application-level profile encryption. Sensitive profile enablement requires [revision-3 classification/vault evidence](docs/specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07); [ADR 0003](adr/0003-personal-platform-classification.md) defines the planned compatibility transition. Do not treat legacy PRIVATE as an automatically exportable canonical label. Host administrator compromise is outside application-session isolation claims.
 
