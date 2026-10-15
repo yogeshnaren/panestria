@@ -63,6 +63,9 @@ def owned_listener(config: LocalApplicationSettings) -> socket.socket:
         if config.bind_host == "::1":
             listener.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 1)
         listener.bind((config.bind_host, config.bind_port))
+        # Reserve the port exclusively throughout startup. Two SO_REUSEADDR
+        # sockets may otherwise bind the same address before either listens.
+        listener.listen(16)
         listener.setblocking(False)
         return listener
     except OSError:

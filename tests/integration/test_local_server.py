@@ -113,6 +113,17 @@ def test_port_conflict_preserves_original_listener(tmp_path):
             pass
 
 
+def test_owned_listener_reserves_port_before_model_start(tmp_path):
+    with socket.socket() as available:
+        available.bind(("127.0.0.1", 0))
+        port = available.getsockname()[1]
+    path, _ = configuration(tmp_path, port=port)
+    config, _ = load_local_settings(path)
+    with local_server.owned_listener(config):
+        with pytest.raises(LocalApplicationRejected, match="local_bind_unavailable"):
+            local_server.owned_listener(config)
+
+
 def test_preserve_existing_runtime_never_inspects_or_reaps_a_container(tmp_path, monkeypatch):
     runtime = ModelRuntime(tmp_path / "models", tmp_path / "socket", preserve_existing=True)
     calls = []
