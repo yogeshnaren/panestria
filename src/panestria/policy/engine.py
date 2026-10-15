@@ -7,6 +7,7 @@ import json
 from dataclasses import dataclass
 from typing import Literal
 
+from panestria.contracts.classification import resolve_classification
 from panestria.contracts.policy import PolicyContext, PolicyRequest
 
 
@@ -26,6 +27,7 @@ class PolicyEngine:
         denied: list[str] = []
         approval: list[str] = []
         cloud = request.destination != "local"
+        classification = resolve_classification(request.label)
         if (request.owner_id, request.project_id) != (context.owner_id, context.project_id):
             denied.append("scope_mismatch")
         if request.action not in context.trust.allowed_actions:
@@ -34,18 +36,17 @@ class PolicyEngine:
             denied.append("runtime_uncertified")
         if cloud and context.trust.profile == "SYNTHETIC_DEV":
             denied.append("synthetic_cloud_denied")
-        if request.label == "UNKNOWN":
+        if classification.effective is None:
             denied.append("classification_unknown")
         if cloud:
-            if request.label == "RESTRICTED":
-                denied.append("restricted_cloud_denied")
+            if classification.effective == "RESTRICTED":
+                denied.append(
+                    "legacy_private_cloud_denied"
+                    if classification.interpretation == "LEGACY_RESTRICTED"
+                    else "restricted_cloud_denied"
+                )
             if request.destination not in context.privacy.cloud_destinations:
                 denied.append("destination_denied")
-            if request.label == "PRIVATE":
-                if not context.privacy.allow_private_cloud:
-                    denied.append("private_cloud_denied")
-                else:
-                    approval.append("private_cloud_review")
         mode = context.autonomy.actions[request.action]
         if mode in {"observe", "suggest"}:
             denied.append("autonomy_execution_denied")

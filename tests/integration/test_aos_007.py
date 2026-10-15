@@ -96,7 +96,7 @@ def test_restricted_cloud_and_labels(record_property: pytest.RecordProperty) -> 
     assert labels.derive(["PUBLIC", "PRIVATE", "RESTRICTED"]) == "RESTRICTED"
     assert labels.derive([]) == labels.derive([None]) == labels.derive(["RESTRICTED", "UNKNOWN"]) == "UNKNOWN"
     private_cloud = engine.authorize(_request(context, destination="openai-api"), context)
-    assert private_cloud.outcome == "APPROVAL_NEEDED" and "private_cloud_review" in private_cloud.reasons
+    assert private_cloud.outcome == "DENY" and "legacy_private_cloud_denied" in private_cloud.reasons
     assert engine.authorize(_request(context, destination="unconfigured-provider"), context).outcome == "DENY"
 
 

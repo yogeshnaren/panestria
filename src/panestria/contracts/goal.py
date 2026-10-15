@@ -16,6 +16,7 @@ from panestria.contracts.acceptance import (
     AcceptanceCheck,
     ContractRejected,
 )
+from panestria.contracts.classification import CanonicalClass
 
 _MONEY = re.compile(r"^(0|[1-9][0-9]*)(\.[0-9]{1,6})?$")
 _SHELL = re.compile(r"[\s;|&$`<>]")
@@ -75,7 +76,7 @@ class GoalContract(BaseModel):
     owner_id: str = Field(pattern=_UUID)
     project_id: str = Field(pattern=_UUID)
     intent: str = Field(min_length=1, max_length=4096)
-    privacy_class: Literal["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED"]
+    privacy_class: CanonicalClass
     trust_profile_id: Literal["SYNTHETIC_DEV", "PERSONAL_SANDBOX", "TRUSTED_PROJECT", "HARDENED_WORKSPACE"]
     autonomy_profile_ref: str = Field(min_length=1)
     constraints: Constraints

@@ -136,7 +136,7 @@ The frozen master and revised per-item specs have different levels of detail. Ca
 
 | Obligation | Parent specs | What must be demonstrated by R3 |
 |---|---|---|
-| MVP-X07: Encrypted owner profile and canonical classification | 011, 002, 007, 009, 017 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07); 3 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
+| MVP-X07: Encrypted owner profile and canonical classification | 011, 002, 007, 009, 017 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07); 3 new R3 slices, 4 added scenarios; IN_PROGRESS / NOT_RUN |
 | MVP-X08: Portable assistant charter, communication style and model context | 017, 011, 016, 024 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x08); 3 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
 | MVP-X09: Explicit connection grants and secret boundary | 008, 007, 009, 010, 024, 028 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x09); 2 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
 | MVP-X10: Verified milestones, stall detection and bounded repair | 025, 006, 027a, 027b, 029 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x10); 2 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |

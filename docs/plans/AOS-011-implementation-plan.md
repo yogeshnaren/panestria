@@ -113,3 +113,10 @@ Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the
 | AOS-011-TC08 | integration | Owner correction, suppression, expiry and forgetting remove the profile from newly compiled contexts and account for derivatives and backup limits. |
 
 These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.
+
+S4 is delivered incrementally: first the restrictive legacy interpretation and
+cloud guard, then audited forward migration and versioned canonical interfaces,
+then complete database/source/destination compatibility proof. See the
+[classification rollout](../design/06-CLASSIFICATION-COMPATIBILITY-ROLLOUT.md).
+The first guard alone cannot complete S4 or TC05; S5/S6 remain blocked on the
+complete classification boundary.
