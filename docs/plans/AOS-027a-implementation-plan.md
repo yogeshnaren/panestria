@@ -1,6 +1,6 @@
 # AOS-027a — Single-worker verification and protected merge approval: implementation plan
 
-**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-004, AOS-009, AOS-010. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS. **Tests:** PARTIAL; native worker generation pending. **Depends on:** AOS-004, AOS-009, AOS-010. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-027a.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -76,3 +76,33 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Observed local implementation progress
+
+An independent readonly OS verifier now checks a frozen final Git tree without
+checkout hooks or filters. Source snapshots are checked before and after
+verification; symlinks, secrets and repository-controlled initialization entries
+are rejected. Canonical trusted-command-ref, git-diff-path-check and
+policy-decision checks produce immutable hashed reports and a scope/contract/
+attempt/epoch/commit/tree/check-set/verifier-bound Build evidence bundle.
+
+Migration `0015_build_evidence` and the kernel publish evidence and check runs
+atomically with task state and its event. Rollback leaves only unreferenced
+protected blobs; replay of the same successful publication adds no second record.
+Missing reports, expired/released attempts and required FAIL/UNKNOWN results do
+not grant merge authority. All required reports are rechecked at authorization.
+
+A local merge controller consumes exact owner approval, revalidates current
+policy/certificate/check set/verifier bundle, performs a protected Git ref CAS
+with an effect witness, then records its receipt through the outbox. Lost replies
+are reconciled from the historical approved bundle and witness even if the owner
+cancels afterwards; cancellation is not overwritten. Completion requires both
+current independent evidence and the exact confirmed merge receipt.
+
+Synthetic controller fixtures exercise real PostgreSQL and Git; separate Docker
+cases prove verifier rejection of failing tests, forbidden edits and changed
+check bundles. They do not substitute for `AOS-027a-TC04`: hardened Claude
+candidate generation, native tool-gateway conformance, runtime workflow/API/UI
+integration and final same-candidate G1 evidence remain pending. The Claude
+account limit affects live inference validation, not these local implementation
+and test tasks.
