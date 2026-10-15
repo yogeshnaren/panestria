@@ -12,9 +12,42 @@ import time
 from collections import deque
 from pathlib import Path
 
+_DOCUMENTATION_V6 = ipaddress.IPv6Network("3fff::/20")  # RFC 9637; absent from older Python 3.12 registries.
+
 
 class EgressDenied(Exception):
     pass
+
+
+def _public_unicast(value: str) -> ipaddress.IPv4Address | ipaddress.IPv6Address | None:
+    if type(value) is not str or "%" in value:
+        return None
+    try:
+        address = ipaddress.ip_address(value)
+    except ValueError:
+        return None
+    if not address.is_global or any(
+        (address.is_multicast, address.is_reserved, address.is_unspecified, address.is_loopback, address.is_link_local)
+    ):
+        return None
+    if isinstance(address, ipaddress.IPv6Address) and (
+        address.is_site_local
+        or address in _DOCUMENTATION_V6
+        or any(item is not None for item in (address.ipv4_mapped, address.sixtofour, address.teredo))
+    ):
+        return None
+    return address
+
+
+def _verify_peer(peer: tuple[str, int] | tuple[str, int, int, int], expected_ip: str, expected_port: int) -> None:
+    address = _public_unicast(peer[0])
+    if (
+        address is None
+        or address != _public_unicast(expected_ip)
+        or peer[1] != expected_port
+        or (len(peer) == 4 and peer[3] != 0)
+    ):
+        raise EgressDenied("private_or_unpinned_peer_denied")
 
 
 def resolve_destination(authority: str, allowed_hosts: frozenset[str]) -> tuple[str, int]:
@@ -26,7 +59,11 @@ def resolve_destination(authority: str, allowed_hosts: frozenset[str]) -> tuple[
     except OSError:
         raise EgressDenied("dns_unavailable") from None
     addresses = {str(answer[4][0]) for answer in answers}
-    if not addresses or any(not ipaddress.ip_address(ip).is_global for ip in addresses):
+    if (
+        not addresses
+        or any(_public_unicast(ip) is None for ip in addresses)
+        or any(len(answer[4]) == 4 and answer[4][3] != 0 for answer in answers)
+    ):
         raise EgressDenied("private_destination_denied")
     # Return an IP, not a hostname: connect cannot perform a second DNS lookup.
     return sorted(addresses)[0], 443
@@ -103,8 +140,8 @@ class _Connect(socketserver.BaseRequestHandler):
                     if gateway.closing.is_set():
                         raise EgressDenied("gateway_closed")
                     gateway.connections.add(upstream)
-                if not ipaddress.ip_address(upstream.getpeername()[0]).is_global:
-                    raise EgressDenied("private_peer_denied")
+                peer = upstream.getpeername()
+                _verify_peer(peer, ip, port)
                 gateway.audit.append((authority, "ALLOWED"))
                 self.request.sendall(b"HTTP/1.1 200 Connection Established\r\n\r\n")
                 self.request.settimeout(5)
