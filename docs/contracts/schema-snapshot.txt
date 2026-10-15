@@ -142,6 +142,21 @@ column learning_record schema_version int4 NO
 column learning_record sha256 bpchar NO
 column learning_record task_id uuid YES
 column learning_record trace_id bpchar NO
+column memory_classification consented_by uuid NO
+column memory_classification created_at timestamptz NO
+column memory_classification effective_label text NO
+column memory_classification interpretation text NO
+column memory_classification origin text NO
+column memory_classification original_label text NO
+column memory_classification owner_id uuid NO
+column memory_classification policy_ref text YES
+column memory_classification project_id uuid NO
+column memory_classification resolver_version int4 NO
+column memory_classification review_decided_by uuid YES
+column memory_classification review_effect_digest bpchar YES
+column memory_classification review_id uuid YES
+column memory_classification source_id uuid NO
+column memory_classification source_sha256 bpchar NO
 column memory_item conflict_key text YES
 column memory_item current_revision int4 NO
 column memory_item id uuid NO
@@ -434,6 +449,14 @@ constraint panestria.learning_record f FOREIGN KEY (request_id, owner_id, projec
 constraint panestria.learning_record f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
 constraint panestria.learning_record p PRIMARY KEY (id)
 constraint panestria.learning_record u UNIQUE (id, owner_id, project_id)
+constraint panestria.memory_classification c CHECK ((((original_label = 'PRIVATE'::text) AND (effective_label = 'RESTRICTED'::text) AND (interpretation = 'LEGACY_RESTRICTED'::text)) OR ((original_label = ANY (ARRAY['PUBLIC'::text, 'INTERNAL'::text, 'CONFIDENTIAL'::text, 'RESTRICTED'::text])) AND (original_label = effective_label) AND (interpretation = 'CANONICAL'::text))))
+constraint panestria.memory_classification c CHECK ((((review_id IS NULL) AND (review_effect_digest IS NULL) AND (review_decided_by IS NULL)) OR ((review_id IS NOT NULL) AND (review_effect_digest IS NOT NULL) AND (review_effect_digest ~ '^[0-9a-f]{64}$'::text) AND (review_decided_by IS NOT NULL) AND (review_decided_by = owner_id) AND (policy_ref IS NOT NULL))))
+constraint panestria.memory_classification c CHECK ((effective_label = ANY (ARRAY['PUBLIC'::text, 'INTERNAL'::text, 'CONFIDENTIAL'::text, 'RESTRICTED'::text])))
+constraint panestria.memory_classification c CHECK ((origin = ANY (ARRAY['MIGRATION'::text, 'SOURCE_WRITE'::text])))
+constraint panestria.memory_classification c CHECK ((resolver_version = 1))
+constraint panestria.memory_classification f FOREIGN KEY (review_id, owner_id, project_id) REFERENCES panestria.memory_review(id, owner_id, project_id)
+constraint panestria.memory_classification f FOREIGN KEY (source_id, owner_id, project_id, source_sha256, original_label, consented_by) REFERENCES panestria.memory_source(id, owner_id, project_id, sha256, privacy_label, consented_by)
+constraint panestria.memory_classification p PRIMARY KEY (source_id)
 constraint panestria.memory_item c CHECK (((valid_until IS NULL) OR (valid_until > valid_from)))
 constraint panestria.memory_item c CHECK ((current_revision > 0))
 constraint panestria.memory_item c CHECK ((kind = ANY (ARRAY['fact'::text, 'preference'::text, 'procedure'::text])))
@@ -463,6 +486,7 @@ constraint panestria.memory_source f FOREIGN KEY (project_id, owner_id) REFERENC
 constraint panestria.memory_source f FOREIGN KEY (review_id, owner_id, project_id) REFERENCES panestria.memory_review(id, owner_id, project_id)
 constraint panestria.memory_source p PRIMARY KEY (id)
 constraint panestria.memory_source u UNIQUE (id, owner_id, project_id)
+constraint panestria.memory_source u UNIQUE (id, owner_id, project_id, sha256, privacy_label, consented_by)
 constraint panestria.memory_use_event c CHECK (((confidence >= (0)::double precision) AND (confidence <= (1)::double precision)))
 constraint panestria.memory_use_event c CHECK (((observer_kind <> 'worker_report'::text) OR (confidence IS NULL) OR (confidence <= (0.5)::double precision)))
 constraint panestria.memory_use_event c CHECK (((stage <> 'candidate_helped'::text) OR ((observer_kind = ANY (ARRAY['human'::text, 'verifier'::text])) AND (evidence_ref IS NOT NULL))))
@@ -589,8 +613,10 @@ index CREATE UNIQUE INDEX goal_contract_pkey ON panestria.goal_contract USING bt
 index CREATE UNIQUE INDEX goal_id_project_id_owner_id_key ON panestria.goal USING btree (id, project_id, owner_id)
 index CREATE UNIQUE INDEX goal_pkey ON panestria.goal USING btree (id)
 index CREATE UNIQUE INDEX idempotency_record_pkey ON panestria.idempotency_record USING btree (owner_id, project_id, operation, request_key)
+index CREATE UNIQUE INDEX ix_classification_review_once ON panestria.memory_classification USING btree (review_id)
 index CREATE UNIQUE INDEX learning_record_id_owner_id_project_id_key ON panestria.learning_record USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX learning_record_pkey ON panestria.learning_record USING btree (id)
+index CREATE UNIQUE INDEX memory_classification_pkey ON panestria.memory_classification USING btree (source_id)
 index CREATE UNIQUE INDEX memory_item_id_owner_id_project_id_key ON panestria.memory_item USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX memory_item_pkey ON panestria.memory_item USING btree (id)
 index CREATE UNIQUE INDEX memory_review_id_owner_id_project_id_key ON panestria.memory_review USING btree (id, owner_id, project_id)
@@ -598,6 +624,7 @@ index CREATE UNIQUE INDEX memory_review_pkey ON panestria.memory_review USING bt
 index CREATE UNIQUE INDEX memory_revision_id_item_id_owner_id_project_id_key ON panestria.memory_revision USING btree (id, item_id, owner_id, project_id)
 index CREATE UNIQUE INDEX memory_revision_item_id_version_key ON panestria.memory_revision USING btree (item_id, version)
 index CREATE UNIQUE INDEX memory_revision_pkey ON panestria.memory_revision USING btree (id)
+index CREATE UNIQUE INDEX memory_source_classification_identity ON panestria.memory_source USING btree (id, owner_id, project_id, sha256, privacy_label, consented_by)
 index CREATE UNIQUE INDEX memory_source_id_owner_id_project_id_key ON panestria.memory_source USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX memory_source_pkey ON panestria.memory_source USING btree (id)
 index CREATE UNIQUE INDEX memory_use_event_pkey ON panestria.memory_use_event USING btree (id)
