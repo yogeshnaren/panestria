@@ -365,9 +365,9 @@
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [],
-          "plan_status": "PARTIAL_CONTRACTS_AND_TEXT",
+          "plan_status": "PARTIAL_REQUEST_CONTRACTS_AND_TEXT",
           "plan_ref": "plans/AOS-013-implementation-plan.md",
-          "implementation_note": "Closed data contracts and 79 bounds/inheritance/authority-denial checks; schema, stored-source proof and full item cases pending."
+          "implementation_note": "Closed contracts/pure text: 79 checks; immutable scoped request metadata: 12 actual PG checks. Source/claim schema, protected retained-fetch resolution and full cases pending."
         },
         {
           "id": "AOS-019",
