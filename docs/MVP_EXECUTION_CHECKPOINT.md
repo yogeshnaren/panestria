@@ -32,6 +32,12 @@ AOS-030-TC04 and requires 156. Existing source may implement a scenario whose
 catalog still says NOT_RUN; inspect its code and collect new source-bound proof
 before changing acceptance status.
 
+The inventory is implemented in `panestria.verification.readiness`; see
+[usage/limitations](testing/MVP_READINESS.md) and the
+[initial source inventory](reviews/MVP-READINESS-2026-10-15.md). Its17 regression
+tests, lint, typing and import checks pass locally. The focused task PR requires
+full CI and review before merge. Source navigation is not release acceptance.
+
 ## Next work
 
 Use the inventory and existing R1 plans to reconcile implementation and live
