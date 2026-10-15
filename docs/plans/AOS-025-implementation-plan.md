@@ -74,3 +74,23 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Revision 3 extension — MVP-X10, delivered in R3
+
+The [active personal-platform contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x10) adds **Verified milestones, stall detection and bounded repair**. Original parent scope and historical results remain intact. These new slices deliver in **R3**, even when the parent AOS item originally ships in R1; they do not reopen historical G0 acceptance or fabricate G1 evidence. Inspect the current repository before choosing exact new files/migration revisions.
+
+| Slice | Concrete outcome, narrowed to about one developer-day | Prerequisites |
+| --- | --- | --- |
+| AOS-025-S4 | Add requirement/evidence milestones, finite repair accounting and honest stall status. | AOS-025-S3, AOS-027b-S3 |
+| AOS-025-S5 | Verify restart/handoff, adversarial false-done and authority-preserving repair. | AOS-025-S4 |
+
+Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the selected manifest entry. File ownership candidates are in implementation-slices.json; record an ADR for a material change. Existing shared transaction/security/API requirements still apply.
+
+| Added case | Lane | Required passing behavior |
+| --- | --- | --- |
+| AOS-025-TC05 | integration | Every original requirement/non-goal maps to candidate-bound evidence; false completion, missing checks or a worker-edited trusted test bundle cannot complete a goal. |
+| AOS-025-TC06 | integration | Heartbeat is separate from verified progress; repeated failures/unchanged candidates expose a stall and finite repair budget rather than a silent infinite loop. |
+| AOS-025-TC07 | chaos | Restart and fresh-session handoff preserve plan/evidence/model identity and reconcile ambiguous external effects before repetition. |
+| AOS-025-TC08 | security | Replans cannot enlarge scope, privacy, cost or tool authority without corresponding authorization; final approval binds the integrated candidate and evidence. |
+
+These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.

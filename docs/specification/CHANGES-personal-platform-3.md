@@ -1,0 +1,13 @@
+# Personal-platform revision 3 change record
+
+**Date:** 2026-10-15. **Source:** owner feature review and quota/REA clarification, building on preserved AgentOS v0.6.1/planning-fixes-1. **Code baseline inspected:** 7f39028a278df6b5b06d1d60df8a0d09c5b56073.
+
+The main build document is now `docs/PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md`, linked from README/START_HERE/Cursor/AGENTS. The shared active specification defines eight added R3 obligations with owning item plans, 21 bounded slice envelopes and 33 cases. The original 38 AOS items, 31 MVP items, 93 slices and 124 baseline cases remain. G3 requires 157 cases; G0/G1/G2 historical scope and original evidence remain unchanged.
+
+Added MVP scope: encrypted local owner profile and explicit classification transition; portable charter/style/model context; connection grants/secrets; verified milestones/stalls/repair; preferred-provider quota work with reserves and offline verified knowledge/eligible examples; private read-only phone access; measured resource budgets; REA-informed reuse/comparative evidence. Owner-supplied quota is usable, and unknown precision can permit bounded authorized work; it is not fabricated zero/unlimited capacity. Billing-mode and training-purpose eligibility are separate.
+
+R4 improves telemetry, allocation and inference/resource efficiency. R5 adds a qualified Byzantium voice boundary, separate TTS and richer mobile/context/app surfaces. R6 adds provider-permitted distillation/fine-tuning and controlled adaptation, with optional measured graph/coaching experiments. R7 adds broader platform/user/host isolation and distribution. Existing full-target capabilities remain in the coverage register. R3 acceptance and SOTA implementation authorization stay separate.
+
+ADR 0003 selects canonical classification and an audited restrictive legacy transition for future implementation. Documentation does not change current code or deployed data. New source clauses/cases/slices are NOT_STARTED/NOT_RUN; proposed node/file paths are not claims that tests/features exist. Trial depends on the new terminal slices and complete technical evidence, not the old 124-case subset.
+
+Preserved without modification: frozen architecture/references, original spec ZIP/Markdown bundles, skills attachments/hashes, applied migrations, runtime code, historical evidence and owner review data. Product/private-project source code is not copied into this public planning change. The prior local design-review document remains review history; this repository revision is the build contract after integration.

@@ -1,6 +1,6 @@
 # Test execution and evidence design
 
-All scenario groups are PLANNED/NOT_RUN. Cursor creates their real assertions with each slice. test-catalog.json supplies IDs/node paths/lanes/expected behavior; requirement-traceability.json retains exact source clauses; implementation-slices.json supplies selected work. Documentation validation is not application test success.
+The catalog mixes source-bound historical observations and future PLANNED/NOT_RUN groups; inspect each case rather than treating all as complete or all as unrun. Cursor creates their real assertions with each slice. test-catalog.json supplies IDs/node paths/lanes/expected behavior; requirement-traceability.json retains exact source clauses; implementation-slices.json supplies selected work. Documentation validation is not application test success.
 
 ## Lanes and fixtures
 
@@ -36,3 +36,9 @@ Version each scenario's parameters and assertion→requirement IDs; splitting a 
 G0: synthetic workflow/contract/state/events/approval/DB recovery. G1: A-1 offline Ask, B-single and actual sandbox/adapter/resource/auth proof. G2: D-1 with deterministic evidence plus separate support/uncertainty and live public brief. G3: B-1 two actual workers/final-tree checks, Mission Control, redacted traces/usage/exposure, cumulative security/recovery and trial.
 
 Six faults: ambiguous external effect, prompt injection, exhausted entitlement, GPU/resource pressure, false done and approval changed after crash. R3 requires 14-day consented daily use with incident regressions resolved and exact candidate tracked. Owner acceptance and SOTA authorization remain separate. Latency targets are set from hardware evidence before acceptance; no retroactive hiding of failed targets.
+
+## Revision 3 gate additions
+
+G0/G1/G2 original manifests remain 20/72/96 cases. G3 now requires **157 cases**, comprising the 124 original cases plus 33 R3 extension cases under existing AOS case prefixes. The case-result schema and seven verifier discriminators are unchanged. Match the complete active manifest, not a hard-coded four-cases-per-AOS count. An evaluator that ignores new cases is incompatible and cannot PASS revision-3 G3.
+
+`test-catalog.json` marks new nodes NOT_RUN, including real-phone and target-host LIVE requirements. Implement/register real node/assertion mappings and exact runtime/source evidence while coding. Planning validation and default CI are not that evidence. The machine-readable pretrial subset has 156 cases and excludes AOS-030-TC04, which records the 14-day trial/owner decision. Pretrial readiness does not PASS final G3; all 157 are required afterward.

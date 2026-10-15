@@ -92,3 +92,24 @@ service/database/volume or interpret unknown confidence as proof of causality.
 This is a database memory restore proof. A full application backup must also
 retain its protected artifact/evidence files, model/config pins and runtime
 receipts; this test does not establish complete application disaster recovery.
+
+## Revision 3 extension — MVP-X07, delivered in R3
+
+The [active personal-platform contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07) adds **Encrypted owner profile and canonical classification**. Original parent scope and historical results remain intact. These new slices deliver in **R3**, even when the parent AOS item originally ships in R1; they do not reopen historical G0 acceptance or fabricate G1 evidence. Inspect the current repository before choosing exact new files/migration revisions.
+
+| Slice | Concrete outcome, narrowed to about one developer-day | Prerequisites |
+| --- | --- | --- |
+| AOS-011-S4 | Resolve classification compatibility with an audited forward migration and fail-closed legacy handling. | AOS-007-S3, AOS-011-S3 |
+| AOS-011-S5 | Implement bounded encrypted profile read/write through the local broker and safe context selection. | AOS-011-S4, AOS-009-S3 |
+| AOS-011-S6 | Complete key lifecycle, restore, correction/suppression and cross-scope boundary checks. | AOS-011-S5 |
+
+Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the selected manifest entry. File ownership candidates are in implementation-slices.json; record an ADR for a material change. Existing shared transaction/security/API requirements still apply.
+
+| Added case | Lane | Required passing behavior |
+| --- | --- | --- |
+| AOS-011-TC05 | security | Goal, policy, source and derived classifications use PUBLIC/INTERNAL/CONFIDENTIAL/RESTRICTED consistently; UNKNOWN denies; legacy PRIVATE remains restricted pending an audited explicit resolution. |
+| AOS-011-TC06 | security | Profile ciphertext and associated-data identity resist tampering/cross-owner/project access; restricted plaintext never enters general FTS, logs, worker mounts or prohibited outbound payloads. |
+| AOS-011-TC07 | integration | Locked/missing key store denies profile operations; approved key rotation and encrypted backup/restore preserve usable data without co-locating wrapping keys. |
+| AOS-011-TC08 | integration | Owner correction, suppression, expiry and forgetting remove the profile from newly compiled contexts and account for derivatives and backup limits. |
+
+These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.

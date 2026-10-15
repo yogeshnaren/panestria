@@ -75,3 +75,24 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Revision 3 extension — MVP-X08, delivered in R3
+
+The [active personal-platform contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x08) adds **Portable assistant charter, communication style and model context**. Original parent scope and historical results remain intact. These new slices deliver in **R3**, even when the parent AOS item originally ships in R1; they do not reopen historical G0 acceptance or fabricate G1 evidence. Inspect the current repository before choosing exact new files/migration revisions.
+
+| Slice | Concrete outcome, narrowed to about one developer-day | Prerequisites |
+| --- | --- | --- |
+| AOS-017-S4 | Implement the minimal editable owner charter/style contract with profile provenance. | AOS-011-S6, AOS-017-S3 |
+| AOS-017-S5 | Implement local presentation constraints and paired factual-retention/style checks. | AOS-017-S4 |
+| AOS-017-S6 | Add portable context/model compatibility metadata and pinned-attempt replacement fixtures. | AOS-017-S5, AOS-024-S3 |
+
+Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the selected manifest entry. File ownership candidates are in implementation-slices.json; record an ADR for a material change. Existing shared transaction/security/API requirements still apply.
+
+| Added case | Lane | Required passing behavior |
+| --- | --- | --- |
+| AOS-017-TC05 | contract | Editable owner-approved behavior/style preferences preserve honesty, uncertainty and permissions; style settings cannot widen authority or establish psychological facts. |
+| AOS-017-TC06 | integration | Paired style fixtures preserve facts, numbers and citations while recording readability, owner preference, output length and latency; unsafe rewrites abstain. |
+| AOS-017-TC07 | contract | Versioned application-owned memory/style/model manifests reject incompatible tokenizers/templates/tools; active attempts remain pinned and replacement rollback preserves data. |
+| AOS-017-TC08 | security | Private profile/examples stay local; cross-harness export requires explicit permitted context and retains provenance/labels; consumer clients do not silently share chats or memory. |
+
+These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.

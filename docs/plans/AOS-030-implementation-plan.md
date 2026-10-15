@@ -76,3 +76,22 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Revision 3 extension — MVP-X14, delivered in R3
+
+The [active personal-platform contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x14) adds **Reuse, REA evidence and comparative engineering**. Original parent scope and historical results remain intact. These new slices deliver in **R3**, even when the parent AOS item originally ships in R1; they do not reopen historical G0 acceptance or fabricate G1 evidence. Inspect the current repository before choosing exact new files/migration revisions.
+
+| Slice | Concrete outcome, narrowed to about one developer-day | Prerequisites |
+| --- | --- | --- |
+| AOS-030-S4 | Record reuse/REA decision and comparative fixture provenance in the existing evidence model. | AOS-008-S3, AOS-025-S3 |
+| AOS-030-S5 | Verify selected integrations/parity and include all revised obligations in release evaluation. | AOS-030-S4, AOS-028-S6, AOS-012-S7, AOS-018-S5, AOS-017-S6, AOS-025-S5 |
+
+Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the selected manifest entry. File ownership candidates are in implementation-slices.json; record an ADR for a material change. Existing shared transaction/security/API requirements still apply.
+
+| Added case | Lane | Required passing behavior |
+| --- | --- | --- |
+| AOS-030-TC05 | contract | Material reuse/recreation records choose a source or REA artifact/runtime evidence route, pin target/tool identity and preserve evidence, limits, license/provenance and minimum integrated scope. |
+| AOS-030-TC06 | security | REA findings inherit privacy labels and trusted execution boundaries; available source uses normal inspection per its workflow, and artifact analysis cannot grant live target execution or credential access. |
+| AOS-030-TC07 | integration | Adopted components pass behavior/contract/security/resource parity and rollback checks; representative Ask/Delegate/Build/style comparisons report actual sample size and verified-success cost without unsupported SOTA claims. |
+
+These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.

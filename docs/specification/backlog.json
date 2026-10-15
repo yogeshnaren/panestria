@@ -8,9 +8,11 @@
       "release": "R0",
       "deps": [],
       "outcome": "An unassisted developer can clone, bootstrap and test a modular-monolith project on supported Ubuntu without a cloud account or real model subscription.",
-      "status": "READY_FOR_PLANNING",
+      "status": "COMPLETE",
       "planning_format": "checklist",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "COMPLETE",
+      "extension_ids": []
     },
     {
       "id": "002",
@@ -20,9 +22,13 @@
         "001"
       ],
       "outcome": "A goal is represented by an immutable, structured, validated contract, with a persisted task DAG and attempt history supporting optimistic concurrency and executable acceptance criteria.",
-      "status": "READY_FOR_PLANNING",
+      "status": "COMPLETE",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "COMPLETE",
+      "extension_ids": [
+        "MVP-X07"
+      ]
     },
     {
       "id": "003",
@@ -32,9 +38,11 @@
         "002"
       ],
       "outcome": "An accepted synthetic goal runs through a DBOS workflow and recovers after sudden process death while preserving authoritative task state and auditable events.",
-      "status": "READY_FOR_PLANNING",
+      "status": "COMPLETE",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "COMPLETE",
+      "extension_ids": []
     },
     {
       "id": "004",
@@ -44,9 +52,11 @@
         "003"
       ],
       "outcome": "A single mock worker edits only synthetic test files, emits normalized events, and generates immutable diff/test evidence verified without model judgment.",
-      "status": "READY_FOR_PLANNING",
+      "status": "COMPLETE",
       "planning_format": "checklist",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "COMPLETE",
+      "extension_ids": []
     },
     {
       "id": "005",
@@ -57,9 +67,11 @@
         "004"
       ],
       "outcome": "A user can submit a synthetic goal, observe authoritative progress, review exact evidence, approve or deny a bound action, and recover across server restart.",
-      "status": "READY_FOR_PLANNING",
+      "status": "COMPLETE",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "COMPLETE",
+      "extension_ids": []
     },
     {
       "id": "006",
@@ -69,9 +81,14 @@
         "003"
       ],
       "outcome": "A lost or stale worker cannot publish results, and ambiguous remote effects are reconciled instead of blindly retried.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X10",
+        "MVP-X11"
+      ]
     },
     {
       "id": "007",
@@ -81,9 +98,14 @@
         "002"
       ],
       "outcome": "Effective authority is the intersection of three independently versioned policy axes, with a denied axis always taking precedence.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X07",
+        "MVP-X09"
+      ]
     },
     {
       "id": "008",
@@ -94,9 +116,15 @@
         "007"
       ],
       "outcome": "Worker filesystem, process, resource and network access are constrained at OS boundaries before any real repository or vendor account is used.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X09",
+        "MVP-X12",
+        "MVP-X14"
+      ]
     },
     {
       "id": "009",
@@ -107,9 +135,15 @@
         "007"
       ],
       "outcome": "Even local browser pages or untrusted network content cannot submit AgentOS actions, invoke approvals or hijack a localhost API.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X07",
+        "MVP-X09",
+        "MVP-X12"
+      ]
     },
     {
       "id": "010",
@@ -121,9 +155,14 @@
         "009"
       ],
       "outcome": "One official Claude Code worker can perform a bounded, authorized code task without executing hostile repository-provided hooks, MCP servers, or plugin initialization.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X09",
+        "MVP-X11"
+      ]
     },
     {
       "id": "011",
@@ -133,9 +172,15 @@
         "002"
       ],
       "outcome": "Offline Ask can retrieve owner/project-scoped memory with provenance, while every retrieval stage creates audit-ready data for later measurable personalization.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X07",
+        "MVP-X08",
+        "MVP-X11"
+      ]
     },
     {
       "id": "012",
@@ -146,9 +191,13 @@
         "007"
       ],
       "outcome": "Every future routing/personalization decision has minimally sufficient evidence from the earliest real tasks, without claiming unavailable cost/quota data.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X11"
+      ]
     },
     {
       "id": "013",
@@ -161,7 +210,9 @@
       "outcome": "A research claim is traceable to an actual retained and fetched source, with exact text offset and source content hash, not just a URL in generated prose.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "014",
@@ -172,9 +223,11 @@
         "012"
       ],
       "outcome": "Trace and UI streams explain every decision without becoming the source of task truth; disconnected clients can replay missed events reliably.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": []
     },
     {
       "id": "015",
@@ -184,9 +237,13 @@
         "001"
       ],
       "outcome": "AgentOS accurately measures installed CPU/GPU/RAM/disk/power and chooses feasible local model candidates without treating simulated specs as real.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X13"
+      ]
     },
     {
       "id": "016",
@@ -197,9 +254,14 @@
         "015"
       ],
       "outcome": "A user can invoke an offline steward locally, measure response speed and memory use on the actual GPU, and fail conservatively when inference is unavailable.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X08",
+        "MVP-X13"
+      ]
     },
     {
       "id": "017",
@@ -210,9 +272,14 @@
         "016"
       ],
       "outcome": "A user can quickly ask the primary local AI offline and retrieve previously approved project memory without leaking information across scopes.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X07",
+        "MVP-X08"
+      ]
     },
     {
       "id": "018",
@@ -224,9 +291,13 @@
         "017"
       ],
       "outcome": "Offline Ask remains useful without cloud/network, while CPU/GPU pressure does not cause resource starvation or corrupt task state.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X13"
+      ]
     },
     {
       "id": "019",
@@ -240,7 +311,9 @@
       "outcome": "AgentOS can search approved public web sources and fetch URLs without resolving or redirecting into internal endpoints, exposing secrets, or mixing reader and actor privileges.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "020",
@@ -253,7 +326,9 @@
       "outcome": "Every Delegate result is grounded in immutable fetched source snapshots processed by a sandboxed reader that has no privileged outbound-action tools.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "021",
@@ -265,7 +340,9 @@
       "outcome": "A research brief cannot mark a factual claim evidenced unless every cited source actually exists and quoted passages exactly match the retained source text under documented normalization.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "022",
@@ -278,7 +355,9 @@
       "outcome": "A separately validated verifier distinguishes source presence from actual evidential support, flags conflicts, and refuses false certainty.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "023",
@@ -293,7 +372,9 @@
       "outcome": "A user can delegate a specific public-web research brief, inspect evidence and limitations, and obtain deterministic security guarantees around source retrieval.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "024",
@@ -307,7 +388,12 @@
       "outcome": "A second approved vendor harness can perform bounded work under exactly the same AgentOS worker contract and sandbox permissions as the first.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": [
+        "MVP-X08",
+        "MVP-X09"
+      ]
     },
     {
       "id": "025",
@@ -320,7 +406,12 @@
       "outcome": "A user intent is converted into an executable acyclic work plan with dependencies, acceptance checks and conservative bounded replanning.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": [
+        "MVP-X10",
+        "MVP-X14"
+      ]
     },
     {
       "id": "026",
@@ -335,7 +426,12 @@
       "outcome": "Two authorized workers execute independent plan steps concurrently without overwriting each other or exceeding CPU/GPU/provider/budget limits.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": [
+        "MVP-X11",
+        "MVP-X13"
+      ]
     },
     {
       "id": "027a",
@@ -347,9 +443,13 @@
         "010"
       ],
       "outcome": "One worker candidate is independently verified and can merge only with an exact scoped effect_digest-bound approval.",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "IN_PROGRESS",
+      "extension_ids": [
+        "MVP-X10"
+      ]
     },
     {
       "id": "027b",
@@ -362,7 +462,11 @@
       "outcome": "Concurrent worker results are integrated, re-verified on the final tree and merged only with fresh exact approval.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": [
+        "MVP-X10"
+      ]
     },
     {
       "id": "028",
@@ -378,7 +482,13 @@
       "outcome": "A locally served dashboard shows Ask, Delegate and Build intake, real task state, source evidence, worker fleet and exact pending approvals without creating a second state machine.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": [
+        "MVP-X09",
+        "MVP-X12",
+        "MVP-X14"
+      ]
     },
     {
       "id": "029",
@@ -392,7 +502,15 @@
       "outcome": "A user can trace every relevant model/tool decision and inspect what data was authorized or accessible to cloud workers versus observed network traffic, without leaking secrets.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": [
+        "MVP-X10",
+        "MVP-X11",
+        "MVP-X12",
+        "MVP-X13",
+        "MVP-X14"
+      ]
     },
     {
       "id": "030",
@@ -416,7 +534,11 @@
       "outcome": "AgentOS proves three independent end-user workflows and its security/recovery invariants over a recorded two-week trial before claiming complete initial MVP.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": [
+        "MVP-X14"
+      ]
     },
     {
       "id": "031",
@@ -430,7 +552,9 @@
       "outcome": "An eligible route is selected with explicit user consent and observed quota confidence, never by assuming an AI subscription can supply arbitrary backend tokens.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "032",
@@ -444,7 +568,9 @@
       "outcome": "Local runtime selection is based on measured task quality, throughput, latency, power and memory\u2014not universal claims that one inference engine is always faster.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "033",
@@ -458,7 +584,9 @@
       "outcome": "AgentOS continuously admits jobs under real CPU/GPU and provider constraints, selects economically justified eligible routes and protects foreground computing.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "034",
@@ -472,7 +600,9 @@
       "outcome": "AgentOS becomes a genuinely useful daily personal assistant: context follows tasks across agents, memory stays provenance-aware, and opt-in voice/desktop capture is governed by privacy controls.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "035",
@@ -486,7 +616,9 @@
       "outcome": "AgentOS can operate authorized desktop and browser tools under scoped identity, action approvals, and observability without granting raw screen content unfettered agent authority.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "036",
@@ -502,7 +634,9 @@
       "outcome": "AgentOS measurably improves task outcomes through approved, reversible candidate changes while detecting unsafe or non-causal personalization and memory deletion.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     },
     {
       "id": "037",
@@ -549,19 +683,239 @@
       "outcome": "Users can install AgentOS on supported hardware, migrate safely, enforce privacy offline, recover tasks across restarts and maintain versioned plugins as an auditable open-source project.",
       "status": "DRAFT",
       "planning_format": "full",
-      "target_slice_developer_days": 1
+      "target_slice_developer_days": 1,
+      "implementation_status": "NOT_STARTED",
+      "extension_ids": []
     }
   ],
-  "revision": "planning-fixes-1",
+  "revision": "personal-platform-3",
   "original_spec_count": 37,
   "release_status": {
-    "R0": "READY_FOR_PLANNING",
-    "R1": "DRAFT",
+    "R0": "COMPLETE",
+    "R1": "IN_PROGRESS",
     "R2": "DRAFT",
     "R3": "DRAFT",
-    "R4": "DRAFT",
-    "R5": "DRAFT",
-    "R6": "DRAFT",
-    "R7": "DRAFT"
-  }
+    "R4": "DRAFT_BLOCKED_BY_MVP_REVIEW",
+    "R5": "DRAFT_BLOCKED_BY_MVP_REVIEW",
+    "R6": "DRAFT_BLOCKED_BY_MVP_REVIEW",
+    "R7": "DRAFT_BLOCKED_BY_MVP_REVIEW"
+  },
+  "roadmap_revision": 3,
+  "planning_extensions": [
+    {
+      "id": "MVP-X07",
+      "title": "Encrypted owner profile and canonical classification",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-011",
+      "related_aos_ids": [
+        "AOS-002",
+        "AOS-007",
+        "AOS-009",
+        "AOS-017"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07",
+      "slice_ids": [
+        "AOS-011-S4",
+        "AOS-011-S5",
+        "AOS-011-S6"
+      ],
+      "case_ids": [
+        "AOS-011-TC05",
+        "AOS-011-TC06",
+        "AOS-011-TC07",
+        "AOS-011-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X08",
+      "title": "Portable assistant charter, communication style and model context",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-017",
+      "related_aos_ids": [
+        "AOS-011",
+        "AOS-016",
+        "AOS-024"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x08",
+      "slice_ids": [
+        "AOS-017-S4",
+        "AOS-017-S5",
+        "AOS-017-S6"
+      ],
+      "case_ids": [
+        "AOS-017-TC05",
+        "AOS-017-TC06",
+        "AOS-017-TC07",
+        "AOS-017-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X09",
+      "title": "Explicit connection grants and secret boundary",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-008",
+      "related_aos_ids": [
+        "AOS-007",
+        "AOS-009",
+        "AOS-010",
+        "AOS-024",
+        "AOS-028"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x09",
+      "slice_ids": [
+        "AOS-008-S4",
+        "AOS-008-S5"
+      ],
+      "case_ids": [
+        "AOS-008-TC05",
+        "AOS-008-TC06",
+        "AOS-008-TC07",
+        "AOS-008-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X10",
+      "title": "Verified milestones, stall detection and bounded repair",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-025",
+      "related_aos_ids": [
+        "AOS-006",
+        "AOS-027a",
+        "AOS-027b",
+        "AOS-029"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x10",
+      "slice_ids": [
+        "AOS-025-S4",
+        "AOS-025-S5"
+      ],
+      "case_ids": [
+        "AOS-025-TC05",
+        "AOS-025-TC06",
+        "AOS-025-TC07",
+        "AOS-025-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X11",
+      "title": "Quota-aware useful work and automatic offline capture",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-012",
+      "related_aos_ids": [
+        "AOS-006",
+        "AOS-010",
+        "AOS-011",
+        "AOS-026",
+        "AOS-029"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x11",
+      "slice_ids": [
+        "AOS-012-S4",
+        "AOS-012-S5",
+        "AOS-012-S6",
+        "AOS-012-S7"
+      ],
+      "case_ids": [
+        "AOS-012-TC05",
+        "AOS-012-TC06",
+        "AOS-012-TC07",
+        "AOS-012-TC08",
+        "AOS-012-TC09",
+        "AOS-012-TC10"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X12",
+      "title": "Private read-only phone companion",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-028",
+      "related_aos_ids": [
+        "AOS-009",
+        "AOS-008",
+        "AOS-029"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x12",
+      "slice_ids": [
+        "AOS-028-S4",
+        "AOS-028-S5",
+        "AOS-028-S6"
+      ],
+      "case_ids": [
+        "AOS-028-TC05",
+        "AOS-028-TC06",
+        "AOS-028-TC07",
+        "AOS-028-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X13",
+      "title": "Measured lightweight resource and foreground contract",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-018",
+      "related_aos_ids": [
+        "AOS-015",
+        "AOS-016",
+        "AOS-026",
+        "AOS-029"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x13",
+      "slice_ids": [
+        "AOS-018-S4",
+        "AOS-018-S5"
+      ],
+      "case_ids": [
+        "AOS-018-TC05",
+        "AOS-018-TC06",
+        "AOS-018-TC07",
+        "AOS-018-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X14",
+      "title": "Reuse, REA evidence and comparative engineering",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-030",
+      "related_aos_ids": [
+        "AOS-008",
+        "AOS-025",
+        "AOS-028",
+        "AOS-029"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x14",
+      "slice_ids": [
+        "AOS-030-S4",
+        "AOS-030-S5"
+      ],
+      "case_ids": [
+        "AOS-030-TC05",
+        "AOS-030-TC06",
+        "AOS-030-TC07"
+      ],
+      "evidence_refs": []
+    }
+  ],
+  "status_authority": "../phase-tracker.json; historical acceptance stays bound to original source; extensions require new evidence."
 }

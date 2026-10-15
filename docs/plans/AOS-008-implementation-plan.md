@@ -78,3 +78,23 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Revision 3 extension — MVP-X09, delivered in R3
+
+The [active personal-platform contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x09) adds **Explicit connection grants and secret boundary**. Original parent scope and historical results remain intact. These new slices deliver in **R3**, even when the parent AOS item originally ships in R1; they do not reopen historical G0 acceptance or fabricate G1 evidence. Inspect the current repository before choosing exact new files/migration revisions.
+
+| Slice | Concrete outcome, narrowed to about one developer-day | Prerequisites |
+| --- | --- | --- |
+| AOS-008-S4 | Implement explicit connection manifests and broker enforcement using existing policy. | AOS-008-S3, AOS-009-S3, AOS-010-S3 |
+| AOS-008-S5 | Implement revocation/secret-boundary checks and scoped onboarding integration. | AOS-008-S4, AOS-028-S3 |
+
+Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the selected manifest entry. File ownership candidates are in implementation-slices.json; record an ADR for a material change. Existing shared transaction/security/API requirements still apply.
+
+| Added case | Lane | Required passing behavior |
+| --- | --- | --- |
+| AOS-008-TC05 | security | Owner/project/version-bound connection grants independently constrain read/write/send/delete/spend, paths, origins, accounts, classifications, budgets and expiry. |
+| AOS-008-TC06 | security | Workers and connectors cannot inherit broad homes, provider credential directories, browser logins, Docker sockets or secret-bearing environment; synthetic secret/egress probes prove the effective envelope. |
+| AOS-008-TC07 | chaos | Revocation/expiry is rechecked before queued/future effects and invalidates stale approval; already-started effects are reconciled honestly. |
+| AOS-008-TC08 | e2e | Connection setup shows exact grants, conformance and revoke state; adding a client or folder cannot import its chats or enable uncertified tools. |
+
+These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.

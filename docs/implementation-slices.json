@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "scope": "R0-R3",
+  "scope": "R0-R3 baseline plus revision-3 MVP extensions; R4-R7 implementation remains separately authorized.",
   "slices": [
     {
       "id": "AOS-001-S1",
@@ -1819,7 +1819,7 @@
       "depends_on": [
         "AOS-023-S1"
       ],
-      "title": "Fetch→read→claim→cite→support pipeline with complete errors/truncation/uncertainty and deterministic offline fixture mode.",
+      "title": "Fetch\u2192read\u2192claim\u2192cite\u2192support pipeline with complete errors/truncation/uncertainty and deterministic offline fixture mode.",
       "planned_files": [
         "src/panestria/research/delegate.py",
         "src/panestria/api/routes/research.py",
@@ -2373,7 +2373,15 @@
       "aos_id": "AOS-030",
       "release": "R3",
       "depends_on": [
-        "AOS-030-S2"
+        "AOS-030-S2",
+        "AOS-011-S6",
+        "AOS-017-S6",
+        "AOS-008-S5",
+        "AOS-025-S5",
+        "AOS-012-S7",
+        "AOS-028-S6",
+        "AOS-018-S5",
+        "AOS-030-S5"
       ],
       "title": "Fourteen-day consented owner trial, incident regressions/revalidated candidate, explicit accept/reject and separate SOTA decision.",
       "planned_files": [
@@ -2392,7 +2400,627 @@
       ],
       "target_developer_days": 1,
       "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-030-S3.md"
+      "prompt_ref": "cursor/prompts/AOS-030-S3.md",
+      "revision3_note": "Begin the 14-day trial only after all 156 pretrial cases and extension dependencies pass. AOS-030-TC04 records trial/owner evidence; final G3 needs all 157."
+    },
+    {
+      "id": "AOS-011-S4",
+      "aos_id": "AOS-011",
+      "extension_id": "MVP-X07",
+      "release": "R3",
+      "depends_on": [
+        "AOS-007-S3",
+        "AOS-011-S3"
+      ],
+      "title": "Resolve classification compatibility with an audited forward migration and fail-closed legacy handling.",
+      "planned_files": [
+        "src/panestria/contracts/policy.py",
+        "src/panestria/policy/labels.py",
+        "src/panestria/memory/profile.py",
+        "src/panestria/memory/vault.py",
+        "migrations/versions/"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x07.py",
+      "case_ids": [
+        "AOS-011-TC05",
+        "AOS-011-TC06",
+        "AOS-011-TC07",
+        "AOS-011-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-011-S5",
+      "aos_id": "AOS-011",
+      "extension_id": "MVP-X07",
+      "release": "R3",
+      "depends_on": [
+        "AOS-011-S4",
+        "AOS-009-S3"
+      ],
+      "title": "Implement bounded encrypted profile read/write through the local broker and safe context selection.",
+      "planned_files": [
+        "src/panestria/contracts/policy.py",
+        "src/panestria/policy/labels.py",
+        "src/panestria/memory/profile.py",
+        "src/panestria/memory/vault.py",
+        "migrations/versions/"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x07.py",
+      "case_ids": [
+        "AOS-011-TC05",
+        "AOS-011-TC06",
+        "AOS-011-TC07",
+        "AOS-011-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-011-S6",
+      "aos_id": "AOS-011",
+      "extension_id": "MVP-X07",
+      "release": "R3",
+      "depends_on": [
+        "AOS-011-S5"
+      ],
+      "title": "Complete key lifecycle, restore, correction/suppression and cross-scope boundary checks.",
+      "planned_files": [
+        "src/panestria/contracts/policy.py",
+        "src/panestria/policy/labels.py",
+        "src/panestria/memory/profile.py",
+        "src/panestria/memory/vault.py",
+        "migrations/versions/"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x07.py",
+      "case_ids": [
+        "AOS-011-TC05",
+        "AOS-011-TC06",
+        "AOS-011-TC07",
+        "AOS-011-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-017-S4",
+      "aos_id": "AOS-017",
+      "extension_id": "MVP-X08",
+      "release": "R3",
+      "depends_on": [
+        "AOS-011-S6",
+        "AOS-017-S3"
+      ],
+      "title": "Implement the minimal editable owner charter/style contract with profile provenance.",
+      "planned_files": [
+        "src/panestria/contracts/profile.py",
+        "src/panestria/memory/context.py",
+        "src/panestria/memory/style.py",
+        "src/panestria/resources/catalog.py"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x08.py",
+      "case_ids": [
+        "AOS-017-TC05",
+        "AOS-017-TC06",
+        "AOS-017-TC07",
+        "AOS-017-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-017-S5",
+      "aos_id": "AOS-017",
+      "extension_id": "MVP-X08",
+      "release": "R3",
+      "depends_on": [
+        "AOS-017-S4"
+      ],
+      "title": "Implement local presentation constraints and paired factual-retention/style checks.",
+      "planned_files": [
+        "src/panestria/contracts/profile.py",
+        "src/panestria/memory/context.py",
+        "src/panestria/memory/style.py",
+        "src/panestria/resources/catalog.py"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x08.py",
+      "case_ids": [
+        "AOS-017-TC05",
+        "AOS-017-TC06",
+        "AOS-017-TC07",
+        "AOS-017-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-017-S6",
+      "aos_id": "AOS-017",
+      "extension_id": "MVP-X08",
+      "release": "R3",
+      "depends_on": [
+        "AOS-017-S5",
+        "AOS-024-S3"
+      ],
+      "title": "Add portable context/model compatibility metadata and pinned-attempt replacement fixtures.",
+      "planned_files": [
+        "src/panestria/contracts/profile.py",
+        "src/panestria/memory/context.py",
+        "src/panestria/memory/style.py",
+        "src/panestria/resources/catalog.py"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x08.py",
+      "case_ids": [
+        "AOS-017-TC05",
+        "AOS-017-TC06",
+        "AOS-017-TC07",
+        "AOS-017-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-008-S4",
+      "aos_id": "AOS-008",
+      "extension_id": "MVP-X09",
+      "release": "R3",
+      "depends_on": [
+        "AOS-008-S3",
+        "AOS-009-S3",
+        "AOS-010-S3"
+      ],
+      "title": "Implement explicit connection manifests and broker enforcement using existing policy.",
+      "planned_files": [
+        "src/panestria/contracts/connections.py",
+        "src/panestria/policy/grants.py",
+        "src/panestria/sandbox/native_tool_gateway.py",
+        "src/panestria/api/routes/connections.py"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x09.py",
+      "case_ids": [
+        "AOS-008-TC05",
+        "AOS-008-TC06",
+        "AOS-008-TC07",
+        "AOS-008-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-008-S5",
+      "aos_id": "AOS-008",
+      "extension_id": "MVP-X09",
+      "release": "R3",
+      "depends_on": [
+        "AOS-008-S4",
+        "AOS-028-S3"
+      ],
+      "title": "Implement revocation/secret-boundary checks and scoped onboarding integration.",
+      "planned_files": [
+        "src/panestria/contracts/connections.py",
+        "src/panestria/policy/grants.py",
+        "src/panestria/sandbox/native_tool_gateway.py",
+        "src/panestria/api/routes/connections.py"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x09.py",
+      "case_ids": [
+        "AOS-008-TC05",
+        "AOS-008-TC06",
+        "AOS-008-TC07",
+        "AOS-008-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-025-S4",
+      "aos_id": "AOS-025",
+      "extension_id": "MVP-X10",
+      "release": "R3",
+      "depends_on": [
+        "AOS-025-S3",
+        "AOS-027b-S3"
+      ],
+      "title": "Add requirement/evidence milestones, finite repair accounting and honest stall status.",
+      "planned_files": [
+        "src/panestria/kernel/progress.py",
+        "src/panestria/kernel/build.py",
+        "src/panestria/verification/build.py"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x10.py",
+      "case_ids": [
+        "AOS-025-TC05",
+        "AOS-025-TC06",
+        "AOS-025-TC07",
+        "AOS-025-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-025-S5",
+      "aos_id": "AOS-025",
+      "extension_id": "MVP-X10",
+      "release": "R3",
+      "depends_on": [
+        "AOS-025-S4"
+      ],
+      "title": "Verify restart/handoff, adversarial false-done and authority-preserving repair.",
+      "planned_files": [
+        "src/panestria/kernel/progress.py",
+        "src/panestria/kernel/build.py",
+        "src/panestria/verification/build.py"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x10.py",
+      "case_ids": [
+        "AOS-025-TC05",
+        "AOS-025-TC06",
+        "AOS-025-TC07",
+        "AOS-025-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-012-S4",
+      "aos_id": "AOS-012",
+      "extension_id": "MVP-X11",
+      "release": "R3",
+      "depends_on": [
+        "AOS-012-S3",
+        "AOS-010-S3"
+      ],
+      "title": "Implement scoped quota observations, owner input, freshness and truthful confidence/UI data.",
+      "planned_files": [
+        "src/panestria/contracts/entitlement.py",
+        "src/panestria/kernel/background.py",
+        "src/panestria/learning/recorder.py",
+        "src/panestria/memory/offline_results.py"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x11.py",
+      "case_ids": [
+        "AOS-012-TC05",
+        "AOS-012-TC06",
+        "AOS-012-TC07",
+        "AOS-012-TC08",
+        "AOS-012-TC09",
+        "AOS-012-TC10"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-012-S5",
+      "aos_id": "AOS-012",
+      "extension_id": "MVP-X11",
+      "release": "R3",
+      "depends_on": [
+        "AOS-012-S4",
+        "AOS-026-S3"
+      ],
+      "title": "Implement the bounded preferred-provider queue, reserves and foreground admission.",
+      "planned_files": [
+        "src/panestria/contracts/entitlement.py",
+        "src/panestria/kernel/background.py",
+        "src/panestria/learning/recorder.py",
+        "src/panestria/memory/offline_results.py"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x11.py",
+      "case_ids": [
+        "AOS-012-TC05",
+        "AOS-012-TC06",
+        "AOS-012-TC07",
+        "AOS-012-TC08",
+        "AOS-012-TC09",
+        "AOS-012-TC10"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-012-S6",
+      "aos_id": "AOS-012",
+      "extension_id": "MVP-X11",
+      "release": "R3",
+      "depends_on": [
+        "AOS-012-S5",
+        "AOS-011-S6"
+      ],
+      "title": "Implement offline validated-result/eligible-example capture with separate purpose/rights checks.",
+      "planned_files": [
+        "src/panestria/contracts/entitlement.py",
+        "src/panestria/kernel/background.py",
+        "src/panestria/learning/recorder.py",
+        "src/panestria/memory/offline_results.py"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x11.py",
+      "case_ids": [
+        "AOS-012-TC05",
+        "AOS-012-TC06",
+        "AOS-012-TC07",
+        "AOS-012-TC08",
+        "AOS-012-TC09",
+        "AOS-012-TC10"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-012-S7",
+      "aos_id": "AOS-012",
+      "extension_id": "MVP-X11",
+      "release": "R3",
+      "depends_on": [
+        "AOS-012-S6",
+        "AOS-029-S3"
+      ],
+      "title": "Prove restart/cancel/limit/no-paid-spillover behavior and expose operator controls.",
+      "planned_files": [
+        "src/panestria/contracts/entitlement.py",
+        "src/panestria/kernel/background.py",
+        "src/panestria/learning/recorder.py",
+        "src/panestria/memory/offline_results.py"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x11.py",
+      "case_ids": [
+        "AOS-012-TC05",
+        "AOS-012-TC06",
+        "AOS-012-TC07",
+        "AOS-012-TC08",
+        "AOS-012-TC09",
+        "AOS-012-TC10"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-028-S4",
+      "aos_id": "AOS-028",
+      "extension_id": "MVP-X12",
+      "release": "R3",
+      "depends_on": [
+        "AOS-009-S3",
+        "AOS-008-S5",
+        "AOS-028-S3"
+      ],
+      "title": "Implement explicit private TLS/device/read-only scope behind a disabled-by-default ingress profile.",
+      "planned_files": [
+        "src/panestria/api/sessions.py",
+        "src/panestria/api/security.py",
+        "apps/mission-control/",
+        "docs/operations/"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x12.py",
+      "case_ids": [
+        "AOS-028-TC05",
+        "AOS-028-TC06",
+        "AOS-028-TC07",
+        "AOS-028-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-028-S5",
+      "aos_id": "AOS-028",
+      "extension_id": "MVP-X12",
+      "release": "R3",
+      "depends_on": [
+        "AOS-028-S4",
+        "AOS-029-S3"
+      ],
+      "title": "Implement responsive status/attention views and safe cache/staleness behavior.",
+      "planned_files": [
+        "src/panestria/api/sessions.py",
+        "src/panestria/api/security.py",
+        "apps/mission-control/",
+        "docs/operations/"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x12.py",
+      "case_ids": [
+        "AOS-028-TC05",
+        "AOS-028-TC06",
+        "AOS-028-TC07",
+        "AOS-028-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-028-S6",
+      "aos_id": "AOS-028",
+      "extension_id": "MVP-X12",
+      "release": "R3",
+      "depends_on": [
+        "AOS-028-S5"
+      ],
+      "title": "Complete adversarial device/reconnect checks and separately scoped real-phone qualification.",
+      "planned_files": [
+        "src/panestria/api/sessions.py",
+        "src/panestria/api/security.py",
+        "apps/mission-control/",
+        "docs/operations/"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x12.py",
+      "case_ids": [
+        "AOS-028-TC05",
+        "AOS-028-TC06",
+        "AOS-028-TC07",
+        "AOS-028-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-018-S4",
+      "aos_id": "AOS-018",
+      "extension_id": "MVP-X13",
+      "release": "R3",
+      "depends_on": [
+        "AOS-015-S3",
+        "AOS-016-S3",
+        "AOS-018-S3"
+      ],
+      "title": "Add reproducible component resource/latency baseline and approved target-host budgets.",
+      "planned_files": [
+        "src/panestria/resources/hardware.py",
+        "src/panestria/resources/admission.py",
+        "src/panestria/telemetry/",
+        "docs/operations/"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x13.py",
+      "case_ids": [
+        "AOS-018-TC05",
+        "AOS-018-TC06",
+        "AOS-018-TC07",
+        "AOS-018-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-018-S5",
+      "aos_id": "AOS-018",
+      "extension_id": "MVP-X13",
+      "release": "R3",
+      "depends_on": [
+        "AOS-018-S4",
+        "AOS-026-S3",
+        "AOS-029-S3"
+      ],
+      "title": "Verify foreground/pressure/recovery limits and expose honest measured capacity.",
+      "planned_files": [
+        "src/panestria/resources/hardware.py",
+        "src/panestria/resources/admission.py",
+        "src/panestria/telemetry/",
+        "docs/operations/"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x13.py",
+      "case_ids": [
+        "AOS-018-TC05",
+        "AOS-018-TC06",
+        "AOS-018-TC07",
+        "AOS-018-TC08"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-030-S4",
+      "aos_id": "AOS-030",
+      "extension_id": "MVP-X14",
+      "release": "R3",
+      "depends_on": [
+        "AOS-008-S3",
+        "AOS-025-S3"
+      ],
+      "title": "Record reuse/REA decision and comparative fixture provenance in the existing evidence model.",
+      "planned_files": [
+        "docs/reuse/",
+        "src/panestria/verification/",
+        "docs/testing/"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x14.py",
+      "case_ids": [
+        "AOS-030-TC05",
+        "AOS-030-TC06",
+        "AOS-030-TC07"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+    },
+    {
+      "id": "AOS-030-S5",
+      "aos_id": "AOS-030",
+      "extension_id": "MVP-X14",
+      "release": "R3",
+      "depends_on": [
+        "AOS-030-S4",
+        "AOS-028-S6",
+        "AOS-012-S7",
+        "AOS-018-S5",
+        "AOS-017-S6",
+        "AOS-025-S5"
+      ],
+      "title": "Verify selected integrations/parity and include all revised obligations in release evaluation.",
+      "planned_files": [
+        "docs/reuse/",
+        "src/panestria/verification/",
+        "docs/testing/"
+      ],
+      "planned_test_file": "tests/e2e/test_mvp_x14.py",
+      "case_ids": [
+        "AOS-030-TC05",
+        "AOS-030-TC06",
+        "AOS-030-TC07"
+      ],
+      "target_developer_days": 1,
+      "status": "NOT_STARTED",
+      "evidence_refs": [],
+      "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
     }
-  ]
+  ],
+  "roadmap_revision": 3
 }

@@ -1,6 +1,6 @@
 {
   "project": "panestria",
-  "roadmap_revision": 2,
+  "roadmap_revision": 3,
   "baseline_version": "v0.6.1",
   "baseline_revision": "planning-fixes-1",
   "repository_url": "https://github.com/yogeshnaren/panestria",
@@ -14,7 +14,10 @@
     "gate_manifest": null,
     "trial_days_required": 14,
     "owner_acceptance": "PENDING",
-    "sota_implementation_authorized": false
+    "sota_implementation_authorized": false,
+    "extension_count": 8,
+    "required_case_count": 157,
+    "deployment_scope": "one Linux workstation and one owner; explicitly enabled private read-only phone access"
   },
   "phases": [
     {
@@ -564,7 +567,18 @@
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-030-implementation-plan.md"
         }
-      ]
+      ],
+      "required_extension_ids": [
+        "MVP-X07",
+        "MVP-X08",
+        "MVP-X09",
+        "MVP-X10",
+        "MVP-X11",
+        "MVP-X12",
+        "MVP-X13",
+        "MVP-X14"
+      ],
+      "extension_slice_count": 21
     },
     {
       "release": "R4",
@@ -1233,7 +1247,12 @@
       "source_section": "2",
       "baseline_target_text": "Tailscale-protected remote monitoring and approvals",
       "baseline_mvp_text": "Not needed; UI can be responsive",
-      "mvp_aos": [],
+      "mvp_aos": [
+        "009",
+        "028",
+        "029",
+        "030"
+      ],
       "expansion_phases": [
         "R5",
         "R7"
@@ -1242,7 +1261,7 @@
         "034",
         "037"
       ],
-      "planned_behavior": "Authenticated private monitoring/approvals; exposure/remote trust tested",
+      "planned_behavior": "R3 private read-only owner phone status/attention; R5 push and approved actions; R7 broader remote trust.",
       "implementation_status": "NOT_STARTED"
     },
     {
@@ -1672,9 +1691,226 @@
       "id": "MVP-X06",
       "status": "NOT_STARTED",
       "evidence_refs": []
+    },
+    {
+      "id": "MVP-X07",
+      "title": "Encrypted owner profile and canonical classification",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-011",
+      "related_aos_ids": [
+        "AOS-002",
+        "AOS-007",
+        "AOS-009",
+        "AOS-017"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07",
+      "slice_ids": [
+        "AOS-011-S4",
+        "AOS-011-S5",
+        "AOS-011-S6"
+      ],
+      "case_ids": [
+        "AOS-011-TC05",
+        "AOS-011-TC06",
+        "AOS-011-TC07",
+        "AOS-011-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X08",
+      "title": "Portable assistant charter, communication style and model context",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-017",
+      "related_aos_ids": [
+        "AOS-011",
+        "AOS-016",
+        "AOS-024"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x08",
+      "slice_ids": [
+        "AOS-017-S4",
+        "AOS-017-S5",
+        "AOS-017-S6"
+      ],
+      "case_ids": [
+        "AOS-017-TC05",
+        "AOS-017-TC06",
+        "AOS-017-TC07",
+        "AOS-017-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X09",
+      "title": "Explicit connection grants and secret boundary",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-008",
+      "related_aos_ids": [
+        "AOS-007",
+        "AOS-009",
+        "AOS-010",
+        "AOS-024",
+        "AOS-028"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x09",
+      "slice_ids": [
+        "AOS-008-S4",
+        "AOS-008-S5"
+      ],
+      "case_ids": [
+        "AOS-008-TC05",
+        "AOS-008-TC06",
+        "AOS-008-TC07",
+        "AOS-008-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X10",
+      "title": "Verified milestones, stall detection and bounded repair",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-025",
+      "related_aos_ids": [
+        "AOS-006",
+        "AOS-027a",
+        "AOS-027b",
+        "AOS-029"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x10",
+      "slice_ids": [
+        "AOS-025-S4",
+        "AOS-025-S5"
+      ],
+      "case_ids": [
+        "AOS-025-TC05",
+        "AOS-025-TC06",
+        "AOS-025-TC07",
+        "AOS-025-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X11",
+      "title": "Quota-aware useful work and automatic offline capture",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-012",
+      "related_aos_ids": [
+        "AOS-006",
+        "AOS-010",
+        "AOS-011",
+        "AOS-026",
+        "AOS-029"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x11",
+      "slice_ids": [
+        "AOS-012-S4",
+        "AOS-012-S5",
+        "AOS-012-S6",
+        "AOS-012-S7"
+      ],
+      "case_ids": [
+        "AOS-012-TC05",
+        "AOS-012-TC06",
+        "AOS-012-TC07",
+        "AOS-012-TC08",
+        "AOS-012-TC09",
+        "AOS-012-TC10"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X12",
+      "title": "Private read-only phone companion",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-028",
+      "related_aos_ids": [
+        "AOS-009",
+        "AOS-008",
+        "AOS-029"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x12",
+      "slice_ids": [
+        "AOS-028-S4",
+        "AOS-028-S5",
+        "AOS-028-S6"
+      ],
+      "case_ids": [
+        "AOS-028-TC05",
+        "AOS-028-TC06",
+        "AOS-028-TC07",
+        "AOS-028-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X13",
+      "title": "Measured lightweight resource and foreground contract",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-018",
+      "related_aos_ids": [
+        "AOS-015",
+        "AOS-016",
+        "AOS-026",
+        "AOS-029"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x13",
+      "slice_ids": [
+        "AOS-018-S4",
+        "AOS-018-S5"
+      ],
+      "case_ids": [
+        "AOS-018-TC05",
+        "AOS-018-TC06",
+        "AOS-018-TC07",
+        "AOS-018-TC08"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "MVP-X14",
+      "title": "Reuse, REA evidence and comparative engineering",
+      "delivery_release": "R3",
+      "owner_aos_id": "AOS-030",
+      "related_aos_ids": [
+        "AOS-008",
+        "AOS-025",
+        "AOS-028",
+        "AOS-029"
+      ],
+      "status": "NOT_STARTED",
+      "gate_status": "NOT_RUN",
+      "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x14",
+      "slice_ids": [
+        "AOS-030-S4",
+        "AOS-030-S5"
+      ],
+      "case_ids": [
+        "AOS-030-TC05",
+        "AOS-030-TC06",
+        "AOS-030-TC07"
+      ],
+      "evidence_refs": []
     }
   ],
   "repository_baseline_commit": "4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917",
   "repository_default_branch": "main",
-  "repository_visibility": "public"
+  "repository_visibility": "public",
+  "active_spec_revision": "personal-platform-3",
+  "planning_source_commit": "7f39028a278df6b5b06d1d60df8a0d09c5b56073",
+  "build_entrypoint": "PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md"
 }
