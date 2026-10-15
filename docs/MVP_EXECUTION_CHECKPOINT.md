@@ -39,9 +39,13 @@ remain unchanged except additive active-schema/migration/interface updates.
 | #61 | Actual isolated OS-key/local-model qualification | 619 / 36 | edc1bb9 |
 | #62 | Explicit audited local-read project setup | 626 / 36 | d5e9068 |
 | #63 | Supported private-config local Ask server | 646 / 37 | e3ffc67 |
+| #64 | Actual CPU-only admission without unused GPU probes | 649 / 37 | fa1b7b9 |
+| #65 | Paired local Ask browser; actual model/cancel/render checks | 656 / 37 | 3e33f15 |
+| #67 | Strict pinned native metadata/candidate compatibility | 718 / 37 | e7cb1b4 |
+| #66 | Closed bounded research contracts, without fetch authority | 760 / 37 | 0152ed4 |
 
-Current verified main: e3ffc6710a05fe0401f41c56cdeedd30b1bc2d92; latest CI
-run 38774612046 at head 3217e53. PR #62's earlier run exposed an older Ask
+Current verified main: 0152ed46fc763d65417d7974dfb7ab268fd37da6; latest CI
+run 38783533166 at exact head a3848de. PR #62's earlier run exposed an older Ask
 downgrade test sharing newer audit data; a schema-only restored isolated guard
 test fixed it without weakening audit-loss protection. PR #61 attempt 1 failed one proposal-demo
 approval-flow test; isolated actual-PG/Docker reproduction and exact-head retry
@@ -67,18 +71,24 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
 ## Exact next work
 
-1. Finish CPU resource fix PR #64 (`task/cpu-resource-probe`) exact-head CI/review/
-   merge, then the dependent `task/local-ask-web` browser PR. Actual browser/model
-   testing found a full-probe timeout; CPU/RAM/power helpers were immediate while
-   the optional NVIDIA helper took 42.023s. CPU mode uses real observations with
-   an empty tool PATH and explicit NOT_PROBED_CPU_ONLY status; no preset or GPU
-   recovery claim. Twenty-six related checks and actual CLI restart qualification
-   passed. Browser code includes #64 explicitly, with 27 related checks plus
-   source-bound actual model/literal-rendering/cancel/reload/logout observations
-   at evidence/local-browser-2026-10-15. No PR number for web until submitted.
-   Default profiles remain off, no Build routes, no release pass. Preserved R0/
-   proposal demos remain separate. Finish remaining profile boundaries and real
-   R1 case/gate reconciliation before claiming the personal alpha accepted.
+1. Finish PR #68 actual native Build qualification and PR #69 canonical research
+   text checks after current-main integration, exact-head CI and review. #68 uses
+   the actual unchanged pinned native adapter, disposable PG, Docker writer and
+   independent verifier, exact scripted test-owner approval and protected Git.
+   Its source-bound live pass took 16.13s at b104e4f (two real fixed-public calls);
+   wrong digest denied, one successful effect, restart/repeated start no replay.
+   Scripted approval is not human acceptance. Native cash remains unknown; no
+   direct paid SDK/API-key calls, billing changes or fallback. Evidence is in
+   evidence/native-build-2026-10-15. #67 preserves six failures plus the later
+   actual native no-tools/hostile-config pass in its compatibility evidence.
+   #69 adds Unicode/byte integrity only, never retained-fetch or claim authority.
+   Next R2 task: immutable scoped PostgreSQL source/request metadata, protected
+   artifact integrity, actual broker/reader fetch authority and SourceStore lookup.
+   No Delegate route or full AOS-013/G2 case is enabled by pure data contracts.
+   Local Ask setup/server/browser are now merged; actual CPU model + CUA verified
+   literal HTML as text, cancellation, reload/logout and responsive layouts. All
+   temporary qualification services were cleaned up; old owner demo 8871 remains
+   on historical code. Profiles stay disabled. See testing/LOCAL_ASK_BROWSER.md.
 2. Complete explicit opt-in local profile setup/launcher, full key lifecycle and
    encrypted restore/forgetting/grant boundaries and whole privacy cases. The
    ordinary ContextCompiler stores metadata/digests, not prompt bodies; profile
