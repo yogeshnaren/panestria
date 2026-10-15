@@ -88,6 +88,8 @@ class ProfileContext:
     def revalidate(self, uow: UnitOfWork, actor: Actor, selection: ProfileSelection) -> ProfileSelection:
         if (selection.owner_id, selection.project_id) != (actor.owner_id, actor.project_id):
             raise KernelDenied("not_found")
+        if selection.label != "RESTRICTED" or selection.offline is not True:
+            raise KernelDenied("profile_context_stale")
         latest = self.select(uow, actor, selection.request)
         # Reconstruct rather than trusting client-supplied text or a plaintext hash.
         if (selection.source, selection.policy_ref, selection.label, selection.offline) != (
