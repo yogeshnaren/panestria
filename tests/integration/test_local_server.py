@@ -198,6 +198,40 @@ def test_unconfigured_policy_stops_before_model_start(configured):
     assert app.state.local_model.stopped_fixture and not calls
 
 
+@pytest.mark.parametrize(
+    "fault,code",
+    [
+        ("schema", "local_schema_migration_required"),
+        ("runtime_permissions", "local_runtime_directory_not_private"),
+        ("resources", "capacity_unknown"),
+        ("model", "model_missing_or_digest_mismatch"),
+    ],
+)
+def test_startup_denial_cleans_owned_state_and_preserves_fixed_reason(configured, monkeypatch, fault, code):
+    config, token, settings, app, calls = configured
+    if fault == "schema":
+        monkeypatch.setattr(local_server, "SCHEMA_HEAD", "unavailable-test-schema")
+    elif fault == "runtime_permissions":
+        config.runtime_directory.mkdir(mode=0o700)
+        config.runtime_directory.chmod(0o750)
+    elif fault == "resources":
+        manifest = app.state.ask_api.probe().model_copy(update={"ram_available_gib": None})
+        monkeypatch.setattr(local_server.HardwareProbe, "collect", lambda self: manifest)
+    else:
+
+        def missing():
+            raise InferenceUnavailable(code)
+
+        monkeypatch.setattr(app.state.local_model, "start", missing)
+    with (
+        pytest.raises((KernelDenied, InferenceUnavailable, LocalApplicationRejected), match="^" + code + "$"),
+        TestClient(app),
+    ):
+        pass
+    assert app.state.local_failure == code and app.state.local_model.stopped_fixture
+    assert not calls and not app.state.local_model.socket_path.exists()
+
+
 def test_real_http_enforces_headers_and_slow_header_deadline(configured, monkeypatch):
     config, token, settings, app, _ = configured
     listener = socket.socket()
