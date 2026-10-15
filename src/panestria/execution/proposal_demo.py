@@ -752,6 +752,21 @@ class ProposalDemo:
 
     def _failed(self, goal: str, task: str, reason: str) -> None:
         with self.connect() as c:
+            # Match cancellation's goal -> task -> attempt order. The goal lock
+            # permits FK key-share checks by workers recording historical events.
+            current = c.execute(
+                "SELECT status FROM panestria.goal WHERE id=%s AND owner_id=%s AND project_id=%s FOR NO KEY UPDATE",
+                (goal, self.actor.owner_id, self.actor.project_id),
+            ).fetchone()
+            if current is None or current[0] == "COMPLETED":
+                return
+            if (
+                c.execute(
+                    "SELECT id FROM panestria.task WHERE id=%s AND goal_id=%s FOR UPDATE", (task, goal)
+                ).fetchone()
+                is None
+            ):
+                raise KernelDenied("not_found")
             c.execute(
                 "UPDATE panestria.task_attempt SET "
                 "status='FAILED',error_code=%s,finished_at=clock_timestamp() WHERE task_id=%s AND "
@@ -810,6 +825,7 @@ class ProposalDemo:
         elif effect.state != "SUCCEEDED":
             raise DemoUnavailable("recorded_merge_requires_reconciliation")
         with self.connect() as c:
+            self._completion_lock(c, goal)
             self.evidence.complete_confirmed(
                 UnitOfWork(c), self.actor, task, str(view.preview["candidate_sha256"]), effect.effect_id
             )
@@ -826,6 +842,14 @@ class ProposalDemo:
     def _goal(self, c: psycopg.Connection[Any], goal: str) -> None:
         GoalService().get(UnitOfWork(c), self.actor, goal)
         if goal == self.identity["setup_goal"]:
+            raise KernelDenied("not_found")
+
+    def _completion_lock(self, c: psycopg.Connection[Any], goal: str) -> None:
+        row = c.execute(
+            "SELECT id FROM panestria.goal WHERE id=%s AND owner_id=%s AND project_id=%s FOR NO KEY UPDATE",
+            (goal, self.actor.owner_id, self.actor.project_id),
+        ).fetchone()
+        if row is None:
             raise KernelDenied("not_found")
 
     def reconcile(self, goal: str) -> None:
@@ -847,6 +871,7 @@ class ProposalDemo:
         if state != "SUCCEEDED":
             executor.reconcile(self.actor, str(effect))
         with self.connect() as c:
+            self._completion_lock(c, goal)
             self.evidence.complete_confirmed(
                 UnitOfWork(c), self.actor, str(task), str(preview["candidate_sha256"]), str(effect)
             )

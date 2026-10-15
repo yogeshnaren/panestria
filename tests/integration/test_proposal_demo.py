@@ -314,3 +314,54 @@ def test_lost_merge_receipt_reconciles_actual_git_without_another_worker(
     demo.reconcile(goal)
     assert demo.view(goal)["goal"]["status"] == "COMPLETED"
     assert demo.adapter.calls == 2
+
+
+def test_cancellation_goal_lock_allows_a_worker_to_record_its_final_event(r1_task: dict[str, str]) -> None:
+    from panestria.kernel.cancellation import CancellationService
+    from panestria.kernel.goals import Actor
+    from panestria.kernel.repositories.tasks import append_event
+
+    actor = Actor(r1_task["owner"], r1_task["project"])
+    errors: list[Exception] = []
+    ready = threading.Event()
+    cancel_pid: list[int] = []
+    with psycopg.connect(r1_task["dsn"]) as worker:
+        worker.execute("SET LOCAL statement_timeout='1500ms'")
+        worker.execute("SELECT id FROM panestria.task WHERE id=%s FOR UPDATE", (r1_task["task"],))
+        worker_pid = worker.info.backend_pid
+
+        def cancel() -> None:
+            try:
+                with psycopg.connect(r1_task["dsn"]) as c:
+                    cancel_pid.append(c.info.backend_pid)
+                    ready.set()
+                    CancellationService().cancel(
+                        UnitOfWork(c), actor, r1_task["goal"], 0, "synthetic cancel race", correlation_id=str(uuid4())
+                    )
+            except Exception as exc:
+                errors.append(exc)
+
+        thread = threading.Thread(target=cancel)
+        thread.start()
+        assert ready.wait(2)
+        deadline = time.monotonic() + 3
+        with psycopg.connect(r1_task["dsn"], autocommit=True) as observer:
+            while worker_pid not in observer.execute("SELECT pg_blocking_pids(%s)", (cancel_pid[0],)).fetchone()[0]:
+                assert time.monotonic() < deadline, "cancel did not reach task lock"
+                time.sleep(0.01)
+        # Cancellation holds the goal lock and waits for this task. The worker
+        # must be able to insert a goal FK without waiting on that goal lock.
+        append_event(
+            UnitOfWork(worker),
+            goal_id=r1_task["goal"],
+            task_id=r1_task["task"],
+            actor=actor.owner_id,
+            kind="fixture.worker_returned",
+            payload={},
+        )
+    thread.join(timeout=5)
+    assert not thread.is_alive() and not errors, errors
+    with psycopg.connect(r1_task["dsn"]) as c:
+        assert c.execute("SELECT status FROM panestria.goal WHERE id=%s", (r1_task["goal"],)).fetchone() == (
+            "CANCELLED",
+        )
