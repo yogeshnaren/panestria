@@ -34,7 +34,7 @@ before changing acceptance status.
 
 The inventory is implemented in `panestria.verification.readiness`; see
 [usage/limitations](testing/MVP_READINESS.md) and the
-[initial source inventory](reviews/MVP-READINESS-2026-10-15.md). Its17 regression
+[initial source inventory](reviews/MVP-READINESS-2026-10-15.md). Its 17 regression
 tests, lint, typing and import checks pass locally. The focused task PR requires
 full CI and review before merge. Source navigation is not release acceptance.
 
