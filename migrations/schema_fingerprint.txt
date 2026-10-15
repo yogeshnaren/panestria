@@ -304,6 +304,17 @@ column user_correction privacy_label text NO
 column user_correction project_id uuid NO
 column user_correction request_id uuid NO
 column user_correction version int4 NO
+column worker_invocation attempt_id uuid NO
+column worker_invocation binding jsonb NO
+column worker_invocation binding_sha256 bpchar NO
+column worker_invocation created_at timestamptz NO
+column worker_invocation expires_at timestamptz NO
+column worker_invocation finished_at timestamptz YES
+column worker_invocation id uuid NO
+column worker_invocation invocation_key varchar NO
+column worker_invocation receipt_sha256 bpchar YES
+column worker_invocation state text NO
+column worker_invocation task_id uuid NO
 column workflow_link attempt_id uuid NO
 column workflow_link dbos_workflow_id text NO
 column workflow_link task_id uuid NO
@@ -528,6 +539,16 @@ constraint panestria.user_correction f FOREIGN KEY (consented_by) REFERENCES pan
 constraint panestria.user_correction f FOREIGN KEY (request_id, owner_id, project_id) REFERENCES panestria.ask_request(id, owner_id, project_id)
 constraint panestria.user_correction p PRIMARY KEY (id)
 constraint panestria.user_correction u UNIQUE (request_id, owner_id, project_id, version)
+constraint panestria.worker_invocation c CHECK (((state = 'RETURNED'::text) = (receipt_sha256 IS NOT NULL)))
+constraint panestria.worker_invocation c CHECK (((state = ANY (ARRAY['RETURNED'::text, 'UNKNOWN'::text])) = (finished_at IS NOT NULL)))
+constraint panestria.worker_invocation c CHECK ((binding_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.worker_invocation c CHECK ((expires_at > created_at))
+constraint panestria.worker_invocation c CHECK ((jsonb_typeof(binding) = 'object'::text))
+constraint panestria.worker_invocation c CHECK ((receipt_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.worker_invocation c CHECK ((state = ANY (ARRAY['PREPARED'::text, 'CLAIMED'::text, 'RETURNED'::text, 'UNKNOWN'::text])))
+constraint panestria.worker_invocation f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
+constraint panestria.worker_invocation p PRIMARY KEY (id)
+constraint panestria.worker_invocation u UNIQUE (attempt_id, invocation_key)
 constraint panestria.workflow_link f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
 constraint panestria.workflow_link f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.workflow_link p PRIMARY KEY (task_id, attempt_id)
@@ -601,5 +622,7 @@ index CREATE UNIQUE INDEX task_id_goal_id_key ON panestria.task USING btree (id,
 index CREATE UNIQUE INDEX task_pkey ON panestria.task USING btree (id)
 index CREATE UNIQUE INDEX user_correction_pkey ON panestria.user_correction USING btree (id)
 index CREATE UNIQUE INDEX user_correction_request_id_owner_id_project_id_version_key ON panestria.user_correction USING btree (request_id, owner_id, project_id, version)
+index CREATE UNIQUE INDEX worker_invocation_attempt_id_invocation_key_key ON panestria.worker_invocation USING btree (attempt_id, invocation_key)
+index CREATE UNIQUE INDEX worker_invocation_pkey ON panestria.worker_invocation USING btree (id)
 index CREATE UNIQUE INDEX workflow_link_dbos_workflow_id_key ON panestria.workflow_link USING btree (dbos_workflow_id)
 index CREATE UNIQUE INDEX workflow_link_pkey ON panestria.workflow_link USING btree (task_id, attempt_id)
