@@ -58,3 +58,7 @@ AOS-034,035,036,037 are intentionally high-level platform epics because actual h
 - Temporal: https://github.com/temporalio/temporal
 - Claude Code: https://code.claude.com/docs/en/cli-reference
 - Codex CLI: https://github.com/openai/codex
+
+## Active personal-platform revision 3
+
+The [revision-3 contract](05-PERSONAL-PLATFORM-REVISION-3.md) adds eight bounded R3 obligations and explicitly preserves the R4–R7 target above. Basic quota-aware useful work/offline capture, encrypted profile/style/model context, connection grants, read-only private phone views and verified/resource evidence are MVP foundations. R4 improves telemetry/governor/model selection; R5 adds qualified Byzantium voice/TTS and fuller surfaces; R6 adds permitted weight learning, coaching/graph candidates and gated adaptation; R7 expands user/host/platform trust. Reuse uses REA's source/artifact/runtime evidence workflow, never a claim that inspected proprietary code is automatically reusable.

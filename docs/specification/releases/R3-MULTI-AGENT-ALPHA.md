@@ -1,6 +1,6 @@
 # R3 Build Specification — Multi-Agent Build + Mission Control
 
-**Planning status:** DRAFT — release scope requires review before implementation planning; revision planning-fixes-1.
+**Planning status:** DRAFT implementation; active scope is personal-platform-3. Read [the revision-3 contract](../architecture/05-PERSONAL-PLATFORM-REVISION-3.md) and [R3 build sequence](../../phases/R3-BUILD-PLAN.md). No runtime acceptance is claimed.
 
 **Goal:** Demonstrate real concurrent work across two independently authenticated, policy-constrained coding harnesses, while making progress and approvals useful to a human.
 
@@ -27,3 +27,9 @@
 
 ## Complete MVP gate
 `A-1` offline Ask; `D-1` read-only grounded research; `B-1` concurrent Build; independent three-axis policy negative tests; six chaos scenarios from frozen master §17; 14-day daily-use observation. Log results against code SHA, model/CLI version and hardware profile; no statistically unjustified claims on tiny sample sets.
+
+## Expanded personal MVP scope
+
+MVP-X07–X14 add a bounded encrypted owner profile/canonical classification, portable charter/style/model context, explicit connections/secrets, verified milestones/stalls/repair, a quota-aware preferred-provider queue with verified offline capture, private read-only phone views, target-host resource budgets and REA-informed reuse. Parent IDs and original phase assignments remain intact; these new obligations deliver in R3 and require separate evidence.
+
+The G3 manifest now requires 157 scenarios (124 original + 33 new): pass its 156-case pretrial subset, then complete AOS-030-TC04 with the 14-day owner trial/decision. Only the complete set can PASS final G3. The phone boundary is a deliberate exception to the older no-remote-MVP design: disabled-by-default private authenticated TLS ingress and server-enforced read-only device scope, not public API exposure or remote approvals. Owner-reported quota can schedule useful work, and authorized bounded work may proceed with unknown precision; no-extra-spend and training-purpose eligibility are independently enforced. R4–R7 remain separately authorized expansion.

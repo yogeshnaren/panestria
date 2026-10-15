@@ -1,19 +1,19 @@
 # Security
 
-Panestria R0 is a local synthetic kernel. It is not a hosted service, and R0 is not accepted. Do not point it at production data, personal data, or a real model account.
+Panestria contains an accepted R0 synthetic kernel and R1 components; the complete R3 MVP is not accepted. Current release and source-bound evidence are in [the tracker](docs/phase-tracker.json). A merged component/default CI is not certification for arbitrary code, every native harness, sensitive profiles or public deployment.
 
 ## Reporting
 
-Report a vulnerability privately to the repository owner. Do not include live passwords, provider keys, or production data in the report. A synthetic request and the source commit are enough.
+Report vulnerabilities privately to the repository owner. Share a synthetic reproducer and source commit, not actual passwords, provider tokens or private project data.
 
-## Local boundaries
+## Current boundaries
 
-The API binds `127.0.0.1` only. A non-loopback bind is rejected. Compose publishes PostgreSQL on `127.0.0.1:55432` and does not mount the Docker socket into the database container.
+The API binds loopback (127.0.0.1) by default with scoped authentication, Host/Origin/session/CSRF controls on the relevant flows. Workers use reviewed pinned profiles and separate no-secret verification; each enabled harness needs its exact OS/tool/auth compatibility proof. The native demo is a fixed public isolated exercise, not unrestricted app orchestration. Provider credentials remain in the approved local authentication boundary, not worker mounts, Git, URLs or logs. Preserve owner databases/services and use disposable test projects.
 
-`.env.example` contains placeholders. Panestria does not load it. Health and error output must not print the database URL or password. CI does not inject provider credentials and runs only the reviewed commands in `.github/workflows/ci.yml`.
+Existing memory filtering/provenance is not application-level profile encryption. Sensitive profile enablement requires [revision-3 classification/vault evidence](docs/specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07); [ADR 0003](adr/0003-personal-platform-classification.md) defines the planned compatibility transition. Do not treat legacy PRIVATE as an automatically exportable canonical label. Host administrator compromise is outside application-session isolation claims.
 
-The synthetic token and the placeholder database password are not credentials for any other system. Do not reuse them outside this repository.
+## Planned boundaries
 
-## Out of scope for this tree
+The revision-3 MVP includes explicitly enabled private authenticated TLS read-only phone access; it is not implemented by this documentation. Keep the current API loopback-only and public ingress disabled. A private network is not sufficient authentication. Phone approvals, background push, general desktop actions and voice expand later with their own evidence.
 
-Sandboxing arbitrary code, real provider authentication, and a public deployment are not provided. R1 security hardening is required before any of those uses.
+Quota-aware work uses scoped standing policy, reserves and no-extra-spend eligibility; stale/unknown measurements do not imply unlimited funds. Offline knowledge and training rights are separate. No documentation grants new account settings, provider spending, live inference or model-training authorization. API examples remain placeholders; health/errors must not disclose secrets. CI uses no real model credentials.

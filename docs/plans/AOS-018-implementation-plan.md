@@ -74,3 +74,23 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Revision 3 extension — MVP-X13, delivered in R3
+
+The [active personal-platform contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x13) adds **Measured lightweight resource and foreground contract**. Original parent scope and historical results remain intact. These new slices deliver in **R3**, even when the parent AOS item originally ships in R1; they do not reopen historical G0 acceptance or fabricate G1 evidence. Inspect the current repository before choosing exact new files/migration revisions.
+
+| Slice | Concrete outcome, narrowed to about one developer-day | Prerequisites |
+| --- | --- | --- |
+| AOS-018-S4 | Add reproducible component resource/latency baseline and approved target-host budgets. | AOS-015-S3, AOS-016-S3, AOS-018-S3 |
+| AOS-018-S5 | Verify foreground/pressure/recovery limits and expose honest measured capacity. | AOS-018-S4, AOS-026-S3, AOS-029-S3 |
+
+Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the selected manifest entry. File ownership candidates are in implementation-slices.json; record an ADR for a material change. Existing shared transaction/security/API requirements still apply.
+
+| Added case | Lane | Required passing behavior |
+| --- | --- | --- |
+| AOS-018-TC05 | integration | Versioned measurements separate controller/database/model idle/active/peak memory, CPU, disk, VRAM, queue latency and cold/warm output; host-specific budgets are fixed before qualification. |
+| AOS-018-TC06 | security | Effective CPU/RAM/process/I/O limits and pressure-aware admission protect controller recovery and foreground work; unavailable cgroup/PSI capabilities are explicit. |
+| AOS-018-TC07 | chaos | Resource pressure bounds queues and unloads safe idle resources while retaining task state; no unauthorized cloud fallback; GPU estimates are not reported as guaranteed VRAM partitions. |
+| AOS-018-TC08 | live | Actual target-host workload and foreground contention meet recorded memory/responsiveness budgets; synthetic presets or unmeasured resource claims cannot qualify. |
+
+These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.

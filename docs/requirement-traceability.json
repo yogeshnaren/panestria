@@ -325,7 +325,7 @@
       "id": "AOS-003-F03",
       "aos_id": "AOS-003",
       "source_kind": "F",
-      "source_clause": "Implement explicit `CREATED→VALIDATING→READY→LEASED→RUNNING→VERIFYING→COMPLETED` happy path and terminal/error states. Add controlled pause, cancellation requested, retry-wait and reconciliation states as modeled; R0 mock activity never uses real external side effects.",
+      "source_clause": "Implement explicit `CREATED\u2192VALIDATING\u2192READY\u2192LEASED\u2192RUNNING\u2192VERIFYING\u2192COMPLETED` happy path and terminal/error states. Add controlled pause, cancellation requested, retry-wait and reconciliation states as modeled; R0 mock activity never uses real external side effects.",
       "slice_ids": [
         "AOS-003-S1",
         "AOS-003-S2",
@@ -760,7 +760,7 @@
       "id": "AOS-006-F03",
       "aos_id": "AOS-006",
       "source_kind": "F",
-      "source_clause": "On timeout/transport drop mark effect UNKNOWN → RECONCILING; run target query with stable fingerprint before retry; unresolved effects require owner approval.",
+      "source_clause": "On timeout/transport drop mark effect UNKNOWN \u2192 RECONCILING; run target query with stable fingerprint before retry; unresolved effects require owner approval.",
       "slice_ids": [
         "AOS-006-S1",
         "AOS-006-S2",
@@ -940,7 +940,7 @@
       "id": "AOS-007-AC02",
       "aos_id": "AOS-007",
       "source_kind": "AC",
-      "source_clause": "Two projects cannot share policy/profile by implicit filesystem path; policy update invalidates stale approval; RESTRICTED→cloud always DENY.",
+      "source_clause": "Two projects cannot share policy/profile by implicit filesystem path; policy update invalidates stale approval; RESTRICTED\u2192cloud always DENY.",
       "slice_ids": [
         "AOS-007-S1",
         "AOS-007-S2",
@@ -1840,7 +1840,7 @@
       "id": "AOS-014-AC02",
       "aos_id": "AOS-014",
       "source_kind": "AC",
-      "source_clause": "Trace ID joins API→DBOS→adapter→verifier; secret sentinel never appears in JSON event or Phoenix exporter.",
+      "source_clause": "Trace ID joins API\u2192DBOS\u2192adapter\u2192verifier; secret sentinel never appears in JSON event or Phoenix exporter.",
       "slice_ids": [
         "AOS-014-S1",
         "AOS-014-S2",
@@ -2200,7 +2200,7 @@
       "id": "AOS-017-AC02",
       "aos_id": "AOS-017",
       "source_kind": "AC",
-      "source_clause": "Latency distribution measured on actual hardware; provisional warm p95 TTFT ≤3 s only if hardware ADR confirms feasibility.",
+      "source_clause": "Latency distribution measured on actual hardware; provisional warm p95 TTFT \u22643 s only if hardware ADR confirms feasibility.",
       "slice_ids": [
         "AOS-017-S1",
         "AOS-017-S2",
@@ -2974,7 +2974,7 @@
       "id": "AOS-023-F02",
       "aos_id": "AOS-023",
       "source_kind": "F",
-      "source_clause": "Planner breaks request into ≤N research subqueries, calls approved search provider, fetcher and isolated reader; synthesizer constructs structured claim and source list; all factual claims go through source/quote and semantic support pipeline.",
+      "source_clause": "Planner breaks request into \u2264N research subqueries, calls approved search provider, fetcher and isolated reader; synthesizer constructs structured claim and source list; all factual claims go through source/quote and semantic support pipeline.",
       "slice_ids": [
         "AOS-023-S1",
         "AOS-023-S2",
@@ -3028,7 +3028,7 @@
       "id": "AOS-023-AC01",
       "aos_id": "AOS-023",
       "source_kind": "AC",
-      "source_clause": "D-1: ≥5 fixture briefs including fabricated quote, fabricated URL, claim contradiction, injection and SSRF attempt. All negative fixtures explicitly fail/abstain.",
+      "source_clause": "D-1: \u22655 fixture briefs including fabricated quote, fabricated URL, claim contradiction, injection and SSRF attempt. All negative fixtures explicitly fail/abstain.",
       "slice_ids": [
         "AOS-023-S1",
         "AOS-023-S2",
@@ -3802,7 +3802,7 @@
       "id": "AOS-029-AC03",
       "aos_id": "AOS-029",
       "source_kind": "AC",
-      "source_clause": "Can trace one goal through task→worker→verifier→approval across restart.",
+      "source_clause": "Can trace one goal through task\u2192worker\u2192verifier\u2192approval across restart.",
       "slice_ids": [
         "AOS-029-S1",
         "AOS-029-S2",
@@ -3941,6 +3941,165 @@
         "AOS-030-TC04"
       ],
       "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "MVP-X07",
+      "aos_id": "AOS-011",
+      "source_kind": "REVISION_3_EXTENSION",
+      "source_clause": "Encrypted owner profile and canonical classification",
+      "source_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07",
+      "delivery_release": "R3",
+      "slice_ids": [
+        "AOS-011-S4",
+        "AOS-011-S5",
+        "AOS-011-S6"
+      ],
+      "case_ids": [
+        "AOS-011-TC05",
+        "AOS-011-TC06",
+        "AOS-011-TC07",
+        "AOS-011-TC08"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "MVP-X08",
+      "aos_id": "AOS-017",
+      "source_kind": "REVISION_3_EXTENSION",
+      "source_clause": "Portable assistant charter, communication style and model context",
+      "source_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x08",
+      "delivery_release": "R3",
+      "slice_ids": [
+        "AOS-017-S4",
+        "AOS-017-S5",
+        "AOS-017-S6"
+      ],
+      "case_ids": [
+        "AOS-017-TC05",
+        "AOS-017-TC06",
+        "AOS-017-TC07",
+        "AOS-017-TC08"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "MVP-X09",
+      "aos_id": "AOS-008",
+      "source_kind": "REVISION_3_EXTENSION",
+      "source_clause": "Explicit connection grants and secret boundary",
+      "source_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x09",
+      "delivery_release": "R3",
+      "slice_ids": [
+        "AOS-008-S4",
+        "AOS-008-S5"
+      ],
+      "case_ids": [
+        "AOS-008-TC05",
+        "AOS-008-TC06",
+        "AOS-008-TC07",
+        "AOS-008-TC08"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "MVP-X10",
+      "aos_id": "AOS-025",
+      "source_kind": "REVISION_3_EXTENSION",
+      "source_clause": "Verified milestones, stall detection and bounded repair",
+      "source_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x10",
+      "delivery_release": "R3",
+      "slice_ids": [
+        "AOS-025-S4",
+        "AOS-025-S5"
+      ],
+      "case_ids": [
+        "AOS-025-TC05",
+        "AOS-025-TC06",
+        "AOS-025-TC07",
+        "AOS-025-TC08"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "MVP-X11",
+      "aos_id": "AOS-012",
+      "source_kind": "REVISION_3_EXTENSION",
+      "source_clause": "Quota-aware useful work and automatic offline capture",
+      "source_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x11",
+      "delivery_release": "R3",
+      "slice_ids": [
+        "AOS-012-S4",
+        "AOS-012-S5",
+        "AOS-012-S6",
+        "AOS-012-S7"
+      ],
+      "case_ids": [
+        "AOS-012-TC05",
+        "AOS-012-TC06",
+        "AOS-012-TC07",
+        "AOS-012-TC08",
+        "AOS-012-TC09",
+        "AOS-012-TC10"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "MVP-X12",
+      "aos_id": "AOS-028",
+      "source_kind": "REVISION_3_EXTENSION",
+      "source_clause": "Private read-only phone companion",
+      "source_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x12",
+      "delivery_release": "R3",
+      "slice_ids": [
+        "AOS-028-S4",
+        "AOS-028-S5",
+        "AOS-028-S6"
+      ],
+      "case_ids": [
+        "AOS-028-TC05",
+        "AOS-028-TC06",
+        "AOS-028-TC07",
+        "AOS-028-TC08"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "MVP-X13",
+      "aos_id": "AOS-018",
+      "source_kind": "REVISION_3_EXTENSION",
+      "source_clause": "Measured lightweight resource and foreground contract",
+      "source_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x13",
+      "delivery_release": "R3",
+      "slice_ids": [
+        "AOS-018-S4",
+        "AOS-018-S5"
+      ],
+      "case_ids": [
+        "AOS-018-TC05",
+        "AOS-018-TC06",
+        "AOS-018-TC07",
+        "AOS-018-TC08"
+      ],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "MVP-X14",
+      "aos_id": "AOS-030",
+      "source_kind": "REVISION_3_EXTENSION",
+      "source_clause": "Reuse, REA evidence and comparative engineering",
+      "source_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x14",
+      "delivery_release": "R3",
+      "slice_ids": [
+        "AOS-030-S4",
+        "AOS-030-S5"
+      ],
+      "case_ids": [
+        "AOS-030-TC05",
+        "AOS-030-TC06",
+        "AOS-030-TC07"
+      ],
+      "status": "NOT_IMPLEMENTED"
     }
-  ]
+  ],
+  "roadmap_revision": 3
 }

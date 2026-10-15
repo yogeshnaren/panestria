@@ -1,7 +1,7 @@
 # R1 execution control
 
 R0 was accepted by the repository owner and pushed to `origin/r0-kernel` at
-`a5b9233`. R1 implementation is authorized on `r1-alpha`. Preserve individual
+`a5b9233`. R1 implementation is authorized. The old `r1-alpha` branch is a preserved historical reference; new task branches start at current main or their explicit unmerged prerequisite. Preserve individual
 commits authored by Yogesh Naren Bundey; do not squash or merge main implicitly.
 
 Implement the 13 items and 39 slices in R1-BUILD-PLAN.md, then evaluate all G1
@@ -21,7 +21,7 @@ Panestria's local UI/CLI and database. The runtime must operate independently of
 this development chat. Hold OpenAI live calls and automatic provider fallback;
 do not interpret local execution as offline inference. Credentials stay in the
 native local authentication store. Remote telemetry is disabled by default.
-The renewed login check currently returns an account monthly spend-limit error;
+The historical renewed-login check returned an account spend-limit error;
 no account-limit changes or credential substitution are authorized by that check.
 
 Use disposable R1 test databases on a separate loopback port/container. Preserve
@@ -35,7 +35,7 @@ G1 remains incomplete until actual OS, Claude, paid SDK, hardware, local model,
 offline and resource-pressure cases pass. No mock substitutes for a live case.
 R1 owner review is separate from G1 evidence. R2/R3 implementation is not started.
 
-The owner expects Claude quota to reset within about 24 hours. Keep successful
+The owner previously expected a quota reset within about 24 hours; this is historical context, not a current usage observation. Keep successful
 native inference/conformance cases pending while continuing all independent
 local work. This dependency does not suspend R1 implementation or authorize
 raising account limits, changing credentials or substituting mocks for live proof.
@@ -45,3 +45,5 @@ aggregate R1 PR. The original `r1-alpha` history is preserved as a reference;
 current work is submitted through the [task PR stack](../reviews/R1-TASK-PR-STACK.md).
 Use a focused task branch and PR for subsequent changes, preserve author identity
 and source-bound evidence, and report pending live checks explicitly.
+
+Revision 3's current build entrypoint is [the phased plan](../PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md). G1 remains NOT_RUN; actual current native eligibility must be rechecked under the existing scoped permissions rather than inferred from an old error/date. New quota-queue, profile and phone requirements are tracked explicitly for R3. This document grants no new model spending or secret access.

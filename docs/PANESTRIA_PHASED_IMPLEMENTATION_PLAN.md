@@ -1,6 +1,8 @@
 # Panestria — phased implementation plan, MVP through full target
 
-**Date:** 2026-10-11. **Plan revision:** 2. **Source:** AgentOS v0.6.1 planning-fixes-1. **MVP boundary:** R3, explicitly confirmed by the owner. **Repository:** [yogeshnaren/panestria](https://github.com/yogeshnaren/panestria), public, main branch. **Historical baseline:** 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917 contained only README.md and the MIT LICENSE. **Live status:** R0 is in progress on local branch `r0-kernel`. S1 and S2 hermetic cases are not a release-gate pass. S3 PostgreSQL scaffold is the active slice. AOS-001-TC04, AOS-001, and MVP acceptance are not complete.
+**Date:** 2026-10-15. **Plan revision:** 3. **Active specification:** personal-platform-3 over preserved AgentOS v0.6.1/planning-fixes-1. **MVP boundary:** R3, owner confirmed. **Repository:** [yogeshnaren/panestria](https://github.com/yogeshnaren/panestria). **Inspected source:** `7f39028a278df6b5b06d1d60df8a0d09c5b56073`. **Current status:** R0 COMPLETE/G0 PASS; R1 IN_PROGRESS/G1 NOT_RUN; R2/R3 DRAFT with implementation not started; R4–R7 planning only, blocked by MVP acceptance and separate SOTA authorization.
+
+**Build from this document.** The [active revision-3 specification](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md) defines new contracts and acceptance; [phase tracker](phase-tracker.json), [backlog](specification/backlog.json), [slice manifest](implementation-slices.json) and [test catalog/gates](testing/release-gates.json) are synchronized. Read one selected item/slice and actual code after these shared decisions. Older status headers, slice prompts and original download archives are historical where superseded; they do not override this revision. No new requirement is implemented merely because it is documented.
 
 The delivery path is R0 → R1 → R2 → R3 → **owner MVP review and acceptance** → R4 → R5 → R6 → R7. Every original capability remains assigned to a phase or a named evidence-gated candidate. R1 and R2 are useful pilots; the complete MVP is accepted at R3. SOTA implementation requires a separate owner decision after MVP review.
 
@@ -13,34 +15,37 @@ This is the full phased roadmap and planning contract. Detailed implementation p
 | R0 | MVP | Durable synthetic kernel | AOS-001, AOS-002, AOS-003, AOS-004, AOS-005 | G0 |
 | R1 | MVP | Personal alpha: offline Ask and one-worker Build | AOS-006, AOS-007, AOS-008, AOS-009, AOS-010, AOS-027a, AOS-011, AOS-012, AOS-014, AOS-015, AOS-016, AOS-017, AOS-018 | G1 |
 | R2 | MVP | Research alpha: verified Delegate | AOS-013, AOS-019, AOS-020, AOS-021, AOS-022, AOS-023 | G2 |
-| R3 | MVP | Complete MVP: two-worker Build and Mission Control | AOS-024, AOS-025, AOS-026, AOS-027b, AOS-028, AOS-029, AOS-030 | G3 |
+| R3 | MVP | Complete MVP: verified two-worker Build, personal profile, quota queue and read-only phone Mission Control | AOS-024, AOS-025, AOS-026, AOS-027b, AOS-028, AOS-029, AOS-030 | G3 |
 | MVP REVIEW | Required checkpoint | Freeze a candidate, run the full suite and 14-day owner trial; accept or return to MVP fixes | AOS-030 and MVP checklist | Owner acceptance recorded; SOTA separately authorized |
 | R4 | SOTA | SOTA: routing, quotas and compute | AOS-031, AOS-032, AOS-033 | G4 |
 | R5 | SOTA | SOTA: context, memory and daily-use surfaces | AOS-034, AOS-035 | G5 |
 | R6 | SOTA | SOTA: evaluated adaptation and capability discovery | AOS-036 | G6 |
 | R7 | SOTA | SOTA: portability, multi-machine and public distribution | AOS-037 | G7 |
 
-An item being documented or merged is not proof that a release gate passed. The [machine-readable tracker](phase-tracker.json) starts with NOT_STARTED items and NOT_RUN gates. The [MVP checklist](MVP_ACCEPTANCE_CHECKLIST.md) defines the completion evidence. The [coverage register](FULL_TARGET_COVERAGE.md) accounts for 35 baseline subsystem rows, 16 preservation pillars and their finer features.
+An item being documented or merged is not proof that a release gate passed. The [machine-readable tracker](phase-tracker.json) records accepted R0 evidence, R1 in progress and later work not yet accepted. New revision-3 slices and cases remain NOT_STARTED/NOT_RUN. The [MVP checklist](MVP_ACCEPTANCE_CHECKLIST.md) defines the completion evidence. The [coverage register](FULL_TARGET_COVERAGE.md) accounts for 35 baseline subsystem rows, 16 preservation pillars and their finer features.
 
 ## 2. Repository setup and planning rules
 
 Use the `panestria` repository as the project home and retain AOS IDs as stable engineering references. The actual repository URL/default branch and complete commit tree have been inspected; recheck its HEAD before generating exact patches. See [repository baseline](REPOSITORY_BASELINE.json). The preserved source specs propose src/agentos/. The active [AOS-001 implementation plan](plans/AOS-001-implementation-plan.md) and [naming ADR](../adr/0001-namespace-panestria.md) use one panestria distribution and `src/panestria/`. The [older checklist](plans/AOS-001-checklist.md) is superseded and is not the execution plan. This namespace mapping does not modify the frozen source. The historical architecture remains unchanged. A repository name alone does not prove public package/CLI availability.
 
-Proposed repository documentation layout:
+Repository documentation and source layout:
 
 ```text
 docs/specification/         repaired baseline, original archives, skills ZIP/checksums
-docs/roadmap/               this phased plan, MVP checklist, coverage register
-docs/decisions/             naming and implementation ADRs
-plans/                     one current AOS checklist/full plan at a time
-evidence/releases/         gate manifests, test reports, owner review records
+docs/                      phased plan, MVP checklist, coverage register and phase tracker
+docs/design/               shared contracts/security/API/migration design
+docs/plans/                one selected AOS plan and its revision-3 extension
+docs/cursor/               bounded slice handoffs and reference rule
+docs/testing/              case catalog and cumulative gate manifests
+adr/                       accepted planning/implementation decisions
+evidence/                  source-bound test/release/owner review records
 tests/                     fixtures created with their implementation slices
-src/<chosen-package>/      one distribution with enforced sub-package boundaries
+src/panestria/             one distribution with enforced sub-package boundaries
 ```
 
 1. Preserve the delivered frozen architecture, original spec archives and original skills ZIP with hashes. Keep revised spec provenance explicit.
 2. Create GitHub milestones corresponding to R0–R7 and one issue per active AOS spec when repository setup is authorized; label MVP vs SOTA and not-started vs evidence-backed completion. This roadmap does not create remote issues or push commits.
-3. Start with an AOS-001 checklist, then full plans for 002/003, a checklist for 004 and a full plan for 005. Planning templates and common requirements are included under specification/.
+3. Preserve the accepted R0 plans and evidence: concise plans for AOS-001/004 and full plans for 002/003/005. Do not restart them. Reconcile the next R1 slice against current code, its existing plan and the release-gate evidence. Planning templates and common requirements are included under specification/.
 4. Target roughly one developer-day per tested implementation slice. Estimate against inspected code; split work that cannot fit. This is a granularity target, not a claim that one whole AOS item or phase takes one day.
 5. Give schema, durability, sandbox, approvals, provider adapters and external-action changes full design/failure analysis. Use concise checklists for low-risk wiring and docs; preserve every applicable acceptance test.
 6. Plan, implement and verify one slice; keep a working vertical path and end with evidence. Keep only the current phase's detailed plans active. Later release specs remain draft until their phase planning uses observed results.
@@ -98,9 +103,11 @@ Configure a search backend explicitly and log queries as outbound disclosures. B
 
 **Entry:** G2 passes. **Scope/order:** 024 Codex adapter → 025 bounded plan/DAG → 026 concurrent two-worker admission → 027b final integrated-tree checks/merge approval → 028 React Mission Control → 029 trace/cost/exposure views → 030 complete gates and 14-day trial.
 
+Revision 3 adds MVP-X07–X14: encrypted local owner profile/classification, portable charter/style/model context, explicit connection grants, verified milestones/stalls and bounded repair, quota-aware preferred-provider work plus offline capture, private read-only phone access, measured resource budgets and REA-backed reuse decisions. Their 21 slices are listed after the baseline dependencies in [the R3 build plan](phases/R3-BUILD-PLAN.md). Parent items keep their original phase; these additions deliver by R3 and require new evidence.
+
 Each worker uses an isolated worktree and the same kernel-owned policy/attempt protocol. Passing isolated tests cannot authorize an integrated tree. Mission Control reads the canonical API/event cursor; the UI never becomes another state store. Preserve vendor-neutral contracts and represent unknown quota/cost as unknown.
 
-**Build-complete exit:** A-1, D-1 and B-1 fixtures pass, including two independently configured workers, conflict handling, final-tree verification, stale-epoch rejection and exact merge approval. All 31 MVP AOS items and the baseline obligations in section 8 have acceptance evidence. Mark an immutable MVP candidate with commit, dependency/model/CLI/hardware manifest, setup/backup/rollback instructions and a known-issues list. This is not yet owner-accepted MVP completion.
+**Build-complete exit:** A-1, D-1 and B-1 fixtures pass, including two independently configured workers, conflict handling, final-tree verification, stale-epoch rejection and exact merge approval. All 31 MVP AOS items and MVP-X01–X14 are mapped, and all 156 pretrial cases have evidence, including separately scoped live phone/host/provider checks. Freeze the technical candidate, then run the 14-day trial and owner decision recorded by AOS-030-TC04. Final G3 requires all 157 cases; pretrial readiness is not G3 PASS. Mark an immutable MVP candidate with commit, dependency/model/CLI/hardware manifest, setup/backup/rollback instructions and a known-issues list. This is not yet owner-accepted MVP completion.
 
 ## 7. Mandatory MVP review checkpoint — stop before SOTA
 
@@ -125,11 +132,28 @@ The frozen master and revised per-item specs have different levels of detail. Ca
 | MVP-X05: local service and operational recovery | 003,005,018,030 | Documented start/restart/reboot behavior, bounded human waits/cancellation, safe artifacts, task-state continuity, backup/restore and runbooks without keeping an LLM reasoning loop alive |
 | MVP-X06: small quality baseline | 017,022,027a,027b,030 | A reviewed 10–20-scenario corpus covering Ask/Delegate/Build and failure cases; independent grading plus deterministic checks. Keep development/holdout separation where feasible and preserve versions; no invented hundreds of historical examples |
 
-These clarify the baseline MVP, not advanced optimizers or autonomous expansion. API/live tests and personal-repo trials are separately scoped when implementing; no credentials are provisioned by this planning task.
+**Revision-3 additions:**
+
+| Obligation | Parent specs | What must be demonstrated by R3 |
+|---|---|---|
+| MVP-X07: Encrypted owner profile and canonical classification | 011, 002, 007, 009, 017 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07); 3 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
+| MVP-X08: Portable assistant charter, communication style and model context | 017, 011, 016, 024 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x08); 3 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
+| MVP-X09: Explicit connection grants and secret boundary | 008, 007, 009, 010, 024, 028 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x09); 2 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
+| MVP-X10: Verified milestones, stall detection and bounded repair | 025, 006, 027a, 027b, 029 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x10); 2 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
+| MVP-X11: Quota-aware useful work and automatic offline capture | 012, 006, 010, 011, 026, 029 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x11); 4 new R3 slices, 6 added scenarios; NOT_STARTED / NOT_RUN |
+| MVP-X12: Private read-only phone companion | 028, 009, 008, 029 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x12); 3 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
+| MVP-X13: Measured lightweight resource and foreground contract | 018, 015, 016, 026, 029 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x13); 2 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
+| MVP-X14: Reuse, REA evidence and comparative engineering | 030, 008, 025, 028, 029 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x14); 2 new R3 slices, 3 added scenarios; NOT_STARTED / NOT_RUN |
+
+Revision 3 preserves the six baseline obligations and adds eight owner-requested obligations. The new cases extend existing AOS case IDs; no new acceptance discriminator or AOS item is invented. G3 has 124 baseline + 33 additional scenarios, and the slice manifest has 93 baseline + 21 additions. These totals describe planning coverage, not executed assertions.
+
+These clarify the baseline MVP and bounded personal-platform additions, not advanced optimizers or autonomous expansion. API/live tests and personal-repo trials are separately scoped when implementing; no credentials are provisioned by this planning task.
 
 ## 9. R4 — intelligent routing and compute (G4)
 
 **Entry:** MVP_ACCEPTED and owner authorization to start SOTA. **Scope:** 031 entitlement/consent/uncertainty → 032 controlled engine comparison → 033 adaptive quota/resource/cost governor. Base safety continues from MVP.
+
+The R3 queue already accepts provider/owner observations and authorized bounded best-effort work. R4 improves that baseline; incomplete quota measurement does not prohibit all useful work. Keep precise balances/valuation unavailable when unsupported, and keep no-extra-spend eligibility independently enforced.
 
 Plan children for approved provider telemetry, eligible-backend filtering, task-class success estimates, reset forecasting, hard/soft budget pacing, capacity reservation, scarcity/shadow-price candidates and value-of-information scheduling. Compute scarcity prices only when quota units and remaining capacity are meaningfully observed. Unknown is not unlimited or free.
 
@@ -216,8 +240,14 @@ Every active spec is assigned exactly once below. The phase order preserves all 
 
 ## 14. What happens next
 
-The historical baseline and the superseded [AOS-001 checklist](plans/AOS-001-checklist.md) remain for provenance. The active plan is the [AOS-001 implementation plan](plans/AOS-001-implementation-plan.md). Next, accept or return the corrected S1 slice, then implement S2. AOS-002 through AOS-005 already have detailed plans; do not treat them as unwritten. S1 is not a release-gate pass, and R0 is not complete.
+R0 is complete for its recorded accepted candidate. Continue R1 using [execution control](phases/R1-EXECUTION-CONTROL.md), current code and the gate manifests: reconcile merged implementation with required evidence, then select a ready unfinished slice or acceptance gap. Pending live provider checks can run separately from independent fixture and implementation work; they still require real evidence before G1 passes. Preserve existing R0 plans and evidence rather than restarting AOS-001-S1. The old [AOS-001 checklist](plans/AOS-001-checklist.md) remains superseded by its [implementation plan](plans/AOS-001-implementation-plan.md).
 
 Build a usable R1 pilot, add R2 verified research, then finish R3 concurrency/dashboard and the release trial. Freeze and review the MVP at the explicit checkpoint. SOTA epics remain visible and measurable, with detailed child plans generated after MVP feedback rather than before hardware, workload and integration facts exist.
 
 The old architecture's Phase 0–5 labels and this roadmap's R0–R7 labels use different granularity. Always reference the R release and AOS ID in implementation issues to avoid phase-name ambiguity. The full target is preserved; optional framework choices require evidence instead of installing every named alternative together.
+
+## 15. Personal-platform continuity across MVP and SOTA
+
+R3 delivers the bounded owner profile/style, useful-work quota queue and private read-only phone view. R4 expands telemetry/forecasting, model qualification and Linux efficiency. R5 adds a versioned qualified Byzantium voice adapter, separate TTS, richer style/context, push/approved remote actions and per-app integrations. R6 adds consented coaching/graph experiments, permitted teacher datasets and post-training only after measured benefit over prompting/retrieval/skills, with independent promotion/rollback. R7 adds adversarial multi-user/multi-host boundaries and distribution. No brain metaphor, graph database, fine-tune or release name establishes intelligence or SOTA leadership.
+
+Use REA's investigation workflow for material borrowing/recreation: direct source inspection when source is complete, artifact/runtime tools when that evidence is needed, pinned findings and minimum tested integration. Pythonic code does not require rewriting useful browser/native components. Keep account quotas separate from API money, ordinary offline knowledge from training eligibility, and inference/learning candidates separate from accepted decisions. The revision-3 spec supplies exact boundaries and the coverage register preserves the original full target.

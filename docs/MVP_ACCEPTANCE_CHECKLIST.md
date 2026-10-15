@@ -1,13 +1,13 @@
 # Panestria MVP acceptance — R3 completion and review
 
-**Owner-confirmed boundary:** R0–R3, all 31 MVP AOS specs, including 027a and 027b. **Current state:** NOT_STARTED; every checkbox is pending. Documentation/package checks from the previous task do not satisfy runtime tests here.
+**Owner-confirmed boundary:** R0–R3, all 31 MVP AOS specs, including 027a and 027b. **Current MVP state:** IN_PROGRESS, not accepted; R0 is complete, R1 live acceptance and R2/R3 remain pending. Revision 3 adds eight explicit obligations and 33 cases; cumulative G3 requires 157 cases. Every final-candidate checkbox remains pending. Documentation/package checks from the previous task do not satisfy runtime tests here.
 
 ## Candidate identity and evidence
 
 - [ ] Record repository URL/default branch, immutable candidate commit, build/dependency hashes and reproducible setup.
 - [ ] Record exact model/runtime/driver/CLI versions, hardware profile, sandbox profile, owner/project scope and test corpus version.
 - [ ] Each of the 31 MVP items has its required positive/negative/security/failure evidence, not just a merged issue.
-- [ ] MVP-X01–X06 baseline obligations in the roadmap are covered and tested; missing parent-spec detail receives an acceptance addendum.
+- [ ] MVP-X01–X14 baseline and revision-3 obligations in the roadmap are covered and tested; missing parent-spec detail receives an acceptance addendum.
 - [ ] Attach fixture reports, actual CI run references, safe logs, provenance/artifact manifests, backup/rollback steps and known issues.
 
 ## A-1 — offline Ask
@@ -73,10 +73,24 @@
 | Gate state | NOT_RUN |
 | Trial state | NOT_STARTED |
 | Owner acceptance | PENDING |
-| MVP state | NOT_STARTED |
+| MVP state | IN_PROGRESS |
 | Authorize SOTA implementation | false |
 | Next phase authorized | none |
 
 After all required gates/trial pass, the owner records accept/reject with date, commit, evidence and known non-blockers. Only that decision establishes MVP_ACCEPTED. A separate decision names R4 or a deliberately revised SOTA entry scope. Accepting MVP does not automatically authorize SOTA.
 
 If acceptance fails, return to the affected MVP slices and retain the candidate evidence. If MVP is accepted but expansion is deferred, keep a maintenance-only branch/release usable. Do not relabel missing SOTA experiments as MVP defects or claim the full target is complete because its roadmap exists.
+
+## Revision 3 required MVP evidence
+
+- [ ] MVP-X07: canonical classification and audited legacy compatibility, encrypted profile/key lifecycle and restore, no prohibited plaintext FTS/log/worker/egress, scoped correction/retention.
+- [ ] MVP-X08: editable charter/style, factual/citation/readability retention, portable model/context manifests, private examples local and pinned attempts/rollback.
+- [ ] MVP-X09: explicit action/path/account/data grants, secret broker and actual sandbox envelope, revocation and connection UI.
+- [ ] MVP-X10: requirement-to-evidence milestones, independent checks, honest stalls, bounded repair/handoffs and exact integrated approval.
+- [ ] MVP-X11: owner/provider/estimated/unknown quota states, reported 40%-before-reset scheduling, reserves/foreground priority, no unauthorized paid spillover, verified offline capture and independent training eligibility.
+- [ ] MVP-X12: actual private TLS/read-only phone setup, authenticated revocable devices, scope/Origin/cache/staleness checks; no implied push/remote approvals.
+- [ ] MVP-X13: actual target-host component measurements and predeclared budgets, effective limits/pressure/foreground protection, honest GPU capacity and recovery.
+- [ ] MVP-X14: REA/source investigation decisions, pinned evidence/license/privacy, integration parity/rollback and representative comparative outcomes.
+- [ ] All 33 extension cases plus the original 124 are registered, collected and observed on the qualified final candidate; missing future nodes cannot satisfy G3.
+
+The 14-day trial starts only after the 156-case pretrial readiness subset. AOS-030-TC04 is the subsequent trial/owner-decision case; final G3 needs all 157, so readiness is not G3 PASS. Preserve old candidate results as historical; they do not establish any new extension. See [the normative revision](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md).

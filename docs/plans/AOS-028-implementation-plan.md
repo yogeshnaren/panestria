@@ -77,3 +77,24 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Revision 3 extension — MVP-X12, delivered in R3
+
+The [active personal-platform contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x12) adds **Private read-only phone companion**. Original parent scope and historical results remain intact. These new slices deliver in **R3**, even when the parent AOS item originally ships in R1; they do not reopen historical G0 acceptance or fabricate G1 evidence. Inspect the current repository before choosing exact new files/migration revisions.
+
+| Slice | Concrete outcome, narrowed to about one developer-day | Prerequisites |
+| --- | --- | --- |
+| AOS-028-S4 | Implement explicit private TLS/device/read-only scope behind a disabled-by-default ingress profile. | AOS-009-S3, AOS-008-S5, AOS-028-S3 |
+| AOS-028-S5 | Implement responsive status/attention views and safe cache/staleness behavior. | AOS-028-S4, AOS-029-S3 |
+| AOS-028-S6 | Complete adversarial device/reconnect checks and separately scoped real-phone qualification. | AOS-028-S5 |
+
+Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the selected manifest entry. File ownership candidates are in implementation-slices.json; record an ADR for a material change. Existing shared transaction/security/API requirements still apply.
+
+| Added case | Lane | Required passing behavior |
+| --- | --- | --- |
+| AOS-028-TC05 | security | Explicit device pairing/revocation, application authentication, TLS private ingress and exact Host/Origin checks deny replayed or untrusted devices; loopback API remains the default. |
+| AOS-028-TC06 | e2e | Responsive phone views show authorized task/worker/evidence status and a minimal attention inbox with last-seen/stale/offline states. |
+| AOS-028-TC07 | security | Read-only device sessions cannot submit jobs, approve merges, write data, change grants or export restricted profiles; unauthorized artifacts and sensitive service-worker caches are denied. |
+| AOS-028-TC08 | live | Actual owner-selected phone/browser/private-network deployment demonstrates reconnect, revocation, offline workstation behavior and truthful status without requiring public ingress or claiming background push. |
+
+These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.

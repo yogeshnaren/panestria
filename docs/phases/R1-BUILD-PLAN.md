@@ -25,3 +25,7 @@ Cumulative gate requires **72 scenario groups** across **18 items**. See [releas
 Offline Ask/source-linked memory and one independently verified live worker. Three-axis policy, OS/credential/tool isolation, API security, resource caps, baseline opt-in SDK and telemetry proved. Uncertified native shell tier cannot be declared certified by an edit-only pilot.
 
 Record code, dependency/image/model/CLI/hardware versions, corpus/hash, reports, known issues, runbook and rollback. Do not assume current docs or simulated prototypes are installed-runtime proof.
+
+## Revision 3 boundaries
+
+R0 is accepted and R1/G1 remains in progress, not completed by merged code. [Revision 3](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md) assigns added work to R3 under existing owners; it does not silently expand historical G0/G1 manifests. Resolve classification and certify the vault before sensitive profiles are enabled. Independent fixture work can continue during a pending quota/live lane. Use current main/task branches and [the phase tracker](../phase-tracker.json), rather than the old aggregate r1-alpha branch, for new work.

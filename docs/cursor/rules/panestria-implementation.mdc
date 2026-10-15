@@ -2,10 +2,12 @@
 description: Implement one evidence-backed Panestria R0-R3 slice at a time
 alwaysApply: true
 ---
-Read selected AOS slice and actual dependency code/evidence. Preserve unrelated changes.
+Read docs/PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md revision 3 and its active specification, then the selected AOS/extension slice and actual dependency code/evidence. Preserve unrelated changes.
 Use one src/panestria distribution. Kernel owns task/approval/effect/budget state; UI/models cannot authorize or declare completion.
 Use canonical verifier types, task_event, effect_digest, scoped identities and atomic datasource state/event transactions. External effects require intent/receipt/reconciliation.
 Create meaningful tests for source requirement IDs. Record actual results; NOT_RUN/SKIP/UNKNOWN is not PASS. Mocks cannot certify required live adapter/hardware/OS boundaries.
 Do not edit frozen references, weaken checks, introduce privilege bypass, provision credentials, publish/push/merge, or implement R4+ from a slice request. Live/account/OS provisioning needs its actual scoped authorization.
 Read design files explicitly. This rule is coding guidance, not an OS sandbox or policy grant.
-Stop after selected slice; report evidence, pending work and rollback.
+Continue to another ready slice only for an explicitly authorized multi-slice goal; otherwise stop after the selected slice. Report evidence, pending work and rollback. Expanded G3 requires 157 cases/trial/owner acceptance before separately authorized SOTA.
+
+Use REA's investigation workflow for material reuse/recreation, with direct source inspection for complete repositories and artifact/runtime analysis when needed; retain pinned evidence, rights and integration tests. Quota uncertainty permits bounded work under policy, not invented balances or unapproved paid/training use. New profile/grant/phone boundaries require their registered conformance evidence before sensitive enablement.

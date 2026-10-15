@@ -75,3 +75,27 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Revision 3 extension — MVP-X11, delivered in R3
+
+The [active personal-platform contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x11) adds **Quota-aware useful work and automatic offline capture**. Original parent scope and historical results remain intact. These new slices deliver in **R3**, even when the parent AOS item originally ships in R1; they do not reopen historical G0 acceptance or fabricate G1 evidence. Inspect the current repository before choosing exact new files/migration revisions.
+
+| Slice | Concrete outcome, narrowed to about one developer-day | Prerequisites |
+| --- | --- | --- |
+| AOS-012-S4 | Implement scoped quota observations, owner input, freshness and truthful confidence/UI data. | AOS-012-S3, AOS-010-S3 |
+| AOS-012-S5 | Implement the bounded preferred-provider queue, reserves and foreground admission. | AOS-012-S4, AOS-026-S3 |
+| AOS-012-S6 | Implement offline validated-result/eligible-example capture with separate purpose/rights checks. | AOS-012-S5, AOS-011-S6 |
+| AOS-012-S7 | Prove restart/cancel/limit/no-paid-spillover behavior and expose operator controls. | AOS-012-S6, AOS-029-S3 |
+
+Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the selected manifest entry. File ownership candidates are in implementation-slices.json; record an ADR for a material change. Existing shared transaction/security/API requirements still apply.
+
+| Added case | Lane | Required passing behavior |
+| --- | --- | --- |
+| AOS-012-TC05 | contract | Fresh provider-reported, owner-reported, estimated and unknown quota observations retain source/time/window/model/reset metadata; unknown is not zero or unlimited and may permit authorized bounded best-effort work. |
+| AOS-012-TC06 | integration | Reported 40%-before-reset evidence schedules valuable preferred-provider tasks; overlapping windows, regular-use reserves, observation freshness and foreground priority govern bounded admission. |
+| AOS-012-TC07 | security | Background policy permits only the approved billing/entitlement route and per-job budgets; missing no-extra-spend proof denies that mode and quota exhaustion never silently enables paid API/extra usage or another provider. |
+| AOS-012-TC08 | integration | Results are retained offline with protected inputs/outputs, model/version, provenance, privacy, validation and retention lineage; unverified architecture advice remains a proposal. |
+| AOS-012-TC09 | security | Knowledge/reference permission and training eligibility are independent; unknown/restricted rights and contaminated/unverified examples cannot enter training exports; permitted curated examples survive offline export/restore. |
+| AOS-012-TC10 | chaos | Restart, cancellation, foreground preemption and provider limit/reset observations preserve queue/outcome state; ambiguous inference is reconciled without blind duplicate paid work or retry storms. |
+
+These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.
