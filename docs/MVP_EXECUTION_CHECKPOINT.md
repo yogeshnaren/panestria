@@ -36,13 +36,17 @@ remain unchanged except additive active-schema/migration/interface updates.
 | #58 | Explicit scoped owner profile API | 585 / 35 | 26343a5 |
 | #59 | Explicit local key setup/reconciliation | 591 / 35 | d545fdb |
 | #60 | Restricted Ask overlay/private receipt mode | 619 / 35 | e51df70 |
+| #61 | Actual isolated OS-key/local-model qualification | 619 / 36 | edc1bb9 |
 
-Current verified main: e51df70d43681b87a6c1f608d0f6106ba2dd8db3; latest CI
-run 38741135889 at head 7e8a530. Query Git/GitHub before continuing. Keep previous
+Current verified main: edc1bb908fdd49ba24e26d27085a5c9d53fd503a; latest CI
+run 38743000168 attempt 2 at head adeee1a. Attempt 1 failed one proposal-demo
+approval-flow test; isolated actual-PG/Docker reproduction and exact-head retry
+passed. Root cause remains unconfirmed and is an R1/G1 follow-up, not a claimed
+fix. Query Git/GitHub before continuing. Keep previous
 merged branches historical; start new tasks at freshly fetched main or name an
 explicit prerequisite. Preserve owner checkouts, review demo, services and DBs.
 
-## Current task: actual runtime qualification
+## Runtime qualification and current setup task
 
 Branch task/profile-runtime-qualification starts from explicit PR #60 and includes
 verified main. A new live test uses actual Secret Service + PostgreSQL + paired
@@ -53,14 +57,18 @@ subsequent inference. It preserves all pre-existing model resources rather than
 reaping them. See [scope and commands](testing/PROFILE_RUNTIME_QUALIFICATION.md).
 
 The observed component pass does not enable profiles or complete TC06–TC08.
-Source-bound evidence lives in evidence/profile-runtime-2026-10-15. Full exact-head
-CI/review and merge remain required for this task; query its actual PR state.
+Source-bound evidence lives in evidence/profile-runtime-2026-10-15. Exact-head
+CI, review and merge completed in PR #61.
 Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
 ## Exact next work
 
-1. Finish this task's actual live evidence, exact-head CI and review; merge only
-   when verified passing. Update this checkpoint with its PR/head/CI references.
+1. Finish `task/local-owner-setup`: explicit local-read policy plus immutable
+   project receipt without fabricated tasks. Eight actual PostgreSQL checks,
+   including concurrency, restore and migration reapply, passed locally. Finish
+   exact-head CI/review/merge; then add the supported local Ask listener/model
+   lifecycle and pairing. Tests currently mount Ask programmatically; the R0
+   launcher and preserved demo do not expose these new APIs.
 2. Complete explicit opt-in local profile setup/launcher, full key lifecycle and
    encrypted restore/forgetting/grant boundaries and whole privacy cases. The
    ordinary ContextCompiler stores metadata/digests, not prompt bodies; profile
