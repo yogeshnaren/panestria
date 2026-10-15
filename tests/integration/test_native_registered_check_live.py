@@ -98,6 +98,11 @@ def test_actual_subscription_native_check_reaches_durable_read_gateway(configure
     observation = adapter().check(controller.session(), candidate_ref=controller.candidate_ref)
     record_property("observation", json.dumps(asdict(observation), sort_keys=True))
     record_property("rejected_frame_shapes", json.dumps(rejected, sort_keys=True))
+    with controller.connect() as c:
+        observed_rows = c.execute(
+            "SELECT state,receipt_sha256 FROM panestria.worker_invocation WHERE task_id=%s", (task["task"],)
+        ).fetchall()
+    record_property("observed_invocations", json.dumps(observed_rows))
     assert observation.process is not None
     assert observation.process.status == "CANDIDATE", (asdict(observation), rejected)
     assert observation.startup_observed and observation.hostile_configuration_ignored

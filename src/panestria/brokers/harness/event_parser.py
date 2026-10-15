@@ -461,6 +461,9 @@ class ClaudeEventParser:
                     except (ValueError, TypeError):
                         raise ProtocolRejected("invalid_registered_check_metadata") from None
                 content = value.get("content") if isinstance(value, dict) else value
+                if type(content) is str:
+                    # Pinned CLI wraps its flattened text alongside structuredContent.
+                    content = [{"type": "text", "text": content}]
                 if (
                     not isinstance(content, list)
                     or len(content) != 1

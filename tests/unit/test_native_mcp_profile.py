@@ -326,3 +326,17 @@ def test_native_tool_use_correlation_is_bounded_ignored_and_never_authority():
     result = send("tools/call", 10, {**params, "_meta": {"claudecode/toolUseId": "toolu_public", "progressToken": 10}})
     assert json.loads(result)["result"]["structuredContent"]["outcome"] == "DENIED"
     assert len(calls) == 1 and calls[0][0] == "public-synthetic-check"
+
+
+def test_cli_flattened_text_with_structured_content_must_match_same_receipt():
+    receipt = {"outcome": "COMPLETED", "exit_code": 0, "report_sha256": "ab" * 32}
+    for structured, valid in [(receipt, True), ({"outcome": "UNKNOWN"}, False)]:
+        state = parser()
+        state.feed(init())
+        state.feed(tool_message("assistant"))
+        wire = tool_message("user", tool_use_result={"content": json.dumps(receipt), "structuredContent": structured})
+        if valid:
+            assert state.feed(wire)[0].kind == "message"
+        else:
+            with pytest.raises(ProtocolRejected, match="invalid_registered_check_metadata"):
+                state.feed(wire)
