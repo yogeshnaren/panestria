@@ -115,7 +115,7 @@ class RegisteredCheckSocket:
             raise CommandTransportUnavailable("transport_shutdown_unconfirmed")
 
     def start(self) -> None:
-        if self._started or self._stop.is_set():
+        if self._started or self._stop.is_set() or self.session.closed:
             raise CommandTransportUnavailable("transport_already_started")
         try:
             if (

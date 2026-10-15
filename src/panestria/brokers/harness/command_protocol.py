@@ -282,7 +282,7 @@ class RegisteredCheckSession:
         except Exception:
             receipt = RegisteredCheckReceipt(outcome="UNKNOWN")
         payload = receipt.model_dump()
-        response = _result(
+        response: bytes | None = _result(
             identity,
             {
                 "content": [{"type": "text", "text": json.dumps(payload, sort_keys=True, separators=(",", ":"))}],
