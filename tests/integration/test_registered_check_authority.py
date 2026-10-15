@@ -66,6 +66,7 @@ def configured(r1_task, tmp_path, request):
             review = service.propose(UnitOfWork(connection), actor, r1_task["task"], proposed)
             service.decide(UnitOfWork(connection), actor, review.review_id, review.effect_digest, "approve")
             policy = service.apply(UnitOfWork(connection), actor, review.review_id, review.effect_digest)
+    command_ref = "public-synthetic-check" if setting == "native-public" else "unit-check"
     contract = load_contract(
         {
             "schema_version": 1,
@@ -92,7 +93,7 @@ def configured(r1_task, tmp_path, request):
                     "evidence": {"required": True, "kind": "registered-check-report"},
                     "verifier": {
                         "type": "trusted-command-ref",
-                        "command_ref": "unit-check",
+                        "command_ref": command_ref,
                         "expected_exit_code": 0,
                         "timeout_seconds": 10,
                     },
@@ -139,7 +140,7 @@ def configured(r1_task, tmp_path, request):
         "print('reviewed public check')\n"
     )
     script.chmod(0o600)
-    command = ReviewedCommand("unit-check", script, hashlib.sha256(script.read_bytes()).hexdigest(), "read")
+    command = ReviewedCommand(command_ref, script, hashlib.sha256(script.read_bytes()).hexdigest(), "read")
     reports = BuildEvidenceStore(tmp_path / "reports")
     args = (r1_task["dsn"], actor, scope, contract, uuid4(), snapshot, command, certificates, reports)
     return r1_task, args
@@ -330,7 +331,7 @@ def test_actual_private_stdio_to_postgres_docker_protected_report(configured):
                         "tools/call",
                         "check",
                         name="run_registered_check",
-                        arguments={"command_ref": "unit-check", "candidate_ref": controller.candidate_ref},
+                        arguments={"command_ref": controller.command.ref, "candidate_ref": controller.candidate_ref},
                     )
                 )
                 child.stdin.flush()
