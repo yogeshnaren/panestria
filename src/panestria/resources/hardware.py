@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import platform
+import signal
 import subprocess
 import sys
 import tempfile
@@ -19,6 +20,7 @@ PROBE_SHA256 = "21bf9a12aa2fa499bc09a47b30430a86284aaada5a5bf1c573b9435759500b99
 ZIP_SHA256 = "bf9178cbd7800852e0167452900659f5a8238eb71754aa3b7944117ef35ceba6"
 MEMBER = "agentos-skills/skills/hardware-probe/scripts/hwprobe.py"
 PRESETS = ("lite-16gb", "omen-8gb", "omen-12gb", "omen-16gb", "mac-studio-512")
+PROBE_DEADLINE_SECONDS = 15.0
 
 
 class ProbeUnavailable(Exception):
@@ -28,6 +30,16 @@ class ProbeUnavailable(Exception):
 class HardwareProbe:
     def __init__(self, archive: Path, catalog_version: str = "local-ask-v1") -> None:
         self.archive, self.catalog_version = archive, catalog_version
+
+    def collect_cpu(self) -> HardwareManifest:
+        if sys.platform != "linux":
+            raise ProbeUnavailable("cpu_probe_platform_unsupported")
+        # The pinned prototype reads CPU/RAM/power directly on Linux. An owned
+        # empty executable search path disables optional accelerator commands;
+        # no preset or invented hardware observation substitutes for real data.
+        with tempfile.TemporaryDirectory(prefix="panestria-cpu-tools-") as empty:
+            manifest = self.collect(tool_path=empty)
+        return manifest.model_copy(update={"gpu_status": "NOT_PROBED_CPU_ONLY"})
 
     def collect(self, *, preset: str | None = None, tool_path: str = "/usr/bin:/bin") -> HardwareManifest:
         if os.geteuid() == 0:
@@ -48,13 +60,25 @@ class HardwareProbe:
             if preset:
                 command += ["--preset", preset]
             try:
-                process = subprocess.run(
+                process = subprocess.Popen(
                     command,
                     env={"PATH": tool_path, "HOME": folder, "LANG": "C.UTF-8"},
-                    capture_output=True,
-                    timeout=15,
-                    check=False,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    start_new_session=True,
                 )
+                try:
+                    process.wait(timeout=PROBE_DEADLINE_SECONDS)
+                except BaseException:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    try:
+                        process.wait(timeout=1)
+                    except subprocess.TimeoutExpired:
+                        pass  # Uninterruptible kernel I/O cannot be force-reaped.
+                    raise
             except (OSError, subprocess.TimeoutExpired):
                 raise ProbeUnavailable("probe_timeout_or_unsupported") from None
             if process.returncode or not result.exists() or result.stat().st_size > 65536:

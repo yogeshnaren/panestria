@@ -37,7 +37,7 @@ class HardwareManifest(BaseModel):
     on_ac_power: bool | None = None
     thermal_state: Literal["UNKNOWN", "NORMAL", "HOT"] = "UNKNOWN"
     permissions: Literal["READ_ONLY_UNPRIVILEGED"] = "READ_ONLY_UNPRIVILEGED"
-    gpu_status: Literal["OBSERVED", "NONE_OR_UNSUPPORTED"]
+    gpu_status: Literal["OBSERVED", "NONE_OR_UNSUPPORTED", "NOT_PROBED_CPU_ONLY"]
     probe_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     catalog_version: str
     source_license: Literal["NOT_DECLARED_IN_ATTACHED_ARCHIVE"] = "NOT_DECLARED_IN_ATTACHED_ARCHIVE"
