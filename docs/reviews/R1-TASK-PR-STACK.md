@@ -36,8 +36,10 @@ R1 PRs are drafts because implementation and required live validation remain unf
 | 25 | [#27](https://github.com/yogeshnaren/panestria/pull/27) | R1 / AOS-010: pinned CLI and private login metadata preflight | [#26](https://github.com/yogeshnaren/panestria/pull/26) |
 | 26 | [#28](https://github.com/yogeshnaren/panestria/pull/28) | R1 / AOS-008: cancel workers and handle attachment EOF | [#27](https://github.com/yogeshnaren/panestria/pull/27) |
 | 27 | [#29](https://github.com/yogeshnaren/panestria/pull/29) | R1 / AOS-010: reviewed native tool gateway component | [#28](https://github.com/yogeshnaren/panestria/pull/28) |
+| 28 | [#30](https://github.com/yogeshnaren/panestria/pull/30) | R1 / AOS-010: durable one-use native invocation controller | [#29](https://github.com/yogeshnaren/panestria/pull/29) |
+| 29 | [#31](https://github.com/yogeshnaren/panestria/pull/31) | R1 / AOS-010: fixed public Claude proposal adapter | [#30](https://github.com/yogeshnaren/panestria/pull/30) |
 
-Rows 25–27 are subsequent focused implementation tasks. They preserve the
+Rows 25–29 are subsequent focused implementation tasks. They preserve the
 original extracted stack and keep native startup/controller/live obligations
 explicit in their descriptions and runbooks.
 
