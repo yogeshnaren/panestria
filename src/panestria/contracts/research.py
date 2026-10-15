@@ -92,7 +92,7 @@ class SourceSnapshotRecord(ResearchContract):
     scope: ResearchScope
     requested_url: str = Field(min_length=1, max_length=2048)
     terminal_url: str | None = Field(default=None, min_length=1, max_length=2048)
-    redirects: tuple[str, ...] = Field(default=(), max_length=5)
+    redirect_receipts: tuple[ResearchArtifactRef, ...] = Field(default=(), max_length=5)
     fetched_at: datetime
     http_status: StrictInt | None = Field(default=None, ge=100, le=599)
     content_type: Literal["text/plain", "text/html", "application/pdf", "application/octet-stream"] | None = None
@@ -122,11 +122,6 @@ class SourceSnapshotRecord(ResearchContract):
     def url_syntax(cls, value: str | None) -> str | None:
         return _url(value) if value is not None else None
 
-    @field_validator("redirects")
-    @classmethod
-    def redirect_syntax(cls, value: tuple[str, ...]) -> tuple[str, ...]:
-        return tuple(_url(item) for item in value)
-
     @property
     def privacy_label(self) -> CanonicalClass:
         label = derive_classification((self.query_label, self.source_label)).effective
@@ -137,7 +132,7 @@ class SourceSnapshotRecord(ResearchContract):
     def integrity(self) -> Self:
         if self.fetched_at.tzinfo is None or self.fetched_at.utcoffset() is None:
             raise ValueError("research_requires_timezone")
-        for artifact in (self.raw, self.text):
+        for artifact in (self.raw, self.text, *self.redirect_receipts):
             if artifact is not None:
                 if artifact.task_id != self.scope.task_id:
                     raise ValueError("research_artifact_scope_mismatch")
@@ -145,11 +140,15 @@ class SourceSnapshotRecord(ResearchContract):
                     raise ValueError("research_artifact_label_downgrade")
         if self.raw is not None and self.raw.size_bytes > self.byte_limit:
             raise ValueError("research_byte_limit_exceeded")
+        if self.text is not None and self.raw is None:
+            raise ValueError("research_raw_lineage_required")
+        if len({receipt.artifact_id for receipt in self.redirect_receipts}) != len(self.redirect_receipts):
+            raise ValueError("research_redirect_receipt_reused")
         if self.completeness == "COMPLETE" and (
             self.http_status is None
             or not 200 <= self.http_status < 300
             or self.terminal_url is None
-            or self.content_type is None
+            or self.content_type not in {"text/plain", "text/html", "application/pdf"}
             or self.raw is None
             or self.text is None
             or self.raw.size_bytes == 0

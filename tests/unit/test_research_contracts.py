@@ -161,6 +161,26 @@ def test_incomplete_and_unknown_source_facts_are_retained_without_inventing_them
         snapshot(completeness="TRUNCATED")
 
 
+def test_redirects_reference_protected_scoped_receipts_and_not_model_urls():
+    record = snapshot()
+    pointer = artifact(record.scope.task_id)
+    accepted = SourceSnapshotRecord.model_validate({**record.model_dump(), "redirect_receipts": (pointer,)})
+    assert accepted.redirect_receipts == (pointer,)
+    with pytest.raises(ValidationError):
+        SourceSnapshotRecord.model_validate({**record.model_dump(), "redirect_receipts": ("https://fake.example",)})
+    with pytest.raises(ValidationError, match="research_artifact_scope_mismatch"):
+        SourceSnapshotRecord.model_validate({**record.model_dump(), "redirect_receipts": (artifact(str(uuid4())),)})
+    with pytest.raises(ValidationError, match="research_redirect_receipt_reused"):
+        SourceSnapshotRecord.model_validate({**record.model_dump(), "redirect_receipts": (pointer, pointer)})
+
+
+def test_complete_source_cannot_claim_unknown_binary_or_missing_raw_lineage():
+    with pytest.raises(ValidationError, match="research_complete_snapshot_invalid"):
+        snapshot(content_type="application/octet-stream")
+    with pytest.raises(ValidationError, match="research_raw_lineage_required"):
+        snapshot(completeness="ERROR", error_code="decoder_error", raw=None)
+
+
 def passage(**updates):
     return PassageRef(
         **{**dict(snapshot_id=str(uuid4()), request_id=str(uuid4()), text_sha256="ab" * 32, start=0, end=3), **updates}

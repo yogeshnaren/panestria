@@ -19,6 +19,10 @@ versions, completeness and maximum input/source classification. An unverified
 URL or model-authored ID cannot become trusted fetch provenance. Storage/write
 authority stays with the future broker/quarantined reader; no arbitrary upload
 or model-facing commit endpoint is introduced here.
+Redirect receipts are protected artifact references with the same task and
+maximum classification, not worker-provided URL strings. Their actual body,
+addresses/status/chain verification and retained-fetch authority remain broker/
+reader obligations. Opaque binary content cannot self-assert complete extraction.
 
 Passage references use half-open UTF-8 byte offsets and a pinned normalization
 version. They bind an existing snapshot/text hash. Quote/support/conflict verdicts
