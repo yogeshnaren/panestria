@@ -15,7 +15,9 @@ hash/size. Reject unsafe existing targets; never overwrite or silently repair a
 published blob. Model/reader workers must not receive the store or its descriptors.
 
 Serialize cooperating writers with a directory flock and per-instance thread
-lock. Write a deterministic per-digest private pending file, fsync, chmod 0400,
+lock, with a five-second total lock-wait deadline. This bounds lock contention;
+it does not claim to interrupt an unresponsive kernel/filesystem operation.
+Write a deterministic per-digest private pending file, fsync, chmod 0400,
 publish with a no-replace hard link, remove only that pending name and fsync the
 directory. Publication returns only after hash/size recheck. An interrupted pending
 file has no valid artifact store key. A retry of the exact digest may remove its

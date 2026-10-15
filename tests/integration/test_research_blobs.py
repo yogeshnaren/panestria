@@ -1,8 +1,8 @@
 """Actual protected files/process crashes; no fetched-source/citation qualification."""
 
-import fcntl
 import hashlib
 import os
+import select
 import subprocess
 import sys
 import threading
@@ -130,7 +130,7 @@ def test_renamed_root_descriptor_does_not_follow_replacement_path(blobs, tmp_pat
         ResearchBlobStore(root, actor)
 
 
-@pytest.mark.parametrize("fault", ["root_mode", "owner_symlink", "project_mode", "bad_id"])
+@pytest.mark.parametrize("fault", ["root_mode", "owner_symlink", "project_mode", "bad_id", "root_loop"])
 def test_unsafe_scope_setup_fails_before_blob_access(blobs, tmp_path, fault):
     root, actor, _, scope = blobs
     if fault == "root_mode":
@@ -140,6 +140,9 @@ def test_unsafe_scope_setup_fails_before_blob_access(blobs, tmp_path, fault):
         (root / actor.owner_id).symlink_to(tmp_path, target_is_directory=True)
     elif fault == "project_mode":
         scope.chmod(0o770)
+    elif fault == "root_loop":
+        root = tmp_path / "loop"
+        root.symlink_to(root)
     else:
         actor = Actor("../private", actor.project_id)
     with pytest.raises(ResearchBlobUnavailable):
@@ -176,6 +179,10 @@ with ResearchBlobStore(Path(root), Actor(owner, project)) as store:
         try: store.read(hashlib.sha256(b'public').hexdigest(), expected_size=6)
         except ResearchBlobUnavailable: sys.exit(0)
         sys.exit(19)
+    elif mode == 'hold':
+        with store._locked():
+            print('LOCKED', flush=True)
+            sys.stdin.readline()
     else:
         for _ in range(8): store.put(b'public')
 """
@@ -262,14 +269,31 @@ def test_only_own_pending_name_is_recovered_and_close_is_explicit(blobs):
 def test_busy_directory_lock_denies_without_creating_partial_files(blobs, monkeypatch):
     root, actor, store, scope = blobs
     monkeypatch.setattr(research_blobs, "_LOCK_SECONDS", 0.05)
-    with ResearchBlobStore(root, actor) as holder:
-        fcntl.flock(holder._fd, fcntl.LOCK_EX)
-        try:
-            with pytest.raises(ResearchBlobUnavailable, match="busy"):
-                store.put(b"public")
-            assert not list(scope.iterdir())
-        finally:
-            fcntl.flock(holder._fd, fcntl.LOCK_UN)
+    holder = subprocess.Popen(
+        child_args(root, actor, "hold"),
+        env=child_env(),
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    )
+    try:
+        assert holder.stdout and holder.stdin
+        assert select.select([holder.stdout], [], [], 5)[0], "child lock startup deadline"
+        assert holder.stdout.readline() == b"LOCKED\n"
+        with pytest.raises(ResearchBlobUnavailable, match="busy"):
+            store.put(b"public")
+        assert not list(scope.iterdir())
+        holder.stdin.write(b"EXIT\n")
+        holder.stdin.flush()
+        assert holder.wait(timeout=5) == 0
+    finally:
+        if holder.poll() is None:
+            holder.kill()
+            holder.wait(timeout=5)
+        if holder.stdin:
+            holder.stdin.close()
+        if holder.stdout:
+            holder.stdout.close()
     assert store.put(b"public").size_bytes == 6
 
 

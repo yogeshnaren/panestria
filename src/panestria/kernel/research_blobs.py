@@ -77,7 +77,7 @@ class ResearchBlobStore:
             _private_directory(root_fd)
             owner_fd = _child(root_fd, owner)
             self._fd = _child(owner_fd, project)
-        except OSError:
+        except (OSError, RuntimeError):
             raise ResearchBlobUnavailable("research_directory_unavailable") from None
         finally:
             for fd in (owner_fd, root_fd):
