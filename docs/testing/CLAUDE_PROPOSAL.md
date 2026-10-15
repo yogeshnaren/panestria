@@ -48,3 +48,21 @@ claimed. This changes code on main after its task merges; the preserved demo on
 Official CLI semantics: [CLI reference](https://code.claude.com/docs/en/cli-reference)
 and [security](https://code.claude.com/docs/en/security). Managed policy hooks can
 still run under safe mode; this profile refuses detected managed configuration.
+
+
+The full fixed-public controller qualification now also has an actual native
+lane. It uses disposable PostgreSQL, an already cached pinned worker image,
+separate Docker application/verification, and a protected temporary Git ref:
+
+```sh
+PANESTRIA_ALLOW_NATIVE_LIVE=1 uv run --frozen pytest tests/integration/test_native_build_live.py -m live -q
+```
+
+Two actual fixed-public calls are expected. The test denies a wrong approval
+fingerprint, verifies the protected ref stays unchanged before approval, then
+supplies an exact **scripted synthetic test-owner** decision and checks one
+successful effect and no replay after restart. This is not a human release
+acceptance. The observed source-bound pass took 16.13s at b104e4f;
+[the report and JUnit](../../evidence/native-build-2026-10-15/report.json) retain
+its scope and limits. No image download, direct SDK/API-key call, provider fallback
+or change to the owner's running demo is part of this lane.
