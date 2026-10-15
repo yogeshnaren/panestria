@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "source_commit": "2323f2ba1e6116f26033b6d18886a5dae0e878d4",
+  "observed_at": "2026-10-15T17:28:37.351801+00:00",
+  "scope": "actual in-app browser GUI + TCP + disposable PostgreSQL + actual offline CPU model, synthetic content",
+  "result": "PASS",
+  "source_sha256": {
+    "src/panestria/api/assets/ask.html": "d227c3a5525a643cfe34d875d7765b048846d2002a6d4a6aea52ad3110da33e4",
+    "src/panestria/api/assets/ask.js": "270341aaa17936dd836ab6c0ff05860a175dfc11268557b0619d845fba8eca3a",
+    "src/panestria/api/assets/ask.css": "338f6aab5ef94061e60b0dddf2ab518c95968fe9b78475d0a7f47b68873511e5",
+    "src/panestria/api/local_web.py": "3bc0c1ea68bc25df69dce4225a3a89b973a7c20965384f45b58b81990a690aec",
+    "src/panestria/api/local_server.py": "cd3aeda6aea06f363854103fdb52c6bdd819af9b3133cf570dde81719c6791d1",
+    "src/panestria/cli/local.py": "0c4be4b85480f195be987d1f8f387865dc6e03070940e36cf1e93ba92f71bcf2",
+    "src/panestria/resources/hardware.py": "fed93a0ea9234abe98868f0553298d76aa0ed805dd154ee3b85714dcaf19c7f2",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "helper_sha256": "be6ddad7f68af93563217446ea4cb4d0f810652b117d7a8786ad53475251447c",
+  "observations": [
+    "fresh terminal challenge pairs scoped browser",
+    "actual local HTML-example answer completed with Restricted offline receipt",
+    "HTML markup remained literal with zero child elements in answer DOM",
+    "actual long request cancelled; DB state CANCELLED",
+    "reload cleared text and required fresh challenge",
+    "logout revoked current session and disabled input; text cleared",
+    "browser warn/error log empty",
+    "narrow responsive layout observed; desktop 1100x850 two columns aligned and no horizontal overflow",
+    "captured process output excludes token and synthetic question text"
+  ],
+  "receipts": [
+    {
+      "request_id": "411974f5-0ebc-4e4b-b924-5b5053b4ab75",
+      "state": "COMPLETED",
+      "code": null
+    },
+    {
+      "request_id": "460585b7-d500-4aff-a1ab-1e8980e2db07",
+      "state": "COMPLETED",
+      "code": null
+    },
+    {
+      "request_id": "a68906c4-17a8-4dcb-a982-49976a37ca1a",
+      "state": "CANCELLED",
+      "code": "owner_cancelled"
+    }
+  ],
+  "paid_provider_calls": 0,
+  "mock_inference": false,
+  "profiles": "DISABLED",
+  "release_gate": "NOT_EVALUATED",
+  "prior_failure": {
+    "source_commit": "bab154461f85c0862a019954db28acd426386c80",
+    "request_id": "e6fbf20c-aec3-4ca6-9cf4-6ffb1b110ba7",
+    "state": "UNAVAILABLE",
+    "code": "database_or_resource_unavailable",
+    "cause_observation": "full probe timed out; read-only optional NVIDIA helper took 42.023 seconds; CPU/RAM/power helpers returned immediately",
+    "correction": "separate CPU probe PR #64, not GPU driver recovery"
+  },
+  "limitations": [
+    "not full A-1/G1/R3 gates or owner trial",
+    "no profile/native-harness/phone access conformance claim",
+    "first request asking for exact malicious markup was answered with an explanation; the separate HTML-example response proved literal rendering",
+    "desktop/narrow viewport checks are not real mobile remote-access tests"
+  ]
+}
