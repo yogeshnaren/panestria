@@ -16,6 +16,7 @@ from panestria.api.health import (
     secret_rejection_body,
 )
 from panestria.cli.approvals import approve_command, deny_command, list_command
+from panestria.cli.ask import ask_command
 from panestria.cli.goals import goal_app, show_artifact
 from panestria.config import ProfileRejected, load_settings
 
@@ -26,6 +27,7 @@ app.add_typer(artifact_app, name="artifact")
 app.command("approve")(approve_command)
 app.command("deny")(deny_command)
 app.command("approvals")(list_command)
+app.command("ask")(ask_command)
 
 
 @artifact_app.command("show")
