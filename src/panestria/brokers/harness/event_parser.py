@@ -64,13 +64,15 @@ def _reason(text: str) -> str:
 
 
 class ClaudeEventParser:
-    def __init__(self, allowed_tools: frozenset[str] = frozenset()) -> None:
+    def __init__(self, allowed_tools: frozenset[str] = frozenset(), *, capture_candidate: bool = False) -> None:
         self.allowed_tools = allowed_tools
         self.session: str | None = None
         self.result: NativeResult | None = None
         self._pending = bytearray()
         self._tool_ids: set[str] = set()
         self._frames = 0
+        self._capture_candidate = capture_candidate
+        self.candidate_text: str | None = None
 
     def feed(self, chunk: bytes) -> tuple[NativeEvent, ...]:
         events: list[NativeEvent] = []
@@ -130,6 +132,13 @@ class ClaudeEventParser:
                     "plugins",
                     "uuid",
                     "fast_mode_status",
+                    "analytics_disabled",
+                    "product_feedback_disabled",
+                    "capabilities",
+                    "terminal_slash_commands",
+                    "fast_mode_state",
+                    "fast_mode_disabled_reason",
+                    "messaging_socket_path",
                 },
             )
             if body.get("subtype") != "init" or self.session is not None:
@@ -139,6 +148,30 @@ class ClaudeEventParser:
                 raise ProtocolRejected("invalid_session")
             if body.get("claude_code_version", CLAUDE_VERSION) != CLAUDE_VERSION:
                 raise ProtocolRejected("cli_version_mismatch")
+            if self._capture_candidate and not {"tools", "mcp_servers", "claude_code_version"}.issubset(body):
+                raise ProtocolRejected("missing_profile_metadata")
+            # These are pinned transport/UI metadata, not model tool grants.
+            capabilities = body.get("capabilities", [])
+            if not isinstance(capabilities, list) or any(
+                not isinstance(item, str)
+                or item not in {"interrupt_receipt_v1", "interrupt_cancel_queued_v1", "msg_lifecycle_v1"}
+                for item in capabilities
+            ):
+                raise ProtocolRejected("unexpected_transport_capability")
+            commands = body.get("terminal_slash_commands", [])
+            if not isinstance(commands, list) or any(
+                not isinstance(item, str) or item not in {"doctor", "color", "reload-plugins"} for item in commands
+            ):
+                raise ProtocolRejected("unexpected_terminal_command")
+            if body.get("fast_mode_state", "off") != "off" or body.get(
+                "fast_mode_disabled_reason", "sdk_opt_in_required"
+            ) not in (None, "sdk_opt_in_required"):
+                raise ProtocolRejected("unexpected_fast_mode")
+            for flag in ("analytics_disabled", "product_feedback_disabled"):
+                if flag in body and body[flag] is not True:
+                    raise ProtocolRejected("telemetry_not_disabled")
+            if "messaging_socket_path" in body:
+                _text(body["messaging_socket_path"], maximum=1024)
             tools = body.get("tools", [])
             if not isinstance(tools, list) or any(not isinstance(tool, str) for tool in tools):
                 raise ProtocolRejected("invalid_tools")
@@ -149,6 +182,33 @@ class ClaudeEventParser:
                 raise ProtocolRejected("unexpected_mcp_server")
             self.session = session
             return NativeEvent("started", digest)
+        if kind == "rate_limit_event":
+            _keys(body, {"type", "session_id", "uuid", "rate_limit_info"})
+            self._session(body, allow_before_init=True)
+            info = body.get("rate_limit_info")
+            if not isinstance(info, dict):
+                raise ProtocolRejected("invalid_rate_limit")
+            _keys(
+                info,
+                {
+                    "status",
+                    "rateLimitType",
+                    "resetsAt",
+                    "isUsingOverage",
+                    "overageStatus",
+                    "overageDisabledReason",
+                    "unifiedWindows",
+                },
+            )
+            if info.get("status") not in ("allowed", "allowed_warning", "rejected"):
+                raise ProtocolRejected("invalid_rate_limit")
+            if "isUsingOverage" in info and info["isUsingOverage"] is not False:
+                raise ProtocolRejected("unapproved_overage")
+            if info["status"] == "rejected":
+                # Stop the process rather than allowing native backoff/fallback
+                # to turn a denied subscription route into further attempts.
+                raise ProtocolRejected("quota_unavailable")
+            return NativeEvent("rate_limit", digest)
         if kind in {"assistant", "user"}:
             _keys(
                 body,
@@ -207,6 +267,8 @@ class ClaudeEventParser:
                 if self.session is None or self._tool_ids:
                     raise ProtocolRejected("incomplete_execution")
                 status, reason = "CANDIDATE", "independent_checks_required"
+                if self._capture_candidate:
+                    self.candidate_text = text
             else:
                 errors = body.get("errors", [])
                 if not isinstance(errors, list) or any(not isinstance(error, str) for error in errors):
