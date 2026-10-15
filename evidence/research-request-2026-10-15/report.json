@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "source_commit": "a1319bb13c516e1e312bb3b92f903ddfd73e66e4",
+  "result": "PASS",
+  "checks": 41,
+  "request_checks": 13,
+  "scope": "actual disposable PostgreSQL request metadata, restore, migrations and local server checks; no fetch or blob authority",
+  "schema_head": "0023_research_request",
+  "schema_snapshot_lines": 808,
+  "observed": [
+    "request and event commit/rollback together",
+    "autocommit outside transaction denied; explicit transaction works",
+    "scope/artifact mismatches rejected by service and SQL",
+    "concurrent retries produce one request/event",
+    "referenced artifact hash/size/label pinned by FK",
+    "actual dump/restore preserves receipt/event/global sequence",
+    "populated downgrade guarded; empty downgrade/reapply preserves existing artifacts",
+    "local setup audit downgrade guard still protects history",
+    "default local server exact-head compatibility"
+  ],
+  "source_sha256": {
+    "migrations/versions/0023_research_request.py": "a2cd66260a5d9032b00e72ec1275e0f2181c828eeefaa2a3a68ea0d7fde372b1",
+    "migrations/schema_fingerprint.txt": "c7d3068949b49876c7ea13e79ed4fb84bb00806490c178b63ed30e4fd0097aa6",
+    "docs/contracts/schema-snapshot.txt": "c7d3068949b49876c7ea13e79ed4fb84bb00806490c178b63ed30e4fd0097aa6",
+    "src/panestria/kernel/research_requests.py": "ee6ba929f729616897595982508dd6f85c7d31d8843adcf62a85a83793d0c38e",
+    "src/panestria/api/local_server.py": "523ba5a42185329a66c38b617989c73b7dcd7b0e41603ea9bac8f37b0739c5d9",
+    "tests/integration/test_research_requests.py": "38ce1e46a75532ac8876afbdc9be16c0f7c55314577b3e43c0acd7d8251c1308",
+    "tests/integration/test_local_setup.py": "5f8365a60377ae8ea627a99b27c2d6062ed00bad40e76a5fd1ba5136e054c956",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "junit_sha256": {
+    "race-correction-13-checks.xml": "9b3c365d51f427067c5245ccf711a65bb7743b746a932b7e5fed7518b2ddbdd1",
+    "final-41-checks.xml": "5c56a40d7291ecf755f62cf9fd034303505a44f3c2146297abe28c17c238853a",
+    "initial-40-checks.xml": "27ab9deda13bc26db98570f6fc9ab9d08082c046eea9f0f639b59a704914341d"
+  },
+  "initial_qualification": {
+    "source_commit": "c0c20a8",
+    "checks": 40,
+    "result": "PASS",
+    "limitation": "before explicit autocommit guard review"
+  },
+  "provider_calls": 0,
+  "gates": "NO_RELEASE_OR_FULL_AOS013_CASE_PROMOTION",
+  "ci_race_failure": {
+    "run_id": 38786656826,
+    "head": "f4ebf95421fa9613db3032e5ef12333a976b8da9",
+    "result": "FAIL",
+    "passed": 809,
+    "failed": 1,
+    "live_excluded": 38,
+    "test": "test_concurrent_retry_returns_one_receipt_and_one_event",
+    "error": "UniqueViolation on research_request_id_task_id_key; id-only arbiter omitted the second unique index"
+  },
+  "ci_race_correction": {
+    "source_commit": "df0596ea3a43ab78e0c398148dd15a07d7185d01",
+    "result": "PASS",
+    "actual_request_checks": 13,
+    "elapsed_seconds": 24.46,
+    "concurrent_rounds": 24,
+    "concurrent_calls": 48,
+    "change": "ON CONFLICT DO NOTHING handles all unique constraints; exact scoped hash retry verification remains",
+    "reference": "https://www.postgresql.org/docs/current/sql-insert.html#SQL-ON-CONFLICT",
+    "source_sha256": {
+      "src/panestria/kernel/research_requests.py": "ad65ef9e8be5dd234f950b54a6e0e19c3cc986766e603ee07cbc066b888c3fd8",
+      "tests/integration/test_research_requests.py": "2080581001a0480bf118584a5b559e1745226e8351f7d88fcb4f2fba7acd5549"
+    }
+  }
+}

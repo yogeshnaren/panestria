@@ -43,9 +43,11 @@ remain unchanged except additive active-schema/migration/interface updates.
 | #65 | Paired local Ask browser; actual model/cancel/render checks | 656 / 37 | 3e33f15 |
 | #67 | Strict pinned native metadata/candidate compatibility | 718 / 37 | e7cb1b4 |
 | #66 | Closed bounded research contracts, without fetch authority | 760 / 37 | 0152ed4 |
+| #68 | Actual native proposal through verified, approved protected merge | 760 / 38 | 22a048d |
+| #69 | Canonical Unicode and exact passage byte checks | 797 / 38 | 4603531 |
 
-Current verified main: 0152ed46fc763d65417d7974dfb7ab268fd37da6; latest CI
-run 38783533166 at exact head a3848de. PR #62's earlier run exposed an older Ask
+Current verified main: 4603531b8ea79da1aaa5ebb2baffde25d30cbdf0; latest CI
+run 38785556252 at exact head 1431376. PR #62's earlier run exposed an older Ask
 downgrade test sharing newer audit data; a schema-only restored isolated guard
 test fixed it without weakening audit-loss protection. PR #61 attempt 1 failed one proposal-demo
 approval-flow test; isolated actual-PG/Docker reproduction and exact-head retry
@@ -71,21 +73,25 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
 ## Exact next work
 
-1. Finish PR #68 actual native Build qualification and PR #69 canonical research
-   text checks after current-main integration, exact-head CI and review. #68 uses
-   the actual unchanged pinned native adapter, disposable PG, Docker writer and
-   independent verifier, exact scripted test-owner approval and protected Git.
-   Its source-bound live pass took 16.13s at b104e4f (two real fixed-public calls);
-   wrong digest denied, one successful effect, restart/repeated start no replay.
-   Scripted approval is not human acceptance. Native cash remains unknown; no
-   direct paid SDK/API-key calls, billing changes or fallback. Evidence is in
-   evidence/native-build-2026-10-15. #67 preserves six failures plus the later
-   actual native no-tools/hostile-config pass in its compatibility evidence.
-   #69 adds Unicode/byte integrity only, never retained-fetch or claim authority.
-   Next R2 task: immutable scoped PostgreSQL source/request metadata, protected
-   artifact integrity, actual broker/reader fetch authority and SourceStore lookup.
-   No Delegate route or full AOS-013/G2 case is enabled by pure data contracts.
-   Local Ask setup/server/browser are now merged; actual CPU model + CUA verified
+1. Finish PR #70 immutable research request storage after current-main integration,
+   exact-head CI and review. Migration 0023 pins question artifact metadata/scope,
+   enforces limits, refuses populated downgrade and uses the global audit counter.
+   Service rejects unwrapped autocommit and commits request/event in one caller
+   transaction. Forty-one actual PG/migration/local-server checks passed at a1319bb,
+   including 13 request checks and actual restore/concurrent retry/rollback proofs;
+   evidence/research-request-2026-10-15 retains the initial and corrected passes.
+   No underlying blob/fetch/source/claim authority or research route is enabled.
+   Next R2 task: protected source blobs and immutable source/claim metadata,
+   actual broker/reader fetch authority and SourceStore lookup. No full AOS-013/G2
+   case is promoted by these components. #69's 79 contract/text checks return only
+   BYTE_MATCH_ONLY_FETCH_AUTHORITY_REQUIRED. #68's actual native Build pass took
+   16.13s at b104e4f (two real public calls, wrong digest denied, one exact scripted
+   approval/effect, restart no replay); that scripted decision is not acceptance.
+   R1 gateway review found is_global permits multicast; task/egress-unicast fixes
+   explicit public-unicast and exact connected-peer checks. Its independent CI,
+   review and source-bound qualification must finish before merge. Native actual
+   cash stays unknown; no direct paid SDK/API-key calls or provider fallback.
+   Local Ask setup/server/browser are merged; actual CPU model + CUA verified
    literal HTML as text, cancellation, reload/logout and responsive layouts. All
    temporary qualification services were cleaned up; old owner demo 8871 remains
    on historical code. Profiles stay disabled. See testing/LOCAL_ASK_BROWSER.md.

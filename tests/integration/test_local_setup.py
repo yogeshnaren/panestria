@@ -213,7 +213,9 @@ def test_setup_dump_restore_and_populated_downgrade_guard(r1_database):
             )
             assert guarded.returncode != 0 and "local setup audit exists" in guarded.stderr
             with psycopg.connect(make_conninfo(**params)) as c:
-                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0022_local_setup",)
+                from panestria.api.local_server import SCHEMA_HEAD
+
+                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (SCHEMA_HEAD,)
                 assert LocalSetupService().initialize(UnitOfWork(c), request).replayed is True
         finally:
             admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(params["dbname"])))
