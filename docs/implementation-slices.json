@@ -2450,17 +2450,20 @@
         "src/panestria/policy/labels.py",
         "src/panestria/memory/profile.py",
         "src/panestria/memory/vault.py",
-        "migrations/versions/"
+        "migrations/versions/",
+        "src/panestria/memory/keys.py"
       ],
       "planned_test_file": "tests/e2e/test_mvp_x07.py",
       "case_ids": [
         "AOS-011-TC06"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "evidence_refs": [],
+      "status": "IN_PROGRESS",
+      "evidence_refs": [
+        "evidence/profile-keys-2026-10-15/report.json"
+      ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+      "scope_note": "Key backend foundation only; profile vault/context still pending. Component evidence does not complete TC06."
     },
     {
       "id": "AOS-011-S6",
