@@ -15,7 +15,7 @@ This is an R1 gateway correction, not public-web fetching or complete OS/live
 qualification. No inference, provider permission, fallback or credentials change.
 
 Primary semantics: [Python 3.12 ipaddress](https://docs.python.org/3.12/library/ipaddress.html),
-with the complete installed stdlib source inspected directly under the existing
+with the installed stdlib address predicates inspected directly under the existing
 REA direct-source workflow. Reuse standard address properties, not copied vendor
 code. Deterministic tests inject DNS/transport and must not contact the internet;
 run the existing actual sandbox/gateway checks independently of hermetic fixtures.
