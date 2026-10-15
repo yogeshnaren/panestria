@@ -6,7 +6,7 @@ Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../d
 
 ## Outcome and scope
 
-Current narrow task implements [closed research data contracts](../design/17-RESEARCH-SOURCE-CONTRACTS.md). Pydantic validation does not establish actual fetch, artifact integrity, byte-boundary, verifier or source authority. The follow-on [canonical text and supplied byte checker](../design/19-RESEARCH-TEXT-BYTES.md) adds strict UTF-8/Unicode 15 NFC, exact hashes/length and multibyte offsets. It only returns BYTE_MATCH_ONLY; Request metadata now has [immutable scoped PostgreSQL storage](../design/20-RESEARCH-REQUEST-STORAGE.md) with same-transaction event publication. Source/claim schema, retained fetch, protected SourceStore lookup, reader and semantic judgments remain pending. No full AOS-013 case is promoted by these 79 checks.
+Current narrow task implements [closed research data contracts](../design/17-RESEARCH-SOURCE-CONTRACTS.md). Pydantic validation does not establish actual fetch, artifact integrity, byte-boundary, verifier or source authority. The follow-on [canonical text and supplied byte checker](../design/19-RESEARCH-TEXT-BYTES.md) adds strict UTF-8/Unicode 15 NFC, exact hashes/length and multibyte offsets. It only returns BYTE_MATCH_ONLY. Request metadata now has [immutable scoped PostgreSQL storage](../design/20-RESEARCH-REQUEST-STORAGE.md) with same-transaction event publication. Source/claim schema, retained fetch, protected SourceStore lookup, reader and semantic judgments remain pending. No full AOS-013 case is promoted by these component checks.
 
 A research claim is traceable to an actual retained and fetched source, with exact text offset and source content hash, not just a URL in generated prose.
 
