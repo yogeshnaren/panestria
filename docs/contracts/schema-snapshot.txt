@@ -235,6 +235,38 @@ column policy_review task_id uuid NO
 column principal created_at timestamptz NO
 column principal display_name text NO
 column principal id uuid NO
+column profile created_at timestamptz NO
+column profile current_revision int4 NO
+column profile id uuid NO
+column profile owner_id uuid NO
+column profile project_id uuid NO
+column profile row_version int4 NO
+column profile status text NO
+column profile_event created_at timestamptz NO
+column profile_event current_revision int4 NO
+column profile_event id uuid NO
+column profile_event kind text NO
+column profile_event owner_id uuid NO
+column profile_event profile_id uuid NO
+column profile_event project_id uuid NO
+column profile_event row_version int4 NO
+column profile_event seq int8 NO
+column profile_event status text NO
+column profile_revision algorithm text NO
+column profile_revision ciphertext bytea NO
+column profile_revision ciphertext_sha256 bpchar NO
+column profile_revision consent_ref uuid NO
+column profile_revision consented_by uuid NO
+column profile_revision created_at timestamptz NO
+column profile_revision id uuid NO
+column profile_revision key_id uuid NO
+column profile_revision nonce bytea NO
+column profile_revision owner_id uuid NO
+column profile_revision privacy_label text NO
+column profile_revision profile_id uuid NO
+column profile_revision project_id uuid NO
+column profile_revision schema_version int4 NO
+column profile_revision version int4 NO
 column project created_at timestamptz NO
 column project id uuid NO
 column project owner_id uuid NO
@@ -507,6 +539,31 @@ constraint panestria.policy_review f FOREIGN KEY (project_id, owner_id) REFERENC
 constraint panestria.policy_review f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.policy_review p PRIMARY KEY (id)
 constraint panestria.principal p PRIMARY KEY (id)
+constraint panestria.profile c CHECK (((current_revision >= 1) AND (current_revision <= 1024)))
+constraint panestria.profile c CHECK ((row_version >= 0))
+constraint panestria.profile c CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'SUPPRESSED'::text])))
+constraint panestria.profile f FOREIGN KEY (id, owner_id, project_id, current_revision) REFERENCES panestria.profile_revision(profile_id, owner_id, project_id, version) DEFERRABLE INITIALLY DEFERRED
+constraint panestria.profile f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.profile p PRIMARY KEY (id)
+constraint panestria.profile u UNIQUE (id, owner_id, project_id)
+constraint panestria.profile_event c CHECK ((kind = ANY (ARRAY['CREATED'::text, 'REVISED'::text, 'SUPPRESSED'::text])))
+constraint panestria.profile_event c CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'SUPPRESSED'::text])))
+constraint panestria.profile_event f FOREIGN KEY (profile_id, owner_id, project_id, current_revision) REFERENCES panestria.profile_revision(profile_id, owner_id, project_id, version) DEFERRABLE INITIALLY DEFERRED
+constraint panestria.profile_event p PRIMARY KEY (id)
+constraint panestria.profile_event u UNIQUE (profile_id, row_version)
+constraint panestria.profile_event u UNIQUE (seq)
+constraint panestria.profile_revision c CHECK (((octet_length(ciphertext) >= 17) AND (octet_length(ciphertext) <= 32784)))
+constraint panestria.profile_revision c CHECK (((version >= 1) AND (version <= 1024)))
+constraint panestria.profile_revision c CHECK ((algorithm = 'A256GCM'::text))
+constraint panestria.profile_revision c CHECK ((ciphertext_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.profile_revision c CHECK ((consented_by = owner_id))
+constraint panestria.profile_revision c CHECK ((octet_length(nonce) = 12))
+constraint panestria.profile_revision c CHECK ((privacy_label = 'RESTRICTED'::text))
+constraint panestria.profile_revision c CHECK ((schema_version = 1))
+constraint panestria.profile_revision f FOREIGN KEY (profile_id, owner_id, project_id) REFERENCES panestria.profile(id, owner_id, project_id)
+constraint panestria.profile_revision p PRIMARY KEY (id)
+constraint panestria.profile_revision u UNIQUE (owner_id, project_id, profile_id, key_id, nonce)
+constraint panestria.profile_revision u UNIQUE (profile_id, owner_id, project_id, version)
 constraint panestria.project c CHECK ((policy_version >= 0))
 constraint panestria.project f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
 constraint panestria.project p PRIMARY KEY (id)
@@ -631,6 +688,14 @@ index CREATE UNIQUE INDEX memory_use_event_pkey ON panestria.memory_use_event US
 index CREATE UNIQUE INDEX pairing_challenge_pkey ON panestria.pairing_challenge USING btree (code_hash)
 index CREATE UNIQUE INDEX policy_review_pkey ON panestria.policy_review USING btree (id)
 index CREATE UNIQUE INDEX principal_pkey ON panestria.principal USING btree (id)
+index CREATE UNIQUE INDEX profile_event_pkey ON panestria.profile_event USING btree (id)
+index CREATE UNIQUE INDEX profile_event_profile_id_row_version_key ON panestria.profile_event USING btree (profile_id, row_version)
+index CREATE UNIQUE INDEX profile_event_seq_key ON panestria.profile_event USING btree (seq)
+index CREATE UNIQUE INDEX profile_id_owner_id_project_id_key ON panestria.profile USING btree (id, owner_id, project_id)
+index CREATE UNIQUE INDEX profile_pkey ON panestria.profile USING btree (id)
+index CREATE UNIQUE INDEX profile_revision_owner_id_project_id_profile_id_key_id_nonc_key ON panestria.profile_revision USING btree (owner_id, project_id, profile_id, key_id, nonce)
+index CREATE UNIQUE INDEX profile_revision_pkey ON panestria.profile_revision USING btree (id)
+index CREATE UNIQUE INDEX profile_revision_profile_id_owner_id_project_id_version_key ON panestria.profile_revision USING btree (profile_id, owner_id, project_id, version)
 index CREATE UNIQUE INDEX project_id_owner_id_key ON panestria.project USING btree (id, owner_id)
 index CREATE UNIQUE INDEX project_pkey ON panestria.project USING btree (id)
 index CREATE UNIQUE INDEX project_policy_revision_pkey ON panestria.project_policy_revision USING btree (project_id, version)

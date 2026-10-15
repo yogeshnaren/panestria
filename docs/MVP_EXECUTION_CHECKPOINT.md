@@ -119,6 +119,29 @@ evidence; no full vault case or release gate is promoted. Full exact-head PR CI
 and final review remain required. Next implement bounded authenticated profile
 ciphertext storage, broker-only reads and its real database failure matrix.
 
+## Latest checkpoint: ciphertext vault storage
+
+PR #54 merged as `df485486133a770f6059cb866a30c18fe58e5228` after exact-head CI
+passed 516 default tests, 35 live deselected (run 38732648397). The isolated OS
+key-store test passed separately. Branch `task/profile-ciphertext-vault` started
+from that explicit prerequisite and merged verified main before validation.
+
+Migration 0020 adds separate encrypted profile revisions, a scoped deferred
+current pointer and immutable metadata-only lifecycle audit using the kernel's
+global event counter. The caller-owned transaction commits state, ciphertext
+and event together. The opt-in trusted vault loads existing scoped keys only;
+it never provisions keys in database transactions. No profile API/dispatch is
+enabled. General memory, FTS and historical data remain unchanged.
+
+Thirty targeted real crypto/database/restore/schema checks pass. They include
+tamper/scope/AAD swaps, CAS/concurrent writes, rollback, correction/rotation,
+suppression/expiry, old/new actual snapshots with external retained keys and
+refusal of destructive populated downgrade. Strict mypy (152 files), Ruff and
+11 import contracts pass. See PROFILE_VAULT.md and component evidence. Full
+exact-head PR CI and review remain required; TC06/TC07 and release gates are
+not promoted. Next: approved-field local context selection and trusted local
+setup/admission, then runtime privacy qualification and remaining MVP work.
+
 ## Latest checkpoint: canonical memory version 2
 
 PR #52 merged as `2f8c983` after CI run 38727911700 passed 471 default tests, 34 live deselected. The dependent canonical branch incorporated that verified main merge before final CI. Separate commits cover design, canonical domain/migration, v2 API and execution tracking.
