@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="3.025" timestamp="2026-10-15T15:42:10.814357-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_registered_check_authority" name="test_actual_read_check_publishes_verified_report_and_restart_never_reruns" file="tests/integration/test_registered_check_authority.py" line="128" time="2.771"><error message="failed on setup with &quot;panestria.contracts.acceptance.ContractRejected: invalid_contract&quot;">tests/integration/test_registered_check_authority.py:42: in configured
+    contract = load_contract(
+src/panestria/contracts/goal.py:130: in load_contract
+    raise ContractRejected(_code(exc)) from None
+E   panestria.contracts.acceptance.ContractRejected: invalid_contract</error></testcase></testsuite></testsuites>

@@ -128,3 +128,15 @@ identity, output pressure and owned cleanup. Callbacks are labeled fixtures, not
 durable execution authority or native CLI qualification. Profiles remain disabled
 until the current lease/policy/registry/protected-report binding and actual native
 MCP conformance are verified. Evidence: evidence/native-command-transport-2026-10-15.
+
+The [durable one-check controller](../design/25-NATIVE-CHECK-DURABLE-BINDING.md)
+connects an exact required read command to current policy/lease, deterministic
+PostgreSQL invocation fencing, the existing Docker gateway and protected report
+readback. At ed0d63c, 139 checks pass: 27 new actual PG/Docker/stdio, 17 existing
+invocation and 95 protocol/transport. Concurrent/reconstructed controllers do not
+rerun the command. Real running-container cancellation and lease revocation remove
+only the exact test-owned container. Nonzero check exits remain failed checks;
+no receipt completes a task or creates approval. Source-bound report and earlier
+failed development observations: evidence/native-check-authority-2026-10-15.
+Actual native MCP/settings/parser/hostile-project conformance remains pending;
+this component does not enable or certify a native shell tier or full G1 case.

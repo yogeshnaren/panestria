@@ -49,9 +49,10 @@ remain unchanged except additive active-schema/migration/interface updates.
 | #71 | Public-unicast provider gateway and exact peer/scope checks | 854 / 38 | d987e6c |
 | #72 | Scoped protected bytes, actual process interruption and bounded locks | 888 / 38 | 62765d0 |
 | #73 | Internal bounded MCP registered-check protocol, fixture authority only | 936 / 38 | 0e01e82 |
+| #74 | Actual private bounded Unix socket and stdio relay, fixture authority only | 983 / 38 | 435d95f |
 
-Current verified main: 0e01e8222bf1539cb149f7795cec782ed415cd53; latest CI
-run 38816626188 at exact head e8c36a5. PR #62's earlier run exposed an older Ask
+Current verified main: 435d95f00770368adb0ea21e7c3671fc5303acc2; latest CI
+run 38818446200 at exact head bd21308. PR #62's earlier run exposed an older Ask
 downgrade test sharing newer audit data; a schema-only restored isolated guard
 test fixed it without weakening audit-loss protection. PR #61 attempt 1 failed one proposal-demo
 approval-flow test; isolated actual-PG/Docker reproduction and exact-head retry
@@ -77,16 +78,18 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
 ## Exact next work
 
-1. Finish `task/native-command-transport` with exact-head CI/review. The merged
-   internal MCP 2025-06-18 session exposes only reviewed references and metadata.
-   The private Unix socket/stdio relay adds ordered acceptance and responsive
-   cancellation with bounded frames, buffers and deadlines; 169 targeted checks
-   pass at c5818c0 (47 new actual transport/dispatch, 48 protocol, 74 existing).
-   Evidence: evidence/native-command-transport-2026-10-15. Callback fixtures do
-   not establish current lease/policy/registry access or protected report proof.
-   Implement that durable binding, then actual native configuration/tool and
-   hostile-project conformance before enabling a native profile. Internal MCP
-   is an MVP command bridge; the R4 external-agent API remains outside scope.
+1. Finish `task/native-check-authority` with exact-head CI/review. The internal
+   one-check controller now binds a required reviewed read command to a canonical
+   scoped contract, protected candidate snapshot, policy and current lease. Actual
+   PostgreSQL claims fence restarts/concurrency; actual read-only Docker output
+   enters a protected report verified before the metadata receipt is returned.
+   At ed0d63c, 139 checks pass (27 new actual authority, 17 existing invocation,
+   95 protocol/transport). Evidence: evidence/native-check-authority-2026-10-15.
+   Earlier development fixture/nonzero failures are retained with honest source
+   limits. These checks do not enable or certify a native inference profile.
+   Next implement and actually qualify the pinned native MCP/settings/tool parser
+   against hostile project configuration, with only the authorized synthetic
+   Anthropic route. Safe mode disables MCP, so do not silently widen that profile.
    Protected research bytes are merged, with 34 actual filesystem/process and 79
    contract/text checks plus three existing Build checks. Source/claim metadata,
    actual retained-fetch/reader/SourceStore authority remain next R2 obligations.
