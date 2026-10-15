@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "source_commit": "aa79fef449c574553838f562cc4f4a1a73b15f31",
+  "result": "PASS",
+  "checks": 79,
+  "new_text_checks": 37,
+  "contract_checks": 42,
+  "normalization": "nfc-utf8-v1",
+  "unicode_version": "15.0.0",
+  "scope": "pure bounded UTF-8 normalization and supplied passage bytes; no actual fetch, SourceStore or semantic verdict",
+  "source_sha256": {
+    "src/panestria/contracts/research.py": "5f7307bc04132cd463582fae9d047abaa7e7623172234c53fb3685795a66df0c",
+    "src/panestria/verification/research_text.py": "5832c6f0ff236352fda1b4e89afbf268f98e890ba399c57f05b2de7a2b802b0a",
+    "tests/unit/test_research_text.py": "f1202d3c56cfaf67b911584dc17d0576379a6d54af8990aefdd5315f2547acb1",
+    "tests/unit/test_research_contracts.py": "1fe503263aaf794234dcebcb286617efe9f623ac827ec74f4fd1f601d8adcc88",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "junit_sha256": "a58412e3833178f5875472d1133eb0e9bae4b0323810b279b63c1f0025b1191b",
+  "gates": "NO_RELEASE_OR_FULL_ITEM_CASE_PROMOTION",
+  "provider_calls": 0
+}
