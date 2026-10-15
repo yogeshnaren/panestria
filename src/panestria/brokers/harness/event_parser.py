@@ -64,13 +64,15 @@ def _reason(text: str) -> str:
 
 
 class ClaudeEventParser:
-    def __init__(self, allowed_tools: frozenset[str] = frozenset()) -> None:
+    def __init__(self, allowed_tools: frozenset[str] = frozenset(), *, capture_candidate: bool = False) -> None:
         self.allowed_tools = allowed_tools
         self.session: str | None = None
         self.result: NativeResult | None = None
         self._pending = bytearray()
         self._tool_ids: set[str] = set()
         self._frames = 0
+        self._capture_candidate = capture_candidate
+        self.candidate_text: str | None = None
 
     def feed(self, chunk: bytes) -> tuple[NativeEvent, ...]:
         events: list[NativeEvent] = []
@@ -207,6 +209,8 @@ class ClaudeEventParser:
                 if self.session is None or self._tool_ids:
                     raise ProtocolRejected("incomplete_execution")
                 status, reason = "CANDIDATE", "independent_checks_required"
+                if self._capture_candidate:
+                    self.candidate_text = text
             else:
                 errors = body.get("errors", [])
                 if not isinstance(errors, list) or any(not isinstance(error, str) for error in errors):

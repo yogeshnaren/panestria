@@ -58,6 +58,7 @@ def collect_native(
     wall_seconds: float,
     cancel: threading.Event | None = None,
     output_bytes: int = 1024 * 1024,
+    pass_fds: tuple[int, ...] = (),
 ) -> ProcessReceipt:
     if not argv or not 0 < wall_seconds <= 900 or not 1024 <= output_bytes <= 1024 * 1024:
         raise ValueError("invalid_process_limits")
@@ -72,6 +73,7 @@ def collect_native(
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         start_new_session=True,
+        pass_fds=pass_fds,
     )
     assert process.stdout is not None and process.stderr is not None
     streams = {"stdout": process.stdout, "stderr": process.stderr}
