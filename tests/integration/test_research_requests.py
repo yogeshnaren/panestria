@@ -172,11 +172,14 @@ def test_concurrent_retry_returns_one_receipt_and_one_event(research):
             return ResearchRequestService().prepare(UnitOfWork(c), actor, request)
 
     with ThreadPoolExecutor(max_workers=2) as pool:
-        receipts = list(pool.map(prepare, range(2)))
-    assert sorted(r.replayed for r in receipts) == [False, True]
-    assert len({r.seq for r in receipts}) == 1
+        for _ in range(24):
+            request = request.model_copy(update={"request_id": str(uuid4())})
+            receipts = list(pool.map(prepare, range(2)))
+            assert sorted(r.replayed for r in receipts) == [False, True]
+            assert len({r.seq for r in receipts}) == 1
     with psycopg.connect(dsn) as c:
-        assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == (1,)
+        assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == (24,)
+        assert c.execute("SELECT count(*) FROM panestria.research_request").fetchone() == (24,)
 
 
 def test_database_enforces_limits_without_service_and_guard_preserves_receipt(research):

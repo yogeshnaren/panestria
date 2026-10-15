@@ -47,7 +47,9 @@ class ResearchRequestService:
                 "question_artifact_id,question_sha256,question_size_bytes,privacy_class,max_sources,"
                 "max_source_bytes,max_total_bytes,max_redirects,deadline_seconds,request_sha256) "
                 "VALUES (%s,1,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
-                "ON CONFLICT(id) DO NOTHING RETURNING seq",
+                # Both id and (id,task_id) are unique. Targeting only id leaves
+                # the other index outside the concurrent conflict arbiter.
+                "ON CONFLICT DO NOTHING RETURNING seq",
                 (
                     request.request_id,
                     scope.owner_id,
