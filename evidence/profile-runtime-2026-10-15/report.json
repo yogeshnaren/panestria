@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "scope": "synthetic component: actual OS keys, PostgreSQL, ASGI cookie/CSRF routes, actual local inference",
+  "source_commit": "68d020e4002030e9683ba61da1515411658473a1",
+  "observed_at": "2026-10-15T13:28:26.062542+00:00",
+  "result": "PASS",
+  "tests": {
+    "actual_runtime_pipeline": 1,
+    "failed": 0
+  },
+  "source_sha256": {
+    "tests/integration/test_profile_runtime_live.py": "bdce6519c67b8b78d8fa2648895b28e0caaa3e34be3fc426611871b8cda4d0e5",
+    "tests/fixtures/profile_runtime_probe.py": "e0f06da6d73477e85d5ef375a78196945b1428fede9ecbc187e3a68fe1700b0e",
+    "tests/fixtures/profile_keyring_probe.py": "d410e1b5922b4d8851ffd96aceafc087c5afa0a383152a09614914a78515851a",
+    "src/panestria/memory/keys.py": "cc65dd77ff699c0c7adfae6e979183d25f5a53aee2943df11857b55a63ac6193",
+    "src/panestria/memory/vault.py": "81dd2797283a0143ac1e6ef19f968a137b7343c114f411372c16ae79a123b10f",
+    "src/panestria/memory/profile.py": "22d3f5cd0c5821dc54858b0d6ad09495ae15098230c49bd9c7a93249524e97c3",
+    "src/panestria/memory/profile_ask.py": "d51f253f0728206081d50883ee8ff706e95570b3f2959352fdef5bf513594549",
+    "src/panestria/kernel/ask.py": "78a274e84790ba5b853053933774a775993e534615a5d20aa205bd3a71a41ae1",
+    "src/panestria/api/routes/ask.py": "777f66f2332ab6f2652a1d450882c059521326db8c0097eaf793866ebe84ca03",
+    "src/panestria/api/routes/profiles.py": "86b27a79ce8d3eb6ea56325cad2b81a8605ef5858244576ff286593593c896b5",
+    "src/panestria/inference/local.py": "ed6ea1e68e1b2c64d0640a16cc4c34220fa4e37c785e59b8c5ab75da9726a423",
+    "src/panestria/inference/runtime.py": "fce93ac33617d4d23f32aff1cd27d69a85ea54ebc58e0b06572d7d3b340234e2",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "junit_sha256": "dc9522a72135ee24441636b2fa51eb3c195ef30eb541ae7d9f9afc856f5c3b0d",
+  "model": "qwen2.5:1.5b-instruct",
+  "model_digest": "65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+  "runtime_image": "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9",
+  "runtime_assertions": {
+    "network": "none",
+    "published_ports": false,
+    "private_unix_socket": true,
+    "nonroot_readonly_root": true,
+    "model_cache_readonly": true,
+    "keyring_database_home_mounts": false,
+    "persistent_container_logging": false,
+    "core_dumps": false,
+    "cpu_limit": 2,
+    "memory_limit_bytes": 2684354560
+  },
+  "mock_inference_or_key_store": false,
+  "successful_model_calls": 1,
+  "suppression_denied_next_before_inference": true,
+  "profile_cleartext_or_fingerprint_in_database": false,
+  "paid_provider_calls": 0,
+  "owner_keyring_or_database_or_service_touched": false,
+  "release_gate_result": "NOT_EVALUATED",
+  "limitations": [
+    "ASGI cookie/CSRF HTTP handlers, not a real browser/phone UI trial",
+    "Synthetic isolated OS store, not owner keyring qualification",
+    "No orphan reaping or recovery tested; all preexisting model resources preserved",
+    "No peak resource, throughput, key-backup/purge or full privacy case/release acceptance claim",
+    "Default profile use remains disabled pending remaining setup and boundary obligations"
+  ]
+}

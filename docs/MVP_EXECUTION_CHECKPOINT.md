@@ -1,251 +1,86 @@
-# MVP execution checkpoint
+# Panestria MVP execution checkpoint
 
-Updated 2026-10-15. The owner authorized implementation through revision-3 R3,
-focused task branches/PRs with coherent commits, and sequential merges after
-passing CI and verification. Automatic continuation after usage resets is
-authorized. Preserve original evidence, specs and skills; stop for actual R3
-owner trial/acceptance, without beginning R4-R7.
+Updated 2026-10-15. Follow the revision-3 [main plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md)
+and its active specification. The owner authorizes implementation through R3,
+focused task branches with coherent owner-authored commits, exact-head CI,
+review and sequential merge commits. Automatic continuation after usage resets
+is authorized. Stop at actual R3 owner trial/acceptance; do not start R4–R7.
 
-## Starting point
+## Release truth
 
-Planning PR #49 merged at `e1664f54eeeb8b4dd65b44e99639f89e8b774132`.
-Its final head passed 437 default tests, with 34 live checks deselected. This
-does not certify G1 or the full MVP. R0 retains its source-bound acceptance;
-R1 remains in progress; R2/R3 implementation and extension acceptance remain
-pending. Follow the [main plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
+R0/G0 retains its source-bound accepted evidence. R1 remains in progress with
+G1 not accepted; later gates and most original/extension work remain pending.
+The catalog has 157 final G3 cases and 156 pretrial cases, excluding only the
+actual 14-day trial/owner decision AOS-030-TC04. Preserve 38 AOS items and 114
+slice envelopes. Component CI/live passes do not establish full case assertions,
+release promotion or owner acceptance. The readiness AST inventory is navigation,
+not a release evaluator. Sensitive profiles remain disabled in default launchers.
 
-New branches start from freshly fetched `origin/main`. Previously merged task
-branches remain historical and must not be used as the base for new work.
-Preserve the owner's review checkouts, running demo, databases and services.
+## Verified task history
 
-## Completed foundation: readiness inventory
+All listed task PRs were reviewed and merged sequentially with merge commits.
+Original specs, skills, archives, applied migrations and historical evidence
+remain unchanged except additive active-schema/migration/interface updates.
 
-Add a read-only reconciliation of required gate cases, the catalog and actual
-literal `gate_case_id` registrations in test source. Expose missing/planned
-nodes, annotation mismatches and live requirements. Source registration alone
-cannot establish execution, assertion completeness or release acceptance.
-Do not build a permissive substitute for the planned trusted evidence evaluator.
+| PR | Outcome | Exact-head default CI | Merge |
+| --- | --- | --- | --- |
+| #49 | Revision-3 plan/spec baseline | 437 / 34 live excluded | e1664f5 |
+| #50 | Read-only readiness inventory | 454 / 34 | d22c9f2 |
+| #51 | Legacy PRIVATE cloud denial | 467 / 34 | 2a4db7b |
+| #52 | Immutable classification ledger | 471 / 34 | 2f8c983 |
+| #53 | Canonical v2 memory/context compatibility | 482 / 34 | b22c46c |
+| #54 | Bounded scoped OS key adapter | 516 / 35 | df48548 |
+| #55 | Ciphertext vault, lifecycle and restore | 545 / 35 | bbe4268 |
+| #56 | Ephemeral approved-field local context | 567 / 35 | 24f1dc0 |
+| #57 | Paired browser v1/v2 cookie compatibility | 568 / 35 | 999251e |
+| #58 | Explicit scoped owner profile API | 585 / 35 | 26343a5 |
+| #59 | Explicit local key setup/reconciliation | 591 / 35 | d545fdb |
+| #60 | Restricted Ask overlay/private receipt mode | 619 / 35 | e51df70 |
 
-Catalog at this starting point: 157 scenarios, 20 historical observations and
-137 NOT_RUN records. Final G3 requires 157; pretrial readiness excludes only
-AOS-030-TC04 and requires 156. Existing source may implement a scenario whose
-catalog still says NOT_RUN; inspect its code and collect new source-bound proof
-before changing acceptance status.
+Current verified main: e51df70d43681b87a6c1f608d0f6106ba2dd8db3; latest CI
+run 38741135889 at head 7e8a530. Query Git/GitHub before continuing. Keep previous
+merged branches historical; start new tasks at freshly fetched main or name an
+explicit prerequisite. Preserve owner checkouts, review demo, services and DBs.
 
-The inventory is implemented in `panestria.verification.readiness`; see
-[usage/limitations](testing/MVP_READINESS.md) and the
-[initial source inventory](reviews/MVP-READINESS-2026-10-15.md). Its 17 regression
-tests, lint, typing and import checks pass locally. The focused task PR requires
-full CI and review before merge. Source navigation is not release acceptance.
+## Current task: actual runtime qualification
 
-## Next work
+Branch task/profile-runtime-qualification starts from explicit PR #60 and includes
+verified main. A new live test uses actual Secret Service + PostgreSQL + paired
+ASGI HTTP handlers + actual constrained local model, with synthetic content only.
+It asserts network/mount/log/core-dump isolation, one bounded successful model
+call, no profile plaintext/fingerprint persistence, and suppression before any
+subsequent inference. It preserves all pre-existing model resources rather than
+reaping them. See [scope and commands](testing/PROFILE_RUNTIME_QUALIFICATION.md).
 
-Use the inventory and existing R1 plans to reconcile implementation and live
-gaps. Continue ready local/fixture work while independent live prerequisites
-wait. Implement remaining R1, R2 and R3 work plus MVP-X07-X14 in dependency order,
-with an independently reviewable outcome per PR. Keep this checkpoint current
-with commit/PR/test references and the exact next action before stopping.
+The observed component pass does not enable profiles or complete TC06–TC08.
+Source-bound evidence lives in evidence/profile-runtime-2026-10-15. Full exact-head
+CI/review and merge remain required for this task; query its actual PR state.
+Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
-No new account configuration, provider fallback, reset credits, credential
-provisioning or broad model spending is authorized. Existing synthetic provider
-test permissions remain scoped. Use real disposable databases and actual
-required live evidence. Automated continuation does not replace the 14-day
-owner trial, owner acceptance or a needed human action.
+## Exact next work
 
-## Latest checkpoint: classification guard
+1. Finish this task's actual live evidence, exact-head CI and review; merge only
+   when verified passing. Update this checkpoint with its PR/head/CI references.
+2. Complete explicit opt-in local profile setup/launcher, full key lifecycle and
+   encrypted restore/forgetting/grant boundaries and whole privacy cases. The
+   ordinary ContextCompiler stores metadata/digests, not prompt bodies; profile
+   values must bypass its search/fingerprint path. Preserve the v1 Ask contract.
+3. Reconcile remaining R1 source/live/gate gaps, then original R2 Delegate and R3
+   two-worker Build plus all revision-3 extensions in dependency order. Quota-aware
+   useful work/offline capture, grants, progress, phone and resource obligations
+   remain MVP scope. Do not disappear them into a SOTA backlog.
+4. Run all 156 pretrial cases with actual required evidence before candidate
+   freeze. Only then begin the actual 14-day owner trial/acceptance checkpoint.
 
-Readiness PR #50 merged into main as d22c9f2 after exact-head CI passed 454 tests,
-34 live deselected (run 38713323941). New independent branch
-`task/privacy-classification-v3` began from e1664f5 and merged current main before
-validation. It introduces the shared canonical goal type, conservative legacy
-interpretation, and PRIVATE cloud denial in policy/SDK pre-transport checks.
-The goal wire classes, stored records, applied migrations and evidence remain
-unchanged. This is the first step of AOS-011-S4, now IN_PROGRESS; TC05 remains
-NOT_RUN and sensitive profiles remain disabled. See classification rollout.
+## Execution boundaries
 
-Local validation: 29 targeted classification/goal/policy/SDK tests passed,
-2 database tests deselected in that targeted run; Ruff, strict mypy and all 10
-import contracts passed. SDK tests hung inside the development process sandbox;
-the same frozen offline/mock tests passed outside it in 0.90s. Three agent-owned
-hanging diagnostic processes were stopped, without touching owner services.
-Full PR CI must pass before merge; do not infer a complete slice or live pass.
-
-At 99% usage, publish this focused PR and preserve its exact head. Resume by
-checking its CI, reviewing the diff, merging only when passing, fetching main,
-then implementing the audited forward classification migration and versioned
-source/policy/context compatibility. Continue independent R1 evidence mapping
-work as appropriate. Hourly continuation is enabled in the development chat;
-no repeated approval to resume or merge verified MVP task PRs is needed.
-
-## Latest checkpoint: immutable classification ledger
-
-PR #51 merged as `2a4db7b` after exact-head CI passed 467 default tests,
-34 live deselected (run 38714493560). Work resumed after the usage reset.
-Branch `task/classification-ledger` starts from that current main.
-
-The next substep adds migration 0018 and a scoped read-only classification
-service. Existing sources backfill without changing original rows; new source
-and classification records commit atomically. Consumed exact owner reviews
-remain linked to new revisions, while old PRIVATE sources stay restricted.
-Populated classification audit cannot be dropped by schema downgrade. The
-active schema snapshots were regenerated from real isolated PostgreSQL and
-contain additive changes only; applied migrations and old evidence are intact.
-
-Eight targeted real database tests passed: old-data upgrade, audit preservation,
-atomic rollback, scope/immutability, review consumption, existing memory review,
-actual dump/restore and schema drift/round-trip. Ruff, strict mypy and import
-boundaries pass. Full exact-head PR CI and final review remain required.
-
-Next: merge only after CI/review, then implement versioned canonical memory
-interfaces and canonical derived labels with conservative cloud defaults,
-keeping old API/history/active-attempt compatibility explicit. Complete the
-whole class/source/context/destination matrix before completing S4/TC05.
-Profile encryption remains disabled and later MVP work remains pending.
-
-## Latest checkpoint: key-store foundation
-
-PR #53 merged as `b22c46c9e28f84b2a5ed9fc02e96cabecbe0b248` after corrected
-exact-head CI passed 482 default tests, 34 live deselected (run 38730813894).
-Branch `task/profile-secret-store` began at fresh main 2f8c983, then merged this
-verified main. It pins cryptography/SecretStorage/Jeepney and adds a scoped,
-bounded, non-prompting Linux key adapter. It does not enable profile storage.
-
-Local source `3ec27b3eb921ec58c15f574a27133c8f52b497d3` passed 34 adapter checks
-and one actual isolated OS keyring test, including daemon restart. Qualification
-exposed GNOME's generic schema insertion; explicit schema binding fixes the
-compatibility issue while preserving exact scope checks. Ruff, strict mypy
-(150 files) and all 10 import contracts pass. See PROFILE_KEYS.md and component
-evidence; no full vault case or release gate is promoted. Full exact-head PR CI
-and final review remain required. Next implement bounded authenticated profile
-ciphertext storage, broker-only reads and its real database failure matrix.
-
-## Latest checkpoint: ciphertext vault storage
-
-PR #54 merged as `df485486133a770f6059cb866a30c18fe58e5228` after exact-head CI
-passed 516 default tests, 35 live deselected (run 38732648397). The isolated OS
-key-store test passed separately. Branch `task/profile-ciphertext-vault` started
-from that explicit prerequisite and merged verified main before validation.
-
-Migration 0020 adds separate encrypted profile revisions, a scoped deferred
-current pointer and immutable metadata-only lifecycle audit using the kernel's
-global event counter. The caller-owned transaction commits state, ciphertext
-and event together. The opt-in trusted vault loads existing scoped keys only;
-it never provisions keys in database transactions. No profile API/dispatch is
-enabled. General memory, FTS and historical data remain unchanged.
-
-Thirty targeted real crypto/database/restore/schema checks pass. They include
-tamper/scope/AAD swaps, CAS/concurrent writes, rollback, correction/rotation,
-suppression/expiry, old/new actual snapshots with external retained keys and
-refusal of destructive populated downgrade. Strict mypy (152 files), Ruff and
-11 import contracts pass. See PROFILE_VAULT.md and component evidence. Full
-exact-head PR CI and review remain required; TC06/TC07 and release gates are
-not promoted. Next: approved-field local context selection and trusted local
-setup/admission, then runtime privacy qualification and remaining MVP work.
-
-## Latest checkpoint: ephemeral profile context
-
-PR #55 merged as `bbe42683681befed15d16b4020f779ffd42a0bb7` after exact-head CI
-passed 545 default tests, 35 live deselected (run 38734495924). Branch
-`task/profile-local-context` began from that explicit prerequisite and merged
-verified main. Its selector compiles only owner-approved requested fields for
-a bounded offline local purpose, checks current policy and revalidates protected
-bytes/source/policy before a later dispatch. It does not persist a plaintext
-overlay or enable a provider/API route. Sensitive profiles remain disabled.
-
-Twenty-two targeted real ciphertext/database context checks pass, including
-policy/lifecycle invalidation and forgery rejection. Ruff, strict mypy (154 files)
-and 11 import contracts pass. See PROFILE_CONTEXT.md and component evidence;
-full exact-head CI/review and actual runtime qualification remain required.
-Next: trusted local profile setup/API admission and an ephemeral Ask overlay
-that preserves restrictive labels without storing its clear text, followed by
-whole profile-boundary qualification and remaining revision-3 MVP work.
-
-## Latest checkpoint: browser API-version compatibility
-
-PR #56 merged as `24f1dc0c79fc5c660ae59022b070697c6066ea7e` after exact-head CI
-passed 567 default tests, 35 live deselected (run 38735519516). Profile-owner API
-testing then exposed that the existing `/v1` cookie path prevented browser
-authentication on `/v2`, including canonical memory. A focused branch
-`task/browser-v2-session` starts from this verified main to correct the path,
-clear legacy cookies on re-pair/logout and retain all existing scope/CSRF checks.
-Seventeen targeted cookie/session/canonical-memory checks pass; full exact-head
-CI/review remain required before merge. The owner API is independent work in
-`task/profile-owner-api` and will incorporate this verified fix before handoff.
-
-## Latest checkpoint: explicit owner profile API
-
-Branch `task/profile-owner-api` began at verified main bbe4268. It now includes
-PR #56/main and the explicit browser-cookie prerequisite PR #57, which must pass
-CI/review and merge before this API task. A separate mount exposes bounded,
-scoped owner create/correct/view/suppress operations, with exact versions,
-transaction-time session reauthorization and fixed private-data-safe errors.
-Server scope supplies the consent actor and each save receives a new action ID.
-Keys are pre-existing opaque handles; HTTP cannot provision/unlock/delete them.
-Default launchers do not mount the API and profiles remain disabled by default.
-
-Sixty-nine targeted API/context/vault/restore/browser tests pass. Ruff, strict
-mypy (155 files) and 11 import contracts pass. API views are explicit owner POSTs
-with CSRF and no-store headers. Stale views and duplicate creates deny before
-loading keys. Full exact-head CI/review and runtime qualification remain required.
-Next: explicit local key setup, a qualified ephemeral Ask overlay, runtime privacy
-checks and the remaining revision-3 MVP scope. No release gate is promoted here.
-
-## Latest checkpoint: canonical memory version 2
-
-PR #52 merged as `2f8c983` after CI run 38727911700 passed 471 default tests, 34 live deselected. The dependent canonical branch incorporated that verified main merge before final CI. Separate commits cover design, canonical domain/migration, v2 API and execution tracking.
-
-Migration 0019 accepts canonical labels without rewriting records. New contexts use effective canonical labels; v1 history and old pending pack identities remain compatible. V2 memory requires integer schema_version 2, canonical labels and exact version-bound owner reviews. Non-public cloud requests remain denied; missing classification or falsely public contexts stop before dispatch. Profiles are not enabled.
-
-All 41 affected tests passed locally, including the class/action/destination matrix, actual PostgreSQL upgrade/restore, v1/v2 review isolation, scope, suppression and legacy context identity. Ruff, strict mypy, all 10 import contracts and secret scan passed. The active schema snapshot was generated from isolated actual PostgreSQL. Full exact-head CI/review is still required before merge. TC05 node mapping now points to the implemented integration file; formal G3 evidence and the full MVP remain pending.
-
-Next: verify/merge the canonical PR, then implement the bounded encrypted profile broker/vault and fail-closed OS secret-store adapter under S5/S6, with actual key-store conformance separate from fake fixtures. Keep new sensitive-profile use disabled until that boundary is verified. Continue independent R1 and other MVP work while live prerequisites wait.
-
-## Independent key-setup CLI work
-
-Task branch `task/profile-key-setup` starts from freshly fetched main 24f1dc0
-while browser PR #57 and independent owner API work progress. It adds explicit
-scoped `profile key-create`/`key-check` commands. Results never contain key bytes;
-failure retains a valid opaque handle for reconciliation. It does not enable
-personal profiles or provision keys through HTTP/database transactions.
-
-Six targeted CLI checks and the actual isolated OS keyring test pass. The live
-test now invokes the real CLI against its disposable daemon and still validates
-scope, locking and restart. This run does not rewrite older source-bound OS
-evidence. Full exact-head CI/review and verified main incorporation are required
-before merge. Continue scoped setup/API and actual local Ask/runtime privacy
-work; full MVP cases and the owner trial remain pending.
-
-## Verified owner API prerequisite and current key CLI
-
-PR #57 merged as 999251ee8e45e7e5c4d67caee83b57df7661608a after CI passed
-568 default tests, 35 live deselected (run 38736557047). PR #58 then merged as
-26343a514a04bb0211d35d9a1867b41ab539755c after CI passed 585 default tests,
-35 live deselected (run 38737392366). The key-setup branch incorporated both
-verified merges before its final qualification and task PR. Owner checkouts,
-services, databases, keyring and original evidence remain unchanged. The actual
-key CLI test uses an isolated child daemon and synthetic encryption material.
-
-## Latest checkpoint: restricted profile Ask
-
-PR #59 merged as `d545fdbf9afab2b4517f9e7832bde376ea6bb6fd` after exact-head CI
-passed 591 default tests, 35 live deselected (run 38738565476). Branch
-`task/profile-ask-overlay` started from the explicit owner API prerequisite and
-incorporated verified current main before qualification. Migration 0021 binds
-profile Ask to immutable scoped ciphertext and adds an immutable receipt mode
-that omits unkeyed profile-answer hashes while preserving every v1 invariant.
-
-Source inspection corrected an earlier design assumption: ContextCompiler
-persists metadata/digests, not the prompt body. Profile fields still bypass its
-search/fingerprint path. They join only the in-memory local prompt, with current
-selection, stored source/manifest and complete inference checks at claim. The
-version-2 route shares the existing admission/resource/cancel pipeline and does
-not enable the default profile configuration. Known probe failure now records
-UNAVAILABLE; database loss leaves durable admission for reconciliation.
-
-Thirty-nine targeted crypto/database/HTTP/restore/schema and legacy Ask checks
-pass. Active snapshots were generated from actual isolated PostgreSQL. Ruff,
-strict mypy (157 files) and 11 import contracts pass. Full exact-head CI/review
-and actual OS/local-model privacy qualification remain required. Next: collect
-that real runtime evidence, complete explicit opt-in setup and whole privacy
-cases, then continue the remaining original and extension MVP scope. No release
-gate, complete profile slice or 14-day owner acceptance is promoted here.
+Use disposable uniquely named test databases/containers and exact cleanup.
+Preserve owner DB ports 55432/55438 and demo 8871; R1 tests own their fixture on
+55439. No provider calls, owner keyring changes or paid inference were needed
+for these privacy components. Existing Claude Code/Anthropic and USD1-total
+synthetic SDK smoke permissions remain scoped; no new provider credentials,
+implicit fallback, paid background overflow, reset credits or training.
+Continue independent work while live prerequisites wait. Checkpoint before
+usage exhaustion; resume automatically without asking again. Never manufacture
+evidence, a release pass or the actual owner trial. Sources under the mirrored
+ChatGPT project's sources directory remain read-only.
