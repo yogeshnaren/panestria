@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "source_commit": "b104e4f855586e8f740d1b35bb7f0d32f77e7996",
+  "result": "PASS",
+  "elapsed_seconds": 16.127,
+  "scope": "actual fixed public native proposal, PostgreSQL, Docker writer/independent verifier, protected Git",
+  "calls": 2,
+  "requested_model_alias": "haiku",
+  "resolved_inference_model_version": "UNKNOWN_NOT_RETAINED",
+  "actual_native_cash": "UNKNOWN",
+  "budget_flag": "estimate only; unchanged existing subscription route; no direct paid SDK/API-key calls",
+  "approval_actor": "SCRIPTED_SYNTHETIC_TEST_OWNER_NOT_HUMAN_ACCEPTANCE",
+  "observed": [
+    "native candidates remained unaccepted",
+    "independent checks passed before approval",
+    "protected main unchanged before exact approval",
+    "mismatched approval digest denied without effect",
+    "exact scripted approval produced one succeeded effect",
+    "two returned durable invocations",
+    "restart and repeated start did not replay inference or merge"
+  ],
+  "limitations": [
+    "one fixed public arithmetic profile only",
+    "not arbitrary native tool/repository or Cursor orchestration certification",
+    "no G1/full AOS-027a or R3/owner trial acceptance",
+    "no universal provider/OS retention claim",
+    "old owner demo/services preserved"
+  ],
+  "source_sha256": {
+    "tests/integration/test_native_build_live.py": "a05b9fea7a1a655a9f70284ccb099828557174842b7e59533fe74468a056b47b",
+    "src/panestria/execution/proposal_demo.py": "d93b8aaf3e0883bba95737604b6114c0f4fc60b56402e75ed6cf0b56a72ff07f",
+    "src/panestria/brokers/harness/claude_proposal.py": "e668014944af7d197eaee8e36fd93fca5c26a6200812ae0b12b751792aa49203",
+    "src/panestria/brokers/harness/event_parser.py": "066480f2ad4edf7137537c66608219b199c6f08a31a1a4601126d6c4eca15b78",
+    "src/panestria/execution/proposal_certificate.py": "edfcd9c9127553b0fd338ef2733ad43cd2a6f1e6670ce7b2eaa65786ac5066dd",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "junit_sha256": "fae925c2fd1a66fba3d10d3e2c4b191cb80f0e38dd20c8d16f53e97a93916a3e"
+}
