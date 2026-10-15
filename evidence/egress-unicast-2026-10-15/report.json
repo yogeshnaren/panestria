@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "source_commit": "8ac4f7e31fe5b569c976cf71ab501d52380a28eb",
+  "result": "PASS",
+  "targeted_default_checks": 53,
+  "live_checks": 2,
+  "python": "3.12.4",
+  "stdlib_ipaddress_sha256": "5009d4809896dc5e2906b13708c13be7a97ee736d0323634ef6befd0cbe1588a",
+  "observations": {
+    "224.0.0.1": {
+      "is_global": true,
+      "is_multicast": true
+    },
+    "ff0e::1": {
+      "is_global": true,
+      "is_multicast": true
+    },
+    "fec0::1": {
+      "is_global": true,
+      "is_reserved": false,
+      "site_local": true
+    },
+    "3fff::1": {
+      "is_global": true,
+      "is_reserved": false,
+      "site_local": false
+    }
+  },
+  "scope": [
+    "DNS/address/peer deterministic fixtures and actual Unix gateway denial",
+    "actual pinned container uid/mount/secret-environment/egress/resource observations",
+    "actual allowlisted Anthropic TLS and unauthenticated HEAD only"
+  ],
+  "initial_source_commit": "401627a",
+  "limitations": [
+    "no complete AOS-008/G1 promotion",
+    "not public-web broker/redirect/reader proof",
+    "DNS/peer adversarial matrix is hermetic; not malicious external DNS infrastructure",
+    "stdlib flags do not guarantee registry freshness; RFC 9637 prefix explicitly denied"
+  ],
+  "source_sha256": {
+    "src/panestria/sandbox/egress.py": "465b9276c73f7e35abc4b0a1100ed801de425410cf614b0c32243ad67bf2e030",
+    "tests/unit/test_egress_addresses.py": "540507fce9698f4d24607743b94b54f9ad6f9e5070d00f9665bee9be5f5ec2ae",
+    "tests/integration/test_aos_008.py": "6f27572585d15b912f6b80d5e91f168438f51cb3285879857bb94e09508cc9bb",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "junit_sha256": {
+    "review-51-two-live.xml": "f2e23c62686f6f78ed891b47caf4ed109b0a6d0cb716f34411d3ea7ef2cfeed9",
+    "initial-49-default.xml": "92cc41b3e05316fa91a063840e336bece1e231364e2c21c6c316189550c0753b",
+    "final-50-default.xml": "f35be70a1816eb5c5411ed973f322ad2fe84a018f98c4359feb02d8373c05ca4",
+    "complete-two-live.xml": "5ddb2bfba0460ed40e0ccb3c4aa8fdbfdbe01abfecaca7a2f9e8df474756220c",
+    "review-51-default.xml": "f4745ee4723d7bb7f6d1921b61dbb8154e93561a376c8d4a0a0abf9703e6afe7",
+    "initial-1-tls.xml": "df73c2a43c1af9e8bbf63f176f829d6bf12a43d7b105c591c538fe92cdb16e78",
+    "final-2-live.xml": "3d95221f1c93bb9f11b2bc073f4b22e58d3581689388ef0733ca3f15f59ce718",
+    "complete-53-default.xml": "29ef3c4ccb1b29bd7737c71eccba565fb0712bd180b998ba19863049d255932a"
+  },
+  "references": [
+    "https://docs.python.org/3.12/library/ipaddress.html",
+    "https://www.iana.org/assignments/iana-ipv6-special-registry"
+  ],
+  "inference_calls": 0,
+  "authenticated_provider_requests": 0,
+  "qualification_history": [
+    {
+      "source_commit": "93d5b36a4d96530be1403dec5501c5aaf4e7f009",
+      "default_checks": 50,
+      "live_checks": 2
+    },
+    {
+      "source_commit": "e3e8b75",
+      "default_checks": 51,
+      "live_checks": 2
+    }
+  ]
+}
