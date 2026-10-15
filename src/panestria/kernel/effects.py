@@ -10,6 +10,7 @@ from panestria.contracts.effects import EffectIntent
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.approvals import required_verdicts
+from panestria.kernel.repositories.policy import require_current_policy
 from panestria.kernel.repositories.tasks import append_event, lock_task
 from panestria.kernel.uow import UnitOfWork
 
@@ -39,6 +40,7 @@ class SideEffectService:
         if locked is None:
             raise KernelDenied("not_found")
         goal_id, task_state, _version, _epoch = locked
+        require_current_policy(uow, actor, intent.policy_version)
         existing = uow.execute(
             "SELECT id::text,state,request_hash FROM panestria.side_effect"
             " WHERE task_id=%s AND effect_key=%s FOR UPDATE",
@@ -159,6 +161,9 @@ class SideEffectService:
         task = lock_task(uow, actor.owner_id, actor.project_id, task_id)
         if task is None:
             raise KernelDenied("not_found")
+        uow.execute(
+            "SELECT id FROM panestria.project WHERE id=%s AND owner_id=%s FOR SHARE", (actor.project_id, actor.owner_id)
+        )
         row = uow.execute(
             "SELECT e.state,e.dispatch_epoch,e.target,e.request_ref,e.request_hash,e.classification,"
             " o.state,o.due_at<=clock_timestamp(),o.claim_expires_at<=clock_timestamp(),"
@@ -174,6 +179,13 @@ class SideEffectService:
         if not 1 <= ttl_seconds <= 3600:
             raise KernelDenied("invalid_claim")
         goal_id, task_id, row = self._lock(uow, actor, effect_id)
+        ref = uow.execute(
+            "SELECT c.body->>'autonomy_profile_ref' FROM panestria.task t"
+            " JOIN panestria.goal_contract c ON c.id=t.contract_id WHERE t.id=%s",
+            (task_id,),
+        ).fetchone()
+        assert ref is not None
+        require_current_policy(uow, actor, str(ref[0]))
         if row[0] != "PREPARED" or row[6] != "PENDING" or row[7] is not True:
             raise KernelDenied("effect_not_dispatchable")
         current_task = uow.execute("SELECT state FROM panestria.task WHERE id=%s", (task_id,)).fetchone()
@@ -226,7 +238,9 @@ class SideEffectService:
         )
         if receipt is None:
             uow.execute(
-                "UPDATE panestria.task SET state='RECONCILING',row_version=row_version+1 WHERE id=%s", (task_id,)
+                "UPDATE panestria.task SET state='RECONCILING',row_version=row_version+1"
+                " WHERE id=%s AND state NOT IN ('CANCELLING','CANCELLED','COMPLETED','FAILED','REJECTED')",
+                (task_id,),
             )
         append_event(
             uow,
@@ -248,7 +262,11 @@ class SideEffectService:
             "UPDATE panestria.side_effect SET state='RECONCILING',dispatch_epoch=%s WHERE id=%s", (epoch, effect_id)
         )
         uow.execute("UPDATE panestria.effect_outbox SET state='PAUSED' WHERE effect_id=%s", (effect_id,))
-        uow.execute("UPDATE panestria.task SET state='RECONCILING',row_version=row_version+1 WHERE id=%s", (task_id,))
+        uow.execute(
+            "UPDATE panestria.task SET state='RECONCILING',row_version=row_version+1"
+            " WHERE id=%s AND state NOT IN ('CANCELLING','CANCELLED','COMPLETED','FAILED','REJECTED')",
+            (task_id,),
+        )
         append_event(
             uow,
             goal_id=goal_id,
