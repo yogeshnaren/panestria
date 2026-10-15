@@ -27,6 +27,10 @@ The live command is a future separately scoped action. Register markers and gate
 
 ## Gate evaluator contract
 
+The [read-only readiness inventory](MVP_READINESS.md) reconciles static source
+registrations with these manifests. It is a navigation aid and cannot PASS a
+release or substitute for the evidence checks below.
+
 Input: required manifest, actual JUnit/structured report receipts, candidate/environment/corpus hashes, compatibility manifests and known blockers. Validate against schemas/case-result.schema.json; check every required case exists, exact candidate/version/hash, correct lane and LIVE vs HERMETIC/OS_BOUNDARY mode, command exit and immutable report/artifact proof. FAIL for failed case/blocker; INCOMPLETE for missing/SKIP/NOT_RUN/UNKNOWN/wrong candidate/mock-for-live. PASS only for complete actual evidence. Case-result text supplied by an LLM is not a trusted test runner receipt.
 
 Version each scenario's parameters and assertion→requirement IDs; splitting a group preserves release requirements. Run changed/dependency checks per slice, cumulative G0/G1/G2/G3 at promotion, all MVP tests/six faults before trial. After changed candidate revalidate affected/cross-cutting gates and document/extend or restart observation. Report sample size/abstention/confusion honestly.
