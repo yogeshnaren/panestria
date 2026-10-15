@@ -11,3 +11,6 @@ evidence/ci.xml
 dist/
 build/
 *.egg-info/
+
+# Local model weights, protected runtime receipts and sockets
+.panestria-runtime/
