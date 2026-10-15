@@ -18,6 +18,7 @@ from panestria.contracts.memory import MemoryObservation, MemorySubmission
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.uow import UnitOfWork
+from panestria.memory.classification import MemoryClassificationService
 from panestria.memory.service import MemoryService
 
 
@@ -75,6 +76,8 @@ def test_revision_suppression_restore(
             )
         before = memory.history(uow, actor, original.item_id)
         hidden_before = memory.history(uow, actor, suppressed.item_id)
+        classifier = MemoryClassificationService()
+        classification_before = [classifier.get(uow, actor, ref.source_id) for ref in (original, corrected, suppressed)]
     container = _fixture_container()
     dump = subprocess.run(
         [
@@ -125,6 +128,9 @@ def test_revision_suppression_restore(
                 uow = UnitOfWork(c)
                 assert memory.history(uow, actor, original.item_id) == before
                 assert memory.history(uow, actor, suppressed.item_id) == hidden_before
+                assert [classifier.get(uow, actor, ref.source_id) for ref in (original, corrected, suppressed)] == (
+                    classification_before
+                )
                 recalled = memory.search(uow, actor, "PostgreSQL")
                 assert len(recalled) == 1 and recalled[0].ref == corrected and recalled[0].pinned
                 assert recalled[0].label == "PRIVATE" and recalled[0].explanation == "owner_pin"
