@@ -94,12 +94,14 @@ def test_bounded_client_display_metadata_has_no_protocol_or_authority_effect():
         ("public-synthetic-check",), "snapshot:" + "ab" * 32, lambda *_: RegisteredCheckReceipt(outcome="DENIED")
     )
 
+    serial = iter(range(10))
+
     def initialize(info):
         return state.handle(
             json.dumps(
                 {
                     "jsonrpc": "2.0",
-                    "id": 0,
+                    "id": next(serial),
                     "method": "initialize",
                     "params": {
                         "protocolVersion": "2025-11-25",
