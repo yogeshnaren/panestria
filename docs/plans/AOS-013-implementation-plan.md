@@ -78,3 +78,15 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+A [PUBLIC HTTPS transport](../design/27-RESEARCH-PUBLIC-FETCH-TRANSPORT.md) now
+returns bounded memory-only bytes with fresh all-public DNS and exact verified
+TLS peers on every redirect, framing/body/deadline/cancellation bounds and no
+cookies/proxies/auth/compression/retries. At ecf564f, 178 targeted checks pass;
+three actual public TLS checks pass at 3c1b3a2 with identical fetch code, including
+an actual IANA downgrade denial. Injected DNS/TLS fixtures are labeled separately.
+Source-bound results and the earlier wrong expectation remain in
+evidence/research-public-fetch-2026-10-15. This does not persist a source, mint
+source IDs, authorize fetch or make a passage/claim usable. Scoped source/claim
+schema, retained receipt/artifact lookup, isolated reader and citation authority
+remain pending; no full AOS-013 case or G2 promotion follows from this component.
