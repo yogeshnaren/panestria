@@ -367,7 +367,7 @@
           "evidence_refs": [],
           "plan_status": "PARTIAL_CONTRACTS",
           "plan_ref": "plans/AOS-013-implementation-plan.md",
-          "implementation_note": "Closed data contracts and 40 bounds/inheritance/authority-denial checks; schema, stored-source proof and full item cases pending."
+          "implementation_note": "Closed data contracts and 42 bounds/inheritance/authority-denial checks; schema, stored-source proof and full item cases pending."
         },
         {
           "id": "AOS-019",
