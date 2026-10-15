@@ -308,6 +308,24 @@ column project_policy_revision project_id uuid NO
 column project_policy_revision sha256 bpchar NO
 column project_policy_revision trust_version int8 NO
 column project_policy_revision version int8 NO
+column research_request created_at timestamptz NO
+column research_request deadline_seconds float8 NO
+column research_request goal_id uuid NO
+column research_request id uuid NO
+column research_request max_redirects int4 NO
+column research_request max_source_bytes int4 NO
+column research_request max_sources int4 NO
+column research_request max_total_bytes int4 NO
+column research_request owner_id uuid NO
+column research_request privacy_class text NO
+column research_request project_id uuid NO
+column research_request question_artifact_id uuid NO
+column research_request question_sha256 bpchar NO
+column research_request question_size_bytes int8 NO
+column research_request request_sha256 bpchar NO
+column research_request schema_version int4 NO
+column research_request seq int8 NO
+column research_request task_id uuid NO
 column side_effect approval_request_id uuid YES
 column side_effect classification text YES
 column side_effect dispatch_attempts int4 NO
@@ -422,6 +440,7 @@ constraint panestria.artifact f FOREIGN KEY (attempt_id, task_id) REFERENCES pan
 constraint panestria.artifact f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.artifact p PRIMARY KEY (id)
 constraint panestria.artifact u UNIQUE (id, task_id)
+constraint panestria.artifact u UNIQUE (id, task_id, sha256, size_bytes, privacy_class)
 constraint panestria.ask_profile_context c CHECK ((jsonb_typeof(request_body) = 'object'::text))
 constraint panestria.ask_profile_context c CHECK ((manifest_sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.ask_profile_context c CHECK ((privacy_label = 'RESTRICTED'::text))
@@ -621,6 +640,21 @@ constraint panestria.project_policy_revision c CHECK ((trust_version > 0))
 constraint panestria.project_policy_revision c CHECK ((version > 0))
 constraint panestria.project_policy_revision f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.project_policy_revision p PRIMARY KEY (project_id, version)
+constraint panestria.research_request c CHECK (((deadline_seconds >= (1)::double precision) AND (deadline_seconds <= (300)::double precision)))
+constraint panestria.research_request c CHECK (((max_redirects >= 0) AND (max_redirects <= 5)))
+constraint panestria.research_request c CHECK (((max_source_bytes >= 1) AND (max_source_bytes <= 2097152)))
+constraint panestria.research_request c CHECK (((max_sources >= 1) AND (max_sources <= 16)))
+constraint panestria.research_request c CHECK (((max_total_bytes >= max_source_bytes) AND (max_total_bytes <= 33554432)))
+constraint panestria.research_request c CHECK (((question_size_bytes >= 0) AND (question_size_bytes <= 2097152)))
+constraint panestria.research_request c CHECK ((privacy_class = ANY (ARRAY['PUBLIC'::text, 'INTERNAL'::text, 'CONFIDENTIAL'::text, 'RESTRICTED'::text])))
+constraint panestria.research_request c CHECK ((request_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.research_request c CHECK ((schema_version = 1))
+constraint panestria.research_request f FOREIGN KEY (goal_id, project_id, owner_id) REFERENCES panestria.goal(id, project_id, owner_id)
+constraint panestria.research_request f FOREIGN KEY (question_artifact_id, task_id, question_sha256, question_size_bytes, privacy_class) REFERENCES panestria.artifact(id, task_id, sha256, size_bytes, privacy_class)
+constraint panestria.research_request f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
+constraint panestria.research_request p PRIMARY KEY (id)
+constraint panestria.research_request u UNIQUE (id, task_id)
+constraint panestria.research_request u UNIQUE (seq)
 constraint panestria.side_effect c CHECK ((classification = ANY (ARRAY['read-only'::text, 'idempotent-with-key'::text, 'reconcile-by-query'::text, 'compensatable'::text, 'non-retryable'::text])))
 constraint panestria.side_effect c CHECK ((request_hash ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.side_effect c CHECK ((state = ANY (ARRAY['PREPARED'::text, 'EXECUTING'::text, 'SUCCEEDED'::text, 'FAILED'::text, 'UNKNOWN'::text, 'RECONCILING'::text])))
@@ -695,6 +729,7 @@ index CREATE UNIQUE INDEX approval_consumption_pkey ON panestria.approval_consum
 index CREATE UNIQUE INDEX approval_consumption_side_effect_id_key ON panestria.approval_consumption USING btree (side_effect_id)
 index CREATE UNIQUE INDEX approval_request_pkey ON panestria.approval_request USING btree (id)
 index CREATE UNIQUE INDEX artifact_id_task_id_key ON panestria.artifact USING btree (id, task_id)
+index CREATE UNIQUE INDEX artifact_pinned_metadata ON panestria.artifact USING btree (id, task_id, sha256, size_bytes, privacy_class)
 index CREATE UNIQUE INDEX artifact_pkey ON panestria.artifact USING btree (id)
 index CREATE UNIQUE INDEX ask_profile_context_pkey ON panestria.ask_profile_context USING btree (request_id, owner_id, project_id)
 index CREATE UNIQUE INDEX ask_request_pkey ON panestria.ask_request USING btree (id, owner_id, project_id)
@@ -749,6 +784,9 @@ index CREATE UNIQUE INDEX profile_revision_profile_id_owner_id_project_id_versio
 index CREATE UNIQUE INDEX project_id_owner_id_key ON panestria.project USING btree (id, owner_id)
 index CREATE UNIQUE INDEX project_pkey ON panestria.project USING btree (id)
 index CREATE UNIQUE INDEX project_policy_revision_pkey ON panestria.project_policy_revision USING btree (project_id, version)
+index CREATE UNIQUE INDEX research_request_id_task_id_key ON panestria.research_request USING btree (id, task_id)
+index CREATE UNIQUE INDEX research_request_pkey ON panestria.research_request USING btree (id)
+index CREATE UNIQUE INDEX research_request_seq_key ON panestria.research_request USING btree (seq)
 index CREATE UNIQUE INDEX side_effect_id_task_unique ON panestria.side_effect USING btree (id, task_id)
 index CREATE UNIQUE INDEX side_effect_pkey ON panestria.side_effect USING btree (id)
 index CREATE UNIQUE INDEX side_effect_task_id_effect_key_key ON panestria.side_effect USING btree (task_id, effect_key)
