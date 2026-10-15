@@ -196,6 +196,12 @@ class BuildEvidenceService:
         task_id = LeaseService().require_current(uow, actor, bundle.attempt_id, bundle.lease_epoch)
         if task_id != bundle.task_id:
             raise KernelDenied("build_scope_mismatch")
+        unfinished = uow.execute(
+            "SELECT 1 FROM panestria.worker_invocation WHERE attempt_id=%s AND state!='RETURNED' LIMIT 1",
+            (bundle.attempt_id,),
+        ).fetchone()
+        if unfinished is not None:
+            raise KernelDenied("invocations_unconfirmed")
         contract_id, contract = _contract(uow, actor, task_id)
         if (contract_id, contract_sha256(contract), contract.contract_version, contract.autonomy_profile_ref) != (
             bundle.contract_id,
