@@ -64,6 +64,38 @@ def _reason(text: str) -> str:
     return "native_error"
 
 
+def _result_metadata(body: dict[str, Any], *, failed: bool) -> None:
+    for field in ("first_content_frame_ms", "time_to_request_ms", "ttft_ms", "ttft_stream_ms"):
+        if field in body and (type(body[field]) is not int or not 0 <= body[field] <= 900_000):
+            raise ProtocolRejected("invalid_result_metadata")
+    for field in ("queued_turn_count", "result_index"):
+        if field in body and (type(body[field]) is not int or body[field] != 0):
+            raise ProtocolRejected("unexpected_native_background_work")
+    if body.get("fast_mode_state", "off") != "off" or body.get("fast_mode_disabled_reason") not in (
+        None,
+        "sdk_opt_in_required",
+    ):
+        raise ProtocolRejected("unexpected_fast_mode")
+    if "terminal_reason" in body:
+        terminal = _text(body["terminal_reason"], maximum=128)
+        if not failed and terminal != "completed":
+            raise ProtocolRejected("incomplete_execution")
+    status = body.get("api_error_status")
+    if status is not None and (not failed or type(status) is not int or not 400 <= status <= 599):
+        raise ProtocolRejected("invalid_result_metadata")
+    if "subagent_stats" in body:
+        stats = body["subagent_stats"]
+        counters = {"spawned", "started_in_background", "max_depth", "spawned_by_subagents", "completed", "failed"}
+        maps = {"requested", "killed", "refused", "by_type"}
+        if (
+            not isinstance(stats, dict)
+            or set(stats) != counters | maps
+            or any(type(stats[key]) is not int or stats[key] != 0 for key in counters)
+            or any(type(stats[key]) is not dict or stats[key] != {} for key in maps)
+        ):
+            raise ProtocolRejected("unexpected_native_subagents")
+
+
 class ClaudeEventParser:
     def __init__(self, allowed_tools: frozenset[str] = frozenset(), *, capture_candidate: bool = False) -> None:
         self.allowed_tools = allowed_tools
@@ -218,11 +250,7 @@ class ClaudeEventParser:
                 raise ProtocolRejected("invalid_rate_limit")
             if "utilization" in info:
                 utilization = info["utilization"]
-                if (
-                    type(utilization) not in {int, float}
-                    or not 0 <= utilization <= 1
-                    or not math.isfinite(utilization)
-                ):
+                if type(utilization) not in {int, float} or not 0 <= utilization <= 1 or not math.isfinite(utilization):
                     raise ProtocolRejected("invalid_rate_limit")
             if "isUsingOverage" in info and info["isUsingOverage"] is not False:
                 raise ProtocolRejected("unapproved_overage")
@@ -276,6 +304,17 @@ class ClaudeEventParser:
                     "stop_reason",
                     "errors",
                     "structured_output",
+                    "api_error_status",
+                    "fast_mode_disabled_reason",
+                    "fast_mode_state",
+                    "first_content_frame_ms",
+                    "queued_turn_count",
+                    "result_index",
+                    "subagent_stats",
+                    "terminal_reason",
+                    "time_to_request_ms",
+                    "ttft_ms",
+                    "ttft_stream_ms",
                 },
             )
             self._session(body, allow_before_init=True)
@@ -289,6 +328,7 @@ class ClaudeEventParser:
                 "error_max_structured_output_retries",
             }:
                 raise ProtocolRejected("unknown_result_state")
+            _result_metadata(body, failed=failed)
             if body.get("permission_denials"):
                 raise ProtocolRejected("privilege_request_denied")
             text = _text(body.get("result", ""))

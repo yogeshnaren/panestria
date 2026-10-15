@@ -14,6 +14,11 @@ Rate-limit metadata also includes optional finite `utilization` in [0,1]. Treat
 it only as an opaque provider observation here; no quota amount, window identity,
 spend, reset prediction or routing decision is derived. Rejected status and
 unapproved overage still terminate the process, regardless of this value.
+The observed result includes timing/correlation metadata, completed terminal
+reason, zero queued turns/result index and zero/empty subagent counters. Accept
+only those bounded timings, exact off/disabled fast mode and no native background
+or subagent activity. A successful result cannot carry an API error or incomplete
+terminal reason. This metadata never changes the kernel's own deadline/identity.
 
 The official [headless guide](https://code.claude.com/docs/en/headless) describes
 newline JSON events. The exact auxiliary shape here is based on the installed

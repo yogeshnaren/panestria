@@ -152,3 +152,81 @@ def test_malformed_utilization_never_grants_capacity(value):
                 }
             )
         )
+
+
+def result_metadata():
+    return {
+        "api_error_status": None,
+        "terminal_reason": "completed",
+        "result_index": 0,
+        "queued_turn_count": 0,
+        "fast_mode_state": "off",
+        "fast_mode_disabled_reason": "sdk_opt_in_required",
+        "first_content_frame_ms": 1,
+        "time_to_request_ms": 2,
+        "ttft_ms": 3,
+        "ttft_stream_ms": 4,
+        "subagent_stats": {
+            "spawned": 0,
+            "started_in_background": 0,
+            "max_depth": 0,
+            "spawned_by_subagents": 0,
+            "completed": 0,
+            "failed": 0,
+            "requested": {},
+            "killed": {},
+            "refused": {},
+            "by_type": {},
+        },
+    }
+
+
+def terminal(**extra):
+    return {
+        "type": "result",
+        "subtype": "success",
+        "session_id": "synthetic-native-session",
+        "is_error": False,
+        "result": "candidate",
+        **result_metadata(),
+        **extra,
+    }
+
+
+def test_result_metadata_still_needs_independent_acceptance():
+    parser = ClaudeEventParser()
+    init(parser)
+    parser.feed(line(terminal()))
+    result = parser.finish(0)
+    assert result.status == "CANDIDATE" and result.accepted is False
+
+
+@pytest.mark.parametrize(
+    "extra,reason",
+    [
+        ({"terminal_reason": "interrupted"}, "incomplete_execution"),
+        ({"queued_turn_count": 1}, "unexpected_native_background_work"),
+        ({"result_index": 1}, "unexpected_native_background_work"),
+        ({"result_index": False}, "unexpected_native_background_work"),
+        ({"api_error_status": 429}, "invalid_result_metadata"),
+        ({"ttft_ms": -1}, "invalid_result_metadata"),
+        ({"time_to_request_ms": 900_001}, "invalid_result_metadata"),
+        ({"fast_mode_state": "on"}, "unexpected_fast_mode"),
+        ({"fast_mode_disabled_reason": "unknown"}, "unexpected_fast_mode"),
+    ],
+)
+def test_contradictory_result_metadata_never_becomes_a_candidate(extra, reason):
+    parser = ClaudeEventParser()
+    init(parser)
+    with pytest.raises(ProtocolRejected, match=reason):
+        parser.feed(line(terminal(**extra)))
+
+
+@pytest.mark.parametrize("field", list(result_metadata()["subagent_stats"]))
+def test_any_native_subagent_activity_or_unknown_stats_fails_closed(field):
+    parser = ClaudeEventParser()
+    init(parser)
+    stats = result_metadata()["subagent_stats"]
+    stats[field] = 1 if type(stats[field]) is int else {"unknown": 0}
+    with pytest.raises(ProtocolRejected, match="unexpected_native_subagents"):
+        parser.feed(line(terminal(subagent_stats=stats)))
