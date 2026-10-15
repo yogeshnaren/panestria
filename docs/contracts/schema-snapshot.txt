@@ -114,6 +114,20 @@ column idempotency_record project_id uuid NO
 column idempotency_record request_hash bpchar NO
 column idempotency_record request_key text NO
 column idempotency_record response_ref jsonb NO
+column learning_record body jsonb NO
+column learning_record created_at timestamptz NO
+column learning_record goal_id uuid YES
+column learning_record id uuid NO
+column learning_record kind text NO
+column learning_record owner_id uuid NO
+column learning_record policy_ref text NO
+column learning_record privacy_label text NO
+column learning_record project_id uuid NO
+column learning_record request_id uuid YES
+column learning_record schema_version int4 NO
+column learning_record sha256 bpchar NO
+column learning_record task_id uuid YES
+column learning_record trace_id bpchar NO
 column memory_item conflict_key text YES
 column memory_item current_revision int4 NO
 column memory_item id uuid NO
@@ -244,6 +258,19 @@ column task_event payload jsonb NO
 column task_event seq int8 NO
 column task_event task_id uuid YES
 column task_event trace_id text YES
+column user_correction body text NO
+column user_correction body_sha256 bpchar NO
+column user_correction consent_ref uuid NO
+column user_correction consented_by uuid NO
+column user_correction created_at timestamptz NO
+column user_correction id uuid NO
+column user_correction kind text NO
+column user_correction output_sha256 bpchar NO
+column user_correction owner_id uuid NO
+column user_correction privacy_label text NO
+column user_correction project_id uuid NO
+column user_correction request_id uuid NO
+column user_correction version int4 NO
 column workflow_link attempt_id uuid NO
 column workflow_link dbos_workflow_id text NO
 column workflow_link task_id uuid NO
@@ -336,6 +363,18 @@ constraint panestria.idempotency_record c CHECK ((request_hash ~ '^[0-9a-f]{64}$
 constraint panestria.idempotency_record f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
 constraint panestria.idempotency_record f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.idempotency_record p PRIMARY KEY (owner_id, project_id, operation, request_key)
+constraint panestria.learning_record c CHECK (((goal_id IS NULL) = (task_id IS NULL)))
+constraint panestria.learning_record c CHECK ((kind = ANY (ARRAY['route'::text, 'exposure'::text, 'outcome'::text])))
+constraint panestria.learning_record c CHECK ((privacy_label = ANY (ARRAY['PUBLIC'::text, 'PRIVATE'::text, 'RESTRICTED'::text, 'UNKNOWN'::text])))
+constraint panestria.learning_record c CHECK ((schema_version = 1))
+constraint panestria.learning_record c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.learning_record c CHECK ((trace_id ~ '^[0-9a-f]{32}$'::text))
+constraint panestria.learning_record f FOREIGN KEY (goal_id, project_id, owner_id) REFERENCES panestria.goal(id, project_id, owner_id)
+constraint panestria.learning_record f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.learning_record f FOREIGN KEY (request_id, owner_id, project_id) REFERENCES panestria.ask_request(id, owner_id, project_id)
+constraint panestria.learning_record f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
+constraint panestria.learning_record p PRIMARY KEY (id)
+constraint panestria.learning_record u UNIQUE (id, owner_id, project_id)
 constraint panestria.memory_item c CHECK (((valid_until IS NULL) OR (valid_until > valid_from)))
 constraint panestria.memory_item c CHECK ((current_revision > 0))
 constraint panestria.memory_item c CHECK ((kind = ANY (ARRAY['fact'::text, 'preference'::text, 'procedure'::text])))
@@ -423,6 +462,15 @@ constraint panestria.task_event f FOREIGN KEY (goal_id) REFERENCES panestria.goa
 constraint panestria.task_event f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
 constraint panestria.task_event p PRIMARY KEY (id)
 constraint panestria.task_event u UNIQUE (seq)
+constraint panestria.user_correction c CHECK ((body_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.user_correction c CHECK ((consented_by = owner_id))
+constraint panestria.user_correction c CHECK ((kind = ANY (ARRAY['explicit_text'::text, 'diff'::text, 'rejection'::text])))
+constraint panestria.user_correction c CHECK ((privacy_label = ANY (ARRAY['PUBLIC'::text, 'PRIVATE'::text, 'RESTRICTED'::text])))
+constraint panestria.user_correction c CHECK ((version > 0))
+constraint panestria.user_correction f FOREIGN KEY (consented_by) REFERENCES panestria.principal(id)
+constraint panestria.user_correction f FOREIGN KEY (request_id, owner_id, project_id) REFERENCES panestria.ask_request(id, owner_id, project_id)
+constraint panestria.user_correction p PRIMARY KEY (id)
+constraint panestria.user_correction u UNIQUE (request_id, owner_id, project_id, version)
 constraint panestria.workflow_link f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
 constraint panestria.workflow_link f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.workflow_link p PRIMARY KEY (task_id, attempt_id)
@@ -430,6 +478,7 @@ constraint panestria.workflow_link u UNIQUE (dbos_workflow_id)
 index CREATE INDEX ix_approvals_owner_pending ON panestria.approval_request USING btree (owner_id, state, expires_at)
 index CREATE INDEX ix_attempt_expiry ON panestria.task_attempt USING btree (lease_expires_at) WHERE (status = ANY (ARRAY['PENDING'::text, 'RUNNING'::text]))
 index CREATE INDEX ix_event_goal_seq ON panestria.task_event USING btree (goal_id, seq)
+index CREATE INDEX ix_learning_scope ON panestria.learning_record USING btree (owner_id, project_id, request_id)
 index CREATE INDEX ix_memory_fts ON panestria.memory_revision USING gin (search_document)
 index CREATE INDEX ix_memory_scope ON panestria.memory_item USING btree (owner_id, project_id, status)
 index CREATE INDEX ix_outbox_due ON panestria.effect_outbox USING btree (due_at) WHERE (state = 'PENDING'::text)
@@ -458,6 +507,8 @@ index CREATE UNIQUE INDEX goal_contract_pkey ON panestria.goal_contract USING bt
 index CREATE UNIQUE INDEX goal_id_project_id_owner_id_key ON panestria.goal USING btree (id, project_id, owner_id)
 index CREATE UNIQUE INDEX goal_pkey ON panestria.goal USING btree (id)
 index CREATE UNIQUE INDEX idempotency_record_pkey ON panestria.idempotency_record USING btree (owner_id, project_id, operation, request_key)
+index CREATE UNIQUE INDEX learning_record_id_owner_id_project_id_key ON panestria.learning_record USING btree (id, owner_id, project_id)
+index CREATE UNIQUE INDEX learning_record_pkey ON panestria.learning_record USING btree (id)
 index CREATE UNIQUE INDEX memory_item_id_owner_id_project_id_key ON panestria.memory_item USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX memory_item_pkey ON panestria.memory_item USING btree (id)
 index CREATE UNIQUE INDEX memory_revision_id_item_id_owner_id_project_id_key ON panestria.memory_revision USING btree (id, item_id, owner_id, project_id)
@@ -485,5 +536,7 @@ index CREATE UNIQUE INDEX task_event_seq_key ON panestria.task_event USING btree
 index CREATE UNIQUE INDEX task_id_contract_id_key ON panestria.task USING btree (id, contract_id)
 index CREATE UNIQUE INDEX task_id_goal_id_key ON panestria.task USING btree (id, goal_id)
 index CREATE UNIQUE INDEX task_pkey ON panestria.task USING btree (id)
+index CREATE UNIQUE INDEX user_correction_pkey ON panestria.user_correction USING btree (id)
+index CREATE UNIQUE INDEX user_correction_request_id_owner_id_project_id_version_key ON panestria.user_correction USING btree (request_id, owner_id, project_id, version)
 index CREATE UNIQUE INDEX workflow_link_dbos_workflow_id_key ON panestria.workflow_link USING btree (dbos_workflow_id)
 index CREATE UNIQUE INDEX workflow_link_pkey ON panestria.workflow_link USING btree (task_id, attempt_id)
