@@ -2428,7 +2428,7 @@
         "AOS-011-TC08"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "evidence_refs": [],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
       "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."

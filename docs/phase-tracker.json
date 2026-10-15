@@ -1703,7 +1703,7 @@
         "AOS-009",
         "AOS-017"
       ],
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "gate_status": "NOT_RUN",
       "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07",
       "slice_ids": [

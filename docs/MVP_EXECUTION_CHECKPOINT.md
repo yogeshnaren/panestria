@@ -51,3 +51,28 @@ provisioning or broad model spending is authorized. Existing synthetic provider
 test permissions remain scoped. Use real disposable databases and actual
 required live evidence. Automated continuation does not replace the 14-day
 owner trial, owner acceptance or a needed human action.
+
+## Latest checkpoint: classification guard
+
+Readiness PR #50 merged into main as d22c9f2 after exact-head CI passed 454 tests,
+34 live deselected (run 38713323941). New independent branch
+`task/privacy-classification-v3` began from e1664f5 and merged current main before
+validation. It introduces the shared canonical goal type, conservative legacy
+interpretation, and PRIVATE cloud denial in policy/SDK pre-transport checks.
+The goal wire classes, stored records, applied migrations and evidence remain
+unchanged. This is the first step of AOS-011-S4, now IN_PROGRESS; TC05 remains
+NOT_RUN and sensitive profiles remain disabled. See classification rollout.
+
+Local validation: 29 targeted classification/goal/policy/SDK tests passed,
+2 database tests deselected in that targeted run; Ruff, strict mypy and all 10
+import contracts passed. SDK tests hung inside the development process sandbox;
+the same frozen offline/mock tests passed outside it in 0.90s. Three agent-owned
+hanging diagnostic processes were stopped, without touching owner services.
+Full PR CI must pass before merge; do not infer a complete slice or live pass.
+
+At 99% usage, publish this focused PR and preserve its exact head. Resume by
+checking its CI, reviewing the diff, merging only when passing, fetching main,
+then implementing the audited forward classification migration and versioned
+source/policy/context compatibility. Continue independent R1 evidence mapping
+work as appropriate. Hourly continuation is enabled in the development chat;
+no repeated approval to resume or merge verified MVP task PRs is needed.
