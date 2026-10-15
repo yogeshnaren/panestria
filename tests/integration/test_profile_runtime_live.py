@@ -52,6 +52,11 @@ def test_actual_profile_runtime_boundary(r1_task, tmp_path, record_property):
         model.start()
         actual = model.effective
         assert actual["HostConfig"]["NetworkMode"] == "none" and not actual["HostConfig"]["PortBindings"]
+        assert actual["HostConfig"]["LogConfig"]["Type"] == "none"
+        assert {limit["Name"]: (limit["Soft"], limit["Hard"]) for limit in actual["HostConfig"]["Ulimits"]}["core"] == (
+            0,
+            0,
+        )
         destinations = {mount["Destination"] for mount in actual["Mounts"]}
         assert destinations == {
             "/usr/local/bin/ollama",
