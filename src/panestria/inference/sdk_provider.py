@@ -12,6 +12,7 @@ import httpx2 as httpx
 import openai
 from pydantic import SecretStr
 
+from panestria.contracts.classification import resolve_classification
 from panestria.contracts.inference import (
     CloudAuthorizer,
     InferenceRequest,
@@ -67,7 +68,7 @@ class SdkProvider:
         return asyncio.run(self.agenerate(request))
 
     async def agenerate(self, request: InferenceRequest) -> InferenceResult:
-        if request.offline or request.label in {"RESTRICTED", "UNKNOWN"}:
+        if request.offline or resolve_classification(request.label).effective in {None, "RESTRICTED"}:
             raise InferenceUnavailable("cloud_privacy_denied")
         if request.model_ref != self.tariff.model_ref:
             raise InferenceUnavailable("model_not_pinned")
