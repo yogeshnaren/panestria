@@ -22,6 +22,7 @@ from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body
 from panestria.api.db import DatabaseUnavailable, open_database
 from panestria.api.health import default_readiness_probe
 from panestria.api.local_protocol import LocalHttpProtocol
+from panestria.api.local_web import mount_local_web
 from panestria.api.main import create_app, mount_ask_api, mount_browser_api
 from panestria.api.routes.ask import AskApi
 from panestria.api.sessions import BrowserAccess
@@ -87,6 +88,7 @@ def build_local_app(config: LocalApplicationSettings, settings: ValidatedSetting
     session_secret = hmac.digest(token.encode(), b"panestria.local-browser-session.v1", hashlib.sha256)
     mount_browser_api(app, BrowserAccess(config.origin, SessionService(session_secret), api.database_url))
     mount_ask_api(app, ask)
+    mount_local_web(app)
     app.state.local_model = model
     app.state.local_failure = None
     base_lifespan = app.router.lifespan_context
