@@ -19,6 +19,8 @@ class Admission:
     cpu_limit: int = 2
     ram_limit_bytes: int = 2560 * 1024 * 1024
     gpu_partition_guaranteed: bool = False
+    gpu_model_budget_gib: float = 2.5
+    gpu_foreground_reserve_gib: float = 1.0
 
 
 def admit(manifest: HardwareManifest, *, gpu: bool, foreground_active: bool = True) -> Admission:
@@ -37,7 +39,9 @@ def admit(manifest: HardwareManifest, *, gpu: bool, foreground_active: bool = Tr
         return Admission("WAIT", ("thermal_pressure",))
     if manifest.logical_cores is None or manifest.logical_cores < 4:
         return Admission("UNAVAILABLE", ("cpu_headroom_unknown_or_insufficient",))
-    if gpu and not any(g.free_gib is not None and g.free_gib >= 3.0 for g in manifest.accelerators):
+    # Reserve the complete model profile plus foreground VRAM even if the primary
+    # is already resident. This is an admission estimate, not an OS VRAM partition.
+    if gpu and not any(g.free_gib is not None and g.free_gib >= 2.5 + 1.0 for g in manifest.accelerators):
         return Admission("WAIT", ("gpu_pressure_or_unknown",))
     return Admission("PERMIT", ("coarse_caps_and_foreground_reserve",))
 
