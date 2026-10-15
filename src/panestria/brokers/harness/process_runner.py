@@ -142,7 +142,7 @@ def collect_native(
         except ProtocolRejected as exc:
             terminated = _terminate(process)
             return ProcessReceipt(
-                "REJECTED",
+                "UNAVAILABLE" if str(exc) == "quota_unavailable" else "REJECTED",
                 terminated,
                 process.returncode,
                 str(exc),

@@ -53,7 +53,14 @@ def test_transport_keeps_auth_and_prompt_out_of_model_tool_scope(
         for fd in kwargs["pass_fds"]:
             os.fstat(fd)  # type: ignore[union-attr]
         session = str(uuid4())
-        init = {"type": "system", "subtype": "init", "session_id": session, "tools": [], "mcp_servers": []}
+        init = {
+            "type": "system",
+            "subtype": "init",
+            "session_id": session,
+            "tools": [],
+            "mcp_servers": [],
+            "claude_code_version": "2.1.273",
+        }
         result = {
             "type": "result",
             "subtype": "success",
@@ -97,6 +104,83 @@ def test_default_parser_does_not_retain_raw_candidate_content() -> None:
     parser.feed(b'{"type":"system","subtype":"init","session_id":"test"}\n')
     parser.feed(b'{"type":"result","subtype":"success","is_error":false,"result":"private","session_id":"test"}\n')
     assert parser.finish(0).status == "CANDIDATE" and parser.candidate_text is None
+
+
+@pytest.mark.parametrize(
+    "changed",
+    [
+        {"capabilities": ["new_unreviewed_channel"]},
+        {"capabilities": {}},
+        {"capabilities": [{}]},
+        {"terminal_slash_commands": [{}]},
+        {"terminal_slash_commands": ["host-shell"]},
+        {"analytics_disabled": False},
+        {"product_feedback_disabled": "true"},
+        {"fast_mode_state": "on"},
+        {"messaging_socket_path": 42},
+    ],
+)
+def test_pinned_startup_metadata_never_widens_capabilities(changed: dict[str, object]) -> None:
+    from panestria.brokers.harness.event_parser import ProtocolRejected
+
+    parser = ClaudeEventParser(capture_candidate=True)
+    init = {
+        "type": "system",
+        "subtype": "init",
+        "session_id": "test",
+        "tools": [],
+        "mcp_servers": [],
+        "claude_code_version": "2.1.273",
+        "capabilities": ["interrupt_receipt_v1", "msg_lifecycle_v1"],
+        "terminal_slash_commands": ["doctor", "color", "reload-plugins"],
+        "analytics_disabled": True,
+        "product_feedback_disabled": True,
+        "fast_mode_state": "off",
+        "fast_mode_disabled_reason": "sdk_opt_in_required",
+        "messaging_socket_path": "/tmp/synthetic-only.sock",
+        **changed,
+    }
+    with pytest.raises(ProtocolRejected):
+        parser.feed((json.dumps(init) + "\n").encode())
+
+
+@pytest.mark.parametrize(
+    "status,overage,reason",
+    [
+        ("allowed", False, None),
+        ("allowed_warning", False, None),
+        ("rejected", False, "quota_unavailable"),
+        ("allowed", True, "unapproved_overage"),
+        ("unknown", False, "invalid_rate_limit"),
+    ],
+)
+def test_subscription_rate_events_cannot_authorize_overage_or_retry(
+    status: str, overage: bool, reason: str | None
+) -> None:
+    from panestria.brokers.harness.event_parser import ProtocolRejected
+
+    parser = ClaudeEventParser()
+    parser.feed(b'{"type":"system","subtype":"init","session_id":"test"}\n')
+    event = {
+        "type": "rate_limit_event",
+        "session_id": "test",
+        "rate_limit_info": {
+            "status": status,
+            "isUsingOverage": overage,
+            "rateLimitType": "synthetic-window",
+            "resetsAt": 1234567890,
+            "overageStatus": "disabled",
+            "overageDisabledReason": "synthetic",
+            "unifiedWindows": [],
+        },
+    }
+    if reason:
+        with pytest.raises(ProtocolRejected, match=reason):
+            parser.feed((json.dumps(event) + "\n").encode())
+    else:
+        assert parser.feed((json.dumps(event) + "\n").encode())[0].kind == "rate_limit"
+        with pytest.raises(ProtocolRejected, match="missing_result"):
+            parser.finish(0)
 
 
 def test_managed_configuration_refuses_native_profile_before_auth(
