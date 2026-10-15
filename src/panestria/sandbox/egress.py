@@ -35,9 +35,14 @@ def _public_unicast(value: str) -> ipaddress.IPv4Address | ipaddress.IPv6Address
     return address
 
 
-def _verify_peer(peer: tuple[str, int], expected_ip: str, expected_port: int) -> None:
+def _verify_peer(peer: tuple[str, int] | tuple[str, int, int, int], expected_ip: str, expected_port: int) -> None:
     address = _public_unicast(peer[0])
-    if address is None or address != _public_unicast(expected_ip) or peer[1] != expected_port:
+    if (
+        address is None
+        or address != _public_unicast(expected_ip)
+        or peer[1] != expected_port
+        or (len(peer) == 4 and peer[3] != 0)
+    ):
         raise EgressDenied("private_or_unpinned_peer_denied")
 
 
@@ -50,7 +55,11 @@ def resolve_destination(authority: str, allowed_hosts: frozenset[str]) -> tuple[
     except OSError:
         raise EgressDenied("dns_unavailable") from None
     addresses = {str(answer[4][0]) for answer in answers}
-    if not addresses or any(_public_unicast(ip) is None for ip in addresses):
+    if (
+        not addresses
+        or any(_public_unicast(ip) is None for ip in addresses)
+        or any(len(answer[4]) == 4 and answer[4][3] != 0 for answer in answers)
+    ):
         raise EgressDenied("private_destination_denied")
     # Return an IP, not a hostname: connect cannot perform a second DNS lookup.
     return sorted(addresses)[0], 443
@@ -128,7 +137,7 @@ class _Connect(socketserver.BaseRequestHandler):
                         raise EgressDenied("gateway_closed")
                     gateway.connections.add(upstream)
                 peer = upstream.getpeername()
-                _verify_peer((peer[0], peer[1]), ip, port)
+                _verify_peer(peer, ip, port)
                 gateway.audit.append((authority, "ALLOWED"))
                 self.request.sendall(b"HTTP/1.1 200 Connection Established\r\n\r\n")
                 self.request.settimeout(5)

@@ -82,6 +82,20 @@ def test_equivalent_ipv6_spelling_is_the_same_pinned_address():
     _verify_peer(("2606:4700:4700:0:0:0:0:1111", 443), "2606:4700:4700::1111", 443)
 
 
+def test_numeric_ipv6_socket_scope_is_not_discarded(monkeypatch):
+    address = "2606:4700:4700::1111"
+    monkeypatch.setattr(
+        socket,
+        "getaddrinfo",
+        lambda *args, **kwargs: [(socket.AF_INET6, socket.SOCK_STREAM, 6, "", (address, 443, 0, 2))],
+    )
+    with pytest.raises(EgressDenied, match="private_destination_denied"):
+        resolve_destination("api.anthropic.com:443", ALLOWED)
+    with pytest.raises(EgressDenied, match="private_or_unpinned_peer_denied"):
+        _verify_peer((address, 443, 0, 2), address, 443)
+    _verify_peer((address, 443, 0, 0), address, 443)
+
+
 def test_actual_unix_gateway_never_calls_connector_for_multicast_or_scoped_dns(tmp_path, monkeypatch):
     current = ["224.0.0.1"]
     monkeypatch.setattr(socket, "getaddrinfo", lambda *args, **kwargs: answers(current[0]))
