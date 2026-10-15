@@ -164,7 +164,7 @@ def configured(r1_database, tmp_path, monkeypatch):
     monkeypatch.setattr(local_server, "ModelRuntime", ModelFixture)
     archive = Path(__file__).resolve().parents[2] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
     manifest = HardwareProbe(archive).collect(preset="omen-8gb")
-    monkeypatch.setattr(local_server.HardwareProbe, "collect", lambda self: manifest)
+    monkeypatch.setattr(local_server.HardwareProbe, "collect_cpu", lambda self: manifest)
     settings = Settings(database_url=r1_database).validate_profile()
     app = local_server.build_local_app(config, settings, token.get_secret_value())
     mocked, calls = transport(valid_frames())
@@ -227,7 +227,7 @@ def test_startup_denial_cleans_owned_state_and_preserves_fixed_reason(configured
         config.runtime_directory.chmod(0o750)
     elif fault == "resources":
         manifest = app.state.ask_api.probe().model_copy(update={"ram_available_gib": None})
-        monkeypatch.setattr(local_server.HardwareProbe, "collect", lambda self: manifest)
+        monkeypatch.setattr(local_server.HardwareProbe, "collect_cpu", lambda self: manifest)
     else:
 
         def missing():
