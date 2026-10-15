@@ -6,6 +6,7 @@ import hashlib
 from dataclasses import dataclass
 from uuid import uuid4
 
+from panestria.contracts.classification import classification_rank
 from panestria.contracts.memory import MemoryObservation, MemorySubmission
 from panestria.contracts.policy import DataLabel
 from panestria.kernel.errors import KernelDenied
@@ -13,7 +14,7 @@ from panestria.kernel.goals import Actor
 from panestria.kernel.uow import UnitOfWork
 from panestria.memory.reclassification import consume_review, guard_review_policy
 
-_LABELS: dict[str, int] = {"PUBLIC": 0, "PRIVATE": 1, "RESTRICTED": 2}
+_LABELS = ("PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED", "PRIVATE")
 
 
 @dataclass(frozen=True)
@@ -133,7 +134,7 @@ class MemoryService:
             raise KernelDenied("not_found")
         if row[1] != expected_version:
             raise KernelDenied("version_conflict")
-        if _LABELS[document.label] < _LABELS[str(row[2])]:
+        if classification_rank(document.label) < classification_rank(row[2]):
             if review_id is None:
                 raise KernelDenied("privacy_downgrade_requires_review")
             consume_review(uow, actor, review_id, item_id, expected_version, str(row[4]), document)
@@ -182,7 +183,7 @@ class MemoryService:
         query: str,
         *,
         limit: int = 10,
-        allowed_labels: tuple[DataLabel, ...] = ("PUBLIC", "PRIVATE", "RESTRICTED"),
+        allowed_labels: tuple[DataLabel, ...] = ("PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED", "PRIVATE"),
     ) -> list[MemoryHit]:
         self._project(uow, actor)
         if not query or len(query.encode()) > 4096 or not 1 <= limit <= 20 or not allowed_labels:

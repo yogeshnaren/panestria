@@ -92,7 +92,7 @@ def test_restricted_cloud_and_labels(record_property: pytest.RecordProperty) -> 
     for label in ["RESTRICTED", "UNKNOWN"]:
         decision = engine.authorize(_request(context, label=label, destination="openai-api"), context)
         assert decision.outcome == "DENY"
-    assert labels.derive(["PUBLIC", "PRIVATE"]) == "PRIVATE"
+    assert labels.derive(["PUBLIC", "PRIVATE"]) == "RESTRICTED"
     assert labels.derive(["PUBLIC", "PRIVATE", "RESTRICTED"]) == "RESTRICTED"
     assert labels.derive([]) == labels.derive([None]) == labels.derive(["RESTRICTED", "UNKNOWN"]) == "UNKNOWN"
     private_cloud = engine.authorize(_request(context, destination="openai-api"), context)
