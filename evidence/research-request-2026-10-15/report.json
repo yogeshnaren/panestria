@@ -3,7 +3,7 @@
   "source_commit": "a1319bb13c516e1e312bb3b92f903ddfd73e66e4",
   "result": "PASS",
   "checks": 41,
-  "request_checks": 12,
+  "request_checks": 13,
   "scope": "actual disposable PostgreSQL request metadata, restore, migrations and local server checks; no fetch or blob authority",
   "schema_head": "0023_research_request",
   "schema_snapshot_lines": 808,
@@ -29,6 +29,7 @@
     "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
   },
   "junit_sha256": {
+    "race-correction-13-checks.xml": "9b3c365d51f427067c5245ccf711a65bb7743b746a932b7e5fed7518b2ddbdd1",
     "final-41-checks.xml": "5c56a40d7291ecf755f62cf9fd034303505a44f3c2146297abe28c17c238853a",
     "initial-40-checks.xml": "27ab9deda13bc26db98570f6fc9ab9d08082c046eea9f0f639b59a704914341d"
   },
@@ -39,5 +40,29 @@
     "limitation": "before explicit autocommit guard review"
   },
   "provider_calls": 0,
-  "gates": "NO_RELEASE_OR_FULL_AOS013_CASE_PROMOTION"
+  "gates": "NO_RELEASE_OR_FULL_AOS013_CASE_PROMOTION",
+  "ci_race_failure": {
+    "run_id": 38786656826,
+    "head": "f4ebf95421fa9613db3032e5ef12333a976b8da9",
+    "result": "FAIL",
+    "passed": 809,
+    "failed": 1,
+    "live_excluded": 38,
+    "test": "test_concurrent_retry_returns_one_receipt_and_one_event",
+    "error": "UniqueViolation on research_request_id_task_id_key; id-only arbiter omitted the second unique index"
+  },
+  "ci_race_correction": {
+    "source_commit": "df0596ea3a43ab78e0c398148dd15a07d7185d01",
+    "result": "PASS",
+    "actual_request_checks": 13,
+    "elapsed_seconds": 24.46,
+    "concurrent_rounds": 24,
+    "concurrent_calls": 48,
+    "change": "ON CONFLICT DO NOTHING handles all unique constraints; exact scoped hash retry verification remains",
+    "reference": "https://www.postgresql.org/docs/current/sql-insert.html#SQL-ON-CONFLICT",
+    "source_sha256": {
+      "src/panestria/kernel/research_requests.py": "ad65ef9e8be5dd234f950b54a6e0e19c3cc986766e603ee07cbc066b888c3fd8",
+      "tests/integration/test_research_requests.py": "2080581001a0480bf118584a5b559e1745226e8351f7d88fcb4f2fba7acd5549"
+    }
+  }
 }

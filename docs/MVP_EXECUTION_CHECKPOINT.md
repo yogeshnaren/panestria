@@ -78,7 +78,7 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
    enforces limits, refuses populated downgrade and uses the global audit counter.
    Service rejects unwrapped autocommit and commits request/event in one caller
    transaction. Forty-one actual PG/migration/local-server checks passed at a1319bb,
-   including 12 request checks and actual restore/concurrent retry/rollback proofs;
+   including 13 request checks and actual restore/concurrent retry/rollback proofs;
    evidence/research-request-2026-10-15 retains the initial and corrected passes.
    No underlying blob/fetch/source/claim authority or research route is enabled.
    Next R2 task: protected source blobs and immutable source/claim metadata,

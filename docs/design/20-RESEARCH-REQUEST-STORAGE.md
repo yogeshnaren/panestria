@@ -24,3 +24,13 @@ rollback, concurrent retry and real dump/restore. Use a uniquely created test
 database inside the disposable R1 fixture; leave shared fixture audit history and
 owner databases intact. Advance supported local server's exact schema head without
 enabling research routes. Full AOS-013 cases/G2 remain pending.
+
+
+CI review found a real race: targeting only the primary id index left the second
+unique (id,task_id) index outside conflict arbitration. Use ON CONFLICT DO NOTHING
+without a target, then verify the existing scoped request hash exactly. The
+[PostgreSQL INSERT documentation](https://www.postgresql.org/docs/current/sql-insert.html#SQL-ON-CONFLICT)
+specifies that omitted targets cover all usable unique constraints. The regression
+runs 24 concurrent pairs in actual PostgreSQL and requires exactly 24 rows/events.
+The failed CI observation remains in the evidence report; default CI must pass
+at the corrected exact head before merge.
