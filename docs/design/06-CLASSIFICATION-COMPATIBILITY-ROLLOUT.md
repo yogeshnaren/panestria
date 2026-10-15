@@ -56,6 +56,34 @@ do not drop classification evidence to roll application code back. Tests use
 real disposable PostgreSQL to cover legacy upgrade, atomic rollback, scope,
 immutability, owner review, duplicate consumption and backup/restore.
 
+## Step 3: canonical labels and versioned memory surfaces
+
+The compatibility transport accepts the canonical four classes, legacy PRIVATE
+and diagnostic UNKNOWN. PRIVATE is never a canonical authorized class. New
+derived contexts use the strictest effective canonical class; immutable old
+requests/packs keep their original bytes and identities. Unknown lineage denies.
+
+Version-2 memory submissions require explicit schema_version 2 and canonical
+labels. Version-2 reads expose canonical primary labels plus original-label
+lineage. Version-1 memory/history remains compatible, including original PRIVATE
+records; using it does not authorize private cloud export. Source corrections
+that lower the effective class require the exact one-use owner review. A
+version-2 review cannot be consumed by a different version-1 document.
+
+Migration 0019 expands only active label constraints; it rewrites no record or
+applied migration. All four classes work locally under the existing owner,
+project, trust and autonomy checks. Current cloud policy/SDK defaults permit
+only PUBLIC; INTERNAL/CONFIDENTIAL remain denied until separately versioned
+class-specific grants are implemented and verified. The old allow_private_cloud
+flag cannot widen these defaults. UNKNOWN and unresolved legacy PRIVATE deny
+cloud access. No implicit model fallback or API spending is introduced.
+
+Tests must cover all labels/actions/destinations, effective downgrade review,
+canonical source/context/learning propagation, unchanged old request identities,
+v1/v2 document/review isolation, authentication/scope and real PostgreSQL
+upgrade/restore. This branch depends on the ledger PR #52 and must include its
+verified main merge before its own final CI. Profiles remain disabled.
+
 ## Remaining steps in the same slice
 
 1. Finish the additive source-ledger migration and its real PostgreSQL checks;

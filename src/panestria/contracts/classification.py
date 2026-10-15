@@ -31,6 +31,14 @@ def resolve_classification(label: object) -> Classification:
     return Classification(None, "UNKNOWN")
 
 
+def classification_rank(label: object) -> int:
+    """Compare effective classes; uncertainty is not an authorized downgrade."""
+    resolved = resolve_classification(label)
+    if resolved.effective is None:
+        raise ValueError("classification_unknown")
+    return _RANK[resolved.effective]
+
+
 def derive_classification(source_labels: Iterable[object]) -> Classification:
     """Strictest source wins; missing/unknown lineage can never authorize a class."""
     labels = [resolve_classification(label) for label in source_labels]

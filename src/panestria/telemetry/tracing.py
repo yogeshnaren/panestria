@@ -18,7 +18,7 @@ from opentelemetry.trace import NonRecordingSpan, SpanContext, TraceFlags
 _IDS = {"panestria.goal_id", "panestria.task_id", "panestria.attempt_id", "panestria.project_id", "panestria.owner_id"}
 _NUMBERS = {"panestria.epoch", "panestria.input_tokens", "panestria.output_tokens", "http.response.status_code"}
 _ENUMS = {
-    "panestria.privacy_label": {"PUBLIC", "PRIVATE", "RESTRICTED", "UNKNOWN"},
+    "panestria.privacy_label": {"PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED", "PRIVATE", "UNKNOWN"},
     "panestria.provider": {"local-ollama", "openai-api", "claude-code"},
     "http.request.method": {"GET", "POST", "HEAD", "DELETE", "PATCH"},
 }

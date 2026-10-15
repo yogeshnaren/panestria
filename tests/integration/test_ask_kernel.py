@@ -45,7 +45,7 @@ def test_ask_identity_receipt_no_retention(r1_task: dict[str, str], tmp_path: Pa
             service.prepare(uow, actor, submission.model_copy(update={"question": "different"}))
         inferred = service.claim(uow, actor, prepared)
         c.commit()
-        assert inferred.offline is True and inferred.label == "PRIVATE" and inferred.model_ref == STEWARD.model_ref
+        assert inferred.offline is True and inferred.label == "RESTRICTED" and inferred.model_ref == STEWARD.model_ref
         with pytest.raises(KernelDenied, match="ask_not_admissible"), c.transaction():
             service.claim(uow, actor, prepared)
         service.finish(

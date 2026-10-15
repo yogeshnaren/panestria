@@ -104,6 +104,7 @@ def mount_ask_api(app: FastAPI, ask: object) -> None:
     from panestria.api.routes.ask import AskApi, router
     from panestria.api.routes.learning import router as learning_router
     from panestria.api.routes.memory import router as memory_router
+    from panestria.api.routes.memory_v2 import router as memory_v2_router
 
     if not isinstance(ask, AskApi) or not isinstance(app.state.goal_api, GoalApi):
         raise TypeError("Ask requires configured scope and a local provider")
@@ -111,3 +112,4 @@ def mount_ask_api(app: FastAPI, ask: object) -> None:
     app.include_router(router)
     app.include_router(learning_router)
     app.include_router(memory_router)
+    app.include_router(memory_v2_router)

@@ -39,6 +39,8 @@ class PolicyEngine:
         if classification.effective is None:
             denied.append("classification_unknown")
         if cloud:
+            if classification.effective in {"INTERNAL", "CONFIDENTIAL"}:
+                denied.append("canonical_private_cloud_denied")
             if classification.effective == "RESTRICTED":
                 denied.append(
                     "legacy_private_cloud_denied"

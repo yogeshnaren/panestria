@@ -61,7 +61,7 @@ def test_legacy_upgrade_preserves_originals_and_refuses_audit_loss(r1_database: 
                         (identity, owner, project, body, hashlib.sha256(body.encode()).hexdigest(), label, owner),
                     )
                 before = c.execute("SELECT * FROM panestria.memory_source ORDER BY id").fetchall()
-            upgraded = alembic(dsn, "upgrade", "head")
+            upgraded = alembic(dsn, "upgrade", "0018_memory_classification")
             assert upgraded.returncode == 0, upgraded.stderr
             service = MemoryClassificationService()
             with psycopg.connect(dsn) as c:

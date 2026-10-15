@@ -76,3 +76,7 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Revision-3 classification compatibility
+
+The [active classification contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07) supersedes legacy PRIVATE cloud-review semantics. Canonical classes are PUBLIC/INTERNAL/CONFIDENTIAL/RESTRICTED; UNKNOWN is deny-only and unresolved PRIVATE is effectively RESTRICTED. Current policy/SDK cloud defaults permit only PUBLIC, irrespective of the retained legacy allow_private_cloud flag. Canonical classes operate locally under the independent policy axes. Versioned memory and immutable original-label lineage are implemented under AOS-011-S4; profile encryption and release acceptance remain separately pending.
