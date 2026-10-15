@@ -38,9 +38,10 @@ remain unchanged except additive active-schema/migration/interface updates.
 | #60 | Restricted Ask overlay/private receipt mode | 619 / 35 | e51df70 |
 | #61 | Actual isolated OS-key/local-model qualification | 619 / 36 | edc1bb9 |
 | #62 | Explicit audited local-read project setup | 626 / 36 | d5e9068 |
+| #63 | Supported private-config local Ask server | 646 / 37 | e3ffc67 |
 
-Current verified main: d5e9068f70b58d4ef36c876a6eff18eb3e327e35; latest CI
-run 38773471378 at head fa61b93. PR #62's earlier run exposed an older Ask
+Current verified main: e3ffc6710a05fe0401f41c56cdeedd30b1bc2d92; latest CI
+run 38774612046 at head 3217e53. PR #62's earlier run exposed an older Ask
 downgrade test sharing newer audit data; a schema-only restored isolated guard
 test fixed it without weakening audit-loss protection. PR #61 attempt 1 failed one proposal-demo
 approval-flow test; isolated actual-PG/Docker reproduction and exact-head retry
@@ -66,14 +67,18 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
 ## Exact next work
 
-1. Finish `task/local-ask-server` exact-head CI/review/merge. It includes verified
-   main and a supported private-config/loopback CLI launch, paired sessions,
-   bounded HTTP and exact owned constrained-model lifecycle. Twenty local server
-   checks and actual CLI/TCP/local-model Ask/restart/shutdown qualification passed;
-   source-bound evidence is in evidence/local-server-2026-10-15. Profiles remain
-   off, no Build routes, no release pass. Then compose the usable browser Ask
-   surface and remaining explicit profile setup/boundaries. The old R0 launcher
-   and preserved proposal demo remain separate.
+1. Finish CPU resource fix PR #64 (`task/cpu-resource-probe`) exact-head CI/review/
+   merge, then the dependent `task/local-ask-web` browser PR. Actual browser/model
+   testing found a full-probe timeout; CPU/RAM/power helpers were immediate while
+   the optional NVIDIA helper took 42.023s. CPU mode uses real observations with
+   an empty tool PATH and explicit NOT_PROBED_CPU_ONLY status; no preset or GPU
+   recovery claim. Twenty-six related checks and actual CLI restart qualification
+   passed. Browser code includes #64 explicitly, with 27 related checks plus
+   source-bound actual model/literal-rendering/cancel/reload/logout observations
+   at evidence/local-browser-2026-10-15. No PR number for web until submitted.
+   Default profiles remain off, no Build routes, no release pass. Preserved R0/
+   proposal demos remain separate. Finish remaining profile boundaries and real
+   R1 case/gate reconciliation before claiming the personal alpha accepted.
 2. Complete explicit opt-in local profile setup/launcher, full key lifecycle and
    encrypted restore/forgetting/grant boundaries and whole privacy cases. The
    ordinary ContextCompiler stores metadata/digests, not prompt bodies; profile

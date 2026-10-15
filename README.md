@@ -1,8 +1,14 @@
 # panestria
 
-Local synthetic kernel for R0. The scaffold, domain tables, DBOS admission, and loopback goal flow are present. R0 is complete and owner-accepted; G0 passed on the recorded candidate. R1 implementation is authorized, and the complete MVP remains the R3 milestone. This tree is not a release.
+Local agent orchestration kernel with a supported offline Ask application. R0 is complete and owner-accepted; G0 passed on the recorded candidate. R1 is in progress, and the complete MVP remains the R3 milestone. This tree is not a release.
 
 The main build document is [the revision-3 phased plan](docs/PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md), with [active specification/contracts](docs/specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md) and [build navigation](docs/START_HERE.md). Setup is [docs/SETUP.md](docs/SETUP.md). Local limits are in [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+
+For local Ask, follow [explicit project setup](docs/testing/LOCAL_ASK_SETUP.md),
+[server launch](docs/testing/LOCAL_ASK_SERVER.md) and
+[browser pairing/testing](docs/testing/LOCAL_ASK_BROWSER.md). The local browser
+uses the offline model and scoped memory; profiles and Build/tools are disabled
+there. The R0 commands and native proposal demo below remain separate.
 
 ## Requirements
 

@@ -4,16 +4,18 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import asdict
 from pathlib import Path
 
+import httpx2 as httpx
 import psycopg
 import typer
 from pydantic import ValidationError
 
 from panestria.api.db import DatabaseUnavailable, open_database
 from panestria.config import ProfileRejected, Settings
-from panestria.config_local import LocalApplicationRejected, create_local_token
+from panestria.config_local import LocalApplicationRejected, create_local_token, load_local_settings
 from panestria.contracts.inference import InferenceUnavailable
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.local_setup import LocalSetupIntent, LocalSetupService
@@ -22,6 +24,39 @@ from panestria.kernel.uow import UnitOfWork
 local_app = typer.Typer(no_args_is_help=True)
 _TOKEN_FILE = typer.Option(..., "--token-file")
 _CONFIG_FILE = typer.Option(..., "--config")
+
+
+@local_app.command("pair-code")
+def pair_code(config: Path = _CONFIG_FILE) -> None:
+    """Print a short one-use browser code; never print the local bearer token."""
+    try:
+        settings, token = load_local_settings(config)
+        with httpx.Client(trust_env=False, follow_redirects=False, timeout=5) as client:
+            with client.stream(
+                "POST",
+                settings.origin + "/v1/session/code",
+                json={},
+                headers={"Authorization": "Bearer " + token.get_secret_value()},
+            ) as response:
+                data = bytearray()
+                for chunk in response.iter_bytes():
+                    if len(data) + len(chunk) > 4096:
+                        raise LocalApplicationRejected("local_pairing_unavailable")
+                    data.extend(chunk)
+                body = json.loads(data)
+        if (
+            response.status_code != 200
+            or not isinstance(body, dict)
+            or re.fullmatch(r"[0-9A-F]{8}", str(body.get("code"))) is None
+        ):
+            raise LocalApplicationRejected("local_pairing_unavailable")
+        typer.echo(json.dumps({"code": body["code"], "expires_in_seconds": 120, "origin": settings.origin}))
+    except LocalApplicationRejected as exc:
+        typer.echo(json.dumps({"code": exc.code}), err=True)
+        raise typer.Exit(2) from None
+    except (ValueError, OSError, httpx.HTTPError):
+        typer.echo(json.dumps({"code": "local_pairing_unavailable"}), err=True)
+        raise typer.Exit(2) from None
 
 
 @local_app.command("token-create")

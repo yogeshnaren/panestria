@@ -8,6 +8,11 @@ Read the phased plan and [active personal-platform specification](specification/
 
 ## Build navigation
 
+For the supported offline Ask application, use [owner setup](testing/LOCAL_ASK_SETUP.md),
+[server launch](testing/LOCAL_ASK_SERVER.md) and [browser pairing/testing](testing/LOCAL_ASK_BROWSER.md).
+These component paths are usable before release acceptance; they do not enable
+profiles, remote phone access, or Build tools in the Ask browser.
+
 1. [Cursor instructions and reusable prompt](CURSOR_START_HERE.md).
 2. [Architecture](design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](design/02-DATABASE-AND-MIGRATIONS.md), [security](design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API/UI](design/04-API-AND-USER-FLOWS.md), [decisions](design/05-DECISIONS-AND-COMPATIBILITY.md).
 3. [Phase tracker](phase-tracker.json), [active backlog](specification/backlog.json), [slice manifest](implementation-slices.json), [requirement traceability](requirement-traceability.json).
