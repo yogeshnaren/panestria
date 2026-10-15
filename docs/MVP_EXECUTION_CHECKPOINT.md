@@ -199,3 +199,28 @@ Migration 0019 accepts canonical labels without rewriting records. New contexts 
 All 41 affected tests passed locally, including the class/action/destination matrix, actual PostgreSQL upgrade/restore, v1/v2 review isolation, scope, suppression and legacy context identity. Ruff, strict mypy, all 10 import contracts and secret scan passed. The active schema snapshot was generated from isolated actual PostgreSQL. Full exact-head CI/review is still required before merge. TC05 node mapping now points to the implemented integration file; formal G3 evidence and the full MVP remain pending.
 
 Next: verify/merge the canonical PR, then implement the bounded encrypted profile broker/vault and fail-closed OS secret-store adapter under S5/S6, with actual key-store conformance separate from fake fixtures. Keep new sensitive-profile use disabled until that boundary is verified. Continue independent R1 and other MVP work while live prerequisites wait.
+
+## Independent key-setup CLI work
+
+Task branch `task/profile-key-setup` starts from freshly fetched main 24f1dc0
+while browser PR #57 and independent owner API work progress. It adds explicit
+scoped `profile key-create`/`key-check` commands. Results never contain key bytes;
+failure retains a valid opaque handle for reconciliation. It does not enable
+personal profiles or provision keys through HTTP/database transactions.
+
+Six targeted CLI checks and the actual isolated OS keyring test pass. The live
+test now invokes the real CLI against its disposable daemon and still validates
+scope, locking and restart. This run does not rewrite older source-bound OS
+evidence. Full exact-head CI/review and verified main incorporation are required
+before merge. Continue scoped setup/API and actual local Ask/runtime privacy
+work; full MVP cases and the owner trial remain pending.
+
+## Verified owner API prerequisite and current key CLI
+
+PR #57 merged as 999251ee8e45e7e5c4d67caee83b57df7661608a after CI passed
+568 default tests, 35 live deselected (run 38736557047). PR #58 then merged as
+26343a514a04bb0211d35d9a1867b41ab539755c after CI passed 585 default tests,
+35 live deselected (run 38737392366). The key-setup branch incorporated both
+verified merges before its final qualification and task PR. Owner checkouts,
+services, databases, keyring and original evidence remain unchanged. The actual
+key CLI test uses an isolated child daemon and synthetic encryption material.
