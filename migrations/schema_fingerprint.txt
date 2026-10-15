@@ -159,6 +159,14 @@ column learning_record schema_version int4 NO
 column learning_record sha256 bpchar NO
 column learning_record task_id uuid YES
 column learning_record trace_id bpchar NO
+column local_project_setup created_at timestamptz NO
+column local_project_setup intent text NO
+column local_project_setup owner_id uuid NO
+column local_project_setup policy_sha256 bpchar NO
+column local_project_setup policy_version int8 NO
+column local_project_setup project_id uuid NO
+column local_project_setup schema_version int4 NO
+column local_project_setup seq int8 NO
 column memory_classification consented_by uuid NO
 column memory_classification created_at timestamptz NO
 column memory_classification effective_label text NO
@@ -510,6 +518,14 @@ constraint panestria.learning_record f FOREIGN KEY (request_id, owner_id, projec
 constraint panestria.learning_record f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
 constraint panestria.learning_record p PRIMARY KEY (id)
 constraint panestria.learning_record u UNIQUE (id, owner_id, project_id)
+constraint panestria.local_project_setup c CHECK ((intent = 'OFFLINE_ASK'::text))
+constraint panestria.local_project_setup c CHECK ((policy_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.local_project_setup c CHECK ((policy_version = 1))
+constraint panestria.local_project_setup c CHECK ((schema_version = 1))
+constraint panestria.local_project_setup f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.local_project_setup f FOREIGN KEY (project_id, policy_version) REFERENCES panestria.project_policy_revision(project_id, version)
+constraint panestria.local_project_setup p PRIMARY KEY (project_id)
+constraint panestria.local_project_setup u UNIQUE (seq)
 constraint panestria.memory_classification c CHECK ((((original_label = 'PRIVATE'::text) AND (effective_label = 'RESTRICTED'::text) AND (interpretation = 'LEGACY_RESTRICTED'::text)) OR ((original_label = ANY (ARRAY['PUBLIC'::text, 'INTERNAL'::text, 'CONFIDENTIAL'::text, 'RESTRICTED'::text])) AND (original_label = effective_label) AND (interpretation = 'CANONICAL'::text))))
 constraint panestria.memory_classification c CHECK ((((review_id IS NULL) AND (review_effect_digest IS NULL) AND (review_decided_by IS NULL)) OR ((review_id IS NOT NULL) AND (review_effect_digest IS NOT NULL) AND (review_effect_digest ~ '^[0-9a-f]{64}$'::text) AND (review_decided_by IS NOT NULL) AND (review_decided_by = owner_id) AND (policy_ref IS NOT NULL))))
 constraint panestria.memory_classification c CHECK ((effective_label = ANY (ARRAY['PUBLIC'::text, 'INTERNAL'::text, 'CONFIDENTIAL'::text, 'RESTRICTED'::text])))
@@ -704,6 +720,8 @@ index CREATE UNIQUE INDEX idempotency_record_pkey ON panestria.idempotency_recor
 index CREATE UNIQUE INDEX ix_classification_review_once ON panestria.memory_classification USING btree (review_id)
 index CREATE UNIQUE INDEX learning_record_id_owner_id_project_id_key ON panestria.learning_record USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX learning_record_pkey ON panestria.learning_record USING btree (id)
+index CREATE UNIQUE INDEX local_project_setup_pkey ON panestria.local_project_setup USING btree (project_id)
+index CREATE UNIQUE INDEX local_project_setup_seq_key ON panestria.local_project_setup USING btree (seq)
 index CREATE UNIQUE INDEX memory_classification_pkey ON panestria.memory_classification USING btree (source_id)
 index CREATE UNIQUE INDEX memory_item_id_owner_id_project_id_key ON panestria.memory_item USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX memory_item_pkey ON panestria.memory_item USING btree (id)
