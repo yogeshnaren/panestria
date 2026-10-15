@@ -246,6 +246,7 @@ class ClaudeEventParser:
                 or any(
                     not isinstance(server, dict)
                     or set(server) != {"name", "status"}
+                    or type(server["name"]) is not str
                     or server["name"] not in self.allowed_mcp_servers
                     or server["status"] != "connected"
                     for server in servers
@@ -253,6 +254,17 @@ class ClaudeEventParser:
                 or len({server["name"] for server in servers}) != len(servers)
             ):
                 raise ProtocolRejected("unexpected_mcp_server")
+            if self.allowed_mcp_servers:
+                if (
+                    set(tools) != self.allowed_tools
+                    or len(tools) != len(self.allowed_tools)
+                    or body.get("permissionMode") != "default"
+                    or any(body.get(field, []) != [] for field in ("skills", "slash_commands", "plugins"))
+                    or body.get("apiKeySource") != "none"
+                    or body.get("model") != "claude-haiku-4-5-20251001"
+                    or body.get("agents") != ["claude", "Explore", "general-purpose", "Plan", "statusline-setup"]
+                ):
+                    raise ProtocolRejected("unexpected_mcp_profile_metadata")
             self.session = session
             return NativeEvent("started", digest)
         if kind == "rate_limit_event":

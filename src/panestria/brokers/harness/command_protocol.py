@@ -93,6 +93,10 @@ class RegisteredCheckSession:
         self._running: set[Key] = set()
 
     @property
+    def references(self) -> tuple[tuple[str, ...], str]:
+        return self._commands, self._candidate
+
+    @property
     def closed(self) -> bool:
         with self._lock:
             return self._state == "CLOSED"
@@ -135,10 +139,17 @@ class RegisteredCheckSession:
             or len(caps) > 16
             or any(type(value) is not dict or len(key) > 64 for key, value in caps.items())
             or not isinstance(info, dict)
-            or not {"name", "version"} <= set(info) <= {"name", "version", "title"}
-            or any(type(value) is not str or not 1 <= len(value) <= 64 for value in info.values())
+            or not {"name", "version"} <= set(info) <= {"name", "version", "title", "description", "websiteUrl"}
+            or any(
+                type(value) is not str
+                or not 1 <= len(value) <= (256 if key in {"description", "websiteUrl"} else 64)
+                or any(ord(character) < 32 for character in value)
+                for key, value in info.items()
+            )
         ):
             raise ValueError
+        # Newer client display metadata is bounded and ignored. Negotiated wire
+        # version and server capabilities remain the pinned June dialect.
         self._state = "INITIALIZING"
         return _result(
             identity,
