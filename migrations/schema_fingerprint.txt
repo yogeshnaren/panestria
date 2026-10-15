@@ -36,6 +36,22 @@ column artifact sha256 bpchar NO
 column artifact size_bytes int8 NO
 column artifact store_key text NO
 column artifact task_id uuid NO
+column ask_profile_context ciphertext_sha256 bpchar NO
+column ask_profile_context created_at timestamptz NO
+column ask_profile_context key_id uuid NO
+column ask_profile_context manifest_sha256 bpchar NO
+column ask_profile_context owner_id uuid NO
+column ask_profile_context policy_ref text NO
+column ask_profile_context privacy_label text NO
+column ask_profile_context profile_id uuid NO
+column ask_profile_context profile_version int4 NO
+column ask_profile_context project_id uuid NO
+column ask_profile_context render_version int4 NO
+column ask_profile_context request_body jsonb NO
+column ask_profile_context request_id uuid NO
+column ask_profile_context row_version int4 NO
+column ask_profile_context selection_sha256 bpchar NO
+column ask_profile_context source_revision_id uuid NO
 column ask_request code text YES
 column ask_request context_pack_id uuid NO
 column ask_request created_at timestamptz NO
@@ -47,6 +63,7 @@ column ask_request owner_id uuid NO
 column ask_request policy_ref text NO
 column ask_request project_id uuid NO
 column ask_request request_sha256 bpchar NO
+column ask_request response_digest_mode text NO
 column ask_request response_sha256 bpchar YES
 column ask_request state text NO
 column ask_request trace_id bpchar NO
@@ -397,14 +414,26 @@ constraint panestria.artifact f FOREIGN KEY (attempt_id, task_id) REFERENCES pan
 constraint panestria.artifact f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.artifact p PRIMARY KEY (id)
 constraint panestria.artifact u UNIQUE (id, task_id)
+constraint panestria.ask_profile_context c CHECK ((jsonb_typeof(request_body) = 'object'::text))
+constraint panestria.ask_profile_context c CHECK ((manifest_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.ask_profile_context c CHECK ((privacy_label = 'RESTRICTED'::text))
+constraint panestria.ask_profile_context c CHECK ((render_version = 1))
+constraint panestria.ask_profile_context c CHECK ((row_version >= 0))
+constraint panestria.ask_profile_context c CHECK ((selection_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.ask_profile_context f FOREIGN KEY (request_id, owner_id, project_id) REFERENCES panestria.ask_request(id, owner_id, project_id)
+constraint panestria.ask_profile_context f FOREIGN KEY (source_revision_id, profile_id, owner_id, project_id, profile_version, key_id, ciphertext_sha256) REFERENCES panestria.profile_revision(id, profile_id, owner_id, project_id, version, key_id, ciphertext_sha256)
+constraint panestria.ask_profile_context p PRIMARY KEY (request_id, owner_id, project_id)
+constraint panestria.ask_profile_context t TRIGGER DEFERRABLE INITIALLY DEFERRED
+constraint panestria.ask_request c CHECK ((((response_digest_mode = 'SHA256'::text) AND ((state = 'COMPLETED'::text) = (response_sha256 IS NOT NULL))) OR ((response_digest_mode = 'OMITTED_RESTRICTED_PROFILE'::text) AND (response_sha256 IS NULL))))
 constraint panestria.ask_request c CHECK (((response_sha256 IS NULL) OR (response_sha256 ~ '^[0-9a-f]{64}$'::text)))
-constraint panestria.ask_request c CHECK (((state = 'COMPLETED'::text) = (response_sha256 IS NOT NULL)))
 constraint panestria.ask_request c CHECK ((request_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.ask_request c CHECK ((response_digest_mode = ANY (ARRAY['SHA256'::text, 'OMITTED_RESTRICTED_PROFILE'::text])))
 constraint panestria.ask_request c CHECK ((state = ANY (ARRAY['PREPARED'::text, 'RUNNING'::text, 'COMPLETED'::text, 'UNAVAILABLE'::text, 'CANCELLED'::text])))
 constraint panestria.ask_request c CHECK ((trace_id ~ '^[0-9a-f]{32}$'::text))
 constraint panestria.ask_request f FOREIGN KEY (context_pack_id, owner_id, project_id) REFERENCES panestria.context_pack(id, owner_id, project_id)
 constraint panestria.ask_request f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.ask_request p PRIMARY KEY (id, owner_id, project_id)
+constraint panestria.ask_request t TRIGGER DEFERRABLE INITIALLY DEFERRED
 constraint panestria.browser_session c CHECK ((csrf_hash ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.browser_session c CHECK ((token_hash ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.browser_session f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
@@ -562,6 +591,7 @@ constraint panestria.profile_revision c CHECK ((privacy_label = 'RESTRICTED'::te
 constraint panestria.profile_revision c CHECK ((schema_version = 1))
 constraint panestria.profile_revision f FOREIGN KEY (profile_id, owner_id, project_id) REFERENCES panestria.profile(id, owner_id, project_id)
 constraint panestria.profile_revision p PRIMARY KEY (id)
+constraint panestria.profile_revision u UNIQUE (id, profile_id, owner_id, project_id, version, key_id, ciphertext_sha256)
 constraint panestria.profile_revision u UNIQUE (owner_id, project_id, profile_id, key_id, nonce)
 constraint panestria.profile_revision u UNIQUE (profile_id, owner_id, project_id, version)
 constraint panestria.project c CHECK ((policy_version >= 0))
@@ -650,6 +680,7 @@ index CREATE UNIQUE INDEX approval_consumption_side_effect_id_key ON panestria.a
 index CREATE UNIQUE INDEX approval_request_pkey ON panestria.approval_request USING btree (id)
 index CREATE UNIQUE INDEX artifact_id_task_id_key ON panestria.artifact USING btree (id, task_id)
 index CREATE UNIQUE INDEX artifact_pkey ON panestria.artifact USING btree (id)
+index CREATE UNIQUE INDEX ask_profile_context_pkey ON panestria.ask_profile_context USING btree (request_id, owner_id, project_id)
 index CREATE UNIQUE INDEX ask_request_pkey ON panestria.ask_request USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX browser_session_pkey ON panestria.browser_session USING btree (id)
 index CREATE UNIQUE INDEX browser_session_token_hash_key ON panestria.browser_session USING btree (token_hash)
@@ -693,6 +724,7 @@ index CREATE UNIQUE INDEX profile_event_profile_id_row_version_key ON panestria.
 index CREATE UNIQUE INDEX profile_event_seq_key ON panestria.profile_event USING btree (seq)
 index CREATE UNIQUE INDEX profile_id_owner_id_project_id_key ON panestria.profile USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX profile_pkey ON panestria.profile USING btree (id)
+index CREATE UNIQUE INDEX profile_revision_context_identity ON panestria.profile_revision USING btree (id, profile_id, owner_id, project_id, version, key_id, ciphertext_sha256)
 index CREATE UNIQUE INDEX profile_revision_owner_id_project_id_profile_id_key_id_nonc_key ON panestria.profile_revision USING btree (owner_id, project_id, profile_id, key_id, nonce)
 index CREATE UNIQUE INDEX profile_revision_pkey ON panestria.profile_revision USING btree (id)
 index CREATE UNIQUE INDEX profile_revision_profile_id_owner_id_project_id_version_key ON panestria.profile_revision USING btree (profile_id, owner_id, project_id, version)

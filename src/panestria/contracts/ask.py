@@ -7,9 +7,10 @@ import json
 from typing import Literal, Self
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from panestria.contracts.policy import DataLabel
+from panestria.contracts.profile_context import ProfileSelectionRequest
 
 
 class AskSubmission(BaseModel):
@@ -34,3 +35,23 @@ class AskSubmission(BaseModel):
 
     def sha256(self) -> str:
         return hashlib.sha256(json.dumps(self.model_dump(), sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+class ProfileAskSubmission(AskSubmission):
+    schema_version: Literal[2]
+    privacy_label: Literal["RESTRICTED"] = "RESTRICTED"
+    profile: ProfileSelectionRequest
+
+    @field_validator("offline", "retain_response", mode="before")
+    @classmethod
+    def exact_flags(cls, value: object) -> object:
+        if type(value) is not bool:
+            raise ValueError("invalid_profile_ask_flag")
+        return value
+
+    @field_validator("schema_version", mode="before")
+    @classmethod
+    def explicit_version(cls, value: object) -> object:
+        if type(value) is not int or value != 2:
+            raise ValueError("invalid_profile_ask_version")
+        return value
