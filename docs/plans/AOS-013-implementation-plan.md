@@ -1,10 +1,12 @@
 # AOS-013 — Research source snapshots, hashes, passage spans and claim evidence: implementation plan
 
-**Release:** R2. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-002, AOS-008. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R2. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS (data contracts only). **Tests:** 40 contract checks PASS; full item cases NOT_RUN. **Depends on:** AOS-002, AOS-008. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-013.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
 ## Outcome and scope
+
+Current narrow task implements [closed research data contracts](../design/17-RESEARCH-SOURCE-CONTRACTS.md). Pydantic validation does not establish actual fetch, artifact integrity, byte-boundary, verifier or source authority. Schema and reader/broker/resolver work remain pending; no full AOS-013 case is promoted by the contract suite.
 
 A research claim is traceable to an actual retained and fetched source, with exact text offset and source content hash, not just a URL in generated prose.
 
@@ -24,7 +26,7 @@ Typed signatures; model contracts live in contracts, with actor/project scope on
 - `PassageResolver.resolve(snapshot_ref, start_offset, end_offset) -> VerifiedPassage`
 - `ClaimStore.attach_evidence(actor, claim_ref, passages) -> ClaimEvidence`
 
-**Migration ownership:** 0005_research: research_request/source_snapshot/claim/claim_passage/verification_report; raw/text hashes, extraction/offset versions and scope.
+**Migration ownership:** Next additive revision after current 0022; historical prospective label `0005_research`: research_request/source_snapshot/claim/claim_passage/verification_report; raw/text hashes, extraction/offset versions and scope.
 
 Repositories use the supplied UnitOfWork/session and never commit independently. UI/adapters create no second task store. Migration/locking tests use disposable real PostgreSQL; SQLite does not prove JSON/identity/transaction behavior.
 
