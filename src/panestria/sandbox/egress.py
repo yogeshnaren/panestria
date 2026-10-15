@@ -12,6 +12,8 @@ import time
 from collections import deque
 from pathlib import Path
 
+_DOCUMENTATION_V6 = ipaddress.IPv6Network("3fff::/20")  # RFC 9637; absent from older Python 3.12 registries.
+
 
 class EgressDenied(Exception):
     pass
@@ -30,6 +32,7 @@ def _public_unicast(value: str) -> ipaddress.IPv4Address | ipaddress.IPv6Address
         return None
     if isinstance(address, ipaddress.IPv6Address) and (
         address.is_site_local
+        or address in _DOCUMENTATION_V6
         or any(item is not None for item in (address.ipv4_mapped, address.sixtofour, address.teredo))
     ):
         return None

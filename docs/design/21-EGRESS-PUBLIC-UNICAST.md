@@ -5,6 +5,11 @@ for IPv4/IPv6 multicast addresses. A global flag alone is insufficient for the
 existing policy's multicast/reserved denial. The installed runtime also accepts
 an IPv6 zone suffix on an otherwise public address. Actual read-only observations
 used 224.0.0.1, ff0e::1 and a zoned public IPv6 literal; no connection was made.
+Review also found deprecated site-local and RFC 9637 documentation addresses
+reported global. Explicitly deny site-local and 3fff::/20; the latter is absent
+from this older stdlib registry. [IANA's IPv6 registry](https://www.iana.org/assignments/iana-ipv6-special-registry)
+records that documentation prefix as not globally reachable. This is a pinned
+conservative correction, not a claim that runtime flags track future allocations.
 
 Require global **unicast**, rejecting multicast, reserved, unspecified, loopback,
 link-local, scoped and mapped/transition addresses before connecting. Reject the
