@@ -91,3 +91,11 @@ supervisor requires an approved isolated launch and is not an OS boundary.
 No provider request is made by these tests. Native profile, dedicated auth
 principal, tool gateway, malicious repository configuration and successful live
 conformance remain pending; synthetic PASS does not certify those capabilities.
+
+Metadata preflight is implemented in `brokers/harness/cli_profile.py`, with frozen
+inspection-only contracts and `panestria native inspect`. It inventories the
+original skill as data, pins executable bytes/version, bounds both metadata pipes
+and the total deadline, discards account/credential fields, and refuses unsafe
+or changed config references. Installed CLI metadata and empty private-directory
+checks are observed; these do not certify startup profiles. See [native
+preflight](../testing/NATIVE_PREFLIGHT.md) for commands and remaining obligations.
