@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import re
+import stat
 import subprocess
 import time
 from pathlib import Path
@@ -13,6 +14,7 @@ from typing import Any
 from uuid import uuid4
 
 from panestria.contracts.inference import InferenceUnavailable
+from panestria.resources.primary import PrimaryLease
 
 IMAGE = "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9"
 MODEL = "qwen2.5:1.5b-instruct"
@@ -22,6 +24,7 @@ MODEL_DIGEST = "65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b
 class ModelRuntime:
     def __init__(self, models: Path, socket_directory: Path, *, gpu: bool = False) -> None:
         self.models, self.socket_directory, self.gpu = models.resolve(), socket_directory.resolve(), gpu
+        self.primary = PrimaryLease(Path.home() / ".local/state/panestria")
         self.id: str | None = None
         self.identity = uuid4().hex
         self.effective: dict[str, Any] = {}
@@ -40,8 +43,59 @@ class ModelRuntime:
         return result.stdout
 
     def start(self) -> None:
+        self.primary.acquire()
+        try:
+            self._start()
+        except BaseException:
+            if self.id is None:
+                self.primary.release()
+            raise
+
+    def _reap_orphans(self) -> None:
+        containers = self._docker(
+            [
+                "ps",
+                "-a",
+                "-q",
+                "--filter",
+                "label=panestria.purpose=local-model",
+                "--filter",
+                f"label=panestria.owner_uid={self.uid}",
+            ]
+        ).split()
+        for identity in containers:
+            actual = json.loads(self._docker(["inspect", identity]))[0]
+            labels = actual["Config"]["Labels"]
+            runtime = labels.get("panestria.runtime", "")
+            if not re.fullmatch(r"[0-9a-f]{32}", runtime) or actual["Config"]["User"] != f"{self.uid}:{self.gid}":
+                raise InferenceUnavailable("model_orphan_identity_invalid")
+            pid = labels.get("panestria.controller_pid", "")
+            ticks = labels.get("panestria.controller_ticks", "")
+            if not pid.isdigit() or not ticks.isdigit():
+                raise InferenceUnavailable("model_orphan_owner_unknown")
+            process = Path(f"/proc/{pid}/stat")
+            if process.exists():
+                body = process.read_text()
+                if body[body.rfind(")") + 2 :].split()[19] == ticks:
+                    raise InferenceUnavailable("primary_controller_still_running")
+            # Lock ownership plus matching process birth/UID/purpose proves this
+            # app's controller died. No arbitrary PID, name or container is removed.
+            self._docker(["rm", "--force", "--volumes", actual["Id"]])
+            bridge = next((m["Source"] for m in actual["Mounts"] if m["Destination"] == "/bridge"), None)
+            if bridge is not None:
+                directory = Path(bridge)
+                socket_path = directory / "model.sock"
+                if directory.is_symlink() or directory.stat().st_uid != self.uid or directory.stat().st_mode & 0o077:
+                    raise InferenceUnavailable("model_orphan_socket_not_private")
+                if socket_path.exists():
+                    if not stat.S_ISSOCK(socket_path.lstat().st_mode):
+                        raise InferenceUnavailable("model_orphan_socket_invalid")
+                    socket_path.unlink()
+
+    def _start(self) -> None:
         if self.id is not None:
             raise InferenceUnavailable("model_already_running")
+        self._reap_orphans()
         manifest = self.models / "manifests/registry.ollama.ai/library/qwen2.5/1.5b-instruct"
         if not manifest.is_file() or hashlib.sha256(manifest.read_bytes()).hexdigest() != MODEL_DIGEST:
             raise InferenceUnavailable("model_missing_or_digest_mismatch")
@@ -93,6 +147,12 @@ class ModelRuntime:
             "panestria.purpose=local-model",
             "--label",
             f"panestria.runtime={self.identity}",
+            "--label",
+            f"panestria.owner_uid={self.uid}",
+            "--label",
+            f"panestria.controller_pid={os.getpid()}",
+            "--label",
+            "panestria.controller_ticks=" + Path("/proc/self/stat").read_text().split(")", 1)[1].split()[19],
             "--pull",
             "never",
             "--network",
@@ -166,6 +226,7 @@ class ModelRuntime:
 
     def stop(self) -> None:
         if self.id is None:
+            self.primary.release()
             return
         actual = json.loads(self._docker(["inspect", self.id]))[0]
         if actual["Id"] != self.id or actual["Config"]["Labels"].get("panestria.runtime") != self.identity:
@@ -173,3 +234,4 @@ class ModelRuntime:
         self._docker(["rm", "--force", "--volumes", self.id])
         self.id = None
         self.socket_path.unlink(missing_ok=True)
+        self.primary.release()
