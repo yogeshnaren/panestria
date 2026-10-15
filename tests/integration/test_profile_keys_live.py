@@ -51,6 +51,7 @@ def test_isolated_secret_service_backend(tmp_path: Path, record_property: pytest
         "persistent_test_keyring": True,
         "locked_denied": True,
         "daemon_restart_preserved_keys": True,
+        "cli_setup_checked": True,
     }
     record_property("execution_mode", "ACTUAL_ISOLATED_OS_SECRET_SERVICE")
     record_property("qualification_scope", "profile-key-backend-only; full-vault-case-not-claimed")
