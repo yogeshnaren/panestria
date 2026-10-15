@@ -6,6 +6,7 @@ import hashlib
 import os
 import subprocess
 from contextlib import contextmanager
+from urllib.parse import urlsplit
 from uuid import uuid4
 
 import psycopg
@@ -19,7 +20,7 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.uow import UnitOfWork
 
 
-def dump(container):
+def dump(container, *, schema_only=False):
     result = subprocess.run(
         [
             "docker",
@@ -32,6 +33,7 @@ def dump(container):
             "--compress=0",
             "--no-owner",
             "--no-acl",
+            *(["--schema-only"] if schema_only else []),
         ],
         capture_output=True,
         timeout=60,
@@ -111,18 +113,40 @@ def test_actual_backup_restore_and_rotation_key_retention(profile, record_proper
 
 def test_populated_vault_downgrade_preserves_audit(profile):  # noqa: F811
     dsn, actor, handle, keys, vault = profile
-    ref = create(profile)
-    result = subprocess.run(
-        ["uv", "run", "--frozen", "alembic", "-c", "migrations/alembic.ini", "downgrade", "0019_canonical_labels"],
-        env={**os.environ, "PANESTRIA_DATABASE_URL": dsn},
-        capture_output=True,
-        text=True,
-        timeout=30,
-    )
-    assert result.returncode != 0 and "profile audit exists" in result.stderr
-    with psycopg.connect(dsn) as c:
-        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0020_profile_vault",)
-        assert vault.read(UnitOfWork(c), actor, handle.profile_id)[0] == ref
-        assert c.execute(
-            "SELECT count(*) FROM panestria.profile_event WHERE profile_id=%s", (handle.profile_id,)
-        ).fetchone() == (1,)
+    container = _fixture_container()
+    # Isolate the vault's guard from newer guards/data created by other tests.
+    # Restore actual current schema only; no test/owner source database is reset.
+    with restore(dsn, container, dump(container, schema_only=True)) as isolated_dsn:
+        isolated_url = urlsplit(dsn)._replace(path="/" + conninfo_to_dict(isolated_dsn)["dbname"]).geturl()
+        with psycopg.connect(isolated_dsn) as c:
+            c.execute(
+                "INSERT INTO panestria.principal(id,display_name) VALUES(%s,'synthetic guard owner')", (actor.owner_id,)
+            )
+            c.execute("INSERT INTO panestria.project(id,owner_id) VALUES(%s,%s)", (actor.project_id, actor.owner_id))
+            before = c.execute("SELECT version_num FROM alembic_version").fetchone()
+        # Schema-only dump deliberately has no Alembic data row.
+        result = subprocess.run(
+            ["uv", "run", "--frozen", "alembic", "-c", "migrations/alembic.ini", "stamp", "head"],
+            env={**os.environ, "PANESTRIA_DATABASE_URL": isolated_url},
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        assert result.returncode == 0 and before is None
+        ref = create((isolated_dsn, *profile[1:]))
+        with psycopg.connect(isolated_dsn) as c:
+            version = c.execute("SELECT version_num FROM alembic_version").fetchone()
+        result = subprocess.run(
+            ["uv", "run", "--frozen", "alembic", "-c", "migrations/alembic.ini", "downgrade", "0019_canonical_labels"],
+            env={**os.environ, "PANESTRIA_DATABASE_URL": isolated_url},
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        assert result.returncode != 0 and "profile audit exists" in result.stderr
+        with psycopg.connect(isolated_dsn) as c:
+            assert c.execute("SELECT version_num FROM alembic_version").fetchone() == version
+            assert vault.read(UnitOfWork(c), actor, handle.profile_id)[0] == ref
+            assert c.execute(
+                "SELECT count(*) FROM panestria.profile_event WHERE profile_id=%s", (handle.profile_id,)
+            ).fetchone() == (1,)

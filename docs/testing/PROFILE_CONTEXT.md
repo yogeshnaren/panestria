@@ -28,5 +28,5 @@ boundary unwraps them. Suppression cannot recall an already delivered value.
 source-bound. Actual OS key-store qualification and ciphertext backup tests are
 separate. Full profile setup/API admission, local runtime dispatch/privacy and
 TC06–TC08 acceptance remain pending. Do not feed this overlay into the existing
-plaintext-persisting ContextCompiler. See [the design](../design/09-EPHEMERAL-PROFILE-CONTEXT.md)
+general ContextCompiler's search/fingerprint path. See [the design](../design/09-EPHEMERAL-PROFILE-CONTEXT.md)
 and [storage checks](PROFILE_VAULT.md).

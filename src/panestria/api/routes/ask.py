@@ -16,7 +16,7 @@ from pydantic import ValidationError
 
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body, reauthorize_mutation
 from panestria.api.db import DatabaseUnavailable, open_database
-from panestria.contracts.ask import AskSubmission
+from panestria.contracts.ask import AskSubmission, ProfileAskSubmission
 from panestria.contracts.hardware import HardwareManifest
 from panestria.contracts.inference import InferenceResult, InferenceUnavailable
 from panestria.inference.local import LocalProvider
@@ -67,6 +67,25 @@ def _status(code: str) -> int:
 
 @router.post("/v1/ask")
 async def ask_question(request: Request) -> JSONResponse:
+    return await _execute_ask(request, _SERVICE, AskSubmission)
+
+
+@router.post("/v2/ask")
+async def profile_ask_question(request: Request) -> JSONResponse:
+    from panestria.api.routes.profiles import ProfileApi
+    from panestria.memory.profile import ProfileContext
+
+    profiles = getattr(request.app.state, "profile_api", None)
+    if not isinstance(profiles, ProfileApi):
+        return JSONResponse(status_code=503, content=error_body("profile_not_configured"))
+    response = await _execute_ask(
+        request, AskService(profile_context=ProfileContext(profiles.vault)), ProfileAskSubmission
+    )
+    response.headers.update({"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"})
+    return response
+
+
+async def _execute_ask(request: Request, service: AskService, submission_type: type[AskSubmission]) -> JSONResponse:
     prepared: PreparedAsk | None = None
     ticket, model_task = None, None
     client_disconnected = False
@@ -76,10 +95,10 @@ async def ask_question(request: Request) -> JSONResponse:
         if isinstance(raw, JSONResponse):
             return raw
         try:
-            submission = AskSubmission.model_validate_json(raw)
+            submission = submission_type.model_validate_json(raw)
         except ValidationError:
             return JSONResponse(status_code=422, content=error_body("invalid_ask"))
-        prepared = await asyncio.to_thread(_transaction, request, api, lambda u: _SERVICE.prepare(u, actor, submission))
+        prepared = await asyncio.to_thread(_transaction, request, api, lambda u: service.prepare(u, actor, submission))
         ticket = await ask.governor.acquire(wait_seconds=min(5.0, submission.deadline_seconds))
         resource_deadline = time.monotonic() + min(5.0, submission.deadline_seconds)
         while True:
@@ -93,7 +112,7 @@ async def ask_question(request: Request) -> JSONResponse:
                 client_disconnected = True
                 raise asyncio.CancelledError()
             await asyncio.sleep(0.2)
-        inference = await asyncio.to_thread(_transaction, request, api, lambda u: _SERVICE.claim(u, actor, prepared))
+        inference = await asyncio.to_thread(_transaction, request, api, lambda u: service.claim(u, actor, prepared))
         model_task = asyncio.create_task(ask.provider.agenerate(inference))
         ask.active[submission.request_id] = model_task
         while not model_task.done():
@@ -104,27 +123,29 @@ async def ask_question(request: Request) -> JSONResponse:
                 raise asyncio.CancelledError()
         result = await model_task
         await asyncio.to_thread(
-            _transaction, request, api, lambda u: _SERVICE.finish(u, actor, submission.request_id, result)
+            _transaction, request, api, lambda u: service.finish(u, actor, submission.request_id, result)
         )
         receipt = await asyncio.to_thread(
-            _transaction, request, api, lambda u: _SERVICE.receipt(u, actor, submission.request_id)
+            _transaction, request, api, lambda u: service.receipt(u, actor, submission.request_id)
         )
-        return JSONResponse(status_code=200, content={**receipt, "text": result.text})
+        version = {"schema_version": 2} if isinstance(submission, ProfileAskSubmission) else {}
+        return JSONResponse(status_code=200, content={**receipt, **version, "text": result.text})
     except LoopbackDenied as exc:
         return JSONResponse(status_code=exc.status_code, content=error_body(exc.code))
     except KernelDenied as exc:
         code = exc.code
         if code == "request_already_admitted":
             receipt = await asyncio.to_thread(
-                _transaction, request, api, lambda u: _SERVICE.receipt(u, actor, submission.request_id)
+                _transaction, request, api, lambda u: service.receipt(u, actor, submission.request_id)
             )
-            return JSONResponse(status_code=200, content={**receipt, "replayed_receipt": True})
+            version = {"schema_version": 2} if isinstance(submission, ProfileAskSubmission) else {}
+            return JSONResponse(status_code=200, content={**receipt, **version, "replayed_receipt": True})
         if prepared:
             await asyncio.to_thread(
                 _transaction,
                 request,
                 api,
-                lambda u: _SERVICE.stop(
+                lambda u: service.stop(
                     u,
                     actor,
                     prepared.submission.request_id,
@@ -141,7 +162,7 @@ async def ask_question(request: Request) -> JSONResponse:
                 _transaction,
                 request,
                 api,
-                lambda u: _SERVICE.stop(
+                lambda u: service.stop(
                     u,
                     actor,
                     prepared.submission.request_id,
@@ -151,7 +172,24 @@ async def ask_question(request: Request) -> JSONResponse:
                 auth=False,
             )
         return JSONResponse(status_code=503, content=error_body(exc.code))
-    except (DatabaseUnavailable, ProbeUnavailable, OSError):
+    except (DatabaseUnavailable, ProbeUnavailable, OSError) as exc:
+        if prepared is not None and isinstance(exc, ProbeUnavailable):
+            try:
+                await asyncio.to_thread(
+                    _transaction,
+                    request,
+                    api,
+                    lambda u: service.stop(
+                        u,
+                        actor,
+                        prepared.submission.request_id,
+                        cancelled=False,
+                        code="database_or_resource_unavailable",
+                    ),
+                    auth=False,
+                )
+            except DatabaseUnavailable:
+                pass  # Retain the durable admission for deadline reconciliation.
         return JSONResponse(status_code=503, content=error_body("database_or_resource_unavailable"))
     except asyncio.CancelledError:
         if model_task:
@@ -163,7 +201,7 @@ async def ask_question(request: Request) -> JSONResponse:
                     _transaction,
                     request,
                     api,
-                    lambda u: _SERVICE.stop(
+                    lambda u: service.stop(
                         u,
                         actor,
                         prepared.submission.request_id,
