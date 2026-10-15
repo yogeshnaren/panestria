@@ -8,6 +8,7 @@ import os
 import re
 import stat
 import threading
+import time
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -17,6 +18,8 @@ from uuid import UUID
 
 from panestria.contracts.research import MAX_SOURCE_BYTES
 from panestria.kernel.goals import Actor
+
+_LOCK_SECONDS = 5.0
 
 
 class ResearchBlobUnavailable(ValueError):
@@ -95,18 +98,31 @@ class ResearchBlobStore:
 
     @contextmanager
     def _locked(self) -> Iterator[None]:
-        with self._mutex:
+        deadline = time.monotonic() + _LOCK_SECONDS
+        if not self._mutex.acquire(timeout=_LOCK_SECONDS):
+            raise ResearchBlobUnavailable("research_store_busy")
+        try:
             if self._fd < 0:
                 raise ResearchBlobUnavailable("research_store_closed")
             try:
                 _private_directory(self._fd)
-                fcntl.flock(self._fd, fcntl.LOCK_EX)
+                while True:
+                    try:
+                        fcntl.flock(self._fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                        break
+                    except BlockingIOError:
+                        remaining = deadline - time.monotonic()
+                        if remaining <= 0:
+                            raise ResearchBlobUnavailable("research_store_busy") from None
+                        time.sleep(min(0.01, remaining))
                 try:
                     yield
                 finally:
                     fcntl.flock(self._fd, fcntl.LOCK_UN)
             except OSError:
                 raise ResearchBlobUnavailable("research_blob_io_unavailable") from None
+        finally:
+            self._mutex.release()
 
     def _file(self, name: str, links: tuple[int, ...], modes: tuple[int, ...]) -> tuple[bytes, os.stat_result]:
         fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC, dir_fd=self._fd)
@@ -125,7 +141,8 @@ class ResearchBlobStore:
             if (
                 len(raw) > MAX_SOURCE_BYTES
                 or len(raw) != before.st_size
-                or before != after
+                or (before.st_mode, before.st_uid, before.st_gid, before.st_nlink, before.st_size)
+                != (after.st_mode, after.st_uid, after.st_gid, after.st_nlink, after.st_size)
                 or before.st_mtime_ns != after.st_mtime_ns
                 or before.st_ctime_ns != after.st_ctime_ns
             ):
