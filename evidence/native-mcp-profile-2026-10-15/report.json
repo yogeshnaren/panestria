@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "source_commit": "f67b6470ae058a9e385a3e8dd36171a779ebacba",
+  "result": "PASS",
+  "targeted_default_checks": 172,
+  "new_profile_checks": 49,
+  "actual_native_checks": 2,
+  "actual_native_cli_inference_invocations_during_development": 8,
+  "earlier_native_failed_observations": 6,
+  "native_requested_alias": "haiku",
+  "native_init_model": "claude-haiku-4-5-20251001",
+  "native_cli_version": "2.1.273",
+  "native_binary_sha256": "6c752e2cc7c110c9df15f26d8d134d438c5ae95dbd610efc1a308bf7f9c5f6c1",
+  "provider_route": "EXISTING_CLAUDE_SUBSCRIPTION_LOGIN_ANTHROPIC_ONLY",
+  "native_actual_cash": "UNKNOWN_SUBSCRIPTION_ESTIMATE_ONLY",
+  "native_max_budget_flag_usd": "0.25_PER_NATIVE_PROCESS_CLIENT_ESTIMATE_NOT_CASH_CAP",
+  "direct_paid_sdk_calls": 0,
+  "provider_request_count": "UNKNOWN_MULTIPLE_NATIVE_TURNS_POSSIBLE",
+  "scope": "explicit PUBLIC synthetic internal MCP read-check conformance profile only; existing safe-mode no-tool proposal profile unchanged",
+  "observed": [
+    "actual zero-turn empty-auth native startup connects only panestria private MCP and advertises only one reviewed check; no callback/inference success claimed",
+    "actual subscription native call reaches current-policy PostgreSQL one-use claim, actual nonroot readonly Docker and protected report with one RETURNED invocation",
+    "native process CANDIDATE with accepted=false, task RUNNING and no task/approval/release promotion",
+    "hostile project SessionStart hook/apiKeyHelper/repository MCP touch markers remain absent; no auto skills/plugins/slash commands admitted",
+    "MCP June2025 dialect stays pinned while bounded newer-client display metadata is ignored",
+    "bounded native tool correlation is not owner/task/lease/approval authority; remote execution metadata remains denied",
+    "only direct native caller, exact connected server/tool, requested/resolved Haiku, default permissions and inert pinned agent inventory admitted; no Agent tool",
+    "receipt string, array or structured wrapper remains closed bounded JSON; mismatched output/approval/unknown shape rejected",
+    "stdio shim starts with env-i and clears inherited environment/extra descriptors before protocol connection",
+    "config identity, private modes, binary and explicit settings/MCP/prompt hashes checked before/after; managed policy refuses",
+    "final review rejects extra fields attempting to escape the flattened JSON normalization wrapper"
+  ],
+  "observations": [
+    {
+      "file": "development-150-pass-one-test-id-failure.xml",
+      "source_commit": "65df8cfba680793ff5d1ec6955b925e4ad609646",
+      "observation": "150 passed, 1 failed: fixture reused rejected initialize request ID, correctly receiving replay denial",
+      "sha256": "335c94b50190e5185b0f1b7362834468542e244a728bce7d7d904a3f7c48d9ee"
+    },
+    {
+      "file": "native-1-display-rejected.xml",
+      "source_commit": "9e663dec06d34601046c8131b7eea841c6fd0b5d",
+      "observation": "REJECTED unknown assistant tool_use_meta",
+      "sha256": "126fb36f7bbab11de6c9f86dc8502f20ad8c9b46c5b9a14fe1aae51da0742f61"
+    },
+    {
+      "file": "native-2-caller-rejected.xml",
+      "source_commit": "c3d127ae8d4523869fea0eab45ba1e533319053b",
+      "observation": "startup PASS, native REJECTED unknown direct caller field",
+      "sha256": "96c3b8aacd38c5c7f028bb9fd29a6335ce5634a18e0aecedfac562f447d2e431"
+    },
+    {
+      "file": "native-3-rpc-error-rejected.xml",
+      "source_commit": "b9de121e5f752983c43d58457fd2d40c737e142b",
+      "observation": "startup PASS, native REJECTED non-receipt tool error",
+      "sha256": "7512454821e91e3adc4a1162b198007522cd3c962960d02b70aa39ea6aa8cc44"
+    },
+    {
+      "file": "native-4-rpc-error-rejected.xml",
+      "source_commit": "ab995fc7334618dc8a911e7535dfa4ea96fe46cf",
+      "observation": "startup PASS, native REJECTED non-receipt tool error",
+      "sha256": "9cf5118e5f2da6df3e6d8986f21a40cb0e8f5b016049f716e9780203b4097ef4"
+    },
+    {
+      "file": "native-5-rpc-error-rejected.xml",
+      "source_commit": "4e08645b0a3e5e13ff378558661e49bfaf848d5f",
+      "observation": "startup PASS, native REJECTED non-JSON tool error, no completion asserted",
+      "sha256": "bb28ba1cc2c6c47ffc912e6b69f674740fee3a6dc18f290e899e41a300b645fd"
+    },
+    {
+      "file": "native-6-structured-text-rejected.xml",
+      "source_commit": "ad42c55b9e1e8e13dcfabdc7e94c4490c4ae8835",
+      "observation": "startup PASS, native REJECTED flattened text plus structured receipt shape",
+      "sha256": "ed82cf16abf17a9d57a55faea4449702b1c189a793082367e72e6d287617b751"
+    },
+    {
+      "file": "targeted-171.xml",
+      "source_commit": "0413fee113ccf219fd4f6a9d229c421de80425c6",
+      "observation": "171 targeted PASS",
+      "sha256": "d4d9efd0edc12ce0ead5baef872e79bab3fb13d075b689bc141b9335513810e5"
+    },
+    {
+      "file": "native-final-2.xml",
+      "source_commit": "0413fee113ccf219fd4f6a9d229c421de80425c6",
+      "observation": "actual startup and subscription PG/Docker/check report 2 PASS",
+      "sha256": "2704064746aab00f78df613ac6c8fe92cf4f4d670e4fba546a3d968316e4b34c"
+    },
+    {
+      "file": "targeted-final-172.xml",
+      "source_commit": "f67b6470ae058a9e385a3e8dd36171a779ebacba",
+      "observation": "172 targeted PASS including trailing-wrapper injection denial",
+      "sha256": "5bfb0f4d7a96c22ea182b6189bdf52d4260f802ab565d42ae78db61d599f48b8"
+    },
+    {
+      "file": "native-hardened-final-2.xml",
+      "source_commit": "f67b6470ae058a9e385a3e8dd36171a779ebacba",
+      "observation": "2 actual startup/subscription checks PASS on corrected parser",
+      "sha256": "919c07f6c3150a94198174e217dd126cec251b2e4d961982505a222473612a85"
+    }
+  ],
+  "source_sha256": {
+    "src/panestria/brokers/harness/claude_check.py": "e8f04dcc11f7ceb8539030f0c407b48b3e2b6cca87c8835f4e0b641af1826cbf",
+    "src/panestria/brokers/harness/event_parser.py": "51d8967d553f13f5b9193ecbfb1b0d5d8e73265f15b9049069dfe56dadf2a23a",
+    "src/panestria/brokers/harness/command_protocol.py": "aec45ab23e2b2a0b3e110a5f9d17f24ffe4942ca8203aefeba1dd0093b4d4883",
+    "src/panestria/brokers/harness/command_stdio.py": "cbc18bf9ddc76ac81fa314f2faa48935ab87f712d6c4aab6728dda93d0c3841c",
+    "tests/unit/test_native_mcp_profile.py": "26a3d48fee95f4fd1cb02da577460d004934d469737f5c4a6e0e9c016f72fea5",
+    "tests/integration/test_native_registered_check_live.py": "19c40a0f082fa8a674b8c4781d15bf5f1cf8caa38bed24d89024d9fb007ecb62",
+    "tests/integration/test_registered_check_authority.py": "af72a009e88a1b72edd35a386abafeeb627c4d0f6181d1e85915a0003ab8769b",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "checks": [
+    "Ruff PASS",
+    "mypy 176 files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "references": [
+    "https://code.claude.com/docs/en/cli-reference",
+    "https://code.claude.com/docs/en/headless",
+    "https://code.claude.com/docs/en/mcp",
+    "https://code.claude.com/docs/en/memory",
+    "https://modelcontextprotocol.io/specification/2025-11-25/schema",
+    "https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md",
+    "https://github.com/anthropics/anthropic-sdk-python/blob/main/src/anthropic/types/beta/beta_direct_caller.py"
+  ],
+  "diagnosis": "Pinned binary artifact inspected as data; no vendor implementation copied or SDK installed. The non-JSON tool errors came from the closed server denying claudecode/toolUseId correlation; that bounded field is now ignored without authority. CLI wraps flattened content text alongside structuredContent; both receipts must match. Earlier failures remain failed, not relabeled as pass.",
+  "limitations": [
+    "only one PUBLIC synthetic reviewed read-check profile, not arbitrary owner prompt/data or general native shell/edit access",
+    "not an enabled UI/default launcher or full AOS010/native security certificate/G1/R3 gate",
+    "flags/pinned trusted auth principal are not an OS containment claim around the native CLI itself",
+    "no universal vendor/host log retention or hostile same-user OS-process guarantee",
+    "actual native cash unknown; cost flags estimates; no new credentials/API-key/paid fallback/extra usage/training",
+    "successful native read is not independent verification or owner/merge approval",
+    "initial mcp list ignored CLI config and was not a discovery proof; early zero-turn initialization rejected display metadata; untracked helper observations were not formal qualification"
+  ]
+}
