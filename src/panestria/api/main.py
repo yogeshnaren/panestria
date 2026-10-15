@@ -113,3 +113,12 @@ def mount_ask_api(app: FastAPI, ask: object) -> None:
     app.include_router(learning_router)
     app.include_router(memory_router)
     app.include_router(memory_v2_router)
+
+
+def mount_profile_api(app: FastAPI, profiles: object) -> None:
+    from panestria.api.routes.profiles import ProfileApi, router
+
+    if not isinstance(profiles, ProfileApi) or not isinstance(app.state.goal_api, GoalApi):
+        raise TypeError("profiles require configured owner scope and a trusted vault")
+    app.state.profile_api = profiles
+    app.include_router(router)

@@ -172,6 +172,24 @@ Seventeen targeted cookie/session/canonical-memory checks pass; full exact-head
 CI/review remain required before merge. The owner API is independent work in
 `task/profile-owner-api` and will incorporate this verified fix before handoff.
 
+## Latest checkpoint: explicit owner profile API
+
+Branch `task/profile-owner-api` began at verified main bbe4268. It now includes
+PR #56/main and the explicit browser-cookie prerequisite PR #57, which must pass
+CI/review and merge before this API task. A separate mount exposes bounded,
+scoped owner create/correct/view/suppress operations, with exact versions,
+transaction-time session reauthorization and fixed private-data-safe errors.
+Server scope supplies the consent actor and each save receives a new action ID.
+Keys are pre-existing opaque handles; HTTP cannot provision/unlock/delete them.
+Default launchers do not mount the API and profiles remain disabled by default.
+
+Sixty-nine targeted API/context/vault/restore/browser tests pass. Ruff, strict
+mypy (155 files) and 11 import contracts pass. API views are explicit owner POSTs
+with CSRF and no-store headers. Stale views and duplicate creates deny before
+loading keys. Full exact-head CI/review and runtime qualification remain required.
+Next: explicit local key setup, a qualified ephemeral Ask overlay, runtime privacy
+checks and the remaining revision-3 MVP scope. No release gate is promoted here.
+
 ## Latest checkpoint: canonical memory version 2
 
 PR #52 merged as `2f8c983` after CI run 38727911700 passed 471 default tests, 34 live deselected. The dependent canonical branch incorporated that verified main merge before final CI. Separate commits cover design, canonical domain/migration, v2 API and execution tracking.
