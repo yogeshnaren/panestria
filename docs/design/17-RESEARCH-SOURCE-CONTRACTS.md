@@ -5,8 +5,9 @@ remain pending. Current main has durable scoped tasks, immutable artifacts and
 the sandbox interfaces. This task does not promote G1/G2, enable Delegate, make
 web requests or add a research reader/tool permission.
 
-Start with closed versioned transport contracts and immutable research metadata
-using the next additive migration after 0022. Preserve historical prospective
+Start with closed versioned transport contracts. This first PR narrows to the
+contract boundary; immutable database metadata follows in the next task using
+the next additive migration after 0022. Preserve historical prospective
 revision `0005_research` in old design references; it is not an applied revision.
 Keep owner/project/goal/task/request/snapshot/claim relations in composite foreign
 keys. No worker/model supplies canonical snapshot IDs or fetch authorization.
@@ -24,13 +25,14 @@ version. They bind an existing snapshot/text hash. Quote/support/conflict verdic
 are separate immutable observations with verifier identity and evidence refs;
 neither a matching hash nor valid offsets establishes semantic support.
 
-This first task's accepted outcome is contract/schema integrity, including scope,
-immutability and bounds, not a completed AOS-013 or research brief. Subsequent
+This first task's accepted outcome is contract and byte-budget integrity, not
+source authority, a completed AOS-013, its schema case, or a research brief. Subsequent
 slices implement canonical normalization/resolution, verified source commit and
 claim attachment with the actual retained-successful-fetch prerequisite. Missing
 raw/text, truncation, unsupported extraction and failed fetch never become usable
 complete citations. Keep claim-support judgments pending until their verifier.
 
-Test real PostgreSQL scope/immutability/data preservation and downgrade guards,
-plus malformed contract inputs. Record source-bound results; leave full item
+Test malformed authority fields, byte budgets, snapshot completeness and passage
+reference bounds. The next schema task must also test real PostgreSQL
+scope/immutability/data preservation and downgrade guards. Record source-bound results; leave full item
 cases pending wherever their broker/reader/extraction assertions do not yet exist.
