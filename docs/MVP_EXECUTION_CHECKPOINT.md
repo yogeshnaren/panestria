@@ -18,7 +18,7 @@ New branches start from freshly fetched `origin/main`. Previously merged task
 branches remain historical and must not be used as the base for new work.
 Preserve the owner's review checkouts, running demo, databases and services.
 
-## Current task: readiness inventory
+## Completed foundation: readiness inventory
 
 Add a read-only reconciliation of required gate cases, the catalog and actual
 literal `gate_case_id` registrations in test source. Expose missing/planned
@@ -76,3 +76,28 @@ then implementing the audited forward classification migration and versioned
 source/policy/context compatibility. Continue independent R1 evidence mapping
 work as appropriate. Hourly continuation is enabled in the development chat;
 no repeated approval to resume or merge verified MVP task PRs is needed.
+
+## Latest checkpoint: immutable classification ledger
+
+PR #51 merged as `2a4db7b` after exact-head CI passed 467 default tests,
+34 live deselected (run 38714493560). Work resumed after the usage reset.
+Branch `task/classification-ledger` starts from that current main.
+
+The next substep adds migration 0018 and a scoped read-only classification
+service. Existing sources backfill without changing original rows; new source
+and classification records commit atomically. Consumed exact owner reviews
+remain linked to new revisions, while old PRIVATE sources stay restricted.
+Populated classification audit cannot be dropped by schema downgrade. The
+active schema snapshots were regenerated from real isolated PostgreSQL and
+contain additive changes only; applied migrations and old evidence are intact.
+
+Eight targeted real database tests passed: old-data upgrade, audit preservation,
+atomic rollback, scope/immutability, review consumption, existing memory review,
+actual dump/restore and schema drift/round-trip. Ruff, strict mypy and import
+boundaries pass. Full exact-head PR CI and final review remain required.
+
+Next: merge only after CI/review, then implement versioned canonical memory
+interfaces and canonical derived labels with conservative cloud defaults,
+keeping old API/history/active-attempt compatibility explicit. Complete the
+whole class/source/context/destination matrix before completing S4/TC05.
+Profile encryption remains disabled and later MVP work remains pending.
