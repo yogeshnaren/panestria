@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from pathlib import Path
 
 from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile, SandboxRejected
@@ -39,6 +40,8 @@ class SandboxedCheckRunner:
         )
         profile = SandboxProfile(
             name="restricted-offline",
+            uid=os.getuid(),
+            gid=os.getgid(),
             memory_bytes=256 * 1024 * 1024,
             cpu_nanos=1_000_000_000,
             pids=64,

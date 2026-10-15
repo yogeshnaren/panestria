@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Panestria · Native review demo</title><link rel="stylesheet" href="/demo.css"><script src="/demo.js" defer></script></head>
+<body><main>
+<header><p class="eyebrow">PANESTRIA / R1 PREVIEW</p><h1>One goal. Evidence you can inspect.</h1><p>A fixed public calculator exercise with Claude Code, an isolated writer, independent tests and your merge approval.</p></header>
+<section id="pair"><h2>Connect your review session</h2><p>Generate a one-use pairing code in the demo terminal. It expires in five minutes.</p><form id="pair-form"><label for="code">Pairing code</label><input id="code" name="code" maxlength="8" autocomplete="off" required pattern="[0-9A-Fa-f]{8}"><button>Connect</button></form></section>
+<p id="message" role="status" aria-live="polite"></p>
+<div id="review" hidden>
+<section><div class="row"><h2>Claude readiness</h2><span id="ready" class="badge"></span></div><p id="route"></p><p id="reason"></p><p>Only the public exercise below is sent to Anthropic through the dedicated Claude Code subscription profile. Native tools are disabled. No API keys are passed to the worker and no provider fallback is configured. Reported overage is rejected.</p><details><summary>Run the compatibility check when Claude usage is available</summary><p>In the demo checkout, run the <code>qualify</code> command shown in the instructions. It makes one fixed Claude prompt and checks the real writer and verifier containers. This page does not retry inference.</p></details><details><summary>Review the policy before starting</summary><pre id="policy"></pre></details><button id="start" disabled>Enable this policy and start the public goal</button></section>
+<section><h2>The exercise</h2><p id="intent"></p><pre id="source"></pre></section>
+<section><div class="row"><h2>Goal progress</h2><span id="status" class="badge">No run yet</span></div><p id="goal-id"></p><p id="interrupted"></p><button id="cancel" disabled>Cancel goal</button><ol id="events"></ol></section>
+<section><h2>Candidate diff</h2><pre id="diff">Awaiting a generated and verified candidate.</pre><p id="candidate"></p></section>
+<section><h2>Independent checks</h2><div id="checks">No reports yet.</div></section>
+<section id="approval-section" hidden><h2>Your merge decision</h2><p>The checks passed. Review the diff above and this exact merge preview. Approving updates only the isolated demo repository.</p><pre id="preview"></pre><div class="row"><button id="approve">Approve this exact merge</button><button id="deny" class="secondary">Reject merge</button></div></section>
+<footer>Single-worker preview. Claude chat and Cursor agents are not automatically imported or orchestrated. This demonstration does not complete the R1/G1 gate or the R3 MVP.</footer>
+</div></main></body></html>

@@ -39,9 +39,11 @@ class CancellationService:
         correlation = require_correlation(correlation_id)
         if not isinstance(reason, str) or reason.strip() == "" or len(reason) > 200:
             raise KernelDenied("invalid_contract")
+        # Serialize status changes while allowing a worker holding the task row
+        # to insert its final goal-referencing event (FK key-share lock).
         goal = uow.execute(
             "SELECT status FROM panestria.goal"
-            " WHERE id = %s AND owner_id = %s AND project_id = %s FOR UPDATE",
+            " WHERE id = %s AND owner_id = %s AND project_id = %s FOR NO KEY UPDATE",
             (goal_id, actor.owner_id, actor.project_id),
         ).fetchone()
         if goal is None:
