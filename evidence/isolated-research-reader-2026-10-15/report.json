@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "source_commit": "f60fc1a92c2296c3edd9d5e6a605d38d406667b2",
+  "result": "PASS",
+  "new_reader_checks": 31,
+  "actual_container_or_public_tls_checks": 14,
+  "injected_receipt_or_controller_guard_checks": 17,
+  "existing_research_checks": 134,
+  "provider_inference_calls": 0,
+  "scope": "strict UTF8/plain and bounded HTML tokenizer in existing actual readonly/nonroot/network-none Docker, memory-only text; no source/citation authority",
+  "observed": [
+    "strict UTF8, Unicode15 NFC, BOM/line ending preservation and exact raw/text SHA/size",
+    "one fixed input and reviewed reader program mounted readonly, pinned default sandbox image/profile and effective-config hashes retained",
+    "script/style/head/template/noscript/form/embedded-object/comment content skipped; attributes, JS and external entities never executed/fetched by tokenizer",
+    "source instructions stay text and returned SecretStr representation is masked",
+    "HTML is tokenizer text, not browser CSS visibility/layout/raw-byte/table semantics",
+    "invalid UTF8, unclosed skipped markup, PDF/opaque formats and text cap never yield usable complete text",
+    "actual short Docker runtime deadline returns UNKNOWN without unconfined parsing",
+    "injected malformed hashes/NFC/version/base64/duplicate/authority/runtime/effective-config receipts refuse completion",
+    "actual public HTTPS Example.org bytes feed directly into isolated Docker extraction with raw/text hashes, not stored source status"
+  ],
+  "runtime_metadata": [
+    {
+      "effective_config_sha256": "be007a4f09925eee59b0b83d6b2e465cf25d6313e19169c4e712d51ab8c26c1d",
+      "extractor_version": "strict-utf8-v1",
+      "outcome": "COMPLETE",
+      "profile_sha256": "0b8f5958a2b08794a25914552b72aadf44022714fc5a2f70209043577ffcd6f6",
+      "program_sha256": "034874e33acac570699dc2825df3de20bb6a9b2510279dd98378b5b88172ff73",
+      "text_sha256": "f196294bda8b00147497579cfeca60c2321fcb2b53d36a0fca43a4484d177207",
+      "tokenizer_sha256": "a4c5558209ffe6d677dbe18e4a4b2d34672c73aee46e39b1d118846afa62a9ff"
+    },
+    {
+      "effective_config_sha256": "980d1574af58094b44a3dbb04bfe9cda4fc626f8a1ea3a7c75d181642e9b60e0",
+      "extractor_version": "strict-utf8-v1",
+      "outcome": "COMPLETE",
+      "profile_sha256": "0b8f5958a2b08794a25914552b72aadf44022714fc5a2f70209043577ffcd6f6",
+      "program_sha256": "034874e33acac570699dc2825df3de20bb6a9b2510279dd98378b5b88172ff73",
+      "text_sha256": "a083e8060816ddf27c98ab73bb9fd0ad0a6be792afc6ea9bf92fbeac5410524f",
+      "tokenizer_sha256": "a4c5558209ffe6d677dbe18e4a4b2d34672c73aee46e39b1d118846afa62a9ff"
+    },
+    {
+      "effective_config_sha256": "09fdaead4d05f9564230fa97d0373bbbdf87a784d4787abfd6bb4859ca5f91b8",
+      "extractor_version": "strict-utf8-v1",
+      "outcome": "COMPLETE",
+      "profile_sha256": "0b8f5958a2b08794a25914552b72aadf44022714fc5a2f70209043577ffcd6f6",
+      "program_sha256": "034874e33acac570699dc2825df3de20bb6a9b2510279dd98378b5b88172ff73",
+      "text_sha256": "2623148f0d047ef6feae63422c0d60741888ae7f45fd979ba232e1c975c14702",
+      "tokenizer_sha256": "a4c5558209ffe6d677dbe18e4a4b2d34672c73aee46e39b1d118846afa62a9ff"
+    },
+    {
+      "effective_config_sha256": "7c5aaef75940e26482918cb28c90e4d1e6ba5312a9e7fcdaf969f7ea9117ff8d",
+      "extractor_version": "strict-utf8-v1",
+      "outcome": "COMPLETE",
+      "profile_sha256": "0b8f5958a2b08794a25914552b72aadf44022714fc5a2f70209043577ffcd6f6",
+      "program_sha256": "034874e33acac570699dc2825df3de20bb6a9b2510279dd98378b5b88172ff73",
+      "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tokenizer_sha256": "a4c5558209ffe6d677dbe18e4a4b2d34672c73aee46e39b1d118846afa62a9ff"
+    },
+    {
+      "extractor": "htmlparser-text-v1",
+      "fetch_bytes": 577,
+      "fetch_sha256": "25ddf2c883e0d1958ea971d279a7e4f0fd446724ee3db7db19dadabd4a62e484",
+      "profile_sha256": "0b8f5958a2b08794a25914552b72aadf44022714fc5a2f70209043577ffcd6f6",
+      "scope": "public TLS to isolated Docker text; memory-only, no source/citation/policy authority",
+      "text_sha256": "662d2ac01657eb72d3fb95adf8641d1f1bfbcb0645af474616378b1d594bb42b",
+      "tokenizer_sha256": "a4c5558209ffe6d677dbe18e4a4b2d34672c73aee46e39b1d118846afa62a9ff"
+    }
+  ],
+  "observations": [
+    {
+      "file": "earlier-18-df5e877.xml",
+      "source_commit": "df5e877a84c8c3000ba09ca07094c19c8f5ffd8f",
+      "result": "18 mixed actual Docker and controller guard cases PASS",
+      "sha256": "3e869f6dec32e7db143bd6a01ca37b5d8257dd7480bff5121ae107548ce47295"
+    },
+    {
+      "file": "earlier-30-dc41995.xml",
+      "source_commit": "dc4199549c4cdcc620eee1bd436c4f9c522f1d9a",
+      "result": "30 mixed actual Docker and injected receipt/controller guards PASS",
+      "sha256": "1f5e80691160f76183bdb6fbf5010e71be5eeda72ec9b1efc1604e83b2e27803"
+    },
+    {
+      "file": "qualified-31.xml",
+      "source_commit": "f60fc1a92c2296c3edd9d5e6a605d38d406667b2",
+      "result": "31 PASS: 14 actual container/public-TLS cases and 17 explicit controller/injected-receipt guards",
+      "sha256": "fbe752246d381709f929c617b840691160410f856129bbc5781d74e0eaee2160"
+    },
+    {
+      "file": "existing-research-134.xml",
+      "source_commit": "f60fc1a92c2296c3edd9d5e6a605d38d406667b2",
+      "result": "134 existing fetch/contracts/text checks PASS",
+      "sha256": "ed056244f7d14843300259795ca35ae84693c909ec6dff4176beeb914239cfae"
+    }
+  ],
+  "source_sha256": {
+    "src/panestria/brokers/research/reader.py": "7392ca8e83b97a107f3ecf31aedb6a703c6ab211072db4262f1dda44483e7f8d",
+    "src/panestria/brokers/research/reader_worker.py": "034874e33acac570699dc2825df3de20bb6a9b2510279dd98378b5b88172ff73",
+    "tests/integration/test_isolated_research_reader.py": "e07c409cbf0e08e6e3176507f5757b66b5259cecdae35121e05321ca1017ed16",
+    "tests/unit/test_research_reader_receipts.py": "a7dd85dafdbe9e8c98afe98f0751bb1e1c888572a52b61ddcdd6482b5f1802e2",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "checks": [
+    "Ruff PASS",
+    "mypy 180 files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "reuse": "complete installed HTMLParser source inspected as stdlib dependency (456 lines; host source SHA ab5a0a2fce2bec75d969dbe057b490ef574f9ac57cce9e0eaaf7a220b301e838); no tokenizer source copied, actual container tokenizer hash observed separately",
+  "limitations": [
+    "PDF extraction remains UNSUPPORTED and required R2 follow-on work",
+    "raw cap2MiB; normalized text cap512KiB, larger extraction TRUNCATED with no partial complete-text result",
+    "HTML CSS visibility and rendered/table semantics not interpreted; hidden CSS text can remain",
+    "no durable SourceStore/artifact/fetch metadata, policy admission, stable source IDs or claim/citation authority",
+    "injected receipt guards are parser tests, not actual OS security proof; no full AOS013/G2/R3 gate/owner acceptance",
+    "initial untracked 18 and later dirty 31+134 development observations not relabeled as clean-source qualification; final source qualification rerun after Ruff correction"
+  ]
+}

@@ -52,9 +52,10 @@ remain unchanged except additive active-schema/migration/interface updates.
 | #74 | Actual private bounded Unix socket and stdio relay, fixture authority only | 983 / 38 | 435d95f |
 | #75 | Actual durable required read check, policy/lease fencing and report proof | 1010 / 38 | 848414b |
 | #76 | Actual pinned PUBLIC subscription MCP read conformance | 1059 / 40 | f933999 |
+| #77 | Bounded public HTTPS transport; actual TLS and downgrade denial | 1114 / 43 | 9f54d73 |
 
-Current verified main: f93399970c623915fecfc774fc0401a7ea405575; latest CI
-run 38821747993 at exact head 4b0726c. PR #62's earlier run exposed an older Ask
+Current verified main: 9f54d73b75f52a834186697913fde606f69c766f; latest CI
+run 38822704320 at exact head ec96f0e. PR #62's earlier run exposed an older Ask
 downgrade test sharing newer audit data; a schema-only restored isolated guard
 test fixed it without weakening audit-loss protection. PR #61 attempt 1 failed one proposal-demo
 approval-flow test; isolated actual-PG/Docker reproduction and exact-head retry
@@ -80,17 +81,16 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
 ## Exact next work
 
-1. Finish `task/research-public-fetch` with exact-head CI/review. The internal
-   PUBLIC HTTPS443 transport pins all-public DNS/actual TLS peers and bounds every
-   redirect, response framing/body, resolver slot and overall receive deadline.
-   At ecf564f, 178 targeted checks pass; at 3c1b3a2, three actual public TLS cases
-   pass with identical fetch code. Example.org/IANA bytes are hashed; an actual
-   IANA HTTP downgrade is refused. The initial wrong test expectation stays failed.
-   Evidence: evidence/research-public-fetch-2026-10-15. Returned bytes remain in
-   memory: durable scoped fetch/source/claim metadata, protected SourceStore,
-   isolated extraction and claim/citation authority remain next R2 obligations.
-   The merged native PUBLIC synthetic MCP component passed actual subscription
-   read checks, but does not enable a general native user/shell profile or G1.
+1. Finish `task/research-isolated-reader` with exact-head CI/review. Fixed strict
+   UTF8/text and HTML tokenization now runs in actual nonroot/read-only/network-none
+   Docker. At f60fc1a, 31 new checks pass (14 actual container/TLS cases, 17 explicit
+   parser/controller guards), plus 134 existing research checks. Actual public
+   HTTPS bytes feed the reader and retain raw/text/runtime hashes. Evidence:
+   evidence/isolated-research-reader-2026-10-15. PDF remains UNSUPPORTED; HTML is
+   tokenizer text without CSS/rendered-table/raw-byte mapping claims. Bytes/text
+   stay in memory; durable scoped fetch/source/claim records, protected SourceStore
+   lookup, PDF reader and citation/support authority remain next R2 obligations.
+   No usable source/citation status or G2/R3 promotion follows from these pieces.
    Protected research bytes are merged, with 34 actual filesystem/process and 79
    contract/text checks plus three existing Build checks. Source/claim metadata,
    actual retained-fetch/reader/SourceStore authority remain next R2 obligations.
