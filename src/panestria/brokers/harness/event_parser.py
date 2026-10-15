@@ -220,8 +220,8 @@ class ClaudeEventParser:
                 utilization = info["utilization"]
                 if (
                     type(utilization) not in {int, float}
-                    or not math.isfinite(utilization)
                     or not 0 <= utilization <= 1
+                    or not math.isfinite(utilization)
                 ):
                     raise ProtocolRejected("invalid_rate_limit")
             if "isUsingOverage" in info and info["isUsingOverage"] is not False:

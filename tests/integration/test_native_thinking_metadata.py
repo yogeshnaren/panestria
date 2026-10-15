@@ -138,7 +138,7 @@ def test_utilization_is_only_bounded_metadata_not_usable_quota(value):
         parser.feed(line({**event, "rate_limit_info": {**event["rate_limit_info"], "status": "rejected"}}))
 
 
-@pytest.mark.parametrize("value", [None, True, -0.1, 1.1, "0.4", float("inf")])
+@pytest.mark.parametrize("value", [None, True, -0.1, 1.1, "0.4", float("inf"), 10**400])
 def test_malformed_utilization_never_grants_capacity(value):
     parser = ClaudeEventParser()
     init(parser)
