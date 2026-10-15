@@ -107,8 +107,15 @@ def _result_metadata(body: dict[str, Any], *, failed: bool) -> None:
 
 
 class ClaudeEventParser:
-    def __init__(self, allowed_tools: frozenset[str] = frozenset(), *, capture_candidate: bool = False) -> None:
+    def __init__(
+        self,
+        allowed_tools: frozenset[str] = frozenset(),
+        *,
+        capture_candidate: bool = False,
+        allowed_mcp_servers: frozenset[str] = frozenset(),
+    ) -> None:
         self.allowed_tools = allowed_tools
+        self.allowed_mcp_servers = allowed_mcp_servers
         self.session: str | None = None
         self.result: NativeResult | None = None
         self._pending = bytearray()
@@ -233,7 +240,18 @@ class ClaudeEventParser:
             if set(tools) - self.allowed_tools:
                 raise ProtocolRejected("unexpected_tool_capability")
             servers = body.get("mcp_servers", [])
-            if servers:
+            if (
+                not isinstance(servers, list)
+                or len(servers) != len(self.allowed_mcp_servers)
+                or any(
+                    not isinstance(server, dict)
+                    or set(server) != {"name", "status"}
+                    or server["name"] not in self.allowed_mcp_servers
+                    or server["status"] != "connected"
+                    for server in servers
+                )
+                or len({server["name"] for server in servers}) != len(servers)
+            ):
                 raise ProtocolRejected("unexpected_mcp_server")
             self.session = session
             return NativeEvent("started", digest)

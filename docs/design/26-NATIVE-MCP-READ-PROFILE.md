@@ -17,9 +17,10 @@ shim must discard inherited private environment/descriptors before connecting.
 Official CLI documentation says safe mode disables MCP, while restricted mode
 ignores user/project settings, removes code-running builtins unless explicitly
 requested and retains managed policy. Therefore validate a separate explicit
-restricted/bare/settings/strict-MCP combination against the pinned artifact and
+restricted/settings/strict-MCP combination against the pinned artifact and
 actual observed behavior. Do not claim that reusing safe-mode flags proves MCP
-works. Disable hooks, autodiscovered agents/skills/plugins/memory/connectors;
+works. Bare mode is excluded because it skips subscription OAuth credentials;
+do not supply a replacement API key. Disable hooks, autodiscovered agents/skills/plugins/memory/connectors;
 allow only the exact internal MCP tool and any unavoidable inert terminal tool.
 Every additional event/tool/server or permission escalation fails closed.
 
