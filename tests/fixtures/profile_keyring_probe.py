@@ -13,7 +13,9 @@ from uuid import uuid4
 
 from jeepney.bus_messages import message_bus
 from jeepney.io.blocking import Proxy
+from typer.testing import CliRunner
 
+from panestria.cli.main import app
 from panestria.memory.keys import KeyStoreUnavailable, ProfileKeyHandle, SecretServiceProfileKeys, _BoundedConnection
 
 
@@ -75,7 +77,18 @@ def main() -> None:
         store = SecretServiceProfileKeys(timeout_seconds=1)
         reference = ProfileKeyHandle(**{field: str(uuid4()) for field in ProfileKeyHandle.model_fields})
         wait_name(True)
-        store.provision(reference)
+        args = [
+            value for name, value in reference.model_dump().items() for value in ("--" + name.replace("_", "-"), value)
+        ]
+        runner = CliRunner()
+        for operation in ("key-create", "key-check"):
+            result = runner.invoke(app, ["profile", operation, *args])
+            assert result.exit_code == 0, "isolated_key_cli_failed"
+            assert json.loads(result.output) == {
+                "schema_version": 1,
+                "status": "PRESENT",
+                "handle": reference.model_dump(),
+            }
         key = store.load(reference)
         store.provision(reference)
         assert key.get_secret_value() == store.load(reference).get_secret_value()
@@ -118,6 +131,7 @@ def main() -> None:
                     "persistent_test_keyring": True,
                     "locked_denied": True,
                     "daemon_restart_preserved_keys": True,
+                    "cli_setup_checked": True,
                 }
             )
         )

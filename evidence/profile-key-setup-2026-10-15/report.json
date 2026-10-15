@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "scope": "component-only: explicit local profile key CLI and isolated OS backend",
+  "source_commit": "8887e49b40d4364c464df303ccc27d05f399f7a4",
+  "observed_at": "2026-10-15T12:56:29.287236+00:00",
+  "result": "PASS",
+  "tests": {
+    "key_cli": 6,
+    "adapter": 34,
+    "actual_isolated_os_with_cli": 1,
+    "failed": 0
+  },
+  "source_sha256": {
+    "src/panestria/cli/profile.py": "6948180dc37d262f161a79d89e715848015b27622ba0f085098ecd2cfbbdbd2b",
+    "src/panestria/cli/main.py": "e8ef49cc6fdabbb3f3fcd9b9d199f6ee359a7acf96841dc80daca5e17fc503f4",
+    "src/panestria/memory/keys.py": "cc65dd77ff699c0c7adfae6e979183d25f5a53aee2943df11857b55a63ac6193",
+    "tests/integration/test_profile_key_cli.py": "beebd01054e87118e826e8d54d8194773df75ae14e14c0a0c8cf6704efa65bf3",
+    "tests/integration/test_profile_keys.py": "9ff918e4636afbacbe03be624bc6ef983879c964d34885c146911c25d2c3d2f0",
+    "tests/integration/test_profile_keys_live.py": "1167d580575dbc0e375af9122eb05c2c8cc16a99703e6d6a889d7baa118c3b33",
+    "tests/fixtures/profile_keyring_probe.py": "d410e1b5922b4d8851ffd96aceafc087c5afa0a383152a09614914a78515851a",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "junit_sha256": "721b3da6684a550f04f971eec0e135edf66c5d0204ced27dee97c4cf216bedb6",
+  "owner_keyring_touched": false,
+  "provider_calls": 0,
+  "release_gate_result": "NOT_EVALUATED",
+  "limitations": [
+    "Profile API/default dispatch not enabled",
+    "No full privacy case or release pass claimed",
+    "Synthetic test-only keyring; not owner store qualification"
+  ]
+}
