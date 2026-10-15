@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "scope": "component-only: ephemeral approved local profile context",
+  "source_commit": "9a5a77f0a8e07a5893b9a9b367309b08c4e8a67a",
+  "observed_at": "2026-10-15T12:32:39.327849+00:00",
+  "result": "PASS",
+  "tests": {
+    "actual_ciphertext_database_context": 22,
+    "failed": 0
+  },
+  "source_sha256": {
+    "src/panestria/contracts/profile_context.py": "7fecaac009fb5c1181a9ea56e01936f78367bbfeddf31419ce1eccf87f115b18",
+    "src/panestria/memory/profile.py": "22d3f5cd0c5821dc54858b0d6ad09495ae15098230c49bd9c7a93249524e97c3",
+    "src/panestria/memory/vault.py": "8ce0dbdbb1cb34616ba21fa5eba07263f553f182dddc7085dca2cdf9619e531d",
+    "tests/integration/test_profile_context.py": "6ceeb9a66be2a74cac2d00d329223c3eb016ce506512611f899cc064c6c9c87d",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "junit_sha256": "06da1efcbdbf5b82468ee1cbf0d2599351f9a69e3d4ec8c8851a86ea22d92269",
+  "keys": "synthetic test-only memory implementation",
+  "owner_data_or_services_touched": false,
+  "provider_calls": 0,
+  "release_gate_result": "NOT_EVALUATED",
+  "limitations": [
+    "API and actual local inference overlay not enabled",
+    "No full TC06-TC08 or release acceptance claim",
+    "OS store and restore qualification remain separate",
+    "Masked content is not protection from host administrators"
+  ]
+}
