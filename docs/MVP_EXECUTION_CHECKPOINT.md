@@ -142,6 +142,24 @@ exact-head PR CI and review remain required; TC06/TC07 and release gates are
 not promoted. Next: approved-field local context selection and trusted local
 setup/admission, then runtime privacy qualification and remaining MVP work.
 
+## Latest checkpoint: ephemeral profile context
+
+PR #55 merged as `bbe42683681befed15d16b4020f779ffd42a0bb7` after exact-head CI
+passed 545 default tests, 35 live deselected (run 38734495924). Branch
+`task/profile-local-context` began from that explicit prerequisite and merged
+verified main. Its selector compiles only owner-approved requested fields for
+a bounded offline local purpose, checks current policy and revalidates protected
+bytes/source/policy before a later dispatch. It does not persist a plaintext
+overlay or enable a provider/API route. Sensitive profiles remain disabled.
+
+Twenty-two targeted real ciphertext/database context checks pass, including
+policy/lifecycle invalidation and forgery rejection. Ruff, strict mypy (154 files)
+and 11 import contracts pass. See PROFILE_CONTEXT.md and component evidence;
+full exact-head CI/review and actual runtime qualification remain required.
+Next: trusted local profile setup/API admission and an ephemeral Ask overlay
+that preserves restrictive labels without storing its clear text, followed by
+whole profile-boundary qualification and remaining revision-3 MVP work.
+
 ## Latest checkpoint: canonical memory version 2
 
 PR #52 merged as `2f8c983` after CI run 38727911700 passed 471 default tests, 34 live deselected. The dependent canonical branch incorporated that verified main merge before final CI. Separate commits cover design, canonical domain/migration, v2 API and execution tracking.
