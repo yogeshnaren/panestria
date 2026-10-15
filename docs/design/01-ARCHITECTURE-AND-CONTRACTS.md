@@ -165,3 +165,7 @@ Defaults are proposed conservative synthetic/pilot limits, configurable only wit
 ## Version/compatibility policy
 
 Pin exact Python/dependencies/images/CLI binaries/model digests when each integration slice runs; record them in a compatibility manifest. Never write invented latest version numbers in a lockfile. Official docs were checked on 2026-10-11; installed behavior is still a required test. DBOS client/datasource migration/API, native vendor login/tool/config restrictions and supported auth mode are compatibility spikes with fail-closed outcomes. A spike failing pauses only the affected capability, not the kernel or offline Ask.
+
+## Active personal-platform revision 3
+
+[The normative delta](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md) owns the new profile/classification, style/model, connection, progress, quota/capture, phone, resource and reuse contracts. They extend existing policy/durability/evidence interfaces; no separate authoritative task store or task-state enum is introduced. [ADR 0003](../../adr/0003-personal-platform-classification.md) selects the canonical classification and legacy transition; implementation is pending. Preserve old goal/schema semantics and historical evidence through forward compatibility. R3 pretrial readiness requires 156 registered cases; AOS-030-TC04 then records the trial/owner decision, and final G3 requires all 157.

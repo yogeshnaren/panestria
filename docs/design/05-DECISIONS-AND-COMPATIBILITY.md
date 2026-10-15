@@ -35,3 +35,7 @@ Current documentation checks on 2026-10-11 are source evidence only. Pin exact i
 | Phoenix/UI footprint and security | telemetry/UI / 028,029 | Local redacted traces, correct browser auth/reconnect, acceptable resource use | Trace export off or UI error; task truth unaffected; unresolved required UI gate blocks G3 |
 
 Remaining account, pricing, CLI and hardware facts must be rechecked when implementation runs. Planning is authorized here; live vendor use, credential provisioning, OS provisioning and public publishing need their actual scoped user actions. No implementation result is claimed by this document.
+
+## Revision 3 settled planning additions and pending proof
+
+[ADR 0003](../../adr/0003-personal-platform-classification.md) settles classification direction; migration and enablement remain unimplemented. [The active specification](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md) settles R3 owner profile/style, connection grants, verified progress, basic quota/offline capture, private read-only phone and resource/reuse scope. Key-store availability/recovery, native no-extra-spend route proof, actual phone TLS/session deployment, model/context compatibility and target-host budgets need implementation spikes and observed evidence. Their unavailable outcomes disable only the affected capability, preserve independent work and cannot be reported PASS. Rich voice, training, graph/coaching and remote action expansion remain later.

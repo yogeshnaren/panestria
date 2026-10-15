@@ -1,10 +1,12 @@
 # R4–R7 Expansion Specification — Preserve the Full SOTA Target
 
-**Planning status:** DRAFT — release scope requires review before implementation planning; revision planning-fixes-1.
+**Planning status:** DRAFT and blocked by MVP review/separate implementation authorization; active planning revision personal-platform-3. The [main build plan](../../PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md) and [revision-3 specification](../architecture/05-PERSONAL-PLATFORM-REVISION-3.md) govern current scope.
 
 These releases expand a working platform; **none are removed from the target**. Adoption is gated by actual quality/resource/security evidence rather than a desire to collect frameworks.
 
 ## R4 — Advanced routing and compute (AOS-031–033)
+
+The R3 useful-work queue already schedules preferred-provider jobs from supported or owner-supplied observations, preserves reserves and captures verified results offline. R4 improves measurement/forecasts/allocation; it is not a prerequisite for basic subscription value. Qualified model replacement checks tokenizer/template/tools, context, hardware, privacy and rollback, while active attempts remain pinned.
 - Subscription entitlement contract: plan usage only through officially supported routes; read-only trustworthy telemetry, background consent and conservative UNKNOWN states.
 - Quota forecaster, budget reservation, hard eligibility filters before value-based optimization.
 - Benchmark same model/quantization when technically possible using Ollama, vLLM and SGLang under 1/2/4/8/16 concurrency, cold/warm state, shared vs independent prefixes, measured success and foreground interference.
@@ -12,6 +14,8 @@ These releases expand a working platform; **none are removed from the target**. 
 - **Promotion:** no improper subscription use, no surprise spend, no unauthorized provider fallback, and a measured gain in quality-adjusted outcomes or cost.
 
 ## R5 — Memory, desktop and context (AOS-034–035)
+
+Expand R3 encrypted profiles, communication style and private read-only phone access into richer portable context/skills, optional background push, separately approved remote actions and consented app integrations. Integrate a stable qualified Byzantium voice boundary rather than rewriting capture/ASR/transcript/evaluation machinery; keep Panestria authorization/routing authoritative. Real ASR, capture/revision/cancel/critical-number/negation quality and resource contention need measured evidence. TTS is a separate evaluated component; protocol mocks and speaker identity are not live recognition or authentication.
 - Cross-harness context compiler with project/source privacy lineage, skills context, precise token budgeting and attention to Claude safe-mode's ignored workspace CLAUDE.md.
 - Hybrid RAG + memory lifecycle, project decisions, skills and episodes; retrieval lift evaluated against no-memory baseline before adopting complex engines.
 - Push-to-talk/local STT, hotkey/tray, phone status and developer-tool integrations as consented surfaces; ambient recording off by default.
@@ -19,6 +23,8 @@ These releases expand a working platform; **none are removed from the target**. 
 - **Promotion:** useful repeated personal tasks, measured time saved, memory privacy/relevance tests and app-isolation security pass.
 
 ## R6 — Capability discovery and supervised learning (AOS-036)
+
+Use R3 offline results and separately training-eligible curated examples with provider/data rights and lineage. Compare prompting/retrieval/skills against permitted distillation and local LoRA; architecture-specific adapters and embeddings are not universally portable. Automatic candidate generation/evaluation stays inside standing scope; independent promotion checks held-out quality/safety, canary and rollback. Candidates cannot change graders/policy. Optional coaching follows an explicit owner goal; personality graphs begin as typed relationships, with a graph database only after measured benefit.
 - Candidate skill/tool/model registry with security manifest, hashes, permissions and user approval.
 - Frozen replay evaluation, task/outcome corrections, held-out comparison and guarded promotion/rollback; no uncontrolled policy self-editing.
 - Memory compaction with dry runs, pinned source retention, provenance-aware changes and honest forget/backup limits.
@@ -26,6 +32,8 @@ These releases expand a working platform; **none are removed from the target**. 
 - **Promotion:** measurable held-out improvement, no gate-metric regression, reproducible revert.
 
 ## R7 — Open source, cross-platform and multi-machine (AOS-037)
+
+The one-owner workstation/phone MVP is not adversarial multi-user isolation. Broader deployment needs separate identity/keys/contexts/caches, host-principal and remote-executor trust, encrypted restore and platform-specific sandbox proof. Preserve an offline-first local deployment option. All original portability/distribution/security obligations remain.
 - Ubuntu/NVIDIA, CPU-only, Apple Silicon compatibility; native inference on Apple host; platform-specific sandbox conformance.
 - Signed releases, SBOM, pinned dependencies, license policy, threat model, migrations, offline package mode and no mandatory hosted account/telemetry.
 - Potential distributed DBOS recovery/conductor or Temporal *only if architecture decision supported by operational evidence.*
@@ -40,3 +48,7 @@ These releases expand a working platform; **none are removed from the target**. 
 - Transparent cumulative cloud exposure and actual cost/plan savings, without claiming unknowable encrypted payloads.
 
 For exhaustive target coverage, the **unchanged master architecture** is included in `../references/AgentOS_v0.6.1_Architecture_Baseline.md`, and the module-specific specs are [AOS-031](../specs/AOS-031.md) through [AOS-037](../specs/AOS-037.md).
+
+## Reuse and comparative evidence across SOTA
+
+Apply the REA/source investigation workflow for material borrowing or reconstruction; pin target/tool evidence, rights, boundaries and tested integration/rollback. Use established DBOS/PostgreSQL/serving/crypto/transport components where compatible; do not accumulate duplicate workflow stores or resident agent daemons. Retain Dots/firstmate/Grok Bot/Muse as product/workflow evaluation references without assuming consumer account sessions are delegatable APIs. Compare actual verified task outcomes, resources, costs and owner review burden before making any SOTA claim.

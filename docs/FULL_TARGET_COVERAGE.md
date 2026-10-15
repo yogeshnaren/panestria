@@ -1,5 +1,7 @@
 # Panestria full-target coverage register
 
+**Active revision:** 3, personal-platform-3. See [the build plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md) and [extension contract](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md). Original target wording is preserved; mapped coverage is not observed implementation.
+
 **Purpose:** preserve every baseline subsystem and all 16 Appendix A pillars across the MVP/SOTA plan. Coverage means explicit planned ownership, not implementation or measured leadership. The source is the unchanged v0.6.1 architecture and repaired active specs. The package includes their original text; this register is the new planning map.
 
 ## All 35 subsystem rows
@@ -17,7 +19,7 @@
 | Harness broker | 010, 024 | R6, R7 / 036, 037 | Additional native harness/ACP candidates; only compatible scoped adapters enabled |
 | Token broker | 012, 016, 029 | R4, R7 / 031, 032, 033, 037 | Raw local/API inference contract, eligibility/latency/cost routing and extra serving backends; MVP-X01 tracks the baseline SDK path |
 | Model serving | 015, 016 | R4, R7 / 032, 033, 037 | Matched inference experiments, quantization/offload/batching/cache/affinity and native Apple profile |
-| Subscription entitlement | 010, 012, 024, 026, 029 | R4 / 031, 033 | Approved telemetry/forecasting, capacity reserves and uncertainty-aware quotas |
+| Subscription entitlement | 010, 012, 024, 026, 029 / MVP-X11 | R4 / 031, 033 | R3 useful-work queue with owner/provider/estimated/unknown observations, reserves and offline capture; R4 richer approved telemetry/forecasting |
 | API cost optimization | 006, 012, 026, 029 | R4 / 031, 033 | Hard stops before advanced pacing/shadow price/quality-adjusted value optimization |
 | Hardware discovery | 015, 016, 018 | R4, R7 / 032, 033, 037 | Actual measured manifests and benchmark-based per-host model/engine placement |
 | Resource governor | 018, 026 | R4, R7 / 033, 037 | Thermal/battery/foreground modes, fair budgets, specialist slots and safe eviction |
@@ -30,7 +32,7 @@
 | Computer use | 019, 020 | R5 / 035 | Observation/actor split, scoped browser/desktop actions, approvals and manual takeover |
 | Voice | Post-MVP | R5 / 034 | Local STT/TTS, push-to-talk, optional streaming/wake word; capture disabled by default |
 | Desktop integration | 005, 028 | R5 / 034, 035 | Hotkey/tray, selected window/clipboard context, IDE/office/note-app integration |
-| Phone/mobile | Post-MVP | R5, R7 / 034, 037 | Authenticated private monitoring/approvals; exposure/remote trust tested |
+| Phone/mobile | 009, 028, 029, 030 / MVP-X12 | R5, R7 / 034, 037 | R3 private read-only status/inbox; R5 push and separately approved actions; broader remote trust tested in R7 |
 | Mission Control | 028, 029 | R4, R5, R6, R7 / 033, 034, 036, 037 | Fleet/DAG/priorities/quotas/resources/cost/quality/security/memory/skills full views |
 | Observability | 014, 029 | R4, R6, R7 / 033, 036, 037 | OTel stable contract, trace/audit separation, eval dashboards and optional telemetry backends |
 | Cloud exposure ledger | 008, 012, 029 | R5, R7 / 035, 037 | Authorized/accessible/observed data across UI capture, specialists and remote executors |
@@ -112,3 +114,9 @@ Mandatory target behavior cannot be removed silently. Record any changed scope o
 ## Traceability validation
 
 Every one of the 38 active AOS specs is assigned exactly once in the phase tracker; all 35 capability rows and 16 preservation pillars have mapped phases. Appendix A.1 routing candidates are covered by 031/033, A.2 lifecycle by 036, A.3 hardware/residency by 015/032/033/034/037, A.4 non-MVP UX by 034/035/037 and A.5 registry/scout by 036. Detailed clauses remain in the included frozen reference and each parent spec; a child plan must account for its parent before marking it complete.
+
+## Revision-3 feature coverage
+
+The original 35 rows, 16 pillars and all AOS-001–037 responsibilities remain. MVP-X07–X14 add encrypted profiles and consistent labels; an editable charter/style and model portability; connection grants; verified long-horizon progress; quota-aware work with offline reference/eligible dataset curation; read-only private phone access; measured lightweight resource budgets; and REA/source evidence for reuse. Their owners/cases/slices are in the active specification and catalogs.
+
+Full voice/TTS uses a qualified versioned Byzantium adapter in R5; minimal style/profile stays in R3 while richer domain examples and portable skills expand in R5. Provider-permitted distillation, evaluated fine-tuning, optional user-selected coaching and graph experiments are R6. Multi-user/multi-host isolation remains R7. Auto-capture of useful work does not imply training permission or automatic weight promotion. Source inspection or REA's artifact/runtime path must produce evidence before borrowing a component; closed product UX inspiration is not automatic source reuse.
