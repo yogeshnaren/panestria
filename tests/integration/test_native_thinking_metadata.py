@@ -84,3 +84,39 @@ def test_auxiliary_metadata_cannot_hide_privilege_or_thinking_text(extra):
     with pytest.raises(ProtocolRejected, match="unknown_field") as exc:
         parser.feed(line(metadata(**extra)))
     assert "PRIVATE_SENTINEL" not in str(exc.value) and parser.result is None
+
+
+def test_assistant_correlation_metadata_does_not_replace_session_or_complete_work():
+    parser = ClaudeEventParser()
+    init(parser)
+    body = {
+        "type": "assistant",
+        "session_id": "synthetic-native-session",
+        "request_id": "untrusted-correlation-id",
+        "timestamp": "untrusted-time-not-an-authoritative-clock",
+        "message": {"role": "assistant", "content": []},
+    }
+    assert parser.feed(line(body))[0].kind == "message" and parser.result is None
+    with pytest.raises(ProtocolRejected, match="session_mismatch"):
+        parser.feed(line({**body, "session_id": "wrong-session"}))
+    with pytest.raises(ProtocolRejected, match="unknown_field"):
+        parser.feed(line({**body, "approved": True}))
+
+
+@pytest.mark.parametrize(
+    "field,value", [("request_id", 3), ("request_id", "x" * 129), ("timestamp", None), ("timestamp", "x" * 65)]
+)
+def test_assistant_correlation_metadata_is_bounded_text(field, value):
+    parser = ClaudeEventParser()
+    init(parser)
+    with pytest.raises(ProtocolRejected, match="invalid_text"):
+        parser.feed(
+            line(
+                {
+                    "type": "assistant",
+                    "session_id": "synthetic-native-session",
+                    field: value,
+                    "message": {"role": "assistant", "content": []},
+                }
+            )
+        )

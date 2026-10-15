@@ -222,11 +222,18 @@ class ClaudeEventParser:
                 raise ProtocolRejected("quota_unavailable")
             return NativeEvent("rate_limit", digest)
         if kind in {"assistant", "user"}:
+            metadata = {"request_id", "timestamp"} if kind == "assistant" else set()
             _keys(
                 body,
-                {"type", "message", "session_id", "parent_tool_use_id", "uuid", "error", "isSynthetic", "isReplay"},
+                {"type", "message", "session_id", "parent_tool_use_id", "uuid", "error", "isSynthetic", "isReplay"}
+                | metadata,
             )
             self._session(body)
+            for field in metadata:
+                if field in body:
+                    # Correlation strings are bounded opaque transport metadata,
+                    # never trusted task identity, timing or authorization.
+                    _text(body[field], maximum=128 if field == "request_id" else 64)
             message = body.get("message")
             if (
                 not isinstance(message, dict)

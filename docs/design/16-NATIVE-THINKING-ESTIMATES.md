@@ -6,6 +6,10 @@ only field names/enum strings also present in that public executable and value
 types, never message bodies, thinking text, account data or credentials. It
 observed `system/thinking_tokens` with integer `estimated_tokens` and
 `estimated_tokens_delta`. Rejection was never bypassed to collect the shape.
+A later rejected assistant envelope exposed string `request_id` and `timestamp`.
+Accept only bounded opaque strings on assistant messages. They never replace
+the initialized session, trusted kernel task identity or monotonic deadline;
+they are neither persisted as metadata values nor interpreted as a clock.
 
 The official [headless guide](https://code.claude.com/docs/en/headless) describes
 newline JSON events. The exact auxiliary shape here is based on the installed
