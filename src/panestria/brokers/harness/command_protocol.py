@@ -7,6 +7,7 @@ import json
 import re
 import threading
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any, TypeGuard
 
 from panestria.contracts.native_command import RegisteredCheckReceipt
@@ -16,6 +17,15 @@ VERSION = "2025-06-18"
 RequestId = str | int
 Key = tuple[type[str] | type[int], RequestId]
 CheckExecutor = Callable[[str, str, threading.Event], RegisteredCheckReceipt]
+
+
+@dataclass(frozen=True)
+class PreparedCheck:
+    identity: RequestId
+    key: Key
+    digest: str
+    command_ref: str
+    cancel: threading.Event
 
 
 def _id(value: object) -> TypeGuard[RequestId]:
@@ -79,7 +89,8 @@ class RegisteredCheckSession:
         self._state = "NEW"
         self._lock = threading.RLock()
         self._responses: dict[Key, tuple[str, bytes | None]] = {}
-        self._active: dict[Key, tuple[str, threading.Event]] = {}
+        self._active: dict[Key, PreparedCheck] = {}
+        self._running: set[Key] = set()
 
     @property
     def closed(self) -> bool:
@@ -89,8 +100,8 @@ class RegisteredCheckSession:
     def close(self) -> None:
         with self._lock:
             self._state = "CLOSED"
-            for _, signal in self._active.values():
-                signal.set()  # Request cancellation, never claim process reaping.
+            for pending in self._active.values():
+                pending.cancel.set()  # Request cancellation, never claim process reaping.
 
     def _notification(self, body: dict[str, Any]) -> None:
         method = body["method"]
@@ -108,7 +119,7 @@ class RegisteredCheckSession:
                     return
                 pending = self._active.get((type(identity), identity))
                 if pending:
-                    pending[1].set()
+                    pending.cancel.set()
         except ValueError:
             return
 
@@ -164,6 +175,11 @@ class RegisteredCheckSession:
         }
 
     def handle(self, raw: bytes) -> bytes | None:
+        prepared = self.prepare(raw)
+        return self.run(prepared) if isinstance(prepared, PreparedCheck) else prepared
+
+    def prepare(self, raw: bytes) -> bytes | PreparedCheck | None:
+        """Accept frames in wire order before moving only actual execution to a worker."""
         with self._lock:
             if self.closed:
                 return None
@@ -203,7 +219,7 @@ class RegisteredCheckSession:
             if pending:
                 return (
                     _error(identity, -32000, "request_in_progress")
-                    if pending[0] == digest
+                    if pending.digest == digest
                     else _error(identity, -32600, "request_id_reused")
                 )
             method, signal, command = body["method"], None, None
@@ -237,7 +253,7 @@ class RegisteredCheckSession:
                     else:
                         self._calls += 1
                         command, signal = args["command_ref"], threading.Event()
-                        self._active[key] = (digest, signal)
+                        self._active[key] = PreparedCheck(identity, key, digest, command, signal)
                         response = None
                 else:
                     response = _error(identity, -32601, "method_not_found")
@@ -246,16 +262,27 @@ class RegisteredCheckSession:
             if signal is None or command is None:
                 self._responses[key] = (digest, response)
                 return response
+            return self._active[key]
+
+    def run(self, operation: PreparedCheck) -> bytes | None:
+        """Consume an accepted operation once; never accept model-supplied dispatch objects."""
+        with self._lock:
+            if self._active.get(operation.key) is not operation or operation.key in self._running:
+                return _error(None, -32600, "invalid_or_consumed_dispatch")
+            self._running.add(operation.key)
+        identity, key, digest, signal = operation.identity, operation.key, operation.digest, operation.cancel
         try:
             receipt = (
                 RegisteredCheckReceipt(outcome="CANCELLED")
                 if signal.is_set() or self.closed
-                else RegisteredCheckReceipt.model_validate(self._executor(command, self._candidate, signal))
+                else RegisteredCheckReceipt.model_validate(
+                    self._executor(operation.command_ref, self._candidate, signal)
+                )
             )
         except Exception:
             receipt = RegisteredCheckReceipt(outcome="UNKNOWN")
         payload = receipt.model_dump()
-        response = _result(
+        response: bytes | None = _result(
             identity,
             {
                 "content": [{"type": "text", "text": json.dumps(payload, sort_keys=True, separators=(",", ":"))}],
@@ -265,6 +292,7 @@ class RegisteredCheckSession:
         )
         with self._lock:
             self._active.pop(key, None)
+            self._running.discard(key)
             if signal.is_set() or self.closed:
                 response = None  # Cancelled requests have no protocol completion response.
             self._responses[key] = (digest, response)
