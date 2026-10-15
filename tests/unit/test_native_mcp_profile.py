@@ -279,3 +279,15 @@ def test_flattened_cli_receipt_string_is_still_strict_metadata_only():
         state.feed(tool_message("assistant"))
         with pytest.raises(ProtocolRejected, match="invalid_registered_check_metadata"):
             state.feed(tool_message("user", tool_use_result=invalid))
+
+
+@pytest.mark.parametrize("wrapped", [False, True])
+def test_flattened_mcp_content_array_or_result_is_strict_receipt(wrapped):
+    receipt = {"outcome": "COMPLETED", "exit_code": 0, "report_sha256": "ab" * 32}
+    content = [{"type": "text", "text": json.dumps(receipt)}]
+    value = {"content": content, "structuredContent": receipt, "isError": False} if wrapped else content
+    state = parser()
+    state.feed(init())
+    state.feed(tool_message("assistant"))
+    assert state.feed(tool_message("user", tool_use_result=json.dumps(value)))[0].kind == "message"
+    assert state.result is None

@@ -58,8 +58,22 @@ def test_actual_subscription_native_check_reaches_durable_read_gateway(configure
                 return super()._frame(raw)
             except ProtocolRejected:
                 body = json.loads(raw)
+                shape = None
+                if isinstance(body.get("tool_use_result"), str):
+                    try:
+                        parsed = json.loads(body["tool_use_result"])
+                        shape = {
+                            "type": type(parsed).__name__,
+                            "keys": sorted(parsed) if isinstance(parsed, dict) else None,
+                            "item_keys": [sorted(x) for x in parsed if isinstance(x, dict)]
+                            if isinstance(parsed, list)
+                            else None,
+                        }
+                    except ValueError:
+                        shape = {"type": "non-json-string", "bytes": len(body["tool_use_result"].encode())}
                 rejected.append(
                     {
+                        "flattened_result_shape": shape,
                         "type": body.get("type"),
                         "keys": sorted(body),
                         "message_keys": sorted(body.get("message", {}))

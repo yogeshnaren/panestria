@@ -451,10 +451,15 @@ class ClaudeEventParser:
                 value = body["tool_use_result"]
                 if type(value) is str:
                     try:
-                        RegisteredCheckReceipt.model_validate_json(canonical_payload(_text(value, maximum=4096)))
+                        text = _text(value, maximum=4096)
+                        # The CLI can flatten the MCP content array/result, rather
+                        # than just its text. Normalize one strict JSON layer only.
+                        value = json.loads(canonical_payload('{"value":' + text + "}"))["value"]
+                        if isinstance(value, dict) and "outcome" in value:
+                            RegisteredCheckReceipt.model_validate(value)
+                            return
                     except (ValueError, TypeError):
                         raise ProtocolRejected("invalid_registered_check_metadata") from None
-                    return
                 content = value.get("content") if isinstance(value, dict) else value
                 if (
                     not isinstance(content, list)
