@@ -45,9 +45,11 @@ remain unchanged except additive active-schema/migration/interface updates.
 | #66 | Closed bounded research contracts, without fetch authority | 760 / 37 | 0152ed4 |
 | #68 | Actual native proposal through verified, approved protected merge | 760 / 38 | 22a048d |
 | #69 | Canonical Unicode and exact passage byte checks | 797 / 38 | 4603531 |
+| #70 | Immutable scoped request metadata, atomic event and corrected retry race | 810 / 38 | 5ca8fbc |
+| #71 | Public-unicast provider gateway and exact peer/scope checks | 854 / 38 | d987e6c |
 
-Current verified main: 4603531b8ea79da1aaa5ebb2baffde25d30cbdf0; latest CI
-run 38785556252 at exact head 1431376. PR #62's earlier run exposed an older Ask
+Current verified main: d987e6c6b44fe9d415d8e9f335dc1493213d0483; latest CI
+run 38813199573 at exact head 94bf2c1. PR #62's earlier run exposed an older Ask
 downgrade test sharing newer audit data; a schema-only restored isolated guard
 test fixed it without weakening audit-loss protection. PR #61 attempt 1 failed one proposal-demo
 approval-flow test; isolated actual-PG/Docker reproduction and exact-head retry
@@ -73,28 +75,26 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
 ## Exact next work
 
-1. Finish PR #70 immutable research request storage after current-main integration,
-   exact-head CI and review. Migration 0023 pins question artifact metadata/scope,
-   enforces limits, refuses populated downgrade and uses the global audit counter.
-   Service rejects unwrapped autocommit and commits request/event in one caller
-   transaction. Forty-one actual PG/migration/local-server checks passed at a1319bb,
-   including 13 request checks and actual restore/concurrent retry/rollback proofs;
-   evidence/research-request-2026-10-15 retains the initial and corrected passes.
-   No underlying blob/fetch/source/claim authority or research route is enabled.
-   Next R2 task: protected source blobs and immutable source/claim metadata,
-   actual broker/reader fetch authority and SourceStore lookup. No full AOS-013/G2
-   case is promoted by these components. #69's 79 contract/text checks return only
-   BYTE_MATCH_ONLY_FETCH_AUTHORITY_REQUIRED. #68's actual native Build pass took
-   16.13s at b104e4f (two real public calls, wrong digest denied, one exact scripted
-   approval/effect, restart no replay); that scripted decision is not acceptance.
-   R1 gateway review found is_global permits multicast; task/egress-unicast fixes
-   explicit public-unicast and exact connected-peer checks. Its independent CI,
-   review and source-bound qualification must finish before merge. Native actual
-   cash stays unknown; no direct paid SDK/API-key calls or provider fallback.
-   Local Ask setup/server/browser are merged; actual CPU model + CUA verified
-   literal HTML as text, cancellation, reload/logout and responsive layouts. All
-   temporary qualification services were cleaned up; old owner demo 8871 remains
-   on historical code. Profiles stay disabled. See testing/LOCAL_ASK_BROWSER.md.
+1. Finish the scoped protected-byte task (`task/research-blobs`) after exact-head
+   CI/review. At source bdfca98, 113 focused checks passed (34 actual filesystem/
+   process checks + 79 contracts/text); three existing Build evidence checks also
+   passed. Actual child exits around publication, exact-byte retry, cross-process
+   lock contention, 2 MiB limits, unsafe links/nodes/permissions and corruption are
+   covered. It provides protected plaintext, not encryption or fetch authority.
+   Source-bound reports are in evidence/research-blobs-2026-10-15. Next: immutable
+   source/claim metadata plus actual retained broker fetch/reader/SourceStore
+   integrity before any usable citation or Delegate route. AOS-013 stays partial.
+   #70's first CI exposed a real secondary unique-index retry race; all-constraint
+   conflict arbitration and 24 concurrent pairs corrected it. The passing exact
+   CI has 810 tests; failed CI and earlier source-bound checks remain preserved.
+   #71 also rejects site-local/documentation/zone/mapped addresses that older
+   runtime flags can classify as global; 53 targeted + 2 actual Docker/TLS checks
+   are preserved, alongside full default CI. No full AOS-008/G1 promotion.
+   The temporary agent checkouts disappeared during the allowance wait; cause is
+   unknown. Published changes/evidence were recovered into an independent clone
+   at /tmp/panestria-pr-integration. Preserve owner checkouts, legacy Git worktree
+   references and services. Do not assume an old demo is running from a missing
+   temporary directory. Local Ask services are explicit opt-in; profiles stay off.
 2. Complete explicit opt-in local profile setup/launcher, full key lifecycle and
    encrypted restore/forgetting/grant boundaries and whole privacy cases. The
    ordinary ContextCompiler stores metadata/digests, not prompt bodies; profile
