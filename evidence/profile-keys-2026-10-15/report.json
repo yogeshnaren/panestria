@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "scope": "component-only: scoped Linux profile key adapter",
+  "source_commit": "3ec27b3eb921ec58c15f574a27133c8f52b497d3",
+  "observed_at": "2026-10-15T12:10:06.684012+00:00",
+  "result": "PASS",
+  "tests": {
+    "adapter": 34,
+    "actual_isolated_secret_service": 1,
+    "failed": 0
+  },
+  "versions": {
+    "cryptography": "50.0.2",
+    "SecretStorage": "3.5.0",
+    "jeepney": "0.9.0"
+  },
+  "gnome_keyring": "gnome-keyring-daemon: 40.0",
+  "os": "Linux",
+  "source_sha256": {
+    "src/panestria/memory/keys.py": "cc65dd77ff699c0c7adfae6e979183d25f5a53aee2943df11857b55a63ac6193",
+    "tests/integration/test_profile_keys.py": "9ff918e4636afbacbe03be624bc6ef983879c964d34885c146911c25d2c3d2f0",
+    "tests/integration/test_profile_keys_live.py": "824985417b9df4d24ec7a9a72e7596dc2cb7fab8868c98cb107845bd63226100",
+    "tests/fixtures/profile_keyring_probe.py": "351d80e993e9f0103d0febe8583e7c6fa3e91a897ef0fd02c7066653f6f9f21d",
+    "uv.lock": "3e855e719ad186a7e5f58e06155907c63187d9129a9cc025271a18bcd78aed1e"
+  },
+  "junit_sha256": "e064221f04719b7dd41c9177ada6888fc6091e662e73bb3b2cf262c3d9f43549",
+  "owner_keyring_touched": false,
+  "provider_calls": 0,
+  "release_gate_result": "NOT_EVALUATED",
+  "limitations": [
+    "No profile vault or API enabled",
+    "No complete TC06/TC07 assertion claim",
+    "No owner keyring conformance or host administrator protection",
+    "Default CI excludes live OS test"
+  ]
+}

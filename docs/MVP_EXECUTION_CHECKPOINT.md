@@ -102,6 +102,23 @@ keeping old API/history/active-attempt compatibility explicit. Complete the
 whole class/source/context/destination matrix before completing S4/TC05.
 Profile encryption remains disabled and later MVP work remains pending.
 
+## Latest checkpoint: key-store foundation
+
+PR #53 merged as `b22c46c9e28f84b2a5ed9fc02e96cabecbe0b248` after corrected
+exact-head CI passed 482 default tests, 34 live deselected (run 38730813894).
+Branch `task/profile-secret-store` began at fresh main 2f8c983, then merged this
+verified main. It pins cryptography/SecretStorage/Jeepney and adds a scoped,
+bounded, non-prompting Linux key adapter. It does not enable profile storage.
+
+Local source `3ec27b3eb921ec58c15f574a27133c8f52b497d3` passed 34 adapter checks
+and one actual isolated OS keyring test, including daemon restart. Qualification
+exposed GNOME's generic schema insertion; explicit schema binding fixes the
+compatibility issue while preserving exact scope checks. Ruff, strict mypy
+(150 files) and all 10 import contracts pass. See PROFILE_KEYS.md and component
+evidence; no full vault case or release gate is promoted. Full exact-head PR CI
+and final review remain required. Next implement bounded authenticated profile
+ciphertext storage, broker-only reads and its real database failure matrix.
+
 ## Latest checkpoint: canonical memory version 2
 
 PR #52 merged as `2f8c983` after CI run 38727911700 passed 471 default tests, 34 live deselected. The dependent canonical branch incorporated that verified main merge before final CI. Separate commits cover design, canonical domain/migration, v2 API and execution tracking.
