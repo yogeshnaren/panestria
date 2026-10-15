@@ -8,6 +8,9 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
+from panestria.contracts.native_command import RegisteredCheckReceipt
+from panestria.contracts.native_tools import canonical_payload
+
 CLAUDE_VERSION = "2.1.273"
 MAX_FRAME_BYTES = 128 * 1024
 
@@ -301,13 +304,19 @@ class ClaudeEventParser:
             return NativeEvent("rate_limit", digest)
         if kind in {"assistant", "user"}:
             metadata = {"request_id", "timestamp"} if kind == "assistant" else set()
+            if self.allowed_mcp_servers:
+                metadata |= (
+                    {"tool_use_meta", "narration_block_indexes"}
+                    if kind == "assistant"
+                    else {"timestamp", "tool_use_result", "tool_result_meta"}
+                )
             _keys(
                 body,
                 {"type", "message", "session_id", "parent_tool_use_id", "uuid", "error", "isSynthetic", "isReplay"}
                 | metadata,
             )
             self._session(body)
-            for field in metadata:
+            for field in metadata & {"request_id", "timestamp"}:
                 if field in body:
                     # Correlation strings are bounded opaque transport metadata,
                     # never trusted task identity, timing or authorization.
@@ -319,6 +328,8 @@ class ClaudeEventParser:
                 or not isinstance(message.get("content"), list)
             ):
                 raise ProtocolRejected("invalid_message")
+            if self.allowed_mcp_servers:
+                self._mcp_metadata(body, message, kind)
             for block in message["content"]:
                 if not isinstance(block, dict):
                     raise ProtocolRejected("invalid_block")
@@ -391,6 +402,80 @@ class ClaudeEventParser:
             self.result = NativeResult(status, False, reason, hashlib.sha256(text.encode()).hexdigest())
             return NativeEvent("candidate" if status == "CANDIDATE" else "unavailable", digest, reason)
         raise ProtocolRejected("unknown_event_type")
+
+    def _mcp_metadata(self, body: dict[str, Any], message: dict[str, Any], role: str) -> None:
+        blocks = message["content"]
+        if role == "assistant":
+            ids = {
+                block.get("id")
+                for block in blocks
+                if isinstance(block, dict) and block.get("type") == "tool_use" and type(block.get("id")) is str
+            }
+            display = body.get("tool_use_meta", [])
+            if not isinstance(display, list) or len(display) > 8:
+                raise ProtocolRejected("invalid_tool_display_metadata")
+            seen: set[str] = set()
+            for item in display:
+                if not isinstance(item, dict) or not {"id", "display_name"} <= set(item) <= {
+                    "id",
+                    "display_name",
+                    "server_display_name",
+                }:
+                    raise ProtocolRejected("invalid_tool_display_metadata")
+                identity = _text(item["id"], maximum=128)
+                if identity not in ids or identity in seen:
+                    raise ProtocolRejected("invalid_tool_display_metadata")
+                seen.add(identity)
+                _text(item["display_name"], maximum=256)
+                server_name = _text(item.get("server_display_name", "panestria"), maximum=128)
+                if server_name not in {"panestria", "panestria-registered-check"}:
+                    raise ProtocolRejected("invalid_tool_display_metadata")
+            indexes = body.get("narration_block_indexes", [])
+            if (
+                not isinstance(indexes, list)
+                or len(indexes) > 16
+                or any(
+                    type(index) is not int
+                    or not 0 <= index < len(blocks)
+                    or not isinstance(blocks[index], dict)
+                    or blocks[index].get("type") != "text"
+                    for index in indexes
+                )
+                or indexes != sorted(set(indexes))
+            ):
+                raise ProtocolRejected("invalid_narration_metadata")
+        else:
+            if body.get("tool_result_meta", []) != []:
+                raise ProtocolRejected("native_tool_not_executed")
+            if "tool_use_result" in body:
+                value = body["tool_use_result"]
+                content = value.get("content") if isinstance(value, dict) else value
+                if (
+                    not isinstance(content, list)
+                    or len(content) != 1
+                    or not isinstance(content[0], dict)
+                    or set(content[0]) != {"type", "text"}
+                    or content[0]["type"] != "text"
+                ):
+                    raise ProtocolRejected("invalid_registered_check_metadata")
+                try:
+                    text = _text(content[0]["text"], maximum=4096)
+                    receipt = RegisteredCheckReceipt.model_validate_json(canonical_payload(text))
+                    if isinstance(value, dict):
+                        if not {"content"} <= set(value) <= {"content", "structuredContent", "isError"}:
+                            raise ValueError
+                        if (
+                            "structuredContent" in value
+                            and RegisteredCheckReceipt.model_validate(value["structuredContent"]) != receipt
+                        ):
+                            raise ValueError
+                        if "isError" in value and (
+                            type(value["isError"]) is not bool
+                            or value["isError"] != (receipt.outcome != "COMPLETED" or receipt.exit_code != 0)
+                        ):
+                            raise ValueError
+                except (ValueError, TypeError):
+                    raise ProtocolRejected("invalid_registered_check_metadata") from None
 
     def _session(self, body: dict[str, Any], *, allow_before_init: bool = False) -> None:
         session = body.get("session_id", self.session)
