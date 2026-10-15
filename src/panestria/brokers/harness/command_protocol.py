@@ -52,10 +52,12 @@ def _params(body: dict[str, Any], allowed: set[str]) -> dict[str, Any]:
         raise ValueError
     if "_meta" in params:
         meta = params["_meta"]
-        if not isinstance(meta, dict) or not set(meta) <= {"progressToken"}:
+        allowed_meta = {"progressToken"} | ({"claudecode/toolUseId"} if body.get("method") == "tools/call" else set())
+        if not isinstance(meta, dict) or not set(meta) <= allowed_meta:
             raise ValueError
-        if "progressToken" in meta and not _id(meta["progressToken"]):
+        if any(not _id(value) for value in meta.values()):
             raise ValueError
+        # Native call correlation is opaque display data, never scope/lease/approval authority.
     return params
 
 

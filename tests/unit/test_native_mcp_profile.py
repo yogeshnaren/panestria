@@ -291,3 +291,38 @@ def test_flattened_mcp_content_array_or_result_is_strict_receipt(wrapped):
     state.feed(tool_message("assistant"))
     assert state.feed(tool_message("user", tool_use_result=json.dumps(value)))[0].kind == "message"
     assert state.result is None
+
+
+def test_native_tool_use_correlation_is_bounded_ignored_and_never_authority():
+    calls = []
+    state = RegisteredCheckSession(
+        ("public-synthetic-check",),
+        "snapshot:" + "ab" * 32,
+        lambda *args: calls.append(args) or RegisteredCheckReceipt(outcome="DENIED"),
+    )
+
+    def send(method, identity, params):
+        return state.handle(json.dumps({"jsonrpc": "2.0", "method": method, "id": identity, "params": params}).encode())
+
+    send(
+        "initialize",
+        0,
+        {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "fixture", "version": "1"}},
+    )
+    state.handle(b'{"jsonrpc":"2.0","method":"notifications/initialized"}')
+    params = {
+        "name": "run_registered_check",
+        "arguments": {"command_ref": "public-synthetic-check", "candidate_ref": "snapshot:" + "ab" * 32},
+    }
+    for i, meta in enumerate(
+        [
+            {"approved": True},
+            {"claudecode/toolUseId": []},
+            {"claudecode/toolUseId": "x" * 65},
+            {"claudecode/remoteToolCall": True},
+        ]
+    ):
+        assert json.loads(send("tools/call", i + 1, {**params, "_meta": meta}))["error"]["code"] == -32602
+    result = send("tools/call", 10, {**params, "_meta": {"claudecode/toolUseId": "toolu_public", "progressToken": 10}})
+    assert json.loads(result)["result"]["structuredContent"]["outcome"] == "DENIED"
+    assert len(calls) == 1 and calls[0][0] == "public-synthetic-check"
