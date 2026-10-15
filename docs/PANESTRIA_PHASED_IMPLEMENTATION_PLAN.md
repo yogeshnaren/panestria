@@ -22,7 +22,7 @@ This is the full phased roadmap and planning contract. Detailed implementation p
 | R6 | SOTA | SOTA: evaluated adaptation and capability discovery | AOS-036 | G6 |
 | R7 | SOTA | SOTA: portability, multi-machine and public distribution | AOS-037 | G7 |
 
-An item being documented or merged is not proof that a release gate passed. The [machine-readable tracker](phase-tracker.json) starts with NOT_STARTED items and NOT_RUN gates. The [MVP checklist](MVP_ACCEPTANCE_CHECKLIST.md) defines the completion evidence. The [coverage register](FULL_TARGET_COVERAGE.md) accounts for 35 baseline subsystem rows, 16 preservation pillars and their finer features.
+An item being documented or merged is not proof that a release gate passed. The [machine-readable tracker](phase-tracker.json) records accepted R0 evidence, R1 in progress and later work not yet accepted. New revision-3 slices and cases remain NOT_STARTED/NOT_RUN. The [MVP checklist](MVP_ACCEPTANCE_CHECKLIST.md) defines the completion evidence. The [coverage register](FULL_TARGET_COVERAGE.md) accounts for 35 baseline subsystem rows, 16 preservation pillars and their finer features.
 
 ## 2. Repository setup and planning rules
 
@@ -45,7 +45,7 @@ src/panestria/             one distribution with enforced sub-package boundaries
 
 1. Preserve the delivered frozen architecture, original spec archives and original skills ZIP with hashes. Keep revised spec provenance explicit.
 2. Create GitHub milestones corresponding to R0–R7 and one issue per active AOS spec when repository setup is authorized; label MVP vs SOTA and not-started vs evidence-backed completion. This roadmap does not create remote issues or push commits.
-3. Start with an AOS-001 checklist, then full plans for 002/003, a checklist for 004 and a full plan for 005. Planning templates and common requirements are included under specification/.
+3. Preserve the accepted R0 plans and evidence: concise plans for AOS-001/004 and full plans for 002/003/005. Do not restart them. Reconcile the next R1 slice against current code, its existing plan and the release-gate evidence. Planning templates and common requirements are included under specification/.
 4. Target roughly one developer-day per tested implementation slice. Estimate against inspected code; split work that cannot fit. This is a granularity target, not a claim that one whole AOS item or phase takes one day.
 5. Give schema, durability, sandbox, approvals, provider adapters and external-action changes full design/failure analysis. Use concise checklists for low-risk wiring and docs; preserve every applicable acceptance test.
 6. Plan, implement and verify one slice; keep a working vertical path and end with evidence. Keep only the current phase's detailed plans active. Later release specs remain draft until their phase planning uses observed results.
@@ -240,13 +240,13 @@ Every active spec is assigned exactly once below. The phase order preserves all 
 
 ## 14. What happens next
 
-The historical baseline and the superseded [AOS-001 checklist](plans/AOS-001-checklist.md) remain for provenance. The active plan is the [AOS-001 implementation plan](plans/AOS-001-implementation-plan.md). Next, accept or return the corrected S1 slice, then implement S2. AOS-002 through AOS-005 already have detailed plans; do not treat them as unwritten. S1 is not a release-gate pass, and R0 is not complete.
+R0 is complete for its recorded accepted candidate. Continue R1 using [execution control](phases/R1-EXECUTION-CONTROL.md), current code and the gate manifests: reconcile merged implementation with required evidence, then select a ready unfinished slice or acceptance gap. Pending live provider checks can run separately from independent fixture and implementation work; they still require real evidence before G1 passes. Preserve existing R0 plans and evidence rather than restarting AOS-001-S1. The old [AOS-001 checklist](plans/AOS-001-checklist.md) remains superseded by its [implementation plan](plans/AOS-001-implementation-plan.md).
 
 Build a usable R1 pilot, add R2 verified research, then finish R3 concurrency/dashboard and the release trial. Freeze and review the MVP at the explicit checkpoint. SOTA epics remain visible and measurable, with detailed child plans generated after MVP feedback rather than before hardware, workload and integration facts exist.
 
 The old architecture's Phase 0–5 labels and this roadmap's R0–R7 labels use different granularity. Always reference the R release and AOS ID in implementation issues to avoid phase-name ambiguity. The full target is preserved; optional framework choices require evidence instead of installing every named alternative together.
 
-## 14. Personal-platform continuity across MVP and SOTA
+## 15. Personal-platform continuity across MVP and SOTA
 
 R3 delivers the bounded owner profile/style, useful-work quota queue and private read-only phone view. R4 expands telemetry/forecasting, model qualification and Linux efficiency. R5 adds a versioned qualified Byzantium voice adapter, separate TTS, richer style/context, push/approved remote actions and per-app integrations. R6 adds consented coaching/graph experiments, permitted teacher datasets and post-training only after measured benefit over prompting/retrieval/skills, with independent promotion/rollback. R7 adds adversarial multi-user/multi-host boundaries and distribution. No brain metaphor, graph database, fine-tune or release name establishes intelligence or SOTA leadership.
 
