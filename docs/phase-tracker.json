@@ -351,7 +351,7 @@
       "track": "MVP",
       "outcome": "A bounded public-web research brief with fetched source hashes, exact passages, support judgments and isolated retrieval.",
       "gate": "G2",
-      "status": "DRAFT",
+      "status": "IN_PROGRESS",
       "gate_status": "NOT_RUN",
       "items": [
         {
@@ -361,12 +361,13 @@
             "AOS-002",
             "AOS-008"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [],
-          "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
-          "plan_ref": "plans/AOS-013-implementation-plan.md"
+          "plan_status": "PARTIAL_CONTRACTS",
+          "plan_ref": "plans/AOS-013-implementation-plan.md",
+          "implementation_note": "Closed data contracts and 42 bounds/inheritance/authority-denial checks; schema, stored-source proof and full item cases pending."
         },
         {
           "id": "AOS-019",
