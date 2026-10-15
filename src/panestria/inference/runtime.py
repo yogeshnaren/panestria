@@ -22,10 +22,13 @@ MODEL_DIGEST = "65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b
 
 
 class ModelRuntime:
-    def __init__(self, models: Path, socket_directory: Path, *, gpu: bool = False) -> None:
+    def __init__(
+        self, models: Path, socket_directory: Path, *, gpu: bool = False, preserve_existing: bool = False
+    ) -> None:
         self.models, self.socket_directory, self.gpu = models.resolve(), socket_directory.resolve(), gpu
         self.primary = PrimaryLease(Path.home() / ".local/state/panestria")
         self.id: str | None = None
+        self.preserve_existing = preserve_existing
         self.identity = uuid4().hex
         self.effective: dict[str, Any] = {}
         self.socket_path = self.socket_directory / "model.sock"
@@ -52,6 +55,10 @@ class ModelRuntime:
             raise
 
     def _reap_orphans(self) -> None:
+        if self.preserve_existing:
+            if self._docker(["ps", "-a", "-q", "--filter", "label=panestria.purpose=local-model"]).strip():
+                raise InferenceUnavailable("existing_model_service_preserved")
+            return
         containers = self._docker(
             [
                 "ps",
