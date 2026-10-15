@@ -19,6 +19,7 @@ from panestria.brokers.harness.cli_profile import BinaryPin
 from panestria.execution.proposal_demo import DemoUnavailable, ProposalDemo, _lock
 from panestria.kernel.sessions import SessionService
 from panestria.kernel.uow import UnitOfWork
+from panestria.sandbox.profiles import DEFAULT_IMAGE
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_DSN = "postgresql://panestria_demo:placeholder-not-a-secret@127.0.0.1:55438/panestria_native_demo"
@@ -26,6 +27,13 @@ IMAGE = "postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7
 CONTAINER = "panestria-native-review-demo-db"
 VOLUME = "panestria_native_review_demo_pgdata"
 BINARY = Path("/home/yogesh/.local/share/claude/versions/2.1.273")
+
+
+def prepare_worker_image() -> None:
+    """Trusted setup downloads a pinned image; workers themselves use pull=never."""
+    present = subprocess.run(["docker", "image", "inspect", DEFAULT_IMAGE], capture_output=True, timeout=10)
+    if present.returncode != 0:
+        subprocess.run(["docker", "pull", DEFAULT_IMAGE], capture_output=True, timeout=180, check=True)
 
 
 def main() -> None:
@@ -45,6 +53,7 @@ def main() -> None:
     if not 1024 <= args.port <= 65535:
         raise SystemExit("invalid_demo_port")
     if args.command == "init":
+        prepare_worker_image()
         found = subprocess.run(["docker", "inspect", CONTAINER], capture_output=True, text=True)
         if found.returncode == 0:
             body = json.loads(found.stdout)[0]

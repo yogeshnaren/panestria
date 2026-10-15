@@ -21,28 +21,29 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.sessions import SessionService
 
 ASSETS = Path(__file__).with_name("demo_assets")
+UUID_PATTERN = r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
 
 
 class StartBody(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
-    goal_id: str = Field(pattern=r"^[0-9a-f-]{36}$")
+    goal_id: str = Field(pattern=UUID_PATTERN)
     certificate_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     policy_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
 class DecisionBody(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
-    goal_id: str = Field(pattern=r"^[0-9a-f-]{36}$")
-    approval_id: str = Field(pattern=r"^[0-9a-f-]{36}$")
+    goal_id: str = Field(pattern=UUID_PATTERN)
+    approval_id: str = Field(pattern=UUID_PATTERN)
     effect_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
     expected_version: int = Field(ge=0)
     decision: str = Field(pattern=r"^(approve|deny)$")
-    idempotency_key: str = Field(pattern=r"^[0-9a-f-]{36}$")
+    idempotency_key: str = Field(pattern=UUID_PATTERN)
 
 
 class CancelBody(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
-    goal_id: str = Field(pattern=r"^[0-9a-f-]{36}$")
+    goal_id: str = Field(pattern=UUID_PATTERN)
     expected_version: int = Field(ge=0)
 
 

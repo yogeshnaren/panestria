@@ -57,8 +57,15 @@ class ProviderFixture(ClaudeProposalAdapter):
         )
 
 
+@pytest.fixture(scope="session")
+def demo_image() -> None:
+    from panestria.cli.review_demo import prepare_worker_image
+
+    prepare_worker_image()
+
+
 @pytest.fixture
-def demo(r1_database: str, tmp_path: Path) -> ProposalDemo:
+def demo(r1_database: str, tmp_path: Path, demo_image: None) -> ProposalDemo:
     result = ProposalDemo(tmp_path / "demo", r1_database, ProviderFixture())
     result.initialize()
     yield result
@@ -188,6 +195,11 @@ def test_browser_requires_pairing_exact_origin_csrf_and_valid_session(demo: Prop
         assert client.get("/v1/demo").status_code == 200
         body = {"goal_id": str(uuid4()), "certificate_sha256": "ff" * 32, "policy_sha256": "ff" * 32}
         assert client.post("/v1/demo/start", json=body, headers={"origin": origin}).status_code == 403
+        authenticated = {"origin": origin, "x-panestria-csrf": csrf}
+        assert (
+            client.post("/v1/demo/start", json={**body, "goal_id": "-" * 36}, headers=authenticated).status_code == 422
+        )
+        assert client.post("/v1/demo/start", json={**body, "approved": True}, headers=authenticated).status_code == 422
         assert (
             client.post(
                 "/v1/demo/start", json=body, headers={"origin": "https://evil.invalid", "x-panestria-csrf": csrf}
@@ -365,3 +377,24 @@ def test_cancellation_goal_lock_allows_a_worker_to_record_its_final_event(r1_tas
         assert c.execute("SELECT status FROM panestria.goal WHERE id=%s", (r1_task["goal"],)).fetchone() == (
             "CANCELLED",
         )
+
+
+def test_missing_container_runtime_is_refused_before_claude(
+    demo: ProposalDemo, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(demo, "_runtime_ready", lambda: False)
+    assert demo.qualify() == {"status": "UNAVAILABLE", "reason": "container_runtime_not_prepared"}
+    assert demo.adapter.calls == 0
+    assert not (demo.root / "certificate.json").exists()
+    with pytest.raises(DemoUnavailable, match="container_runtime_not_prepared"):
+        demo.start(str(uuid4()), "ff" * 32, "ff" * 32)
+    assert demo.adapter.calls == 0
+
+
+def test_loaded_runtime_change_requires_restart_before_qualification(
+    demo: ProposalDemo, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("panestria.execution.proposal_demo.runtime_versions", lambda: {"changed": "runtime"})
+    assert demo.qualify() == {"status": "UNAVAILABLE", "reason": "runtime_changed_restart_required"}
+    assert demo.adapter.calls == 0
+    assert not (demo.root / "certificate.json").exists()

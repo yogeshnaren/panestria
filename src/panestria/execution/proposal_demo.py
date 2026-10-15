@@ -58,7 +58,7 @@ from panestria.kernel.uow import UnitOfWork
 from panestria.policy.engine import PolicyEngine
 from panestria.policy.profiles import CertificateRejected
 from panestria.sandbox.native_tool_gateway import NativeCommandRegistry, NativeToolGateway, ReviewedCommand, ToolPermit
-from panestria.sandbox.profiles import SandboxProfile
+from panestria.sandbox.profiles import DEFAULT_IMAGE, SandboxProfile
 from panestria.verification.build import verify_build
 from panestria.verification.git_snapshot import materialize
 from panestria.verification.registry import CommandRegistry
@@ -350,6 +350,15 @@ class ProposalDemo:
                 )
         return state
 
+    def _runtime_ready(self) -> bool:
+        try:
+            result = subprocess.run(
+                ["docker", "image", "inspect", DEFAULT_IMAGE], capture_output=True, timeout=5, check=False
+            )
+            return result.returncode == 0
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+
     def qualify(self) -> dict[str, Any]:
         # Explicit operator diagnostic, before task cloud permissions exist.
         # No arbitrary input, project context or automatic retry is supported.
@@ -365,7 +374,15 @@ class ProposalDemo:
             journal = self.root / "qualification.json"
             if journal.exists() and json.loads(journal.read_bytes()).get("status") == "STARTED":
                 raise DemoUnavailable("qualification_outcome_unknown_owner_resolution_required")
+            if not self._runtime_ready():
+                outcome = {"status": "UNAVAILABLE", "reason": "container_runtime_not_prepared"}
+                _atomic(journal, outcome)
+                return outcome
             versions = runtime_versions()
+            if versions != self.certificates.runtime_versions:
+                outcome = {"status": "UNAVAILABLE", "reason": "runtime_changed_restart_required"}
+                _atomic(journal, outcome)
+                return outcome
             _atomic(
                 journal,
                 {"status": "STARTED", "reason": "operator_requested", "started_at": datetime.now(UTC).isoformat()},
@@ -479,6 +496,8 @@ class ProposalDemo:
         except ValueError:
             raise DemoUnavailable("invalid_goal_id") from None
         with _lock(self.root / "operation.lock"):
+            if not self._runtime_ready():
+                raise DemoUnavailable("container_runtime_not_prepared")
             ready = self.readiness()
             if not ready["ready"] or ready["certificate_sha256"] != certificate or ready["policy_sha256"] != policy_sha:
                 raise DemoUnavailable("reviewed_policy_changed_or_unavailable")

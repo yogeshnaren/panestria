@@ -52,6 +52,10 @@ Enter the one-use pairing code on the page within five minutes. Codes, session
 cookies and CSRF tokens never appear in URLs. A page reload requires another
 pairing code because the page keeps its CSRF token only in memory.
 
+Setup prepares the exact pinned Python worker image before starting the database.
+Qualification and task start refuse a missing image or unavailable Docker daemon
+before making any native inference call. Workers always use `--pull never`.
+
 Setup uses its own container `panestria-native-review-demo-db`, port **55438**,
 volume `panestria_native_review_demo_pgdata`, and database `panestria_native_demo`.
 It preserves the R0 container and volume on 55432. State defaults to
@@ -101,6 +105,8 @@ A rejected rate limit returns `UNAVAILABLE` and stops. Nothing auto-retries.
 
 A successful check issues a purpose-specific, hash-addressed attestation valid
 for 24 hours, tied to the binary, prompt, Docker image and Python source hashes.
+After changing code, restart `serve` before qualifying: an older running
+controller cannot accept an attestation for new source.
 The general runtime certificate validator rejects this demo attestation. It
 cannot certify arbitrary repositories, native shell/MCP access, private exports,
 or either complete AOS-008/010 conformance group. The authenticated CLI is a

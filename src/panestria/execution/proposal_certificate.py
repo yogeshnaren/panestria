@@ -48,6 +48,8 @@ class ProposalCertificateStore(CertificateStore):
         if trust.profile == "SYNTHETIC_DEV":
             return super().validate(trust)
         try:
+            if self.runtime_versions != runtime_versions():
+                raise CertificateRejected("demo_runtime_restart_required")
             if trust.profile != "PERSONAL_SANDBOX" or set(trust.allowed_actions) != set(ACTIONS):
                 raise CertificateRejected("demo_scope_mismatch")
             digest = trust.runtime_certificate_sha256
@@ -58,7 +60,7 @@ class ProposalCertificateStore(CertificateStore):
             if (
                 set(body) != {"purpose", "runtime_versions", "cases", "expires_at"}
                 or body["purpose"] != PROFILE
-                or body["runtime_versions"] != runtime_versions()
+                or body["runtime_versions"] != self.runtime_versions
                 or expiry.tzinfo is None
                 or expiry <= datetime.now(UTC)
                 or set(body["cases"]) != set(CASES)
