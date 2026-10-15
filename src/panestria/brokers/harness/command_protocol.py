@@ -1,0 +1,271 @@
+"""Internal MCP wire state machine; execution authority belongs to its trusted callback."""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import re
+import threading
+from collections.abc import Callable
+from typing import Any, TypeGuard
+
+from panestria.contracts.native_command import RegisteredCheckReceipt
+from panestria.contracts.native_tools import MAX_PAYLOAD_BYTES, canonical_payload
+
+VERSION = "2025-06-18"
+RequestId = str | int
+Key = tuple[type[str] | type[int], RequestId]
+CheckExecutor = Callable[[str, str, threading.Event], RegisteredCheckReceipt]
+
+
+def _id(value: object) -> TypeGuard[RequestId]:
+    return (type(value) is int and 0 <= value <= 2**53 - 1) or (
+        type(value) is str and bool(re.fullmatch(r"[a-zA-Z0-9._:-]{1,64}", value))
+    )
+
+
+def _wire(body: dict[str, Any]) -> bytes:
+    return json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+
+
+def _error(identity: RequestId | None, code: int, reason: str) -> bytes:
+    return _wire({"jsonrpc": "2.0", "id": identity, "error": {"code": code, "message": reason}})
+
+
+def _result(identity: RequestId, body: dict[str, Any]) -> bytes:
+    return _wire({"jsonrpc": "2.0", "id": identity, "result": body})
+
+
+def _params(body: dict[str, Any], allowed: set[str]) -> dict[str, Any]:
+    params = body.get("params", {})
+    if not isinstance(params, dict) or not set(params) <= allowed | {"_meta"}:
+        raise ValueError
+    if "_meta" in params:
+        meta = params["_meta"]
+        if not isinstance(meta, dict) or not set(meta) <= {"progressToken"}:
+            raise ValueError
+        if "progressToken" in meta and not _id(meta["progressToken"]):
+            raise ValueError
+    return params
+
+
+class RegisteredCheckSession:
+    def __init__(
+        self,
+        command_refs: tuple[str, ...],
+        candidate_ref: str,
+        executor: CheckExecutor,
+        *,
+        max_calls: int = 4,
+        max_frames: int = 64,
+    ) -> None:
+        if (
+            type(command_refs) is not tuple
+            or not 1 <= len(command_refs) <= 16
+            or any(type(ref) is not str or not re.fullmatch(r"[a-z][a-z0-9-]{0,63}", ref) for ref in command_refs)
+            or len(set(command_refs)) != len(command_refs)
+            or type(candidate_ref) is not str
+            or not re.fullmatch(r"[a-z0-9][a-z0-9:._-]{0,127}", candidate_ref)
+            or type(max_calls) is not int
+            or not 1 <= max_calls <= 16
+            or type(max_frames) is not int
+            or not max_calls + 2 <= max_frames <= 128
+            or not callable(executor)
+        ):
+            raise ValueError("invalid_registered_check_session")
+        self._commands, self._candidate, self._executor = command_refs, candidate_ref, executor
+        self._max_calls, self._max_frames = max_calls, max_frames
+        self._calls = self._frames = 0
+        self._state = "NEW"
+        self._lock = threading.RLock()
+        self._responses: dict[Key, tuple[str, bytes | None]] = {}
+        self._active: dict[Key, tuple[str, threading.Event]] = {}
+
+    @property
+    def closed(self) -> bool:
+        with self._lock:
+            return self._state == "CLOSED"
+
+    def close(self) -> None:
+        with self._lock:
+            self._state = "CLOSED"
+            for _, signal in self._active.values():
+                signal.set()  # Request cancellation, never claim process reaping.
+
+    def _notification(self, body: dict[str, Any]) -> None:
+        method = body["method"]
+        try:
+            if method == "notifications/initialized":
+                _params(body, set())
+                if self._state == "INITIALIZING":
+                    self._state = "READY"
+            elif method == "notifications/cancelled":
+                params = _params(body, {"requestId", "reason"})
+                identity = params.get("requestId")
+                if not _id(identity):
+                    return
+                if "reason" in params and (type(params["reason"]) is not str or len(params["reason"]) > 256):
+                    return
+                pending = self._active.get((type(identity), identity))
+                if pending:
+                    pending[1].set()
+        except ValueError:
+            return
+
+    def _initialize(self, identity: RequestId, body: dict[str, Any]) -> bytes:
+        if self._state != "NEW":
+            return _error(identity, -32600, "session_already_initialized")
+        params = _params(body, {"protocolVersion", "capabilities", "clientInfo"})
+        version, caps, info = params.get("protocolVersion"), params.get("capabilities"), params.get("clientInfo")
+        if (
+            type(version) is not str
+            or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", version)
+            or not isinstance(caps, dict)
+            or len(caps) > 16
+            or any(type(value) is not dict or len(key) > 64 for key, value in caps.items())
+            or not isinstance(info, dict)
+            or not {"name", "version"} <= set(info) <= {"name", "version", "title"}
+            or any(type(value) is not str or not 1 <= len(value) <= 64 for value in info.values())
+        ):
+            raise ValueError
+        self._state = "INITIALIZING"
+        return _result(
+            identity,
+            {
+                "protocolVersion": VERSION,
+                "capabilities": {"tools": {"listChanged": False}},
+                "serverInfo": {"name": "panestria-registered-check", "version": "1"},
+            },
+        )
+
+    def _tool_list(self) -> dict[str, Any]:
+        return {
+            "tools": [
+                {
+                    "name": "run_registered_check",
+                    "description": "Run a controller-bound reviewed check on the fixed candidate.",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "command_ref": {"type": "string", "enum": list(self._commands)},
+                            "candidate_ref": {"type": "string", "const": self._candidate},
+                        },
+                        "required": ["command_ref", "candidate_ref"],
+                        "additionalProperties": False,
+                    },
+                    "annotations": {
+                        "readOnlyHint": True,
+                        "destructiveHint": False,
+                        "idempotentHint": False,
+                        "openWorldHint": False,
+                    },
+                }
+            ]
+        }
+
+    def handle(self, raw: bytes) -> bytes | None:
+        with self._lock:
+            if self.closed:
+                return None
+            self._frames += 1
+            if self._frames > self._max_frames:
+                self.close()
+            if self.closed:
+                return None
+        try:
+            if type(raw) is not bytes or len(raw) > MAX_PAYLOAD_BYTES:
+                raise ValueError
+            canonical = canonical_payload(raw.decode("utf-8"))
+            body = json.loads(canonical)
+        except (ValueError, UnicodeError, RecursionError):
+            return _error(None, -32700, "invalid_json")
+        if (
+            not set(body) <= {"jsonrpc", "id", "method", "params"}
+            or body.get("jsonrpc") != "2.0"
+            or type(body.get("method")) is not str
+        ):
+            return _error(None, -32600, "invalid_request")
+        if "id" in body and not _id(body["id"]):
+            return _error(None, -32600, "invalid_request_id")
+        digest = hashlib.sha256(canonical.encode()).hexdigest()
+        with self._lock:
+            if self.closed:
+                return None
+            if "id" not in body:
+                self._notification(body)
+                return None
+            identity = body["id"]
+            key: Key = (type(identity), identity)
+            previous = self._responses.get(key)
+            if previous:
+                return previous[1] if previous[0] == digest else _error(identity, -32600, "request_id_reused")
+            pending = self._active.get(key)
+            if pending:
+                return (
+                    _error(identity, -32000, "request_in_progress")
+                    if pending[0] == digest
+                    else _error(identity, -32600, "request_id_reused")
+                )
+            method, signal, command = body["method"], None, None
+            try:
+                if method == "initialize":
+                    response = self._initialize(identity, body)
+                elif method == "ping":
+                    _params(body, set())
+                    response = _result(identity, {})
+                elif self._state != "READY":
+                    response = _error(identity, -32000, "session_not_ready")
+                elif method == "tools/list":
+                    _params(body, set())
+                    response = _result(identity, self._tool_list())
+                elif method == "tools/call":
+                    params = _params(body, {"name", "arguments"})
+                    args = params.get("arguments")
+                    if (
+                        params.get("name") != "run_registered_check"
+                        or not isinstance(args, dict)
+                        or set(args) != {"command_ref", "candidate_ref"}
+                        or type(args["command_ref"]) is not str
+                        or args["command_ref"] not in self._commands
+                        or args["candidate_ref"] != self._candidate
+                    ):
+                        raise ValueError
+                    if self._active:
+                        response = _error(identity, -32000, "session_busy")
+                    elif self._calls >= self._max_calls:
+                        response = _error(identity, -32000, "call_budget_exhausted")
+                    else:
+                        self._calls += 1
+                        command, signal = args["command_ref"], threading.Event()
+                        self._active[key] = (digest, signal)
+                        response = None
+                else:
+                    response = _error(identity, -32601, "method_not_found")
+            except (ValueError, TypeError):
+                response = _error(identity, -32602, "invalid_params")
+            if signal is None or command is None:
+                self._responses[key] = (digest, response)
+                return response
+        try:
+            receipt = (
+                RegisteredCheckReceipt(outcome="CANCELLED")
+                if signal.is_set() or self.closed
+                else RegisteredCheckReceipt.model_validate(self._executor(command, self._candidate, signal))
+            )
+        except Exception:
+            receipt = RegisteredCheckReceipt(outcome="UNKNOWN")
+        payload = receipt.model_dump()
+        response = _result(
+            identity,
+            {
+                "content": [{"type": "text", "text": json.dumps(payload, sort_keys=True, separators=(",", ":"))}],
+                "structuredContent": payload,
+                "isError": receipt.outcome != "COMPLETED" or receipt.exit_code != 0,
+            },
+        )
+        with self._lock:
+            self._active.pop(key, None)
+            if signal.is_set() or self.closed:
+                response = None  # Cancelled requests have no protocol completion response.
+            self._responses[key] = (digest, response)
+            return response

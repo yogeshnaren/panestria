@@ -47,9 +47,10 @@ remain unchanged except additive active-schema/migration/interface updates.
 | #69 | Canonical Unicode and exact passage byte checks | 797 / 38 | 4603531 |
 | #70 | Immutable scoped request metadata, atomic event and corrected retry race | 810 / 38 | 5ca8fbc |
 | #71 | Public-unicast provider gateway and exact peer/scope checks | 854 / 38 | d987e6c |
+| #72 | Scoped protected bytes, actual process interruption and bounded locks | 888 / 38 | 62765d0 |
 
-Current verified main: d987e6c6b44fe9d415d8e9f335dc1493213d0483; latest CI
-run 38813199573 at exact head 94bf2c1. PR #62's earlier run exposed an older Ask
+Current verified main: 62765d037c72761e430b8fe4e64bcdd6fb623d1a; latest CI
+run 38814690617 at exact head e7e1af2. PR #62's earlier run exposed an older Ask
 downgrade test sharing newer audit data; a schema-only restored isolated guard
 test fixed it without weakening audit-loss protection. PR #61 attempt 1 failed one proposal-demo
 approval-flow test; isolated actual-PG/Docker reproduction and exact-head retry
@@ -75,21 +76,19 @@ Earlier source-bound key/vault/context/CLI evidence stays intact in evidence/.
 
 ## Exact next work
 
-1. Finish the scoped protected-byte task (`task/research-blobs`) after exact-head
-   CI/review. At source bdfca98, 113 focused checks passed (34 actual filesystem/
-   process checks + 79 contracts/text); three existing Build evidence checks also
-   passed. Actual child exits around publication, exact-byte retry, cross-process
-   lock contention, 2 MiB limits, unsafe links/nodes/permissions and corruption are
-   covered. It provides protected plaintext, not encryption or fetch authority.
-   Source-bound reports are in evidence/research-blobs-2026-10-15. Next: immutable
-   source/claim metadata plus actual retained broker fetch/reader/SourceStore
-   integrity before any usable citation or Delegate route. AOS-013 stays partial.
-   #70's first CI exposed a real secondary unique-index retry race; all-constraint
-   conflict arbitration and 24 concurrent pairs corrected it. The passing exact
-   CI has 810 tests; failed CI and earlier source-bound checks remain preserved.
-   #71 also rejects site-local/documentation/zone/mapped addresses that older
-   runtime flags can classify as global; 53 targeted + 2 actual Docker/TLS checks
-   are preserved, alongside full default CI. No full AOS-008/G1 promotion.
+1. Finish `task/native-command-protocol` with exact-head CI/review. The internal
+   MCP 2025-06-18 registered-check session exposes only reviewed references and
+   bounded metadata, with no arbitrary shell/path or authority fields. At 309bfa5,
+   122 targeted checks passed (48 new protocol + 74 existing). The executor is a
+   labeled callback fixture; private transport, actual durable gateway/registry/
+   report binding, native CLI permission/config/hostile-project conformance and
+   shell-tier qualification remain pending before enabling a profile. Its evidence
+   is in evidence/native-command-protocol-2026-10-15. Native MCP is an internal
+   bounded command bridge for MVP, not the R4 external-agent API.
+   Protected research bytes are merged, with 34 actual filesystem/process and 79
+   contract/text checks plus three existing Build checks. Source/claim metadata,
+   actual retained-fetch/reader/SourceStore authority remain next R2 obligations.
+   #70's CI retry race and all corrected/historical observations remain recorded.
    The temporary agent checkouts disappeared during the allowance wait; cause is
    unknown. Published changes/evidence were recovered into an independent clone
    at /tmp/panestria-pr-integration. Preserve owner checkouts, legacy Git worktree
