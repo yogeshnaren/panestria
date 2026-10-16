@@ -278,3 +278,18 @@ connector/credential/network/inference/API route is enabled. GrantBroker/capabil
 and root/account registry, lease/budget/approval bindings/revocation-before-future-
 effect/reconciliation, secret/OS enforcement and onboarding UI remain required.
 No complete AOS008S4/S5, TC05–08, R1/G1 or R3 pass follows from this component.
+
+### 2026-10-16 10:04 UTC — private native relay component
+
+PR88 is merged at `164812362855ffaf4c0e89f420edc65722696f44`; exact PR head
+`494b85d01bec0cc32f03b3c431e4e03a2c381fd3` CI38880978399 passed1434 default
+checks/49 live excluded. Fresh-main task/native-egress-relay now adds the
+standalone network-none loopback/private-UDS transport. Clean `c6fa589` passes74
+focused checks plus one actual public TLS HEAD (no credential/auth/inference/SDK).
+Four actual Docker tests include read-only/nonroot/resource/mount observations,
+synthetic host sentinel and provider environment separation, host-loopback/direct
+TEST-NET denial, forbidden CONNECT, replaced inode refusal and exact owned
+shutdown. Earlier deadline/admission test timing failures remain recorded.
+Evidence: evidence/native-private-relay-2026-10-16. Native launcher/profile/auth/
+MCP integration, task/policy/grant/lease/budgets and conformance still pending.
+No G1/G2/G3 acceptance or owner service change.

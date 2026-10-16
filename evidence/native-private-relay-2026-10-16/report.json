@@ -1,0 +1,141 @@
+{
+  "artifacts": {
+    "development-19-deadline-failure.xml": "cf6ea5fe18f461daf07ffcfd70c0ed715be63ba805018345ba244e62a5e6fc1d",
+    "development-21-pass.xml": "9190ebad68771906bdfda32806c8513fd983bbb01965b743590b33733442cc6e",
+    "public-tls-head.xml": "4dc479da0cd0ff3d051a380f9da2cb5ee1b0af2ea5df6cc49d33d9b460f8c7bf",
+    "qualified-74.xml": "10c1565c4b9fda7d7dcee48f50cab475d042f6471e8c9319a50ed686e11acbee",
+    "source-23a4bc8-admission-timing-failure.xml": "9b51d1aba9c6bf20bc66fb10b88ca008fca824702ff17717e1896debbcff0f3b"
+  },
+  "checks": {
+    "default": {
+      "live_deselected": 8,
+      "passed": 74
+    },
+    "explicit_public_tls_head": {
+      "auth": false,
+      "inference": false,
+      "passed": 1
+    },
+    "import_contracts_kept": 11,
+    "mypy_source_files": 190,
+    "ruff": "PASS",
+    "secret_scan": "PASS"
+  },
+  "default_coverage": [
+    "actual local sockets: large bidirectional half-close/draining, backpressure, aggregate byte/attempt/live/deadline caps",
+    "endpoint inode/device/type/private modes/canonical path guards; injected wrong peer UID refusal explicitly not an actual different-UID OS probe",
+    "four actual Docker cases with exact verified cached image, nonroot/network-none/read-only root/program/gateway mounts and resource limits",
+    "synthetic unmounted host credential sentinel, no provider/env inheritance, read-only mount writes denied, capabilities zero",
+    "actual host loopback inaccessible from container, TEST-NET direct route fails, host gateway forbids unknown CONNECT without public request",
+    "actual replacement of the mounted socket inode refuses before dispatch; TERM exit zero and exact-owned cleanup",
+    "existing EgressGateway/domain/address/mount/resource guards"
+  ],
+  "limitations": [
+    "standalone transport only; no production native container launcher/binary/profile/auth/MCP integration or automatic tool permission",
+    "host gateway validates CONNECT destination/public DNS/pinned IP; TLS/SNI/application authorization remains trusted pinned client responsibility; no generic domain-fronting certificate",
+    "no actual owner secrets mounted/read; synthetic sentinel cannot establish full credential non-disclosure conformance",
+    "no runtime task/policy/grant/lease/budget binding, registered-command authority, revocation/reconciliation or onboarding UI added",
+    "default four Docker tests are actual OS observations; injected unit peer UID is labeled separately",
+    "no complete AOS008/AOS010, G1/G2/G3, provider/native conformance or owner acceptance"
+  ],
+  "live_coverage": [
+    "one actual HTTPS HEAD to api.anthropic.com through Docker network-none loopback relay/private UDS/host EgressGateway; system CA and hostname verified",
+    "no credentials/authentication/model/inference/SDK, no new images/models/dependencies or provider fallback"
+  ],
+  "native_conformance_authority": false,
+  "observed_tests": {
+    "development-19-deadline-failure.xml": [
+      {
+        "errors": "0",
+        "failures": "1",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "19",
+        "time": "7.443",
+        "timestamp": "2026-10-16T02:53:43.078052-07:00"
+      }
+    ],
+    "development-21-pass.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "21",
+        "time": "7.612",
+        "timestamp": "2026-10-16T02:57:25.740209-07:00"
+      }
+    ],
+    "public-tls-head.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "1",
+        "time": "1.929",
+        "timestamp": "2026-10-16T03:01:05.737233-07:00"
+      }
+    ],
+    "qualified-74.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "74",
+        "time": "8.918",
+        "timestamp": "2026-10-16T03:00:55.884813-07:00"
+      }
+    ],
+    "source-23a4bc8-admission-timing-failure.xml": [
+      {
+        "errors": "0",
+        "failures": "1",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "74",
+        "time": "9.128",
+        "timestamp": "2026-10-16T03:00:17.872539-07:00"
+      }
+    ]
+  },
+  "paid_sdk_calls": 0,
+  "prior_observations": [
+    {
+      "result": "18 passed/1 failed: immediate closing-event assertion raced bounded server shutdown; changed to bounded wait",
+      "state": "dirty development"
+    },
+    {
+      "result": "21 passed",
+      "state": "dirty expanded development"
+    },
+    {
+      "live_tls_run": false,
+      "result": "73 passed/1 failed,8 live deselected: relay socket registration preceded upstream fixture handlers; test now awaits actual admissions",
+      "source_commit": "23a4bc8898e55a9d832d6297b9d58cbba4c71aaa",
+      "state": "clean qualification"
+    }
+  ],
+  "release_authority": false,
+  "result": "PASS_COMPONENT",
+  "runtime_inference_calls": 0,
+  "schema_version": 1,
+  "scope": "bounded private Unix CONNECT relay transport, not a native auth/task/grant certificate",
+  "source_commit": "c6fa58982650fd48c1d9e6907655cba6fd1c5952",
+  "source_sha256": {
+    "src/panestria/sandbox/egress.py": "465b9276c73f7e35abc4b0a1100ed801de425410cf614b0c32243ad67bf2e030",
+    "src/panestria/sandbox/native_proxy_relay.py": "9c687f64b75d3526ac0691b9e68f3ef2b556cda6b0f48deb6e88f0a7a6863bde",
+    "src/panestria/sandbox/profiles.py": "e010646b1d289175672e3e579d41df18e099d973d0fc7820afa950753f5484a5",
+    "tests/integration/test_native_proxy_container.py": "9fc440c68db0bb4cbf751acbba26ffb4b426402eef935efec2839321ac9a1fe1",
+    "tests/integration/test_native_proxy_tls_live.py": "619fafb00f7f2415bf1cc99b4959db7b3c6c56d857a52bccec9f97f432c522a1",
+    "tests/native_relay_support.py": "785d865d13dcb95a6430af3f33b8a834be033cbcbdd0d219d5d8864074dc6dc0",
+    "tests/unit/test_native_proxy_relay.py": "75162da02f9ec82f3e2a0bf84695f733876adf8f0712d945acb2064281278dc5"
+  },
+  "source_state_at_execution": "clean"
+}
