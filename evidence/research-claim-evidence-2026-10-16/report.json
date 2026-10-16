@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "source_commit": "04b8f09fc7e634064512a5b3dea3710c6867b89d",
+  "worktree": "clean",
+  "result": "PASS",
+  "default_passed": 127,
+  "new_claim_checks": 27,
+  "existing_source_schema_launcher_checks": 100,
+  "excluded_live": 1,
+  "scope": "deterministic retained citation and NFC quote checks; every semantic support status remains NOT_ASSESSED",
+  "observed": [
+    "fresh controller claim IDs, protected exact SecretStr payload/quote bytes and deterministic immutable report",
+    "case/space/offset/UTF8/hash/fabricated/cross-request/metadata-only sources invalid; only verified bindings get FK rows",
+    "one invalid reference blocks whole-claim evidence even when another citation is valid",
+    "unresolved lineage conservatively RESTRICTED; question/input/valid source classes inherit maximum",
+    "real unrelated passage establishes EVIDENCE_PRESENT only, never entails unrelated claim",
+    "draft OPINION does not bypass support assessment; no references remains NO_EVIDENCE",
+    "fresh offline verification detects later source loss and returns INVALID_EVIDENCE without overwriting earlier immutable passing history",
+    "all missing/corrupt payload/report bytes refuse verification; copied foreign payload identity refuses",
+    "actual concurrent final-slot race cannot exceed64 claims; every entity write precedes global event lock",
+    "actual pg_dump/pg_restore preserves proof/claim/source/bindings/events/triggers/global sequence; populated downgrade refused",
+    "direct database scope/pin/SUPPORTED/missing-child forgeries denied; client authority fields/duplicate quotes/UTF8 byte caps denied"
+  ],
+  "source_sha256": {
+    "src/panestria/contracts/research_claims.py": "59a5e99616d5f9fb3886630209f2c5b533ab80827ab563009c1de2a31733e8d5",
+    "src/panestria/execution/research_claims.py": "6b65b39a3467360caee89db62cfbd963da4042529f67cab00ffdfd5d20f00ec6",
+    "migrations/versions/0026_claim_evidence.py": "73f4410078734799c16610b74a5771106b91e0341b009a3f2612e3151e1fc024",
+    "migrations/schema_fingerprint.txt": "4353bb2c84dac4bd21d7b57185c9d96e125e1269e2c4290e91c55b82c882cfa2",
+    "tests/integration/test_research_claim_evidence.py": "a46247c8af14e0c020a18573b2d948592e02b7fa0d2d5d77653e797b78f72da2",
+    "tests/unit/test_research_claim_contracts.py": "73bf6741563630d9bc8e1875c3471111cd31938dd342c47021638a63ca2fdbd4",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d"
+  },
+  "junit_sha256": "c34cf8049938f006be4724794c64b10e09fb3171c8782d40292b55852f19c047",
+  "checks": [
+    "Ruff PASS",
+    "mypy184 PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "schema_lines": 947,
+  "schema_generation": "actual unique temporary pinned PostgreSQL on loopback dynamic32770, exact container/volumes cleaned",
+  "provider_inference_calls": 0,
+  "public_fetch_calls": 0,
+  "new_credentials": 0,
+  "limitations": [
+    "default transport observations explicitly synthetic; actual Docker reader/PG/CAS used, separate actual TLS proof preserved from SourceStore",
+    "no semantic adjudication/confidence/contradiction model is invoked or claimed; unrelated real evidence remains NOT_ASSESSED",
+    "no enabled API/agent tool, task completion, configured search, outbound admission or full AOS/G1/G2/G3 acceptance",
+    "SNLI calibration investigation is separate public data preparation and not part of this pass",
+    "initial dirty24 development checks not relabeled as clean qualification; final127 recorded at committed source",
+    "claim/source plaintext remains only in private test CAS, no claim/quote text in DB metadata/events or Git"
+  ]
+}

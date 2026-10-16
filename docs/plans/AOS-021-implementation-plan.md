@@ -74,3 +74,20 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Deterministic claim evidence (2026-10-16)
+
+[Retained claim evidence](../design/33-CLAIM-EVIDENCE-RECORDS.md) now binds claims
+and optional exact NFC quotations to protected SourceStore captures. Invalid or
+metadata-only IDs, wrong scopes/hashes/offsets/quotes and corrupt lineage never
+produce a whole-claim evidence pass. Unrelated genuine passages establish source
+presence only: all semantic support statuses remain NOT_ASSESSED. Draft kind
+cannot bypass that boundary. A later verification rechecks actual source bytes
+without replacing historical reports or refetching silently.
+
+At clean 04b8f09, 127 default checks pass (27 new claim and100 existing source/
+schema/launcher checks). Source-bound evidence and limitations live in
+evidence/research-claim-evidence-2026-10-16. Migration0026, actual schema snapshots,
+scoped FKs/immutability/deferred passage-count check, real dump/restore, concurrent
+64-claim cap, privacy and event-last checks are included. No semantic model,
+network/API authority, task completion or full case/release promotion is claimed.
