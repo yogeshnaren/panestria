@@ -28,3 +28,15 @@ external outcomes. No new parallel task store is introduced. NOT_OBSERVED does
 not prove a delayed create cannot subsequently arrive, authorize a retry or pass
 AOS-008-TC04/G1. Preserve failed observations and test exact-owned cleanup with
 real Docker plus explicitly injected lost/malformed replies and identity faults.
+
+## Observed validation
+
+At clean `4abb61d`, 115 focused default checks pass (29 new), plus seven actual
+OS boundary/resource/cleanup probes and one pinned native version/help case
+(two credential-free metadata commands). The original leaked-container
+reproduction, injected lookup/removal/late-create failures, and an earlier
+zero-test command selecting a stale planned node are retained separately in
+`evidence/sandbox-create-reconciliation-2026-10-16`. The actual nodes passed;
+the stale plan/catalog primary name and startup-cleanup live-required annotation
+are aligned without changing NOT_RUN release status. Native task/connected auth,
+durable intent/controller-death recovery and G1/G2/G3 remain pending.

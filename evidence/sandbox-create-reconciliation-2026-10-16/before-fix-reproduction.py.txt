@@ -1,0 +1,49 @@
+"""Actual owned Docker create plus injected lost response, no process starts."""
+import json
+import os
+import subprocess
+from uuid import uuid4
+
+import pytest
+
+from panestria.sandbox.profiles import SandboxProfile, SandboxRejected
+from panestria.sandbox.runner import DockerSandbox
+
+
+def docker(*args):
+    result = subprocess.run(['docker', *args], capture_output=True, text=True, timeout=10)
+    assert result.returncode == 0, 'owned_launch_fixture_operation_failed'
+    return result.stdout
+
+
+def test_actual_created_container_does_not_survive_a_lost_create_response(tmp_path):
+    identity = str(uuid4())
+    created = []
+    root = tmp_path / 'root'
+    root.mkdir(mode=0o700)
+    workspace = root / 'workspace'
+    workspace.mkdir(mode=0o700)
+
+    class LostCreateReply(DockerSandbox):
+        def _docker(self, args, *, timeout=30):
+            result = super()._docker(args, timeout=timeout)
+            if args[0] == 'create':
+                created.append(result.stdout.strip())
+                raise SandboxRejected('container_operation_failed')
+            return result
+
+    try:
+        with pytest.raises(SandboxRejected):
+            LostCreateReply(root).run(
+                workspace, ('/usr/local/bin/python', '--version'),
+                SandboxProfile(name='restricted-offline', uid=os.getuid(), gid=os.getgid()),
+                attempt_id=identity,
+            )
+        assert len(created) == 1
+        assert not docker('ps', '--all', '--quiet', '--filter', 'id=' + created[0]).strip(), 'created_container_leaked'
+    finally:
+        for identifier in created:
+            if docker('ps', '--all', '--quiet', '--filter', 'id=' + identifier).strip():
+                current = json.loads(docker('inspect', identifier))[0]
+                assert current['Id'] == identifier and current['Config']['Labels']['panestria.attempt'] == identity
+                docker('rm', '--force', '--volumes', identifier)

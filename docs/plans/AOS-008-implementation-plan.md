@@ -58,7 +58,7 @@ These groups are planned obligations, not observed coverage. Actual assertions/p
 |---|---|---|---|
 | AOS-008-TC01 | security | `tests/integration/test_aos_008.py::test_mount_symlink_proc_escape` | Synthetic host credential/parent/proc/device/hardlink targets blocked; no privileged container or docker socket. |
 | AOS-008-TC02 | security | `tests/integration/test_aos_008.py::test_network_gateway_escape` | Direct socket/DNS/private/localhost/metadata attempts denied where profile forbids; allowed channel cannot become arbitrary proxy. |
-| AOS-008-TC03 | live | `tests/integration/test_aos_008.py::test_effective_os_resource_limits` | Real host process namespace/UID/cgroup/mount/egress probes match manifest and enforce caps; unsupported feature is not PASS. |
+| AOS-008-TC03 | live | `tests/integration/test_aos_008.py::test_os_effective_uid_mounts_egress_and_limits` | Real host process namespace/UID/cgroup/mount/egress probes match manifest and enforce caps; unsupported feature is not PASS. |
 | AOS-008-TC04 | chaos | `tests/integration/test_aos_008.py::test_sandbox_failure_cleanup` | Startup failure refuses unconfined fallback; orphan process cleanup uses identity and preserves unrelated workspace. |
 
 After tests exist, baseline command is `uv run --frozen pytest tests/integration/test_aos_008.py --junitxml=evidence/AOS-008.xml`. Register lane markers and gate_case_id in pytest user_properties; default CI excludes live. Release promotion still needs separately observed live cases. Missing future nodes remain pending. Test collection, scenario assertion outcomes and candidate/version consistency must be checked by the gate evaluator, not inferred from exit 0.
@@ -156,3 +156,21 @@ proxy/registered-MCP integration, credential-boundary/current-authority checks
 and full AOS-008/AOS-010 conformance remain required. Existing host pilot profiles
 are unchanged; no G1/G2/G3 gate is promoted. Source-bound evidence and earlier
 uncommitted prototype observations are preserved separately.
+
+## Lost create-response cleanup component (2026-10-16)
+
+[Launch reconciliation](../design/41-SANDBOX-CREATE-RECONCILIATION.md) fixes an
+actual stopped-container leak demonstrated with an injected lost Docker reply.
+Unique launch/profile/image/attempt/name/purpose/ID checks preserve unrelated or
+ambiguous resources, including a foreign container sharing the attempt/name.
+A missing observation remains NOT_OBSERVED, and lookup/removal uncertainty remains
+UNCONFIRMED. No result grants retry or returns a successful sandbox receipt.
+
+At clean `4abb61d`, 115 focused default checks (29 new), seven actual OS probes
+and actual pinned credential-free version/help pass. Original failed evidence
+and the subsequent corrected observations are retained. The catalog's TC03
+primary node now names the actual UID/mount/egress test; its resource-pressure
+parameters remain required alongside it. TC04 now correctly requires live OS
+evidence to match the existing test annotation. Both catalog statuses stay
+NOT_RUN. The launch reference is still in memory; durable pre-dispatch intent
+and controller-death reconciliation are required before full TC04/G1 acceptance.

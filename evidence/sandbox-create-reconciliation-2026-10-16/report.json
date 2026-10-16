@@ -1,0 +1,232 @@
+{
+  "actual_bootstrap_observation": {
+    "authentication_observed": false,
+    "binary_sha256": "6c752e2cc7c110c9df15f26d8d134d438c5ae95dbd610efc1a308bf7f9c5f6c1",
+    "controls": [
+      "--disallowedTools",
+      "--max-budget-usd",
+      "--no-session-persistence",
+      "--output-format",
+      "--permission-mode",
+      "--permission-prompts",
+      "--restricted",
+      "--safe-mode",
+      "--settings",
+      "--strict-mcp-config",
+      "--tools"
+    ],
+    "image": "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9",
+    "inference_observed": false,
+    "runs": [
+      {
+        "container_id": "c1aaa2760912db895e2342752bf93a432833da2619a3dd49bf9627f1465d24d6",
+        "effective_config_sha256": "68fb379c96af7d10d433c863259f0ca8c53b079a788255439f6db535d837b948",
+        "elapsed_seconds": 0.6876930709986482,
+        "mode": "version",
+        "output_sha256": "f8e1c3ef52479aac12b679a60da498a9e5c9c43c0d741e182088775a4b29de09",
+        "profile_sha256": "9de0a7c389cfc0cc66cb605847592291f6dc48d6392c360b88f670f2bc7fbf0e"
+      },
+      {
+        "container_id": "54a5e032c1dca17d26b4adfc6d3fa3b222f96436b4480411cc9b327167bf213c",
+        "effective_config_sha256": "eab92656427fde07df7d967970d3952ccb21f89461fb8d2d12cd18e39b13b337",
+        "elapsed_seconds": 0.6097615359976771,
+        "mode": "help",
+        "output_sha256": "ae85d661e9c086f05637ebcd868f5702b477ff6e55e2e65b8ada7807cd51a4b6",
+        "profile_sha256": "9de0a7c389cfc0cc66cb605847592291f6dc48d6392c360b88f670f2bc7fbf0e"
+      }
+    ],
+    "runtime_authority": false,
+    "status": "BOOTSTRAP_ONLY",
+    "version": "2.1.273"
+  },
+  "artifacts": {
+    "actual-native-metadata.xml": "fc281fd10c98c99f7b613be8ffbf0a50158c54eed7c0a6b3a4e836b61f39a9bc",
+    "actual-os-7.xml": "1432857f6fbf5f371d1a7659ddbdb201fef12a3f940b8dcb7fb9cc79666d7abd",
+    "after-fix-development.xml": "c7e8badebd18e2903683c5e36a96abce8cf2a32df746c6612a5d68689c1ad934",
+    "before-fix-lost-create.xml": "241212e4ad9872df07a0255bd005d313b319ec9ed2a9e9757c784df1467e0f5d",
+    "before-fix-reproduction.py.txt": "92ce658cfebacc6de2a2e784a3ed1ff5508d49225602bb97bea259b2f35be05c",
+    "development-25.xml": "deff19d30ac1aa7217154263d8596bad0c0c6608085ff0f2700736c7475e972f",
+    "development-29.xml": "6563d36746267d3357c7959b2dc34b2f74bb3958c56f3c7e8abf3601ee43e81c",
+    "live-selection-no-tests.xml": "162d22bb3c37e0b3b04178f7c8e189d510e1fef5daa55e604b3585f7a6954c21",
+    "qualified-115.xml": "5e72d745099bb2a36502b9d42cc0c8c76593b782181e46ddbf860dc2754a53f0"
+  },
+  "authentication_calls": 0,
+  "checks": {
+    "actual_existing_os_cases": 7,
+    "actual_native_metadata_cases": 1,
+    "actual_native_version_help_processes": 2,
+    "focused_default_passed": 115,
+    "import_contracts_kept": 11,
+    "live_deselected_in_default": 21,
+    "mypy_source_files": 191,
+    "new_default_cases": 29,
+    "ruff": "PASS",
+    "secret_scan": "PASS"
+  },
+  "coverage": [
+    "actual owned stopped Docker create plus injected lost/malformed/foreign-ID reply removes only exact launch and never executes candidate or returns success",
+    "unique launch UUID/profile/image/attempt/name/purpose/expected-ID checks; actual foreign/name-collision/mismatched/multiple candidates preserved",
+    "actual late create after NOT_OBSERVED recovered with original reference; missing observation is not proof of future absence or retry permission",
+    "injected lookup unavailable and removal error before/after actual deletion retain UNCONFIRMED; later exact reconcile never repeats candidate execution",
+    "actual normal cleanup, repeated same-attempt runs with distinct nonce, and unchanged existing gateway/cancellation/verifier/reader/offline bootstrap consumers",
+    "actual live OS UID/mount/AF_INET and AF_INET6 denial/cgroup/capability/read-only/private-path/resource pressure/startup profile-denial cleanup probes",
+    "actual pinned Claude version/help only in changed offline backend, no authentication/inference/gateway"
+  ],
+  "environment": {
+    "machine": "x86_64",
+    "python": "3.12.4",
+    "release": "6.8.0-138-generic",
+    "system": "Linux"
+  },
+  "limitations": [
+    "faults use actual owned Docker resources but explicitly injected client replies/late completion, not a real production daemon outage",
+    "REMOVED confirms only observed exact resource removal; NOT_OBSERVED and UNCONFIRMED never authorize automatic retry",
+    "launch reference currently in-memory; full controller-death recovery still requires durable intent before dispatch and protected reconciliation",
+    "reference and reconcile method are trusted controller internals, no public or worker-facing cleanup authority",
+    "existing gateway retains dispatched exceptions as UNKNOWN; no task success, approval or native capability granted",
+    "no new auth/provider/inference/paid SDK/model/image calls; no owner checkout/DB/service/cache mutation",
+    "no complete AOS008TC04, AOS003, G1/G2/G3 or owner-trial acceptance"
+  ],
+  "observed_tests": {
+    "actual-native-metadata.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "1",
+        "time": "6.114",
+        "timestamp": "2026-10-16T03:35:52.383646-07:00"
+      }
+    ],
+    "actual-os-7.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "7",
+        "time": "10.378",
+        "timestamp": "2026-10-16T03:35:41.108576-07:00"
+      }
+    ],
+    "after-fix-development.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "1",
+        "time": "0.516",
+        "timestamp": "2026-10-16T03:27:46.503242-07:00"
+      }
+    ],
+    "before-fix-lost-create.xml": [
+      {
+        "errors": "0",
+        "failures": "1",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "1",
+        "time": "0.615",
+        "timestamp": "2026-10-16T03:23:08.716205-07:00"
+      }
+    ],
+    "development-25.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "25",
+        "time": "9.156",
+        "timestamp": "2026-10-16T03:31:13.496115-07:00"
+      }
+    ],
+    "development-29.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "29",
+        "time": "12.166",
+        "timestamp": "2026-10-16T03:32:41.027334-07:00"
+      }
+    ],
+    "live-selection-no-tests.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "0",
+        "time": "0.045",
+        "timestamp": "2026-10-16T03:34:36.833615-07:00"
+      }
+    ],
+    "qualified-115.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "115",
+        "time": "45.525",
+        "timestamp": "2026-10-16T03:33:50.502484-07:00"
+      }
+    ]
+  },
+  "paid_sdk_calls": 0,
+  "prior_observations": [
+    {
+      "artifact": "before-fix-lost-create.xml",
+      "candidate_executed": false,
+      "reproduction": "before-fix-reproduction.py.txt",
+      "result": "one actual Docker test failed: lost create response bypassed ID cleanup and left created stopped container; test finally removed exact fixture",
+      "source_commit": "a4f95071e9135179590fa4c0a2db8993ef4fcdec",
+      "state": "clean source, external new reproduction test"
+    },
+    {
+      "result": "same reproduction passes after launch nonce fix",
+      "state": "dirty implementation development"
+    },
+    {
+      "result": "25 passed then expanded29 passed",
+      "state": "dirty new test development"
+    },
+    {
+      "artifact": "live-selection-no-tests.xml",
+      "correction": "explicitly select actual OS nodes; update stale primary catalog/plan name and live annotation without status promotion",
+      "result": "exit4/no tests collected: planned test_effective_os_resource_limits node does not exist; original0-test JUnit retained, never counted as pass",
+      "source_commit": "4abb61d265db1062eee1271fd20a0a7dbd515eda",
+      "state": "clean qualification command selection error"
+    }
+  ],
+  "release_authority": false,
+  "result": "PASS_COMPONENT",
+  "runtime_inference_calls": 0,
+  "schema_version": 1,
+  "scope": "exact-owned create-response reconciliation and cleanup; no process-death/durable-intent or full release certificate",
+  "source_commit": "4abb61d265db1062eee1271fd20a0a7dbd515eda",
+  "source_sha256": {
+    "src/panestria/brokers/harness/native_bootstrap.py": "020d1f34d0600f185d808296379625d1f5dbeae895ab19b7145181194bfab705",
+    "src/panestria/sandbox/native_tool_gateway.py": "316209ab9103912237a6f4dec25e42a8ffafa9de4bac2412786182d4d1012bf1",
+    "src/panestria/sandbox/no_network.py": "8154f842ea648c76ef6c6d849ce57ba96f0beeb5d35d70d36e98bb28ce8e5853",
+    "src/panestria/sandbox/profiles.py": "e010646b1d289175672e3e579d41df18e099d973d0fc7820afa950753f5484a5",
+    "src/panestria/sandbox/runner.py": "9348a5d1f9fe31d0ee7ffda4be13422d0a2f2bca608a7cb16456e02c45e5aaba",
+    "tests/integration/test_aos_008.py": "6f27572585d15b912f6b80d5e91f168438f51cb3285879857bb94e09508cc9bb",
+    "tests/integration/test_sandbox_launch_reconciliation.py": "3a84f7e1c68d2e54d6abc8161f400863e9028e2b47ee108099b93eb702c379d0",
+    "tests/sandbox_launch_support.py": "15af5c84440a2c91521c709c4a2d9ab99cad997171cb995d18ba54747cad5588",
+    "tests/unit/test_sandbox_launch_reference.py": "97848c855f6b5eb0ad40ba079a456ded332b7bbc323f459ace08841e3b57fbc9"
+  },
+  "source_state_at_execution": "clean"
+}

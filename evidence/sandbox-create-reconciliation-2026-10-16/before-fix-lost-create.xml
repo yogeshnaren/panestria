@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.615" timestamp="2026-10-16T03:23:08.716205-07:00" hostname="yogesh-verisim"><testcase classname="test_panestria_lost_create_reply" name="test_actual_created_container_does_not_survive_a_lost_create_response" time="0.306"><failure message="AssertionError: created_container_leaked&#10;assert not '6a75ec287b0b'&#10; +  where '6a75ec287b0b' = &lt;built-in method strip of str object at 0x78fc812f8ff0&gt;()&#10; +    where &lt;built-in method strip of str object at 0x78fc812f8ff0&gt; = '6a75ec287b0b\n'.strip&#10; +      where '6a75ec287b0b\n' = docker('ps', '--all', '--quiet', '--filter', ('id=' + '6a75ec287b0bbd6375503a1bea6513ee4a6f392e63d1fd88e12127f617c35989'))">tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-83/test_actual_created_container_0')
+
+    def test_actual_created_container_does_not_survive_a_lost_create_response(tmp_path):
+        identity = str(uuid4())
+        created = []
+        root = tmp_path / 'root'
+        root.mkdir(mode=0o700)
+        workspace = root / 'workspace'
+        workspace.mkdir(mode=0o700)
+    
+        class LostCreateReply(DockerSandbox):
+            def _docker(self, args, *, timeout=30):
+                result = super()._docker(args, timeout=timeout)
+                if args[0] == 'create':
+                    created.append(result.stdout.strip())
+                    raise SandboxRejected('container_operation_failed')
+                return result
+    
+        try:
+            with pytest.raises(SandboxRejected):
+                LostCreateReply(root).run(
+                    workspace, ('/usr/local/bin/python', '--version'),
+                    SandboxProfile(name='restricted-offline', uid=os.getuid(), gid=os.getgid()),
+                    attempt_id=identity,
+                )
+            assert len(created) == 1
+&gt;           assert not docker('ps', '--all', '--quiet', '--filter', 'id=' + created[0]).strip(), 'created_container_leaked'
+E           AssertionError: created_container_leaked
+E           assert not '6a75ec287b0b'
+E            +  where '6a75ec287b0b' = &lt;built-in method strip of str object at 0x78fc812f8ff0&gt;()
+E            +    where &lt;built-in method strip of str object at 0x78fc812f8ff0&gt; = '6a75ec287b0b\n'.strip
+E            +      where '6a75ec287b0b\n' = docker('ps', '--all', '--quiet', '--filter', ('id=' + '6a75ec287b0bbd6375503a1bea6513ee4a6f392e63d1fd88e12127f617c35989'))
+
+../test_panestria_lost_create_reply.py:43: AssertionError</failure></testcase></testsuite></testsuites>

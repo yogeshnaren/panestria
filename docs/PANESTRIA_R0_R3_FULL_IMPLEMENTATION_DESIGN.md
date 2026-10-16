@@ -1295,7 +1295,7 @@ These groups are planned obligations, not observed coverage. Actual assertions/p
 |---|---|---|---|
 | AOS-008-TC01 | security | `tests/integration/test_aos_008.py::test_mount_symlink_proc_escape` | Synthetic host credential/parent/proc/device/hardlink targets blocked; no privileged container or docker socket. |
 | AOS-008-TC02 | security | `tests/integration/test_aos_008.py::test_network_gateway_escape` | Direct socket/DNS/private/localhost/metadata attempts denied where profile forbids; allowed channel cannot become arbitrary proxy. |
-| AOS-008-TC03 | live | `tests/integration/test_aos_008.py::test_effective_os_resource_limits` | Real host process namespace/UID/cgroup/mount/egress probes match manifest and enforce caps; unsupported feature is not PASS. |
+| AOS-008-TC03 | live | `tests/integration/test_aos_008.py::test_os_effective_uid_mounts_egress_and_limits` | Real host process namespace/UID/cgroup/mount/egress probes match manifest and enforce caps; unsupported feature is not PASS. |
 | AOS-008-TC04 | chaos | `tests/integration/test_aos_008.py::test_sandbox_failure_cleanup` | Startup failure refuses unconfined fallback; orphan process cleanup uses identity and preserves unrelated workspace. |
 
 After tests exist, baseline command is `uv run --frozen pytest tests/integration/test_aos_008.py --junitxml=evidence/AOS-008.xml`. Register lane markers and gate_case_id in pytest user_properties; default CI excludes live. Release promotion still needs separately observed live cases. Missing future nodes remain pending. Test collection, scenario assertion outcomes and candidate/version consistency must be checked by the gate evaluator, not inferred from exit 0.
