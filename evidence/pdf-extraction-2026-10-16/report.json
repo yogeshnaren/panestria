@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "source_commit": "dbe4952f962f57881d39770c5173f0f03f69b7ae",
+  "worktree": "clean",
+  "result": "PASS",
+  "command": "uv run --frozen pytest tests/integration/test_isolated_pdf_extraction.py tests/integration/test_isolated_research_reader.py tests/unit/test_pdf_reader_receipts.py tests/unit/test_research_reader_receipts.py tests/unit/test_pdf_runtime_bundle.py tests/integration/test_pdf_bundle_container.py -m 'not live' -q --junitxml=/tmp/panestria-pdf-extraction-qualified.xml",
+  "passed": 77,
+  "excluded_live": 1,
+  "new_pdf_actual_container_checks": 21,
+  "new_pdf_injected_protocol_checks": 13,
+  "existing_reader_and_bundle_checks": 43,
+  "provider_inference_calls": 0,
+  "model_or_image_downloads": 0,
+  "scope": "static text-layer extraction and exact page byte spans in actual read-only/nonroot/network-none pinned Docker; not SourceStore, provenance, OCR, layout or citation/support authority",
+  "actual_metadata": [
+    {
+      "bundle_sha256": "ee7677af7c459d97f4d1ee9a715e5b4d19fecb3295d2d596b6d4a6ac076b6c5a",
+      "effective_config_sha256": "349152e7170ff4366bf69a6730d17f86dc8def8ea1334036965cd8a45e3e208e",
+      "limitations": [
+        "pdf-text-layer-only",
+        "pdf-no-ocr",
+        "pdf-layout-unverified"
+      ],
+      "page_spans": [
+        [
+          0,
+          16
+        ],
+        [
+          19,
+          30
+        ]
+      ],
+      "profile_sha256": "0b8f5958a2b08794a25914552b72aadf44022714fc5a2f70209043577ffcd6f6",
+      "program_sha256": "9e691ba664a2005c04ad98e9710f4df626a4c487c3b0aff9c82d42f110e8cec6",
+      "text_sha256": "625617e86f3e90416ba7c4019ed066d62ac8f23e76355f17fde040eb023a9dbe"
+    },
+    {
+      "bundle_sha256": "ee7677af7c459d97f4d1ee9a715e5b4d19fecb3295d2d596b6d4a6ac076b6c5a",
+      "effective_config_sha256": "3d2bbab0296dc70d308ed1091c8db2ca0368155d44ebc073244253cc884a6082",
+      "limitations": [
+        "pdf-text-layer-only",
+        "pdf-no-ocr",
+        "pdf-layout-unverified"
+      ],
+      "page_spans": [
+        [
+          0,
+          16
+        ],
+        [
+          19,
+          30
+        ]
+      ],
+      "profile_sha256": "0b8f5958a2b08794a25914552b72aadf44022714fc5a2f70209043577ffcd6f6",
+      "program_sha256": "9e691ba664a2005c04ad98e9710f4df626a4c487c3b0aff9c82d42f110e8cec6",
+      "text_sha256": "625617e86f3e90416ba7c4019ed066d62ac8f23e76355f17fde040eb023a9dbe"
+    }
+  ],
+  "observed": [
+    "strict pinned pypdf 6.20.1 imported only in isolated container from before/after verified minimal source/license bundle",
+    "ordinary and Flate-compressed two-page text has exact UTF8 page spans and raw/text/runtime hashes",
+    "encryption, JS/open-action, attachment, form, annotation and image features explicitly UNSUPPORTED with no partial text",
+    "empty document/page/missing text layer UNSUPPORTED",
+    "malformed PDFs return fixed errors without source-derived exception messages",
+    "33 pages and declared text cap return TRUNCATED without partial text",
+    "compressed PDF below16KiB expanding beyond2MiB stream limit returns ERROR",
+    "actual short runtime deadline UNKNOWN, no host parsing/fallback",
+    "instructions retained as data; table-like words always retain layout-unverified/no-OCR/text-layer-only limitations",
+    "injected closed-receipt/bundle/page/UTF8/limitation failures deny complete text; these are not OS proof"
+  ],
+  "source_sha256": {
+    "src/panestria/brokers/research/pdf_worker.py": "9e691ba664a2005c04ad98e9710f4df626a4c487c3b0aff9c82d42f110e8cec6",
+    "src/panestria/brokers/research/reader.py": "b146d4dea214a8207a812eb8fa11e1e24b855fab5e98c3e851712ac03981f119",
+    "src/panestria/brokers/research/pdf_bundle.py": "345cc1cb5954697e13225a69898f32869939bd464df06739eb94be4c54645e6c",
+    "tests/integration/test_isolated_pdf_extraction.py": "15b2b151f0d9552b281f235a403535f51cd20eb0f4958ea0e106e1505b11a755",
+    "tests/unit/test_pdf_reader_receipts.py": "87e2f188c9101c9ed947e3eb6307ac6494b31d6bf235fb03643acfd57e1ec479",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d"
+  },
+  "junit_sha256": "c3769c27bdade50d3903b0a809166e551e6dba5d9282a412407a13ef80e60c55",
+  "checks": [
+    "Ruff PASS",
+    "mypy PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "reuse": {
+    "package": "pypdf 6.20.1",
+    "license": "BSD-3-Clause",
+    "bundle_sha256": "ee7677af7c459d97f4d1ee9a715e5b4d19fecb3295d2d596b6d4a6ac076b6c5a",
+    "upstream_docs": "https://pypdf.readthedocs.io/en/stable/user/extract-text.html",
+    "inspected_source_sha256": {
+      "_configuration.py": "dd2b41d34cedc9113c33be3555c662b6692f038d0d8ae29a2ea0ad9fb49823a9",
+      "_reader.py": "dedbfa826d5e1660e6d5718d3b10c52de975ad5eefd9a3bb8518487ec8ad4390",
+      "_page.py": "a431cf8af6baed1a7f7e0dd19fb4ffe6f6fdc6417932305f8400517d30afd96e",
+      "filters.py": "7567a0838190cd5e03508d9e945ab11bf4fe1822a80834b5bf958c58efa76aa9"
+    },
+    "method": "REA direct installed-source inspection, public configuration/strict-reader/filter/text paths; no upstream implementation copied; minimal source/license pin retained separately"
+  },
+  "limitations": [
+    "PDF object filter is conservative additional restriction, not a claim to recognize every active PDF feature; mandatory actual sandbox remains",
+    "images/Form XObjects, annotations, encryption and missing text on any page unsupported; no OCR or external decoders",
+    "tables, columns, hidden text and reading order not interpreted or certified; every PDF result carries layout-unverified",
+    "runtime CPU/memory are configured limits, not measured peaks",
+    "no durable SourceStore/fetch metadata, trusted passage lookup, semantic support, full AOS case or release/owner acceptance",
+    "development dirty 39+25 observations were not relabeled as clean qualification; initial syntax/type issues corrected before this source commit",
+    "upstream synthetic add_js fixture emits a deprecation warning; no JS is executed"
+  ]
+}

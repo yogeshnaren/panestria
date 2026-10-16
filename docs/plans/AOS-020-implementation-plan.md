@@ -74,3 +74,15 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Static PDF component observation (2026-10-16)
+
+The [isolated PDF reader](../design/30-ISOLATED-PDF-EXTRACTION.md) adds bounded
+static text layers to the existing text/HTML reader. A clean committed source
+passed 77 component checks, including 21 new actual Docker PDF cases and 13
+separate injected protocol guards. Evidence is source-bound in
+`evidence/pdf-extraction-2026-10-16`; older evidence retains its original scope.
+PDF text always carries layout-unverified, no-OCR and text-layer-only limitations.
+Encryption, actions/forms/attachments/annotations/images, missing text and limits
+never return partial complete text. This does not implement SourceStore, fetch
+admission, source/citation authority or full AOS-020/G2 acceptance.

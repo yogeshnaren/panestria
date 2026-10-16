@@ -91,7 +91,7 @@ def test_html_is_tokenized_not_browser_rendered_and_private_repr_is_masked():
     "raw,content_type,outcome,reason",
     [
         (b"\xff", "text/plain", "ERROR", "decoder_error"),
-        (b"fake-pdf", "application/pdf", "UNSUPPORTED", "extractor_unsupported"),
+        (b"fake-pdf", "application/pdf", "ERROR", "reader_error"),
         (b"opaque", "application/octet-stream", "UNSUPPORTED", "extractor_unsupported"),
         (b"<head>unclosed", "text/html", "ERROR", "reader_error"),
     ],
