@@ -293,3 +293,18 @@ shutdown. Earlier deadline/admission test timing failures remain recorded.
 Evidence: evidence/native-private-relay-2026-10-16. Native launcher/profile/auth/
 MCP integration, task/policy/grant/lease/budgets and conformance still pending.
 No G1/G2/G3 acceptance or owner service change.
+
+### 2026-10-16 10:20 UTC — native offline bootstrap component
+
+PR89 merged at `07c6298b5b844145394c053c6701d4e0a8f720da`; exact PR head
+`b483f3b73522ca8ec861d64491a96ba176fa6902` CI38884565048 passed1455 default
+checks/50 live excluded in391.44s. Fresh-main task/native-bootstrap-capsule
+adds closed credential-free version/help checks reusing the existing offline
+DockerSandbox/seccomp envelope. At clean `1ae3209`, 63 focused checks pass,
+including 32 new cases and 11 actual Docker synthetic-fixture cases. An explicit
+actual metadata case passes with two pinned Claude version/help commands, no
+auth/profile/gateway/inference/SDK. Snapshot/source mutation, pressure, deadline,
+closed-output linger and cancellation after actual Running state reject cleanly.
+Evidence: evidence/native-offline-bootstrap-2026-10-16. This is BOOTSTRAP_ONLY;
+connected auth/container/proxy/MCP and current policy/grant/lease/budget still
+pending. No native task certificate or G1/G2/G3 acceptance.

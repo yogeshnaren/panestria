@@ -1,0 +1,14 @@
+{
+  "scope": "development native binary version only, no auth/profile/gateway/inference",
+  "binary_sha256": "6c752e2cc7c110c9df15f26d8d134d438c5ae95dbd610efc1a308bf7f9c5f6c1",
+  "image_id": "sha256:9e87977b867847e186d066f531ef783b006d582a985c341c269446088d90f2c4",
+  "returncode": 1,
+  "container_exit": 128,
+  "stdout_matches_pin": false,
+  "stdout_bytes": 0,
+  "stderr_bytes": 390,
+  "elapsed_seconds": 1.018,
+  "network": "none",
+  "readonly": true,
+  "owner_state_changed": false
+}
