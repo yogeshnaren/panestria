@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "source_commit": "a114b935c3969fb314f82fe9129c3aaa3ef70515",
+  "worktree": "clean",
+  "result": "PASS",
+  "new_default_component_checks": 34,
+  "new_actual_public_pipeline_checks": 1,
+  "existing_default_component_checks": 66,
+  "default_run_passed": 100,
+  "observations": [
+    {
+      "file": "pre-fix-99.xml",
+      "source_commit": "2fda4bc89342cc8d60729079c123cb2bc2888e7d",
+      "result": "99 PASS before review found event-lock ordering violation; not final qualification",
+      "sha256": "1580b1510d4e79658adf659fc575168c618ec59c8f11c4acad05a13169bbbbe5"
+    },
+    {
+      "file": "qualified-100.xml",
+      "source_commit": "a114b935c3969fb314f82fe9129c3aaa3ef70515",
+      "result": "100 PASS after event-last repair including actual guard; 34 new component and66 existing cases",
+      "sha256": "dc9720e44adb5b27477bca6f120499aeaea93fec690a6d2012746b928e2b9a3b"
+    },
+    {
+      "file": "actual-public-pipeline.xml",
+      "source_commit": "a114b935c3969fb314f82fe9129c3aaa3ef70515",
+      "result": "1 PASS actual public TLS/isolated reader/PG/CAS/offline quote; 34 excluded",
+      "sha256": "93f01c8bc70e620639518dfecdff73ef90b92d1dc37c526a7de9c21bd1bb41c6"
+    }
+  ],
+  "actual_public_pipeline": [
+    {
+      "extractor_version": "htmlparser-text-v1",
+      "metadata_sha256": "2d7ef71f5a54683fc7a73b69005355280260369b6fb3acdbf9904f7db937eee8",
+      "proof_sha256": "2f8fb1e3f1523417296a56bdba6a82cad5ed0bb4395d36ea69aba78aedb05f76",
+      "raw_sha256": "25ddf2c883e0d1958ea971d279a7e4f0fd446724ee3db7db19dadabd4a62e484",
+      "reader_profile_sha256": "0b8f5958a2b08794a25914552b72aadf44022714fc5a2f70209043577ffcd6f6",
+      "scope": "actual public TLS/isolated reader/PG/CAS/offline passage; no policy/gate/support claim",
+      "text_sha256": "662d2ac01657eb72d3fb95adf8641d1f1bfbcb0645af474616378b1d594bb42b"
+    }
+  ],
+  "source_sha256": {
+    "src/panestria/contracts/research_provenance.py": "9c1f46539113218988100ceeba76e74c586adbccabdb2f352b082e2ef636b50a",
+    "src/panestria/execution/research_sources.py": "12cb8351db71aa288701104fb704d643603ed174a80b795d2846f4beea693a76",
+    "src/panestria/kernel/research_sources.py": "cf1de5404881ace7e14371e112857a87847ebf65ce7b6cf62be2dafd1ebb6c2a",
+    "src/panestria/brokers/research/reader.py": "61dddf9c2d3877788c9b3c8e03d63132658dac0c4158c0b4f6f1aa835e7a26c8",
+    "src/panestria/brokers/research/fetch.py": "0d3bb2ab23778733d18bb8fcc158a7527743c65d928e67bd31450bdc3994bd43",
+    "migrations/versions/0025_source_capture.py": "f1084292b1707a5aced8e77939ec0da0e46c1e1991d460b8b69cbec24a35cf90",
+    "migrations/schema_fingerprint.txt": "852d4fa997c57b699873b3d83d4ca69601f046dc1219e90aa2aaf4cf93ba8478",
+    "tests/integration/test_research_source_provenance.py": "64e7bc7c37d2b39197363b704afd5ef6075072cd20fb3a4c19282d7d65801a10",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d"
+  },
+  "scope": "trusted retention of already-admitted actual broker observations and protected offline source/passage/quote lookup; no network admission, semantic support or release certificate",
+  "observed": [
+    "reader observation binds exact raw input SHA/size; different raw/body/program/profile/runtime/extractor cannot promote source",
+    "fresh trusted source IDs and scope-bound immutable raw/text/fetch/reader/redirect/proof artifact references",
+    "capture proof is separate from metadata; metadata-only or invented source IDs cannot resolve",
+    "every missing/corrupt lineage blob blocks usable passage; offline resolver never re-fetches",
+    "exact NFC UTF8 byte/quote match EVIDENCE_PRESENT; case/whitespace/wrong hash/request/task/project/split UTF8 rejected",
+    "HTML tokenizer/layout limitations and PDF text-layer/no-OCR/layout limitations retained with exact page spans",
+    "request FORUPDATE serializes retained source count/aggregate raw budgets; actual concurrent test cannot oversubscribe",
+    "capture/source/artifact/event rollback leaves only inert private bytes; repeated retrieval/re-extraction uses new immutable IDs",
+    "actual pg_dump/pg_restore preserves proof/trigger/source/counter and offline lookup; populated downgrade denied",
+    "all entity writes before global event lock: actual PG UnitOfWork regression guard and source-service replay/event tests",
+    "actual Example.org public TLS to isolated reader to committed PG/CAS then a new SourceStore exact quote lookup succeeds without source bodies in Git/telemetry"
+  ],
+  "checks": [
+    "Ruff PASS",
+    "mypy182 PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "schema_lines": 883,
+  "schema_generation": "actual unique temporary pinned PostgreSQL dynamic loopback32769; exact container/volumes cleaned",
+  "provider_inference_calls": 0,
+  "public_fetches_this_qualification": 1,
+  "new_credentials": 0,
+  "model_or_image_downloads": 0,
+  "limitations": [
+    "kernel/controller/DB trusted; capture ledger is not remote hardware/process attestation or protection against arbitrary compromised host code",
+    "most default fixtures explicitly inject synthetic fetch observations while using actual Docker reader/PG/CAS; only separate live pipeline proves actual public TLS",
+    "SourceStore performs no outbound request or permission grant; caller must separately implement actual current public-web policy/admission/disclosure/lease/grants",
+    "retention source/raw budgets do not account for prior discarded fetches or outbound queries; those remain broker/controller obligations",
+    "no enabled source creation API/tool, configured search backend, claim/support adjudication, bounded Delegate, G1/G2/G3 promotion or owner acceptance",
+    "quote matching uses NFC only, preserving case/punctuation/whitespace; it never proves claim entailment or factual truth",
+    "pre-fix99 passed ordinary assertions but review found entity writes after event lock; retained as pre-fix observation, corrected and requalified with new actual guard",
+    "no source bodies/quotes/receipt URLs committed; protected test data and credentials remain outside Git"
+  ]
+}

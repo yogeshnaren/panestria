@@ -33,3 +33,17 @@ The kernel/API/database are trusted, and workers have neither database
 credentials nor protected-store access. Actual public TLS→isolated reader→PG/CAS
 qualification is separate from injected observation/negative protocol tests.
 No enabled network/API route or full release gate follows from this component.
+
+Implementation retains source count/aggregate raw-byte budgets under a request
+row lock. This prevents concurrent retention oversubscription and is separate
+from query/disclosure/admission accounting. HTML results always carry tokenizer/
+layout-unverified limitations; PDF results carry text-layer/no-OCR/layout limits.
+Quotes normalize only NFC; case, punctuation and whitespace remain exact.
+
+A review caught proof entity writes after SourceRecordService's global event
+lock. The kernel now has private validated insert/event helpers for trusted
+composite commands; the public metadata commit behavior is unchanged. SourceStore
+finishes every artifact/source/proof/association write first, then publishes both
+events. One composite command per caller transaction; no entity writes after its
+event publication. An actual PostgreSQL UnitOfWork regression guard checks this.
+Pre-fix ordinary passing tests remain explicitly pre-fix evidence.
