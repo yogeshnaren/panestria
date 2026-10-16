@@ -3,38 +3,21 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Literal
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from pydantic import Field, StrictInt, ValidationError
+from pydantic import ValidationError
 
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body
 from panestria.api.db import DatabaseUnavailable
 from panestria.api.routes.ask import _transaction
-from panestria.contracts.quota import QuotaContract, QuotaId, QuotaObservation, QuotaScope
+from panestria.contracts.quota import QueryQuota, QuotaObservation, SubmitQuota
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.quota import QuotaService, QuotaView
 
 router = APIRouter(prefix="/v2/quota")
 _SERVICE = QuotaService()
 _HEADERS = {"Cache-Control": "no-store", "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff"}
-
-
-class OwnerQuotaObservation(QuotaObservation):
-    source: Literal["OWNER_REPORTED", "UNKNOWN"]
-    source_sha256: None = None
-
-
-class SubmitQuota(QuotaContract):
-    schema_version: StrictInt = Field(ge=1, le=1)
-    task_id: QuotaId
-    observation: OwnerQuotaObservation
-
-
-class QueryQuota(QuotaContract):
-    schema_version: StrictInt = Field(ge=1, le=1)
-    scope: QuotaScope
 
 
 def _response(content: dict[str, object], status: int = 200) -> JSONResponse:

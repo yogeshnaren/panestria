@@ -75,6 +75,22 @@ class QuotaObservation(QuotaContract):
         return _sha(self)
 
 
+class OwnerQuotaObservation(QuotaObservation):
+    source: Literal["OWNER_REPORTED", "UNKNOWN"]
+    source_sha256: None = None
+
+
+class SubmitQuota(QuotaContract):
+    schema_version: StrictInt = Field(ge=1, le=1)
+    task_id: QuotaId
+    observation: OwnerQuotaObservation
+
+
+class QueryQuota(QuotaContract):
+    schema_version: StrictInt = Field(ge=1, le=1)
+    scope: QuotaScope
+
+
 def _sha(value: BaseModel) -> str:
     return hashlib.sha256(
         json.dumps(value.model_dump(mode="json"), sort_keys=True, separators=(",", ":")).encode()
