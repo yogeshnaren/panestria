@@ -247,6 +247,8 @@ def main() -> None:
     stopped = [False]
     if sys.platform != "linux" or os.geteuid() == 0:
         raise SystemExit("native_proxy_platform_unavailable")
+    if {name for _index, name in socket.if_nameindex()} != {"lo"}:
+        raise SystemExit("native_proxy_network_unavailable")
     if len(sys.argv) != 3 or any(not arg.isdecimal() or not 1 <= len(arg) <= 20 for arg in sys.argv[1:]):
         raise SystemExit("native_proxy_identity_required")
     identity = SocketIdentity(ENDPOINT, int(sys.argv[1]), int(sys.argv[2]))
