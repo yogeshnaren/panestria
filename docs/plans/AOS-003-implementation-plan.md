@@ -87,3 +87,25 @@ API ordinary transaction: request dedupe → immutable goal/contract/tasks → o
 Workflow: validate_contract_tx → acquire_attempt_tx → process_intent_tx → spawn_or_observe_step → process_receipt_tx → collect_step → immutable_metadata_tx → verify_step → checks_tx → approval wait → effect_intent_tx → execute_or_reconcile_step → receipt_tx → finish_tx.
 
 Tracked DB callbacks commit with their result; no network/process/file effect inside them. BEFORE_DB_COMMIT kill leaves no writes. AFTER_DB_COMMIT_BEFORE_RETURN replay has exactly one transition/event. AFTER_EXTERNAL_EFFECT_BEFORE_CHECKPOINT requires observation/reconciliation. Unsupported enqueue API calls require the explicit admission-outbox ADR, never uncoordinated task/enqueue writes.
+
+## Durable registered-tool launch component (2026-10-16)
+
+[The same-PostgreSQL launch journal](../design/42-DURABLE-SANDBOX-LAUNCH.md) adds
+one-use immutable intent before Docker create on the actual registered-check
+controller path. Intent/event commits share the caller transaction; lost commit
+acknowledgment admits no create. An actual shorter-deadline profile is witnessed
+without widening any other cap. Fresh authority is checked before startup.
+Reconstruction uses the scoped stored reference, and historical cleanup keeps
+unknown work fenced without manufacturing task/check/approval success.
+
+Clean `ec9a43f` passes170 focused checks (46 new), including six actual controller
+SIGKILL cases, two admission faults, actual schema/downgrade/backup/restore and
+existing research/setup/native-tool paths. Source-bound evidence retains earlier
+failed observations. Head28/schema1078 lines were generated from disposable
+PostgreSQL. DBOS transaction/workflow/outbox documentation was rechecked in the
+design. Existing R0 acceptance is preserved.
+
+This covers one registered-tool recovery path. Other worker/verifier/private
+control-stage lifecycle recovery, connected native auth/proxy/MCP, full grant/
+lease/budget/capability enforcement and G1/G2/G3 evidence remain required.
+No provider inference, credentials or paid API are used or enabled here.

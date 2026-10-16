@@ -510,6 +510,13 @@ column worker_invocation invocation_key varchar NO
 column worker_invocation receipt_sha256 bpchar YES
 column worker_invocation state text NO
 column worker_invocation task_id uuid NO
+column worker_invocation_launch binding_sha256 bpchar NO
+column worker_invocation_launch body jsonb NO
+column worker_invocation_launch body_sha256 bpchar NO
+column worker_invocation_launch created_at timestamptz NO
+column worker_invocation_launch invocation_id uuid NO
+column worker_invocation_launch launch_id uuid NO
+column worker_invocation_launch runtime_attempt_id uuid NO
 column workflow_link attempt_id uuid NO
 column workflow_link dbos_workflow_id text NO
 column workflow_link task_id uuid NO
@@ -924,6 +931,25 @@ constraint panestria.worker_invocation c CHECK ((state = ANY (ARRAY['PREPARED'::
 constraint panestria.worker_invocation f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
 constraint panestria.worker_invocation p PRIMARY KEY (id)
 constraint panestria.worker_invocation u UNIQUE (attempt_id, invocation_key)
+constraint panestria.worker_invocation u UNIQUE (id, binding_sha256)
+constraint panestria.worker_invocation_launch c CHECK ((("substring"((launch_id)::text, 15, 1) = '4'::text) AND ("substring"((launch_id)::text, 20, 1) = ANY (ARRAY['8'::text, '9'::text, 'a'::text, 'b'::text]))))
+constraint panestria.worker_invocation_launch c CHECK ((((body ->> 'binding_sha256'::text) = (binding_sha256)::text) AND (jsonb_typeof((body -> 'binding_sha256'::text)) = 'string'::text)))
+constraint panestria.worker_invocation_launch c CHECK ((((body ->> 'invocation_id'::text) = (invocation_id)::text) AND (jsonb_typeof((body -> 'invocation_id'::text)) = 'string'::text)))
+constraint panestria.worker_invocation_launch c CHECK ((((body ->> 'launch_id'::text) = (launch_id)::text) AND (jsonb_typeof((body -> 'launch_id'::text)) = 'string'::text)))
+constraint panestria.worker_invocation_launch c CHECK ((((body ->> 'runtime_attempt_id'::text) = (runtime_attempt_id)::text) AND (jsonb_typeof((body -> 'runtime_attempt_id'::text)) = 'string'::text)))
+constraint panestria.worker_invocation_launch c CHECK ((((body ->> 'schema_version'::text) = '1'::text) AND (jsonb_typeof((body -> 'schema_version'::text)) = 'number'::text)))
+constraint panestria.worker_invocation_launch c CHECK (((body - ARRAY['schema_version'::text, 'invocation_id'::text, 'binding_sha256'::text, 'scope_sha256'::text, 'runtime_attempt_id'::text, 'launch_id'::text, 'profile_sha256'::text, 'image_id'::text]) = '{}'::jsonb))
+constraint panestria.worker_invocation_launch c CHECK (((jsonb_typeof((body -> 'image_id'::text)) = 'string'::text) AND ((body ->> 'image_id'::text) ~ '^sha256:[0-9a-f]{64}$'::text)))
+constraint panestria.worker_invocation_launch c CHECK (((jsonb_typeof((body -> 'profile_sha256'::text)) = 'string'::text) AND ((body ->> 'profile_sha256'::text) ~ '^[0-9a-f]{64}$'::text)))
+constraint panestria.worker_invocation_launch c CHECK (((jsonb_typeof((body -> 'scope_sha256'::text)) = 'string'::text) AND ((body ->> 'scope_sha256'::text) ~ '^[0-9a-f]{64}$'::text)))
+constraint panestria.worker_invocation_launch c CHECK ((binding_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.worker_invocation_launch c CHECK ((body ?& ARRAY['schema_version'::text, 'invocation_id'::text, 'binding_sha256'::text, 'scope_sha256'::text, 'runtime_attempt_id'::text, 'launch_id'::text, 'profile_sha256'::text, 'image_id'::text]))
+constraint panestria.worker_invocation_launch c CHECK ((body_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.worker_invocation_launch c CHECK ((jsonb_typeof(body) = 'object'::text))
+constraint panestria.worker_invocation_launch f FOREIGN KEY (invocation_id, binding_sha256) REFERENCES panestria.worker_invocation(id, binding_sha256)
+constraint panestria.worker_invocation_launch p PRIMARY KEY (invocation_id)
+constraint panestria.worker_invocation_launch u UNIQUE (launch_id)
+constraint panestria.worker_invocation_launch u UNIQUE (runtime_attempt_id)
 constraint panestria.workflow_link f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
 constraint panestria.workflow_link f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.workflow_link p PRIMARY KEY (task_id, attempt_id)
@@ -1043,6 +1069,10 @@ index CREATE UNIQUE INDEX task_pkey ON panestria.task USING btree (id)
 index CREATE UNIQUE INDEX user_correction_pkey ON panestria.user_correction USING btree (id)
 index CREATE UNIQUE INDEX user_correction_request_id_owner_id_project_id_version_key ON panestria.user_correction USING btree (request_id, owner_id, project_id, version)
 index CREATE UNIQUE INDEX worker_invocation_attempt_id_invocation_key_key ON panestria.worker_invocation USING btree (attempt_id, invocation_key)
+index CREATE UNIQUE INDEX worker_invocation_launch_binding ON panestria.worker_invocation USING btree (id, binding_sha256)
+index CREATE UNIQUE INDEX worker_invocation_launch_launch_id_key ON panestria.worker_invocation_launch USING btree (launch_id)
+index CREATE UNIQUE INDEX worker_invocation_launch_pkey ON panestria.worker_invocation_launch USING btree (invocation_id)
+index CREATE UNIQUE INDEX worker_invocation_launch_runtime_attempt_id_key ON panestria.worker_invocation_launch USING btree (runtime_attempt_id)
 index CREATE UNIQUE INDEX worker_invocation_pkey ON panestria.worker_invocation USING btree (id)
 index CREATE UNIQUE INDEX workflow_link_dbos_workflow_id_key ON panestria.workflow_link USING btree (dbos_workflow_id)
 index CREATE UNIQUE INDEX workflow_link_pkey ON panestria.workflow_link USING btree (task_id, attempt_id)

@@ -59,6 +59,10 @@ class _ReadAuthority(DurableToolAuthority):
             self.controller.authorize(connection)
             self.service.check(UnitOfWork(connection), self.actor, tool_binding(permit), self.identity)
 
+    def _authorize_launch(self, connection: psycopg.Connection[Any], permit: ToolPermit) -> None:
+        self.controller.authorize(connection)
+        super()._authorize_launch(connection, permit)
+
 
 class RegisteredCheckController:
     def __init__(
@@ -183,7 +187,12 @@ class RegisteredCheckController:
                     ttl_seconds=self.wall_seconds + 5,
                 )
             authority = _ReadAuthority(self, identity)
-            result = NativeToolGateway(self.snapshot.directory.parent, self.registry, authority).execute(
+            result = NativeToolGateway(
+                self.snapshot.directory.parent,
+                self.registry,
+                authority,
+                runner_factory=authority.runner_factory(permit),
+            ).execute(
                 self.request,
                 permit,
                 cancel=cancel,

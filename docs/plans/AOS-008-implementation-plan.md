@@ -174,3 +174,25 @@ parameters remain required alongside it. TC04 now correctly requires live OS
 evidence to match the existing test annotation. Both catalog statuses stay
 NOT_RUN. The launch reference is still in memory; durable pre-dispatch intent
 and controller-death reconciliation are required before full TC04/G1 acceptance.
+
+## Durable registered-tool launch component (2026-10-16)
+
+[The same-PostgreSQL launch journal](../design/42-DURABLE-SANDBOX-LAUNCH.md) adds
+one-use immutable intent before Docker create on the actual registered-check
+controller path. Intent/event commits share the caller transaction; lost commit
+acknowledgment admits no create. An actual shorter-deadline profile is witnessed
+without widening any other cap. Fresh authority is checked before startup.
+Reconstruction uses the scoped stored reference, and historical cleanup keeps
+unknown work fenced without manufacturing task/check/approval success.
+
+Clean `ec9a43f` passes170 focused checks (46 new), including six actual controller
+SIGKILL cases, two admission faults, actual schema/downgrade/backup/restore and
+existing research/setup/native-tool paths. Source-bound evidence retains earlier
+failed observations. Head28/schema1078 lines were generated from disposable
+PostgreSQL. DBOS transaction/workflow/outbox documentation was rechecked in the
+design. Existing R0 acceptance is preserved.
+
+This covers one registered-tool recovery path. Other worker/verifier/private
+control-stage lifecycle recovery, connected native auth/proxy/MCP, full grant/
+lease/budget/capability enforcement and G1/G2/G3 evidence remain required.
+No provider inference, credentials or paid API are used or enabled here.

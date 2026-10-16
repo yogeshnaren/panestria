@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="9" skipped="0" tests="43" time="12.282" timestamp="2026-10-16T03:56:06.453421-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_invocations" name="test_claim_race_commits_once_and_lost_reply_cannot_restart" file="tests/integration/test_invocations.py" line="52" time="3.441"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_claim_and_event_rollback_together" file="tests/integration/test_invocations.py" line="85" time="0.084"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_scope_and_binding_drift_refuses_dispatch[owner]" file="tests/integration/test_invocations.py" line="103" time="0.072"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_scope_and_binding_drift_refuses_dispatch[project]" file="tests/integration/test_invocations.py" line="103" time="0.071"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_scope_and_binding_drift_refuses_dispatch[task]" file="tests/integration/test_invocations.py" line="103" time="0.075"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_scope_and_binding_drift_refuses_dispatch[attempt]" file="tests/integration/test_invocations.py" line="103" time="0.080"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_scope_and_binding_drift_refuses_dispatch[epoch]" file="tests/integration/test_invocations.py" line="103" time="0.082"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_scope_and_binding_drift_refuses_dispatch[contract]" file="tests/integration/test_invocations.py" line="103" time="0.082"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_scope_and_binding_drift_refuses_dispatch[policy]" file="tests/integration/test_invocations.py" line="103" time="0.083"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_scope_and_binding_drift_refuses_dispatch[request]" file="tests/integration/test_invocations.py" line="103" time="0.089"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_scope_and_binding_drift_refuses_dispatch[config]" file="tests/integration/test_invocations.py" line="103" time="0.085"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_check_revokes_authority_but_preserves_historical_receipt[expiry]" file="tests/integration/test_invocations.py" line="143" time="1.206"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_check_revokes_authority_but_preserves_historical_receipt[cancel]" file="tests/integration/test_invocations.py" line="143" time="0.114"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_check_revokes_authority_but_preserves_historical_receipt[epoch]" file="tests/integration/test_invocations.py" line="143" time="0.117"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_check_revokes_authority_but_preserves_historical_receipt[contract]" file="tests/integration/test_invocations.py" line="143" time="0.120"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_invocations" name="test_invocation_binding_and_history_are_database_immutable" file="tests/integration/test_invocations.py" line="177" time="0.073"><properties><property name="candidate_commit" value="e5253563b862fbfc6efafe0a5f2bd294798a4fb7" /><property name="fixture_digest" value="5b2ee6ef0db0a7c858f65f13335e03d8c074ba3e7fd8e124950f5a5ca1275417" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_registered_check_authority" name="test_actual_read_check_publishes_verified_report_and_restart_never_reruns" file="tests/integration/test_registered_check_authority.py" line="159" time="0.231"><failure message="AssertionError: assert ('UNKNOWN' == 'COMPLETED'&#10;  &#10;  - COMPLETED&#10;  + UNKNOWN)">configured = ({'owner': '8af76f88-7292-4fc9-a757-d1493ffa90b2', 'project': '18de7574-42df-475f-95ea-e6689a0231db', 'goal': '0f23bbb...), files=(('calculator.py', '88f92d58d9706e16b293aacf471dd930213780b70cbf773d31c716c3e1e84682', 11, '100644'),)), ...))
+
+    def test_actual_read_check_publishes_verified_report_and_restart_never_reruns(configured):
+        task, args = configured
+        controller = RegisteredCheckController(*args)
+        receipt = run(controller)
+&gt;       assert receipt.outcome == "COMPLETED" and receipt.exit_code == 0
+E       AssertionError: assert ('UNKNOWN' == 'COMPLETED'
+E         
+E         - COMPLETED
+E         + UNKNOWN)
+
+tests/integration/test_registered_check_authority.py:164: AssertionError</failure></testcase><testcase classname="tests.integration.test_registered_check_authority" name="test_constructor_refuses_unreviewed_binding[edit]" file="tests/integration/test_registered_check_authority.py" line="182" time="0.094" /><testcase classname="tests.integration.test_registered_check_authority" name="test_constructor_refuses_unreviewed_binding[unregistered]" file="tests/integration/test_registered_check_authority.py" line="182" time="0.096" /><testcase classname="tests.integration.test_registered_check_authority" name="test_constructor_refuses_unreviewed_binding[not-required]" file="tests/integration/test_registered_check_authority.py" line="182" time="0.095" /><testcase classname="tests.integration.test_registered_check_authority" name="test_constructor_refuses_unreviewed_binding[scope]" file="tests/integration/test_registered_check_authority.py" line="182" time="0.095" /><testcase classname="tests.integration.test_registered_check_authority" name="test_constructor_refuses_unreviewed_binding[contract]" file="tests/integration/test_registered_check_authority.py" line="182" time="0.096" /><testcase classname="tests.integration.test_registered_check_authority" name="test_drift_before_dispatch_has_no_claim_or_effect[lease]" file="tests/integration/test_registered_check_authority.py" line="202" time="0.154" /><testcase classname="tests.integration.test_registered_check_authority" name="test_drift_before_dispatch_has_no_claim_or_effect[policy]" file="tests/integration/test_registered_check_authority.py" line="202" time="0.144" /><testcase classname="tests.integration.test_registered_check_authority" name="test_drift_before_dispatch_has_no_claim_or_effect[candidate]" file="tests/integration/test_registered_check_authority.py" line="202" time="0.117" /><testcase classname="tests.integration.test_registered_check_authority" name="test_drift_before_dispatch_has_no_claim_or_effect[script]" file="tests/integration/test_registered_check_authority.py" line="202" time="0.142" /><testcase classname="tests.integration.test_registered_check_authority" name="test_drift_before_dispatch_has_no_claim_or_effect[cancel]" file="tests/integration/test_registered_check_authority.py" line="202" time="0.118" /><testcase classname="tests.integration.test_registered_check_authority" name="test_nonzero_exit_is_completed_execution_and_failed_check" file="tests/integration/test_registered_check_authority.py" line="230" time="0.225"><failure message="AssertionError: assert ('UNKNOWN' == 'COMPLETED'&#10;  &#10;  - COMPLETED&#10;  + UNKNOWN)">configured = ({'owner': 'f2b936f9-236d-4246-8ad9-c63cb6af1ad0', 'project': '7fcefcb2-6316-4b80-8cab-815d94be0f44', 'goal': 'fafa28e...), files=(('calculator.py', '88f92d58d9706e16b293aacf471dd930213780b70cbf773d31c716c3e1e84682', 11, '100644'),)), ...))
+
+    def test_nonzero_exit_is_completed_execution_and_failed_check(configured):
+        task, args = configured
+        script = args[6].script
+        script.write_text("print('failed public check')\nraise SystemExit(3)\n")
+        values = list(args)
+        values[6] = replace(args[6], sha256=hashlib.sha256(script.read_bytes()).hexdigest())
+        controller = RegisteredCheckController(*values)
+        receipt = run(controller)
+&gt;       assert receipt.outcome == "COMPLETED" and receipt.exit_code == 3
+E       AssertionError: assert ('UNKNOWN' == 'COMPLETED'
+E         
+E         - COMPLETED
+E         + UNKNOWN)
+
+tests/integration/test_registered_check_authority.py:239: AssertionError</failure></testcase><testcase classname="tests.integration.test_registered_check_authority" name="test_readonly_container_cannot_edit_candidate_or_use_network" file="tests/integration/test_registered_check_authority.py" line="242" time="0.226"><failure message="AssertionError: assert 'UNKNOWN' == 'COMPLETED'&#10;  &#10;  - COMPLETED&#10;  + UNKNOWN">configured = ({'owner': '5500c180-498b-48c2-b4e5-e560f7024e27', 'project': 'c67e3d8a-1b32-4231-adf0-a7f2b345f6ac', 'goal': 'a622480...), files=(('calculator.py', '88f92d58d9706e16b293aacf471dd930213780b70cbf773d31c716c3e1e84682', 11, '100644'),)), ...))
+
+    def test_readonly_container_cannot_edit_candidate_or_use_network(configured):
+        _task, args = configured
+        script = args[6].script
+        script.write_text(
+            "from pathlib import Path\nimport socket\n"
+            "try:\n Path('/workspace/calculator.py').write_text('changed')\n"
+            "except OSError:\n pass\nelse:\n raise RuntimeError('writable candidate')\n"
+            "try:\n socket.socket().connect(('1.1.1.1',443))\n"
+            "except (OSError,PermissionError):\n pass\nelse:\n raise RuntimeError('network available')\n"
+            "print('isolation observed')\n"
+        )
+        values = list(args)
+        values[6] = replace(args[6], sha256=hashlib.sha256(script.read_bytes()).hexdigest())
+        controller = RegisteredCheckController(*values)
+&gt;       assert run(controller).outcome == "COMPLETED"
+E       AssertionError: assert 'UNKNOWN' == 'COMPLETED'
+E         
+E         - COMPLETED
+E         + UNKNOWN
+
+tests/integration/test_registered_check_authority.py:257: AssertionError</failure></testcase><testcase classname="tests.integration.test_registered_check_authority" name="test_missing_or_corrupt_final_report_is_never_a_completion[missing]" file="tests/integration/test_registered_check_authority.py" line="260" time="0.269" /><testcase classname="tests.integration.test_registered_check_authority" name="test_missing_or_corrupt_final_report_is_never_a_completion[corrupt]" file="tests/integration/test_registered_check_authority.py" line="260" time="0.282" /><testcase classname="tests.integration.test_registered_check_authority" name="test_actual_private_stdio_to_postgres_docker_protected_report" file="tests/integration/test_registered_check_authority.py" line="282" time="0.657"><failure message="assert (True is False)">configured = ({'owner': '85a9667e-c7ab-40a2-89e3-956d0add63f9', 'project': '296941a0-7805-4d90-bc4f-f05e79f29273', 'goal': '18bb5cb...), files=(('calculator.py', '88f92d58d9706e16b293aacf471dd930213780b70cbf773d31c716c3e1e84682', 11, '100644'),)), ...))
+
+    def test_actual_private_stdio_to_postgres_docker_protected_report(configured):
+        task, args = configured
+        controller = RegisteredCheckController(*args)
+    
+        def frame(method, identity=None, **params):
+            body = {"jsonrpc": "2.0", "method": method, "params": params}
+            if identity is not None:
+                body["id"] = identity
+            return json.dumps(body).encode() + b"\n"
+    
+        with tempfile.TemporaryDirectory(prefix="pns-check-", dir="/tmp") as root:
+            with RegisteredCheckSocket(Path(root) / "attempt", controller.session()) as server:
+                child = subprocess.Popen(
+                    [
+                        sys.executable,
+                        "-m",
+                        "panestria.brokers.harness.command_stdio",
+                        "--endpoint",
+                        str(server.path),
+                        "--device",
+                        str(server.identity[0]),
+                        "--inode",
+                        str(server.identity[1]),
+                        "--controller-pid",
+                        str(os.getpid()),
+                        "--lifetime-seconds",
+                        "10",
+                    ],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    env={"PATH": "/usr/bin:/bin", "PYTHONPATH": str(Path(__file__).resolve().parents[2] / "src")},
+                )
+                try:
+                    child.stdin.write(
+                        frame(
+                            "initialize",
+                            "init",
+                            protocolVersion="2025-06-18",
+                            capabilities={},
+                            clientInfo={"name": "synthetic", "version": "1"},
+                        )
+                    )
+                    child.stdin.flush()
+                    assert json.loads(child.stdout.readline())["id"] == "init"
+                    child.stdin.write(
+                        frame("notifications/initialized")
+                        + frame(
+                            "tools/call",
+                            "check",
+                            name="run_registered_check",
+                            arguments={"command_ref": controller.command.ref, "candidate_ref": controller.candidate_ref},
+                        )
+                    )
+                    child.stdin.flush()
+                    response = json.loads(child.stdout.readline())["result"]
+&gt;                   assert response["isError"] is False and response["structuredContent"]["outcome"] == "COMPLETED"
+E                   assert (True is False)
+
+tests/integration/test_registered_check_authority.py:339: AssertionError</failure></testcase><testcase classname="tests.integration.test_registered_check_authority" name="test_current_read_policy_denial_or_missing_approval_never_prepares[observe]" file="tests/integration/test_registered_check_authority.py" line="352" time="0.157" /><testcase classname="tests.integration.test_registered_check_authority" name="test_current_read_policy_denial_or_missing_approval_never_prepares[approve-first]" file="tests/integration/test_registered_check_authority.py" line="352" time="0.137" /><testcase classname="tests.integration.test_registered_check_authority" name="test_current_read_policy_denial_or_missing_approval_never_prepares[trust-deny]" file="tests/integration/test_registered_check_authority.py" line="352" time="0.137" /><testcase classname="tests.integration.test_registered_check_authority" name="test_restricted_local_check_keeps_output_in_protected_report[restricted]" file="tests/integration/test_registered_check_authority.py" line="359" time="0.222"><failure message="AssertionError: assert 'UNKNOWN' == 'COMPLETED'&#10;  &#10;  - COMPLETED&#10;  + UNKNOWN">configured = ({'owner': '74d78099-5ba2-461d-8b6d-a60670990f21', 'project': '787086f7-9621-4bca-8d16-87e2245a3700', 'goal': '5431010...), files=(('calculator.py', '88f92d58d9706e16b293aacf471dd930213780b70cbf773d31c716c3e1e84682', 11, '100644'),)), ...))
+
+    @pytest.mark.parametrize("configured", ["restricted"], indirect=True)
+    def test_restricted_local_check_keeps_output_in_protected_report(configured):
+        _task, args = configured
+        controller = RegisteredCheckController(*args)
+        receipt = run(controller)
+&gt;       assert receipt.outcome == "COMPLETED"
+E       AssertionError: assert 'UNKNOWN' == 'COMPLETED'
+E         
+E         - COMPLETED
+E         + UNKNOWN
+
+tests/integration/test_registered_check_authority.py:365: AssertionError</failure></testcase><testcase classname="tests.integration.test_registered_check_authority" name="test_authority_loss_after_report_storage_never_publishes_completion[lease]" file="tests/integration/test_registered_check_authority.py" line="371" time="0.238" /><testcase classname="tests.integration.test_registered_check_authority" name="test_authority_loss_after_report_storage_never_publishes_completion[policy]" file="tests/integration/test_registered_check_authority.py" line="371" time="0.234" /><testcase classname="tests.integration.test_registered_check_authority" name="test_authority_loss_after_report_storage_never_publishes_completion[cancel]" file="tests/integration/test_registered_check_authority.py" line="371" time="0.220"><failure message="AssertionError: assert 'UNKNOWN' == 'CANCELLED'&#10;  &#10;  - CANCELLED&#10;  + UNKNOWN">configured = ({'owner': 'c612f3c4-37e8-42c8-9b2d-f5fd4f3538f0', 'project': 'eeb022c0-2abe-4b25-a763-40f04b467cd8', 'goal': '531db66...), files=(('calculator.py', '88f92d58d9706e16b293aacf471dd930213780b70cbf773d31c716c3e1e84682', 11, '100644'),)), ...))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7e9a958f8080&gt;
+revoke = 'cancel'
+
+    @pytest.mark.parametrize("revoke", ["lease", "policy", "cancel"])
+    def test_authority_loss_after_report_storage_never_publishes_completion(configured, monkeypatch, revoke):
+        task, args = configured
+        controller = RegisteredCheckController(*args)
+        original = controller.reports.write_report
+        cancel = threading.Event()
+    
+        def revoke_after_write(raw):
+            digest = original(raw)
+            if revoke == "cancel":
+                cancel.set()
+            else:
+                with controller.connect() as connection:
+                    if revoke == "lease":
+                        LeaseService().release(
+                            UnitOfWork(connection),
+                            controller.actor,
+                            str(controller.scope.attempt_id),
+                            controller.scope.lease_epoch,
+                        )
+                    else:
+                        connection.execute("UPDATE panestria.project SET policy_version=2 WHERE id=%s", (task["project"],))
+            return digest
+    
+        monkeypatch.setattr(controller.reports, "write_report", revoke_after_write)
+&gt;       assert run(controller, cancel).outcome == ("CANCELLED" if revoke == "cancel" else "UNKNOWN")
+E       AssertionError: assert 'UNKNOWN' == 'CANCELLED'
+E         
+E         - CANCELLED
+E         + UNKNOWN
+
+tests/integration/test_registered_check_authority.py:397: AssertionError</failure></testcase><testcase classname="tests.integration.test_registered_check_authority" name="test_two_reconstructed_controllers_have_one_actual_dispatch" file="tests/integration/test_registered_check_authority.py" line="400" time="0.230"><failure message="AssertionError: assert ['UNKNOWN', 'UNKNOWN'] == ['COMPLETED', 'UNKNOWN']&#10;  &#10;  At index 0 diff: 'UNKNOWN' != 'COMPLETED'&#10;  Use -v to get more diff">configured = ({'owner': '1cb6fa5d-5d9f-45d2-97a1-4b77034e1e4a', 'project': '5d4a2426-26a4-46c9-aa65-3fd5d4d31bee', 'goal': '96aa86e...), files=(('calculator.py', '88f92d58d9706e16b293aacf471dd930213780b70cbf773d31c716c3e1e84682', 11, '100644'),)), ...))
+
+    def test_two_reconstructed_controllers_have_one_actual_dispatch(configured):
+        from concurrent.futures import ThreadPoolExecutor
+    
+        task, args = configured
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            receipts = list(pool.map(lambda _: run(RegisteredCheckController(*args)), range(2)))
+&gt;       assert sorted(receipt.outcome for receipt in receipts) == ["COMPLETED", "UNKNOWN"]
+E       AssertionError: assert ['UNKNOWN', 'UNKNOWN'] == ['COMPLETED', 'UNKNOWN']
+E         
+E         At index 0 diff: 'UNKNOWN' != 'COMPLETED'
+E         Use -v to get more diff
+
+tests/integration/test_registered_check_authority.py:407: AssertionError</failure></testcase><testcase classname="tests.integration.test_registered_check_authority" name="test_actual_output_limit_cannot_complete" file="tests/integration/test_registered_check_authority.py" line="414" time="0.235" /><testcase classname="tests.integration.test_registered_check_authority" name="test_actual_running_container_stops_after_authority_loss[lease]" file="tests/integration/test_registered_check_authority.py" line="424" time="0.257"><failure message="assert (False)&#10; +  where False = is_alive()&#10; +    where is_alive = &lt;Thread(Thread-4 (&lt;lambda&gt;), stopped 139202397206080)&gt;.is_alive">configured = ({'owner': '688822fb-8622-44dc-88ef-853152de7918', 'project': '25911fb1-403f-4f52-82bf-d24642b54442', 'goal': 'e51fc16...), files=(('calculator.py', '88f92d58d9706e16b293aacf471dd930213780b70cbf773d31c716c3e1e84682', 11, '100644'),)), ...))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7e9a958fadb0&gt;
+revoke = 'lease'
+
+    @pytest.mark.parametrize("revoke", ["lease", "cancel"])
+    def test_actual_running_container_stops_after_authority_loss(configured, monkeypatch, revoke):
+        import time
+    
+        from panestria.sandbox.runner import DockerSandbox
+    
+        task, args = configured
+        script = args[6].script
+        script.write_text("import time\ntime.sleep(8)\n")
+        values = list(args)
+        values[6] = replace(args[6], sha256=hashlib.sha256(script.read_bytes()).hexdigest())
+        controller = RegisteredCheckController(*values)
+        original = DockerSandbox.run
+        runtime_id = str(uuid4())
+    
+        def exact_identity(self, workspace, argv, profile, **kwargs):
+            return original(self, workspace, argv, profile, **{**kwargs, "attempt_id": runtime_id})
+    
+        # Only supply a deterministic test identity; the real supervisor still starts,
+        # inspects, cancels, reaps and removes its actual Docker container.
+        monkeypatch.setattr(DockerSandbox, "run", exact_identity)
+        results, cancel = [], threading.Event()
+        worker = threading.Thread(target=lambda: results.append(run(controller, cancel)))
+        worker.start()
+        try:
+            deadline = time.monotonic() + 5
+            while True:
+                running = subprocess.run(
+                    ["docker", "ps", "--filter", "label=panestria.attempt=" + runtime_id, "-q"],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                if running.stdout.strip():
+                    break
+&gt;               assert worker.is_alive() and time.monotonic() &lt; deadline
+E               assert (False)
+E                +  where False = is_alive()
+E                +    where is_alive = &lt;Thread(Thread-4 (&lt;lambda&gt;), stopped 139202397206080)&gt;.is_alive
+
+tests/integration/test_registered_check_authority.py:460: AssertionError</failure></testcase><testcase classname="tests.integration.test_registered_check_authority" name="test_actual_running_container_stops_after_authority_loss[cancel]" file="tests/integration/test_registered_check_authority.py" line="424" time="0.629"><failure message="assert (False)&#10; +  where False = is_alive()&#10; +    where is_alive = &lt;Thread(Thread-5 (&lt;lambda&gt;), stopped 139202397206080)&gt;.is_alive">configured = ({'owner': '4a72dca5-ae06-421b-906e-6d2019c805d7', 'project': '34052852-9c23-4db1-9614-b88de5ec1e09', 'goal': '5a30b88...), files=(('calculator.py', '88f92d58d9706e16b293aacf471dd930213780b70cbf773d31c716c3e1e84682', 11, '100644'),)), ...))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7e9a958fab10&gt;
+revoke = 'cancel'
+
+    @pytest.mark.parametrize("revoke", ["lease", "cancel"])
+    def test_actual_running_container_stops_after_authority_loss(configured, monkeypatch, revoke):
+        import time
+    
+        from panestria.sandbox.runner import DockerSandbox
+    
+        task, args = configured
+        script = args[6].script
+        script.write_text("import time\ntime.sleep(8)\n")
+        values = list(args)
+        values[6] = replace(args[6], sha256=hashlib.sha256(script.read_bytes()).hexdigest())
+        controller = RegisteredCheckController(*values)
+        original = DockerSandbox.run
+        runtime_id = str(uuid4())
+    
+        def exact_identity(self, workspace, argv, profile, **kwargs):
+            return original(self, workspace, argv, profile, **{**kwargs, "attempt_id": runtime_id})
+    
+        # Only supply a deterministic test identity; the real supervisor still starts,
+        # inspects, cancels, reaps and removes its actual Docker container.
+        monkeypatch.setattr(DockerSandbox, "run", exact_identity)
+        results, cancel = [], threading.Event()
+        worker = threading.Thread(target=lambda: results.append(run(controller, cancel)))
+        worker.start()
+        try:
+            deadline = time.monotonic() + 5
+            while True:
+                running = subprocess.run(
+                    ["docker", "ps", "--filter", "label=panestria.attempt=" + runtime_id, "-q"],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                if running.stdout.strip():
+                    break
+&gt;               assert worker.is_alive() and time.monotonic() &lt; deadline
+E               assert (False)
+E                +  where False = is_alive()
+E                +    where is_alive = &lt;Thread(Thread-5 (&lt;lambda&gt;), stopped 139202397206080)&gt;.is_alive
+
+tests/integration/test_registered_check_authority.py:460: AssertionError</failure></testcase></testsuite></testsuites>

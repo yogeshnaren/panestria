@@ -10,6 +10,7 @@ import selectors
 import subprocess
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
@@ -75,8 +76,16 @@ class SandboxLaunchUncertain(SandboxRejected):
 
 
 class DockerSandbox:
-    def __init__(self, workspace_root: Path, *, runtime_mounts: tuple[ReadOnlyMount, ...] = ()) -> None:
+    def __init__(
+        self,
+        workspace_root: Path,
+        *,
+        runtime_mounts: tuple[ReadOnlyMount, ...] = (),
+        on_launch: Callable[[SandboxLaunchReference, SandboxProfile], None] | None = None,
+        before_start: Callable[[], None] | None = None,
+    ) -> None:
         self.root = workspace_root.resolve()
+        self._on_launch, self._before_start = on_launch, before_start
         self.mounts = (
             *runtime_mounts,
             ReadOnlyMount(Path(__file__).with_name("no_network.py"), "/runtime/panestria-no-network.py"),
@@ -191,6 +200,13 @@ class DockerSandbox:
         for mount in self.mounts:
             args.extend(["--mount", f"type=bind,src={mount.source.resolve()},dst={mount.destination},readonly"])
         args.extend([profile.image, "-I", "/runtime/panestria-no-network.py", *argv])
+        if self._on_launch is not None:
+            try:
+                self._on_launch(launch, profile)  # Must commit before returning.
+            except Exception:
+                raise SandboxRejected("launch_intent_unconfirmed") from None
+        if cancel is not None and cancel.is_set():
+            raise SandboxRejected("cancelled_before_start")
         try:
             container_id = self._docker(args).stdout.strip()
             if re.fullmatch(r"[0-9a-f]{64}", container_id) is None:
@@ -205,6 +221,11 @@ class DockerSandbox:
             raise SandboxLaunchUncertain(launch, observed) from None
         try:
             self._validate_effective(effective, image_id, workspace, profile, str(identity))
+            if self._before_start is not None:
+                try:
+                    self._before_start()
+                except Exception:
+                    raise SandboxRejected("launch_start_authority_unconfirmed") from None
             config_hash = hashlib.sha256(
                 json.dumps(effective, sort_keys=True, separators=(",", ":")).encode()
             ).hexdigest()
