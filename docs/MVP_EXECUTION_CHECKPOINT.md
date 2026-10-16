@@ -256,3 +256,25 @@ PR86 merged307371587fc470b335db762163632449ab2efaaf after exacthead3e80b8c
 CI38855712327 PASS1318/49liveexcluded (one upstream pypdf deprecation warning).
 The public-web policy branch integrates that verified main before publication;
 only appended checkpoint text conflicted, and both histories are preserved.
+
+
+### 2026-10-16 — scoped connection declaration/review component
+
+PR87 merged66cf31c after exactbb06fa4 CI38856594072 PASS1365/49; post-merge
+main CI38857394253 also PASS. Current task starts from that freshly fetched main.
+At clean b41ee6682e3a6ff33fbe282d5f4bc952272c07d1,81 focused contract/actual PG/
+policy/setup checks PASS27.32s, Ruff/mypy189/11imports/secret scanPASS. Migration
+0027_connection_reviews has immutable owner proposals/decisions/revisions and a
+monotonic pointer with deferred exact review/version consistency. APIhead27 and
+both actual schema snapshots1048lines were refreshed on unique owned PG32771.
+Evidence/connection-reviews-2026-10-16 retains source/artifact pins and earlier
+orphan-decision and old restore-guard failures without relabeling them.
+
+Manifests constrain declared connector/config/account/root/origin/action/class/
+budget/expiry; owner digest/version/policy review, real expiry/replay/concurrent
+races/rollback/dumprestore/downgrade and event-last behavior tested. All outputs
+remain DECLARATION_ONLY, conformanceUNVERIFIED and policyCURRENT/STALE. No actual
+connector/credential/network/inference/API route is enabled. GrantBroker/capability
+and root/account registry, lease/budget/approval bindings/revocation-before-future-
+effect/reconciliation, secret/OS enforcement and onboarding UI remain required.
+No complete AOS008S4/S5, TC05–08, R1/G1 or R3 pass follows from this component.

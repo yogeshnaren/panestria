@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="4.873" timestamp="2026-10-16T02:09:23.971090-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_connection_reviews" name="test_database_requires_each_approved_decision_to_have_its_own_revision[None]" file="tests/integration/test_connection_reviews.py" line="239" time="3.805" /><testcase classname="tests.integration.test_connection_reviews" name="test_database_requires_each_approved_decision_to_have_its_own_revision[1]" file="tests/integration/test_connection_reviews.py" line="239" time="0.644"><failure message="Failed: DID NOT RAISE Error">configured = ({'owner': '09c2d4a9-0345-4909-9dc6-2a411e028985', 'project': 'b2146d02-1005-4cc4-b8c1-ab83999ce497', 'goal': 'af58a09...a3976ccbabc98263e77857e9d8a842813391', &lt;panestria.kernel.connections.ConnectionReviewService object at 0x7825aa0b4980&gt;)
+granted_version = 1
+
+    @pytest.mark.parametrize("granted_version", [None, 1])
+    def test_database_requires_each_approved_decision_to_have_its_own_revision(configured, granted_version):
+        task, actor, policy, _ = configured
+        first = prepare(configured, request(configured))
+        other = prepare(configured, proposal(policy, first.manifest, grant_id=first.grant_id, expected_version=0))
+        decide(configured, first)
+&gt;       with pytest.raises(psycopg.Error), psycopg.connect(task["dsn"]) as c:
+E       Failed: DID NOT RAISE Error
+
+tests/integration/test_connection_reviews.py:246: Failed</failure></testcase></testsuite></testsuites>

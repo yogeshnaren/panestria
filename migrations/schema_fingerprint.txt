@@ -100,6 +100,49 @@ column check_run evidence_artifact_id uuid YES
 column check_run id uuid NO
 column check_run task_id uuid NO
 column check_run verdict text NO
+column connection_grant created_at timestamptz NO
+column connection_grant current_version int4 NO
+column connection_grant id uuid NO
+column connection_grant owner_id uuid NO
+column connection_grant project_id uuid NO
+column connection_grant_decision decided_at timestamptz NO
+column connection_grant_decision decided_by uuid NO
+column connection_grant_decision decision text NO
+column connection_grant_decision effect_digest bpchar NO
+column connection_grant_decision expected_version int4 NO
+column connection_grant_decision grant_id uuid NO
+column connection_grant_decision granted_version int4 YES
+column connection_grant_decision owner_id uuid NO
+column connection_grant_decision project_id uuid NO
+column connection_grant_decision review_id uuid NO
+column connection_grant_decision seq int8 NO
+column connection_grant_review created_at timestamptz NO
+column connection_grant_review effect_digest bpchar NO
+column connection_grant_review expected_version int4 NO
+column connection_grant_review expires_at timestamptz NO
+column connection_grant_review goal_id uuid NO
+column connection_grant_review grant_id uuid NO
+column connection_grant_review id uuid NO
+column connection_grant_review manifest_body jsonb NO
+column connection_grant_review manifest_sha256 bpchar NO
+column connection_grant_review operation text NO
+column connection_grant_review owner_id uuid NO
+column connection_grant_review policy_ref text NO
+column connection_grant_review project_id uuid NO
+column connection_grant_review request_sha256 bpchar NO
+column connection_grant_review seq int8 NO
+column connection_grant_review task_id uuid NO
+column connection_grant_revision created_at timestamptz NO
+column connection_grant_revision decision text NO
+column connection_grant_revision grant_id uuid NO
+column connection_grant_revision manifest_sha256 bpchar NO
+column connection_grant_revision operation text NO
+column connection_grant_revision owner_id uuid NO
+column connection_grant_revision policy_ref text NO
+column connection_grant_revision project_id uuid NO
+column connection_grant_revision review_id uuid NO
+column connection_grant_revision seq int8 NO
+column connection_grant_revision version int4 NO
 column context_pack created_at timestamptz NO
 column context_pack id uuid NO
 column context_pack metadata jsonb NO
@@ -553,6 +596,51 @@ constraint panestria.check_run f FOREIGN KEY (attempt_id, task_id) REFERENCES pa
 constraint panestria.check_run f FOREIGN KEY (evidence_artifact_id, task_id) REFERENCES panestria.artifact(id, task_id)
 constraint panestria.check_run f FOREIGN KEY (task_id, contract_id) REFERENCES panestria.task(id, contract_id)
 constraint panestria.check_run p PRIMARY KEY (id)
+constraint panestria.connection_grant c CHECK (((current_version >= 0) AND (current_version <= 1000001)))
+constraint panestria.connection_grant f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.connection_grant p PRIMARY KEY (id)
+constraint panestria.connection_grant t TRIGGER DEFERRABLE INITIALLY DEFERRED
+constraint panestria.connection_grant u UNIQUE (id, owner_id, project_id)
+constraint panestria.connection_grant_decision c CHECK ((((decision = 'APPROVED'::text) AND (granted_version IS NOT NULL) AND (granted_version = (expected_version + 1))) OR ((decision = 'DENIED'::text) AND (granted_version IS NULL))))
+constraint panestria.connection_grant_decision c CHECK (((expected_version >= 0) AND (expected_version <= 1000000)))
+constraint panestria.connection_grant_decision c CHECK (((granted_version >= 1) AND (granted_version <= 1000001)))
+constraint panestria.connection_grant_decision c CHECK ((decided_by = owner_id))
+constraint panestria.connection_grant_decision c CHECK ((decision = ANY (ARRAY['APPROVED'::text, 'DENIED'::text])))
+constraint panestria.connection_grant_decision c CHECK ((effect_digest ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.connection_grant_decision f FOREIGN KEY (decided_by) REFERENCES panestria.principal(id)
+constraint panestria.connection_grant_decision f FOREIGN KEY (grant_id, granted_version, review_id) REFERENCES panestria.connection_grant_revision(grant_id, version, review_id) DEFERRABLE INITIALLY DEFERRED
+constraint panestria.connection_grant_decision f FOREIGN KEY (review_id, grant_id, owner_id, project_id, expected_version, effect_digest) REFERENCES panestria.connection_grant_review(id, grant_id, owner_id, project_id, expected_version, effect_digest)
+constraint panestria.connection_grant_decision p PRIMARY KEY (review_id)
+constraint panestria.connection_grant_decision u UNIQUE (review_id, grant_id, granted_version, decision)
+constraint panestria.connection_grant_decision u UNIQUE (seq)
+constraint panestria.connection_grant_review c CHECK (((expected_version >= 0) AND (expected_version <= 1000000)))
+constraint panestria.connection_grant_review c CHECK (((expires_at > created_at) AND (expires_at <= (created_at + '00:15:00'::interval))))
+constraint panestria.connection_grant_review c CHECK (((jsonb_typeof(manifest_body) = 'object'::text) AND ((octet_length((manifest_body)::text) >= 1) AND (octet_length((manifest_body)::text) <= 32768))))
+constraint panestria.connection_grant_review c CHECK (((operation <> 'REVOKE'::text) OR (expected_version > 0)))
+constraint panestria.connection_grant_review c CHECK ((effect_digest ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.connection_grant_review c CHECK ((manifest_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.connection_grant_review c CHECK ((operation = ANY (ARRAY['REPLACE'::text, 'REVOKE'::text])))
+constraint panestria.connection_grant_review c CHECK ((policy_ref ~ '^project-policy:[1-9][0-9]{0,18}:[0-9a-f]{64}$'::text))
+constraint panestria.connection_grant_review c CHECK ((request_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.connection_grant_review f FOREIGN KEY (goal_id, project_id, owner_id) REFERENCES panestria.goal(id, project_id, owner_id)
+constraint panestria.connection_grant_review f FOREIGN KEY (grant_id, owner_id, project_id) REFERENCES panestria.connection_grant(id, owner_id, project_id)
+constraint panestria.connection_grant_review f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
+constraint panestria.connection_grant_review p PRIMARY KEY (id)
+constraint panestria.connection_grant_review u UNIQUE (id, grant_id, owner_id, project_id, expected_version, effect_digest)
+constraint panestria.connection_grant_review u UNIQUE (id, grant_id, owner_id, project_id, manifest_sha256, operation, policy_ref)
+constraint panestria.connection_grant_review u UNIQUE (seq)
+constraint panestria.connection_grant_revision c CHECK (((version >= 1) AND (version <= 1000001)))
+constraint panestria.connection_grant_revision c CHECK ((decision = 'APPROVED'::text))
+constraint panestria.connection_grant_revision c CHECK ((manifest_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.connection_grant_revision c CHECK ((operation = ANY (ARRAY['REPLACE'::text, 'REVOKE'::text])))
+constraint panestria.connection_grant_revision f FOREIGN KEY (grant_id, owner_id, project_id) REFERENCES panestria.connection_grant(id, owner_id, project_id)
+constraint panestria.connection_grant_revision f FOREIGN KEY (review_id, grant_id, owner_id, project_id, manifest_sha256, operation, policy_ref) REFERENCES panestria.connection_grant_review(id, grant_id, owner_id, project_id, manifest_sha256, operation, policy_ref)
+constraint panestria.connection_grant_revision f FOREIGN KEY (review_id, grant_id, version, decision) REFERENCES panestria.connection_grant_decision(review_id, grant_id, granted_version, decision) DEFERRABLE INITIALLY DEFERRED
+constraint panestria.connection_grant_revision p PRIMARY KEY (grant_id, version)
+constraint panestria.connection_grant_revision t TRIGGER DEFERRABLE INITIALLY DEFERRED
+constraint panestria.connection_grant_revision u UNIQUE (grant_id, version, review_id)
+constraint panestria.connection_grant_revision u UNIQUE (review_id)
+constraint panestria.connection_grant_revision u UNIQUE (seq)
 constraint panestria.context_pack c CHECK ((privacy_label = ANY (ARRAY['PUBLIC'::text, 'PRIVATE'::text, 'RESTRICTED'::text, 'INTERNAL'::text, 'CONFIDENTIAL'::text])))
 constraint panestria.context_pack c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.context_pack f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
@@ -867,6 +955,19 @@ index CREATE UNIQUE INDEX build_evidence_artifact_id_key ON panestria.build_evid
 index CREATE UNIQUE INDEX build_evidence_pkey ON panestria.build_evidence USING btree (id)
 index CREATE UNIQUE INDEX build_evidence_task_id_sha256_key ON panestria.build_evidence USING btree (task_id, sha256)
 index CREATE UNIQUE INDEX check_run_pkey ON panestria.check_run USING btree (id)
+index CREATE UNIQUE INDEX connection_grant_decision_pkey ON panestria.connection_grant_decision USING btree (review_id)
+index CREATE UNIQUE INDEX connection_grant_decision_review_id_grant_id_granted_versio_key ON panestria.connection_grant_decision USING btree (review_id, grant_id, granted_version, decision)
+index CREATE UNIQUE INDEX connection_grant_decision_seq_key ON panestria.connection_grant_decision USING btree (seq)
+index CREATE UNIQUE INDEX connection_grant_id_owner_id_project_id_key ON panestria.connection_grant USING btree (id, owner_id, project_id)
+index CREATE UNIQUE INDEX connection_grant_pkey ON panestria.connection_grant USING btree (id)
+index CREATE UNIQUE INDEX connection_grant_review_id_grant_id_owner_id_project_id_exp_key ON panestria.connection_grant_review USING btree (id, grant_id, owner_id, project_id, expected_version, effect_digest)
+index CREATE UNIQUE INDEX connection_grant_review_id_grant_id_owner_id_project_id_man_key ON panestria.connection_grant_review USING btree (id, grant_id, owner_id, project_id, manifest_sha256, operation, policy_ref)
+index CREATE UNIQUE INDEX connection_grant_review_pkey ON panestria.connection_grant_review USING btree (id)
+index CREATE UNIQUE INDEX connection_grant_review_seq_key ON panestria.connection_grant_review USING btree (seq)
+index CREATE UNIQUE INDEX connection_grant_revision_grant_id_version_review_id_key ON panestria.connection_grant_revision USING btree (grant_id, version, review_id)
+index CREATE UNIQUE INDEX connection_grant_revision_pkey ON panestria.connection_grant_revision USING btree (grant_id, version)
+index CREATE UNIQUE INDEX connection_grant_revision_review_id_key ON panestria.connection_grant_revision USING btree (review_id)
+index CREATE UNIQUE INDEX connection_grant_revision_seq_key ON panestria.connection_grant_revision USING btree (seq)
 index CREATE UNIQUE INDEX context_pack_id_owner_id_project_id_key ON panestria.context_pack USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX context_pack_pkey ON panestria.context_pack USING btree (id)
 index CREATE UNIQUE INDEX effect_outbox_pkey ON panestria.effect_outbox USING btree (effect_id)

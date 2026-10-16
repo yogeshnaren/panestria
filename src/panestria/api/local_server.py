@@ -40,7 +40,7 @@ from panestria.kernel.uow import UnitOfWork
 from panestria.resources.admission import admit
 from panestria.resources.hardware import HardwareProbe, ProbeUnavailable
 
-SCHEMA_HEAD = "0026_claim_evidence"
+SCHEMA_HEAD = "0027_connection_reviews"
 
 
 def require_setup(settings: ValidatedSettings, actor: Actor) -> str:
