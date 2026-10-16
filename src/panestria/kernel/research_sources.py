@@ -6,6 +6,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
+from uuid import UUID
 
 from psycopg.errors import ForeignKeyViolation
 from psycopg.pq import TransactionStatus
@@ -49,10 +50,16 @@ class StoredSourceBytes:
 
 def _references(evidence: SourceSnapshotEvidence) -> list[tuple[str, int, ResearchArtifactRef]]:
     snapshot = evidence.snapshot
-    refs = [(name, 0, ref) for name, ref in (
-        ("raw", snapshot.raw), ("text", snapshot.text),
-        ("fetch", evidence.fetch_receipt), ("reader", evidence.reader_receipt),
-    ) if ref is not None]
+    refs = [
+        (name, 0, ref)
+        for name, ref in (
+            ("raw", snapshot.raw),
+            ("text", snapshot.text),
+            ("fetch", evidence.fetch_receipt),
+            ("reader", evidence.reader_receipt),
+        )
+        if ref is not None
+    ]
     refs.extend(("redirect", index, ref) for index, ref in enumerate(snapshot.redirect_receipts))
     return refs
 
@@ -88,8 +95,18 @@ class SourceRecordService:
                 "(id,request_id,owner_id,project_id,goal_id,task_id,schema_version,body,"
                 "body_sha256,privacy_class,completeness) "
                 "VALUES (%s,%s,%s,%s,%s,%s,1,%s::jsonb,%s,%s,%s) ON CONFLICT DO NOTHING RETURNING seq",
-                (snapshot.snapshot_id, snapshot.request_id, actor.owner_id, actor.project_id, scope.goal_id,
-                 scope.task_id, evidence.model_dump_json(), digest, evidence.privacy_label, snapshot.completeness),
+                (
+                    snapshot.snapshot_id,
+                    snapshot.request_id,
+                    actor.owner_id,
+                    actor.project_id,
+                    scope.goal_id,
+                    scope.task_id,
+                    evidence.model_dump_json(),
+                    digest,
+                    evidence.privacy_label,
+                    snapshot.completeness,
+                ),
             ).fetchone()
             if row is None:
                 old = self.read(uow, actor, snapshot.snapshot_id, request_id=snapshot.request_id, task_id=scope.task_id)
@@ -105,14 +122,30 @@ class SourceRecordService:
         except ForeignKeyViolation:
             raise KernelDenied("source_artifact_or_scope_mismatch") from None
         append_event(
-            uow, goal_id=scope.goal_id, task_id=scope.task_id, kind="research.source.recorded", actor=actor.owner_id,
+            uow,
+            goal_id=scope.goal_id,
+            task_id=scope.task_id,
+            kind="research.source.recorded",
+            actor=actor.owner_id,
             payload={"snapshot_id": snapshot.snapshot_id, "body_sha256": digest, "completeness": snapshot.completeness},
         )
         return SourceRecordReceipt(snapshot.snapshot_id, digest, int(row[0]), False)
 
     def read(
-        self, uow: UnitOfWork, actor: Actor, snapshot_id: str, *, request_id: str, task_id: str,
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        snapshot_id: str,
+        *,
+        request_id: str,
+        task_id: str,
     ) -> StoredSourceRecord:
+        for identifier in (snapshot_id, request_id, task_id, actor.owner_id, actor.project_id):
+            try:
+                if type(identifier) is not str or str(UUID(identifier)) != identifier:
+                    raise ValueError
+            except (ValueError, AttributeError):
+                raise KernelDenied("not_found") from None
         row = uow.execute(
             "SELECT body,body_sha256,seq,privacy_class FROM panestria.research_source_snapshot "
             "WHERE id=%s AND request_id=%s AND task_id=%s AND owner_id=%s AND project_id=%s",
@@ -143,8 +176,15 @@ class SourceRecordService:
         return StoredSourceRecord(evidence, str(row[1]).strip(), int(row[2]))
 
     def read_bytes(
-        self, uow: UnitOfWork, actor: Actor, snapshot_id: str, *, request_id: str, task_id: str,
-        root: Path, role: Literal["raw", "text"],
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        snapshot_id: str,
+        *,
+        request_id: str,
+        task_id: str,
+        root: Path,
+        role: Literal["raw", "text"],
     ) -> StoredSourceBytes:
         if role not in {"raw", "text"}:
             raise KernelDenied("invalid_source_role")

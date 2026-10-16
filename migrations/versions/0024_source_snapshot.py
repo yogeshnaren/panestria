@@ -9,8 +9,10 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.execute("ALTER TABLE panestria.research_request ADD CONSTRAINT research_request_full_scope "
-               "UNIQUE(id,owner_id,project_id,goal_id,task_id)")
+    op.execute(
+        "ALTER TABLE panestria.research_request ADD CONSTRAINT research_request_full_scope "
+        "UNIQUE(id,owner_id,project_id,goal_id,task_id)"
+    )
     op.execute("""CREATE TABLE panestria.research_source_snapshot (
         id uuid PRIMARY KEY, request_id uuid NOT NULL,
         owner_id uuid NOT NULL, project_id uuid NOT NULL, goal_id uuid NOT NULL, task_id uuid NOT NULL,
@@ -59,8 +61,10 @@ def upgrade() -> None:
         FOREIGN KEY(artifact_id,task_id,sha256,size_bytes,privacy_class)
             REFERENCES panestria.artifact(id,task_id,sha256,size_bytes,privacy_class))""")
     for table in ("research_source_snapshot", "research_source_artifact"):
-        op.execute(f"CREATE TRIGGER immutable_{table} BEFORE UPDATE OR DELETE ON panestria.{table} "
-                   "FOR EACH ROW EXECUTE FUNCTION panestria.immutable_memory_record()")
+        op.execute(
+            f"CREATE TRIGGER immutable_{table} BEFORE UPDATE OR DELETE ON panestria.{table} "
+            "FOR EACH ROW EXECUTE FUNCTION panestria.immutable_memory_record()"
+        )
     op.execute("""CREATE FUNCTION panestria.check_source_artifact_set() RETURNS trigger LANGUAGE plpgsql AS $$
     DECLARE source_id uuid; stored jsonb; actual jsonb; expected jsonb;
     BEGIN
@@ -84,13 +88,16 @@ def upgrade() -> None:
       RETURN NEW;
     END $$""")
     for table in ("research_source_snapshot", "research_source_artifact"):
-        op.execute(f"CREATE CONSTRAINT TRIGGER source_artifact_set_{table} AFTER INSERT ON panestria.{table} "
-                   "DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION panestria.check_source_artifact_set()")
+        op.execute(
+            f"CREATE CONSTRAINT TRIGGER source_artifact_set_{table} AFTER INSERT ON panestria.{table} "
+            "DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION panestria.check_source_artifact_set()"
+        )
 
 
 def downgrade() -> None:
-    op.execute("LOCK TABLE panestria.research_source_snapshot,panestria.research_source_artifact "
-               "IN ACCESS EXCLUSIVE MODE")
+    op.execute(
+        "LOCK TABLE panestria.research_source_snapshot,panestria.research_source_artifact IN ACCESS EXCLUSIVE MODE"
+    )
     if op.get_bind().exec_driver_sql("SELECT EXISTS(SELECT 1 FROM panestria.research_source_snapshot)").scalar():
         raise RuntimeError("source snapshot audit exists; use forward repair or a reviewed backup")
     op.execute("DROP TABLE panestria.research_source_artifact")

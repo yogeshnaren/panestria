@@ -326,6 +326,28 @@ column research_request request_sha256 bpchar NO
 column research_request schema_version int4 NO
 column research_request seq int8 NO
 column research_request task_id uuid NO
+column research_source_artifact artifact_id uuid NO
+column research_source_artifact ordinal int4 NO
+column research_source_artifact privacy_class text NO
+column research_source_artifact reference jsonb NO
+column research_source_artifact role text NO
+column research_source_artifact sha256 bpchar NO
+column research_source_artifact size_bytes int8 NO
+column research_source_artifact snapshot_id uuid NO
+column research_source_artifact task_id uuid NO
+column research_source_snapshot body jsonb NO
+column research_source_snapshot body_sha256 bpchar NO
+column research_source_snapshot completeness text NO
+column research_source_snapshot created_at timestamptz NO
+column research_source_snapshot goal_id uuid NO
+column research_source_snapshot id uuid NO
+column research_source_snapshot owner_id uuid NO
+column research_source_snapshot privacy_class text NO
+column research_source_snapshot project_id uuid NO
+column research_source_snapshot request_id uuid NO
+column research_source_snapshot schema_version int4 NO
+column research_source_snapshot seq int8 NO
+column research_source_snapshot task_id uuid NO
 column side_effect approval_request_id uuid YES
 column side_effect classification text YES
 column side_effect dispatch_attempts int4 NO
@@ -653,8 +675,36 @@ constraint panestria.research_request f FOREIGN KEY (goal_id, project_id, owner_
 constraint panestria.research_request f FOREIGN KEY (question_artifact_id, task_id, question_sha256, question_size_bytes, privacy_class) REFERENCES panestria.artifact(id, task_id, sha256, size_bytes, privacy_class)
 constraint panestria.research_request f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
 constraint panestria.research_request p PRIMARY KEY (id)
+constraint panestria.research_request u UNIQUE (id, owner_id, project_id, goal_id, task_id)
 constraint panestria.research_request u UNIQUE (id, task_id)
 constraint panestria.research_request u UNIQUE (seq)
+constraint panestria.research_source_artifact c CHECK ((((ordinal >= 0) AND (ordinal <= 4)) AND ((role = 'redirect'::text) OR (ordinal = 0))))
+constraint panestria.research_source_artifact c CHECK ((((reference -> 'schema_version'::text) = '1'::jsonb) IS TRUE))
+constraint panestria.research_source_artifact c CHECK (((reference ->> 'sha256'::text) ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.research_source_artifact c CHECK (((size_bytes >= 0) AND (size_bytes <= 2097152)))
+constraint panestria.research_source_artifact c CHECK ((jsonb_typeof(reference) = 'object'::text))
+constraint panestria.research_source_artifact c CHECK ((privacy_class = ANY (ARRAY['PUBLIC'::text, 'INTERNAL'::text, 'CONFIDENTIAL'::text, 'RESTRICTED'::text])))
+constraint panestria.research_source_artifact c CHECK ((role = ANY (ARRAY['raw'::text, 'text'::text, 'fetch'::text, 'reader'::text, 'redirect'::text])))
+constraint panestria.research_source_artifact f FOREIGN KEY (artifact_id, task_id, sha256, size_bytes, privacy_class) REFERENCES panestria.artifact(id, task_id, sha256, size_bytes, privacy_class)
+constraint panestria.research_source_artifact f FOREIGN KEY (snapshot_id, task_id) REFERENCES panestria.research_source_snapshot(id, task_id)
+constraint panestria.research_source_artifact p PRIMARY KEY (snapshot_id, role, ordinal)
+constraint panestria.research_source_artifact t TRIGGER DEFERRABLE INITIALLY DEFERRED
+constraint panestria.research_source_snapshot c CHECK (((((((body -> 'snapshot'::text) -> 'scope'::text) ->> 'owner_id'::text) = (owner_id)::text) AND ((((body -> 'snapshot'::text) -> 'scope'::text) ->> 'project_id'::text) = (project_id)::text) AND ((((body -> 'snapshot'::text) -> 'scope'::text) ->> 'goal_id'::text) = (goal_id)::text) AND ((((body -> 'snapshot'::text) -> 'scope'::text) ->> 'task_id'::text) = (task_id)::text)) IS TRUE))
+constraint panestria.research_source_snapshot c CHECK ((((((body -> 'snapshot'::text) ->> 'snapshot_id'::text) = (id)::text) AND (((body -> 'snapshot'::text) ->> 'request_id'::text) = (request_id)::text)) IS TRUE))
+constraint panestria.research_source_snapshot c CHECK (((((body -> 'snapshot'::text) ->> 'completeness'::text) = completeness) IS TRUE))
+constraint panestria.research_source_snapshot c CHECK (((((body ->> 'schema_version'::text))::integer = 1) IS TRUE))
+constraint panestria.research_source_snapshot c CHECK ((((completeness <> 'COMPLETE'::text) OR ((jsonb_typeof(((body -> 'snapshot'::text) -> 'raw'::text)) = 'object'::text) AND (jsonb_typeof(((body -> 'snapshot'::text) -> 'text'::text)) = 'object'::text) AND (jsonb_typeof((body -> 'reader_receipt'::text)) = 'object'::text) AND (((((body -> 'snapshot'::text) ->> 'http_status'::text))::integer >= 200) AND ((((body -> 'snapshot'::text) ->> 'http_status'::text))::integer <= 299)) AND (((body -> 'snapshot'::text) ->> 'terminal_url'::text) IS NOT NULL) AND (((body -> 'snapshot'::text) ->> 'content_type'::text) = ANY (ARRAY['text/plain'::text, 'text/html'::text, 'application/pdf'::text])) AND (((((body -> 'snapshot'::text) -> 'raw'::text) ->> 'size_bytes'::text))::bigint > 0) AND (((((body -> 'snapshot'::text) -> 'text'::text) ->> 'size_bytes'::text))::bigint > 0) AND (((body -> 'snapshot'::text) -> 'error_code'::text) = 'null'::jsonb))) IS TRUE))
+constraint panestria.research_source_snapshot c CHECK (((jsonb_typeof((body -> 'fetch_receipt'::text)) = 'object'::text) IS TRUE))
+constraint panestria.research_source_snapshot c CHECK (((jsonb_typeof(body) = 'object'::text) AND (octet_length((body)::text) <= 32768)))
+constraint panestria.research_source_snapshot c CHECK ((body_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.research_source_snapshot c CHECK ((completeness = ANY (ARRAY['COMPLETE'::text, 'TRUNCATED'::text, 'UNSUPPORTED'::text, 'ERROR'::text])))
+constraint panestria.research_source_snapshot c CHECK ((privacy_class = ANY (ARRAY['PUBLIC'::text, 'INTERNAL'::text, 'CONFIDENTIAL'::text, 'RESTRICTED'::text])))
+constraint panestria.research_source_snapshot c CHECK ((schema_version = 1))
+constraint panestria.research_source_snapshot f FOREIGN KEY (request_id, owner_id, project_id, goal_id, task_id) REFERENCES panestria.research_request(id, owner_id, project_id, goal_id, task_id)
+constraint panestria.research_source_snapshot p PRIMARY KEY (id)
+constraint panestria.research_source_snapshot t TRIGGER DEFERRABLE INITIALLY DEFERRED
+constraint panestria.research_source_snapshot u UNIQUE (id, task_id)
+constraint panestria.research_source_snapshot u UNIQUE (seq)
 constraint panestria.side_effect c CHECK ((classification = ANY (ARRAY['read-only'::text, 'idempotent-with-key'::text, 'reconcile-by-query'::text, 'compensatable'::text, 'non-retryable'::text])))
 constraint panestria.side_effect c CHECK ((request_hash ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.side_effect c CHECK ((state = ANY (ARRAY['PREPARED'::text, 'EXECUTING'::text, 'SUCCEEDED'::text, 'FAILED'::text, 'UNKNOWN'::text, 'RECONCILING'::text])))
@@ -784,9 +834,14 @@ index CREATE UNIQUE INDEX profile_revision_profile_id_owner_id_project_id_versio
 index CREATE UNIQUE INDEX project_id_owner_id_key ON panestria.project USING btree (id, owner_id)
 index CREATE UNIQUE INDEX project_pkey ON panestria.project USING btree (id)
 index CREATE UNIQUE INDEX project_policy_revision_pkey ON panestria.project_policy_revision USING btree (project_id, version)
+index CREATE UNIQUE INDEX research_request_full_scope ON panestria.research_request USING btree (id, owner_id, project_id, goal_id, task_id)
 index CREATE UNIQUE INDEX research_request_id_task_id_key ON panestria.research_request USING btree (id, task_id)
 index CREATE UNIQUE INDEX research_request_pkey ON panestria.research_request USING btree (id)
 index CREATE UNIQUE INDEX research_request_seq_key ON panestria.research_request USING btree (seq)
+index CREATE UNIQUE INDEX research_source_artifact_pkey ON panestria.research_source_artifact USING btree (snapshot_id, role, ordinal)
+index CREATE UNIQUE INDEX research_source_snapshot_id_task_id_key ON panestria.research_source_snapshot USING btree (id, task_id)
+index CREATE UNIQUE INDEX research_source_snapshot_pkey ON panestria.research_source_snapshot USING btree (id)
+index CREATE UNIQUE INDEX research_source_snapshot_seq_key ON panestria.research_source_snapshot USING btree (seq)
 index CREATE UNIQUE INDEX side_effect_id_task_unique ON panestria.side_effect USING btree (id, task_id)
 index CREATE UNIQUE INDEX side_effect_pkey ON panestria.side_effect USING btree (id)
 index CREATE UNIQUE INDEX side_effect_task_id_effect_key_key ON panestria.side_effect USING btree (task_id, effect_key)
