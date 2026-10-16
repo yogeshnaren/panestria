@@ -308,6 +308,37 @@ column project_policy_revision project_id uuid NO
 column project_policy_revision sha256 bpchar NO
 column project_policy_revision trust_version int8 NO
 column project_policy_revision version int8 NO
+column research_claim created_at timestamptz NO
+column research_claim draft_kind text NO
+column research_claim goal_id uuid NO
+column research_claim id uuid NO
+column research_claim owner_id uuid NO
+column research_claim payload_artifact_id uuid NO
+column research_claim payload_sha256 bpchar NO
+column research_claim payload_size_bytes int8 NO
+column research_claim privacy_class text NO
+column research_claim project_id uuid NO
+column research_claim report_artifact_id uuid NO
+column research_claim report_sha256 bpchar NO
+column research_claim report_size_bytes int8 NO
+column research_claim request_id uuid NO
+column research_claim seq int8 NO
+column research_claim support_status text NO
+column research_claim task_id uuid NO
+column research_claim verdict text NO
+column research_claim verified_passage_count int4 NO
+column research_claim verifier_version text NO
+column research_claim_passage claim_id uuid NO
+column research_claim_passage end_bytes int4 NO
+column research_claim_passage normalization_version text NO
+column research_claim_passage ordinal int4 NO
+column research_claim_passage quote_matched bool NO
+column research_claim_passage request_id uuid NO
+column research_claim_passage snapshot_id uuid NO
+column research_claim_passage source_metadata_sha256 bpchar NO
+column research_claim_passage start_bytes int4 NO
+column research_claim_passage task_id uuid NO
+column research_claim_passage text_sha256 bpchar NO
 column research_request created_at timestamptz NO
 column research_request deadline_seconds float8 NO
 column research_request goal_id uuid NO
@@ -671,6 +702,33 @@ constraint panestria.project_policy_revision c CHECK ((trust_version > 0))
 constraint panestria.project_policy_revision c CHECK ((version > 0))
 constraint panestria.project_policy_revision f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.project_policy_revision p PRIMARY KEY (project_id, version)
+constraint panestria.research_claim c CHECK (((payload_size_bytes >= 1) AND (payload_size_bytes <= 262144)))
+constraint panestria.research_claim c CHECK (((report_size_bytes >= 1) AND (report_size_bytes <= 32768)))
+constraint panestria.research_claim c CHECK (((verdict <> 'EVIDENCE_PRESENT'::text) OR (verified_passage_count > 0)))
+constraint panestria.research_claim c CHECK (((verdict <> 'NO_EVIDENCE'::text) OR (verified_passage_count = 0)))
+constraint panestria.research_claim c CHECK (((verified_passage_count >= 0) AND (verified_passage_count <= 16)))
+constraint panestria.research_claim c CHECK ((draft_kind = ANY (ARRAY['FACT'::text, 'INTERPRETATION'::text, 'OPINION'::text, 'QUESTION'::text])))
+constraint panestria.research_claim c CHECK ((privacy_class = ANY (ARRAY['PUBLIC'::text, 'INTERNAL'::text, 'CONFIDENTIAL'::text, 'RESTRICTED'::text])))
+constraint panestria.research_claim c CHECK ((support_status = 'NOT_ASSESSED'::text))
+constraint panestria.research_claim c CHECK ((verdict = ANY (ARRAY['NO_EVIDENCE'::text, 'INVALID_EVIDENCE'::text, 'EVIDENCE_PRESENT'::text])))
+constraint panestria.research_claim c CHECK ((verifier_version = 'source-citation-v1'::text))
+constraint panestria.research_claim f FOREIGN KEY (payload_artifact_id, task_id, payload_sha256, payload_size_bytes, privacy_class) REFERENCES panestria.artifact(id, task_id, sha256, size_bytes, privacy_class)
+constraint panestria.research_claim f FOREIGN KEY (report_artifact_id, task_id, report_sha256, report_size_bytes, privacy_class) REFERENCES panestria.artifact(id, task_id, sha256, size_bytes, privacy_class)
+constraint panestria.research_claim f FOREIGN KEY (request_id, owner_id, project_id, goal_id, task_id) REFERENCES panestria.research_request(id, owner_id, project_id, goal_id, task_id)
+constraint panestria.research_claim p PRIMARY KEY (id)
+constraint panestria.research_claim t TRIGGER DEFERRABLE INITIALLY DEFERRED
+constraint panestria.research_claim u UNIQUE (id, request_id, task_id)
+constraint panestria.research_claim u UNIQUE (seq)
+constraint panestria.research_claim_passage c CHECK (((end_bytes > start_bytes) AND (end_bytes <= 2097152)))
+constraint panestria.research_claim_passage c CHECK (((ordinal >= 0) AND (ordinal <= 15)))
+constraint panestria.research_claim_passage c CHECK ((normalization_version = 'nfc-utf8-v1'::text))
+constraint panestria.research_claim_passage c CHECK ((start_bytes >= 0))
+constraint panestria.research_claim_passage c CHECK ((text_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.research_claim_passage f FOREIGN KEY (claim_id, request_id, task_id) REFERENCES panestria.research_claim(id, request_id, task_id)
+constraint panestria.research_claim_passage f FOREIGN KEY (snapshot_id) REFERENCES panestria.research_source_capture(snapshot_id)
+constraint panestria.research_claim_passage f FOREIGN KEY (snapshot_id, request_id, task_id, source_metadata_sha256) REFERENCES panestria.research_source_snapshot(id, request_id, task_id, body_sha256)
+constraint panestria.research_claim_passage p PRIMARY KEY (claim_id, ordinal)
+constraint panestria.research_claim_passage t TRIGGER DEFERRABLE INITIALLY DEFERRED
 constraint panestria.research_request c CHECK (((deadline_seconds >= (1)::double precision) AND (deadline_seconds <= (300)::double precision)))
 constraint panestria.research_request c CHECK (((max_redirects >= 0) AND (max_redirects <= 5)))
 constraint panestria.research_request c CHECK (((max_source_bytes >= 1) AND (max_source_bytes <= 2097152)))
@@ -719,6 +777,7 @@ constraint panestria.research_source_snapshot c CHECK ((schema_version = 1))
 constraint panestria.research_source_snapshot f FOREIGN KEY (request_id, owner_id, project_id, goal_id, task_id) REFERENCES panestria.research_request(id, owner_id, project_id, goal_id, task_id)
 constraint panestria.research_source_snapshot p PRIMARY KEY (id)
 constraint panestria.research_source_snapshot t TRIGGER DEFERRABLE INITIALLY DEFERRED
+constraint panestria.research_source_snapshot u UNIQUE (id, request_id, task_id, body_sha256)
 constraint panestria.research_source_snapshot u UNIQUE (id, task_id)
 constraint panestria.research_source_snapshot u UNIQUE (id, task_id, body_sha256)
 constraint panestria.research_source_snapshot u UNIQUE (seq)
@@ -851,6 +910,10 @@ index CREATE UNIQUE INDEX profile_revision_profile_id_owner_id_project_id_versio
 index CREATE UNIQUE INDEX project_id_owner_id_key ON panestria.project USING btree (id, owner_id)
 index CREATE UNIQUE INDEX project_pkey ON panestria.project USING btree (id)
 index CREATE UNIQUE INDEX project_policy_revision_pkey ON panestria.project_policy_revision USING btree (project_id, version)
+index CREATE UNIQUE INDEX research_claim_id_request_id_task_id_key ON panestria.research_claim USING btree (id, request_id, task_id)
+index CREATE UNIQUE INDEX research_claim_passage_pkey ON panestria.research_claim_passage USING btree (claim_id, ordinal)
+index CREATE UNIQUE INDEX research_claim_pkey ON panestria.research_claim USING btree (id)
+index CREATE UNIQUE INDEX research_claim_seq_key ON panestria.research_claim USING btree (seq)
 index CREATE UNIQUE INDEX research_request_full_scope ON panestria.research_request USING btree (id, owner_id, project_id, goal_id, task_id)
 index CREATE UNIQUE INDEX research_request_id_task_id_key ON panestria.research_request USING btree (id, task_id)
 index CREATE UNIQUE INDEX research_request_pkey ON panestria.research_request USING btree (id)
@@ -864,6 +927,7 @@ index CREATE UNIQUE INDEX research_source_snapshot_seq_key ON panestria.research
 index CREATE UNIQUE INDEX side_effect_id_task_unique ON panestria.side_effect USING btree (id, task_id)
 index CREATE UNIQUE INDEX side_effect_pkey ON panestria.side_effect USING btree (id)
 index CREATE UNIQUE INDEX side_effect_task_id_effect_key_key ON panestria.side_effect USING btree (task_id, effect_key)
+index CREATE UNIQUE INDEX source_snapshot_claim_scope ON panestria.research_source_snapshot USING btree (id, request_id, task_id, body_sha256)
 index CREATE UNIQUE INDEX source_snapshot_pinned_body ON panestria.research_source_snapshot USING btree (id, task_id, body_sha256)
 index CREATE UNIQUE INDEX task_attempt_id_task_id_key ON panestria.task_attempt USING btree (id, task_id)
 index CREATE UNIQUE INDEX task_attempt_pkey ON panestria.task_attempt USING btree (id)
