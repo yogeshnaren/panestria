@@ -152,3 +152,20 @@ evidence/pdf-extraction-2026-10-16. Source-bound checks verify extraction and it
 limits only; no SourceStore or source/citation/support authority follows. Actual
 immutable source records, retained-fetch composition, privacy/admission, protected
 passage resolution and full R1/R2/R3 gates remain work. No owner trial started.
+
+PR #80 merged c03737abab6aca533b865f98926f753d519e3f60 after exact 2a572bc
+CI38848382391 passed1191/44 (one upstream synthetic add_js deprecation warning).
+The isolated PDF reader is now on main; its source-bound 77 checks remain scoped
+component evidence. No provider/model/image download was used.
+
+Source metadata is implemented separately on task/research-source-records,
+starting at fetched main and including verified #80. Migration0024 has immutable
+full request scope, exact pinned artifact associations with deferred set checks,
+same-transaction event publication and guarded downgrade. At clean f611b83,
+25 actual source metadata/private-byte/restore/corruption cases PASS. Earlier
+7d19eaf passed63 source/request/schema/launcher cases; observations stay separate.
+Evidence: evidence/research-source-records-2026-10-16. Every returned record/byte
+result explicitly requires actual fetch authority. No source API or citation
+pass is enabled. SourceStore actual retained-fetch/reader provenance composition,
+protected passage authority, configured search, semantic support and Delegate
+controller remain next; R1 gaps and R3/extensions/gates also remain unfinished.

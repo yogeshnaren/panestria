@@ -109,3 +109,20 @@ manifest to a private readonly bundle. Thirteen filesystem/import checks pass at
 3bc45f, including actual Docker import/configuration. It parses no PDF input and
 does not change UNSUPPORTED outcomes; actual isolated PDF integration remains
 next work. Evidence: evidence/pdf-runtime-bundle-2026-10-15.
+
+## Immutable source metadata component (2026-10-16)
+
+Migration 0024 now stores the exact scoped immutable snapshot body plus pinned
+raw/text/fetch/reader/redirect artifact associations. A deferred database check
+requires the complete exact association set; source and event share the caller
+transaction and global sequence. Readback revalidates body/hash/scope and reads
+actual protected raw/text bytes. Every result remains explicitly metadata-only
+or retained-bytes-only and requires separate actual fetch authority.
+
+At f611b83, 25 source component checks pass, including real pg_dump/restore,
+concurrent retries, direct constraints, private byte corruption and deliberate
+restored-metadata corruption with test-only trigger changes rolled back. Earlier
+7d19eaf passed 63 source/request/schema/launcher checks. Both source bindings are
+retained separately in evidence/research-source-records-2026-10-16. Active schema
+snapshots were generated from actual isolated PostgreSQL. No live fetch, usable
+citation or full case/release pass follows from synthetic metadata fixtures.
