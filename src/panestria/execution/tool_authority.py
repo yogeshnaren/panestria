@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Callable
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 from uuid import UUID
@@ -19,6 +20,7 @@ from panestria.kernel.invocations import InvocationService
 from panestria.kernel.sandbox_launches import SandboxLaunchService
 from panestria.kernel.uow import UnitOfWork
 from panestria.sandbox.native_tool_gateway import RunnerFactory, ToolPermit
+from panestria.sandbox.profiles import SandboxProfile
 from panestria.sandbox.runner import DockerSandbox, LaunchReconciliation, SandboxLaunchReference
 
 
@@ -53,10 +55,17 @@ class DurableToolAuthority:
     def _authorize_launch(self, connection: psycopg.Connection[Any], permit: ToolPermit) -> None:
         self.service.check(UnitOfWork(connection), self.actor, tool_binding(permit), self.identity)
 
-    def record_launch(self, permit: ToolPermit, reference: SandboxLaunchReference) -> None:
+    def record_launch(self, permit: ToolPermit, reference: SandboxLaunchReference, profile: SandboxProfile) -> None:
         reference.validate()
         binding = tool_binding(permit)
-        if reference.profile_sha256 != permit.profile.sha256():
+        # The gateway reduces wall time to the remaining absolute deadline.
+        # Every other declared resource/permission/image/identity stays exact.
+        if (
+            type(profile) is not SandboxProfile
+            or replace(profile, wall_seconds=permit.profile.wall_seconds) != permit.profile
+            or not 0.1 <= profile.wall_seconds <= permit.profile.wall_seconds
+            or reference.profile_sha256 != profile.sha256()
+        ):
             raise ValueError("sandbox_launch_profile_mismatch")
         intent = SandboxLaunchIntent(
             invocation_id=UUID(self.identity),
@@ -77,7 +86,7 @@ class DurableToolAuthority:
         return lambda root, mounts: DockerSandbox(
             root,
             runtime_mounts=mounts,
-            on_launch=lambda reference: self.record_launch(permit, reference),
+            on_launch=lambda reference, profile: self.record_launch(permit, reference, profile),
             before_start=lambda: self.check(permit),
         )
 

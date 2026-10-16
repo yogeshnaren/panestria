@@ -81,7 +81,7 @@ class DockerSandbox:
         workspace_root: Path,
         *,
         runtime_mounts: tuple[ReadOnlyMount, ...] = (),
-        on_launch: Callable[[SandboxLaunchReference], None] | None = None,
+        on_launch: Callable[[SandboxLaunchReference, SandboxProfile], None] | None = None,
         before_start: Callable[[], None] | None = None,
     ) -> None:
         self.root = workspace_root.resolve()
@@ -202,7 +202,7 @@ class DockerSandbox:
         args.extend([profile.image, "-I", "/runtime/panestria-no-network.py", *argv])
         if self._on_launch is not None:
             try:
-                self._on_launch(launch)  # A trusted callback must commit before returning.
+                self._on_launch(launch, profile)  # Must commit before returning.
             except Exception:
                 raise SandboxRejected("launch_intent_unconfirmed") from None
         if cancel is not None and cancel.is_set():
