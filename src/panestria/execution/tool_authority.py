@@ -62,6 +62,7 @@ class DurableToolAuthority:
         # Every other declared resource/permission/image/identity stays exact.
         if (
             type(profile) is not SandboxProfile
+            or type(profile.wall_seconds) not in {int, float}
             or replace(profile, wall_seconds=permit.profile.wall_seconds) != permit.profile
             or not 0.1 <= profile.wall_seconds <= permit.profile.wall_seconds
             or reference.profile_sha256 != profile.sha256()
