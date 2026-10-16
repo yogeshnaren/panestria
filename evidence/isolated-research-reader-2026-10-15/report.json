@@ -119,5 +119,11 @@
     "head": "a977bd8e80134c53bb9475b1e1dc1f1eb0a5c053",
     "result": "12 failed, 1132 passed, 44 excluded",
     "diagnosis": "Fresh CI had not prepared the pinned Python image before reader tests; the existing later proposal-demo fixture prepared it only after these tests. Actual reader correctly returned UNKNOWN for missing runtime. Move the same trusted setup into CI before all tests; workers still pull=never. No assertions weakened."
+  },
+  "ci_follow_up": {
+    "run_id": 38824359203,
+    "head": "732c09f491b86939ba9878f06d2e8bbde6298f13",
+    "result": "1 failed, 1143 passed, 44 excluded",
+    "observed": "All actual reader tests passed after the pinned image was prepared. The remaining failure was the exact reviewed-CI-command allowlist, which had not included that setup step. Reviewed the helper: docker image inspect, then docker pull of the same immutable DEFAULT_IMAGE only if absent; no provider credentials, extra images or worker pull permissions. Add this exact command to the allowlist; preserve the command and no-credential assertions. New exact-head CI remains required."
   }
 }

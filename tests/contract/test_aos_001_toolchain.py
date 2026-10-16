@@ -133,6 +133,9 @@ _REVIEWED_CI_COMMANDS = (
     "uv run --frozen ruff check .",
     "uv run --frozen mypy src/panestria",
     "uv run --frozen lint-imports --config .importlinter",
+    # Reviewed trusted setup: only the existing digest-pinned worker image.
+    "uv run --frozen python -c 'from panestria.cli.review_demo import "
+    "prepare_worker_image; prepare_worker_image()'",
     'uv run --frozen pytest -m "not live" --junitxml=evidence/ci.xml',
     "uv run --frozen python tools/secret_scan.py",
 )
