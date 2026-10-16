@@ -269,7 +269,8 @@ class SourceStore:
                 evidence = SourceSnapshotEvidence(
                     snapshot=snapshot, fetch_receipt=fetched_ref, reader_receipt=reader_ref
                 )
-                recorded = self.records.commit(uow, self.actor, evidence)
+                # The global event lock comes last, after every entity write.
+                recorded, evidence = self.records._insert(uow, self.actor, evidence)
                 proof = SourceCaptureProof(
                     snapshot_id=str(identifier),
                     request_id=request_id,
@@ -294,6 +295,7 @@ class SourceStore:
                         label,
                     ),
                 )
+                self.records._publish(uow, self.actor, evidence, recorded)
                 append_event(
                     uow,
                     goal_id=scope.goal_id,

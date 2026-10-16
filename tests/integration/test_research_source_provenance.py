@@ -250,8 +250,10 @@ def test_capture_rollback_leaves_only_inert_bytes_and_retrieval_versions_are_dis
         assert c.execute("SELECT count(*) FROM panestria.artifact").fetchone() == (1,)
         with pytest.raises(KernelDenied, match="not_found"):
             store.resolve(UnitOfWork(c), reference(orphan, request, observations), task_id=request.scope.task_id)
-        first, second = record(c, request, store, observations), record(c, request, store, observations)
-        assert first.snapshot_id != second.snapshot_id and second.seq > first.seq
+        first = record(c, request, store, observations)
+    with psycopg.connect(dsn) as c:
+        second = record(c, request, store, observations)
+    assert first.snapshot_id != second.snapshot_id and second.seq > first.seq
     with psycopg.connect(dsn) as c:
         for version in (first, second):
             assert (
@@ -275,6 +277,7 @@ def test_actual_public_tls_reader_postgres_and_protected_passage_pipeline(resear
     store = SourceStore(tmp_path, actor)
     with psycopg.connect(dsn) as c:
         ResearchRequestService().prepare(UnitOfWork(c), actor, request)
+    with psycopg.connect(dsn) as c:
         receipt = record(c, request, store, (fetched, extracted))
     ref = reference(receipt, request, (fetched, extracted))
     with psycopg.connect(dsn) as c:
@@ -444,3 +447,37 @@ def test_concurrent_retention_cannot_oversubscribe_source_count(capture):
         assert sorted(pool.map(retain, range(2))) == ["budget-denied", "recorded"]
     with psycopg.connect(dsn) as c:
         assert c.execute("SELECT count(*) FROM panestria.research_source_capture").fetchone() == (1,)
+
+
+def test_global_event_lock_is_acquired_only_after_all_capture_entity_writes(capture):
+    dsn, _, request, store, observations, _ = capture
+
+    class LastEventWriteUnitOfWork(UnitOfWork):
+        event_lock = False
+        entity_writes = 0
+
+        def execute(self, query, params=()):
+            if "pg_advisory_xact_lock" in query:
+                self.event_lock = True
+            if query.lstrip().startswith(("INSERT", "UPDATE", "DELETE", "ALTER")):
+                if "panestria.task_event" not in query:
+                    assert not self.event_lock, "entity write after global event lock"
+                    self.entity_writes += 1
+            return super().execute(query, params)
+
+    with psycopg.connect(dsn) as c:
+        uow = LastEventWriteUnitOfWork(c)
+        store.commit_fetch(
+            uow,
+            request_id=request.request_id,
+            task_id=request.scope.task_id,
+            fetched=observations[0],
+            extracted=observations[1],
+            source_label="PUBLIC",
+        )
+        assert uow.event_lock and uow.entity_writes > 0
+    with psycopg.connect(dsn) as c:
+        assert c.execute("SELECT count(*) FROM panestria.research_source_capture").fetchone() == (1,)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.task_event WHERE kind LIKE 'research.source.%'"
+        ).fetchone() == (2,)

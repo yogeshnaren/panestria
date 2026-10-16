@@ -66,6 +66,17 @@ def _references(evidence: SourceSnapshotEvidence) -> list[tuple[str, int, Resear
 
 class SourceRecordService:
     def commit(self, uow: UnitOfWork, actor: Actor, evidence: SourceSnapshotEvidence) -> SourceRecordReceipt:
+        receipt, validated = self._insert(uow, actor, evidence)
+        self._publish(uow, actor, validated, receipt)
+        return receipt
+
+    def _insert(
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        evidence: SourceSnapshotEvidence,
+    ) -> tuple[SourceRecordReceipt, SourceSnapshotEvidence]:
+        """Trusted composite commands must finish entity writes, then call _publish before commit."""
         if uow.connection.autocommit and uow.connection.info.transaction_status != TransactionStatus.INTRANS:
             raise KernelDenied("research_caller_transaction_required")
         try:
@@ -112,7 +123,7 @@ class SourceRecordService:
                 old = self.read(uow, actor, snapshot.snapshot_id, request_id=snapshot.request_id, task_id=scope.task_id)
                 if old.body_sha256 != digest:
                     raise KernelDenied("source_record_conflict")
-                return SourceRecordReceipt(snapshot.snapshot_id, digest, old.seq, True)
+                return SourceRecordReceipt(snapshot.snapshot_id, digest, old.seq, True), evidence
             for role, index, reference in _references(evidence):
                 uow.execute(
                     "INSERT INTO panestria.research_source_artifact(snapshot_id,role,ordinal,reference) "
@@ -121,15 +132,30 @@ class SourceRecordService:
                 )
         except ForeignKeyViolation:
             raise KernelDenied("source_artifact_or_scope_mismatch") from None
+        return SourceRecordReceipt(snapshot.snapshot_id, digest, int(row[0]), False), evidence
+
+    def _publish(
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        evidence: SourceSnapshotEvidence,
+        receipt: SourceRecordReceipt,
+    ) -> None:
+        if receipt.replayed:
+            return
+        snapshot, scope = evidence.snapshot, evidence.snapshot.scope
         append_event(
             uow,
             goal_id=scope.goal_id,
             task_id=scope.task_id,
             kind="research.source.recorded",
             actor=actor.owner_id,
-            payload={"snapshot_id": snapshot.snapshot_id, "body_sha256": digest, "completeness": snapshot.completeness},
+            payload={
+                "snapshot_id": snapshot.snapshot_id,
+                "body_sha256": receipt.body_sha256,
+                "completeness": snapshot.completeness,
+            },
         )
-        return SourceRecordReceipt(snapshot.snapshot_id, digest, int(row[0]), False)
 
     def read(
         self,
