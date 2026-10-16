@@ -209,3 +209,14 @@ The72 public human-labeled SNLI cases retain exact source revision/SHA/license a
 attribution. No model calibration has run and no release pass is inferred.
 Evidence/entailment-corpus-2026-10-16. Actual local/approved-model calibration and
 semantic integration remain next, with all original R2/R3 obligations retained.
+
+PR #84 merged0938b24 (resolve full SHA) after exacte71e67e CI38853379717
+passed1291/45. Human-label corpus/scorer is on main. Local entailment observation
+is separately implemented on task/research-local-entailment, including verified84.
+At bf3cb42,24guards +2actualfold-observation checks PASS infrastructure; model
+quality is NOT QUALIFIED. Held-out21/36correct; supported precision12/24=50%.
+Claim support remains NOT_ASSESSED. All72 successful-run calls/predictions are
+source-bound; earlier reporting failure retained with unknown completed-case
+count. No model downloads/cloud inference/credentials/training. See evidence/
+local-entailment-2026-10-16 and design35. Better verified semantic path, all original
+research/policy/gates and R3/extensions remain required; do not promote this model.
