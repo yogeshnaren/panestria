@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "source_commit": "3a9067f51593b9e772a1f569608116b17d8690a8",
+  "result": "PASS",
+  "component_checks": 14,
+  "model_inference_calls": 0,
+  "model_calibration": "NOT_RUN",
+  "scope": "human-labeled public fixture provenance, gold projection and synthetic scoring integrity only",
+  "dataset_revision": "cdb5c3d5eed6ead6e5a341c8e56e669bb666725b",
+  "license": "CC-BY-SA-4.0",
+  "fixture_sha256": "5f9c0ac087ebcb1cedea91275ccf497cf9f5a8dec51e112cb597a277e93e7f1c",
+  "cases": {
+    "calibration": 36,
+    "qualification": 36,
+    "per_gold_label_per_fold": 12,
+    "distinct_normalized_premises": 72
+  },
+  "observed": [
+    "all selected original labels and unchanged text match four raw Dataset Viewer snapshots with x-revision matching dataset commit",
+    "no truncated/unlabeled rows or shared normalized premises; opaque IDs/sort and model projection omit gold/row/split metadata",
+    "source license and Bowman2015/Flickr30kYoung2014 attribution retained separately from code",
+    "changed corpus bytes or missing/extra/duplicate/foreign/invalid predictions refuse",
+    "all UNKNOWN gives coverage0 and undefined precision/answered accuracy as None; no zero-denominator fake score",
+    "deliberately all-SUPPORTED synthetic predictions expose24false-supported labels outof36; metric check, not a model claim"
+  ],
+  "source_sha256": {
+    "src/panestria/verification/entailment.py": "3835de572770089ad04a22fb1577c6e7b1fe6391dae2d5793e3926ed1aca7a71",
+    "tests/unit/test_entailment_corpus.py": "2594b79b6c6913ae94eef6452c26065b9187e626a25fcb08d6a3ca67c67a9bd7",
+    "tests/fixtures/research/snli-v1/corpus.json": "5f9c0ac087ebcb1cedea91275ccf497cf9f5a8dec51e112cb597a277e93e7f1c",
+    "tests/fixtures/research/snli-v1/provenance.json": "e2b9cf8343dcab184f9a271a1f8fefed134e74ea29515752d6364cdb28ad336b",
+    "tests/fixtures/research/snli-v1/ATTRIBUTION.md": "29ce09f4a7a7fb7b305b3aab71644b7e9eec90473a24bda3b1c7f2e7f20e6d11"
+  },
+  "junit_sha256": "d169af82ffe56b522f97010c05ec44cfd76e9ec2694883c8917977a2d470d21a",
+  "checks": [
+    "Ruff PASS",
+    "mypy PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "primary_sources": [
+    "https://nlp.stanford.edu/projects/snli/",
+    "https://huggingface.co/datasets/stanfordnlp/snli/blob/cdb5c3d5eed6ead6e5a341c8e56e669bb666725b/README.md"
+  ],
+  "method": "HF datasets skill read-only bounded public Dataset Viewer API and REA direct source/metadata/rights inspection; no credentials, SDK/dataset dependency, jobs, uploads or model downloads",
+  "limitations": [
+    "no actual model inference/calibration/release acceptance follows from synthetic scorer tests",
+    "small image-caption NLI with annotation artifacts/biases and possible model pretraining contamination; not research-domain/world-fact reliability",
+    "correlated/conflicting sources/opinion/partial/injection obligations remain additional checks",
+    "fixture purpose is evaluation only, no implicit training/example capture authorization",
+    "source qualification before main83 inclusion; code/data unchanged and full exact-head CI still required"
+  ]
+}

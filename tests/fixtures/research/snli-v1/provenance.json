@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "dataset": "stanfordnlp/snli",
+  "revision": "cdb5c3d5eed6ead6e5a341c8e56e669bb666725b",
+  "primary_source": "https://nlp.stanford.edu/projects/snli/",
+  "dataset_card": "https://huggingface.co/datasets/stanfordnlp/snli/blob/cdb5c3d5eed6ead6e5a341c8e56e669bb666725b/README.md",
+  "dataset_card_sha256": "f5182390b149b02e045286a586b7f4d4d626e1e47eade1bc1feabc01ee549578",
+  "license": "CC-BY-SA-4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "corpus_sha256": "5f9c0ac087ebcb1cedea91275ccf497cf9f5a8dec51e112cb597a277e93e7f1c",
+  "upstream": [
+    {
+      "path": "upstream/validation-rows.json",
+      "url": "https://datasets-server.huggingface.co/rows?dataset=stanfordnlp%2Fsnli&config=plain_text&split=validation&offset=0&length=100",
+      "sha256": "e48686a9437ff1327696c828582a9e041bb4d39696359de926952bf6f6726f63",
+      "x_revision": "cdb5c3d5eed6ead6e5a341c8e56e669bb666725b"
+    },
+    {
+      "path": "upstream/validation-rows-100.json",
+      "url": "https://datasets-server.huggingface.co/rows?dataset=stanfordnlp%2Fsnli&config=plain_text&split=validation&offset=100&length=100",
+      "sha256": "bdb6a1636edfdabb7d1191431a58fdd81309ec1b27b02c7ded479a900efa1640",
+      "x_revision": "cdb5c3d5eed6ead6e5a341c8e56e669bb666725b"
+    },
+    {
+      "path": "upstream/test-rows.json",
+      "url": "https://datasets-server.huggingface.co/rows?dataset=stanfordnlp%2Fsnli&config=plain_text&split=test&offset=0&length=100",
+      "sha256": "3371e85ccbe2e8fc0511851c40ac0dd5f9c04751071466ecc41849a5bb1fd579",
+      "x_revision": "cdb5c3d5eed6ead6e5a341c8e56e669bb666725b"
+    },
+    {
+      "path": "upstream/test-rows-100.json",
+      "url": "https://datasets-server.huggingface.co/rows?dataset=stanfordnlp%2Fsnli&config=plain_text&split=test&offset=100&length=100",
+      "sha256": "b0a91849d86d8b3a8c1f3822129cf2d643e42c691ecf38d38ede5bbcd210d5fc",
+      "x_revision": "cdb5c3d5eed6ead6e5a341c8e56e669bb666725b"
+    }
+  ],
+  "selection": "12 round-robin gold labels0/1/2, first complete labeled row with globally unused casefold/whitespace-normalized premise hash, from each split offsets0..199; sort selected by opaque ID hash excluding labels; no model predictions used",
+  "transformations": [
+    "subset/reorder, opaque IDs, public provenance and explicit label-name mapping only; premise/hypothesis text unchanged"
+  ],
+  "limitations": [
+    "36 examples per fold only; image-caption NLI, not research-domain or world-fact validation",
+    "annotation artifacts/biases and model pretraining contamination can inflate scores; no SOTA/release acceptance claim",
+    "three human gold labels only; contradiction/conflict aggregation/opinion/partial-support and prompt-injection gates require additional checks"
+  ],
+  "authorizations": [
+    "public evaluation fixture only; no automatic training/example capture authorization"
+  ]
+}
