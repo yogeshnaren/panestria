@@ -89,7 +89,6 @@ class NativeBootstrap:
             not isinstance(pin, BinaryPin)
             or not isinstance(pin.path, Path)
             or not pin.path.is_absolute()
-            or pin.path.resolve() != pin.path
             or pin.sha256 != PINNED_BINARY_SHA256
             or type(wall_seconds) not in {int, float}
             or not 0.1 <= wall_seconds <= 15
@@ -101,6 +100,8 @@ class NativeBootstrap:
             raise NativeBootstrapUnavailable("native_bootstrap_cancelled")
         descriptor = -1
         try:
+            if pin.path.resolve() != pin.path:
+                raise NativeBootstrapUnavailable("invalid_native_bootstrap_reference")
             descriptor = os.open(pin.path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
             with tempfile.TemporaryDirectory(prefix="panestria-native-bootstrap-", dir="/tmp") as directory:
                 root = Path(directory)
@@ -152,7 +153,7 @@ class NativeBootstrap:
                     with executable.open("rb") as held:
                         _unchanged(staged, held.fileno(), time.monotonic() + 5)
                 return NativeBootstrapObservation(pin.sha256, CLAUDE_VERSION, DEFAULT_IMAGE, controls, tuple(runs))
-        except (OSError, ValueError, NativeProbeUnavailable, SandboxRejected):
+        except (OSError, ValueError, RuntimeError, NativeProbeUnavailable, SandboxRejected):
             raise NativeBootstrapUnavailable("native_bootstrap_unavailable") from None
         finally:
             if descriptor >= 0:
