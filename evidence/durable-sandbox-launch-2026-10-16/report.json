@@ -1,0 +1,184 @@
+{
+  "artifacts": {
+    "development-42-with-crashes.xml": "4f754e6847af904a140b7c9835d93778868b54d0ead01ff48118b40c14801eea",
+    "development-admission-2.xml": "43dde851e93d1a605f2cd1a105022b5aac65255bb8dae6a04ba14b4a64e8a651",
+    "development-lease-api-failure.xml": "6bd8af4fd890557da12c11daee31187e61a724213d79d0ea6e33665d4b87f5f3",
+    "development-migration-2.xml": "24b12ed3fe0035da647ed58124e3fcc4b9b3537d79878d58139d610d6ac7f40c",
+    "existing-after-profile-fix.xml": "d5f3353bd6440fae81a74c87140f2a82f34d7f3ded08b04d115a5bb4ce958186",
+    "existing-e525356-profile-failure.xml": "68b1cca0794082dc936f40ccc9c97163b8a427264e8793918faf323e80aaedb0",
+    "qualified-170.xml": "cefe6fa07345293b6748e4f807497658d09a5118de6989fa52bbc599e14006c7"
+  },
+  "checks": {
+    "actual_admission_fault_cases": 2,
+    "actual_controller_sigkill_cases": 6,
+    "actual_migration_restore_cases": 2,
+    "focused_default_passed": 170,
+    "import_contracts_kept": 11,
+    "live_deselected": 2,
+    "mypy_source_files": 193,
+    "new_default_cases": 46,
+    "ruff": "PASS",
+    "secret_scan": "PASS"
+  },
+  "coverage": [
+    "same-PG immutable intent/binding/scope/ref and caller transaction/event atomicity, once-only registration and concurrent bounded loser",
+    "independent profile witness permits only shorter numeric wall time; all other identity/image/resource/permission fields exact; unknown intent commit acknowledgment produces zero actual Docker creates",
+    "actual SIGKILL of own controller after committed intent, after actual create and after actual script start, each with and without subsequent actual lease release",
+    "reconstructed scoped controller reads exact protected PG reference and removes only owned Docker resource; unrelated same-attempt fixture preserved; one public append marker and second dispatch denied",
+    "actual start-time lease release prevents docker start and keeps invocation UNKNOWN; historical cleanup does not restore authority or manufacture task/check/approval success",
+    "actual rollback, scope/binding denials, immutable history, invocation expiry and post-release read/cleanup metadata",
+    "actual empty downgrade/reapply schema equality, populated downgrade guard, pg_dump/restore with immutable intent and continued global event counter",
+    "existing registered private stdio/check/report/replay/cancellation paths, invocations, source/research/schema and setup/restore checks"
+  ],
+  "limitations": [
+    "direct runtime SIGKILL cases use a fixed public synthetic Python script, not native vendor authentication; actual RegisteredCheckController integration/admission tested separately",
+    "no exactly-once external execution claim, cached DBOS intent result must never become a replay permit; unknown invocations stay fenced",
+    "no autonomous sweep/controller-liveness proof or complete all-worker/verifier/temporary-control-stage lifecycle recovery added",
+    "native credential/auth/container/proxy/MCP containment and full current grants/lease/budget/registered capability conformance remain required",
+    "observed cleanup never grants retry, task completion, approval or owner acceptance",
+    "no inference/provider authentication/paid SDK/new credentials/model/image downloads or owner checkout/DB/service/cache mutation",
+    "new JUnit has component nodes, not automatically a complete gate manifest/assertion mapping",
+    "no full AOS003/AOS008TC04/AOS010 or G1/G2/G3/trial acceptance"
+  ],
+  "observed_tests": {
+    "development-42-with-crashes.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "42",
+        "time": "13.514",
+        "timestamp": "2026-10-16T04:10:13.354160-07:00"
+      }
+    ],
+    "development-admission-2.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "2",
+        "time": "5.349",
+        "timestamp": "2026-10-16T04:12:47.015776-07:00"
+      }
+    ],
+    "development-lease-api-failure.xml": [
+      {
+        "errors": "0",
+        "failures": "1",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "36",
+        "time": "5.849",
+        "timestamp": "2026-10-16T04:05:19.582506-07:00"
+      }
+    ],
+    "development-migration-2.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "2",
+        "time": "11.047",
+        "timestamp": "2026-10-16T04:16:03.713817-07:00"
+      }
+    ],
+    "existing-after-profile-fix.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "43",
+        "time": "24.661",
+        "timestamp": "2026-10-16T03:59:24.376819-07:00"
+      }
+    ],
+    "existing-e525356-profile-failure.xml": [
+      {
+        "errors": "0",
+        "failures": "9",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "43",
+        "time": "12.282",
+        "timestamp": "2026-10-16T03:56:06.453421-07:00"
+      }
+    ],
+    "qualified-170.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "170",
+        "time": "217.785",
+        "timestamp": "2026-10-16T04:18:14.816508-07:00"
+      }
+    ]
+  },
+  "paid_sdk_calls": 0,
+  "prior_observations": [
+    {
+      "cause": "gateway reduces profile wall time; exact original-profile hash comparison denied the valid shortened profile",
+      "fix": "26a4d6d6076e76d0861603ca7a88e205b600dc3c passes actual profile witness and enforces exact all other fields plus no time expansion",
+      "result": "34 passed/9 failed/1 live excluded12.32s; ordinary registered checks returned UNKNOWN",
+      "source_commit": "e5253563b862fbfc6efafe0a5f2bd294798a4fb7",
+      "state": "clean development baseline, before new tests"
+    },
+    {
+      "result": "43 passed/1 live excluded24.69s",
+      "source_commit": "26a4d6d6076e76d0861603ca7a88e205b600dc3c",
+      "state": "clean existing-suite development"
+    },
+    {
+      "fix": "use existing actual LeaseService.release; no production permission rule changed",
+      "result": "35 passed/1 failed5.88s; new fixture called nonexistent LeaseService.revoke",
+      "state": "dirty new-test development"
+    },
+    {
+      "result": "42 passed13.58s, then2 actual admission5.42s and2 actual migration11.09s",
+      "state": "dirty expanded development"
+    }
+  ],
+  "provider_authentication_calls": 0,
+  "release_authority": false,
+  "result": "PASS_COMPONENT",
+  "runtime_inference_calls": 0,
+  "schema": {
+    "actual_snapshot_lines": 1078,
+    "head": "0028_sandbox_launch_intent",
+    "refresh": "unique owned cached pinned PostgreSQL random port32772, exact fixture cleanup; no owner database"
+  },
+  "schema_version": 1,
+  "scope": "durable one-use native-tool launch intent and scoped reconstruction/cleanup, not full platform crash/native conformance",
+  "source_commit": "ec9a43fb68dd5f9da05ad8ac69e184ea09276dd0",
+  "source_sha256": {
+    "docs/contracts/schema-snapshot.txt": "ef243eda2085e07bcad74f64d13189aae17ef97b3df4b5fd2c049639bb5a85b3",
+    "migrations/schema_fingerprint.txt": "ef243eda2085e07bcad74f64d13189aae17ef97b3df4b5fd2c049639bb5a85b3",
+    "migrations/versions/0028_sandbox_launch_intent.py": "8383b6f53d00fe854f1115e63fa7311d736ae6a7eeb5b77a89f9b7ee1fb0ece8",
+    "src/panestria/api/local_server.py": "465565e328da36930e7cc85797b9d94575533d57a2780fe3beceda82ab836a68",
+    "src/panestria/contracts/sandbox_launch.py": "5f048d264c3ae9a00e158f5cf533538080b46bb34ba627a77d0abc19c5ea4cc3",
+    "src/panestria/execution/registered_checks.py": "775fee7f021022d778fe195d5ec9443eb1b80d833cc8d10911ce7b0068b6a281",
+    "src/panestria/execution/tool_authority.py": "d6fefb068873bc95c29a2f83501cf6c159ec7d0c9894e4479b483433ac27fd20",
+    "src/panestria/kernel/sandbox_launches.py": "b43c3ee45ce33a8ee4ffdedca1f7e14f21e9028c22abea9a5a269dbe1bebd489",
+    "src/panestria/sandbox/runner.py": "2df4bf50f57a3c7ffd6535d8531b8b0c2085e5f60c81da8e67e7dfb4e7d76347",
+    "tests/durable_launch_support.py": "1bb70ac3eb6960e478a56a45887de1aaebc672526d28b5d9dd3ef84eac0f7c19",
+    "tests/fixtures/durable_launch_child.py": "77e5b55a48b969ff4ba401628ed01e17fd9f5e8fc4240c0bb374811a32f059bc",
+    "tests/integration/test_durable_launch_migration.py": "5f6545359225d91aaaf2100142b7ea25c633e327a3f0cbf2b26405d4a4b1dd4f",
+    "tests/integration/test_durable_registered_admission.py": "80ba60df5437b5efc497fb2f3b6f75cf171395fc1ad384658ee43634874a6970",
+    "tests/integration/test_durable_sandbox_crash.py": "df71dce6917f09bdb50949ec435591a85983da27801e88875468fc8ce0d9a646",
+    "tests/integration/test_durable_sandbox_ledger.py": "4ea6ee4493c1ce9eb7b3219e33eb5ab69d3dc14bd1ba1c9cd5781dcd636a176c",
+    "tests/unit/test_durable_launch_contracts.py": "244f12a1da81e66a19bdf4a997185fc165c74d9128c6f3871b8dcbcc3ff254df"
+  },
+  "source_state_at_execution": "clean"
+}

@@ -326,3 +326,21 @@ node caused an initial zero-test exit4; corrected actual nodes passed, and the
 plan/catalog mapping/live-required annotation is aligned without status promotion.
 The nonce is in memory; durable launch intent/controller-death recovery and all
 remaining native/grant/R1/R2/R3 scope are still pending. Owner state unchanged.
+
+### 2026-10-16 11:24 UTC — durable sandbox launch intent
+
+PR91 merged343a84e6577ed691fcd487d54ff866aa0b3bfc29 after exacta7b5470 CI38888539870
+passed1516/51 live excluded in467s. The dependent task/durable-sandbox-launch began
+from explicit PR91, then fetched and fast-forwarded to verified main before its
+implementation commits. New immutable same-PG intent/event admission precedes
+Docker create; actual registered-check controllers use the fenced factory. Lost
+commit acknowledgment permits zero creates, and start-time lease release denies
+execution. Reconstruction reads protected historical scope and reconciles exact
+owned resources without retry/task completion.
+Clean ec9a43fb68dd5f9da05ad8ac69e184ea09276dd0 passes170 focused checks in217.81s,
+including46 new cases/six actual SIGKILL windows and actual admission/dump/restore.
+Original34PASS/9FAIL profile witness mismatch and35PASS/1FAIL test-API error stay
+separate in evidence/durable-sandbox-launch-2026-10-16. APIhead28/schema1078lines
+match actual unique disposable PG32772. DBOS docs rechecked; full workflow/native/
+other lifecycle/grant/R1–R3 gates still pending. No inference/credentials/owner
+checkout/database/service changes or MVP acceptance.
