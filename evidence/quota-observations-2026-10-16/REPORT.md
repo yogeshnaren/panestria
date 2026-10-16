@@ -31,3 +31,11 @@ The bounded preferred-provider queue, foreground reserve, no-extra-spend proof,
 actual supported telemetry, offline validation/capture, remaining grants/native/
 R1–R3 gates and actual owner trial remain required. No provider/native/model/SDK
 call or owner checkout/database/service/cache mutation was made for this task.
+
+First exact-head CI at0b140d4 (run38920165866) passed1628 and failed the existing
+OpenAPI snapshot assertion;51 live cases were excluded. The three newly mounted
+routes were missing from `docs/api/openapi.json`. The snapshot is now regenerated
+from the actual mounted app. Original CI log is preserved; the contract assertion
+is unchanged and a fresh exact-head CI must pass before merge. The earlier clean
+172-case observation remains bound to its original source, not retrospectively
+extended to cover this correction.

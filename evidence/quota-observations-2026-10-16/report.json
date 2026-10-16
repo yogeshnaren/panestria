@@ -1,5 +1,6 @@
 {
   "artifacts": {
+    "ci-first-openapi-failure.log": "a8ddf8305b3a5f46a8040fe7ae3f71a4d16f914a721e8f2afc6099213d863d09",
     "development-api-cap-expectation-failure.xml": "817b97944e3d165e1936fa499ede2267b78a35b55b382428faad6b590d945b65",
     "development-api-status-failure.xml": "c79034f614bbca3ca23b36934eeb9abeec3f91a3845f29df620365be52d6a586",
     "development-before-status-fix-files.json": "ec783c617a1a1f83cb983cf436570457238b77133d1ecdbfd7c78563f5c86b80",
@@ -102,6 +103,12 @@
       "fix": "assert actual exact413/body-cap behavior; separate valid-body CSRF/session-revocation assertions retained",
       "result": "20 passed1 failed1 excluded9.06s",
       "state": "dirty development, not clean qualification"
+    },
+    {
+      "cause": "mounted quota routes were absent from generated docs/api/openapi.json",
+      "fix": "regenerate from actual mounted application; do not weaken contract assertion; fresh exact-head CI required",
+      "result": "1628 passed1 failed51 excluded506.06s; one upstream pypdf warning",
+      "state": "exact PR head0b140d4906e0bb7330a1653b9a7d99bcdaff2910 CI38920165866"
     }
   ],
   "provider_authentication_calls": 0,
