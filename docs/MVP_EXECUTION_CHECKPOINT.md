@@ -185,3 +185,18 @@ network request or permission grant. Actual public-web policy/lease/admission,
 outbound query/disclosure accounting, search, claims/support and Delegate remain
 required. Retention count/raw bytes are serialized separately. Full R1/R2/R3,
 extensions, trusted gate evaluator and actual owner trial remain unfinished.
+
+PR #82 merged c1592ee9cf69a2648e97f43ade91aab170a5ba95 after exact0297e8e
+CI38851014658 passed1250/45. The source provenance/retained lookup component and
+its separately scoped actual TLS evidence are on main.
+
+Claim evidence is now implemented separately on task/research-claim-evidence,
+including verified main82. Migration0026 retains scoped immutable payload/report
+pins and only successfully verified capture-bound passages. At clean04b8f09,
+127 checks PASS:27 new deterministic claim cases +100 existing source/schema/
+launcher cases. Evidence/research-claim-evidence-2026-10-16. Wrong/partial evidence
+blocks whole-claim pass and unresolved lineage is RESTRICTED. Fresh offline checks
+can invalidate stale source availability without overwriting history. All semantic
+support remains NOT_ASSESSED, including draft OPINION and unrelated genuine text.
+Actual support/contradictions/calibration, public-web policy/disclosures/search,
+Delegate, remaining R1/R3/extensions/gates and owner trial remain unfinished.
