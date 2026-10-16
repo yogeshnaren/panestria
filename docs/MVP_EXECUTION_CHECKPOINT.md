@@ -133,3 +133,22 @@ its minimal BSD source/license bundle is pin-verified before staging. Evidence:
 evidence/pdf-runtime-bundle-2026-10-15. No PDF input was parsed, no source/citation
 status is enabled, and PDF remains UNSUPPORTED until isolated parser integration
 and its resource/malformed/active/encrypted/scanned/table cases are qualified.
+
+## Verified reader follow-up — 2026-10-16
+
+PR #78 merged 0fdebdd541db7e8707d8a71ebbb3d56e8c04f6d9 after exact fd8bc21
+CI 38847227775 passed 1144/44 live excluded. First CI lacked the pinned image;
+second ran all reader cases successfully but failed the unchanged CI command
+allowlist. The reviewed setup command is now listed explicitly; no worker pull
+permission or assertion was removed. Failed observations remain in its report.
+PR #79 merged 6df98db after exact e7c0683 CI 38847828741 passed 1157/44, with
+current reader main included. The dependency bundle's 13 source-bound checks
+remain historical and do not themselves prove PDF extraction.
+
+Static PDF extraction is now separately implemented on task/research-pdf-extraction.
+At clean dbe4952, 77 component checks pass: 21 new actual Docker PDF cases, 13 new
+injected protocol guards and 43 existing reader/bundle checks. Evidence:
+evidence/pdf-extraction-2026-10-16. Source-bound checks verify extraction and its
+limits only; no SourceStore or source/citation/support authority follows. Actual
+immutable source records, retained-fetch composition, privacy/admission, protected
+passage resolution and full R1/R2/R3 gates remain work. No owner trial started.

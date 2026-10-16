@@ -16,7 +16,8 @@ from typing import Literal
 
 from pydantic import SecretStr
 
-from panestria.brokers.research import reader_worker
+from panestria.brokers.research import pdf_worker, reader_worker
+from panestria.brokers.research.pdf_bundle import PYPDF_BUNDLE_SHA256, stage_pdf_bundle, verify_pdf_bundle
 from panestria.contracts.research import MAX_SOURCE_BYTES
 from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile
 from panestria.sandbox.runner import DockerSandbox
@@ -33,6 +34,9 @@ class ReaderObservation:
     sandbox_profile_sha256: str | None = None
     reader_program_sha256: str | None = None
     effective_config_sha256: str | None = None
+    pdf_bundle_sha256: str | None = None
+    page_spans: tuple[tuple[int, int], ...] = ()
+    limitations: tuple[str, ...] = ()
 
 
 def _closed_pairs(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -76,7 +80,13 @@ class IsolatedTextReader:
                 workspace.mkdir(mode=0o700)
                 source, script = root / "source.bin", root / "reader.py"
                 source.write_bytes(raw)
-                program = Path(reader_worker.__file__).read_bytes()
+                is_pdf = content_type == "application/pdf"
+                bundle = stage_pdf_bundle(root / "pdf-deps") if is_pdf else None
+                worker = pdf_worker if is_pdf else reader_worker
+                program_path = worker.__file__
+                if program_path is None:
+                    raise ValueError
+                program = Path(program_path).read_bytes()
                 script.write_bytes(program)
                 source.chmod(0o444)
                 script.chmod(0o444)
@@ -93,6 +103,7 @@ class IsolatedTextReader:
                     runtime_mounts=(
                         ReadOnlyMount(source, "/runtime/source.bin"),
                         ReadOnlyMount(script, "/runtime/reader.py"),
+                        *((ReadOnlyMount(bundle.directory, "/runtime/pdf-deps"),) if bundle else ()),
                     ),
                 )
                 receipt = runner.run(
@@ -100,6 +111,7 @@ class IsolatedTextReader:
                     (
                         "/usr/local/bin/python",
                         "-I",
+                        "-B",
                         "/runtime/reader.py",
                         expected_sha256,
                         content_type,
@@ -109,6 +121,8 @@ class IsolatedTextReader:
                     profile,
                     cancel=cancel,
                 )
+                if bundle is not None:
+                    verify_pdf_bundle(bundle)
                 if cancel.is_set():
                     return ReaderObservation("CANCELLED", "reader_cancelled")
                 if (
@@ -127,9 +141,10 @@ class IsolatedTextReader:
                     raise ValueError
                 if body.get("outcome") != "COMPLETE":
                     valid = {
-                        "TRUNCATED": "text_byte_limit",
+                        "TRUNCATED": {"text_byte_limit", "pdf_page_limit"} if is_pdf else "text_byte_limit",
                         "ERROR": {"decoder_error", "reader_error"},
-                        "UNSUPPORTED": "extractor_unsupported",
+                        "UNSUPPORTED": {"pdf_encrypted", "pdf_feature_unsupported", "pdf_no_text"}
+                        if is_pdf else "extractor_unsupported",
                     }
                     outcome, reason = body.get("outcome"), body.get("reason")
                     if set(body) != {"outcome", "reason"} or outcome not in valid or not isinstance(reason, str):
@@ -144,7 +159,8 @@ class IsolatedTextReader:
                         reader_program_sha256=program_sha,
                         effective_config_sha256=receipt.effective_config_sha256,
                     )
-                if set(body) != {
+                pdf_keys = {"pdf_bundle_sha256", "page_spans", "limitations"} if is_pdf else set()
+                if set(body) != pdf_keys | {
                     "outcome",
                     "reason",
                     "raw_sha256",
@@ -160,7 +176,12 @@ class IsolatedTextReader:
                     raise ValueError
                 text_bytes = base64.b64decode(body["text_b64"], validate=True)
                 text = text_bytes.decode("utf-8", errors="strict")
-                extractor = "strict-utf8-v1" if content_type == "text/plain" else "htmlparser-text-v1"
+                extractor = {
+                    "text/plain": "strict-utf8-v1", "text/html": "htmlparser-text-v1",
+                    "application/pdf": "pypdf-6.20.1-text-v1",
+                }.get(content_type)
+                if extractor is None:
+                    raise ValueError
                 if (
                     body["reason"] != "extracted_text_only"
                     or body["raw_sha256"] != expected_sha256
@@ -179,6 +200,36 @@ class IsolatedTextReader:
                     or not re.fullmatch(r"[0-9a-f]{64}", body["tokenizer_sha256"])
                 ):
                     raise ValueError
+                spans: tuple[tuple[int, int], ...] = ()
+                if is_pdf:
+                    if (
+                        body["pdf_bundle_sha256"] != PYPDF_BUNDLE_SHA256
+                        or body["tokenizer_sha256"] != PYPDF_BUNDLE_SHA256
+                        or body["limitations"] != list(pdf_worker.LIMITATIONS)
+                        or type(body["page_spans"]) is not list
+                        or not 1 <= len(body["page_spans"]) <= 32
+                    ):
+                        raise ValueError
+                    previous = -3
+                    checked = []
+                    for span in body["page_spans"]:
+                        if (
+                            type(span) is not list or len(span) != 2
+                            or any(type(value) is not int for value in span)
+                        ):
+                            raise ValueError
+                        start, end = span
+                        if not (start == previous + 3 and start < end <= len(text_bytes)):
+                            raise ValueError
+                        if start and text_bytes[previous:start] != pdf_worker.SEPARATOR:
+                            raise ValueError
+                        if not text_bytes[start:end].decode("utf-8", errors="strict").strip():
+                            raise ValueError
+                        checked.append((start, end))
+                        previous = end
+                    if previous != len(text_bytes):
+                        raise ValueError
+                    spans = tuple(checked)
                 return ReaderObservation(
                     "COMPLETE",
                     "extracted_text_only",
@@ -189,6 +240,9 @@ class IsolatedTextReader:
                     profile.sha256(),
                     program_sha,
                     receipt.effective_config_sha256,
+                    pdf_bundle_sha256=PYPDF_BUNDLE_SHA256 if is_pdf else None,
+                    page_spans=spans,
+                    limitations=pdf_worker.LIMITATIONS if is_pdf else (),
                 )
         except Exception:
             return ReaderObservation("UNKNOWN", "reader_unavailable")
