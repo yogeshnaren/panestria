@@ -1,0 +1,9 @@
+{
+  "scope": "development version-only path-mounted existing pin/no auth",
+  "returncode": 0,
+  "container_exit": 0,
+  "version_exact": true,
+  "stdout_bytes": 22,
+  "stderr_bytes": 0,
+  "stderr_diagnostic": ""
+}

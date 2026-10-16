@@ -139,3 +139,20 @@ or full AOS-008/AOS-010 conformance. Production native launcher/binary/profile/
 credential/MCP integration, current policy/grant/lease/budget admission and actual
 hostile configuration/secret/revocation proofs remain required. No release gate
 or user task is enabled by this component.
+
+## Credential-free native bootstrap prerequisite (2026-10-16)
+
+[NativeBootstrap](../design/40-NATIVE-OFFLINE-BOOTSTRAP.md) now checks the exact
+pinned version/help within the existing restricted-offline DockerSandbox and
+inherited AF_INET/AF_INET6-denying seccomp filter. It accepts no task prompt, auth
+configuration, environment, command or network choice. A verified executable
+snapshot, empty read-only workspace and trusted launcher are the only binds.
+At `1ae3209`, 63 focused checks pass (32 new, including 11 actual Docker cases
+with a synthetic native fixture). One actual pinned native version/help case
+also passes, with no login, inference, gateway or paid call.
+
+The result stays BOOTSTRAP_ONLY. Authentication, connected native container/
+proxy/registered-MCP integration, credential-boundary/current-authority checks
+and full AOS-008/AOS-010 conformance remain required. Existing host pilot profiles
+are unchanged; no G1/G2/G3 gate is promoted. Source-bound evidence and earlier
+uncommitted prototype observations are preserved separately.

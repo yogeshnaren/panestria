@@ -1,0 +1,164 @@
+{
+  "actual_bootstrap_observation": {
+    "authentication_observed": false,
+    "binary_sha256": "6c752e2cc7c110c9df15f26d8d134d438c5ae95dbd610efc1a308bf7f9c5f6c1",
+    "controls": [
+      "--disallowedTools",
+      "--max-budget-usd",
+      "--no-session-persistence",
+      "--output-format",
+      "--permission-mode",
+      "--permission-prompts",
+      "--restricted",
+      "--safe-mode",
+      "--settings",
+      "--strict-mcp-config",
+      "--tools"
+    ],
+    "image": "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9",
+    "inference_observed": false,
+    "runs": [
+      {
+        "container_id": "020062b8006c8415482608a4ffca827ebb84efcd61a8ff8d1efa0a4deed2c0cc",
+        "effective_config_sha256": "1f81afef9d56c2f1c29c752bde4ac881f26401258bc12006c5e2e5a2264f704b",
+        "elapsed_seconds": 0.6475461680020089,
+        "mode": "version",
+        "output_sha256": "f8e1c3ef52479aac12b679a60da498a9e5c9c43c0d741e182088775a4b29de09",
+        "profile_sha256": "9de0a7c389cfc0cc66cb605847592291f6dc48d6392c360b88f670f2bc7fbf0e"
+      },
+      {
+        "container_id": "fe263102bee6dd2c1034edfb83534a84b292288905191e24eb18fc242686cf20",
+        "effective_config_sha256": "5b80ae6981bd028b2af444d06a979d7474196fe66896a59cd0e9968f9bf2f1da",
+        "elapsed_seconds": 0.6780547479938832,
+        "mode": "help",
+        "output_sha256": "ae85d661e9c086f05637ebcd868f5702b477ff6e55e2e65b8ada7807cd51a4b6",
+        "profile_sha256": "9de0a7c389cfc0cc66cb605847592291f6dc48d6392c360b88f670f2bc7fbf0e"
+      }
+    ],
+    "runtime_authority": false,
+    "status": "BOOTSTRAP_ONLY",
+    "version": "2.1.273"
+  },
+  "artifacts": {
+    "actual-native-metadata.xml": "607a032df3ed63ba49cdf6724b9882e9a155ab663f380118af1c256c7253f937",
+    "development-28.xml": "157de37b189d3d1b4ef1358545d7328e279d0d99246d21bc3309106dca34e6e0",
+    "development-32.xml": "4722a11742d07769d8c9775e8143ae911a00e3c5fa747f09eb0bccaa5ef05e77",
+    "development-descriptor-mount-failed.json": "909ccf0ca63c951a9e4d1e145a388d8580ae147e073f3b3f740b8d6c313b60d0",
+    "development-file-mount-version-pass.json": "59a349cd27a846e074ab43dfe6a5bd5323861c0d87efa876b1ed7c1ba3b28fee",
+    "qualified-63.xml": "6972e77d5812ffb2cef52d58f8f4a05add988244442652a40332bb679e0e7349"
+  },
+  "authentication_calls": 0,
+  "checks": {
+    "actual_native_version_help_processes": 2,
+    "actual_pinned_native_metadata_cases": 1,
+    "focused_default_passed": 63,
+    "import_contracts_kept": 11,
+    "mypy_source_files": 191,
+    "new_default_cases": 32,
+    "ruff": "PASS",
+    "secret_scan": "PASS"
+  },
+  "default_coverage": [
+    "actual filesystem malformed/changed/digest/path/alias-loop/hardlink/mode/empty/FIFO/directory/missing/sparse-oversize guards before dispatch",
+    "closed API: no prompt/argv/environment/config/network/image/workspace input; deadlines/pre-cancel/unsupported architecture fail closed",
+    "11 actual Docker cases use a labeled synthetic native fixture, not actual Claude",
+    "synthetic fixture observes inherited AF_INET/AF_INET6 socket EPERM, seccomp2/nonroot/caps0/NoNewPrivs, read-only program/launcher/workspace,512MiB cgroup,no host sentinel/provider environment",
+    "actual wrong version/missing controls/invalid UTF8/nonzero exit/output pressure/deadline and closed-output lingering process all denied and exact-owned cleaned",
+    "actual source or staged executable mutation after first run rejects observation; replaced path with held original descriptor rejected before dispatch",
+    "cancellation after actual container Running state observed terminates exact-owned fixture; no success receipt"
+  ],
+  "development_observations": [
+    {
+      "artifact": "development-descriptor-mount-failed.json",
+      "result": "held /proc/PID/fd source bind container start failed, exit128, no stdout; root cause unconfirmed",
+      "scope": "uncommitted standalone prototype, no login/auth/profile/gateway/inference"
+    },
+    {
+      "artifact": "development-file-mount-version-pass.json",
+      "result": "conventional read-only file bind: actual version matches, exit0/no stderr",
+      "scope": "uncommitted standalone prototype with same native binary, no auth"
+    },
+    {
+      "result": "28 passed then expanded32 passed; both labeled synthetic native fixture",
+      "scope": "production bootstrap dirty new tests, no actual native pin"
+    }
+  ],
+  "limitations": [
+    "BOOTSTRAP_ONLY metadata; no auth/profile/credential directory mounted or read; no inference/gateway/paid SDK/new images/models",
+    "default synthetic executables require test-only pin replacement and are not actual Claude conformance evidence",
+    "actual pinned version/help confirms these commands in this envelope, not authenticated task/tool/native MCP/credential containment",
+    "no current task/policy/grant/lease/budget admission, connected proxy/auth or revocation/reconciliation integration added",
+    "existing host pilots are unchanged and not silently enabled or certified",
+    "no complete AOS008/AOS010/G1/G2/G3 or owner-trial acceptance"
+  ],
+  "native_task_conformance_authority": false,
+  "observed_tests": {
+    "actual-native-metadata.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "1",
+        "time": "10.064",
+        "timestamp": "2026-10-16T03:17:47.895176-07:00"
+      }
+    ],
+    "development-28.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "28",
+        "time": "11.588",
+        "timestamp": "2026-10-16T03:15:39.137650-07:00"
+      }
+    ],
+    "development-32.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "32",
+        "time": "12.512",
+        "timestamp": "2026-10-16T03:16:44.671699-07:00"
+      }
+    ],
+    "qualified-63.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "63",
+        "time": "23.349",
+        "timestamp": "2026-10-16T03:17:23.513550-07:00"
+      }
+    ]
+  },
+  "paid_sdk_calls": 0,
+  "release_authority": false,
+  "result": "PASS_COMPONENT",
+  "runtime_inference_calls": 0,
+  "schema_version": 1,
+  "scope": "pinned credential-free native version/help inside inherited offline Docker/seccomp/mount/resource envelope",
+  "source_commit": "1ae320932d9f0b70c4b851309aa973f2ae6d3c52",
+  "source_sha256": {
+    "src/panestria/brokers/harness/cli_profile.py": "ee2c27d57aefd25dd7789d33cd13b050892d77f4dc405ef674e538507be45711",
+    "src/panestria/brokers/harness/native_bootstrap.py": "020d1f34d0600f185d808296379625d1f5dbeae895ab19b7145181194bfab705",
+    "src/panestria/sandbox/no_network.py": "8154f842ea648c76ef6c6d849ce57ba96f0beeb5d35d70d36e98bb28ce8e5853",
+    "src/panestria/sandbox/profiles.py": "e010646b1d289175672e3e579d41df18e099d973d0fc7820afa950753f5484a5",
+    "src/panestria/sandbox/runner.py": "f03dc3d3dd10fc2f7854b50eb86ac1355234251a084f6946809443560461039f",
+    "tests/integration/test_native_bootstrap_metadata_live.py": "1822bf5f6764025f90ebc73c9c07a19077d433fa1979b550886af81683c6e84b",
+    "tests/integration/test_offline_native_bootstrap.py": "9ad2016f39e7ac80cfb37ca5f63d25b53a82b8cfa134e70adf821cbe8b554f6d",
+    "tests/native_bootstrap_support.py": "f6ddef6159bf048aba740806b47647f71c5871070deee26dabc2bf9a49bc5c57",
+    "tests/unit/test_bootstrap_pin_guards.py": "e360b665fb31baf462b97bd7a0714c290b4252a54f6bfec1897efbc9439e6213"
+  },
+  "source_state_at_execution": "clean"
+}
