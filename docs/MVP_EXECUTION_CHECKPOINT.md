@@ -222,7 +222,22 @@ local-entailment-2026-10-16 and design35. Better verified semantic path, all ori
 research/policy/gates and R3/extensions remain required; do not promote this model.
 
 
-### 2026-10-16 05:31 UTC — explicit public-web policy component
+### 2026-10-16 05:25 UTC — public native entailment preflight
+
+PR85 merged41458fe after exact head59e8c00 CI38854342553 PASS1301/47liveexcluded;
+actual local Qwen support precision50% remains unqualified. Native probe source
+98927690d37bd0b73a07278957db6e142fb14389:118 guards PASS, two actual PUBLIC Claude
+Haiku4.5 folds PASS104.09s;31/36 calibration,33/36 heldout,12/13supported precision,
+one falseSUPPORTED. Evidence/native-entailment-2026-10-16 preserves actual hashes/
+metrics and failed05e3284 init profiles14skills/43slash commands. Corrected launch
+explicitly disables setting sources/slash/skills/MCP/hooks/memory/instructions,
+checks immutable files and hostile markers. Four CLI processes attempted total,
+72recordedpredictions, rejected-process inference count UNKNOWN; no SDK/private
+payload/fallback/training. Successful observed overageFalse, actual cash/quota
+UNKNOWN. Small preflight is not semantic/G2 certification; supportNOT_ASSESSED.
+
+
+### 2026-10-16 05:30 UTC — explicit public-web policy component
 
 Source63555c90aa642d24b39d909f7f19ca399e9c32fd:52 policy/actual disposablePG checks
 PASS3.85s, Ruff/mypy186/11imports/secret scanPASS. PUBLIC-only explicit destination,
@@ -235,3 +250,9 @@ renamed integration module). No network/provider call, live certificate, runtime
 policy/grant, schema migration or release promotion. Search/disclosure/grants/
 lease/budget/actual OS broker admission still required. Started from main41458fe,
 independent of pending native preflightPR86; integrate verified main before CI.
+
+
+PR86 merged307371587fc470b335db762163632449ab2efaaf after exacthead3e80b8c
+CI38855712327 PASS1318/49liveexcluded (one upstream pypdf deprecation warning).
+The public-web policy branch integrates that verified main before publication;
+only appended checkpoint text conflicted, and both histories are preserved.
