@@ -27,6 +27,7 @@ class PolicyEngine:
         denied: list[str] = []
         approval: list[str] = []
         cloud = request.destination != "local"
+        public_web = request.destination == "public-web"
         classification = resolve_classification(request.label)
         if (request.owner_id, request.project_id) != (context.owner_id, context.project_id):
             denied.append("scope_mismatch")
@@ -38,6 +39,8 @@ class PolicyEngine:
             denied.append("synthetic_cloud_denied")
         if classification.effective is None:
             denied.append("classification_unknown")
+        if public_web and request.action != "external-send":
+            denied.append("public_web_external_send_required")
         if cloud:
             if classification.effective in {"INTERNAL", "CONFIDENTIAL"}:
                 denied.append("canonical_private_cloud_denied")
@@ -56,11 +59,15 @@ class PolicyEngine:
             approval.append("action_review")
         outcome: Literal["PERMIT", "DENY", "APPROVAL_NEEDED"]
         outcome = "DENY" if denied else "APPROVAL_NEEDED" if approval else "PERMIT"
-        enforcement = (
-            ("scoped-filesystem", "secret-free-tools", "provider-gateway")
-            if cloud
-            else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
-        )
+        enforcement: tuple[str, ...]
+        if public_web:
+            enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
+        else:
+            enforcement = (
+                ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+                if cloud
+                else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+            )
         request_hash = hashlib.sha256(
             json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest()

@@ -1,0 +1,11 @@
+{
+  "artifact_sha256": "23221dc780c1abe58a872dc2c2fc7773fe96d2925f460c0402b0ba916e1a645d",
+  "checks": "170 combined policy/native/corpus/process tests PASS5.57s; Ruff/mypy187/11imports/secret scanPASS",
+  "integrated_main": "307371587fc470b335db762163632449ab2efaaf",
+  "merge_conflict": "only appended MVP_EXECUTION_CHECKPOINT text, both histories retained; no code conflicts or rewritten source evidence",
+  "mode": "hermetic/injected protocol plus actual disposable PG; no native/provider inference",
+  "release_authority": false,
+  "result": "PASS",
+  "source_commit": "7c84c809b30feb8522a12166d010351f711ef3bf",
+  "source_state": "clean"
+}

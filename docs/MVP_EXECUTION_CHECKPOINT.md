@@ -235,3 +235,24 @@ checks immutable files and hostile markers. Four CLI processes attempted total,
 72recordedpredictions, rejected-process inference count UNKNOWN; no SDK/private
 payload/fallback/training. Successful observed overageFalse, actual cash/quota
 UNKNOWN. Small preflight is not semantic/G2 certification; supportNOT_ASSESSED.
+
+
+### 2026-10-16 05:30 UTC — explicit public-web policy component
+
+Source63555c90aa642d24b39d909f7f19ca399e9c32fd:52 policy/actual disposablePG checks
+PASS3.85s, Ruff/mypy186/11imports/secret scanPASS. PUBLIC-only explicit destination,
+external-send action, separate provider permissions, all axes/scope/certificate
+checks and owner reviewed revisions/revocation. Existing prechange canonical hash
+fd00816f0a18bdda6726bfbbd9a8ea0014aed99b4373e1904b72adb014948540 preserved.
+Evidence/public-web-policy-2026-10-16 includes clean source/artifact pins and initial
+development collection failure (same test module basename, no tests executed;
+renamed integration module). No network/provider call, live certificate, runtime
+policy/grant, schema migration or release promotion. Search/disclosure/grants/
+lease/budget/actual OS broker admission still required. Started from main41458fe,
+independent of pending native preflightPR86; integrate verified main before CI.
+
+
+PR86 merged307371587fc470b335db762163632449ab2efaaf after exacthead3e80b8c
+CI38855712327 PASS1318/49liveexcluded (one upstream pypdf deprecation warning).
+The public-web policy branch integrates that verified main before publication;
+only appended checkpoint text conflicted, and both histories are preserved.

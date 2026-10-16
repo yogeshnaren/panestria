@@ -1,0 +1,52 @@
+{
+  "artifacts": {
+    "development-collection-failure.xml": "0a28f79973fada0a0587db35df241307e9566a02224344ad369408b5b8421950",
+    "qualified-52-policy.xml": "1e6e12e3ec7310d2aa4982ec493087bb168819d3e906f85411cbd4fecb565409"
+  },
+  "checks": {
+    "elapsed_seconds": 3.839,
+    "import_contracts_kept": 11,
+    "mypy_source_files": 186,
+    "policy_tests": 52,
+    "ruff": "PASS",
+    "secret_scan": "PASS"
+  },
+  "coverage": [
+    "canonical private/legacy/unknown labels always denied despite permissive legacy flag",
+    "trust/privacy/autonomy changes cannot widen another axis; scope/synthetic/certificate denials survive",
+    "public-web requires external-send; observe/suggest deny, approve-first needs review",
+    "provider and web destinations do not imply one another; default no outbound destinations",
+    "existing canonical policy bytes/hash unchanged and roundtrip verified",
+    "actual owner digest review before apply; other owner/bad digest denied; old approvals revoked and stale policy rejected",
+    "three actual persisted revisions: initial, explicit web privacy list, removal; synthetic profile remains denied outbound"
+  ],
+  "database": "actual unique owned disposable PG55439; all migrations and exact container/anonymous-volume cleanup; no owner DB/schema touched",
+  "limitations": [
+    "typed policy declaration alone grants no egress; controller must enforce current policy/disclosure/connection grants/budget/lease/SSRF/TLS/OS isolation",
+    "historical cloud_destinations field name retained deliberately for byte-compatible protected fingerprints",
+    "unit runtime certificate references are injected data, not actual certification; PG uses SYNTHETIC_DEV and cannot send",
+    "initial duplicate unit/integration module basename caused development collection error with no tests run; integration renamed and clean qualification run preserved",
+    "no actual network/provider inference, credential access, runtime grant, schema migration or release acceptance"
+  ],
+  "prechange_policy_pin": {
+    "canonical_sha256": "fd00816f0a18bdda6726bfbbd9a8ea0014aed99b4373e1904b72adb014948540",
+    "preserved": true,
+    "source_main": "41458fec4abc379e8ae482f4a70f4821bb518243"
+  },
+  "release_authority": false,
+  "result": "PASS",
+  "runtime_network_or_provider_calls": 0,
+  "schema_version": 1,
+  "scope": "explicit deterministic public-web destination intersections and actual disposable PG policy reviews only",
+  "source_commit": "63555c90aa642d24b39d909f7f19ca399e9c32fd",
+  "source_sha256": {
+    "src/panestria/contracts/policy.py": "ba4e6918bf96e59ea1b2eb64242a35383eafcdd45d96644bb445c1f92b9cb158",
+    "src/panestria/kernel/policy.py": "11ac2fa75a763d0b6ae1fc1ad582f829993e2c6dfcba9c153103319b44f1db59",
+    "src/panestria/kernel/repositories/policy.py": "d0ff735dbaf5aed9939e736c849d08fd8269a81e1a97b7f77679d8272d44b57c",
+    "src/panestria/policy/engine.py": "f050038a32fda26153dd804a42597b1afe9f6a33031d4a47a8a6ff44f36434cb",
+    "tests/integration/test_aos_007.py": "6b79380c1cbacfaa179fcf4f0c1c8c3894641ea38e7c57b522a1e050fe7e7c61",
+    "tests/integration/test_public_web_policy_store.py": "a798773ccc852a9d4e822213d8284dc1ac1fa86d20cfaf2907bf9a0c9b615685",
+    "tests/unit/test_public_web_policy.py": "d3597023e11ef42b0a997203f2c8112bf6ea6e3c5712be49870d08e29f629667"
+  },
+  "source_state_at_execution": "clean"
+}
