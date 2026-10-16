@@ -1,0 +1,283 @@
+{
+  "actual_process_launches": 4,
+  "artifacts": {
+    "actual-observations.json": "c64a0305359c57d94f81f6bcfd13752a2eee46f18d339d357047c61532f67594",
+    "actual-two-folds.xml": "afbe1b9cdae200e19617783f781a746554e9662d1cbfb00a7becfb341e976a6e",
+    "first-profile-rejection-05e3284.xml": "c43511392527bb2b254aaba6be5d1cc41bc7ac330f579f467f1322dcf7bb2e0d",
+    "qualified-118-guards.xml": "d11e2763baaadf6edc49e375d36606f31e481f574d52c427fc7cee659b1c6b26"
+  },
+  "automatic_support_authority": false,
+  "binary_sha256": "6c752e2cc7c110c9df15f26d8d134d438c5ae95dbd610efc1a308bf7f9c5f6c1",
+  "binary_version": "2.1.273",
+  "cash_actual_microusd": null,
+  "checks": [
+    "118 injected protocol/corpus/process/tamper guards PASS1.62s; no native inference in guards",
+    "two actual PUBLIC existing-subscription batches PASS104.09s; all tools/MCP/skills/plugins/slash commands empty",
+    "observed overageFalse on both completed folds, no API key; unknown actual cash/remaining quota",
+    "local rubric byte hash unchanged; no semantic prompt tuning after heldout outcomes"
+  ],
+  "configured_limits": "one process/fold,120s,2turns,256KiB stream, CLI estimated budgetUSD0.25; not an actual cash/quota measurement",
+  "infrastructure_result": "PASS",
+  "initial_rejected_inference_call_count": null,
+  "initial_rejected_processes": 2,
+  "initial_rejected_source_commit": "05e328458c371792207d5e9c209c09eba92ba396",
+  "initial_rejection_safe_flags": [
+    {
+      "fold": "calibration",
+      "profile_flags": [
+        [
+          "expected_model",
+          true
+        ],
+        [
+          "no_api_key",
+          true
+        ],
+        [
+          "default_permissions",
+          true
+        ],
+        [
+          "tools_count",
+          0
+        ],
+        [
+          "mcp_servers_count",
+          0
+        ],
+        [
+          "skills_count",
+          14
+        ],
+        [
+          "plugins_count",
+          0
+        ],
+        [
+          "slash_commands_count",
+          43
+        ]
+      ],
+      "reason": "unexpected_public_fixture_profile",
+      "status": "UNAVAILABLE"
+    },
+    {
+      "fold": "qualification",
+      "profile_flags": [
+        [
+          "expected_model",
+          true
+        ],
+        [
+          "no_api_key",
+          true
+        ],
+        [
+          "default_permissions",
+          true
+        ],
+        [
+          "tools_count",
+          0
+        ],
+        [
+          "mcp_servers_count",
+          0
+        ],
+        [
+          "skills_count",
+          14
+        ],
+        [
+          "plugins_count",
+          0
+        ],
+        [
+          "slash_commands_count",
+          43
+        ]
+      ],
+      "reason": "unexpected_public_fixture_profile",
+      "status": "UNAVAILABLE"
+    }
+  ],
+  "limitations": [
+    "heldout33/36 correct but one falseSUPPORTED:12/13supported precision; no production support promotion",
+    "small human-labeled caption-domain corpus, annotation artifacts/pretraining contamination possible; not research-domain/world-truth reliability",
+    "initial two launched processes rejected at init due14skills/43slash commands; no accepted predictions, actual inference count unknown",
+    "strict setting/skill/MCP/hook/memory/instruction controls reused from existing inspected native-check launcher; harmless hostile marker probes show no effects",
+    "PUBLIC pinned corpus only, no arbitrary/private claims, no training grant, independent-family certification or release acceptance",
+    "JUnit has no auto-attached candidate property for new nodes: this report binds the exact clean source and file hashes; no properties retrofitted"
+  ],
+  "quality_authority": "PUBLIC_NLI_PREFLIGHT_ONLY",
+  "recorded_case_predictions": 72,
+  "release_gate_authority": false,
+  "requested_model_alias": "haiku",
+  "resolved_model": "claude-haiku-4-5-20251001",
+  "schema_version": 1,
+  "scores": {
+    "calibration": {
+      "accuracy_on_answered": 0.8611111111111112,
+      "answered": 36,
+      "authority": "PREDICTION_METRICS_ONLY",
+      "confusion": [
+        {
+          "count": 12,
+          "expected": "SUPPORTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 11,
+          "expected": "INSUFFICIENT",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 1,
+          "expected": "INSUFFICIENT",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 4,
+          "expected": "CONTRADICTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 8,
+          "expected": "CONTRADICTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "UNKNOWN"
+        }
+      ],
+      "correct": 31,
+      "correct_fraction": 0.8611111111111112,
+      "coverage": 1.0,
+      "false_supported_count": 0,
+      "supported_precision": 1.0,
+      "supported_predictions": 12,
+      "total": 36
+    },
+    "qualification": {
+      "accuracy_on_answered": 0.9166666666666666,
+      "answered": 36,
+      "authority": "PREDICTION_METRICS_ONLY",
+      "confusion": [
+        {
+          "count": 12,
+          "expected": "SUPPORTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 1,
+          "expected": "INSUFFICIENT",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 9,
+          "expected": "INSUFFICIENT",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 2,
+          "expected": "INSUFFICIENT",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 12,
+          "expected": "CONTRADICTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "UNKNOWN"
+        }
+      ],
+      "correct": 33,
+      "correct_fraction": 0.9166666666666666,
+      "coverage": 1.0,
+      "false_supported_count": 1,
+      "supported_precision": 0.9230769230769231,
+      "supported_predictions": 13,
+      "total": 36
+    }
+  },
+  "sdk_calls": 0,
+  "source_commit": "98927690d37bd0b73a07278957db6e142fb14389",
+  "source_sha256": {
+    "src/panestria/brokers/harness/claude_check.py": "e8f04dcc11f7ceb8539030f0c407b48b3e2b6cca87c8835f4e0b641af1826cbf",
+    "src/panestria/brokers/harness/claude_proposal.py": "e668014944af7d197eaee8e36fd93fca5c26a6200812ae0b12b751792aa49203",
+    "src/panestria/brokers/harness/cli_profile.py": "ee2c27d57aefd25dd7789d33cd13b050892d77f4dc405ef674e538507be45711",
+    "src/panestria/brokers/harness/event_parser.py": "51d8967d553f13f5b9193ecbfb1b0d5d8e73265f15b9049069dfe56dadf2a23a",
+    "src/panestria/brokers/harness/process_runner.py": "9701734a0afbc330cdac26157bf93df946dc682b28cd59d2b8f84455b1bd8146",
+    "src/panestria/execution/entailment_probe.py": "fbc4ae3b8cc744e181bda92fd01c67a1449e86122cbfeea0d66760278ea47eee",
+    "src/panestria/execution/native_entailment_probe.py": "29ebb939dcdb05d23cecf60cf782076ab48b605f9114418dce0b16381f9d3232",
+    "tests/integration/test_native_entailment_live.py": "c00a50a2507d5d635d07737fb5c64fa12ccf297ec2c0c789458b67c9735271e9",
+    "tests/unit/test_native_entailment_probe.py": "2db809f7be16b17baae7e866e3dfcbadd95dea21bd27f07e31b3855b94a9062c"
+  },
+  "source_state_at_execution": "clean",
+  "successful_public_batch_processes": 2
+}

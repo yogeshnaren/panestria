@@ -1,6 +1,6 @@
 # AOS-022 — Claim-support adjudication, contradiction and uncertainty labeling: implementation plan
 
-**Release:** R2. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-021, AOS-016. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R2. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS (corpus and model preflight). **Tests:** component observations below; item/release acceptance NOT_RUN. **Depends on:** AOS-021, AOS-016. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-022.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -107,3 +107,23 @@ separately; its unrecorded case count/metrics remain unknown. Source/family/priv
 and corpus/domain limits apply. No cloud inference, credentials, downloads or
 training were used. Semantic integration stays unassessed pending a suitable
 validated verifier; no model switch or higher privilege is implicit in this result.
+
+## Actual public subscription preflight (2026-10-16)
+
+At9892769, the [fixed PUBLIC-only native probe](../design/36-PUBLIC-NATIVE-ENTAILMENT-PROBE.md)
+has118 protocol/tamper/process/corpus guards and two actual subscription batch
+observations. Claude Haiku4.5 scored31/36 calibration and33/36 held-out; held-out
+support precision12/13 (92.3%), **one falseSUPPORTED**. These small caption-domain
+results do not authorize automatic research support or certify AOS022/G2.
+
+Evidence/native-entailment-2026-10-16 retains predictions, metrics, exact source/
+binary/rubric/corpus hashes and two earlier rejected launches. Explicit disabled
+setting sources/skills/MCP/hooks/memory/instructions were needed beyond safe-mode;
+no allowlist was widened. Both completed batches observed no overage/API key.
+Actual cash/remaining quota and inference count of rejected launches stay unknown.
+No SDK/private claim/training/provider fallback. Current files are contracts/
+research_claims.py, execution/research_claims.py, verification/entailment.py and
+execution/{entailment_probe,native_entailment_probe}.py; the earlier owning-file
+list is design intent, to reconcile before semantic integration. Research-domain
+human review/conflict/opinion/injection, policy/grant/disclosure and deterministic
+source checks remain prerequisites; ClaimStore support remains NOT_ASSESSED.

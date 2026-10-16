@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="3.827" timestamp="2026-10-15T22:19:50.735012-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_native_entailment_live" name="test_actual_public_fixture_subscription_observation[calibration]" file="tests/integration/test_native_entailment_live.py" line="12" time="2.171"><properties><property name="public_native_entailment_observation" value="{&quot;authority&quot;: &quot;PUBLIC_NATIVE_OBSERVATION_ONLY&quot;, &quot;cash_actual_microusd&quot;: null, &quot;corpus_sha256&quot;: &quot;5f9c0ac087ebcb1cedea91275ccf497cf9f5a8dec51e112cb597a277e93e7f1c&quot;, &quot;fold&quot;: &quot;calibration&quot;, &quot;model&quot;: null, &quot;observed_overage&quot;: null, &quot;predictions&quot;: [], &quot;profile_flags&quot;: [[&quot;expected_model&quot;, true], [&quot;no_api_key&quot;, true], [&quot;default_permissions&quot;, true], [&quot;tools_count&quot;, 0], [&quot;mcp_servers_count&quot;, 0], [&quot;skills_count&quot;, 14], [&quot;plugins_count&quot;, 0], [&quot;slash_commands_count&quot;, 43]], &quot;prompt_sha256&quot;: &quot;110b440ef5273d27dfce459cd068eacdcb7cdde75588b56e5cd0dbce23a941ec&quot;, &quot;reason&quot;: &quot;unexpected_public_fixture_profile&quot;, &quot;result_sha256&quot;: null, &quot;rubric_sha256&quot;: &quot;d96ec8d8f8b11b44a71f2fff60911f2b1ff3c4f8748a7abcf78cbf9e4bb73121&quot;, &quot;score&quot;: null, &quot;status&quot;: &quot;UNAVAILABLE&quot;}" /></properties><failure message="AssertionError: unexpected_public_fixture_profile&#10;assert 'UNAVAILABLE' == 'COMPLETE'&#10;  &#10;  - COMPLETE&#10;  + UNAVAILABLE">fold = 'calibration'
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x7826ecb3b420&gt;
+
+    @pytest.mark.live
+    @pytest.mark.parametrize("fold", ["calibration", "qualification"])
+    def test_actual_public_fixture_subscription_observation(fold, record_property):
+        if os.environ.get("PANESTRIA_RUN_NATIVE_ENTAILMENT") != "1":
+            pytest.skip("explicit existing-login PUBLIC fixture opt-in absent; actual observation not run")
+        root = Path(__file__).resolve().parents[2]
+        probe = NativeEntailmentProbe(
+            BinaryPin(Path.home() / ".local/share/claude/versions/2.1.273", PINNED_BINARY_SHA256),
+            Path.home() / ".panestria-native-claude",
+            root / "docs/specification/attachments/agentos-skills-v0.1.0.zip",
+        )
+        result = probe.run(root / "tests/fixtures/research/snli-v1/corpus.json", fold)
+        record_property("public_native_entailment_observation", native_observation_json(result))
+&gt;       assert result.status == "COMPLETE", result.reason
+E       AssertionError: unexpected_public_fixture_profile
+E       assert 'UNAVAILABLE' == 'COMPLETE'
+E         
+E         - COMPLETE
+E         + UNAVAILABLE
+
+tests/integration/test_native_entailment_live.py:26: AssertionError</failure></testcase><testcase classname="tests.integration.test_native_entailment_live" name="test_actual_public_fixture_subscription_observation[qualification]" file="tests/integration/test_native_entailment_live.py" line="12" time="1.495"><properties><property name="public_native_entailment_observation" value="{&quot;authority&quot;: &quot;PUBLIC_NATIVE_OBSERVATION_ONLY&quot;, &quot;cash_actual_microusd&quot;: null, &quot;corpus_sha256&quot;: &quot;5f9c0ac087ebcb1cedea91275ccf497cf9f5a8dec51e112cb597a277e93e7f1c&quot;, &quot;fold&quot;: &quot;qualification&quot;, &quot;model&quot;: null, &quot;observed_overage&quot;: null, &quot;predictions&quot;: [], &quot;profile_flags&quot;: [[&quot;expected_model&quot;, true], [&quot;no_api_key&quot;, true], [&quot;default_permissions&quot;, true], [&quot;tools_count&quot;, 0], [&quot;mcp_servers_count&quot;, 0], [&quot;skills_count&quot;, 14], [&quot;plugins_count&quot;, 0], [&quot;slash_commands_count&quot;, 43]], &quot;prompt_sha256&quot;: &quot;6762003f0ccc3b2d6a28919b4a688311af80fee8e6c25e8a7fbf9ae9c659e22a&quot;, &quot;reason&quot;: &quot;unexpected_public_fixture_profile&quot;, &quot;result_sha256&quot;: null, &quot;rubric_sha256&quot;: &quot;d96ec8d8f8b11b44a71f2fff60911f2b1ff3c4f8748a7abcf78cbf9e4bb73121&quot;, &quot;score&quot;: null, &quot;status&quot;: &quot;UNAVAILABLE&quot;}" /></properties><failure message="AssertionError: unexpected_public_fixture_profile&#10;assert 'UNAVAILABLE' == 'COMPLETE'&#10;  &#10;  - COMPLETE&#10;  + UNAVAILABLE">fold = 'qualification'
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x7826ecb80b80&gt;
+
+    @pytest.mark.live
+    @pytest.mark.parametrize("fold", ["calibration", "qualification"])
+    def test_actual_public_fixture_subscription_observation(fold, record_property):
+        if os.environ.get("PANESTRIA_RUN_NATIVE_ENTAILMENT") != "1":
+            pytest.skip("explicit existing-login PUBLIC fixture opt-in absent; actual observation not run")
+        root = Path(__file__).resolve().parents[2]
+        probe = NativeEntailmentProbe(
+            BinaryPin(Path.home() / ".local/share/claude/versions/2.1.273", PINNED_BINARY_SHA256),
+            Path.home() / ".panestria-native-claude",
+            root / "docs/specification/attachments/agentos-skills-v0.1.0.zip",
+        )
+        result = probe.run(root / "tests/fixtures/research/snli-v1/corpus.json", fold)
+        record_property("public_native_entailment_observation", native_observation_json(result))
+&gt;       assert result.status == "COMPLETE", result.reason
+E       AssertionError: unexpected_public_fixture_profile
+E       assert 'UNAVAILABLE' == 'COMPLETE'
+E         
+E         - COMPLETE
+E         + UNAVAILABLE
+
+tests/integration/test_native_entailment_live.py:26: AssertionError</failure></testcase></testsuite></testsuites>
