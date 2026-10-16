@@ -1,12 +1,12 @@
 # Private native proxy transport in a network-disabled container
 
-Start from verified main1648123 after PR88. The current native pilot has a trusted
+Start from verified main `1648123` after PR88. The current native pilot has a trusted
 vendor-auth process and confined registered tools, but CLI flags do not prove OS
 containment of that auth process. The existing EgressGateway already admits exact
 CONNECT hosts through a private Unix socket with public-DNS checks and IP pinning.
 
 Add a standalone standard-library relay inside a future native container with
-network=none: a trusted client connects to its own127.0.0.1 HTTP proxy; the relay
+network=none: a trusted client connects to its own `127.0.0.1` HTTP proxy; the relay
 forwards bytes only to the exact read-only mounted gateway socket; the trusted
 host gateway owns public network access. There is no Docker bridge, published
 port, host-network fallback, credential directory or model inference in this
@@ -27,3 +27,16 @@ release certificate. CONNECT admission is in the host gateway; end-to-end TLS an
 application authorization remain with the trusted pinned client. Later native
 integration must reject unexpected capabilities and credential/tool sharing,
 apply current policy/grants/lease/budget and retain actual live evidence.
+
+## Observed component validation
+
+Clean source `c6fa589` passes 74 focused checks plus one explicitly opted-in actual
+CA/hostname-verified TLS HEAD to Anthropic through the network-disabled container,
+loopback relay, private Unix socket and host gateway. No auth, inference or paid
+SDK request occurred. The program also refuses to start unless its Linux network
+namespace has only loopback. Four actual Docker checks cover the effective mount,
+network, resource and synthetic sentinel/environment boundary. Socket tests cover
+large half-closed transfers, aggregate caps and endpoint replacement. Source and
+JUnit hashes, development failures and limits are retained in
+`evidence/native-private-relay-2026-10-16`. This observation does not change the
+required native/task/grant conformance boundaries above.

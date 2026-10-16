@@ -152,3 +152,18 @@ is unknown; the budget flag is an estimate. Bare mode was excluded because it
 skips subscription credentials; safe-mode no-tool proposals remain unchanged.
 No general owner task/native shell profile or full AOS010/G1/R3 case is enabled
 or promoted. Evidence and limits: evidence/native-mcp-profile-2026-10-15.
+
+## Private native egress relay prerequisite (2026-10-16)
+
+[The standalone private relay](../design/39-NATIVE-PRIVATE-PROXY-RELAY.md) provides
+bounded container-loopback transport to one pinned private host CONNECT socket.
+At `c6fa589`, 74 focused checks pass, including four actual Docker envelope/
+synthetic-secret/egress/replacement cases; one actual public TLS HEAD also passes
+without auth or inference. Failed earlier timing assertions remain in the
+source-bound evidence. The worker no-network profile is unchanged.
+
+This is a transport prerequisite, not completed native auth-process containment
+or full AOS-008/AOS-010 conformance. Production native launcher/binary/profile/
+credential/MCP integration, current policy/grant/lease/budget admission and actual
+hostile configuration/secret/revocation proofs remain required. No release gate
+or user task is enabled by this component.
