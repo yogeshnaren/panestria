@@ -90,3 +90,20 @@ AOS022 acceptance. Caption-domain/annotation/contamination/small-sample limits a
 explicit. Actual privacy-conforming model observations, research-specific partial/
 opinion/conflict/injection checks, independent-family conditions and calibrated
 uncertainty remain required. Fixture preparation provides no training grant.
+
+## Actual local-model outcome (2026-10-16)
+
+[The bounded offline probe](../design/35-LOCAL-ENTAILMENT-OBSERVATION.md) uses the
+existing read-only Qwen2.5:1.5b-instruct cache in actual network-none/nonroot Docker.
+At bf3cb42, 24 corpus/protocol guards and two actual fold-observation checks pass.
+This is an infrastructure result: **automatic support quality is NOT QUALIFIED**.
+The held-out fold got21/36 labels correct and12/24 supported judgments correct
+(50% supported precision); all72 recorded model calls produced closed verdicts.
+The model's incorrect certainty cannot authorize support or task acceptance.
+
+Evidence/local-entailment-2026-10-16 retains exact predictions/metrics/hashes,
+tokens and runtime limits. An earlier reporting serialization failure is retained
+separately; its unrecorded case count/metrics remain unknown. Source/family/privacy
+and corpus/domain limits apply. No cloud inference, credentials, downloads or
+training were used. Semantic integration stays unassessed pending a suitable
+validated verifier; no model switch or higher privilege is implicit in this result.

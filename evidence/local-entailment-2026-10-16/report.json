@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "source_commit": "bf3cb4260867c2822f789b35b6464a7aea5e25ad",
+  "infrastructure_result": "PASS",
+  "automatic_support_quality": "NOT_QUALIFIED",
+  "reason": "heldout supported precision0.5 with12false supported and21/36correct; no automatic support authority enabled",
+  "actual_recorded_case_calls": 72,
+  "earlier_reporting_failure_case_calls": null,
+  "total_actual_batch_invocations": 4,
+  "scope": "actual pinned offline model outcomes with original corpus limitations, not support/policy/gate certification",
+  "observations_file": "actual-observations.json",
+  "scores": {
+    "calibration": {
+      "accuracy_on_answered": 0.6111111111111112,
+      "answered": 36,
+      "authority": "PREDICTION_METRICS_ONLY",
+      "confusion": [
+        {
+          "count": 12,
+          "expected": "SUPPORTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 10,
+          "expected": "INSUFFICIENT",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 2,
+          "expected": "INSUFFICIENT",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 2,
+          "expected": "CONTRADICTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 10,
+          "expected": "CONTRADICTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "UNKNOWN"
+        }
+      ],
+      "correct": 22,
+      "correct_fraction": 0.6111111111111112,
+      "coverage": 1.0,
+      "false_supported_count": 12,
+      "supported_precision": 0.5,
+      "supported_predictions": 24,
+      "total": 36
+    },
+    "qualification": {
+      "accuracy_on_answered": 0.5833333333333334,
+      "answered": 36,
+      "authority": "PREDICTION_METRICS_ONLY",
+      "confusion": [
+        {
+          "count": 12,
+          "expected": "SUPPORTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 10,
+          "expected": "INSUFFICIENT",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 2,
+          "expected": "INSUFFICIENT",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 2,
+          "expected": "CONTRADICTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 1,
+          "expected": "CONTRADICTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 9,
+          "expected": "CONTRADICTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "UNKNOWN"
+        }
+      ],
+      "correct": 21,
+      "correct_fraction": 0.5833333333333334,
+      "coverage": 1.0,
+      "false_supported_count": 12,
+      "supported_precision": 0.5,
+      "supported_predictions": 24,
+      "total": 36
+    }
+  },
+  "recorded_usage": {
+    "input_tokens": 11588,
+    "output_tokens": 738,
+    "api_cash_actual_microusd": 0,
+    "electricity_cash": null,
+    "subscription_calls": 0
+  },
+  "runtime": {
+    "model_ref": "qwen2.5:1.5b-instruct",
+    "model_manifest_sha256": "65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "image": "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9",
+    "actual": "nonroot read-only root/cache, no network/ports, no credential/home/DB mounts, private UDS, logdriver none",
+    "configured_limits": "CPU2/RAM2.5GiB/PIDs128; no measured peak claim",
+    "lifecycle": "preserve_existing=True, no owner service reaped; exact owned container/lease stopped; no local-model container remained after tests"
+  },
+  "checks": [
+    "24 injected-protocol/corpus guards PASS (not actual inference)",
+    "2 actual fold observations PASS infrastructure only",
+    "Ruff/mypy186/11imports/secret scan PASS"
+  ],
+  "source_sha256": {
+    "src/panestria/execution/entailment_probe.py": "b51712318494123eb6876098af7f7644d0c2452c5a493c3388a84a0db33612bf",
+    "tests/integration/test_local_entailment_live.py": "0feff6ac6cbb11fd0687990b0d46d3aaed56078f1f70335091ca08e94eeafc7b",
+    "tests/unit/test_local_entailment_probe.py": "3340fb365b484982b302cda0eb8dd8cf01f9cdb2b17ab4025acc20b4609b0dfd",
+    "src/panestria/inference/local.py": "ed6ea1e68e1b2c64d0640a16cc4c34220fa4e37c785e59b8c5ab75da9726a423",
+    "src/panestria/inference/runtime.py": "0cfed95c3a988af5bc5f7527207c8497560a074674c63655003e2dac3a5bc0d7"
+  },
+  "artifacts": {
+    "actual-observations.json": "2d6559212222c15c7b971e073a99fa2aa3e5418e5dbfbaf35acb57172c5f5d49",
+    "actual-two-folds.xml": "458bddae22a36e1474ce45d4049c1b4a5ed9e49af05a2906f983c3c999ce6757",
+    "first-reporting-failure-4ff2fee.xml": "3a3b3a7a9258567b4352244cdca91170ccc6e776eb30d17685f6c813dac7b733",
+    "qualified-24-guards.xml": "ad2b57c78ec5a0abfba6ddf32bcdeed125a9b1d64c8c24fe9e05878a095ed80e"
+  },
+  "limitations": [
+    "all semantic ClaimStore support remains NOT_ASSESSED; Qwen result must not be promoted to automatic support",
+    "first actual run failed when serializing nested Pydantic predictions in dataclasses; retained source4ff2fee XML, no aggregate or call count invented for it",
+    "explicit structured serializer fixed reporting and unit regression covers it; full two-fold run repeated at new committed source",
+    "prediction output hash is canonical JSON-string encoding, preserving malformed Unicode without retaining response/reasoning text",
+    "small caption-domain SNLI with possible annotation/pretraining artifacts is not research-domain/world-truth validation",
+    "no cloud provider, new model download, credentials, paid SDK/overflow, training or release promotion"
+  ]
+}
