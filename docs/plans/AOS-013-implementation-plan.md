@@ -90,3 +90,15 @@ evidence/research-public-fetch-2026-10-15. This does not persist a source, mint
 source IDs, authorize fetch or make a passage/claim usable. Scoped source/claim
 schema, retained receipt/artifact lookup, isolated reader and citation authority
 remain pending; no full AOS-013 case or G2 promotion follows from this component.
+
+The [isolated text/HTML reader](../design/28-ISOLATED-RESEARCH-TEXT-READER.md)
+extracts strict UTF8/Unicode15 NFC with exact input/output hashes inside the
+existing nonroot/read-only/network-none Docker boundary. At f60fc1a, 31 new
+checks pass (14 actual container/public-TLS cases and 17 explicitly injected
+receipt/controller guards), plus 134 existing research checks. Actual HTTPS
+bytes feed the container reader; runtime/program/tokenizer hashes are retained.
+HTML is tokenized text, with no browser CSS visibility/table/raw-byte mapping
+claim. Raw cap is 2 MiB; text cap512 KiB yields explicit TRUNCATED on overflow.
+PDF remains UNSUPPORTED and required next work. This is memory-only extraction;
+source/claim persistence, retained provenance, SourceStore and citation authority
+remain pending. Evidence: evidence/isolated-research-reader-2026-10-15.

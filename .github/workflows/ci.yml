@@ -35,6 +35,9 @@ jobs:
         run: uv run --frozen mypy src/panestria
       - name: Import boundaries
         run: uv run --frozen lint-imports --config .importlinter
+      - name: Prepare pinned worker image
+        # Trusted setup runs before any actual sandbox test. Workers keep pull=never.
+        run: uv run --frozen python -c 'from panestria.cli.review_demo import prepare_worker_image; prepare_worker_image()'
       - name: Tests
         run: uv run --frozen pytest -m "not live" --junitxml=evidence/ci.xml
       - name: Secret scan
