@@ -91,8 +91,8 @@ def test_origins_are_exact_bounded_canonical_names_not_urls_or_wildcards(origin)
 @pytest.mark.parametrize(
     "changes",
     [
-        {"actions": ("write",)},
-        {"actions": ("delete",)},
+        {"actions": ("write",), "origins": ()},
+        {"actions": ("delete",), "origins": ()},
         {"actions": ("send",), "origins": ()},
         {"actions": ("spend",)},
         {"actions": ("read",), "origins": ()},
@@ -146,3 +146,10 @@ def test_explicit_root_and_cash_declarations_still_do_not_imply_other_actions():
     )
     assert value.actions == ("spend", "write") and "send" not in value.actions
     assert value.expires_at > datetime.now(UTC)
+
+
+@pytest.mark.parametrize("action", ["write", "delete"])
+def test_scoped_remote_action_does_not_invent_local_roots_or_send_permission(action):
+    value = manifest(OWNER, PROJECT, actions=(action,))
+    assert value.origins == ("https://example.com",) and not value.root_refs
+    assert value.actions == (action,) and "send" not in value.actions

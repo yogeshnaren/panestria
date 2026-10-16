@@ -106,8 +106,9 @@ class ConnectionManifest(ConnectionContract):
     def bounded_scope(self) -> Self:
         if not self.root_refs and not self.origins:
             raise ValueError("unbounded_connection_scope")
-        if any(action in self.actions for action in ("write", "delete")) and not self.root_refs:
-            raise ValueError("connection_roots_required")
+        # Remote APIs may write/delete within exact origins; filesystem
+        # connectors require enrolled roots at their broker, not a universal
+        # local-only assumption here. Neither action implies send permission.
         if "send" in self.actions and not self.origins:
             raise ValueError("connection_origins_required")
         if "spend" in self.actions and self.budget.max_cash_microusd == 0:
