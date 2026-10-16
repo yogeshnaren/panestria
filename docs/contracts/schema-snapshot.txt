@@ -351,6 +351,19 @@ column project_policy_revision project_id uuid NO
 column project_policy_revision sha256 bpchar NO
 column project_policy_revision trust_version int8 NO
 column project_policy_revision version int8 NO
+column quota_observation body jsonb NO
+column quota_observation body_sha256 bpchar NO
+column quota_observation created_at timestamptz NO
+column quota_observation fresh_for_seconds int4 NO
+column quota_observation goal_id uuid NO
+column quota_observation id uuid NO
+column quota_observation observed_at timestamptz NO
+column quota_observation owner_id uuid NO
+column quota_observation project_id uuid NO
+column quota_observation resets_at timestamptz YES
+column quota_observation scope_sha256 bpchar NO
+column quota_observation source text NO
+column quota_observation task_id uuid NO
 column research_claim created_at timestamptz NO
 column research_claim draft_kind text NO
 column research_claim goal_id uuid NO
@@ -797,6 +810,39 @@ constraint panestria.project_policy_revision c CHECK ((trust_version > 0))
 constraint panestria.project_policy_revision c CHECK ((version > 0))
 constraint panestria.project_policy_revision f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.project_policy_revision p PRIMARY KEY (project_id, version)
+constraint panestria.quota_observation c CHECK (
+CASE
+    WHEN ((jsonb_typeof((body -> 'remaining'::text)) = 'string'::text) AND ((body ->> 'remaining'::text) ~ '^(0|[1-9][0-9]{0,11})([.][0-9]{1,3})?$'::text)) THEN
+    CASE
+        WHEN ((body ->> 'unit'::text) = 'percent'::text) THEN (((body ->> 'remaining'::text))::numeric <= (100)::numeric)
+        WHEN ((body ->> 'unit'::text) = ANY (ARRAY['tokens'::text, 'requests'::text])) THEN (mod(((body ->> 'remaining'::text))::numeric, (1)::numeric) = (0)::numeric)
+        ELSE false
+    END
+    ELSE ((body -> 'remaining'::text) = 'null'::jsonb)
+END)
+constraint panestria.quota_observation c CHECK (((((body -> 'resets_at'::text) = 'null'::jsonb) AND (resets_at IS NULL)) OR ((jsonb_typeof((body -> 'resets_at'::text)) = 'string'::text) AND (((body ->> 'resets_at'::text))::timestamp with time zone = resets_at) AND (resets_at IS NOT NULL))))
+constraint panestria.quota_observation c CHECK ((((body -> 'remaining'::text) = 'null'::jsonb) OR ((jsonb_typeof((body -> 'remaining'::text)) = 'string'::text) AND ((body ->> 'remaining'::text) ~ '^(0|[1-9][0-9]{0,11})([.][0-9]{1,3})?$'::text) AND (((body ->> 'unit'::text) = ANY (ARRAY['percent'::text, 'tokens'::text, 'requests'::text])) IS TRUE))))
+constraint panestria.quota_observation c CHECK ((((body -> 'unit'::text) = 'null'::jsonb) OR ((jsonb_typeof((body -> 'unit'::text)) = 'string'::text) AND (((body ->> 'unit'::text) = ANY (ARRAY['percent'::text, 'tokens'::text, 'requests'::text])) IS TRUE))))
+constraint panestria.quota_observation c CHECK ((((body ->> 'fresh_for_seconds'::text) = (fresh_for_seconds)::text) AND (jsonb_typeof((body -> 'fresh_for_seconds'::text)) = 'number'::text)))
+constraint panestria.quota_observation c CHECK ((((body ->> 'observation_id'::text) = (id)::text) AND (jsonb_typeof((body -> 'observation_id'::text)) = 'string'::text)))
+constraint panestria.quota_observation c CHECK ((((body ->> 'schema_version'::text) = '1'::text) AND (jsonb_typeof((body -> 'schema_version'::text)) = 'number'::text)))
+constraint panestria.quota_observation c CHECK ((((body ->> 'source'::text) = source) AND (jsonb_typeof((body -> 'source'::text)) = 'string'::text)))
+constraint panestria.quota_observation c CHECK ((((source = ANY (ARRAY['PROVIDER_REPORTED'::text, 'ESTIMATED'::text])) AND (jsonb_typeof((body -> 'source_sha256'::text)) = 'string'::text) AND ((body ->> 'source_sha256'::text) ~ '^[0-9a-f]{64}$'::text)) OR ((source = ANY (ARRAY['OWNER_REPORTED'::text, 'UNKNOWN'::text])) AND ((body -> 'source_sha256'::text) = 'null'::jsonb))))
+constraint panestria.quota_observation c CHECK (((body - ARRAY['schema_version'::text, 'observation_id'::text, 'scope'::text, 'source'::text, 'remaining'::text, 'unit'::text, 'observed_at'::text, 'resets_at'::text, 'fresh_for_seconds'::text, 'source_sha256'::text]) = '{}'::jsonb))
+constraint panestria.quota_observation c CHECK (((fresh_for_seconds >= 1) AND (fresh_for_seconds <= 86400)))
+constraint panestria.quota_observation c CHECK (((jsonb_typeof((body -> 'observed_at'::text)) = 'string'::text) AND (((body ->> 'observed_at'::text))::timestamp with time zone = observed_at)))
+constraint panestria.quota_observation c CHECK (((jsonb_typeof(body) = 'object'::text) AND ((octet_length((body)::text) >= 1) AND (octet_length((body)::text) <= 4096))))
+constraint panestria.quota_observation c CHECK (((resets_at IS NULL) OR (resets_at > observed_at)))
+constraint panestria.quota_observation c CHECK (((source <> 'UNKNOWN'::text) OR ((body -> 'remaining'::text) = 'null'::jsonb)))
+constraint panestria.quota_observation c CHECK ((body ?& ARRAY['schema_version'::text, 'observation_id'::text, 'scope'::text, 'source'::text, 'remaining'::text, 'unit'::text, 'observed_at'::text, 'resets_at'::text, 'fresh_for_seconds'::text, 'source_sha256'::text]))
+constraint panestria.quota_observation c CHECK ((body_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.quota_observation c CHECK ((jsonb_typeof((body -> 'scope'::text)) = 'object'::text))
+constraint panestria.quota_observation c CHECK ((observed_at <= created_at))
+constraint panestria.quota_observation c CHECK ((scope_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.quota_observation c CHECK ((source = ANY (ARRAY['PROVIDER_REPORTED'::text, 'OWNER_REPORTED'::text, 'ESTIMATED'::text, 'UNKNOWN'::text])))
+constraint panestria.quota_observation f FOREIGN KEY (goal_id, project_id, owner_id) REFERENCES panestria.goal(id, project_id, owner_id)
+constraint panestria.quota_observation f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
+constraint panestria.quota_observation p PRIMARY KEY (id)
 constraint panestria.research_claim c CHECK (((payload_size_bytes >= 1) AND (payload_size_bytes <= 262144)))
 constraint panestria.research_claim c CHECK (((report_size_bytes >= 1) AND (report_size_bytes <= 32768)))
 constraint panestria.research_claim c CHECK (((verdict <> 'EVIDENCE_PRESENT'::text) OR (verified_passage_count > 0)))
@@ -962,6 +1008,7 @@ index CREATE INDEX ix_memory_fts ON panestria.memory_revision USING gin (search_
 index CREATE INDEX ix_memory_scope ON panestria.memory_item USING btree (owner_id, project_id, status)
 index CREATE INDEX ix_outbox_due ON panestria.effect_outbox USING btree (due_at) WHERE (state = 'PENDING'::text)
 index CREATE INDEX ix_task_goal ON panestria.task USING btree (goal_id)
+index CREATE INDEX quota_scope_latest ON panestria.quota_observation USING btree (owner_id, project_id, scope_sha256, source, observed_at DESC, created_at DESC, id DESC)
 index CREATE UNIQUE INDEX acceptance_check_contract_id_check_key_key ON panestria.acceptance_check USING btree (contract_id, check_key)
 index CREATE UNIQUE INDEX acceptance_check_id_contract_id_key ON panestria.acceptance_check USING btree (id, contract_id)
 index CREATE UNIQUE INDEX acceptance_check_pkey ON panestria.acceptance_check USING btree (id)
@@ -1037,6 +1084,7 @@ index CREATE UNIQUE INDEX profile_revision_profile_id_owner_id_project_id_versio
 index CREATE UNIQUE INDEX project_id_owner_id_key ON panestria.project USING btree (id, owner_id)
 index CREATE UNIQUE INDEX project_pkey ON panestria.project USING btree (id)
 index CREATE UNIQUE INDEX project_policy_revision_pkey ON panestria.project_policy_revision USING btree (project_id, version)
+index CREATE UNIQUE INDEX quota_observation_pkey ON panestria.quota_observation USING btree (id)
 index CREATE UNIQUE INDEX research_claim_id_request_id_task_id_key ON panestria.research_claim USING btree (id, request_id, task_id)
 index CREATE UNIQUE INDEX research_claim_passage_pkey ON panestria.research_claim_passage USING btree (claim_id, ordinal)
 index CREATE UNIQUE INDEX research_claim_pkey ON panestria.research_claim USING btree (id)

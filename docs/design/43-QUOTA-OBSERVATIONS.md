@@ -17,7 +17,9 @@ self-authenticating evidence or permission. No collector is enabled here; the
 HTTP boundary permits only owner reports/unknown, not provider impersonation.
 
 Every observation has an immutable ID, UTC observed time, optional reset time,
-bounded freshness duration and ingestion time. Reject timestamps in the future
+bounded freshness duration (at most24 hours) and ingestion time. Storage is capped
+at10,000 immutable observations per project; reaching it denies new input until a
+reviewed retention/archive design exists, while exact replays remain available. Reject timestamps in the future
 using the PostgreSQL clock; naive times are invalid. Reset must follow observed
 time, but an already expired historical report is allowed. Replays compare the
 canonical body and task; they never refresh timestamps. Freshness is recomputed

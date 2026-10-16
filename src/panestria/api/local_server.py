@@ -40,7 +40,7 @@ from panestria.kernel.uow import UnitOfWork
 from panestria.resources.admission import admit
 from panestria.resources.hardware import HardwareProbe, ProbeUnavailable
 
-SCHEMA_HEAD = "0028_sandbox_launch_intent"
+SCHEMA_HEAD = "0029_quota_observations"
 
 
 def require_setup(settings: ValidatedSettings, actor: Actor) -> str:
