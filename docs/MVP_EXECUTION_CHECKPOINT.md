@@ -220,3 +220,18 @@ source-bound; earlier reporting failure retained with unknown completed-case
 count. No model downloads/cloud inference/credentials/training. See evidence/
 local-entailment-2026-10-16 and design35. Better verified semantic path, all original
 research/policy/gates and R3/extensions remain required; do not promote this model.
+
+
+### 2026-10-16 05:25 UTC — public native entailment preflight
+
+PR85 merged41458fe after exact head59e8c00 CI38854342553 PASS1301/47liveexcluded;
+actual local Qwen support precision50% remains unqualified. Native probe source
+98927690d37bd0b73a07278957db6e142fb14389:118 guards PASS, two actual PUBLIC Claude
+Haiku4.5 folds PASS104.09s;31/36 calibration,33/36 heldout,12/13supported precision,
+one falseSUPPORTED. Evidence/native-entailment-2026-10-16 preserves actual hashes/
+metrics and failed05e3284 init profiles14skills/43slash commands. Corrected launch
+explicitly disables setting sources/slash/skills/MCP/hooks/memory/instructions,
+checks immutable files and hostile markers. Four CLI processes attempted total,
+72recordedpredictions, rejected-process inference count UNKNOWN; no SDK/private
+payload/fallback/training. Successful observed overageFalse, actual cash/quota
+UNKNOWN. Small preflight is not semantic/G2 certification; supportNOT_ASSESSED.
