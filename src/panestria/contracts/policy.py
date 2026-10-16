@@ -14,6 +14,7 @@ Action = Literal["read", "edit", "tool-install", "external-send", "spend", "merg
 DataLabel = Literal["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED", "PRIVATE", "UNKNOWN"]
 TrustProfile = Literal["SYNTHETIC_DEV", "PERSONAL_SANDBOX", "TRUSTED_PROJECT", "HARDENED_WORKSPACE"]
 Autonomy = Literal["observe", "suggest", "approve-first", "act-and-report", "act-silently"]
+PrivacyDestination = Literal["claude-subscription", "openai-api", "anthropic-api", "public-web"]
 
 
 class ClosedPolicy(BaseModel):
@@ -36,14 +37,15 @@ class TrustAxis(ClosedPolicy):
 
 class PrivacyAxis(ClosedPolicy):
     version: int = Field(ge=1)
-    cloud_destinations: list[str] = Field(default_factory=list, max_length=16)
+    # Historical transport name, retained for stored policy/approval hashes.
+    # public-web is a separate explicit external destination, never inferred
+    # from a permitted inference provider or enabled by default.
+    cloud_destinations: list[PrivacyDestination] = Field(default_factory=list, max_length=16)
     allow_private_cloud: bool = False
 
     @field_validator("cloud_destinations")
     @classmethod
-    def canonical_destinations(cls, value: list[str]) -> list[str]:
-        if any(item not in {"claude-subscription", "openai-api", "anthropic-api"} for item in value):
-            raise ValueError("unknown_destination")
+    def canonical_destinations(cls, value: list[PrivacyDestination]) -> list[PrivacyDestination]:
         return sorted(set(value))
 
 
