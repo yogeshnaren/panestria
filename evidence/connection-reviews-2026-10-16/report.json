@@ -1,0 +1,91 @@
+{
+  "artifacts": {
+    "cumulative-13e4ff2-legacy-guard-failure.xml": "550e259b7a166cb0a7b8aab7aa0a43a52f6a2f3e2b78330f64793cf266a4b43d",
+    "development-66-expanded.xml": "ace5fdc797d52e1d6f6a0fe64f78c2d795aee839c34bc1d2fbdc34fd087fbb65",
+    "development-orphan-decision-after-fix.xml": "66554faf863130604111dde751f7f1bc94cf50491e629ab8bc200e25b6dcc2b4",
+    "development-orphan-decision-before-fix.xml": "613eae1dd5a34760a9ff51970e53ab0168b7c53b6eef296d227f8e6276e5f022",
+    "development-project-id-race.xml": "66a3fd3f67dc6777ee7554957ccdabeb9917f9e141964f4d4e6b2aebfe7ffaae",
+    "qualified-75-d285e7d.xml": "ce8ea61440aea1209db5585eb29b8c15d86b26428974c126d85aefacd2b69916",
+    "qualified-81-current.xml": "f18fb62124cfa081ee1464b077602e6cfbf6ff862a884f8320ea792e005282b3"
+  },
+  "checks": {
+    "elapsed_seconds": 27.207,
+    "focused_tests": 81,
+    "import_contracts_kept": 11,
+    "mypy_source_files": 189,
+    "ruff": "PASS",
+    "secret_scan": "PASS"
+  },
+  "conformance_authority": false,
+  "coverage": [
+    "closed tuple scopes/config/account/enrolled-root references/exact canonical HTTPS origins/actions/classes/budget/deadlines; no credentials or arbitrary executable paths",
+    "owner/project/task/policy/version/digest binding; independent actions do not imply send or unrelated model grants",
+    "real approval/replay/replacement/revoke, shorter actual review/grant expiry and historical receipt retention",
+    "actual same-project and cross-project concurrent barriers, one winner, bounded conflict and caller rollback with no orphan grant",
+    "immutable proposals/decisions/revisions, deferred exact decision/revision/pointer checks and monotonic pointer",
+    "actual caller rollback/autocommit guard, policy change/stale status and no entity writes after global event lock",
+    "actual pg_dump/restore with post-restore revoke/global counter, audit downgrade refusal and empty downgrade/reupgrade",
+    "synthetic restored-metadata corruption rejected; trusted test-only changes including disabled trigger rolled back"
+  ],
+  "limitations": [
+    "declarations always DECLARATION_ONLY; conformance UNVERIFIED even with a supplied reference",
+    "no public API/setup UI or automatic connection/client/chat import; no connector enabled",
+    "actual certified GrantBroker, protected root/account/capability registry, current lease/budget reservations, approval bindings and revocation before queued/future effects remain next",
+    "already-started effect reconciliation, narrow secret injection and effective OS/egress probes remain required",
+    "origin syntax is not DNS/SSRF/TLS safety; root references are not resolved filesystem paths",
+    "read permission never grants training-purpose rights; source consent/privacy and goal constraints remain independent",
+    "new JUnit nodes do not automatically carry candidate properties; this report binds clean source/files explicitly, no properties retrofitted",
+    "development/older failed observations retained with original source/state; not relabeled as a pass",
+    "no G1/G2/G3 or complete AOS008S4/S5/TC05\u2013TC08 acceptance from this component"
+  ],
+  "prior_observations": [
+    {
+      "fix": "deferred FK includes review_id in both directions, null approved version also rejected",
+      "result": "one failed/one passed: second approved decision could refer to another review revision",
+      "source": "bcd48fa",
+      "state": "development, new uncommitted adversarial test"
+    },
+    {
+      "failure": "existing shared-DB local setup restore test expected an older downgrade guard; new populated connection audit correctly stopped earlier",
+      "fix": "test selects exact newest populated guard from actual restored rows and still verifies unchanged head/setup replay",
+      "result": "186 passed,1 failed,1 live deselected in302.51s",
+      "source": "13e4ff29094783dec3d1535f6c233450f849d42c",
+      "state": "clean cumulative qualification"
+    },
+    {
+      "result": "75 passed in28.04s",
+      "scope": "contracts,grant PG,local setup after independent remote-action scope and audit-expectation corrections",
+      "source": "d285e7ddd9a815258e719f11733906086636bb76",
+      "state": "clean intermediate qualification"
+    }
+  ],
+  "release_authority": false,
+  "result": "PASS_COMPONENT",
+  "runtime_authority": false,
+  "runtime_provider_or_public_fetch_calls": 0,
+  "schema": {
+    "actual_refresh": "unique owned pinned PostgreSQL, random port32771, exact container/volume cleanup; no owner DB",
+    "head": "0027_connection_reviews",
+    "snapshot_files": [
+      "migrations/schema_fingerprint.txt",
+      "docs/contracts/schema-snapshot.txt"
+    ],
+    "snapshot_lines": 1048
+  },
+  "schema_version": 1,
+  "scope": "immutable scoped connection declarations and authenticated-controller owner review only",
+  "source_commit": "b41ee6682e3a6ff33fbe282d5f4bc952272c07d1",
+  "source_sha256": {
+    "docs/contracts/schema-snapshot.txt": "1cffbe4a7264ecda4d8e09d2292e4c47a124887bff8883c2e65e563ad07d6a5c",
+    "migrations/schema_fingerprint.txt": "1cffbe4a7264ecda4d8e09d2292e4c47a124887bff8883c2e65e563ad07d6a5c",
+    "migrations/versions/0027_connection_reviews.py": "85a97c6400353fedb99d5c2e214086404f2741bdb203e0706bba3d38e0091819",
+    "src/panestria/api/local_server.py": "c86d5f955bd1d3660fde73ddeea2e531990631c46bc475258ef6c23f33668c82",
+    "src/panestria/contracts/connections.py": "20da565c9d4298eed325c22cc85716d921d878a02100059d77e8dd486503373d",
+    "src/panestria/kernel/connections.py": "8118e10b6ad7c16a96f35ed6c290610ded8f8b48b54eb58666d07608871447c0",
+    "tests/connection_support.py": "38d1836f60919c393c4d2b991a64b7705c72e0ff42d68eaf0d3b0cafa6572bfd",
+    "tests/integration/test_connection_reviews.py": "e626d9e75c55b92f6fcb2129d3ed554f6f1de745e46000b0b4b62222ad909651",
+    "tests/integration/test_local_setup.py": "c15aae3c618eacb54e10a82abfdd3e63b400877b233a490b88e7de31a9402c44",
+    "tests/unit/test_connection_contracts.py": "7a473e4541d90bbbaae2fd2a093df7c388a2af08ac9ff37ac689ef0b28222356"
+  },
+  "source_state_at_execution": "clean"
+}

@@ -1,6 +1,6 @@
 # AOS-008 — Sandbox profiles, mount validation and enforceable outbound controls: implementation plan
 
-**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-004, AOS-007. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS (component evidence below). **Tests:** partial components observed; item/release acceptance NOT_RUN. **Depends on:** AOS-004, AOS-007. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-008.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -98,3 +98,29 @@ Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the
 | AOS-008-TC08 | e2e | Connection setup shows exact grants, conformance and revoke state; adding a client or folder cannot import its chats or enable uncertified tools. |
 
 These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.
+
+## Connection declaration and owner-review component (2026-10-16)
+
+[The versioned grant review ledger](../design/38-CONNECTION-GRANT-REVIEWS.md) is
+implemented as an additive same-PostgreSQL resource ledger using the existing
+Actor/project/task/policy and caller transaction boundaries. Closed manifests
+name exact connector/config/account/root/origin/action/class/budget/expiry scope.
+Owner review binds the exact digest and expected version; approval atomically
+creates an immutable decision/revision and monotonic pointer. Historical retries
+never renew eligibility. Policy changes are displayed as stale; revocation and
+expiry preserve history. All views remain DECLARATION_ONLY and conformance stays
+UNVERIFIED, including when the declaration includes a conformance reference.
+
+At b41ee66, 81 focused contract/real PostgreSQL/policy/setup checks pass. Actual
+backup/restore, post-restore revoke/counter continuation, empty downgrade/reapply,
+audit downgrade refusal, rollback, immutable constraints and concurrent owner/
+cross-project races are included. Source-bound evidence and earlier failed
+observations are retained in evidence/connection-reviews-2026-10-16. The broader
+13e4ff2 run passed 186 checks and exposed one old restore-test guard expectation;
+the corrected final checks preserve the unchanged-head/setup assertions.
+
+This is the durable declaration/review part of AOS-008-S4, not full TC05–TC08.
+The actual GrantBroker/capability/root/account registry, current lease/budget and
+approval bindings, future-effect revocation/reconciliation, narrow secret/OS
+boundary and onboarding UI remain required. No connector, credential, runtime
+permission, network/provider call or release is enabled by these declarations.

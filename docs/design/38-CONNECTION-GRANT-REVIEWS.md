@@ -14,9 +14,9 @@ still need actual protected enrollment and descriptor-based broker validation.
 
 The authenticated controller supplies Actor and an existing scoped task. Proposal
 and owner decision bind an exact digest, current project-policy reference,
-expected grant version and a15-minute default review deadline (a controller may
-choose a shorter1–900second interval). Replacement grants expire
-within30days. Revoke uses the actual current immutable manifest, not a client
+expected grant version and a 15-minute default review deadline (a controller may
+choose a shorter interval of 1–900 seconds). Replacement grants expire
+within 30 days. Revoke uses the actual current immutable manifest, not a client
 substitute. Approval atomically appends a revision and decision; denial preserves
 the proposal without changing the current revision. Exact retries are replayed;
 changed retry/decision, stale versions, wrong owner/project, expired review or
@@ -45,3 +45,9 @@ probes and setup UI remain required for AOS-008-S4/S5 and TC05–TC08. Missing
 conformance or broker enforcement must remain unavailable. This task adds no
 live certificate, API onboarding route, runtime grant or release pass. Actual
 tests use disposable PostgreSQL and synthetic declarations only.
+
+
+Remote write/delete declarations can be scoped to exact origins without inventing
+local roots; those actions still do not imply send permission. Read does not grant
+training-purpose rights. The final broker must intersect action, transport,
+source-purpose/privacy, goal and policy constraints independently.
