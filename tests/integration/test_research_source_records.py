@@ -431,3 +431,46 @@ def test_source_closed_contract_is_revalidated_before_any_record_write(source_re
         bad = evidence.model_copy(update={"schema_version": True})
     with pytest.raises(KernelDenied, match="invalid_source_record"), psycopg.connect(dsn) as c:
         commit(c, actor, bad)
+
+
+@pytest.mark.parametrize("mutation", ["hash", "body", "association"])
+def test_readback_checks_detect_synthetic_restored_metadata_corruption(source_record, mutation):
+    # Deliberate corruption in this disposable DB transaction only. Roll back the
+    # test-only disabled immutable trigger along with the altered row.
+    dsn, actor, evidence, *_ = source_record
+    with psycopg.connect(dsn) as c:
+        receipt = commit(c, actor, evidence)
+    with psycopg.connect(dsn) as c:
+        with pytest.raises(RuntimeError, match="rollback synthetic corruption"), c.transaction():
+            if mutation == "association":
+                c.execute(
+                    "ALTER TABLE panestria.research_source_artifact DISABLE TRIGGER immutable_research_source_artifact"
+                )
+                c.execute(
+                    "UPDATE panestria.research_source_artifact SET reference=%s::jsonb WHERE role='text'",
+                    (evidence.fetch_receipt.model_dump_json(),),
+                )
+            else:
+                c.execute(
+                    "ALTER TABLE panestria.research_source_snapshot DISABLE TRIGGER immutable_research_source_snapshot"
+                )
+                if mutation == "hash":
+                    c.execute("UPDATE panestria.research_source_snapshot SET body_sha256=repeat('cd',32)")
+                else:
+                    c.execute(
+                        "UPDATE panestria.research_source_snapshot "
+                        "SET body=jsonb_set(body,'{snapshot,requested_url}',to_jsonb('https://changed.example.org/'::text))"
+                    )
+            with pytest.raises(KernelDenied, match="corrupt_source_metadata"):
+                SourceRecordService().read(
+                    UnitOfWork(c),
+                    actor,
+                    receipt.snapshot_id,
+                    request_id=evidence.snapshot.request_id,
+                    task_id=evidence.snapshot.scope.task_id,
+                )
+            raise RuntimeError("rollback synthetic corruption")
+        assert commit(c, actor, evidence).replayed
+        for table in ("research_source_snapshot", "research_source_artifact"):
+            with pytest.raises(psycopg.Error), c.transaction():
+                c.execute(f"DELETE FROM panestria.{table}")
