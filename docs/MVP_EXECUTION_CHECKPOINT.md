@@ -123,3 +123,13 @@ Continue independent work while live prerequisites wait. Checkpoint before
 usage exhaustion; resume automatically without asking again. Never manufacture
 evidence, a release pass or the actual owner trial. Sources under the mirrored
 ChatGPT project's sources directory remain read-only.
+
+## PDF runtime prerequisite in progress
+
+`task/research-pdf-bundle` is stacked on explicit PR #78 including its CI image
+setup correction. At 3bc45f, 13 checks pass: 12 real dependency/filesystem guards
+and one actual read-only Docker import/configuration. Pypdf 6.20.1 is frozen and
+its minimal BSD source/license bundle is pin-verified before staging. Evidence:
+evidence/pdf-runtime-bundle-2026-10-15. No PDF input was parsed, no source/citation
+status is enabled, and PDF remains UNSUPPORTED until isolated parser integration
+and its resource/malformed/active/encrypted/scanned/table cases are qualified.

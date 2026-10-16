@@ -102,3 +102,10 @@ claim. Raw cap is 2 MiB; text cap512 KiB yields explicit TRUNCATED on overflow.
 PDF remains UNSUPPORTED and required next work. This is memory-only extraction;
 source/claim persistence, retained provenance, SourceStore and citation authority
 remain pending. Evidence: evidence/isolated-research-reader-2026-10-15.
+
+The [PDF runtime prerequisite](../design/29-PDF-DEPENDENCY-RUNTIME-BUNDLE.md)
+freezes pypdf 6.20.1/BSD-3-Clause and copies only a verified 61-file source/license
+manifest to a private readonly bundle. Thirteen filesystem/import checks pass at
+3bc45f, including actual Docker import/configuration. It parses no PDF input and
+does not change UNSUPPORTED outcomes; actual isolated PDF integration remains
+next work. Evidence: evidence/pdf-runtime-bundle-2026-10-15.
