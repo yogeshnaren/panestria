@@ -200,3 +200,12 @@ can invalidate stale source availability without overwriting history. All semant
 support remains NOT_ASSESSED, including draft OPINION and unrelated genuine text.
 Actual support/contradictions/calibration, public-web policy/disclosures/search,
 Delegate, remaining R1/R3/extensions/gates and owner trial remain unfinished.
+
+PR #83 merged 7521e26 (resolve full SHA) after exact39875f3 CI38852418587
+passed1277/45. Deterministic claim evidence is on main; semantic support remains
+NOT_ASSESSED. An independent entailment corpus task includes verified main83.
+At source3a9067f, 14 fixture/provenance/projection/synthetic-scoring checks PASS.
+The72 public human-labeled SNLI cases retain exact source revision/SHA/license and
+attribution. No model calibration has run and no release pass is inferred.
+Evidence/entailment-corpus-2026-10-16. Actual local/approved-model calibration and
+semantic integration remain next, with all original R2/R3 obligations retained.

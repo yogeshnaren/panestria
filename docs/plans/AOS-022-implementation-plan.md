@@ -74,3 +74,19 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Human-label preflight preparation (2026-10-16)
+
+The [versioned entailment preflight](../design/34-HUMAN-LABEL-ENTAILMENT-PREFLIGHT.md)
+contains 36 calibration and36 separate qualification cases from the public
+human-labeled SNLI1.0 corpus, with original source snapshots, revision checksums,
+unchanged text, disjoint normalized premises and CC BY-SA4.0 attribution. Input
+projection omits gold/row metadata. Pure scoring retains UNKNOWN and refuses
+missing/foreign predictions; zero-denominator precision remains unknown.
+
+At 3a9067f, 14 provenance/projection/synthetic-metric checks PASS, source-bound in
+evidence/entailment-corpus-2026-10-16. This is **not actual model calibration** or
+AOS022 acceptance. Caption-domain/annotation/contamination/small-sample limits are
+explicit. Actual privacy-conforming model observations, research-specific partial/
+opinion/conflict/injection checks, independent-family conditions and calibrated
+uncertainty remain required. Fixture preparation provides no training grant.
