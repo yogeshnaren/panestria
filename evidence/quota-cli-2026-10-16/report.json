@@ -1,0 +1,105 @@
+{
+  "artifacts": {
+    "development-after-fixture-fix-71.xml": "1942f13c4965cbb83c76e2a207023903c23d24d9b78a718efe99bae6d50e3c7d",
+    "development-input-mode-failure.xml": "c4a1ac27d18b6df78ed461377bd6b2aecee12cfe948d7eae340089187cc386ad",
+    "qualified-89.xml": "7e9d2d9c119ff851f82fccd26b0f683f6903b2c7957eaee2a032ba2cea62586d"
+  },
+  "checks": {
+    "actual_loopback_http_pg_cases": 1,
+    "focused_default_passed": 89,
+    "import_contracts_kept": 11,
+    "mypy_source_files": 200,
+    "new_default_cases": 28,
+    "ruff": "PASS",
+    "secret_scan": "PASS"
+  },
+  "coverage": [
+    "shared owner request models validate before HTTP; literal numeric loopback only, no inherited proxy/DNS/redirect/provider fallback",
+    "held descriptor canonical owner/regular/single-link/mode/size/stability checks reject symlinks, parent aliases, hardlinks, FIFO, directory, broad permissions, oversized or changed token and header controls",
+    "bounded response parsing omits arbitrary extra/errors and rejects malformed/mismatched/duplicate/mixed-scope/unknown-promoted responses",
+    "actual uniquely bound owned uvicorn listener receives CLI requests and uses real authenticated API/Postgres; report/show/current/replay and changed-content denial leave one immutable row/event",
+    "existing quota contracts, authenticated API, actual ledger and AOS012 nullable usage checks after moving shared request types unchanged"
+  ],
+  "limitations": [
+    "unit adversarial HTTP responses use MockTransport and remain separate from actual loopback/API/Postgres case",
+    "no provider telemetry, background queue, entitlement/no-extra-spend proof, offline capture or runtime permission added",
+    "CLI outputs OBSERVATION_ONLY; unknown remains null, current source lanes are not aggregated into usable quota",
+    "data JSON max4096bytes owner regular single-link no group/world write; token max256bytes owner private regular single-link; HTTP response max32768bytes,5second timeout",
+    "actual owner workstation services/checkouts/DBs/cache/credentials unchanged; zero provider/native/model/paid SDK/auth calls",
+    "no full AOS012S4/TC05 or R1/G1/G2/G3 acceptance; subsequent UI/collector/queue/capture work remains required"
+  ],
+  "observed_tests": {
+    "development-after-fixture-fix-71.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "71",
+        "time": "6.107",
+        "timestamp": "2026-10-16T08:05:36.069675-07:00"
+      }
+    ],
+    "development-input-mode-failure.xml": [
+      {
+        "errors": "0",
+        "failures": "2",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "71",
+        "time": "6.238",
+        "timestamp": "2026-10-16T08:04:43.361825-07:00"
+      }
+    ],
+    "qualified-89.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "89",
+        "time": "9.380",
+        "timestamp": "2026-10-16T08:06:08.061342-07:00"
+      }
+    ]
+  },
+  "paid_sdk_calls": 0,
+  "prior_observations": [
+    {
+      "cause": "input JSON fixture inherited group-write permission and was correctly refused before HTTP",
+      "fix": "explicit0600 fixture input modes; no production guard weakened",
+      "result": "69 passed2 failed6.27s",
+      "state": "dirty development tests on clean implementation031a4fd, not qualification"
+    },
+    {
+      "result": "71 passed6.17s",
+      "state": "dirty corrected fixtures, not qualification"
+    }
+  ],
+  "provider_authentication_calls": 0,
+  "release_authority": false,
+  "result": "PASS_COMPONENT",
+  "runtime_inference_calls": 0,
+  "schema_version": 1,
+  "scope": "owner quota CLI report/show/current, held input/token files and bounded numeric-loopback HTTP; prerequisite PR93",
+  "source_commit": "6d372d5d1d910e79591ef61e9f1289320c80dc57",
+  "source_sha256": {
+    ".importlinter": "bc75998b077f693591daffc90a4672f50965ab3750e1c8e4d9346895cdea7bb8",
+    "pyproject.toml": "51bb953a36e78a1139b5334ad8e76e847d87ef323f02ff05c20183d18cf8f95f",
+    "src/panestria/api/routes/quota.py": "0ee13155b920cd064e568073dfe4a266266fa3808eca7be01dd41bb4ed0b7d04",
+    "src/panestria/cli/main.py": "b2bb70091469b9d15a4846520170e8b2f61cee4f8d9a7b9ae74b9f7c0acd1b39",
+    "src/panestria/cli/quota.py": "93cc0311826f32eac846a1463092b758667282810db7b37ca2b5d147fe53ffb8",
+    "src/panestria/contracts/quota.py": "db335403c9892ca46c0fe5c48ba3d3931494222fcfc5de68b37c652fadeb1705",
+    "tests/integration/test_aos_012.py": "6a82d74feec61df7c877f94946ca5ef457e5de6c1bfaef62cb2ab9db29cccda9",
+    "tests/integration/test_quota_api.py": "01b4223c7908a83f6ea50685240ebb40ddc9e0ce29c5817e9c5477fefe6d6f19",
+    "tests/integration/test_quota_cli_loopback.py": "75aba2794ec5136aa4268d4bb23225e3945374ac0ad8309657e5bf188ce3d2d3",
+    "tests/integration/test_quota_ledger.py": "0caca3189b4407f2781bcd60dd6c91a9d2015f29d0db8704c4f732e746d00396",
+    "tests/unit/test_quota_cli.py": "187f7bb732d81872ba29c8e0be093f541d08846578bcb0dd527b6565237aa660",
+    "tests/unit/test_quota_contracts.py": "90475126dedb5b52a71d1fcc973f073b1e8ff1c1e2cb9239b24508d8dc5a60c6",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d"
+  },
+  "source_state_at_execution": "clean"
+}

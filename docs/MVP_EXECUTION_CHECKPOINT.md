@@ -360,3 +360,16 @@ All responses remain OBSERVATION_ONLY; provider/estimate lanes are synthetic
 fixtures, not actual telemetry. AOS012S5–S7 queue/reserves/billing eligibility/
 offline capture, full grant/native/semantic/R1–R3 gates and trial remain pending.
 No provider/native/model/SDK or owner state changed. No release case promoted.
+
+### 2026-10-16 — dependent owner quota CLI
+
+The task/quota-owner-cli branch names PR93/task/quota-observations as its explicit
+prerequisite after fetching current main. Shared request models move from API
+into contracts unchanged; report/show/current use held private token/input files,
+bounded numeric loopback HTTP and validated/redacted output. Clean source in
+`evidence/quota-cli-2026-10-16/report.json` passes89 focused checks in9.40s (28 new),
+including one actual owned uvicorn HTTP→API→Postgres roundtrip and exact listener
+shutdown. Static checks pass. Original69PASS/2FAIL input-mode fixtures and corrected
+71PASS stay separate; no guard weakened. No provider/native/model/SDK/owner-state
+change or release promotion. UI/actual supported telemetry/queue/capture/full
+native/grants/R1–R3 gates and trial remain required.
