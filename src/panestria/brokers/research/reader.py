@@ -37,6 +37,8 @@ class ReaderObservation:
     pdf_bundle_sha256: str | None = None
     page_spans: tuple[tuple[int, int], ...] = ()
     limitations: tuple[str, ...] = ()
+    raw_sha256: str | None = None
+    raw_size_bytes: int | None = None
 
 
 def _closed_pairs(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -243,6 +245,8 @@ class IsolatedTextReader:
                     pdf_bundle_sha256=PYPDF_BUNDLE_SHA256 if is_pdf else None,
                     page_spans=spans,
                     limitations=pdf_worker.LIMITATIONS if is_pdf else (),
+                    raw_sha256=expected_sha256,
+                    raw_size_bytes=len(raw),
                 )
         except Exception:
             return ReaderObservation("UNKNOWN", "reader_unavailable")
