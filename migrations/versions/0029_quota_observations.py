@@ -26,16 +26,21 @@ def upgrade() -> None:
             'observed_at','resets_at','fresh_for_seconds','source_sha256']),
         CHECK(body - ARRAY['schema_version','observation_id','scope','source','remaining','unit',
             'observed_at','resets_at','fresh_for_seconds','source_sha256']='{}'::jsonb),
-        CHECK(body->'schema_version'='1'::jsonb),
+        CHECK(body->>'schema_version'='1' AND jsonb_typeof(body->'schema_version')='number'),
         CHECK(body->>'observation_id'=id::text AND jsonb_typeof(body->'observation_id')='string'),
         CHECK(body->>'source'=source AND jsonb_typeof(body->'source')='string'),
         CHECK(jsonb_typeof(body->'scope')='object'),
         CHECK(body->'remaining'='null'::jsonb OR
             (jsonb_typeof(body->'remaining')='string' AND body->>'remaining' ~ '^(0|[1-9][0-9]{0,11})([.][0-9]{1,3})?$'
-             AND body->>'unit' IN ('percent','tokens','requests'))),
+             AND (body->>'unit' IN ('percent','tokens','requests')) IS TRUE)),
         CHECK(source<>'UNKNOWN' OR body->'remaining'='null'::jsonb),
+        CHECK(CASE WHEN jsonb_typeof(body->'remaining')='string'
+            AND body->>'remaining' ~ '^(0|[1-9][0-9]{0,11})([.][0-9]{1,3})?$'
+            THEN CASE WHEN body->>'unit'='percent' THEN (body->>'remaining')::numeric<=100
+                WHEN body->>'unit' IN ('tokens','requests') THEN mod((body->>'remaining')::numeric,1)=0
+                ELSE false END ELSE body->'remaining'='null'::jsonb END),
         CHECK(body->'unit'='null'::jsonb OR (jsonb_typeof(body->'unit')='string'
-            AND body->>'unit' IN ('percent','tokens','requests'))),
+            AND (body->>'unit' IN ('percent','tokens','requests')) IS TRUE)),
         CHECK((source IN ('PROVIDER_REPORTED','ESTIMATED') AND jsonb_typeof(body->'source_sha256')='string'
                 AND body->>'source_sha256' ~ '^[0-9a-f]{64}$')
             OR (source IN ('OWNER_REPORTED','UNKNOWN') AND body->'source_sha256'='null'::jsonb)),

@@ -44,9 +44,13 @@ def _response(content: dict[str, object], status: int = 200) -> JSONResponse:
 def _body(view: QuotaView) -> dict[str, object]:
     return {
         "observation": view.observation.model_dump(mode="json"),
-        "recorded_at": view.recorded_at.isoformat(), "evaluated_at": view.evaluated_at.isoformat(),
-        "freshness": view.freshness, "confidence": view.confidence, "effective_remaining": view.effective_remaining,
-        "replayed": view.replayed, "authority": view.authority,
+        "recorded_at": view.recorded_at.isoformat(),
+        "evaluated_at": view.evaluated_at.isoformat(),
+        "freshness": view.freshness,
+        "confidence": view.confidence,
+        "effective_remaining": view.effective_remaining,
+        "replayed": view.replayed,
+        "authority": view.authority,
     }
 
 
@@ -54,7 +58,12 @@ def _denied(exc: Exception) -> JSONResponse:
     if isinstance(exc, LoopbackDenied):
         return _response(error_body(exc.code), exc.status_code)
     if isinstance(exc, KernelDenied):
-        return _response(error_body(exc.code), {"not_found": 404, "quota_observation_conflict": 409}.get(exc.code, 422))
+        return _response(
+            error_body(exc.code),
+            {"not_found": 404, "quota_observation_conflict": 409, "unauthorized": 401, "csrf_denied": 403}.get(
+                exc.code, 422
+            ),
+        )
     if isinstance(exc, DatabaseUnavailable):
         return _response(error_body("database_unavailable"), 503)
     return _response(error_body("invalid_quota_request"), 422)
@@ -92,9 +101,7 @@ async def read_observation(observation_id: str, request: Request) -> JSONRespons
     try:
         api = _api(request)
         actor = authorize(request, api)
-        view = await asyncio.to_thread(
-            _transaction, request, api, lambda u: _SERVICE.read(u, actor, observation_id)
-        )
+        view = await asyncio.to_thread(_transaction, request, api, lambda u: _SERVICE.read(u, actor, observation_id))
         return _response(_body(view))
     except (LoopbackDenied, KernelDenied, ValidationError, DatabaseUnavailable) as exc:
         return _denied(exc)
@@ -110,9 +117,7 @@ async def current_quota(request: Request) -> JSONResponse:
             raw.headers.update(_HEADERS)
             return raw
         query = QueryQuota.model_validate_json(raw)
-        views = await asyncio.to_thread(
-            _transaction, request, api, lambda u: _SERVICE.latest(u, actor, query.scope)
-        )
+        views = await asyncio.to_thread(_transaction, request, api, lambda u: _SERVICE.latest(u, actor, query.scope))
         return _response({"lanes": [_body(view) for view in views], "authority": "OBSERVATION_ONLY"})
     except (LoopbackDenied, KernelDenied, ValidationError, DatabaseUnavailable) as exc:
         return _denied(exc)

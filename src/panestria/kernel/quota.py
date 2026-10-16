@@ -68,7 +68,8 @@ def _view(observation: QuotaObservation, recorded: datetime, now: datetime, *, r
         "RESET_PASSED"
         if observation.resets_at is not None and observation.resets_at <= now
         else "STALE"
-        if observation.observed_at + timedelta(seconds=observation.fresh_for_seconds) <= now
+        if now < observation.observed_at
+        or observation.observed_at + timedelta(seconds=observation.fresh_for_seconds) <= now
         else "FRESH"
     )
     confidence: Literal["REPORTED", "ESTIMATED", "UNKNOWN"] = (
@@ -79,8 +80,13 @@ def _view(observation: QuotaObservation, recorded: datetime, now: datetime, *, r
         else "REPORTED"
     )
     return QuotaView(
-        observation, recorded, now, freshness, confidence,
-        observation.remaining if confidence != "UNKNOWN" else None, replayed,
+        observation,
+        recorded,
+        now,
+        freshness,
+        confidence,
+        observation.remaining if confidence != "UNKNOWN" else None,
+        replayed,
     )
 
 
@@ -90,9 +96,7 @@ class QuotaService:
         if uow.connection.autocommit and uow.connection.info.transaction_status != TransactionStatus.INTRANS:
             raise KernelDenied("quota_caller_transaction_required")
 
-    def record(
-        self, uow: UnitOfWork, actor: Actor, task_id: str, observation: QuotaObservation
-    ) -> QuotaView:
+    def record(self, uow: UnitOfWork, actor: Actor, task_id: str, observation: QuotaObservation) -> QuotaView:
         # This is trusted ingestion. A future collector must obtain actual
         # supported provider evidence before selecting PROVIDER_REPORTED.
         # HTTP input below is restricted to the owner/unknown lanes.
@@ -107,8 +111,7 @@ class QuotaService:
         if task is None:
             raise KernelDenied("not_found")
         prior = uow.execute(
-            "SELECT " + _COLUMNS + " FROM panestria.quota_observation "
-            "WHERE id=%s AND owner_id=%s AND project_id=%s",
+            "SELECT " + _COLUMNS + " FROM panestria.quota_observation WHERE id=%s AND owner_id=%s AND project_id=%s",
             (observation.observation_id, actor.owner_id, actor.project_id),
         ).fetchone()
         if prior is not None:
@@ -131,23 +134,35 @@ class QuotaService:
             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s::jsonb,%s) "
             "ON CONFLICT(id) DO NOTHING RETURNING created_at",
             (
-                observation.observation_id, actor.owner_id, actor.project_id, task[0], task_id,
-                observation.scope.sha256(), observation.source, observation.observed_at, observation.resets_at,
-                observation.fresh_for_seconds, observation.model_dump_json(), observation.sha256(),
+                observation.observation_id,
+                actor.owner_id,
+                actor.project_id,
+                task[0],
+                task_id,
+                observation.scope.sha256(),
+                observation.source,
+                observation.observed_at,
+                observation.resets_at,
+                observation.fresh_for_seconds,
+                observation.model_dump_json(),
+                observation.sha256(),
             ),
         ).fetchone()
         if inserted is None:
             raise KernelDenied("quota_observation_conflict")
         append_event(
-            uow, goal_id=task[0], task_id=task_id, kind="quota.observed", actor=actor.owner_id,
+            uow,
+            goal_id=task[0],
+            task_id=task_id,
+            kind="quota.observed",
+            actor=actor.owner_id,
             payload={"observation_id": observation.observation_id, "body_sha256": observation.sha256()},
         )
-        return _view(observation, inserted[0], now)
+        return _view(observation, inserted[0], _clock(uow))
 
     def read(self, uow: UnitOfWork, actor: Actor, observation_id: str) -> QuotaView:
         row = uow.execute(
-            "SELECT " + _COLUMNS + " FROM panestria.quota_observation "
-            "WHERE id=%s AND owner_id=%s AND project_id=%s",
+            "SELECT " + _COLUMNS + " FROM panestria.quota_observation WHERE id=%s AND owner_id=%s AND project_id=%s",
             (_id(observation_id), actor.owner_id, actor.project_id),
         ).fetchone()
         if row is None:
