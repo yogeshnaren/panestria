@@ -344,3 +344,19 @@ separate in evidence/durable-sandbox-launch-2026-10-16. APIhead28/schema1078line
 match actual unique disposable PG32772. DBOS docs rechecked; full workflow/native/
 other lifecycle/grant/R1–R3 gates still pending. No inference/credentials/owner
 checkout/database/service changes or MVP acceptance.
+
+### 2026-10-16 14:58 UTC — owner quota observation input
+
+PR92 merged `d20361e39c887482aa3ecdea8a55c0b1287357fa` at11:36:27 after exact
+`7e18c9c` CI38893797407 passed1562/51 live excluded525.17s. Freshly fetched main
+starts the independent task/quota-observations branch. Clean `cdf3e35` passes172
+focused checks in214.59s, including67 new quota cases; one existing live case is
+excluded. Actual head29/schema1126lines refreshed on unique owned PG32773.
+Evidence/quota-observations-2026-10-16 retains source/artifact pins and original
+HTTP status/test-expectation failures. Owner input/read/current APIs preserve
+source/account/model/window, explicit times/reset, stale/unknown and decimal units;
+actual PG races/rollback, HTTP session revocation and dump/restore are tested.
+All responses remain OBSERVATION_ONLY; provider/estimate lanes are synthetic
+fixtures, not actual telemetry. AOS012S5–S7 queue/reserves/billing eligibility/
+offline capture, full grant/native/semantic/R1–R3 gates and trial remain pending.
+No provider/native/model/SDK or owner state changed. No release case promoted.

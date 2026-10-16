@@ -58,3 +58,13 @@ limits, actual empty migration/reapply and populated restore/refusal. Refresh
 schema snapshots from a unique disposable real PostgreSQL instance. Preserve
 failed observations and bind final evidence to the clean tested source. Do not
 mark all of TC05, S4 or any release gate passed from contract fixtures alone.
+
+## Observed qualification
+
+Clean cdf3e35 passes172 focused checks in214.59s, including67 new cases; one
+existing live test is excluded. Actual head29 schema1126lines was refreshed on
+unique owned cached PostgreSQL port32773. Static checks and11 import contracts
+pass. The source-bound evidence preserves the original HTTP status and test
+expectation failures. See [the report](../../evidence/quota-observations-2026-10-16/REPORT.md)
+and [API review instructions](../testing/QUOTA_OBSERVATIONS.md). Supported live
+quota telemetry, full S4/TC05 and the queue/capture/release obligations remain open.

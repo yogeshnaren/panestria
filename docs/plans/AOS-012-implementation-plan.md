@@ -99,3 +99,20 @@ Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the
 | AOS-012-TC10 | chaos | Restart, cancellation, foreground preemption and provider limit/reset observations preserve queue/outcome state; ambiguous inference is reconciled without blind duplicate paid work or retry storms. |
 
 These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.
+
+## Observed quota component (2026-10-16)
+
+The active implementation now includes `contracts/quota.py`, `kernel/quota.py`
+and owner-scoped `/v2/quota` input/read/current routes, additive migration0029 and
+an actual schema snapshot. See [design43](../design/43-QUOTA-OBSERVATIONS.md),
+[operator review](../testing/QUOTA_OBSERVATIONS.md) and
+[evidence](../../evidence/quota-observations-2026-10-16/REPORT.md). Clean cdf3e35
+passes172 focused checks (67 new), including real PostgreSQL transactions/races,
+HTTP revocation, actual expiry and dump/restore. The preserved earlier status
+headers are not proof of current implementation or release acceptance.
+
+S4/TC05 remains partial: source lanes retain truthful metadata and owner input is
+implemented, but provider/estimate ingestion fixtures do not qualify a supported
+live telemetry source or a Mission Control display. The bounded queue, foreground
+reserve, exhaustion/no-paid-spillover policy, actual offline capture and remaining
+S5–S7/TC06–TC10 remain required. No gate status is promoted by this report.
