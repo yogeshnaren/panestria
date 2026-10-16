@@ -169,3 +169,19 @@ result explicitly requires actual fetch authority. No source API or citation
 pass is enabled. SourceStore actual retained-fetch/reader provenance composition,
 protected passage authority, configured search, semantic support and Delegate
 controller remain next; R1 gaps and R3/extensions/gates also remain unfinished.
+
+PR #81 merged f714c57fdf89e0354196ec17d2a5bca8070334be after exact a01c66a
+CI38849282344 passed1216/44. New source provenance task includes verified main81.
+At a114b93, 100 default component checks plus one actual public TLS→isolated reader→
+PG/CAS→offline exact quote pass. Generic metadata-only source IDs cannot resolve.
+Reader results bind raw SHA/size; immutable capture proof and every retained byte
+are rechecked. Results are EVIDENCE_PRESENT only, retaining HTML/PDF limitations.
+An event-lock review issue was repaired before publication and requalified with
+an actual no-entity-write-after-event-lock guard. Evidence and pre-fix observations
+remain separately bound in evidence/research-source-provenance-2026-10-16.
+
+SourceStore only retains already-admitted broker observations; it performs no
+network request or permission grant. Actual public-web policy/lease/admission,
+outbound query/disclosure accounting, search, claims/support and Delegate remain
+required. Retention count/raw bytes are serialized separately. Full R1/R2/R3,
+extensions, trusted gate evaluator and actual owner trial remain unfinished.

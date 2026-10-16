@@ -126,3 +126,20 @@ restored-metadata corruption with test-only trigger changes rolled back. Earlier
 retained separately in evidence/research-source-records-2026-10-16. Active schema
 snapshots were generated from actual isolated PostgreSQL. No live fetch, usable
 citation or full case/release pass follows from synthetic metadata fixtures.
+
+## Retained source/provenance component (2026-10-16)
+
+[SourceStore](../design/32-RETAINED-SOURCE-PROVENANCE.md) now mints source IDs from
+trusted already-admitted fetch/reader observations, retains exact protected bytes
+and immutable capture proof in migration0025, and resolves scoped offline UTF8
+passages/quotes only after checking all lineage. Generic metadata-only IDs never
+qualify. Reader observations now retain raw input SHA/size to prevent mixing an
+extraction with a different body. Results say EVIDENCE_PRESENT, never SUPPORTED.
+
+At a114b93, 100 default component checks and one separate actual public TLS →
+Docker reader → PG/CAS → offline quote pipeline pass. Evidence is source-bound in
+evidence/research-source-provenance-2026-10-16. Most default fetch observations
+are explicitly synthetic; actual TLS is separately recorded. Review found and
+fixed writes after the global event lock; the final suite includes an actual
+write-order guard. Public-web policy/admission/disclosures, configured search,
+claim/support records, Delegate and full release cases remain pending.

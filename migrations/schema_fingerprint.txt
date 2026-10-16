@@ -335,6 +335,15 @@ column research_source_artifact sha256 bpchar NO
 column research_source_artifact size_bytes int8 NO
 column research_source_artifact snapshot_id uuid NO
 column research_source_artifact task_id uuid NO
+column research_source_capture created_at timestamptz NO
+column research_source_capture metadata_sha256 bpchar NO
+column research_source_capture privacy_class text NO
+column research_source_capture proof_artifact_id uuid NO
+column research_source_capture proof_sha256 bpchar NO
+column research_source_capture proof_size_bytes int8 NO
+column research_source_capture seq int8 NO
+column research_source_capture snapshot_id uuid NO
+column research_source_capture task_id uuid NO
 column research_source_snapshot body jsonb NO
 column research_source_snapshot body_sha256 bpchar NO
 column research_source_snapshot completeness text NO
@@ -689,6 +698,13 @@ constraint panestria.research_source_artifact f FOREIGN KEY (artifact_id, task_i
 constraint panestria.research_source_artifact f FOREIGN KEY (snapshot_id, task_id) REFERENCES panestria.research_source_snapshot(id, task_id)
 constraint panestria.research_source_artifact p PRIMARY KEY (snapshot_id, role, ordinal)
 constraint panestria.research_source_artifact t TRIGGER DEFERRABLE INITIALLY DEFERRED
+constraint panestria.research_source_capture c CHECK (((proof_size_bytes >= 1) AND (proof_size_bytes <= 32768)))
+constraint panestria.research_source_capture c CHECK ((privacy_class = ANY (ARRAY['PUBLIC'::text, 'INTERNAL'::text, 'CONFIDENTIAL'::text, 'RESTRICTED'::text])))
+constraint panestria.research_source_capture c CHECK ((proof_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.research_source_capture f FOREIGN KEY (proof_artifact_id, task_id, proof_sha256, proof_size_bytes, privacy_class) REFERENCES panestria.artifact(id, task_id, sha256, size_bytes, privacy_class)
+constraint panestria.research_source_capture f FOREIGN KEY (snapshot_id, task_id, metadata_sha256) REFERENCES panestria.research_source_snapshot(id, task_id, body_sha256)
+constraint panestria.research_source_capture p PRIMARY KEY (snapshot_id)
+constraint panestria.research_source_capture u UNIQUE (seq)
 constraint panestria.research_source_snapshot c CHECK (((((((body -> 'snapshot'::text) -> 'scope'::text) ->> 'owner_id'::text) = (owner_id)::text) AND ((((body -> 'snapshot'::text) -> 'scope'::text) ->> 'project_id'::text) = (project_id)::text) AND ((((body -> 'snapshot'::text) -> 'scope'::text) ->> 'goal_id'::text) = (goal_id)::text) AND ((((body -> 'snapshot'::text) -> 'scope'::text) ->> 'task_id'::text) = (task_id)::text)) IS TRUE))
 constraint panestria.research_source_snapshot c CHECK ((((((body -> 'snapshot'::text) ->> 'snapshot_id'::text) = (id)::text) AND (((body -> 'snapshot'::text) ->> 'request_id'::text) = (request_id)::text)) IS TRUE))
 constraint panestria.research_source_snapshot c CHECK (((((body -> 'snapshot'::text) ->> 'completeness'::text) = completeness) IS TRUE))
@@ -704,6 +720,7 @@ constraint panestria.research_source_snapshot f FOREIGN KEY (request_id, owner_i
 constraint panestria.research_source_snapshot p PRIMARY KEY (id)
 constraint panestria.research_source_snapshot t TRIGGER DEFERRABLE INITIALLY DEFERRED
 constraint panestria.research_source_snapshot u UNIQUE (id, task_id)
+constraint panestria.research_source_snapshot u UNIQUE (id, task_id, body_sha256)
 constraint panestria.research_source_snapshot u UNIQUE (seq)
 constraint panestria.side_effect c CHECK ((classification = ANY (ARRAY['read-only'::text, 'idempotent-with-key'::text, 'reconcile-by-query'::text, 'compensatable'::text, 'non-retryable'::text])))
 constraint panestria.side_effect c CHECK ((request_hash ~ '^[0-9a-f]{64}$'::text))
@@ -839,12 +856,15 @@ index CREATE UNIQUE INDEX research_request_id_task_id_key ON panestria.research_
 index CREATE UNIQUE INDEX research_request_pkey ON panestria.research_request USING btree (id)
 index CREATE UNIQUE INDEX research_request_seq_key ON panestria.research_request USING btree (seq)
 index CREATE UNIQUE INDEX research_source_artifact_pkey ON panestria.research_source_artifact USING btree (snapshot_id, role, ordinal)
+index CREATE UNIQUE INDEX research_source_capture_pkey ON panestria.research_source_capture USING btree (snapshot_id)
+index CREATE UNIQUE INDEX research_source_capture_seq_key ON panestria.research_source_capture USING btree (seq)
 index CREATE UNIQUE INDEX research_source_snapshot_id_task_id_key ON panestria.research_source_snapshot USING btree (id, task_id)
 index CREATE UNIQUE INDEX research_source_snapshot_pkey ON panestria.research_source_snapshot USING btree (id)
 index CREATE UNIQUE INDEX research_source_snapshot_seq_key ON panestria.research_source_snapshot USING btree (seq)
 index CREATE UNIQUE INDEX side_effect_id_task_unique ON panestria.side_effect USING btree (id, task_id)
 index CREATE UNIQUE INDEX side_effect_pkey ON panestria.side_effect USING btree (id)
 index CREATE UNIQUE INDEX side_effect_task_id_effect_key_key ON panestria.side_effect USING btree (task_id, effect_key)
+index CREATE UNIQUE INDEX source_snapshot_pinned_body ON panestria.research_source_snapshot USING btree (id, task_id, body_sha256)
 index CREATE UNIQUE INDEX task_attempt_id_task_id_key ON panestria.task_attempt USING btree (id, task_id)
 index CREATE UNIQUE INDEX task_attempt_pkey ON panestria.task_attempt USING btree (id)
 index CREATE UNIQUE INDEX task_attempt_task_id_attempt_number_key ON panestria.task_attempt USING btree (task_id, attempt_number)
