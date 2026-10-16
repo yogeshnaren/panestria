@@ -76,7 +76,8 @@ def test_overage_signal_is_rejected_and_remaining_quota_not_invented():
         )
 
 
-def test_injected_launch_uses_only_public_pinned_corpus_and_preserves_profile_controls(tmp_path, monkeypatch):
+@pytest.mark.parametrize("tamper", [None, "rubric", "mcp", "hostile-hook"])
+def test_injected_launch_uses_only_public_pinned_corpus_and_preserves_profile_controls(tmp_path, monkeypatch, tamper):
     binary = tmp_path / "binary"
     binary.write_bytes(b"synthetic")
     binary.chmod(0o700)
@@ -91,6 +92,11 @@ def test_injected_launch_uses_only_public_pinned_corpus_and_preserves_profile_co
         directories.append(cwd)
         assert argv[0].startswith("/proc/self/fd/") and env["CLAUDE_CONFIG_DIR"].startswith("/proc/self/fd/")
         assert argv[argv.index("--tools") + 1] == "" and "--safe-mode" in argv and "--restricted" in argv
+        assert argv[argv.index("--setting-sources") + 1] == "" and "--disable-slash-commands" in argv
+        assert "--strict-mcp-config" in argv
+        assert json.loads(Path(argv[argv.index("--mcp-config") + 1]).read_bytes()) == {"mcpServers": {}}
+        assert json.loads(Path(argv[argv.index("--settings") + 1]).read_bytes()) == module.SETTINGS
+        assert env["CLAUDE_CODE_DISABLE_CLAUDE_MDS"] == "1" and env["ENABLE_CLAUDEAI_MCP_SERVERS"] == "false"
         assert argv[argv.index("--max-budget-usd") + 1] == "0.25"
         assert "ANTHROPIC_API_KEY" not in env and env["HOME"] == str(cwd)
         assert Path(argv[argv.index("--system-prompt-file") + 1]).read_text() == module.BATCH_RUBRIC
@@ -108,14 +114,23 @@ def test_injected_launch_uses_only_public_pinned_corpus_and_preserves_profile_co
         }
         parser.feed((json.dumps(init()) + "\n" + json.dumps(result) + "\n").encode())
         parsed = parser.finish(0)
+        if tamper == "rubric":
+            Path(argv[argv.index("--system-prompt-file") + 1]).write_text("changed")
+        elif tamper == "mcp":
+            Path(argv[argv.index("--mcp-config") + 1]).write_text("changed")
+        elif tamper == "hostile-hook":
+            (cwd / "unexpected-hook").touch()
         return ProcessReceipt("CANDIDATE", True, 0, "independent_checks_required", "ab" * 32, "cd" * 32, parsed)
 
     monkeypatch.setattr(module, "collect_native", injected)
     probe = module.NativeEntailmentProbe(BinaryPin(binary, PINNED_BINARY_SHA256), config, tmp_path / "unused.zip")
     result = probe.run(CORPUS, "calibration")
-    assert result.status == "COMPLETE" and len(result.predictions) == 36
-    assert result.score.supported_precision is None and result.cash_actual_microusd is None
-    assert json.loads(module.native_observation_json(result))["status"] == "COMPLETE"
+    if tamper is None:
+        assert result.status == "COMPLETE" and len(result.predictions) == 36
+        assert result.score.supported_precision is None and result.cash_actual_microusd is None
+        assert json.loads(module.native_observation_json(result))["status"] == "COMPLETE"
+    else:
+        assert result.status == "UNAVAILABLE" and result.score is None and not result.predictions
     assert all(not p.exists() for p in directories)
     private = tmp_path / "private.json"
     private.write_text("private input")

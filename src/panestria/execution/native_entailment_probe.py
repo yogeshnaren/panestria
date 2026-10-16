@@ -13,6 +13,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Literal
 
+from panestria.brokers.harness.claude_check import SETTINGS, _hostile_fixture
 from panestria.brokers.harness.claude_proposal import MANAGED_PATHS, ClaudeProposalAdapter, ProposalUnavailable
 from panestria.brokers.harness.cli_profile import BinaryPin, NativeProbeUnavailable, _unchanged
 from panestria.brokers.harness.event_parser import (
@@ -176,6 +177,14 @@ class NativeEntailmentProbe:
                 prompt = root / "rubric.txt"
                 prompt.write_text(BATCH_RUBRIC)
                 prompt.chmod(0o400)
+                markers = _hostile_fixture(root)
+                settings, mcp = root / "settings.json", root / "mcp.json"
+                pins = {prompt: BATCH_RUBRIC_SHA256}
+                for path, body in ((settings, SETTINGS), (mcp, {"mcpServers": {}})):
+                    raw = json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
+                    path.write_bytes(raw)
+                    path.chmod(0o400)
+                    pins[path] = hashlib.sha256(raw).hexdigest()
                 environment = {
                     "PATH": "/usr/bin:/bin",
                     "HOME": folder,
@@ -185,11 +194,23 @@ class NativeEntailmentProbe:
                     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
                     "DISABLE_TELEMETRY": "1",
                     "DISABLE_ERROR_REPORTING": "1",
+                    "ENABLE_CLAUDEAI_MCP_SERVERS": "false",
+                    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+                    "CLAUDE_CODE_DISABLE_CLAUDE_MDS": "1",
+                    "ENABLE_TOOL_SEARCH": "false",
                 }
                 argv = (
                     f"/proc/self/fd/{binary_fd}",
                     "--safe-mode",
                     "--restricted",
+                    "--setting-sources",
+                    "",
+                    "--settings",
+                    str(settings),
+                    "--mcp-config",
+                    str(mcp),
+                    "--strict-mcp-config",
+                    "--disable-slash-commands",
                     "--print",
                     "--output-format",
                     "stream-json",
@@ -227,7 +248,8 @@ class NativeEntailmentProbe:
                     (held.st_dev, held.st_ino) != (current.st_dev, current.st_ino)
                     or current.st_uid != os.getuid()
                     or stat.S_IMODE(current.st_mode) != 0o700
-                    or hashlib.sha256(prompt.read_bytes()).hexdigest() != BATCH_RUBRIC_SHA256
+                    or any(hashlib.sha256(path.read_bytes()).hexdigest() != sha for path, sha in pins.items())
+                    or any(path.exists() or path.is_symlink() for path in markers)
                 ):
                     raise ProposalUnavailable("native_reference_changed")
                 result_sha = parser.result.result_sha256 if parser.result is not None else None

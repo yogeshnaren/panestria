@@ -1,7 +1,6 @@
 # Public-fixture subscription entailment probe
 
-Explicit prerequisite human corpus #84; current branch also contains local
-observation #85 while it is pending. The small local model's measured50% supported
+Prerequisites human corpus #84 and local observation #85 are merged. The small local model's measured50% supported
 precision does not qualify automatic support. Probe the already-authorized pinned
 Claude Code/Anthropic login only with the immutable PUBLIC SNLI fixture, never
 private claims/profile data, arbitrary prompt input or a provider fallback.
@@ -30,3 +29,14 @@ A small caption-domain score still cannot establish research-domain reliability,
 independent model family for an unknown generator, semantic integration, a release
 pass or permission to send private data. Full AOS022/policy/grant/disclosure work
 remains required. Keep original local-model shortcomings and prior evidence.
+
+The first actual launch at05e3284 failed closed on both folds: the pinned CLI
+reported14 skills and43 slash commands despite safe-mode/restricted/no tools.
+Model/auth/permissions/tools/MCP otherwise matched, but neither result is usable.
+Keep both failed attempts and unknown inference/cash counts. Reuse the already
+inspected registered-check profile's explicit empty setting sources, disabled
+slash commands, immutable hook/memory/connector/CLAUDE.md settings, strict empty
+MCP configuration and environment controls. Include harmless hostile repository
+hook/MCP/instruction fixtures; any marker or changed control file rejects the
+batch. No expanded profile allowlist or change to the semantic rubric. Requalify
+the corrected source; do not relabel the earlier failed XML as a pass.
