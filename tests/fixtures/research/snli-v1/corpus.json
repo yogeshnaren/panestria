@@ -1,0 +1,733 @@
+{
+  "dataset": "stanfordnlp/snli",
+  "dataset_revision": "cdb5c3d5eed6ead6e5a341c8e56e669bb666725b",
+  "folds": {
+    "calibration": [
+      {
+        "case_id": "07d85fd5aede920798c492fe",
+        "expected": "SUPPORTED",
+        "hypothesis": "People watch another person do a trick.",
+        "premise": "A group of onlookers glance at a person doing a strange trick on her head.",
+        "premise_group_sha256": "3dc75224818cb0b04a373e08ddf1b1600f0ade05715555477f878de83ab47984",
+        "source_label": 0,
+        "source_row_index": 65,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "0ae530c43ec4179839efe784",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "Two kids at a ballgame wash their hands.",
+        "premise": "Two young children in blue jerseys, one with the number 9 and one with the number 2 are standing on wooden steps in a bathroom and washing their hands in a sink.",
+        "premise_group_sha256": "c750492dd596f5cf16a5dd58ff98954018b50095d026424aa077b6b379453a36",
+        "source_label": 1,
+        "source_row_index": 4,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "103e0f0d849209b18f8af726",
+        "expected": "CONTRADICTED",
+        "hypothesis": "A man is chasing an SUV that is going in the same direction as him.",
+        "premise": "A taxi SUV drives past an urban construction site, as a man walks down the street in the other direction.",
+        "premise_group_sha256": "42e7e13315899c8b9bace2fcbc51da6026db847da8ed4b09549c7c5f2237e8af",
+        "source_label": 2,
+        "source_row_index": 69,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "153746907df561b393c5fdcf",
+        "expected": "CONTRADICTED",
+        "hypothesis": "They are driving cars.",
+        "premise": "A man in a green jersey and rollerskates stumbles as a man in a black jersey appears to collide with him.",
+        "premise_group_sha256": "7c03ad787356db7c3ad454323f6278e5bc77a967b29d51bbe65f90913c8d70d9",
+        "source_label": 2,
+        "source_row_index": 60,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "19d3ab7de950a53f09308f28",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A tall person in a suit",
+        "premise": "Man in a black suit, white shirt and black bowtie playing an instrument with the rest of his symphony surrounding him.",
+        "premise_group_sha256": "f0d7a87b4aabfcf78be078f75cb779fc3edf4224d73ee6675a0735e44e87b415",
+        "source_label": 1,
+        "source_row_index": 35,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "296b06333bab3f2f5a0dd752",
+        "expected": "SUPPORTED",
+        "hypothesis": "A woman is doing a cartwheel.",
+        "premise": "A woman is doing a cartwheel while wearing a bikini in the sand next to the beach.",
+        "premise_group_sha256": "f62aaae8f2ffc0ea08bacb02c5e26ec3455e0d7162e0ce43f467dfffc2e8ea2b",
+        "source_label": 0,
+        "source_row_index": 18,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "2f2a60054feec925e0423e21",
+        "expected": "CONTRADICTED",
+        "hypothesis": "A child is playing with a ball.",
+        "premise": "Under a blue sky with white clouds, a child reaches up to touch the propeller of a plane standing parked on a field of grass.",
+        "premise_group_sha256": "56a9e27480657e0a936e8c1a30af1e5d3fce666a7eee93bb6ea82256c30b280a",
+        "source_label": 2,
+        "source_row_index": 17,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "36ee8d0c10bff58ec2eb10af",
+        "expected": "CONTRADICTED",
+        "hypothesis": "The restaurant is very bad.",
+        "premise": "Families waiting in line at an amusement park for their turn to ride.",
+        "premise_group_sha256": "c70182764ccabaf100a54bfe88718f2fba9c51f051cc51adec92e882d96d54de",
+        "source_label": 2,
+        "source_row_index": 27,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "3a72e6a2d6e3644690bfc2c1",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A crowd is dancing",
+        "premise": "At an outdoor event in an Asian-themed area, a crowd congregates as one person in a yellow Chinese dragon costume confronts the camera.",
+        "premise_group_sha256": "7e7314e5ecb37e22568ad75d25f8e88c4ccd42ea76cb59f150d5d80016dd3e9d",
+        "source_label": 1,
+        "source_row_index": 40,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "494d359045c3c38988c52ef7",
+        "expected": "SUPPORTED",
+        "hypothesis": "Two women are at a bar.",
+        "premise": "Two women having drinks and smoking cigarettes at the bar.",
+        "premise_group_sha256": "39ca88d9ea22f89788fc269f6651fb3565ca326001d0aebbc1262006937423af",
+        "source_label": 0,
+        "source_row_index": 36,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "4c5d14360c69901b8ff7dd8a",
+        "expected": "SUPPORTED",
+        "hypothesis": "An animal is jumping to catch an object.",
+        "premise": "A white dog with long hair jumps to catch a red and green toy.",
+        "premise_group_sha256": "2b3d9190e0c6492e6fc612f2a52d576f2a95028a430d81d6bd1b2a4bb5341250",
+        "source_label": 0,
+        "source_row_index": 46,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "4d2f483ae5c60a8c0a192782",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "The woman is writing a grocery list.",
+        "premise": "A woman is writing something on a post-it note which is hanging on a bulletin board with a lot of other post-it notes.",
+        "premise_group_sha256": "33897c6e970fde20b4739e4bbeb962797c3bf51d491762500d5af444b3c97939",
+        "source_label": 1,
+        "source_row_index": 93,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "543d41f0a92e49a6364e614a",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A lady is participating in a talent show.",
+        "premise": "A pregnant lady singing on stage while holding a flag behind her.",
+        "premise_group_sha256": "831f99ab03343ade98910d22bd9a192e38172403c6fb54cfdd1bf065fe71b899",
+        "source_label": 1,
+        "source_row_index": 86,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "55cc2eb24148ec546a600f7c",
+        "expected": "SUPPORTED",
+        "hypothesis": "Boy dressed in blue holds a toy.",
+        "premise": "A little boy in a blue shirt holding a toy.",
+        "premise_group_sha256": "dcc2fa45df564e9f283fecaef834cc538eb48c481b08bbef23b8dc8ee5fcf345",
+        "source_label": 0,
+        "source_row_index": 92,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "5b9425491a4c74e5c203bd97",
+        "expected": "CONTRADICTED",
+        "hypothesis": "The man in the black shirt trades Pokemon cards with his girlfriend.",
+        "premise": "A man in a black shirt is playing golf outside.",
+        "premise_group_sha256": "e419d9014ee9ff3ec59cfce7de5b86aaca2e1472357295912e9d06f2eb3af054",
+        "source_label": 2,
+        "source_row_index": 52,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "5dbe1bb3719070fd18469ca1",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "An Indian woman is doing laundry for her son in the lake.",
+        "premise": "An Indian woman is washing and cleaning dirty laundry at a lake and in the background is a kid who appears to have jumped into the lake.",
+        "premise_group_sha256": "dd1e6b870420f4c710b86abee9179726dbf64cc154162ba8c31756d5de08c28d",
+        "source_label": 1,
+        "source_row_index": 59,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "5f1404b42362f229ab49c3cd",
+        "expected": "CONTRADICTED",
+        "hypothesis": "Nobody is sitting",
+        "premise": "A lady sitting on a bench that is against a building and under a poster of a man in a uniform waving.",
+        "premise_group_sha256": "dff87487a12fe0a7aa61ac905a7c9e0cfb89093e7ada11b314a6e8897ab9a422",
+        "source_label": 2,
+        "source_row_index": 107,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "645d321a54caf81134bb640b",
+        "expected": "CONTRADICTED",
+        "hypothesis": "A woman drinks her coffee in a small cafe.",
+        "premise": "A man selling donuts to a customer during a world exhibition event held in the city of Angeles",
+        "premise_group_sha256": "170844c3cc5a6e18de4e26755f3809e8e8131b6ef71836a3dc0175511951841e",
+        "source_label": 2,
+        "source_row_index": 6,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "6b31aa2f79a4bff1561acde3",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "Men are riding bicycles on the street.",
+        "premise": "Two men on bicycles competing in a race.",
+        "premise_group_sha256": "aeac1caef943d9cce73743844e3feeec5d2c3bb4c9a69d713122c6501dac0052",
+        "source_label": 1,
+        "source_row_index": 22,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "83e6d7b8726803c1728db32d",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A man is repainting a garage",
+        "premise": "A man in a blue shirt standing in front of a garage-like structure painted with geometric designs.",
+        "premise_group_sha256": "4d05ffd327e5b472ff22acf8c46fcbe709da8f9932de5ae70959afc9adc630f0",
+        "source_label": 1,
+        "source_row_index": 12,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "8dc34ab21720fc6f2b6e5db2",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "Kids ride their favorite amusement ride.",
+        "premise": "Kids are on a amusement ride.",
+        "premise_group_sha256": "a53f3f5323d64b8b5a806f1555e28296ec1d602be9d32ffc212acb73da3f6e06",
+        "source_label": 1,
+        "source_row_index": 48,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "9166cd3a9eb2635936fc8aba",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "These two women are friends.",
+        "premise": "The middle eastern woman wearing the pink headscarf is walking beside a woman in a purple headscarf.",
+        "premise_group_sha256": "5dcb2daefa08e50f354a282c0368a2a51b2e08a50a7bb915a606ffa5968b5804",
+        "source_label": 1,
+        "source_row_index": 68,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "92831c1f5f28a7910a025f5b",
+        "expected": "CONTRADICTED",
+        "hypothesis": "Two surgeons are having lunch.",
+        "premise": "Two doctors perform surgery on patient.",
+        "premise_group_sha256": "ae5d2327ed747fd6d363f9f5788876490282338df218e5181dd82d0cd0263955",
+        "source_label": 2,
+        "source_row_index": 42,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "9b26ebdea15382852ffcd4b3",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A man is taking photos while on tour in nyc",
+        "premise": "A man in a white t-shirt takes a picture in the middle of the street with two public buses in the background.",
+        "premise_group_sha256": "f4b723bb56b7bafccd7530b062448a3b3bf060206eb65aa78c02010c90f61175",
+        "source_label": 1,
+        "source_row_index": 77,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "9ba4f51f0acc6147ada02fa2",
+        "expected": "SUPPORTED",
+        "hypothesis": "boys play football",
+        "premise": "Two young boys of opposing teams play football, while wearing full protection uniforms and helmets.",
+        "premise_group_sha256": "ed0d3c54cb9609148e0798256a9227806093309d944925b332eb6ceb5274e35e",
+        "source_label": 0,
+        "source_row_index": 9,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "9ecce13654083a2980b2d4c4",
+        "expected": "SUPPORTED",
+        "hypothesis": "A girl is on a swing",
+        "premise": "A girl swings high in the air.",
+        "premise_group_sha256": "181ce44e283154eab1105e808db08caa241d3b49778a0d5cdd4aa860364f10f1",
+        "source_label": 0,
+        "source_row_index": 101,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "a5397aed25d28cc4f3f5f009",
+        "expected": "SUPPORTED",
+        "hypothesis": "A person waits to be served his food.",
+        "premise": "A senior is waiting at the window of a restaurant that serves sandwiches.",
+        "premise_group_sha256": "b5e2889505f2d2e25fd639136e07f29bcba4e6148a0e2a5814637c5d844a38bd",
+        "source_label": 0,
+        "source_row_index": 30,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "a85f37b05477248f9dcdac63",
+        "expected": "CONTRADICTED",
+        "hypothesis": "dog in pool",
+        "premise": "A young boy in a field of flowers carrying a ball",
+        "premise_group_sha256": "e7a46d74baf06c5f4ce7e7cbc112235354dfa158d3fbbcc9c941c7b65eee5f3c",
+        "source_label": 2,
+        "source_row_index": 26,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "b1caede23f76d14f70bffce1",
+        "expected": "SUPPORTED",
+        "hypothesis": "a guy laughs while doing laundry",
+        "premise": "A older gentleman finds it humorous that he is getting his picture taken while doing his laundry.",
+        "premise_group_sha256": "fe8e98ec11e652844d666e891c73dc8272116542fac3255b84681df4013cc669",
+        "source_label": 0,
+        "source_row_index": 55,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "b8709279ba24aff0322bff79",
+        "expected": "SUPPORTED",
+        "hypothesis": "Two woman are holding packages.",
+        "premise": "Two women are embracing while holding to go packages.",
+        "premise_group_sha256": "04d19e73a85bb271d8beaf78a5a34246d17b942052ce7f7ee809c9aa4fcdce7e",
+        "source_label": 0,
+        "source_row_index": 1,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "c286b668a32549703f2aac94",
+        "expected": "CONTRADICTED",
+        "hypothesis": "The man is at the end of the slip and slide",
+        "premise": "A baby at the end of a slip and slide at a party",
+        "premise_group_sha256": "bd85b10167ed1faba38d2402fa7aecd4a357653a1611321369da5b02f89722d3",
+        "source_label": 2,
+        "source_row_index": 97,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "cbf0c0956ee7864dc42e94ba",
+        "expected": "CONTRADICTED",
+        "hypothesis": "2 Men are making a pool together",
+        "premise": "The two farmers are working on a piece of John Deere equipment.",
+        "premise_group_sha256": "8188dba84bd0f56e7915e1469146be4a775b289a1aa1ef35b25533ca2c2dbdae",
+        "source_label": 2,
+        "source_row_index": 89,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "cc7043bd616b51057c6e76db",
+        "expected": "SUPPORTED",
+        "hypothesis": "A person in a shirt",
+        "premise": "People wearing red shirts are standing in a large pool of water as it splashes over and around them.",
+        "premise_group_sha256": "13a3ba130c05acbb699e7ad0bc519d10a136a39f5c824e53f9245bb5cfd70172",
+        "source_label": 0,
+        "source_row_index": 73,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "d074d02413e03b86ea91b889",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "woman drinks a beer",
+        "premise": "A view of the back of a woman having a beverage.",
+        "premise_group_sha256": "ee2a2a7ac45765de72ed6146dbf7a7a89e88ef91538ce22e8755b25ccc794a31",
+        "source_label": 1,
+        "source_row_index": 102,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "d7cbf9c4044e3cb620d93fbc",
+        "expected": "SUPPORTED",
+        "hypothesis": "The woman and kids and sitting down.",
+        "premise": "Women and children sitting outside in the shade while a group of younger children sitting inside in the shade.",
+        "premise_group_sha256": "f0d776d59b4d1fb0959813e9c1f16d4cf00ce103d95c38d5b337af22c5169f9e",
+        "source_label": 0,
+        "source_row_index": 82,
+        "source_split": "validation"
+      },
+      {
+        "case_id": "f3e4693649a67facb4029d89",
+        "expected": "CONTRADICTED",
+        "hypothesis": "He is playing a saxophone.",
+        "premise": "A shirtless man is singing into a microphone while a woman next to him plays an accordion.",
+        "premise_group_sha256": "0c51031f3c98ab90ede254489c6ad9342f67e99070b751feea6eb04fdf734166",
+        "source_label": 2,
+        "source_row_index": 79,
+        "source_split": "validation"
+      }
+    ],
+    "qualification": [
+      {
+        "case_id": "04cf2814db2059385da4ef6d",
+        "expected": "SUPPORTED",
+        "hypothesis": "A boy is on a playground.",
+        "premise": "A little boy in a gray and white striped sweater and tan pants is playing on a piece of playground equipment.",
+        "premise_group_sha256": "755f422e3e06e6cf0f0433fcddbb6c951141ec056eca3c56f5dac6797af94d88",
+        "source_label": 0,
+        "source_row_index": 48,
+        "source_split": "test"
+      },
+      {
+        "case_id": "04da56b7cfb9aae60edc630a",
+        "expected": "SUPPORTED",
+        "hypothesis": "There is a statue that not many people seem to be interested in.",
+        "premise": "A statue at a museum that no seems to be looking at.",
+        "premise_group_sha256": "e2c11c4b328dbca6a4bf13d09438cd201a8aab10ca2a21c5cceb803780048b7d",
+        "source_label": 0,
+        "source_row_index": 10,
+        "source_split": "test"
+      },
+      {
+        "case_id": "0568d36552931ae140eb3569",
+        "expected": "CONTRADICTED",
+        "hypothesis": "A sedan is stuck in the middle of a river.",
+        "premise": "A land rover is being driven across a river.",
+        "premise_group_sha256": "f4e7f2c29033c1d7a051a0e89bc85088bf25361ac6eb3d153558e94b646723e9",
+        "source_label": 2,
+        "source_row_index": 14,
+        "source_split": "test"
+      },
+      {
+        "case_id": "099e9ae15cefff9b880280df",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A man watches his daughter leap",
+        "premise": "One tan girl with a wool hat is running and leaning over an object, while another person in a wool hat is sitting on the ground.",
+        "premise_group_sha256": "10cdd310652a381dea72511e928758ffe1f233ae38b25542e6d0ded1856a2197",
+        "source_label": 1,
+        "source_row_index": 23,
+        "source_split": "test"
+      },
+      {
+        "case_id": "19c6dcd637fef079ca060f28",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A person is selling coconuts.",
+        "premise": "A person wearing a straw hat, standing outside working a steel apparatus with a pile of coconuts on the ground.",
+        "premise_group_sha256": "e3bfd5215ed9f98e9c42c7585dfa9b16bfe88e9e28dcf497311775ca4243160e",
+        "source_label": 1,
+        "source_row_index": 40,
+        "source_split": "test"
+      },
+      {
+        "case_id": "1d5ac25a9fba40308069401a",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "three men going to work",
+        "premise": "Three men, one holding pipes, another holding a large object above his head, and one resting against the pipe bed on the truck, are looking at the camera.",
+        "premise_group_sha256": "39f991ca55c3edafb8ce99f5b30e95b3e85a53256f7f43162cdedc83b1e86c3f",
+        "source_label": 1,
+        "source_row_index": 102,
+        "source_split": "test"
+      },
+      {
+        "case_id": "1e47ac6fb41edc90ef1c6833",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A man is deciding which bike to buy",
+        "premise": "A man in a black shirt is looking at a bike in a workshop.",
+        "premise_group_sha256": "43f471bb6bd83ae312f3f9cd9cbd84fe1f86b07b61e81265387c6efe0cc0a80a",
+        "source_label": 1,
+        "source_row_index": 77,
+        "source_split": "test"
+      },
+      {
+        "case_id": "2f368713d6c3c64add2ddc24",
+        "expected": "SUPPORTED",
+        "hypothesis": "A man watches bike repairs.",
+        "premise": "A man in a black shirt overlooking bike maintenance.",
+        "premise_group_sha256": "6d46b2c7778cf4d04402afff99eb9fa0936716c95ba8991a057d7bcdfce596e7",
+        "source_label": 0,
+        "source_row_index": 73,
+        "source_split": "test"
+      },
+      {
+        "case_id": "3da728829ef4a4091a903343",
+        "expected": "CONTRADICTED",
+        "hypothesis": "The guy in yellow is rolling on the grass",
+        "premise": "Male in a blue jacket decides to lay in the grass.",
+        "premise_group_sha256": "3d03f6c25177fcbe3d9271641e414185aac03f2205ab180212ed1fe51b3e98c5",
+        "source_label": 2,
+        "source_row_index": 42,
+        "source_split": "test"
+      },
+      {
+        "case_id": "3ede876a20fcc7902f8356db",
+        "expected": "SUPPORTED",
+        "hypothesis": "An animal is outside in the cold weather, playing with a plastic toy.",
+        "premise": "A dog jumping for a Frisbee in the snow.",
+        "premise_group_sha256": "b98670487551ec9692f4547f459434234169ec7ccaeaef09af15fb8a49c64390",
+        "source_label": 0,
+        "source_row_index": 92,
+        "source_split": "test"
+      },
+      {
+        "case_id": "4389e6272e0a90b21e5cecdd",
+        "expected": "CONTRADICTED",
+        "hypothesis": "A man walks by an ad.",
+        "premise": "An old man with a package poses in front of an advertisement.",
+        "premise_group_sha256": "41620908a49ae17f5ddc67ef326b37bd27c40a969e894cdfdb33bf3d330eeec1",
+        "source_label": 2,
+        "source_row_index": 8,
+        "source_split": "test"
+      },
+      {
+        "case_id": "44632d5ede0720408dec0aed",
+        "expected": "CONTRADICTED",
+        "hypothesis": "A woman wearing a sun bonnet planting a garden.",
+        "premise": "A woman wearing a ball cap squats down to touch the cracked earth.",
+        "premise_group_sha256": "5f9d791d2ce07f529297d1ce9f071b63bf9288eb487adce67536e85cc3006099",
+        "source_label": 2,
+        "source_row_index": 53,
+        "source_split": "test"
+      },
+      {
+        "case_id": "4d1498ad62c454a14acd246c",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "People at a party are seated for dinner on the lawn.",
+        "premise": "People are conversing at a dining table under a canopy.",
+        "premise_group_sha256": "9123fe3dfc8fccc20aad158133b698cc443465347f516a55e37bc60a7ac15453",
+        "source_label": 1,
+        "source_row_index": 93,
+        "source_split": "test"
+      },
+      {
+        "case_id": "516f95e2bb1beddfa7436967",
+        "expected": "CONTRADICTED",
+        "hypothesis": "Three people sit by a busy street bareheaded.",
+        "premise": "3 young man in hoods standing in the middle of a quiet street facing the camera.",
+        "premise_group_sha256": "a8c6276143bcaf136afcee9ff166880243897501698b59a142318f93f544f6f0",
+        "source_label": 2,
+        "source_row_index": 30,
+        "source_split": "test"
+      },
+      {
+        "case_id": "56906e61d7904f5bacf6921b",
+        "expected": "SUPPORTED",
+        "hypothesis": "A woman is playing the violin.",
+        "premise": "A woman within an orchestra is playing a violin.",
+        "premise_group_sha256": "5c44a397c877f5533a73e8c94a0bbada7dda71ee499d70090ba85975f9af47a5",
+        "source_label": 0,
+        "source_row_index": 100,
+        "source_split": "test"
+      },
+      {
+        "case_id": "5c5bcf32d2dc56c2bb0a895e",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "The man is reading the sportspage.",
+        "premise": "A man reads the paper in a bar with green lighting.",
+        "premise_group_sha256": "cd9ae31d538a3321387a3e84eb59bfea23dfeca10431a958023b00be50e875c3",
+        "source_label": 1,
+        "source_row_index": 34,
+        "source_split": "test"
+      },
+      {
+        "case_id": "72d76bd27185fc5b9b1efd01",
+        "expected": "CONTRADICTED",
+        "hypothesis": "The lady is cooking dinner",
+        "premise": "An older women tending to a garden.",
+        "premise_group_sha256": "ea6cf605ea6a6e26d960f1ee7d463fca5bf169bbd32c054b6a8b5fbb44a99784",
+        "source_label": 2,
+        "source_row_index": 69,
+        "source_split": "test"
+      },
+      {
+        "case_id": "74e51af833b2dfc8d3dd49fa",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A child wearing a red top is standing behind a pretty blond headed child",
+        "premise": "A child wearing a red top is standing behind a blond headed child sitting in a wheelbarrow.",
+        "premise_group_sha256": "8add06b34c2b8daa438801a5b3aa46ecf695fe7daa85df00f9d942d784d4dcac",
+        "source_label": 1,
+        "source_row_index": 86,
+        "source_split": "test"
+      },
+      {
+        "case_id": "7e91fb4d7bc6da83c4b0e79a",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "a busy man stands with bodyguards",
+        "premise": "A man standing in front of a building on the phone as two men to the side pain on the side.",
+        "premise_group_sha256": "605ce1b859d3450ab0fa1f3528454358bb55036300cd510a5b7301be7973687f",
+        "source_label": 1,
+        "source_row_index": 59,
+        "source_split": "test"
+      },
+      {
+        "case_id": "7f3fb90f8f1895ac783ecfff",
+        "expected": "SUPPORTED",
+        "hypothesis": "The church is filled with song.",
+        "premise": "This church choir sings to the masses as they sing joyous songs from the book at a church.",
+        "premise_group_sha256": "d5439da22ba28a5276e1d6145756d966f371926730da5d3abd21bca4d51160e2",
+        "source_label": 0,
+        "source_row_index": 1,
+        "source_split": "test"
+      },
+      {
+        "case_id": "80fed1908c0165f217c14f66",
+        "expected": "CONTRADICTED",
+        "hypothesis": "A family is out at a restaurant.",
+        "premise": "A young family enjoys feeling ocean waves lap at their feet.",
+        "premise_group_sha256": "68e4140a6a24ef53e726106e4e9984c111949d57bd3b79038ed88c578e9d8b6c",
+        "source_label": 2,
+        "source_row_index": 25,
+        "source_split": "test"
+      },
+      {
+        "case_id": "83db150ac7429912b691421b",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A man is performing for cash.",
+        "premise": "A man playing an electric guitar on stage.",
+        "premise_group_sha256": "a8c8adbb179b99e43dc216177448055ed8be78975de0706a6d6e5ac965c3997f",
+        "source_label": 1,
+        "source_row_index": 17,
+        "source_split": "test"
+      },
+      {
+        "case_id": "8a0d3da8625f48212c6bf5a3",
+        "expected": "CONTRADICTED",
+        "hypothesis": "Two girls play dress up indoors.",
+        "premise": "The two young girls are dressed as fairies, and are playing in the leaves outdoors.",
+        "premise_group_sha256": "9d5f293eea7c0ac39bdb4193722fd80ae5cf705e96e1766afd67ec2a75d9c807",
+        "source_label": 2,
+        "source_row_index": 61,
+        "source_split": "test"
+      },
+      {
+        "case_id": "8d313fd8133f3f5625c80a81",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "The woman is young.",
+        "premise": "A woman with a green headscarf, blue shirt and a very big grin.",
+        "premise_group_sha256": "ae2dbd47279522e67cfdb68b562ef13c71dc32065d1b8da494ff6ae0970c07b8",
+        "source_label": 1,
+        "source_row_index": 3,
+        "source_split": "test"
+      },
+      {
+        "case_id": "9035c071cf264c54a6c48bbe",
+        "expected": "CONTRADICTED",
+        "hypothesis": "There are three girls",
+        "premise": "Three boys in white shirts are walking behind an older model Ford car.",
+        "premise_group_sha256": "ed97bbea204fb3047b49f904de4ca3e738acf7d3ca965abb3664cc8dcb5a9c74",
+        "source_label": 2,
+        "source_row_index": 109,
+        "source_split": "test"
+      },
+      {
+        "case_id": "9ba7a87b90c9cf5c141ebf09",
+        "expected": "SUPPORTED",
+        "hypothesis": "Two children are on a rug.",
+        "premise": "Two children re laying on a rug with some wooden bricks laid out in a square between them.",
+        "premise_group_sha256": "f2fc28b31afaeb14d402bfaba06a879ec382c97e9d39e6c69fe8f2ab35049e7c",
+        "source_label": 0,
+        "source_row_index": 56,
+        "source_split": "test"
+      },
+      {
+        "case_id": "9ca0c7d5118e4e170c2afb4e",
+        "expected": "CONTRADICTED",
+        "hypothesis": "A lady sitting on a bench in the park.",
+        "premise": "A person dressed in a dress with flowers and a stuffed bee attached to it, is pushing a baby stroller down the street.",
+        "premise_group_sha256": "b95b23477f344cdd7b13ffdc8d8f85e181e7c3b161645e1f43dfe5171de2dce1",
+        "source_label": 2,
+        "source_row_index": 87,
+        "source_split": "test"
+      },
+      {
+        "case_id": "b32786dcaf8d939babdcbc6e",
+        "expected": "SUPPORTED",
+        "hypothesis": "A doctor is looking at a book",
+        "premise": "A blond-haired doctor and her African american assistant looking threw new medical manuals.",
+        "premise_group_sha256": "2cc868e11dccb4a9e0d8799c24f53da60983c676899abd37ccfd119c9075ebd1",
+        "source_label": 0,
+        "source_row_index": 18,
+        "source_split": "test"
+      },
+      {
+        "case_id": "b866cc11b1e2ca18ba31f9c7",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A first time roper falls off his horse.",
+        "premise": "During calf roping a cowboy calls off his horse.",
+        "premise_group_sha256": "e2ffe180f6fa8d3cde0ecbcc96429c1793f6b2e06dca3a4a8784aeb165f54d61",
+        "source_label": 1,
+        "source_row_index": 45,
+        "source_split": "test"
+      },
+      {
+        "case_id": "b89c8ddee48bfb72afb34adc",
+        "expected": "CONTRADICTED",
+        "hypothesis": "A girl is washing a load of laundry.",
+        "premise": "A girl playing a violin along with a group of people",
+        "premise_group_sha256": "16688ffb357f00043182240ccdb7ce19d2a3b9537c858fa7b69b4702d2e31e1d",
+        "source_label": 2,
+        "source_row_index": 96,
+        "source_split": "test"
+      },
+      {
+        "case_id": "ba6fa958f7dd648e295e8c13",
+        "expected": "SUPPORTED",
+        "hypothesis": "A couple is walking together.",
+        "premise": "A couple walk hand in hand down a street.",
+        "premise_group_sha256": "f4b2ee6f91961c13de3214e85752c03eea99455f488227a376fd26d3863cd07c",
+        "source_label": 0,
+        "source_row_index": 27,
+        "source_split": "test"
+      },
+      {
+        "case_id": "bd7df3b333893660ea2ebf92",
+        "expected": "SUPPORTED",
+        "hypothesis": "People wait at a station.",
+        "premise": "Three people sit on a bench at a station, the man looks oddly at the two women, the redheaded women looks up and forward in an awkward position, and the yellow blond girl twiddles with her hair.",
+        "premise_group_sha256": "cb351a4dfe60d711da184db80538f9a00035ef0cbf4728245e2abcea3e57dd5a",
+        "source_label": 0,
+        "source_row_index": 83,
+        "source_split": "test"
+      },
+      {
+        "case_id": "c60f65f8d0a99ccb34ed96a9",
+        "expected": "CONTRADICTED",
+        "hypothesis": "A man waits outside a garage.",
+        "premise": "A man looking over a bicycle's rear wheel in the maintenance garage with various tools visible in the background.",
+        "premise_group_sha256": "5f8b0a9873be07a399aa8db6e48776e9938524b8e916546a88dc9e852d788d6c",
+        "source_label": 2,
+        "source_row_index": 80,
+        "source_split": "test"
+      },
+      {
+        "case_id": "e06a826516327e5306bb7975",
+        "expected": "SUPPORTED",
+        "hypothesis": "Three firefighters coming up from a subway station.",
+        "premise": "Three firefighter come out of subway station.",
+        "premise_group_sha256": "3af704cdc0d8d59e5b9f4cb1ff539eafcde4d5f577ac64c66b2b5967e568b494",
+        "source_label": 0,
+        "source_row_index": 37,
+        "source_split": "test"
+      },
+      {
+        "case_id": "eab8fcca421c8f7077632dbb",
+        "expected": "INSUFFICIENT",
+        "hypothesis": "A snowboarder gliding over a field of snow",
+        "premise": "A snowboarder on a wide plain of snow",
+        "premise_group_sha256": "5f561c89f1849b29472c2661c80972d0260860d0d801838b178add412f9dc439",
+        "source_label": 1,
+        "source_row_index": 67,
+        "source_split": "test"
+      },
+      {
+        "case_id": "edfb552d698b2c730197f042",
+        "expected": "SUPPORTED",
+        "hypothesis": "People are jumping outside.",
+        "premise": "People jump over a mountain crevasse on a rope.",
+        "premise_group_sha256": "0aec0b759f7a741ed488aab8f9129a2c63375827d2c39fd6f29060f7359a404b",
+        "source_label": 0,
+        "source_row_index": 64,
+        "source_split": "test"
+      }
+    ]
+  },
+  "license": "CC-BY-SA-4.0",
+  "purpose": "evaluation_fixture_only_no_training_authorization",
+  "schema_version": 1
+}
