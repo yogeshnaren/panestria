@@ -61,3 +61,14 @@ Effective mount/process/egress manifest, credential sentinel isolation, maliciou
 ## Revision 3 qualification boundaries
 
 [ADR 0003](../../adr/0003-personal-platform-classification.md) governs the planned goal/runtime classification transition. Current PRIVATE runtime labels require audited compatibility, not silent equivalence to INTERNAL/CONFIDENTIAL. Certify profile keys/ciphertext/derivatives before sensitive use; protect logs/indexes/caches/context as well as stored blobs. Explicit connection/device grants recheck owner/project/action/data/expiry before future effects. REA findings remain private when their sources are private, even if analysis is local. No-extra-spend route eligibility and training-purpose rights are independent of a quota estimate. See the [active contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md) and newly registered G3 cases.
+
+
+## Explicit public web destination
+
+[The destination policy component](37-PUBLIC-WEB-POLICY.md) treats public web
+search/fetch as external-send to public-web. This explicit privacy-list entry is
+separate from every inference provider; defaults and prior policy hashes remain
+unchanged. Only PUBLIC payloads are eligible, subject to every other axis and
+required public-fetch-broker/outbound-disclosure enforcement. This policy result
+is not proof of a connection grant, disclosure, budget/lease or OS enforcement.
+The controller must obtain/revalidate those independently before future sends.

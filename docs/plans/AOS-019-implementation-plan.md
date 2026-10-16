@@ -1,6 +1,6 @@
 # AOS-019 — Search abstraction and SSRF-safe web retrieval broker: implementation plan
 
-**Release:** R2. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-008, AOS-009, AOS-013. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R2. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS (fetch and explicit destination policy components). **Tests:** component evidence retained; complete item/release acceptance NOT_RUN. **Depends on:** AOS-008, AOS-009, AOS-013. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-019.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -76,3 +76,21 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Explicit web-policy preparation (2026-10-16)
+
+[Public-web policy design](../design/37-PUBLIC-WEB-POLICY.md) adds an explicit closed
+web destination to the existing versioned policy transport, with unchanged
+serialized defaults and historical fingerprints. PUBLIC only, action external-send,
+independent axes and owner review remain mandatory. Provider grants do not imply
+web access. At63555c9,52 policy/actual disposable-Postgres checks pass; exact evidence
+is in evidence/public-web-policy-2026-10-16. A privacy revision alone cannot certify
+or widen a runtime; tests deliberately retain synthetic outbound denial.
+
+Existing bounded fetch transport evidence remains in evidence/research-public-fetch-
+2026-10-15. Neither that transport nor this policy declaration is an enabled search
+service. Configured API/SearXNG, actual outbound query/URL disclosures, connection
+grants, current-policy/lease/budget checks and enforced broker/OS integration remain
+required before AOS019/G2 acceptance. No network/provider call or owner policy was
+changed by this slice. Preserve the historical field name cloud_destinations for
+compatibility; public-web is a separate destination within it.

@@ -220,3 +220,18 @@ source-bound; earlier reporting failure retained with unknown completed-case
 count. No model downloads/cloud inference/credentials/training. See evidence/
 local-entailment-2026-10-16 and design35. Better verified semantic path, all original
 research/policy/gates and R3/extensions remain required; do not promote this model.
+
+
+### 2026-10-16 05:31 UTC — explicit public-web policy component
+
+Source63555c90aa642d24b39d909f7f19ca399e9c32fd:52 policy/actual disposablePG checks
+PASS3.85s, Ruff/mypy186/11imports/secret scanPASS. PUBLIC-only explicit destination,
+external-send action, separate provider permissions, all axes/scope/certificate
+checks and owner reviewed revisions/revocation. Existing prechange canonical hash
+fd00816f0a18bdda6726bfbbd9a8ea0014aed99b4373e1904b72adb014948540 preserved.
+Evidence/public-web-policy-2026-10-16 includes clean source/artifact pins and initial
+development collection failure (same test module basename, no tests executed;
+renamed integration module). No network/provider call, live certificate, runtime
+policy/grant, schema migration or release promotion. Search/disclosure/grants/
+lease/budget/actual OS broker admission still required. Started from main41458fe,
+independent of pending native preflightPR86; integrate verified main before CI.
