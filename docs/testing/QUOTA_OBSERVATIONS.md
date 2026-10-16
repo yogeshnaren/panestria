@@ -76,3 +76,35 @@ Provider/estimate ingestion exists as a trusted metadata interface for future
 collectors, but its synthetic tests do not establish actual supported-provider
 telemetry. A source SHA is provenance, not a certificate. Missing/stale quota need
 not block future authorized bounded best-effort work; no queue is enabled here.
+
+## CLI client
+
+The dependent CLI task adds three commands. They contact only the explicitly
+selected numeric loopback API. Keep the token out of command arguments; use the
+existing token file. Save the report JSON above with current IDs/times as an
+owner-owned regular file, and remove group/world write permission. The token
+file must be owner-private (for example0600); symlinks/hardlinks/FIFO inputs are
+denied. A report file is limited to4096bytes. Do not use a provider credential
+as the local API token.
+
+```sh
+chmod 600 /absolute/path/quota-report.json
+uv run --frozen panestria quota report --input-file /absolute/path/quota-report.json --token-file /absolute/path/existing-local-api-token --base-url http://127.0.0.1:8766
+uv run --frozen panestria quota show OBSERVATION_UUID --token-file /absolute/path/existing-local-api-token
+uv run --frozen panestria quota current --account-ref ACCOUNT_UUID --window session --token-file /absolute/path/existing-local-api-token
+```
+
+Add `--model EXACT_MODEL_REF` for a model-specific limit or `--window weekly`
+for a separate weekly query; do not infer either from the session report.
+`--provider` defaults toclaude-subscription and is only metadata. The client
+rejects DNS names, non-loopback addresses and redirects and ignores proxy
+environment variables. LocalAPI failures yield onlyquota_input_or_api_unavailable
+and exit2; success emits validated JSON with OBSERVATION_ONLY and exit0. It does
+not print arbitrary server error text or the token. Use the API's historical ID
+for exact replay; the CLI never invents a replacement submission after failure.
+
+CLI verification, including actual owned loopback/API/Postgres transport:
+
+```sh
+uv run --frozen pytest tests/unit/test_quota_cli.py tests/integration/test_quota_cli_loopback.py -q
+```
