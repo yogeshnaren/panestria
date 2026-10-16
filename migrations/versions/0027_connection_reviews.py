@@ -62,6 +62,7 @@ def upgrade() -> None:
         seq bigint NOT NULL UNIQUE DEFAULT nextval(pg_get_serial_sequence('panestria.task_event','seq')::regclass),
         created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
         PRIMARY KEY(grant_id,version),
+        UNIQUE(grant_id,version,review_id),
         FOREIGN KEY(grant_id,owner_id,project_id) REFERENCES panestria.connection_grant(id,owner_id,project_id),
         FOREIGN KEY(review_id,grant_id,owner_id,project_id,manifest_sha256,operation,policy_ref)
             REFERENCES panestria.connection_grant_review
@@ -71,7 +72,8 @@ def upgrade() -> None:
             DEFERRABLE INITIALLY DEFERRED)""")
     op.execute(
         "ALTER TABLE panestria.connection_grant_decision ADD CONSTRAINT grant_decision_revision "
-        "FOREIGN KEY(grant_id,granted_version) REFERENCES panestria.connection_grant_revision(grant_id,version) "
+        "FOREIGN KEY(grant_id,granted_version,review_id) "
+        "REFERENCES panestria.connection_grant_revision(grant_id,version,review_id) "
         "DEFERRABLE INITIALLY DEFERRED"
     )
     for table in ("connection_grant_review", "connection_grant_decision", "connection_grant_revision"):

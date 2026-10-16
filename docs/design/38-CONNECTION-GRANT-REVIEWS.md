@@ -14,7 +14,8 @@ still need actual protected enrollment and descriptor-based broker validation.
 
 The authenticated controller supplies Actor and an existing scoped task. Proposal
 and owner decision bind an exact digest, current project-policy reference,
-expected grant version and a15-minute review deadline. Replacement grants expire
+expected grant version and a15-minute default review deadline (a controller may
+choose a shorter1–900second interval). Replacement grants expire
 within30days. Revoke uses the actual current immutable manifest, not a client
 substitute. Approval atomically appends a revision and decision; denial preserves
 the proposal without changing the current revision. Exact retries are replayed;
@@ -26,7 +27,15 @@ Keep immutable proposals/decisions/revisions, one monotonic current pointer and
 deferred database consistency checks. No second task state machine or independent
 commit. Journal only identifiers and fingerprints. A current declaration is not
 an execution permit: display DECLARED_ACTIVE/DECLARED_REVOKED/EXPIRED, with
-conformance UNVERIFIED even when an unvalidated reference was supplied.
+conformance UNVERIFIED even when an unvalidated reference was supplied. Display
+CURRENT/STALE policy separately. Replaying an old approved decision returns only
+its historical declaration receipt, even after revocation/expiry/policy change;
+it cannot renew eligibility or create a new event/revision.
+
+Database review caught an orphan-decision edge: a second decision could reference
+the same grant/version created by another review. The foreign key now includes
+review_id in both directions. A real PostgreSQL regression reproduces the earlier
+admission and verifies the correction; null approved versions are rejected too.
 
 The next broker integration must validate actual configured capability evidence,
 root/origin/account/action/data/policy scope, current lease and budget reservation

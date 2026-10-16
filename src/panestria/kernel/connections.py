@@ -65,6 +65,7 @@ class ConnectionDeclaration:
     state: Literal["DECLARED_ACTIVE", "DECLARED_REVOKED", "EXPIRED"]
     policy_ref: str
     manifest: ConnectionManifest = field(repr=False)
+    policy_status: Literal["CURRENT", "STALE"]
     conformance_status: Literal["UNVERIFIED"] = "UNVERIFIED"
     authority: Literal["DECLARATION_ONLY"] = "DECLARATION_ONLY"
 
@@ -200,7 +201,11 @@ class ConnectionReviewService:
             if review.manifest.expires_at <= now[0]
             else "DECLARED_ACTIVE"
         )
-        return ConnectionDeclaration(grant_id, version, status, review.policy_ref, review.manifest)
+        policy = current_policy(uow, actor)
+        policy_status: Literal["CURRENT", "STALE"] = (
+            "CURRENT" if review.policy_ref == f"project-policy:{policy.version}:{policy.sha256()}" else "STALE"
+        )
+        return ConnectionDeclaration(grant_id, version, status, review.policy_ref, review.manifest, policy_status)
 
     def propose(
         self,
