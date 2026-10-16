@@ -419,6 +419,8 @@ def test_audit_actual_dump_restore_and_downgrade_refusal(configured, record_prop
     review = prepare(configured, request(configured))
     decide(configured, review)
     root = Path(__file__).resolve().parents[2]
+    with psycopg.connect(task["dsn"]) as c:
+        launch_history = c.execute("SELECT EXISTS(SELECT 1 FROM panestria.worker_invocation_launch)").fetchone()[0]
     refused = subprocess.run(
         [str(root / ".venv/bin/alembic"), "-c", "migrations/alembic.ini", "downgrade", "0026_claim_evidence"],
         cwd=root,
@@ -426,7 +428,12 @@ def test_audit_actual_dump_restore_and_downgrade_refusal(configured, record_prop
         capture_output=True,
         timeout=30,
     )
-    assert refused.returncode != 0 and b"connection grant audit exists" in refused.stderr
+    expected_guard = b"sandbox launch audit exists" if launch_history else b"connection grant audit exists"
+    assert refused.returncode != 0 and expected_guard in refused.stderr
+    with psycopg.connect(task["dsn"]) as c:
+        from panestria.api.local_server import SCHEMA_HEAD
+
+        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (SCHEMA_HEAD,)
     container = _fixture_container()
     backup = subprocess.run(
         [
@@ -511,7 +518,9 @@ def test_empty_migration_downgrade_and_reupgrade_preserve_existing_schema(r1_dat
                     timeout=30,
                 )
             with psycopg.connect(dsn) as c:
-                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0027_connection_reviews",)
+                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (
+                    "0028_sandbox_launch_intent",
+                )
                 assert c.execute("SELECT count(*) FROM panestria.connection_grant").fetchone() == (0,)
         finally:
             admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))

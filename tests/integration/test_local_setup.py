@@ -203,6 +203,9 @@ def test_setup_dump_restore_and_populated_downgrade_guard(r1_database):
                     True,
                 )
                 grant_history = c.execute("SELECT EXISTS(SELECT 1 FROM panestria.connection_grant)").fetchone()[0]
+                launch_history = c.execute(
+                    "SELECT EXISTS(SELECT 1 FROM panestria.worker_invocation_launch)"
+                ).fetchone()[0]
             # Use URI form for Alembic, never show credentials in assertion output.
             restored_url = r1_database.rsplit("/", 1)[0] + "/" + params["dbname"]
             guarded = subprocess.run(
@@ -214,7 +217,13 @@ def test_setup_dump_restore_and_populated_downgrade_guard(r1_database):
             )
             # The newest populated audit layer must stop downgrade first.
             # Verify the exact expected guard and unchanged setup/head below.
-            expected_guard = "connection grant audit exists" if grant_history else "local setup audit exists"
+            expected_guard = (
+                "sandbox launch audit exists"
+                if launch_history
+                else "connection grant audit exists"
+                if grant_history
+                else "local setup audit exists"
+            )
             assert guarded.returncode != 0 and expected_guard in guarded.stderr
             with psycopg.connect(make_conninfo(**params)) as c:
                 from panestria.api.local_server import SCHEMA_HEAD
