@@ -392,7 +392,7 @@ def test_actual_capture_dump_restore_and_guard_preserve_proof_and_offline_passag
             )
             assert result.returncode == 0, "synthetic source capture restore failed"
             with psycopg.connect(restored_dsn) as c:
-                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0025_source_capture",)
+                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0026_claim_evidence",)
                 passage = store.resolve(
                     UnitOfWork(c), reference(receipt, request, observations), task_id=request.scope.task_id
                 )
