@@ -357,7 +357,7 @@
       "aos_id": "AOS-008",
       "release": "R1",
       "lane": "live",
-      "planned_nodeid": "tests/integration/test_aos_008.py::test_effective_os_resource_limits",
+      "planned_nodeid": "tests/integration/test_aos_008.py::test_os_effective_uid_mounts_egress_and_limits",
       "expected": "Real host process namespace/UID/cgroup/mount/egress probes match manifest and enforce caps; unsupported feature is not PASS.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
       "requires_live_evidence": true,
@@ -371,7 +371,7 @@
       "planned_nodeid": "tests/integration/test_aos_008.py::test_sandbox_failure_cleanup",
       "expected": "Startup failure refuses unconfined fallback; orphan process cleanup uses identity and preserves unrelated workspace.",
       "fixture_scope": "synthetic unless explicitly live-scoped",
-      "requires_live_evidence": false,
+      "requires_live_evidence": true,
       "status": "NOT_RUN"
     },
     {

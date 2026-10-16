@@ -308,3 +308,21 @@ closed-output linger and cancellation after actual Running state reject cleanly.
 Evidence: evidence/native-offline-bootstrap-2026-10-16. This is BOOTSTRAP_ONLY;
 connected auth/container/proxy/MCP and current policy/grant/lease/budget still
 pending. No native task certificate or G1/G2/G3 acceptance.
+
+### 2026-10-16 10:38 UTC — reconcile lost sandbox create replies
+
+PR90 merged at `d0bbd89a7f7a5a49a383cd61b64a369798ea97a9`; exact PR head
+`a4f95071e9135179590fa4c0a2db8993ef4fcdec` CI38886468295 passed1487/51 live
+excluded in371.48s. The independent task/sandbox-create-reconcile fetched current
+main before branching and integrated verified PR90/main before qualification.
+Actual Docker plus an injected lost create reply exposed a stopped-container
+leak; the original failure is preserved. Launch nonce/profile/image/attempt/name/
+purpose/exact-ID reconciliation now removes only observed owned resources and
+keeps missing/uncertain outcomes truthful, with no implicit start or retry.
+Clean `4abb61d` passes115 focused default checks (29 new), seven actual OS probes
+and one actual native metadata case (two version/help commands, no auth/model).
+Evidence: evidence/sandbox-create-reconciliation-2026-10-16. A stale planned OS
+node caused an initial zero-test exit4; corrected actual nodes passed, and the
+plan/catalog mapping/live-required annotation is aligned without status promotion.
+The nonce is in memory; durable launch intent/controller-death recovery and all
+remaining native/grant/R1/R2/R3 scope are still pending. Owner state unchanged.
