@@ -17,7 +17,7 @@ from panestria.kernel.sandbox_launches import SandboxLaunchService
 from panestria.kernel.uow import UnitOfWork
 
 ROOT = Path(__file__).resolve().parents[2]
-HEAD = "0028_sandbox_launch_intent"
+HEAD = "0029_quota_observations"
 
 
 def migrate(dsn, direction, target):
@@ -30,7 +30,7 @@ def migrate(dsn, direction, target):
     )
 
 
-def test_actual_empty_downgrade_reapply_matches_observed_head28_schema(r1_database):
+def test_actual_empty_downgrade_reapply_matches_observed_current_schema(r1_database):
     name = "panestria_empty_launch_" + uuid4().hex
     dsn = r1_database.rsplit("/", 1)[0] + "/" + name
     with psycopg.connect(r1_database, autocommit=True) as admin:
@@ -59,8 +59,11 @@ def test_actual_backup_restore_retains_immutable_intent_and_event_counter_after_
     service = SandboxLaunchService()
     with psycopg.connect(r1_task["dsn"]) as c:
         service.record(UnitOfWork(c), actor, binding, identity, intent)
+    with psycopg.connect(r1_task["dsn"]) as c:
+        quota_history = c.execute("SELECT EXISTS(SELECT 1 FROM panestria.quota_observation)").fetchone()[0]
     refused = migrate(r1_task["dsn"], "downgrade", "0027_connection_reviews")
-    assert refused.returncode != 0 and b"sandbox launch audit exists" in refused.stderr
+    expected_guard = b"quota observation audit exists" if quota_history else b"sandbox launch audit exists"
+    assert refused.returncode != 0 and expected_guard in refused.stderr
     with psycopg.connect(r1_task["dsn"]) as c:
         assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (HEAD,)
         assert service.read(UnitOfWork(c), actor, binding, identity) == intent

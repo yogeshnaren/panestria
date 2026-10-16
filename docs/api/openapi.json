@@ -911,6 +911,75 @@
         },
         "summary": "Read Events"
       }
+    },
+    "/v2/quota/current": {
+      "post": {
+        "operationId": "current_quota_v2_quota_current_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Current Quota"
+      }
+    },
+    "/v2/quota/observations": {
+      "post": {
+        "operationId": "submit_observation_v2_quota_observations_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Submit Observation"
+      }
+    },
+    "/v2/quota/observations/{observation_id}": {
+      "get": {
+        "operationId": "read_observation_v2_quota_observations__observation_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "observation_id",
+            "required": true,
+            "schema": {
+              "title": "Observation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Observation"
+      }
     }
   }
 }

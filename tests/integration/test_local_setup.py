@@ -202,6 +202,7 @@ def test_setup_dump_restore_and_populated_downgrade_guard(r1_database):
                     receipt.policy_ref,
                     True,
                 )
+                quota_history = c.execute("SELECT EXISTS(SELECT 1 FROM panestria.quota_observation)").fetchone()[0]
                 grant_history = c.execute("SELECT EXISTS(SELECT 1 FROM panestria.connection_grant)").fetchone()[0]
                 launch_history = c.execute(
                     "SELECT EXISTS(SELECT 1 FROM panestria.worker_invocation_launch)"
@@ -218,7 +219,9 @@ def test_setup_dump_restore_and_populated_downgrade_guard(r1_database):
             # The newest populated audit layer must stop downgrade first.
             # Verify the exact expected guard and unchanged setup/head below.
             expected_guard = (
-                "sandbox launch audit exists"
+                "quota observation audit exists"
+                if quota_history
+                else "sandbox launch audit exists"
                 if launch_history
                 else "connection grant audit exists"
                 if grant_history

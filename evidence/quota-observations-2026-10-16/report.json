@@ -1,0 +1,151 @@
+{
+  "artifacts": {
+    "ci-first-openapi-failure.log": "a8ddf8305b3a5f46a8040fe7ae3f71a4d16f914a721e8f2afc6099213d863d09",
+    "development-api-cap-expectation-failure.xml": "817b97944e3d165e1936fa499ede2267b78a35b55b382428faad6b590d945b65",
+    "development-api-status-failure.xml": "c79034f614bbca3ca23b36934eeb9abeec3f91a3845f29df620365be52d6a586",
+    "development-before-status-fix-files.json": "ec783c617a1a1f83cb983cf436570457238b77133d1ecdbfd7c78563f5c86b80",
+    "development-ledger-40.xml": "a50f7da00d4a7dd77a59b4a6cc37a3f8bb918bbf335c99035749f0da59db4732",
+    "qualified-172.xml": "e498e8adeddf5d61ab2d76eeaac5dc5b315bce7297bc868ea068d30f4c0a37e4"
+  },
+  "checks": {
+    "focused_default_passed": 172,
+    "import_contracts_kept": 11,
+    "live_deselected": 1,
+    "mypy_source_files": 199,
+    "new_default_cases": 67,
+    "ruff": "PASS",
+    "secret_scan": "PASS"
+  },
+  "coverage": [
+    "strict decimal string/unit/time/version/source/provenance validation; no percent-to-request/token/cash conversion",
+    "actual PostgreSQL scoped immutable row/event transaction, rollback, duplicate replay and cross-project global-ID race",
+    "current view keeps source lanes and account/model/window limits distinct; late-arriving older reports cannot replace newer observation time",
+    "actual server-clock expiry, reset-passed and replay keep historical value but null effective capacity; newer same-lane unknown supersedes known",
+    "authenticated owner-only HTTP create/read/query, actual session revocation before transaction on all three routes, Host/Origin/CSRF/body-cap/forged-authority denials",
+    "actual empty downgrade/reapply observed-schema match, populated audit guard, pg_dump/restore with immutable metadata and continued global event cursor",
+    "direct DB FK/JSON identity/time/null/percentage/fraction/count constraints and read-time hash-corruption rejection",
+    "existing connection/launch/setup audit, research/provenance/schema and AOS012 unknown-usage regression coverage"
+  ],
+  "limitations": [
+    "PROVIDER_REPORTED and ESTIMATED ingestion tests use synthetic provenance fixtures; no supported live provider collector or quota reading is claimed",
+    "HTTP accepts OWNER_REPORTED/UNKNOWN only; a source hash and opaque account UUID are not conformance or enrollment",
+    "OBSERVATION_ONLY is not provider, privacy, billing, training, task-completion or background execution permission",
+    "no capacity aggregation or optimistic source priority; a scheduler must still handle simultaneous limits, other-client usage, reserves, exhaustion, permissions and exact billing eligibility",
+    "stale/unknown balance does not itself forbid future separately authorized bounded best-effort work; no queue/automatic capture enabled by this task",
+    "10000 immutable rows/project cap denies new input at capacity; reviewed retention/archive work remains required, without silent audit deletion",
+    "no complete AOS012/S4/TC05 or G1/G2/G3/owner-trial acceptance is asserted from component evidence",
+    "no provider/native/model/paid SDK/auth calls, new credentials/image/model downloads or owner checkout/database/service/cache changes"
+  ],
+  "observed_tests": {
+    "development-api-cap-expectation-failure.xml": [
+      {
+        "errors": "0",
+        "failures": "1",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "21",
+        "time": "9.046",
+        "timestamp": "2026-10-16T07:50:37.370929-07:00"
+      }
+    ],
+    "development-api-status-failure.xml": [
+      {
+        "errors": "0",
+        "failures": "5",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "21",
+        "time": "9.081",
+        "timestamp": "2026-10-16T07:49:57.522388-07:00"
+      }
+    ],
+    "development-ledger-40.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "40",
+        "time": "6.155",
+        "timestamp": "2026-10-16T07:48:07.807455-07:00"
+      }
+    ],
+    "qualified-172.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "yogesh-verisim",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "172",
+        "time": "214.561",
+        "timestamp": "2026-10-16T07:53:09.219873-07:00"
+      }
+    ]
+  },
+  "paid_sdk_calls": 0,
+  "prior_observations": [
+    {
+      "result": "40 passed6.17s; initial contracts/actual ledger cases, before later added cases",
+      "state": "dirty development"
+    },
+    {
+      "cause": "three revoked-session errors incorrectly mapped422; two fixture expectations missing JSON media type/required Settings database URL",
+      "fix": "map current authorization failures401/403; use explicit synthetic Settings and exact middleware content-type/body-cap expectations",
+      "result": "16 passed5 failed1 excluded9.10s",
+      "state": "dirty development; pre-fix file hashes retained"
+    },
+    {
+      "cause": "test expected403 for oversized JSON, but existing middleware enforces413 before transaction reauthorization",
+      "fix": "assert actual exact413/body-cap behavior; separate valid-body CSRF/session-revocation assertions retained",
+      "result": "20 passed1 failed1 excluded9.06s",
+      "state": "dirty development, not clean qualification"
+    },
+    {
+      "cause": "mounted quota routes were absent from generated docs/api/openapi.json",
+      "fix": "regenerate from actual mounted application; do not weaken contract assertion; fresh exact-head CI required",
+      "result": "1628 passed1 failed51 excluded506.06s; one upstream pypdf warning",
+      "state": "exact PR head0b140d4906e0bb7330a1653b9a7d99bcdaff2910 CI38920165866"
+    }
+  ],
+  "provider_authentication_calls": 0,
+  "release_authority": false,
+  "result": "PASS_COMPONENT",
+  "runtime_inference_calls": 0,
+  "schema": {
+    "actual_snapshot_lines": 1126,
+    "head": "0029_quota_observations",
+    "refresh": "cached pinned unique owned PostgreSQL random port32773; exact cleanup, no owner database"
+  },
+  "schema_version": 1,
+  "scope": "scoped immutable quota metadata, owner HTTP input and historical/current interpretation; no background dispatch or provider collector",
+  "source_commit": "cdf3e35e9ba90fc9439beb3175dba1bd0f540df6",
+  "source_sha256": {
+    ".importlinter": "bc75998b077f693591daffc90a4672f50965ab3750e1c8e4d9346895cdea7bb8",
+    "docs/contracts/schema-snapshot.txt": "788d107c0a395d52f2ce5e2ddeea2549a39889786520109c3aa04af7235e6d90",
+    "migrations/schema_fingerprint.txt": "788d107c0a395d52f2ce5e2ddeea2549a39889786520109c3aa04af7235e6d90",
+    "migrations/versions/0029_quota_observations.py": "fb1eab31e623108377009387a3df428c52fca7a75b1877fe883356e60eda82f6",
+    "pyproject.toml": "51bb953a36e78a1139b5334ad8e76e847d87ef323f02ff05c20183d18cf8f95f",
+    "src/panestria/api/local_server.py": "d637ea61c1785b11f1c6b11d3b2095fe9a380cb3339ad19c7afe762d9c0a859d",
+    "src/panestria/api/main.py": "c82fba5db445b48f0e02f3472628a6490d3c7669b061b4cf76b2d4e236fd5fd4",
+    "src/panestria/api/routes/quota.py": "b2aef6859f44905ca17122373aa5d292c75362615f2b3377cc46a3a07114863a",
+    "src/panestria/contracts/quota.py": "ab8abdc4dbe10a70e47f679459d41d2158be262d2c99775c8c57efdde06917b2",
+    "src/panestria/kernel/quota.py": "43dc1fa1abf690935ca9e0372f241f3abe322d4c00b3ef0fe1746451117af17c",
+    "tests/integration/test_connection_reviews.py": "a71eee62295dc6b9ace518f0c47b91f3af6d83e8da9d3772f641db4e053ee4ec",
+    "tests/integration/test_durable_launch_migration.py": "685c911a0d031a0499ac7ebb08f9e2e0362f2cb0752d997084f00fe4c27994fb",
+    "tests/integration/test_local_setup.py": "5795b8a85b85701ef27ac890b58d32d954de8f98431ef26358808c339ffeaece",
+    "tests/integration/test_quota_api.py": "01b4223c7908a83f6ea50685240ebb40ddc9e0ce29c5817e9c5477fefe6d6f19",
+    "tests/integration/test_quota_ledger.py": "0caca3189b4407f2781bcd60dd6c91a9d2015f29d0db8704c4f732e746d00396",
+    "tests/integration/test_quota_migration.py": "8d39ba8c1cc942269cefb184df4da1fed50fa6e8664b10127343e24953d7f6e2",
+    "tests/integration/test_research_requests.py": "3c088d0b8ac1151e24d0f4ebce7dab2e8a2b85df1b35a3286c4e95dc01ba6d30",
+    "tests/integration/test_research_source_provenance.py": "0e4f7acf4ea0002383ca0fab18f981cbed7882b4e9d2d7b16363838e50df14ad",
+    "tests/integration/test_research_source_records.py": "1d12ba409fface487a843c75c64f685dcca506e4b84a370314ae9c0eced91671",
+    "tests/quota_support.py": "b96ad5c7f53b94709f0ea13d30b21e04c7360e68a0b49c7b827c27bb31c1b15e",
+    "tests/unit/test_quota_contracts.py": "90475126dedb5b52a71d1fcc973f073b1e8ff1c1e2cb9239b24508d8dc5a60c6",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d"
+  },
+  "source_state_at_execution": "clean"
+}

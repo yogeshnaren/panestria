@@ -1,0 +1,11 @@
+{
+  "src/panestria/api/routes/quota.py": "902eef3524e58a7da561a17c66a31d62467e24c12f2f06996f737d40763b7be8",
+  "src/panestria/contracts/quota.py": "ab8abdc4dbe10a70e47f679459d41d2158be262d2c99775c8c57efdde06917b2",
+  "src/panestria/kernel/quota.py": "3442c46ce6207cc7fd26c9095cdca898073a6102b270308b6b24b29f802d41a6",
+  "migrations/versions/0029_quota_observations.py": "c26461eda70d0bb0a97dd6757dded59b5e01029ec8f220d1d4224761245b9c1a",
+  "tests/integration/test_quota_api.py": "829bd38ab8283944ae05558928cba8b20c6b9f14831e5666184fb11a801bda9c",
+  "tests/integration/test_quota_migration.py": "d66298c4b4aa667f1dd2a6c7d1e9aaab92655901a3b77a39e49f1945f1d1c7e2",
+  "tests/integration/test_quota_ledger.py": "a116eb37e3f117ad4541afbac4c5ea372afd6fae8f411c14ccb0505e9a4970f3",
+  "tests/unit/test_quota_contracts.py": "8452abf6342e3c45d45d5ca903ea990ba7711bbc039a252bda0576fc848eb97c",
+  "tests/quota_support.py": "b96ad5c7f53b94709f0ea13d30b21e04c7360e68a0b49c7b827c27bb31c1b15e"
+}
