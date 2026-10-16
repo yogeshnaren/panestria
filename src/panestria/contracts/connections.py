@@ -1,0 +1,142 @@
+"""Versioned connection declarations; validation is never a runtime permit."""
+
+from __future__ import annotations
+
+import hashlib
+import ipaddress
+import json
+import re
+from datetime import UTC
+from typing import Annotated, Literal, Self
+from urllib.parse import urlsplit
+
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, StrictInt, field_validator, model_validator
+
+from panestria.contracts.classification import CanonicalClass, classification_rank
+
+ConnectionId = Annotated[str, Field(pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")]
+Digest = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+ConnectionAction = Literal["read", "write", "send", "delete", "spend"]
+PolicyRef = Annotated[str, Field(pattern=r"^project-policy:[1-9][0-9]{0,18}:[0-9a-f]{64}$")]
+
+
+class ConnectionContract(BaseModel):
+    model_config = ConfigDict(
+        strict=True, frozen=True, extra="forbid", hide_input_in_errors=True, revalidate_instances="always"
+    )
+
+
+class ConnectionBudget(ConnectionContract):
+    max_calls: StrictInt = Field(ge=1, le=10_000)
+    max_bytes: StrictInt = Field(ge=1, le=64 * 1024 * 1024)
+    max_cash_microusd: StrictInt = Field(default=0, ge=0, le=1_000_000)
+    max_wall_seconds: StrictInt = Field(ge=1, le=3600)
+
+
+class ConnectionManifest(ConnectionContract):
+    schema_version: StrictInt = Field(default=1, ge=1, le=1)
+    owner_id: ConnectionId
+    project_id: ConnectionId
+    connector_ref: str = Field(pattern=r"^[a-z][a-z0-9-]{0,63}$")
+    connector_version: str = Field(pattern=r"^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$")
+    configuration_sha256: Digest
+    account_ref: ConnectionId
+    actions: tuple[ConnectionAction, ...] = Field(min_length=1, max_length=5)
+    data_classes: tuple[CanonicalClass, ...] = Field(min_length=1, max_length=4)
+    # Opaque immutable enrollment references, not unvalidated filesystem paths.
+    # A future file broker must resolve and hold actual roots before use.
+    root_refs: tuple[Digest, ...] = Field(default=(), max_length=16)
+    origins: tuple[str, ...] = Field(default=(), max_length=16)
+    budget: ConnectionBudget
+    expires_at: AwareDatetime
+    conformance_sha256: Digest | None = None
+
+    @field_validator("actions", "root_refs")
+    @classmethod
+    def canonical_set(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        if len(set(value)) != len(value):
+            raise ValueError("duplicate_connection_scope")
+        return tuple(sorted(value))
+
+    @field_validator("data_classes")
+    @classmethod
+    def canonical_labels(cls, value: tuple[CanonicalClass, ...]) -> tuple[CanonicalClass, ...]:
+        if len(set(value)) != len(value):
+            raise ValueError("duplicate_connection_scope")
+        return tuple(sorted(value, key=classification_rank))
+
+    @field_validator("origins")
+    @classmethod
+    def exact_https_origins(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        for origin in value:
+            try:
+                parts = urlsplit(origin)
+                host = parts.hostname or ""
+                if (
+                    len(origin.encode()) > 261
+                    or not host.isascii()
+                    or len(host) > 253
+                    or "." not in host
+                    or any(
+                        re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label) is None
+                        for label in host.split(".")
+                    )
+                    or origin != "https://" + host
+                ):
+                    raise ValueError
+                try:
+                    ipaddress.ip_address(host)
+                except ValueError:
+                    pass
+                else:
+                    raise ValueError
+            except (ValueError, UnicodeError):
+                raise ValueError("invalid_connection_origin") from None
+        if len(set(value)) != len(value):
+            raise ValueError("duplicate_connection_scope")
+        # Syntax only: DNS/SSRF/TLS and every redirect still require the broker.
+        return tuple(sorted(value))
+
+    @field_validator("expires_at")
+    @classmethod
+    def utc_expiry(cls, value: AwareDatetime) -> AwareDatetime:
+        return value.astimezone(UTC)
+
+    @model_validator(mode="after")
+    def bounded_scope(self) -> Self:
+        if not self.root_refs and not self.origins:
+            raise ValueError("unbounded_connection_scope")
+        if any(action in self.actions for action in ("write", "delete")) and not self.root_refs:
+            raise ValueError("connection_roots_required")
+        if "send" in self.actions and not self.origins:
+            raise ValueError("connection_origins_required")
+        if "spend" in self.actions and self.budget.max_cash_microusd == 0:
+            raise ValueError("connection_cash_budget_required")
+        return self
+
+    def sha256(self) -> str:
+        return hashlib.sha256(
+            json.dumps(self.model_dump(mode="json"), sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+
+
+class ConnectionReviewRequest(ConnectionContract):
+    proposal_id: ConnectionId
+    policy_ref: PolicyRef
+    grant_id: ConnectionId | None = None
+    expected_version: StrictInt = Field(ge=0, le=1_000_000)
+    operation: Literal["REPLACE", "REVOKE"]
+    manifest: ConnectionManifest | None = None
+
+    @model_validator(mode="after")
+    def change_shape(self) -> Self:
+        # Leave a final revision available to revoke the last active declaration.
+        if self.operation == "REPLACE" and self.expected_version == 1_000_000:
+            raise ValueError("connection_revision_limit")
+        if (self.operation == "REPLACE") != (self.manifest is not None):
+            raise ValueError("invalid_connection_change")
+        if self.grant_id is None and self.expected_version != 0:
+            raise ValueError("invalid_connection_version")
+        if self.operation == "REVOKE" and (self.grant_id is None or self.expected_version == 0):
+            raise ValueError("invalid_connection_revoke")
+        return self
