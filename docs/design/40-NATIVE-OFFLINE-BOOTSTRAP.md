@@ -29,3 +29,13 @@ does not establish authenticated inference, native tool/MCP conformance, current
 policy/grant/lease/budget authority, credential containment or G1/G2/G3. No existing
 host pilot is silently switched or enabled. Connected auth/container integration
 remains required.
+
+## Observed validation
+
+Clean source `1ae3209` passes 63 focused checks, including 32 new cases and
+11 actual Docker cases with an explicitly synthetic native executable. An opted-in
+actual native case passes with two pinned Claude version/help commands in the
+offline envelope. No login/profile mount, inference, gateway, API or new image
+is used. Source-bound evidence, metadata hashes and original prototype observations
+are retained in `evidence/native-offline-bootstrap-2026-10-16`. These observations
+do not expand the native task/auth conformance scope above.
