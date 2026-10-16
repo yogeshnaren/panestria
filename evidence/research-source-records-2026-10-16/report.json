@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "source_commit": "f611b8308c41d508561602186b15bd6322867f7b",
+  "worktree": "clean",
+  "result": "PASS",
+  "new_source_checks": 25,
+  "scope": "immutable metadata and exact scoped protected-byte lookup only; every returned result explicitly requires separate actual fetch authority",
+  "observed": [
+    "same caller transaction source/artifact-set/event commit and rollback; autocommit guard",
+    "exact request owner/project/goal/task FK and every immutable artifact hash/size/class pin",
+    "body/class/byte-budget/closed-contract revalidation; actor/request/task/fabricated IDs and changed retry denied",
+    "actual concurrent retry returns one record, one event and four exact artifact associations",
+    "deferred DB integrity checks refuse missing/extra artifact associations, null required JSON fields and direct incomplete complete-source metadata",
+    "raw/text hash and byte size verified from private scoped ResearchBlobStore; missing/corrupt bytes cannot resolve",
+    "synthetic body/hash/association corruption in test-only trigger-disabled rollback transactions rejected; production immutability restored and tested",
+    "actual pg_dump/pg_restore preserves source/artifact/event/trigger history and advances the same global sequence; no owner DB touched",
+    "downgrade with source audit refused without loss; empty schema upgrade/downgrade and launcher regressions passed in earlier63",
+    "separate source IDs retain complete and explicitly truncated versions of the same URL; never silently upgrade incomplete metadata"
+  ],
+  "observations": [
+    {
+      "file": "earlier-63.xml",
+      "source_commit": "7d19eafac5abe9f3ab1a91815a82dacc05ba63fd",
+      "result": "63 PASS: source22 plus existing request/schema/launcher41",
+      "sha256": "9fca8e6a68c2d064d2e8b8fbc609dac66cc037ef14c25bb121307047d7ba925a"
+    },
+    {
+      "file": "qualified-25.xml",
+      "source_commit": "f611b8308c41d508561602186b15bd6322867f7b",
+      "result": "25 PASS: actual source PostgreSQL/protected-byte/restore and isolated corruption guards",
+      "sha256": "e8c94df041eaba5a9506f6a04c4d6afd8ea5010476a65a1b5f2657640200e8f7"
+    }
+  ],
+  "source_sha256": {
+    "src/panestria/contracts/research.py": "7e10568bf4863c901a38ad5f9433914306f35440e6b76b1b0b91d1c3d45cd0f3",
+    "src/panestria/kernel/research_sources.py": "ab002394e67ed448785d9e7ef58acc49a5d3571f1f3f78d26f30eaf2a453007a",
+    "migrations/versions/0024_source_snapshot.py": "58aeeeec44b16b29856b12018ddef8f27f1f5a6c9666cf4ef50cf9e2ab162287",
+    "migrations/schema_fingerprint.txt": "2eeb6b5144c4cd316a2b11fcf93db010935a620018312d81800a95ee6c8ed395",
+    "tests/integration/test_research_source_records.py": "a388369186a3eaacb1fe8c084a7f7138e3558ad7534595a9d4e7f5bf3183e77f",
+    "src/panestria/api/local_server.py": "24b425205d1ce9d034fe8764da1950906ad0f6809cbde9b4ca3a50eb0f883934"
+  },
+  "schema_lines": 863,
+  "schema_generation": "actual unique ephemeral pinned PostgreSQL container on dynamically allocated loopback port32768, removed with its own volumes; active snapshots match",
+  "checks": [
+    "Ruff PASS",
+    "mypy PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "provider_inference_calls": 0,
+  "public_fetch_calls": 0,
+  "limitations": [
+    "fixtures explicitly contain SYNTHETIC_FETCH/READER_NOT_AUTHORITY receipts, not observed live fetch proof",
+    "no SourceStore provenance ledger, actual fetch/reader composition, trusted usable passage/citation/support authority, HTTP endpoint or task completion enabled",
+    "metadata body validation and protected retained bytes alone cannot establish successful authorized retrieval",
+    "earlier63 and final25 bind different source commits; not combined into a full gate/candidate pass",
+    "ordinary development Ruff/fixture formatting errors corrected before qualification; original15 and30 development passes not relabeled as final",
+    "full AOS013/G1/G2/G3 and actual owner trial remain unaccepted"
+  ]
+}

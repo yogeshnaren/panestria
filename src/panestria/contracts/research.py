@@ -189,3 +189,34 @@ class ClaimDraft(ResearchContract):
         if len({passage.request_id for passage in self.passages}) > 1:
             raise ValueError("research_claim_request_mismatch")
         return self
+
+
+class SourceSnapshotEvidence(ResearchContract):
+    """Trusted-controller metadata only; these references do not prove a live fetch."""
+
+    snapshot: SourceSnapshotRecord
+    fetch_receipt: ResearchArtifactRef
+    reader_receipt: ResearchArtifactRef | None = None
+
+    @model_validator(mode="after")
+    def receipt_scope(self) -> Self:
+        if self.snapshot.text is not None and self.reader_receipt is None:
+            raise ValueError("research_reader_receipt_required")
+        for receipt in (self.fetch_receipt, self.reader_receipt):
+            if receipt is not None and (
+                receipt.task_id != self.snapshot.scope.task_id
+                or classification_rank(receipt.privacy_label) < classification_rank(self.snapshot.privacy_label)
+            ):
+                raise ValueError("research_receipt_scope_or_label_mismatch")
+        return self
+
+    @property
+    def privacy_label(self) -> CanonicalClass:
+        labels = [self.snapshot.privacy_label, self.fetch_receipt.privacy_label]
+        if self.reader_receipt is not None:
+            labels.append(self.reader_receipt.privacy_label)
+        labels.extend(ref.privacy_label for ref in (self.snapshot.raw, self.snapshot.text) if ref is not None)
+        labels.extend(ref.privacy_label for ref in self.snapshot.redirect_receipts)
+        label = derive_classification(labels).effective
+        assert label is not None
+        return label

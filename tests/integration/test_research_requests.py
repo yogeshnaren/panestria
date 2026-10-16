@@ -214,7 +214,7 @@ def test_database_enforces_limits_without_service_and_guard_preserves_receipt(re
     )
     assert before.returncode != 0 and "research request audit exists" in before.stderr
     with psycopg.connect(dsn) as c:
-        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0023_research_request",)
+        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0024_source_snapshot",)
         assert ResearchRequestService().prepare(UnitOfWork(c), actor, request).replayed
 
 

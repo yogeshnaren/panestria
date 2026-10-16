@@ -40,3 +40,11 @@ Backup app and DBOS schemas consistently plus artifact/version manifest before u
 ## Revision 3 additive storage work
 
 The old numbered design revisions above are prospective logical groups, not the deployed Alembic chain. Inspect actual head and never rewrite applied migrations. Add scoped immutable profile ciphertext/key-reference metadata, audited legacy classification resolution, versioned connection/background policies, quota observations and offline-result/purpose/provenance relations as required by [revision 3](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md). No key material goes in DB/backups/worker settings; restricted profile plaintext must not enter general FTS. Reference/knowledge use and training eligibility are independent fields. Existing task/attempt/event/outbox state remains authoritative; all new rows enforce owner/project scope and tested restore/retention behavior.
+
+Source metadata is implemented in additive 0024_source_snapshot. It binds the
+full immutable request scope and pins every referenced artifact hash/size/class.
+A deferred exact-set constraint requires all and only the body-declared artifact
+associations. Source records and task events share the caller transaction/global
+counter; neither service commits independently. Guarded downgrade preserves any
+source audit. JSON metadata and retained bytes alone do not prove fetched source
+provenance; SourceStore authority remains a separate next obligation.
