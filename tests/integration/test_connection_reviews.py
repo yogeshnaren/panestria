@@ -4,6 +4,7 @@ import json
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
+from threading import Barrier
 from uuid import uuid4
 
 import psycopg
@@ -210,6 +211,63 @@ def test_concurrent_proposals_and_decisions_have_one_atomic_winner(configured):
         winners = list(pool.map(race, reviews))
     assert winners.count(2) == 1 and winners.count("connection_version_conflict") == 1
     assert current(configured, initial[0].grant_id).version == 2
+
+
+def test_same_proposal_id_racing_across_projects_never_leaks_or_leaves_an_orphan(configured, tmp_path):
+    task, actor, policy, service = configured
+    other = {name: str(uuid4()) for name in ("project", "goal", "contract", "task")}
+    other_actor = Actor(actor.owner_id, other["project"])
+    with psycopg.connect(task["dsn"]) as c:
+        c.execute("INSERT INTO panestria.project(id,owner_id) VALUES (%s,%s)", (other["project"], actor.owner_id))
+        c.execute(
+            "INSERT INTO panestria.goal(id,owner_id,project_id,intent,status) VALUES (%s,%s,%s,'synthetic','ACTIVE')",
+            (other["goal"], actor.owner_id, other["project"]),
+        )
+        c.execute(
+            "INSERT INTO panestria.goal_contract(id,goal_id,version,body,sha256) VALUES (%s,%s,1,'{}',%s)",
+            (other["contract"], other["goal"], "ab" * 32),
+        )
+        c.execute(
+            "INSERT INTO panestria.task(id,goal_id,contract_id,name,state) VALUES (%s,%s,%s,'synthetic','READY')",
+            (other["task"], other["goal"], other["contract"]),
+        )
+        c.commit()
+        PolicyService(CertificateStore(tmp_path, {})).initialize(UnitOfWork(c), other_actor, other["task"])
+        c.commit()
+        other_policy = active_policy_ref(UnitOfWork(c), other_actor.owner_id, other_actor.project_id)
+    identifier = str(uuid4())
+    barrier = Barrier(2)
+
+    class CrossProjectRace(UnitOfWork):
+        def execute(self, query, params=()):
+            if "INSERT INTO panestria.connection_grant_review" in query:
+                barrier.wait(timeout=10)
+            return super().execute(query, params)
+
+    def submit(item):
+        who, task_id, ref = item
+        try:
+            with psycopg.connect(task["dsn"]) as c:
+                result = service.propose(
+                    CrossProjectRace(c),
+                    who,
+                    task_id,
+                    proposal(ref, manifest(who.owner_id, who.project_id), proposal_id=identifier),
+                )
+                return result.grant_id
+        except KernelDenied as error:
+            return error.code
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(submit, [(actor, task["task"], policy), (other_actor, other["task"], other_policy)]))
+    assert results.count("connection_proposal_conflict") == 1
+    with psycopg.connect(task["dsn"]) as c:
+        assert c.execute(
+            "SELECT count(*) FROM panestria.connection_grant WHERE owner_id=%s", (actor.owner_id,)
+        ).fetchone() == (1,)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.connection_grant_review WHERE id=%s", (identifier,)
+        ).fetchone() == (1,)
 
 
 def test_database_immutability_and_deferred_pointer_are_enforced(configured):

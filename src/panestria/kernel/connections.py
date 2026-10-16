@@ -282,11 +282,12 @@ class ConnectionReviewService:
                 "INSERT INTO panestria.connection_grant(id,owner_id,project_id) VALUES (%s,%s,%s)",
                 (grant_id, actor.owner_id, actor.project_id),
             )
-        uow.execute(
+        inserted = uow.execute(
             "INSERT INTO panestria.connection_grant_review(id,grant_id,owner_id,project_id,goal_id,task_id,"
             "expected_version,operation,request_sha256,manifest_sha256,manifest_body,"
             "policy_ref,effect_digest,expires_at) "
-            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s::jsonb,%s,%s,%s)",
+            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s::jsonb,%s,%s,%s) "
+            "ON CONFLICT(id) DO NOTHING RETURNING id",
             (
                 change.proposal_id,
                 grant_id,
@@ -303,7 +304,11 @@ class ConnectionReviewService:
                 digest,
                 expiry,
             ),
-        )
+        ).fetchone()
+        if inserted is None:
+            # A different project can race the globally unique proposal ID.
+            # Caller rollback discards this attempt's unreferenced root too.
+            raise KernelDenied("connection_proposal_conflict")
         append_event(
             uow,
             goal_id=locked[0],
