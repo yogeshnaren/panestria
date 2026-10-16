@@ -151,7 +151,7 @@ def test_actual_socket_concurrency_and_attempt_caps_close_only_owned_channels(tm
             with socket.create_connection(server.server_address, timeout=2) as first:
                 with socket.create_connection(server.server_address, timeout=2) as second:
                     deadline = time.monotonic() + 2
-                    while len(server.budget.sockets) < 4 and time.monotonic() < deadline:
+                    while (len(server.budget.sockets) < 4 or upstream.accepted < 2) and time.monotonic() < deadline:
                         time.sleep(0.005)
                     assert len(server.budget.sockets) == 4
                     with socket.create_connection(server.server_address, timeout=2) as third:
