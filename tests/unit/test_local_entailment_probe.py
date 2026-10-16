@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from panestria.contracts.inference import InferenceResult, InferenceUnavailable, Usage
-from panestria.execution.entailment_probe import LocalEntailmentProbe
+from panestria.execution.entailment_probe import LocalEntailmentProbe, observation_json
 from panestria.inference.local import LocalProvider
 from panestria.inference.runtime import MODEL
 
@@ -43,6 +43,9 @@ def test_injected_outputs_keep_unknown_and_refuse_extra_or_duplicate_fields(monk
     if reason == "invalid_verdict":
         assert all(c.prediction.verdict == "UNKNOWN" for c in result.cases)
     assert result.authority == "LOCAL_MODEL_OBSERVATION_ONLY"
+    encoded = json.loads(observation_json(result))
+    assert len(encoded["cases"]) == 36
+    assert set(encoded["cases"][0]["prediction"]) == {"case_id", "verdict"}
 
 
 def test_provider_failure_retains_only_called_cases_and_has_no_fake_full_score(monkeypatch):

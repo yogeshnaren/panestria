@@ -1,14 +1,12 @@
 """Actual constrained offline model outcomes, not a claimed semantic quality/release pass."""
 
 import asyncio
-import json
 import os
-from dataclasses import asdict
 from pathlib import Path
 
 import pytest
 
-from panestria.execution.entailment_probe import LocalEntailmentProbe
+from panestria.execution.entailment_probe import LocalEntailmentProbe, observation_json
 from panestria.inference.local import LocalProvider
 from panestria.inference.runtime import ModelRuntime
 
@@ -54,7 +52,7 @@ def test_actual_offline_entailment_outcomes_are_recorded_without_inventing_quali
 ):
     corpus = Path(__file__).resolve().parents[1] / "fixtures/research/snli-v1/corpus.json"
     result = asyncio.run(LocalEntailmentProbe(actual_entailment_model).run(corpus, fold, wall_seconds=180.0))
-    record_property("actual_entailment_observation", json.dumps(asdict(result), sort_keys=True))
+    record_property("actual_entailment_observation", observation_json(result))
     assert result.status == "COMPLETE" and len(result.cases) == 36, result.reason
     assert result.score is not None and result.score.authority == "PREDICTION_METRICS_ONLY"
     record_property(

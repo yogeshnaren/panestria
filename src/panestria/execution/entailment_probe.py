@@ -6,7 +6,7 @@ import hashlib
 import json
 import threading
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Literal
 from uuid import uuid4
@@ -59,6 +59,14 @@ class EntailmentObservation:
     rubric_sha256: str = RUBRIC_SHA256
     corpus_sha256: str = SNLI_SUBSET_SHA256
     authority: Literal["LOCAL_MODEL_OBSERVATION_ONLY"] = "LOCAL_MODEL_OBSERVATION_ONLY"
+
+
+def observation_json(observation: EntailmentObservation) -> str:
+    """Explicit structured prediction serialization; no raw model text or string fallback."""
+    body = asdict(observation)
+    for case in body["cases"]:
+        case["prediction"] = case["prediction"].model_dump(mode="json")
+    return json.dumps(body, sort_keys=True, allow_nan=False)
 
 
 def _pairs(items: list[tuple[str, object]]) -> dict[str, object]:
