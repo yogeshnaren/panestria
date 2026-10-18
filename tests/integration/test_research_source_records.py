@@ -293,7 +293,7 @@ def test_source_audit_downgrade_is_refused_without_history_loss(source_record):
     )
     assert done.returncode != 0 and b"source snapshot audit exists" in done.stderr
     with psycopg.connect(dsn) as c:
-        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0029_quota_observations",)
+        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0030_search_admission",)
         assert commit(c, actor, evidence).seq == receipt.seq
 
 

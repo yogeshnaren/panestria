@@ -406,7 +406,8 @@
           "slice_developer_days_target": 1,
           "evidence_refs": [
             "evidence/research-public-fetch-2026-10-15/report.json",
-            "evidence/configured-search-transport-2026-10-18/report.json"
+            "evidence/configured-search-transport-2026-10-18/report.json",
+            "evidence/search-admission-2026-10-18/report.json"
           ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-019-implementation-plan.md"

@@ -19,7 +19,7 @@ from panestria.kernel.uow import UnitOfWork
 from quota_support import observation
 
 ROOT = Path(__file__).resolve().parents[2]
-HEAD = "0029_quota_observations"
+HEAD = "0030_search_admission"
 
 
 def migrate(dsn, direction, target):

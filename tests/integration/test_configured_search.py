@@ -23,6 +23,8 @@ def search_server():
     class Handler(BaseHTTPRequestHandler):
         def do_POST(self):
             body = self.rfile.read(int(self.headers["Content-Length"]))
+            if state.get("on_request") is not None:
+                state["on_request"]()
             state["requests"].append((self.path, dict(self.headers), body))
             raw = state["body"]
             if raw is None:

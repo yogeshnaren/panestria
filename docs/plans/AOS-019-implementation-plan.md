@@ -2,6 +2,12 @@
 
 **Release:** R2. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS (fetch and explicit destination policy components). **Tests:** component evidence retained; complete item/release acceptance NOT_RUN. **Depends on:** AOS-008, AOS-009, AOS-013. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
+Current component continuation: [durable search admission](../design/50-DURABLE-SEARCH-ADMISSION.md)
+and its [checks/limits](../testing/SEARCH_ADMISSION.md) bind the configured transport
+to a fixed task-wide query budget and committed outbound disclosure. AOS-019-S1
+remains IN_PROGRESS: owner-facing workflow and actual configured-provider/OS
+qualification are pending. No native Build certificate is reused as web authority.
+
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-019.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
 ## Outcome and scope

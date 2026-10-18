@@ -1,0 +1,22 @@
+{
+  "purpose": "Synchronize current documented schema with actual migration-30 fingerprint; preserve existing migration invariant",
+  "source_commit": "fe668c5d3eb576a0a22e266a7d2183ef28dfbd71",
+  "worktree_state": "clean",
+  "failed_ci": {
+    "run": 39137623966,
+    "head": "8f0543056e65a7b85c7921e39e2816eafad10d28",
+    "passed": 1975,
+    "failed": 1,
+    "failure": "test_aos_002_migration.py:167 current documented schema snapshot differed from observed head30 fingerprint"
+  },
+  "correction": "docs/contracts/schema-snapshot.txt synchronized with actual captured migrations/schema_fingerprint.txt; no constraint or assertion weakened, no runtime package bytes changed",
+  "command": "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_aos_002_migration.py::test_kernel_migration_rejects_bad_scope_and_reapplies -q --junitxml=/tmp/panestria-search-migration-correction.xml",
+  "checks": 1,
+  "seconds": 7.97,
+  "junit_sha256": "ef3402de7f2bb8136ed84b774abfa7cd357608d5acf4688fac6cc70229249e4f",
+  "schema_snapshot_sha256": "2e4a1df9de8da81cca2ad74ffca8f0b6a1c9bed8687a34ddd2587eaaddd3c568",
+  "limits": [
+    "Actual disposable PostgreSQL migration check only; earlier 40-check report retains its original source",
+    "Replacement exact-head CI still required before merge; no release or live search pass"
+  ]
+}

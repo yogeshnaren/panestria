@@ -21,7 +21,8 @@ owner/project/task permission, enforce the durable query count and commit the
 query/configuration/scope hashes to the outbound disclosure ledger before
 returning. No socket exists before that callback succeeds. The adapter never
 grants policy or creates a second task store. Binding that callback to the kernel
-and exposing the bounded Delegate workflow are subsequent work; do not connect
+is implemented in [durable search admission](SEARCH_ADMISSION.md). Exposing the
+bounded Delegate workflow remains subsequent work; do not connect
 an untrusted caller to a permissive callback.
 
 V1 accepts PUBLIC plain queries up to 512 UTF-8 bytes, response budgets of
@@ -52,7 +53,7 @@ SearXNG instance or live upstream proof. The
 preserves that distinction and the inspected official protocol/source revision.
 No upstream implementation was copied, installed or executed.
 
-Live configured search, durable query admission/ledger, the bounded brief flow
+Live configured search qualification and the bounded brief flow
 and qualified semantic support remain pending. Prior local/native entailment
 preflights do not grant automatic support authority. All R2 items remain
 IN_PROGRESS, and G2 remains NOT_RUN. Ask/Build are unchanged when search is absent.
