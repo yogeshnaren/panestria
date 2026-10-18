@@ -109,12 +109,13 @@ def test_lease_acquisition_rolls_back_with_event(r1_task: dict[str, str]) -> Non
         ).fetchone() == (0,)
 
 
-def test_lease_migration_roundtrip_preserves_r0_rows(r1_task: dict[str, str]) -> None:
+def test_lease_migration_roundtrip_preserves_r0_rows(r1_migration_task: dict[str, str]) -> None:
     import os
     import subprocess
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[2]
+    r1_task = r1_migration_task
     for target in ("0004_check_candidate", "head"):
         result = subprocess.run(
             [
