@@ -1,0 +1,30 @@
+{
+  "purpose": "Real operator qualification for PUBLIC native Bash runtime only",
+  "result": {
+    "candidate_commit": "3f07e4b4042561597e3e9877b996103ba91ba5bb",
+    "cases": 11,
+    "certificate_sha256": "8807471e90d6ab4d8c8ec39b98c9a9b34a042ca2c34b093949570fa35f5ffc46",
+    "expires_at": "2026-10-19T13:21:31.031374+00:00",
+    "release_gate": "NOT_EVALUATED",
+    "run": "run-d0ac67733db2492a94738a2155f39d4a",
+    "scope": "PUBLIC_BASH_RUNTIME_ONLY",
+    "status": "PASS"
+  },
+  "raw_junit_sha256": "7915f1bc8e36159b16fcf7e3fea652d2cdaf49ca8a22bd0159e8dc218f5a7ba2",
+  "elapsed_seconds": "25.819",
+  "runtime_versions": {
+    "binary_sha256": "6c752e2cc7c110c9df15f26d8d134d438c5ae95dbd610efc1a308bf7f9c5f6c1",
+    "image": "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9",
+    "profile": "claude-subscription-public-bash-v1",
+    "source_sha256": "91a21786f4854ad0d20edad8b1a3dcba6076246d4ffe56976b7493cbab9736cc"
+  },
+  "scope": [
+    "11 real fixed conformance checks; exact clean candidate is retained in every JUnit record",
+    "Authenticated native inference stays in the trusted host process; model-invoked Bash tools run in the separate secret-free OS sandbox",
+    "No test certificate fixture was used to issue this runtime certificate",
+    "The protected certificate store is private operator state, outside Git; report contains only its digest",
+    "Certificate expires after 24 hours and changes to runtime source, pinned binary, profile or worker image invalidate it",
+    "No project policy grant, private export permission, release gate pass or human owner acceptance is implied",
+    "AOS-016-TC04 remains DEFERRED NOT PASS; no API key, OpenAI inference, extra paid usage or implicit fallback"
+  ]
+}

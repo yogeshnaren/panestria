@@ -9,7 +9,7 @@ acceptance checkpoint. Revision 3 remains the active plan; R4–R7 are not start
 | R0 durable synthetic kernel | Accepted for its historical candidate; preserved G0 evidence | Do not reopen accepted R0 work |
 | R1 offline Ask and hardware runtime | Working local GPU inference; all ten network-disabled Ask questions pass; restart and bounded GPU pressure pass | Reconcile all clauses and qualify the cumulative G1 candidate |
 | R1 browser/session access | PR104 merged; revoked sessions clear Ask output and cannot receive cached SSE resync data | Include in the cumulative candidate evaluation |
-| R1 one-worker Build | Bounded Bash, selected PUBLIC context admission, durable native launch, frozen checks and exact approval request implemented; fixed proposal and read-check profiles retained | Real operator runtime qualification, supported owner CLI entry point and cumulative G1 qualification remain |
+| R1 one-worker Build | Bounded Bash, selected PUBLIC context admission, durable native launch, frozen checks and exact approval request implemented; real operator runtime qualification passes 11 conformance checks | Supported owner task CLI entry point and cumulative G1 qualification remain |
 | R1 paid SDK compatibility | Deferred by owner; subscription/local-only operation selected | AOS-016-TC04 is not passed. Original required gate manifest remains intact |
 | R2 verified Delegate | HTTPS fetch, isolated readers and retained source/claim components exist; release not accepted | Connect the components into the verified research workflow and qualify G2 |
 | R3 complete MVP | Partial components; release not accepted | Finish remaining revision-3 outcomes, multi-worker integration, dashboard, quota/capture, release qualification and genuine owner trial |
@@ -36,14 +36,18 @@ preserving earlier reports unchanged. It is a snapshot, not peak memory.
 
 ## Next concrete delivery
 
-Finish real operator runtime qualification and the supported owner CLI for the
-admitted Build backend, then reconcile the remaining R1 gate clauses on one
+Finish the supported owner task CLI for the admitted Build backend, then
+reconcile the remaining R1 gate clauses on one
 candidate. The [Bash report](../evidence/r1-native-bash-build-2026-10-18/report.json)
 records actual subscription conformance and exact scripted approval. The
 [admission guide](testing/ADMITTED_NATIVE_BUILD.md) covers selected source context,
 current cloud policy, one-use native launch and cancellation. Its changed-path
 native test uses a labeled certificate fixture; it does not certify production.
-The generic owner-project launch endpoint is not enabled by these backend tasks.
+The [operator qualification command](testing/BUILD_RUNTIME_QUALIFICATION.md)
+now issues an expiring runtime-only certificate from actual clean-source
+conformance. Its 11 real checks pass, with no fixture certificate. A runtime
+certificate grants no project policy; the generic owner-project launch endpoint
+is not enabled by these backend tasks.
 
 Progress is measured by usable outcomes and their remaining acceptance clauses,
 not the number of commits, PRs or tests. The machine-readable phase and slice

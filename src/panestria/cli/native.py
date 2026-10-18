@@ -1,4 +1,4 @@
-"""Explicit local metadata inspection; this command never starts an agent turn."""
+"""Local metadata inspection and explicitly opted-in PUBLIC runtime qualification."""
 
 from __future__ import annotations
 
@@ -11,6 +11,23 @@ import typer
 from panestria.brokers.harness.cli_profile import BinaryPin, CliProfileProbe, NativeProbeUnavailable
 
 native_app = typer.Typer(no_args_is_help=True)
+
+
+@native_app.command("qualify-build")
+def qualify_build_command(
+    evidence_directory: Annotated[Path, typer.Option("--evidence-directory")],
+    public_subscription_smoke: Annotated[bool, typer.Option("--public-subscription-smoke")] = False,
+) -> None:
+    """Run fixed PUBLIC conformance and issue an expiring runtime-only certificate."""
+    from panestria.execution.native_qualification import QualificationUnavailable, qualify
+
+    try:
+        result = qualify(evidence_directory, public_subscription_smoke=public_subscription_smoke)
+    except (QualificationUnavailable, OSError, ValueError):
+        result = {"status": "UNAVAILABLE", "reason": "qualification_prerequisite_unavailable"}
+    typer.echo(json.dumps(result, sort_keys=True))
+    if result["status"] != "PASS":
+        raise typer.Exit(1)
 
 
 @native_app.command("inspect")
