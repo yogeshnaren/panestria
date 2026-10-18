@@ -500,7 +500,7 @@ class DockerSandbox:
                 reason = "memory_limit"
             elif reason == "completed" and exit_code != 0:
                 reason = "process_failed"
-            elif reason == "completed" and process.returncode != 0:
+            elif reason == "completed" and (process.returncode != 0 or state.get("Status") != "exited"):
                 reason = "attachment_failed"
             if reason == "attachment_failed":
                 output.clear()  # Failed attach diagnostics can contain host paths.

@@ -138,7 +138,14 @@ def test_actual_small_os_pipes_do_not_require_a_writer_thread(tmp_path, monkeypa
     class PipeState(DockerSandbox):
         def _inspect(self, identity):
             code = children[0].poll()
-            return {"State": {"Running": code is None, "ExitCode": code or 0, "OOMKilled": False}}
+            return {
+                "State": {
+                    "Running": code is None,
+                    "ExitCode": code or 0,
+                    "OOMKilled": False,
+                    "Status": "running" if code is None else "exited",
+                }
+            }
 
         def _docker(self, args, **kwargs):
             assert args == ["kill", "ab" * 32]

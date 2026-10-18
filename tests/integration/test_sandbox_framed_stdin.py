@@ -100,7 +100,8 @@ print(json.dumps({'sizes':[len(frame.script),len(frame.request)],'hashes':[hashl
     removed(receipt)
 
 
-def test_failed_attach_cannot_report_an_unstarted_container_as_success(tmp_path, monkeypatch):
+@pytest.mark.parametrize("client_exit", [0, 42])
+def test_failed_attach_cannot_report_an_unstarted_container_as_success(tmp_path, monkeypatch, client_exit):
     import sys
 
     root, workspace, profile = setup(tmp_path)
@@ -117,7 +118,7 @@ def test_failed_attach_cannot_report_an_unstarted_container_as_success(tmp_path,
                     sys.executable,
                     "-I",
                     "-c",
-                    "import sys;sys.stdin.buffer.read();print('SYNTHETIC_HOST_DIAGNOSTIC');sys.exit(42)",
+                    f"import sys;sys.stdin.buffer.read();print('SYNTHETIC_HOST_DIAGNOSTIC');sys.exit({client_exit})",
                 ],
                 **kwargs,
             )
