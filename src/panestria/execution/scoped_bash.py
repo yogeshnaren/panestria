@@ -293,6 +293,7 @@ class ScopedBashController:
             checks,
             registry,
             policy=policy,
+            deadline=deadline,
         )
         for raw in verified.reports:
             self.reports.write_report(raw)

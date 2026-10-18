@@ -820,7 +820,8 @@
       "prompt_ref": "cursor/prompts/AOS-010-S1.md",
       "evidence_refs": [
         "evidence/r1-native-admission-2026-10-18/report.json",
-        "evidence/r1-runtime-qualification-2026-10-18/report.json"
+        "evidence/r1-runtime-qualification-2026-10-18/report.json",
+        "evidence/r1-owner-build-cli-2026-10-18/report.json"
       ],
       "implementation_note": "Native inspection, bounded Bash and admitted selected-context controller implemented. Current certificate/owner CLI qualification and complete clause evaluation remain; test-only certificate is not a release pass."
     },
@@ -849,7 +850,8 @@
       "evidence_refs": [
         "evidence/r1-native-bash-build-2026-10-18/report.json",
         "evidence/r1-native-admission-2026-10-18/report.json",
-        "evidence/r1-runtime-qualification-2026-10-18/report.json"
+        "evidence/r1-runtime-qualification-2026-10-18/report.json",
+        "evidence/r1-owner-build-cli-2026-10-18/report.json"
       ],
       "implementation_note": "Native inspection, bounded Bash and admitted selected-context controller implemented. Current certificate/owner CLI qualification and complete clause evaluation remain; test-only certificate is not a release pass."
     },
@@ -881,7 +883,8 @@
       "evidence_refs": [
         "evidence/r1-native-bash-build-2026-10-18/report.json",
         "evidence/r1-native-admission-2026-10-18/report.json",
-        "evidence/r1-runtime-qualification-2026-10-18/report.json"
+        "evidence/r1-runtime-qualification-2026-10-18/report.json",
+        "evidence/r1-owner-build-cli-2026-10-18/report.json"
       ],
       "implementation_note": "Native inspection, bounded Bash and admitted selected-context controller implemented. Current certificate/owner CLI qualification and complete clause evaluation remain; test-only certificate is not a release pass."
     },
@@ -908,7 +911,10 @@
       ],
       "target_developer_days": 1,
       "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-027a-S1.md"
+      "prompt_ref": "cursor/prompts/AOS-027a-S1.md",
+      "evidence_refs": [
+        "evidence/r1-owner-build-cli-2026-10-18/report.json"
+      ]
     },
     {
       "id": "AOS-027a-S2",
@@ -933,7 +939,8 @@
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-027a-S2.md",
       "evidence_refs": [
-        "evidence/r1-native-bash-build-2026-10-18/report.json"
+        "evidence/r1-native-bash-build-2026-10-18/report.json",
+        "evidence/r1-owner-build-cli-2026-10-18/report.json"
       ],
       "implementation_note": "Bounded Bash backend and actual synthetic native-to-verifier-to-exact-merge flow qualified; generic owner-project cloud admission/certificate integration and complete clause evaluation remain pending."
     },
@@ -963,7 +970,8 @@
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-027a-S3.md",
       "evidence_refs": [
-        "evidence/r1-native-bash-build-2026-10-18/report.json"
+        "evidence/r1-native-bash-build-2026-10-18/report.json",
+        "evidence/r1-owner-build-cli-2026-10-18/report.json"
       ],
       "implementation_note": "Bounded Bash backend and actual synthetic native-to-verifier-to-exact-merge flow qualified; generic owner-project cloud admission/certificate integration and complete clause evaluation remain pending."
     },
