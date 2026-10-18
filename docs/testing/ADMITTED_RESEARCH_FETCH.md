@@ -48,3 +48,8 @@ Closed diagnostics distinguish body-size/truncation, fetch deadline, HTTP error,
 reader truncation/unsupported output and unavailable operations. Raw exception
 text/URLs are not added to events. The DB restore test preserves the same CAS
 root; it is a Postgres restore check, not a complete machine/CAS backup claim.
+
+The [source-bound report](../../evidence/admitted-research-fetch-2026-10-18/report.json)
+records10 final checks, the separate prior109/110 observation and its corrected
+restore assertion. Source pins and failed XML remain unchanged. Exact-head CI
+separately establishes default-suite compatibility; neither is a release pass.

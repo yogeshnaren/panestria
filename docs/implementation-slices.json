@@ -1649,8 +1649,10 @@
       "prompt_ref": "cursor/prompts/AOS-019-S2.md",
       "evidence_refs": [
         "evidence/research-public-fetch-2026-10-15/report.json",
-        "evidence/configured-search-transport-2026-10-18/report.json"
-      ]
+        "evidence/configured-search-transport-2026-10-18/report.json",
+        "evidence/admitted-research-fetch-2026-10-18/report.json"
+      ],
+      "implementation_note": "Admitted source/body reservations, per-hop disclosures and fetch/read/retain/brief components; actual live runtime, new-request orchestration and semantic/G2 qualification remain pending."
     },
     {
       "id": "AOS-019-S3",
@@ -1970,9 +1972,10 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-023-S2.md",
-      "implementation_note": "Offline retained-evidence inspection and private export component only. New-request execution, admitted fetch, semantic support and full Delegate gate remain pending.",
+      "implementation_note": "Admitted source/body reservations, per-hop disclosures and fetch/read/retain/brief components; actual live runtime, new-request orchestration and semantic/G2 qualification remain pending.",
       "evidence_refs": [
-        "evidence/retained-research-brief-2026-10-18/report.json"
+        "evidence/retained-research-brief-2026-10-18/report.json",
+        "evidence/admitted-research-fetch-2026-10-18/report.json"
       ]
     },
     {
