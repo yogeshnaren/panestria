@@ -208,7 +208,7 @@ def test_real_gateway_uses_durable_claim_and_refuses_replay(r1_task: dict[str, s
         request.sha256(),
         registry.sha256(),
         workspace,
-        SandboxProfile(uid=os.getuid(), gid=os.getgid()),
+        SandboxProfile(uid=os.getuid(), gid=os.getgid(), stdin_mode="native-frame-v1"),
         time.monotonic() + 15,
     )
 
