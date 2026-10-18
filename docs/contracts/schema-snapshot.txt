@@ -444,6 +444,31 @@ column research_source_snapshot request_id uuid NO
 column research_source_snapshot schema_version int4 NO
 column research_source_snapshot seq int8 NO
 column research_source_snapshot task_id uuid NO
+column search_dispatch attempt_id uuid NO
+column search_dispatch configuration_sha256 bpchar NO
+column search_dispatch created_at timestamptz NO
+column search_dispatch disclosure jsonb NO
+column search_dispatch disclosure_sha256 bpchar NO
+column search_dispatch id uuid NO
+column search_dispatch lease_epoch int8 NO
+column search_dispatch ordinal int4 NO
+column search_dispatch query_sha256 bpchar NO
+column search_dispatch request_id uuid NO
+column search_dispatch task_id uuid NO
+column search_outcome candidate_count int4 YES
+column search_outcome created_at timestamptz NO
+column search_outcome dispatch_id uuid NO
+column search_outcome response_sha256 bpchar YES
+column search_outcome status text NO
+column search_plan configuration_sha256 bpchar NO
+column search_plan contract_sha256 bpchar NO
+column search_plan created_at timestamptz NO
+column search_plan max_queries int4 NO
+column search_plan plan_sha256 bpchar NO
+column search_plan policy_sha256 bpchar NO
+column search_plan request_id uuid NO
+column search_plan request_sha256 bpchar NO
+column search_plan task_id uuid NO
 column side_effect approval_request_id uuid YES
 column side_effect classification text YES
 column side_effect dispatch_attempts int4 NO
@@ -922,6 +947,48 @@ constraint panestria.research_source_snapshot u UNIQUE (id, request_id, task_id,
 constraint panestria.research_source_snapshot u UNIQUE (id, task_id)
 constraint panestria.research_source_snapshot u UNIQUE (id, task_id, body_sha256)
 constraint panestria.research_source_snapshot u UNIQUE (seq)
+constraint panestria.search_dispatch c CHECK (
+CASE
+    WHEN ((jsonb_typeof((disclosure -> 'query_bytes'::text)) = 'number'::text) AND ((disclosure ->> 'query_bytes'::text) ~ '^[0-9]{1,3}$'::text)) THEN ((((disclosure ->> 'query_bytes'::text))::integer >= 1) AND (((disclosure ->> 'query_bytes'::text))::integer <= 512))
+    ELSE false
+END)
+constraint panestria.search_dispatch c CHECK (((((disclosure -> 'scope'::text) ->> 'task_id'::text) = (task_id)::text) IS TRUE))
+constraint panestria.search_dispatch c CHECK ((((disclosure ->> 'configuration_sha256'::text) = (configuration_sha256)::text) IS TRUE))
+constraint panestria.search_dispatch c CHECK ((((disclosure ->> 'privacy_class'::text) = 'PUBLIC'::text) IS TRUE))
+constraint panestria.search_dispatch c CHECK ((((disclosure ->> 'provider'::text) = 'searxng-local'::text) IS TRUE))
+constraint panestria.search_dispatch c CHECK ((((disclosure ->> 'query_sha256'::text) = (query_sha256)::text) IS TRUE))
+constraint panestria.search_dispatch c CHECK ((((disclosure ->> 'request_id'::text) = (request_id)::text) IS TRUE))
+constraint panestria.search_dispatch c CHECK ((((disclosure ->> 'request_sha256'::text) ~ '^[0-9a-f]{64}$'::text) IS TRUE))
+constraint panestria.search_dispatch c CHECK ((((disclosure ->> 'upstream_disclosure'::text) = 'POSSIBLE_NOT_OBSERVED'::text) IS TRUE))
+constraint panestria.search_dispatch c CHECK (((disclosure - ARRAY['schema_version'::text, 'request_id'::text, 'scope'::text, 'provider'::text, 'configuration_sha256'::text, 'request_sha256'::text, 'query_sha256'::text, 'query_bytes'::text, 'privacy_class'::text, 'upstream_disclosure'::text]) = '{}'::jsonb))
+constraint panestria.search_dispatch c CHECK (((disclosure -> 'schema_version'::text) = '1'::jsonb))
+constraint panestria.search_dispatch c CHECK (((jsonb_typeof(disclosure) = 'object'::text) AND (octet_length((disclosure)::text) <= 4096)))
+constraint panestria.search_dispatch c CHECK (((ordinal >= 1) AND (ordinal <= 16)))
+constraint panestria.search_dispatch c CHECK ((disclosure ?& ARRAY['schema_version'::text, 'request_id'::text, 'scope'::text, 'provider'::text, 'configuration_sha256'::text, 'request_sha256'::text, 'query_sha256'::text, 'query_bytes'::text, 'privacy_class'::text, 'upstream_disclosure'::text]))
+constraint panestria.search_dispatch c CHECK ((disclosure_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.search_dispatch c CHECK ((lease_epoch > 0))
+constraint panestria.search_dispatch c CHECK ((query_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.search_dispatch f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
+constraint panestria.search_dispatch f FOREIGN KEY (task_id) REFERENCES panestria.search_plan(task_id)
+constraint panestria.search_dispatch f FOREIGN KEY (task_id, request_id, configuration_sha256) REFERENCES panestria.search_plan(task_id, request_id, configuration_sha256)
+constraint panestria.search_dispatch p PRIMARY KEY (id)
+constraint panestria.search_dispatch u UNIQUE (task_id, ordinal)
+constraint panestria.search_dispatch u UNIQUE (task_id, query_sha256)
+constraint panestria.search_outcome c CHECK ((((status = 'RETURNED'::text) AND (response_sha256 IS NOT NULL) AND (candidate_count IS NOT NULL)) OR ((status <> 'RETURNED'::text) AND (response_sha256 IS NULL) AND (candidate_count IS NULL))))
+constraint panestria.search_outcome c CHECK (((candidate_count >= 0) AND (candidate_count <= 16)))
+constraint panestria.search_outcome c CHECK ((response_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.search_outcome c CHECK ((status = ANY (ARRAY['RETURNED'::text, 'UNAVAILABLE'::text, 'UNKNOWN'::text])))
+constraint panestria.search_outcome f FOREIGN KEY (dispatch_id) REFERENCES panestria.search_dispatch(id)
+constraint panestria.search_outcome p PRIMARY KEY (dispatch_id)
+constraint panestria.search_plan c CHECK (((max_queries >= 1) AND (max_queries <= 16)))
+constraint panestria.search_plan c CHECK ((configuration_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.search_plan c CHECK ((contract_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.search_plan c CHECK ((plan_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.search_plan c CHECK ((policy_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.search_plan c CHECK ((request_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.search_plan f FOREIGN KEY (request_id, task_id) REFERENCES panestria.research_request(id, task_id)
+constraint panestria.search_plan p PRIMARY KEY (task_id)
+constraint panestria.search_plan u UNIQUE (task_id, request_id, configuration_sha256)
 constraint panestria.side_effect c CHECK ((classification = ANY (ARRAY['read-only'::text, 'idempotent-with-key'::text, 'reconcile-by-query'::text, 'compensatable'::text, 'non-retryable'::text])))
 constraint panestria.side_effect c CHECK ((request_hash ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.side_effect c CHECK ((state = ANY (ARRAY['PREPARED'::text, 'EXECUTING'::text, 'SUCCEEDED'::text, 'FAILED'::text, 'UNKNOWN'::text, 'RECONCILING'::text])))
@@ -1099,6 +1166,12 @@ index CREATE UNIQUE INDEX research_source_capture_seq_key ON panestria.research_
 index CREATE UNIQUE INDEX research_source_snapshot_id_task_id_key ON panestria.research_source_snapshot USING btree (id, task_id)
 index CREATE UNIQUE INDEX research_source_snapshot_pkey ON panestria.research_source_snapshot USING btree (id)
 index CREATE UNIQUE INDEX research_source_snapshot_seq_key ON panestria.research_source_snapshot USING btree (seq)
+index CREATE UNIQUE INDEX search_dispatch_pkey ON panestria.search_dispatch USING btree (id)
+index CREATE UNIQUE INDEX search_dispatch_task_id_ordinal_key ON panestria.search_dispatch USING btree (task_id, ordinal)
+index CREATE UNIQUE INDEX search_dispatch_task_id_query_sha256_key ON panestria.search_dispatch USING btree (task_id, query_sha256)
+index CREATE UNIQUE INDEX search_outcome_pkey ON panestria.search_outcome USING btree (dispatch_id)
+index CREATE UNIQUE INDEX search_plan_pkey ON panestria.search_plan USING btree (task_id)
+index CREATE UNIQUE INDEX search_plan_task_id_request_id_configuration_sha256_key ON panestria.search_plan USING btree (task_id, request_id, configuration_sha256)
 index CREATE UNIQUE INDEX side_effect_id_task_unique ON panestria.side_effect USING btree (id, task_id)
 index CREATE UNIQUE INDEX side_effect_pkey ON panestria.side_effect USING btree (id)
 index CREATE UNIQUE INDEX side_effect_task_id_effect_key_key ON panestria.side_effect USING btree (task_id, effect_key)
