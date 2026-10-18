@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-18T03:51:04.634680+00:00",
+  "source_commit": "86db5259a0fb1d4fc3aadbbd03cf1e129f416e5b",
+  "source_state_at_execution": "clean",
+  "result": "PASS_COMPONENT",
+  "scope": "owner-only connection declaration HTTP proposal/preview/decision/current views; no connector enabled",
+  "source_sha256": {
+    "src/panestria/api/main.py": "c676de569ca227ac5c243efa49cc9b4c4de7e03d2a1b71394dc7c110bb99add6",
+    "src/panestria/api/routes/connections.py": "1586e955bedf2818ac5d012d34df9e5be6e0a357e6d70b686ab16cb088a3e19d",
+    "src/panestria/api/auth.py": "6cce710e44ace60883f9e68a4ab95f2d3d75f16369c61a3a014e15f71554a852",
+    "src/panestria/api/security.py": "d73bc82c45529bf84e43ff9c41f42c676b2ef46e2d6c6aa844b8cd58a04698b4",
+    "src/panestria/api/sessions.py": "f8bb43f427256a812a6aff6f90211ffdcc24bd18e33c7a3558c61796d16e2f90",
+    "src/panestria/api/db.py": "6ab51baa94f3e6568d09100dd25e599216765d5cf1fc01edbe949bf2da07ae12",
+    "src/panestria/api/routes/ask.py": "777f66f2332ab6f2652a1d450882c059521326db8c0097eaf793866ebe84ca03",
+    "src/panestria/contracts/connections.py": "20da565c9d4298eed325c22cc85716d921d878a02100059d77e8dd486503373d",
+    "src/panestria/kernel/connections.py": "8118e10b6ad7c16a96f35ed6c290610ded8f8b48b54eb58666d07608871447c0",
+    "tests/integration/test_connection_api.py": "21f4166e3fc8af4c71fec71d966491485e48145263749dd6fe6c721c05c18980",
+    "tests/integration/test_connection_reviews.py": "a71eee62295dc6b9ace518f0c47b91f3af6d83e8da9d3772f641db4e053ee4ec",
+    "tests/unit/test_connection_contracts.py": "7a473e4541d90bbbaae2fd2a093df7c388a2af08ac9ff37ac689ef0b28222356",
+    "tests/integration/test_quota_api.py": "01b4223c7908a83f6ea50685240ebb40ddc9e0ce29c5817e9c5477fefe6d6f19",
+    "tests/integration/test_aos_009.py": "8f179133ee554343d17fe3c181a2252cf41e6218f2b188bf7d97f6392840ad4b",
+    "pyproject.toml": "51bb953a36e78a1139b5334ad8e76e847d87ef323f02ff05c20183d18cf8f95f",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d",
+    ".importlinter": "bc75998b077f693591daffc90a4672f50965ab3750e1c8e4d9346895cdea7bb8"
+  },
+  "artifacts": {
+    "development-29-failed.xml": "d7edd06b997d0876d185a8c28f091f68fa894142363ee2311999209c98c404e7",
+    "development-corrected-30.xml": "0e1045cf63dbc745dc9179cde5a3793621b6b0d29ca94cc9cd555d7ac369281d",
+    "qualified-86db525-120.xml": "32cc7df672ec510c1aaf2a7cc76558ec17a60602d8a7a38cf1dc70f344a47a8e"
+  },
+  "observed_tests": {
+    "development-29-failed.xml": {
+      "source_state": "dirty development; missing Content-Type fixture received415",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "1",
+          "skipped": "0",
+          "tests": "29",
+          "time": "10.510",
+          "timestamp": "2026-10-17T20:37:39.279119-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-corrected-30.xml": {
+      "source_state": "dirty development; fixture corrected, actual grant expiry added",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "30",
+          "time": "15.465",
+          "timestamp": "2026-10-17T20:38:41.723821-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "qualified-86db525-120.xml": {
+      "source_state": "clean 86db5259a0fb1d4fc3aadbbd03cf1e129f416e5b",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "120",
+          "time": "30.050",
+          "timestamp": "2026-10-17T20:39:45.707335-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    }
+  },
+  "checks": {
+    "focused_default_passed": 120,
+    "new_api_cases": 31,
+    "selected_live_excluded": 0,
+    "seconds": 30.07,
+    "ruff": "PASS",
+    "mypy_source_files": 200,
+    "import_contracts_kept": 11,
+    "secret_scan": "PASS",
+    "source_diff_check": "PASS"
+  },
+  "coverage": [
+    "existing owner CLI bearer/browser cookie/origin/CSRF/host/body limits and fresh database transaction authentication, including actual session revoke between both checks for all four routes",
+    "actual scoped policy/owner/project/task/review/digest/version/deadline/decision states, expiry/staleness/revoke/replay and exact manifest preview",
+    "closed bounded JSON rejects duplicate nested/top keys, nonfinite/overdeep/malformed input, Boolean schema/counter, unknown action, credentials, raw root paths and caller authority fields",
+    "metadata-only DECLARATION_ONLY/conformanceUNVERIFIED/runtime_availablefalse even with supplied certificate hash; no root enrollment, scheduler kick, task-state/version/epoch change or invocation",
+    "actual caller rollback after service writes leaves no orphan review/event; sanitized database/path errors; health-only app has no router"
+  ],
+  "initial_dirty_source_sha256": {
+    "connections.py": "1586e955bedf2818ac5d012d34df9e5be6e0a357e6d70b686ab16cb088a3e19d",
+    "main.py": "c676de569ca227ac5c243efa49cc9b4c4de7e03d2a1b71394dc7c110bb99add6",
+    "test_connection_api.py": "9907b8d1cec06f7c76e02d2d990c5727bae30ba59aa7cfb4c4a41cd36b72ecb2"
+  },
+  "development_failures": [
+    {
+      "artifact": "development-29-failed.xml",
+      "cause": "28PASS1FAIL: oversized fixture omitted Content-Type and existing media gate correctly returned415; corrected only fixture to JSON, body cap413 retained"
+    }
+  ],
+  "integration_state": "API source qualified before parking for independent CI transport race; merge verified current main and obtain fresh exact-head CI before merge",
+  "limitations": [
+    "HTTP metadata API only; no onboarding UI, live account/root/source enrollment, certified capability or GrantBroker effect",
+    "Declaration approval and historical receipts never dispatch, renew permissions or convert conformance references into certificates",
+    "Future current authority/lease/budget/approval/purpose/secret/effect lifecycle remain required; no full TC05-TC08/G1/G2/G3 or owner trial pass",
+    "No provider/model/SDK/auth/new credentials/image/owner checkout/service/database or schema changes; all content synthetic",
+    "Local qualification is bound to86db525; main integration and full exact-head CI must be recorded separately, never relabel the source"
+  ],
+  "conformance_authority": false,
+  "runtime_authority": false,
+  "release_authority": false
+}

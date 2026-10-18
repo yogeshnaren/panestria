@@ -459,3 +459,22 @@ owned PUBLIC fixtures. No provider/model/SDK/auth/image/owner service or schema
 changes. This is not atomic filesystem snapshotting or hard interruptible I/O.
 Actual GrantBroker/current authority/budgets/approval/account/capability/purpose,
 onboarding/secret boundary, other lifecycles and R1–R3 gates remain unfinished.
+
+## 2026-10-18 connection review HTTP component candidate
+
+An independent owner-only declaration review API was qualified at clean86db525:
+120PASS30.07s,31 new real HTTP/PG cases plus89 existing declaration/contracts/
+quota/session regressions. It mounts with GoalApi; health-only applications
+remain unmounted. Same-owner exact manifest/digest/version/deadline views and
+decisions never enable roots, native clients, credentials, dispatch or runtime
+permission. Every success says DECLARATION_ONLY/UNVERIFIED/runtime unavailable.
+
+Actual transaction-time session revoke, scope, policy staleness, review/grant
+expiry, revoke/historical replay, JSON/type/credential/flag/path refusal, cap,
+redaction, unchanged task state/no invocation and caller rollback are verified.
+The initial dirty28PASS1FAIL oversized request lacked JSON Content-Type and
+correctly returned415; fixing only that fixture header preserves413 enforcement.
+Source-bound original/corrected/qualified artifacts are retained in
+evidence/connection-review-api-2026-10-18. The candidate was parked for the
+independent sandbox CI race fix. Synchronize verified main and require fresh
+exact-head CI before publication/merge; no R1–R3 gate or owner trial is accepted.
