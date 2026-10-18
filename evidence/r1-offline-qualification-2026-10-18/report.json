@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "status": "LIVE_OFFLINE_COMPONENTS_PASS_R1_INCOMPLETE",
+  "candidate_commit": "d1ee854145b8b689f294db5dd59a69be57128589",
+  "worktree_state": "clean",
+  "report": "live.xml",
+  "sha256": "4c0788a5a277589b5cca82ff66d4462ed77c92ace6ed4a0dbca245185417e189",
+  "tests": 5,
+  "failures": 0,
+  "cases": [
+    {
+      "node": "tests.integration.test_aos_015.test_real_hardware_read_only",
+      "case_id": "AOS-015-TC03",
+      "source_clauses": [
+        "AOS-015-F01",
+        "AOS-015-F02",
+        "AOS-015-AC01",
+        "AOS-015-AC03"
+      ]
+    },
+    {
+      "node": "tests.integration.test_local_benchmark.test_physical_cold_warm",
+      "case_id": "AOS-016-TC03",
+      "source_clauses": [
+        "AOS-016-F02",
+        "AOS-016-AC01",
+        "AOS-016-AC02"
+      ]
+    },
+    {
+      "node": "tests.integration.test_aos_017.test_a1_network_disabled",
+      "case_id": "AOS-017-TC04",
+      "source_clauses": [
+        "AOS-017-F01",
+        "AOS-017-F02",
+        "AOS-017-F03",
+        "AOS-017-AC01",
+        "AOS-017-AC02",
+        "AOS-017-AC03"
+      ]
+    },
+    {
+      "node": "tests.integration.test_aos_018.test_oom_disk_model_restart",
+      "case_id": "AOS-018-TC02",
+      "source_clauses": [
+        "AOS-018-F01",
+        "AOS-018-F03"
+      ]
+    },
+    {
+      "node": "tests.integration.test_aos_018.test_foreground_pressure_profile",
+      "case_id": "AOS-018-TC04",
+      "source_clauses": [
+        "AOS-018-F02",
+        "AOS-018-AC02",
+        "AOS-018-AC03"
+      ]
+    }
+  ],
+  "command": "uv run --frozen pytest tests/integration/test_aos_015.py tests/integration/test_local_benchmark.py tests/integration/test_aos_017.py tests/integration/test_aos_018.py -m live -q --junitxml=/tmp/panestria-r1-restarted-offline.xml",
+  "observations": {
+    "cuda_init": 0,
+    "cuda_devices": 1,
+    "cold_ttft_seconds": 2.0441985850000037,
+    "warm_inference_p95_ttft_seconds": 0.04138948099989648,
+    "offline_ask_p95_ttft_seconds": 0.12941526000008707,
+    "offline_questions_passed": 10,
+    "model_vram_bytes": 1864415744,
+    "network": "none",
+    "foreground_pressure_allocation_bytes": 3221225472,
+    "foreground_decision_during": "WAIT",
+    "foreground_decision_after": "PERMIT"
+  },
+  "limits": [
+    "Physical workstation qualification, not a whole G1 gate evaluation.",
+    "Cgroup memory is an instantaneous snapshot, not process RSS or peak memory.",
+    "GPU admission respects a foreground reserve; hardware GPU partitioning is not guaranteed.",
+    "Original pre-reboot failures remain unchanged at evidence/r1-gpu-startup-2026-10-18/baseline-offline-failed.xml.",
+    "AOS-016-TC04 paid SDK remains owner-deferred, not passed; no OpenAI or Anthropic API call.",
+    "Native Bash Build qualification and same-candidate cumulative G1 evaluation remain pending."
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "owner_services_modified": false
+}
