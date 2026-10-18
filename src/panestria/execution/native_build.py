@@ -168,6 +168,9 @@ class AdmittedNativeBuild:
         watchdog: threading.Thread | None = None
         digest = None
         try:
+            context = self.context
+            if hashlib.sha256(context.encode()).hexdigest() != self.context_sha256:
+                raise KernelDenied("native_build_context_changed")
             if not isinstance(adapter, ClaudeScopedBashAdapter) or adapter.native.pin.sha256 != PINNED_BINARY_SHA256:
                 raise KernelDenied("native_build_transport_denied")
             config = adapter.native.config
@@ -265,7 +268,7 @@ class AdmittedNativeBuild:
 
             observation = adapter.build_public(
                 controller.session(),
-                public_context=self.context,
+                public_context=context,
                 cancel=stop,
                 before_launch=launch,
             )

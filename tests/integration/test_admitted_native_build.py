@@ -272,6 +272,19 @@ def test_policy_revoked_at_launch_point_sends_no_context(admitted):
     assert rows(task) == [("UNKNOWN", None)]
 
 
+def test_changed_compiled_context_is_rejected_before_any_native_intent(admitted):
+    task, controller = admitted
+    adapter = NativeTransportFixture(controller.workspace.parent.parent, controller)
+    worker = AdmittedNativeBuild(controller, ("calculator.py",))
+    worker.context = "PRIVATE_SENTINEL"
+    bare = Path(task["bare"])
+    registry = required_registry(bare.parent, "value = 43\n", notes=True)
+    outcome = worker.run(
+        adapter, Path(task["protected"]), bare, git(bare, "rev-parse", "HEAD"), bare.parent / "frozen", registry
+    )
+    assert outcome.status == "UNAVAILABLE" and adapter.launches == 0 and rows(task) == []
+
+
 def test_cancellation_stops_current_native_call_and_never_replays(admitted):
     from concurrent.futures import ThreadPoolExecutor
 
