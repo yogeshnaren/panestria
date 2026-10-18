@@ -12,6 +12,7 @@ import socket
 import ssl
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any, Literal, cast
@@ -277,7 +278,14 @@ class PublicHttpsFetcher:
                         raise FetchDenied("incomplete_http_body")
                     return hop, None, content_type, bytes(body[:cap]), truncated
 
-    def fetch(self, url: str, limits: ResearchLimits, *, cancel: threading.Event | None = None) -> FetchObservation:
+    def fetch(
+        self,
+        url: str,
+        limits: ResearchLimits,
+        *,
+        cancel: threading.Event | None = None,
+        before_hop: Callable[[str, str, int], None] | None = None,
+    ) -> FetchObservation:
         cancel = cancel if cancel is not None else threading.Event()
         limits = ResearchLimits.model_validate(limits)
         observed_at = datetime.now(UTC)
@@ -313,6 +321,9 @@ class PublicHttpsFetcher:
                     raise FetchDenied("redirect_cycle")
                 visited.add(current)
                 _remaining(deadline, cancel)
+                if before_hop is not None:
+                    before_hop(current, target.host, index)  # Must acknowledge disclosure before DNS or socket.
+                    _remaining(deadline, cancel)
                 hop, location, content_type, body, truncated = self._one(
                     target, current, limits.max_source_bytes, deadline, cancel
                 )

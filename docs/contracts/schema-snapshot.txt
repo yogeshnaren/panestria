@@ -160,6 +160,36 @@ column effect_outbox task_id uuid NO
 column event_retention floor_seq int8 NO
 column event_retention goal_id uuid NO
 column event_retention row_version int8 NO
+column fetch_dispatch attempt_id uuid NO
+column fetch_dispatch created_at timestamptz NO
+column fetch_dispatch id uuid NO
+column fetch_dispatch lease_epoch int8 NO
+column fetch_dispatch ordinal int4 NO
+column fetch_dispatch request_id uuid NO
+column fetch_dispatch reserved_body_bytes int4 NO
+column fetch_dispatch task_id uuid NO
+column fetch_dispatch url_sha256 bpchar NO
+column fetch_hop created_at timestamptz NO
+column fetch_hop dispatch_id uuid NO
+column fetch_hop host_sha256 bpchar NO
+column fetch_hop ordinal int4 NO
+column fetch_hop url_bytes int4 NO
+column fetch_hop url_sha256 bpchar NO
+column fetch_outcome created_at timestamptz NO
+column fetch_outcome dispatch_id uuid NO
+column fetch_outcome request_id uuid NO
+column fetch_outcome snapshot_id uuid YES
+column fetch_outcome source_metadata_sha256 bpchar YES
+column fetch_outcome status text NO
+column fetch_outcome task_id uuid NO
+column fetch_plan configuration_sha256 bpchar NO
+column fetch_plan contract_sha256 bpchar NO
+column fetch_plan created_at timestamptz NO
+column fetch_plan plan_sha256 bpchar NO
+column fetch_plan policy_sha256 bpchar NO
+column fetch_plan request_id uuid NO
+column fetch_plan request_sha256 bpchar NO
+column fetch_plan task_id uuid NO
 column goal approved_contract_version int4 YES
 column goal created_at timestamptz NO
 column goal id uuid NO
@@ -698,6 +728,37 @@ constraint panestria.event_retention c CHECK ((floor_seq >= 0))
 constraint panestria.event_retention c CHECK ((row_version >= 0))
 constraint panestria.event_retention f FOREIGN KEY (goal_id) REFERENCES panestria.goal(id)
 constraint panestria.event_retention p PRIMARY KEY (goal_id)
+constraint panestria.fetch_dispatch c CHECK (((ordinal >= 1) AND (ordinal <= 16)))
+constraint panestria.fetch_dispatch c CHECK (((reserved_body_bytes >= 2) AND (reserved_body_bytes <= 2097153)))
+constraint panestria.fetch_dispatch c CHECK ((lease_epoch > 0))
+constraint panestria.fetch_dispatch c CHECK ((url_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.fetch_dispatch f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
+constraint panestria.fetch_dispatch f FOREIGN KEY (task_id, request_id) REFERENCES panestria.fetch_plan(task_id, request_id)
+constraint panestria.fetch_dispatch p PRIMARY KEY (id)
+constraint panestria.fetch_dispatch u UNIQUE (id, task_id, request_id)
+constraint panestria.fetch_dispatch u UNIQUE (task_id, ordinal)
+constraint panestria.fetch_dispatch u UNIQUE (task_id, url_sha256)
+constraint panestria.fetch_hop c CHECK (((ordinal >= 0) AND (ordinal <= 5)))
+constraint panestria.fetch_hop c CHECK (((url_bytes >= 1) AND (url_bytes <= 2048)))
+constraint panestria.fetch_hop c CHECK ((host_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.fetch_hop c CHECK ((url_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.fetch_hop f FOREIGN KEY (dispatch_id) REFERENCES panestria.fetch_dispatch(id)
+constraint panestria.fetch_hop p PRIMARY KEY (dispatch_id, ordinal)
+constraint panestria.fetch_hop u UNIQUE (dispatch_id, url_sha256)
+constraint panestria.fetch_outcome c CHECK ((((status = 'RETAINED'::text) AND (snapshot_id IS NOT NULL) AND (source_metadata_sha256 IS NOT NULL)) OR ((status <> 'RETAINED'::text) AND (snapshot_id IS NULL) AND (source_metadata_sha256 IS NULL))))
+constraint panestria.fetch_outcome c CHECK ((status = ANY (ARRAY['RETAINED'::text, 'FETCH_ERROR'::text, 'READER_ERROR'::text, 'UNKNOWN'::text])))
+constraint panestria.fetch_outcome f FOREIGN KEY (dispatch_id, task_id, request_id) REFERENCES panestria.fetch_dispatch(id, task_id, request_id)
+constraint panestria.fetch_outcome f FOREIGN KEY (snapshot_id) REFERENCES panestria.research_source_capture(snapshot_id)
+constraint panestria.fetch_outcome f FOREIGN KEY (snapshot_id, request_id, task_id, source_metadata_sha256) REFERENCES panestria.research_source_snapshot(id, request_id, task_id, body_sha256)
+constraint panestria.fetch_outcome p PRIMARY KEY (dispatch_id)
+constraint panestria.fetch_plan c CHECK ((configuration_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.fetch_plan c CHECK ((contract_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.fetch_plan c CHECK ((plan_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.fetch_plan c CHECK ((policy_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.fetch_plan c CHECK ((request_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.fetch_plan f FOREIGN KEY (request_id, task_id) REFERENCES panestria.research_request(id, task_id)
+constraint panestria.fetch_plan p PRIMARY KEY (task_id)
+constraint panestria.fetch_plan u UNIQUE (task_id, request_id)
 constraint panestria.goal c CHECK ((status = ANY (ARRAY['CREATED'::text, 'ACTIVE'::text, 'COMPLETED'::text, 'FAILED'::text, 'CANCELLED'::text])))
 constraint panestria.goal f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
 constraint panestria.goal f FOREIGN KEY (project_id) REFERENCES panestria.project(id)
@@ -1112,6 +1173,15 @@ index CREATE UNIQUE INDEX context_pack_id_owner_id_project_id_key ON panestria.c
 index CREATE UNIQUE INDEX context_pack_pkey ON panestria.context_pack USING btree (id)
 index CREATE UNIQUE INDEX effect_outbox_pkey ON panestria.effect_outbox USING btree (effect_id)
 index CREATE UNIQUE INDEX event_retention_pkey ON panestria.event_retention USING btree (goal_id)
+index CREATE UNIQUE INDEX fetch_dispatch_id_task_id_request_id_key ON panestria.fetch_dispatch USING btree (id, task_id, request_id)
+index CREATE UNIQUE INDEX fetch_dispatch_pkey ON panestria.fetch_dispatch USING btree (id)
+index CREATE UNIQUE INDEX fetch_dispatch_task_id_ordinal_key ON panestria.fetch_dispatch USING btree (task_id, ordinal)
+index CREATE UNIQUE INDEX fetch_dispatch_task_id_url_sha256_key ON panestria.fetch_dispatch USING btree (task_id, url_sha256)
+index CREATE UNIQUE INDEX fetch_hop_dispatch_id_url_sha256_key ON panestria.fetch_hop USING btree (dispatch_id, url_sha256)
+index CREATE UNIQUE INDEX fetch_hop_pkey ON panestria.fetch_hop USING btree (dispatch_id, ordinal)
+index CREATE UNIQUE INDEX fetch_outcome_pkey ON panestria.fetch_outcome USING btree (dispatch_id)
+index CREATE UNIQUE INDEX fetch_plan_pkey ON panestria.fetch_plan USING btree (task_id)
+index CREATE UNIQUE INDEX fetch_plan_task_id_request_id_key ON panestria.fetch_plan USING btree (task_id, request_id)
 index CREATE UNIQUE INDEX goal_budget_pkey ON panestria.goal_budget USING btree (goal_id)
 index CREATE UNIQUE INDEX goal_contract_goal_id_version_key ON panestria.goal_contract USING btree (goal_id, version)
 index CREATE UNIQUE INDEX goal_contract_id_goal_id_key ON panestria.goal_contract USING btree (id, goal_id)

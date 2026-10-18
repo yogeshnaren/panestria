@@ -2,14 +2,8 @@
 
 from pydantic import Field, StrictInt
 
-from panestria.contracts.research import ResearchContract, ResearchId, ResearchScope, Sha256
+from panestria.contracts.research_admission import ResearchAuthorityBinding
 
 
-class SearchPlan(ResearchContract):
-    scope: ResearchScope
-    request_id: ResearchId
-    request_sha256: Sha256
-    contract_sha256: Sha256
-    policy_sha256: Sha256
-    configuration_sha256: Sha256
+class SearchPlan(ResearchAuthorityBinding):
     max_queries: StrictInt = Field(ge=1, le=16)
