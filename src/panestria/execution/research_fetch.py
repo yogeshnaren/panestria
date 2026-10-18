@@ -1,10 +1,6 @@
 """Trusted PUBLIC fetch/read/retain controller, fenced by canonical authority."""
 
 import hashlib
-import os
-import platform
-import ssl
-import sys
 import threading
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,33 +13,18 @@ from panestria.brokers.research.fetch import PublicHttpsFetcher, https_target
 from panestria.brokers.research.reader import IsolatedTextReader
 from panestria.contracts.research import ResearchLimits
 from panestria.contracts.research_admission import FetchDiagnostic, FetchPlan
+from panestria.contracts.search import LocalSearchSettings
+from panestria.execution.research_runtime import fetch_runtime_versions as fetch_runtime_versions
+from panestria.execution.research_runtime import research_runtime_versions
 from panestria.execution.research_sources import SourceStore
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.research_fetch import FetchAdmissionService
 from panestria.kernel.uow import UnitOfWork
-from panestria.policy.research_fetch import FETCH_PROFILE, PublicFetchCertificateStore
-from panestria.sandbox.profiles import DEFAULT_IMAGE
+from panestria.policy.research import RESEARCH_PROFILE
+from panestria.policy.research_fetch import PublicFetchCertificateStore
 
 _FETCHER = PublicHttpsFetcher()  # Shared bounded fetch/DNS slots, not one new pool per task.
-
-
-def fetch_runtime_versions() -> dict[str, str]:
-    source = Path(__file__).resolve().parents[1]
-    digest = hashlib.sha256()
-    for path in sorted(source.rglob("*.py")):
-        digest.update(str(path.relative_to(source)).encode() + b"\0" + path.read_bytes())
-    return {
-        "profile": FETCH_PROFILE,
-        "source_sha256": digest.hexdigest(),
-        "configuration_sha256": hashlib.sha256(b"public-https443-fixed-reader-no-network-v1").hexdigest(),
-        "python": sys.version,
-        "openssl": ssl.OPENSSL_VERSION,
-        "kernel": platform.release(),
-        "reader_image": DEFAULT_IMAGE,
-        "uid": str(os.getuid()),
-        "gid": str(os.getgid()),
-    }
 
 
 @dataclass(frozen=True)
@@ -64,23 +45,39 @@ class AdmittedFetch:
         epoch: int,
         certificates: PublicFetchCertificateStore,
         root: Path,
+        *,
+        search_settings: LocalSearchSettings | None = None,
     ) -> None:
         self.dsn, self.actor, self.root = dsn, actor, root
         self.plan = FetchPlan.model_validate_json(plan.model_dump_json())
         self.attempt_id, self.epoch = attempt_id, epoch
-        self.versions = fetch_runtime_versions()
+        self.combined = certificates.runtime_versions.get("profile") == RESEARCH_PROFILE
+        if self.combined != (search_settings is not None):
+            raise KernelDenied("public_fetch_search_settings_mismatch")
+        self.search_settings = (
+            LocalSearchSettings.model_validate_json(search_settings.model_dump_json())
+            if search_settings is not None
+            else None
+        )
+        self.versions = self._runtime_versions()
         self.service = FetchAdmissionService(certificates)
         if (
             certificates.runtime_versions != self.versions
-            or plan.configuration_sha256 != self.versions["configuration_sha256"]
+            or plan.configuration_sha256
+            != self.versions["fetch_configuration_sha256" if self.combined else "configuration_sha256"]
         ):
             raise KernelDenied("public_fetch_runtime_mismatch")
+
+    def _runtime_versions(self) -> dict[str, str]:
+        if self.search_settings is not None:
+            return research_runtime_versions(self.search_settings)
+        return fetch_runtime_versions()
 
     def connect(self) -> psycopg.Connection[Any]:
         return psycopg.connect(self.dsn, connect_timeout=2, options="-c statement_timeout=2000 -c lock_timeout=1000")
 
     def _current(self, connection: psycopg.Connection[Any]) -> float:
-        if fetch_runtime_versions() != self.versions or self.service.certificates.runtime_versions != self.versions:
+        if self._runtime_versions() != self.versions or self.service.certificates.runtime_versions != self.versions:
             raise KernelDenied("public_fetch_runtime_changed")
         return self.service.current(UnitOfWork(connection), self.actor, self.plan, self.attempt_id, self.epoch)
 

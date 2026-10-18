@@ -4,9 +4,7 @@ This is trusted controller code, not a worker callback or an HTTP endpoint. The
 loopback service is operator configured; results remain untrusted and unfetched.
 """
 
-import hashlib
 import threading
-from pathlib import Path
 from typing import Any
 
 import psycopg
@@ -14,23 +12,14 @@ import psycopg
 from panestria.brokers.research.search import LocalSearxngProvider, SearchUnavailable
 from panestria.contracts.search import LocalSearchSettings, SearchDisclosure, SearchQuery, SearchResults
 from panestria.contracts.search_admission import SearchPlan
+from panestria.execution.research_runtime import research_runtime_versions
+from panestria.execution.research_runtime import search_runtime_versions as search_runtime_versions
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.search import SearchAdmissionService, SearchDispatch
 from panestria.kernel.uow import UnitOfWork
-from panestria.policy.search import SEARCH_PROFILE, PublicSearchCertificateStore
-
-
-def search_runtime_versions(settings: LocalSearchSettings) -> dict[str, str]:
-    source = Path(__file__).resolve().parents[1]
-    digest = hashlib.sha256()
-    for path in sorted(source.rglob("*.py")):
-        digest.update(str(path.relative_to(source)).encode() + b"\0" + path.read_bytes())
-    return {
-        "profile": SEARCH_PROFILE,
-        "source_sha256": digest.hexdigest(),
-        "configuration_sha256": hashlib.sha256(settings.model_dump_json().encode()).hexdigest(),
-    }
+from panestria.policy.research import RESEARCH_PROFILE
+from panestria.policy.search import PublicSearchCertificateStore
 
 
 class AdmittedSearch:
@@ -48,22 +37,24 @@ class AdmittedSearch:
         self.plan = SearchPlan.model_validate_json(plan.model_dump_json())
         self.attempt_id, self.epoch = attempt_id, epoch
         self.settings = LocalSearchSettings.model_validate_json(settings.model_dump_json())
-        self.versions = search_runtime_versions(self.settings)
+        self.combined = certificates.runtime_versions.get("profile") == RESEARCH_PROFILE
+        self.versions = self._runtime_versions()
         self.service = SearchAdmissionService(certificates)
         if (
             certificates.runtime_versions != self.versions
-            or self.versions["configuration_sha256"] != plan.configuration_sha256
+            or self.versions["search_configuration_sha256" if self.combined else "configuration_sha256"]
+            != plan.configuration_sha256
         ):
             raise KernelDenied("public_search_runtime_mismatch")
+
+    def _runtime_versions(self) -> dict[str, str]:
+        return research_runtime_versions(self.settings) if self.combined else search_runtime_versions(self.settings)
 
     def connect(self) -> psycopg.Connection[Any]:
         return psycopg.connect(self.dsn, connect_timeout=2, options="-c statement_timeout=2000 -c lock_timeout=1000")
 
     def _current(self, connection: psycopg.Connection[Any]) -> float:
-        if (
-            search_runtime_versions(self.settings) != self.versions
-            or self.service.certificates.runtime_versions != self.versions
-        ):
+        if self._runtime_versions() != self.versions or self.service.certificates.runtime_versions != self.versions:
             raise KernelDenied("public_search_runtime_changed")
         return self.service.current(UnitOfWork(connection), self.actor, self.plan, self.attempt_id, self.epoch)
 
