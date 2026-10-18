@@ -129,8 +129,8 @@ def test_replay_and_concurrent_submission_preserve_one_request_and_reject_change
 def test_actual_commit_then_lost_ack_replays_without_duplicate_rows_or_events(staged, monkeypatch):
     original = ResearchSubmissionService.stage
 
-    def lost(uow, *a, **kw):
-        original(uow, *a, **kw)
+    def lost(self, uow, *a, **kw):
+        original(self, uow, *a, **kw)
         uow.connection.commit()
         raise OSError("SYNTHETIC_ACK_LOST_AFTER_ACTUAL_COMMIT")
 
