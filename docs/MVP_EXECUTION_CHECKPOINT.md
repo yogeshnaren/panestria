@@ -437,3 +437,25 @@ state and unrelated matching-attempt resources. No provider/model/vendor CLI/
 SDK/auth or owner state changed. This fixes only gateway input staging; other
 lifecycles, autonomous liveness, full connected native/grants/semantic/R1–R3 gates
 and owner trial remain required. Do not promote this to native or release authority.
+
+## 2026-10-18 connection-root component
+
+PR97 actually merged `fc0c52c9f7d333529a76112d829b8f968b8fb313` after exact
+`63e2a5c` CI39091516491 passed1752/51 excluded/one upstream warning543.19s.
+Its entire merge tree matched the tested head. The next focused branch starts
+from that freshly fetched main with no open PRs or owner-checkout changes.
+
+ConnectionRootSession now provides controller-only owner/project-scoped ephemeral
+descriptor enrollment, contained reads and exact cleanup. ADR0004/design47 define
+object identity, fresh references/review after loss and no persisted raw locator.
+Root enrollment is not a runtime read permission. No connector/API/UI/worker is
+wired. Clean `dda07c3` passes196 component checks17.86s (80 new), Ruff/mypy199/
+11 imports/secret/source diff pass. Evidence/connection-root-sessions-2026-10-18
+keeps all raw observations and source pins, including a real clean-source
+same-size rewrite miss at `de5789d` corrected by a second bounded content hash.
+
+Actual controller SIGKILL, fork/exec, namespace replacement and file races use
+owned PUBLIC fixtures. No provider/model/SDK/auth/image/owner service or schema
+changes. This is not atomic filesystem snapshotting or hard interruptible I/O.
+Actual GrantBroker/current authority/budgets/approval/account/capability/purpose,
+onboarding/secret boundary, other lifecycles and R1–R3 gates remain unfinished.

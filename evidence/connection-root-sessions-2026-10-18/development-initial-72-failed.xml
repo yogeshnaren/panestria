@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="18" skipped="0" tests="72" time="0.450" timestamp="2026-10-17T20:12:05.130926-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_connection_roots" name="test_actual_nested_unicode_and_empty_files_are_bounded_snapshots" file="tests/integration/test_connection_roots.py" line="32" time="0.002"><failure message="panestria.kernel.errors.KernelDenied: connection_root_unsafe">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_actual_nested_unicode_and0/private')
+
+    def test_actual_nested_unicode_and_empty_files_are_bounded_snapshots(directory):
+        child = directory / "nested"
+        child.mkdir()
+        # Linux byte identity is retained; no normalization or URL interpretation.
+        for name, body in [("café", INSIDE), ("cafe\u0301", OUTSIDE), ("%2e%2e", b""), ("empty", b"")]:
+            (child / name).write_bytes(body)
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            assert re.fullmatch("[0-9a-f]{64}", reference)
+            for name, body in [("café", INSIDE), ("cafe\u0301", OUTSIDE), ("%2e%2e", b""), ("empty", b"")]:
+&gt;               result = session.snapshot(ACTOR, reference, "nested/" + name, max_bytes=64)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_connection_roots.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/connection_roots.py:251: in snapshot
+    before = _regular(path_fd, root, max_bytes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fd = 12
+root = os.stat_result(st_mode=16832, st_ino=36867174, st_dev=66306, st_nlink=3, st_uid=1000, st_gid=1000, st_size=4096, st_atime=1792293125, st_mtime=1792293125, st_ctime=1792293125)
+limit = 64
+
+    def _regular(fd: int, root: os.stat_result, limit: int) -&gt; os.stat_result:
+        info = os.fstat(fd)
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.getuid()
+            or info.st_dev != root.st_dev
+            or info.st_nlink != 1
+            or info.st_mode &amp; 0o022
+            or not 0 &lt;= info.st_size &lt;= limit
+        ):
+&gt;           raise KernelDenied("connection_root_unsafe")
+E           panestria.kernel.errors.KernelDenied: connection_root_unsafe
+
+src/panestria/kernel/connection_roots.py:127: KernelDenied</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[.]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[..]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[../file]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[/file]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[a/../file]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[a/./file]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[a//file]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[file/]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[a\\file]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[file\x00x]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[file\nx]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[\ud800]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/x]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9\xe9]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[file]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_worker_paths_reject_traversal_ambiguous_and_unbounded_spellings[None]" file="tests/integration/test_connection_roots.py" line="48" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_enrollment_does_not_normalize_or_discover_paths[]" file="tests/integration/test_connection_roots.py" line="80" time="0.000" /><testcase classname="tests.integration.test_connection_roots" name="test_enrollment_does_not_normalize_or_discover_paths[/]" file="tests/integration/test_connection_roots.py" line="80" time="0.000" /><testcase classname="tests.integration.test_connection_roots" name="test_enrollment_does_not_normalize_or_discover_paths[relative]" file="tests/integration/test_connection_roots.py" line="80" time="0.000" /><testcase classname="tests.integration.test_connection_roots" name="test_enrollment_does_not_normalize_or_discover_paths[/tmp/../x]" file="tests/integration/test_connection_roots.py" line="80" time="0.000" /><testcase classname="tests.integration.test_connection_roots" name="test_enrollment_does_not_normalize_or_discover_paths[/tmp//x]" file="tests/integration/test_connection_roots.py" line="80" time="0.000" /><testcase classname="tests.integration.test_connection_roots" name="test_enrollment_does_not_normalize_or_discover_paths[/tmp/x/]" file="tests/integration/test_connection_roots.py" line="80" time="0.000" /><testcase classname="tests.integration.test_connection_roots" name="test_enrollment_does_not_normalize_or_discover_paths[/tmp/./x]" file="tests/integration/test_connection_roots.py" line="80" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_enrollment_does_not_normalize_or_discover_paths[/tmp/\x00x]" file="tests/integration/test_connection_roots.py" line="80" time="0.000" /><testcase classname="tests.integration.test_connection_roots" name="test_enrollment_does_not_normalize_or_discover_paths[locator8]" file="tests/integration/test_connection_roots.py" line="80" time="0.000" /><testcase classname="tests.integration.test_connection_roots" name="test_enrollment_does_not_normalize_or_discover_paths[None]" file="tests/integration/test_connection_roots.py" line="80" time="0.000" /><testcase classname="tests.integration.test_connection_roots" name="test_read_requires_explicit_bounded_integer[0]" file="tests/integration/test_connection_roots.py" line="90" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_read_requires_explicit_bounded_integer[-1]" file="tests/integration/test_connection_roots.py" line="90" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_read_requires_explicit_bounded_integer[True]" file="tests/integration/test_connection_roots.py" line="90" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_read_requires_explicit_bounded_integer[1.0]" file="tests/integration/test_connection_roots.py" line="90" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_read_requires_explicit_bounded_integer[None]" file="tests/integration/test_connection_roots.py" line="90" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_read_requires_explicit_bounded_integer[67108865]" file="tests/integration/test_connection_roots.py" line="90" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_exact_size_and_oversize_have_no_truncation_fallback" file="tests/integration/test_connection_roots.py" line="98" time="0.001"><failure message="panestria.kernel.errors.KernelDenied: connection_root_unsafe">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_exact_size_and_oversize_h0/private')
+
+    def test_exact_size_and_oversize_have_no_truncation_fallback(directory):
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+&gt;           assert session.snapshot(ACTOR, reference, "file", max_bytes=len(INSIDE)).content == INSIDE
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_connection_roots.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/connection_roots.py:251: in snapshot
+    before = _regular(path_fd, root, max_bytes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fd = 12
+root = os.stat_result(st_mode=16832, st_ino=36867896, st_dev=66306, st_nlink=2, st_uid=1000, st_gid=1000, st_size=4096, st_atime=1792293125, st_mtime=1792293125, st_ctime=1792293125)
+limit = 21
+
+    def _regular(fd: int, root: os.stat_result, limit: int) -&gt; os.stat_result:
+        info = os.fstat(fd)
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.getuid()
+            or info.st_dev != root.st_dev
+            or info.st_nlink != 1
+            or info.st_mode &amp; 0o022
+            or not 0 &lt;= info.st_size &lt;= limit
+        ):
+&gt;           raise KernelDenied("connection_root_unsafe")
+E           panestria.kernel.errors.KernelDenied: connection_root_unsafe
+
+src/panestria/kernel/connection_roots.py:127: KernelDenied</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_foreign_actor_cannot_enroll_read_or_remove[actor0]" file="tests/integration/test_connection_roots.py" line="106" time="0.001"><failure message="panestria.kernel.errors.KernelDenied: connection_root_unsafe">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_foreign_actor_cannot_enro0/private')
+actor = &lt;panestria.kernel.goals.Actor object at 0x7fb47632dd00&gt;
+
+    @pytest.mark.parametrize(
+        "actor",
+        [
+            Actor(str(uuid4()), ACTOR.project_id),
+            Actor(ACTOR.owner_id, str(uuid4())),
+            Actor("not-an-owner", ACTOR.project_id),
+        ],
+    )
+    def test_foreign_actor_cannot_enroll_read_or_remove(directory, actor):
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            for operation in [
+                lambda: session.enroll(actor, str(directory)),
+                lambda: session.snapshot(actor, reference, "file", max_bytes=64),
+                lambda: session.remove(actor, reference),
+            ]:
+                with pytest.raises(KernelDenied, match="^connection_root_unavailable$"):
+                    operation()
+&gt;           assert session.snapshot(ACTOR, reference, "file", max_bytes=64).content == INSIDE
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_connection_roots.py:125: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/connection_roots.py:251: in snapshot
+    before = _regular(path_fd, root, max_bytes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fd = 12
+root = os.stat_result(st_mode=16832, st_ino=36867900, st_dev=66306, st_nlink=2, st_uid=1000, st_gid=1000, st_size=4096, st_atime=1792293125, st_mtime=1792293125, st_ctime=1792293125)
+limit = 64
+
+    def _regular(fd: int, root: os.stat_result, limit: int) -&gt; os.stat_result:
+        info = os.fstat(fd)
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.getuid()
+            or info.st_dev != root.st_dev
+            or info.st_nlink != 1
+            or info.st_mode &amp; 0o022
+            or not 0 &lt;= info.st_size &lt;= limit
+        ):
+&gt;           raise KernelDenied("connection_root_unsafe")
+E           panestria.kernel.errors.KernelDenied: connection_root_unsafe
+
+src/panestria/kernel/connection_roots.py:127: KernelDenied</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_foreign_actor_cannot_enroll_read_or_remove[actor1]" file="tests/integration/test_connection_roots.py" line="106" time="0.001"><failure message="panestria.kernel.errors.KernelDenied: connection_root_unsafe">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_foreign_actor_cannot_enro1/private')
+actor = &lt;panestria.kernel.goals.Actor object at 0x7fb47632dbe0&gt;
+
+    @pytest.mark.parametrize(
+        "actor",
+        [
+            Actor(str(uuid4()), ACTOR.project_id),
+            Actor(ACTOR.owner_id, str(uuid4())),
+            Actor("not-an-owner", ACTOR.project_id),
+        ],
+    )
+    def test_foreign_actor_cannot_enroll_read_or_remove(directory, actor):
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            for operation in [
+                lambda: session.enroll(actor, str(directory)),
+                lambda: session.snapshot(actor, reference, "file", max_bytes=64),
+                lambda: session.remove(actor, reference),
+            ]:
+                with pytest.raises(KernelDenied, match="^connection_root_unavailable$"):
+                    operation()
+&gt;           assert session.snapshot(ACTOR, reference, "file", max_bytes=64).content == INSIDE
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_connection_roots.py:125: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/connection_roots.py:251: in snapshot
+    before = _regular(path_fd, root, max_bytes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fd = 12
+root = os.stat_result(st_mode=16832, st_ino=36867903, st_dev=66306, st_nlink=2, st_uid=1000, st_gid=1000, st_size=4096, st_atime=1792293125, st_mtime=1792293125, st_ctime=1792293125)
+limit = 64
+
+    def _regular(fd: int, root: os.stat_result, limit: int) -&gt; os.stat_result:
+        info = os.fstat(fd)
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.getuid()
+            or info.st_dev != root.st_dev
+            or info.st_nlink != 1
+            or info.st_mode &amp; 0o022
+            or not 0 &lt;= info.st_size &lt;= limit
+        ):
+&gt;           raise KernelDenied("connection_root_unsafe")
+E           panestria.kernel.errors.KernelDenied: connection_root_unsafe
+
+src/panestria/kernel/connection_roots.py:127: KernelDenied</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_foreign_actor_cannot_enroll_read_or_remove[actor2]" file="tests/integration/test_connection_roots.py" line="106" time="0.001"><failure message="panestria.kernel.errors.KernelDenied: connection_root_unsafe">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_foreign_actor_cannot_enro2/private')
+actor = &lt;panestria.kernel.goals.Actor object at 0x7fb47632db50&gt;
+
+    @pytest.mark.parametrize(
+        "actor",
+        [
+            Actor(str(uuid4()), ACTOR.project_id),
+            Actor(ACTOR.owner_id, str(uuid4())),
+            Actor("not-an-owner", ACTOR.project_id),
+        ],
+    )
+    def test_foreign_actor_cannot_enroll_read_or_remove(directory, actor):
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            for operation in [
+                lambda: session.enroll(actor, str(directory)),
+                lambda: session.snapshot(actor, reference, "file", max_bytes=64),
+                lambda: session.remove(actor, reference),
+            ]:
+                with pytest.raises(KernelDenied, match="^connection_root_unavailable$"):
+                    operation()
+&gt;           assert session.snapshot(ACTOR, reference, "file", max_bytes=64).content == INSIDE
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_connection_roots.py:125: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/connection_roots.py:251: in snapshot
+    before = _regular(path_fd, root, max_bytes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fd = 12
+root = os.stat_result(st_mode=16832, st_ino=36867906, st_dev=66306, st_nlink=2, st_uid=1000, st_gid=1000, st_size=4096, st_atime=1792293125, st_mtime=1792293125, st_ctime=1792293125)
+limit = 64
+
+    def _regular(fd: int, root: os.stat_result, limit: int) -&gt; os.stat_result:
+        info = os.fstat(fd)
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.getuid()
+            or info.st_dev != root.st_dev
+            or info.st_nlink != 1
+            or info.st_mode &amp; 0o022
+            or not 0 &lt;= info.st_size &lt;= limit
+        ):
+&gt;           raise KernelDenied("connection_root_unsafe")
+E           panestria.kernel.errors.KernelDenied: connection_root_unsafe
+
+src/panestria/kernel/connection_roots.py:127: KernelDenied</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_unknown_or_malformed_root_never_resolves[abababababababababababababababababababababababababababababababab]" file="tests/integration/test_connection_roots.py" line="127" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_unknown_or_malformed_root_never_resolves[AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA]" file="tests/integration/test_connection_roots.py" line="127" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_unknown_or_malformed_root_never_resolves[/tmp/private]" file="tests/integration/test_connection_roots.py" line="127" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_unknown_or_malformed_root_never_resolves[None]" file="tests/integration/test_connection_roots.py" line="127" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_unknown_or_malformed_root_never_resolves[3]" file="tests/integration/test_connection_roots.py" line="127" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_refs_cannot_be_recovered_from_same_locator_or_another_session" file="tests/integration/test_connection_roots.py" line="135" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_root_and_parent_replacement_cannot_retarget_held_directory" file="tests/integration/test_connection_roots.py" line="149" time="0.001"><failure message="panestria.kernel.errors.KernelDenied: connection_root_unsafe">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_root_and_parent_replaceme0/private')
+
+    def test_root_and_parent_replacement_cannot_retarget_held_directory(directory):
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            moved = directory.with_name("moved")
+            directory.rename(moved)
+            directory.mkdir(mode=0o700)
+            (directory / "file").write_bytes(OUTSIDE)
+&gt;           assert session.snapshot(ACTOR, reference, "file", max_bytes=64).content == INSIDE
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_connection_roots.py:157: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/connection_roots.py:251: in snapshot
+    before = _regular(path_fd, root, max_bytes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fd = 12
+root = os.stat_result(st_mode=16832, st_ino=36867930, st_dev=66306, st_nlink=2, st_uid=1000, st_gid=1000, st_size=4096, st_atime=1792293125, st_mtime=1792293125, st_ctime=1792293125)
+limit = 64
+
+    def _regular(fd: int, root: os.stat_result, limit: int) -&gt; os.stat_result:
+        info = os.fstat(fd)
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.getuid()
+            or info.st_dev != root.st_dev
+            or info.st_nlink != 1
+            or info.st_mode &amp; 0o022
+            or not 0 &lt;= info.st_size &lt;= limit
+        ):
+&gt;           raise KernelDenied("connection_root_unsafe")
+E           panestria.kernel.errors.KernelDenied: connection_root_unsafe
+
+src/panestria/kernel/connection_roots.py:127: KernelDenied</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_actual_aliases_and_hardlinks_cannot_expose_outside_or_inside_targets[file-alias]" file="tests/integration/test_connection_roots.py" line="172" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_actual_aliases_and_hardlinks_cannot_expose_outside_or_inside_targets[directory-alias]" file="tests/integration/test_connection_roots.py" line="172" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_actual_aliases_and_hardlinks_cannot_expose_outside_or_inside_targets[magic-alias]" file="tests/integration/test_connection_roots.py" line="172" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_actual_aliases_and_hardlinks_cannot_expose_outside_or_inside_targets[inside-alias]" file="tests/integration/test_connection_roots.py" line="172" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_actual_aliases_and_hardlinks_cannot_expose_outside_or_inside_targets[hardlink]" file="tests/integration/test_connection_roots.py" line="172" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_parent_and_final_enrollment_aliases_refuse_without_changing_permissions" file="tests/integration/test_connection_roots.py" line="197" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_special_objects_never_reach_readable_open[fifo]" file="tests/integration/test_connection_roots.py" line="215" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_special_objects_never_reach_readable_open[socket]" file="tests/integration/test_connection_roots.py" line="215" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_special_objects_never_reach_readable_open[directory]" file="tests/integration/test_connection_roots.py" line="215" time="0.004" /><testcase classname="tests.integration.test_connection_roots" name="test_special_objects_never_reach_readable_open[symlink]" file="tests/integration/test_connection_roots.py" line="215" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_actual_changes_during_read_deny_without_returning_partial_data[replace]" file="tests/integration/test_connection_roots.py" line="241" time="0.001"><failure message="assert False">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_actual_changes_during_rea0/private')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7fb4763da2d0&gt;
+mutation = 'replace'
+
+    @pytest.mark.parametrize(
+        "mutation", ["replace", "alias", "remove", "rewrite", "grow", "link", "permissions", "root-mode"]
+    )
+    def test_actual_changes_during_read_deny_without_returning_partial_data(directory, monkeypatch, mutation):
+        original_read = os.read
+        source = directory / "file"
+        outside = directory.parent / "outside"
+        outside.write_bytes(OUTSIDE)
+        changed = False
+    
+        def racing_read(fd, count):
+            nonlocal changed
+            result = original_read(fd, count)
+            if not changed:
+                changed = True
+                if mutation in {"replace", "alias", "remove"}:
+                    source.unlink()
+                    if mutation == "replace":
+                        source.write_bytes(OUTSIDE)
+                    elif mutation == "alias":
+                        source.symlink_to(outside)
+                elif mutation == "rewrite":
+                    before = source.stat()
+                    source.write_bytes(b"X" * len(INSIDE))
+                    os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
+                elif mutation == "grow":
+                    with source.open("ab") as stream:
+                        stream.write(OUTSIDE)
+                elif mutation == "link":
+                    os.link(source, directory.parent / "new-link")
+                elif mutation == "permissions":
+                    source.chmod(0o666)
+                else:
+                    directory.chmod(0o755)
+            return result
+    
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            monkeypatch.setattr(roots.os, "read", racing_read)
+            with pytest.raises(KernelDenied):
+                session.snapshot(ACTOR, reference, "file", max_bytes=64)
+&gt;           assert changed
+E           assert False
+
+tests/integration/test_connection_roots.py:283: AssertionError</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_actual_changes_during_read_deny_without_returning_partial_data[alias]" file="tests/integration/test_connection_roots.py" line="241" time="0.001"><failure message="assert False">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_actual_changes_during_rea1/private')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7fb4763d9010&gt;
+mutation = 'alias'
+
+    @pytest.mark.parametrize(
+        "mutation", ["replace", "alias", "remove", "rewrite", "grow", "link", "permissions", "root-mode"]
+    )
+    def test_actual_changes_during_read_deny_without_returning_partial_data(directory, monkeypatch, mutation):
+        original_read = os.read
+        source = directory / "file"
+        outside = directory.parent / "outside"
+        outside.write_bytes(OUTSIDE)
+        changed = False
+    
+        def racing_read(fd, count):
+            nonlocal changed
+            result = original_read(fd, count)
+            if not changed:
+                changed = True
+                if mutation in {"replace", "alias", "remove"}:
+                    source.unlink()
+                    if mutation == "replace":
+                        source.write_bytes(OUTSIDE)
+                    elif mutation == "alias":
+                        source.symlink_to(outside)
+                elif mutation == "rewrite":
+                    before = source.stat()
+                    source.write_bytes(b"X" * len(INSIDE))
+                    os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
+                elif mutation == "grow":
+                    with source.open("ab") as stream:
+                        stream.write(OUTSIDE)
+                elif mutation == "link":
+                    os.link(source, directory.parent / "new-link")
+                elif mutation == "permissions":
+                    source.chmod(0o666)
+                else:
+                    directory.chmod(0o755)
+            return result
+    
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            monkeypatch.setattr(roots.os, "read", racing_read)
+            with pytest.raises(KernelDenied):
+                session.snapshot(ACTOR, reference, "file", max_bytes=64)
+&gt;           assert changed
+E           assert False
+
+tests/integration/test_connection_roots.py:283: AssertionError</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_actual_changes_during_read_deny_without_returning_partial_data[remove]" file="tests/integration/test_connection_roots.py" line="241" time="0.001"><failure message="assert False">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_actual_changes_during_rea2/private')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7fb4763d8050&gt;
+mutation = 'remove'
+
+    @pytest.mark.parametrize(
+        "mutation", ["replace", "alias", "remove", "rewrite", "grow", "link", "permissions", "root-mode"]
+    )
+    def test_actual_changes_during_read_deny_without_returning_partial_data(directory, monkeypatch, mutation):
+        original_read = os.read
+        source = directory / "file"
+        outside = directory.parent / "outside"
+        outside.write_bytes(OUTSIDE)
+        changed = False
+    
+        def racing_read(fd, count):
+            nonlocal changed
+            result = original_read(fd, count)
+            if not changed:
+                changed = True
+                if mutation in {"replace", "alias", "remove"}:
+                    source.unlink()
+                    if mutation == "replace":
+                        source.write_bytes(OUTSIDE)
+                    elif mutation == "alias":
+                        source.symlink_to(outside)
+                elif mutation == "rewrite":
+                    before = source.stat()
+                    source.write_bytes(b"X" * len(INSIDE))
+                    os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
+                elif mutation == "grow":
+                    with source.open("ab") as stream:
+                        stream.write(OUTSIDE)
+                elif mutation == "link":
+                    os.link(source, directory.parent / "new-link")
+                elif mutation == "permissions":
+                    source.chmod(0o666)
+                else:
+                    directory.chmod(0o755)
+            return result
+    
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            monkeypatch.setattr(roots.os, "read", racing_read)
+            with pytest.raises(KernelDenied):
+                session.snapshot(ACTOR, reference, "file", max_bytes=64)
+&gt;           assert changed
+E           assert False
+
+tests/integration/test_connection_roots.py:283: AssertionError</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_actual_changes_during_read_deny_without_returning_partial_data[rewrite]" file="tests/integration/test_connection_roots.py" line="241" time="0.001"><failure message="assert False">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_actual_changes_during_rea3/private')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7fb4763dbb00&gt;
+mutation = 'rewrite'
+
+    @pytest.mark.parametrize(
+        "mutation", ["replace", "alias", "remove", "rewrite", "grow", "link", "permissions", "root-mode"]
+    )
+    def test_actual_changes_during_read_deny_without_returning_partial_data(directory, monkeypatch, mutation):
+        original_read = os.read
+        source = directory / "file"
+        outside = directory.parent / "outside"
+        outside.write_bytes(OUTSIDE)
+        changed = False
+    
+        def racing_read(fd, count):
+            nonlocal changed
+            result = original_read(fd, count)
+            if not changed:
+                changed = True
+                if mutation in {"replace", "alias", "remove"}:
+                    source.unlink()
+                    if mutation == "replace":
+                        source.write_bytes(OUTSIDE)
+                    elif mutation == "alias":
+                        source.symlink_to(outside)
+                elif mutation == "rewrite":
+                    before = source.stat()
+                    source.write_bytes(b"X" * len(INSIDE))
+                    os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
+                elif mutation == "grow":
+                    with source.open("ab") as stream:
+                        stream.write(OUTSIDE)
+                elif mutation == "link":
+                    os.link(source, directory.parent / "new-link")
+                elif mutation == "permissions":
+                    source.chmod(0o666)
+                else:
+                    directory.chmod(0o755)
+            return result
+    
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            monkeypatch.setattr(roots.os, "read", racing_read)
+            with pytest.raises(KernelDenied):
+                session.snapshot(ACTOR, reference, "file", max_bytes=64)
+&gt;           assert changed
+E           assert False
+
+tests/integration/test_connection_roots.py:283: AssertionError</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_actual_changes_during_read_deny_without_returning_partial_data[grow]" file="tests/integration/test_connection_roots.py" line="241" time="0.001"><failure message="assert False">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_actual_changes_during_rea4/private')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7fb4763f5df0&gt;
+mutation = 'grow'
+
+    @pytest.mark.parametrize(
+        "mutation", ["replace", "alias", "remove", "rewrite", "grow", "link", "permissions", "root-mode"]
+    )
+    def test_actual_changes_during_read_deny_without_returning_partial_data(directory, monkeypatch, mutation):
+        original_read = os.read
+        source = directory / "file"
+        outside = directory.parent / "outside"
+        outside.write_bytes(OUTSIDE)
+        changed = False
+    
+        def racing_read(fd, count):
+            nonlocal changed
+            result = original_read(fd, count)
+            if not changed:
+                changed = True
+                if mutation in {"replace", "alias", "remove"}:
+                    source.unlink()
+                    if mutation == "replace":
+                        source.write_bytes(OUTSIDE)
+                    elif mutation == "alias":
+                        source.symlink_to(outside)
+                elif mutation == "rewrite":
+                    before = source.stat()
+                    source.write_bytes(b"X" * len(INSIDE))
+                    os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
+                elif mutation == "grow":
+                    with source.open("ab") as stream:
+                        stream.write(OUTSIDE)
+                elif mutation == "link":
+                    os.link(source, directory.parent / "new-link")
+                elif mutation == "permissions":
+                    source.chmod(0o666)
+                else:
+                    directory.chmod(0o755)
+            return result
+    
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            monkeypatch.setattr(roots.os, "read", racing_read)
+            with pytest.raises(KernelDenied):
+                session.snapshot(ACTOR, reference, "file", max_bytes=64)
+&gt;           assert changed
+E           assert False
+
+tests/integration/test_connection_roots.py:283: AssertionError</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_actual_changes_during_read_deny_without_returning_partial_data[link]" file="tests/integration/test_connection_roots.py" line="241" time="0.001"><failure message="assert False">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_actual_changes_during_rea5/private')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7fb4763f4440&gt;
+mutation = 'link'
+
+    @pytest.mark.parametrize(
+        "mutation", ["replace", "alias", "remove", "rewrite", "grow", "link", "permissions", "root-mode"]
+    )
+    def test_actual_changes_during_read_deny_without_returning_partial_data(directory, monkeypatch, mutation):
+        original_read = os.read
+        source = directory / "file"
+        outside = directory.parent / "outside"
+        outside.write_bytes(OUTSIDE)
+        changed = False
+    
+        def racing_read(fd, count):
+            nonlocal changed
+            result = original_read(fd, count)
+            if not changed:
+                changed = True
+                if mutation in {"replace", "alias", "remove"}:
+                    source.unlink()
+                    if mutation == "replace":
+                        source.write_bytes(OUTSIDE)
+                    elif mutation == "alias":
+                        source.symlink_to(outside)
+                elif mutation == "rewrite":
+                    before = source.stat()
+                    source.write_bytes(b"X" * len(INSIDE))
+                    os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
+                elif mutation == "grow":
+                    with source.open("ab") as stream:
+                        stream.write(OUTSIDE)
+                elif mutation == "link":
+                    os.link(source, directory.parent / "new-link")
+                elif mutation == "permissions":
+                    source.chmod(0o666)
+                else:
+                    directory.chmod(0o755)
+            return result
+    
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            monkeypatch.setattr(roots.os, "read", racing_read)
+            with pytest.raises(KernelDenied):
+                session.snapshot(ACTOR, reference, "file", max_bytes=64)
+&gt;           assert changed
+E           assert False
+
+tests/integration/test_connection_roots.py:283: AssertionError</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_actual_changes_during_read_deny_without_returning_partial_data[permissions]" file="tests/integration/test_connection_roots.py" line="241" time="0.001"><failure message="assert False">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_actual_changes_during_rea6/private')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7fb4763ef620&gt;
+mutation = 'permissions'
+
+    @pytest.mark.parametrize(
+        "mutation", ["replace", "alias", "remove", "rewrite", "grow", "link", "permissions", "root-mode"]
+    )
+    def test_actual_changes_during_read_deny_without_returning_partial_data(directory, monkeypatch, mutation):
+        original_read = os.read
+        source = directory / "file"
+        outside = directory.parent / "outside"
+        outside.write_bytes(OUTSIDE)
+        changed = False
+    
+        def racing_read(fd, count):
+            nonlocal changed
+            result = original_read(fd, count)
+            if not changed:
+                changed = True
+                if mutation in {"replace", "alias", "remove"}:
+                    source.unlink()
+                    if mutation == "replace":
+                        source.write_bytes(OUTSIDE)
+                    elif mutation == "alias":
+                        source.symlink_to(outside)
+                elif mutation == "rewrite":
+                    before = source.stat()
+                    source.write_bytes(b"X" * len(INSIDE))
+                    os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
+                elif mutation == "grow":
+                    with source.open("ab") as stream:
+                        stream.write(OUTSIDE)
+                elif mutation == "link":
+                    os.link(source, directory.parent / "new-link")
+                elif mutation == "permissions":
+                    source.chmod(0o666)
+                else:
+                    directory.chmod(0o755)
+            return result
+    
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            monkeypatch.setattr(roots.os, "read", racing_read)
+            with pytest.raises(KernelDenied):
+                session.snapshot(ACTOR, reference, "file", max_bytes=64)
+&gt;           assert changed
+E           assert False
+
+tests/integration/test_connection_roots.py:283: AssertionError</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_actual_changes_during_read_deny_without_returning_partial_data[root-mode]" file="tests/integration/test_connection_roots.py" line="241" time="0.001"><failure message="assert False">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_actual_changes_during_rea7/private')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7fb4763dbda0&gt;
+mutation = 'root-mode'
+
+    @pytest.mark.parametrize(
+        "mutation", ["replace", "alias", "remove", "rewrite", "grow", "link", "permissions", "root-mode"]
+    )
+    def test_actual_changes_during_read_deny_without_returning_partial_data(directory, monkeypatch, mutation):
+        original_read = os.read
+        source = directory / "file"
+        outside = directory.parent / "outside"
+        outside.write_bytes(OUTSIDE)
+        changed = False
+    
+        def racing_read(fd, count):
+            nonlocal changed
+            result = original_read(fd, count)
+            if not changed:
+                changed = True
+                if mutation in {"replace", "alias", "remove"}:
+                    source.unlink()
+                    if mutation == "replace":
+                        source.write_bytes(OUTSIDE)
+                    elif mutation == "alias":
+                        source.symlink_to(outside)
+                elif mutation == "rewrite":
+                    before = source.stat()
+                    source.write_bytes(b"X" * len(INSIDE))
+                    os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
+                elif mutation == "grow":
+                    with source.open("ab") as stream:
+                        stream.write(OUTSIDE)
+                elif mutation == "link":
+                    os.link(source, directory.parent / "new-link")
+                elif mutation == "permissions":
+                    source.chmod(0o666)
+                else:
+                    directory.chmod(0o755)
+            return result
+    
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            monkeypatch.setattr(roots.os, "read", racing_read)
+            with pytest.raises(KernelDenied):
+                session.snapshot(ACTOR, reference, "file", max_bytes=64)
+&gt;           assert changed
+E           assert False
+
+tests/integration/test_connection_roots.py:283: AssertionError</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_actual_replacement_between_type_check_and_reopen_cannot_open_fifo" file="tests/integration/test_connection_roots.py" line="285" time="0.001"><failure message="assert (0 == 1)&#10; +  where 0 = len([])">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_actual_replacement_betwee0/private')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7fb4763dba40&gt;
+
+    def test_actual_replacement_between_type_check_and_reopen_cannot_open_fifo(directory, monkeypatch):
+        actual_open = os.open
+        source = directory / "file"
+        opened = []
+    
+        def racing_open(path, flags, *args, **kwargs):
+            assert str(path).startswith("/proc/self/fd/")
+            source.unlink()
+            os.mkfifo(source)
+            fd = actual_open(path, flags, *args, **kwargs)
+            opened.append(os.fstat(fd))
+            return fd
+    
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            monkeypatch.setattr(roots.os, "open", racing_open)
+            with pytest.raises(KernelDenied):
+                session.snapshot(ACTOR, reference, "file", max_bytes=64)
+&gt;           assert len(opened) == 1 and opened[0].st_nlink == 0
+E           assert (0 == 1)
+E            +  where 0 = len([])
+
+tests/integration/test_connection_roots.py:304: AssertionError</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_actual_concurrent_symlink_swaps_only_return_inside_bytes_or_deny" file="tests/integration/test_connection_roots.py" line="306" time="0.001"><failure message="panestria.kernel.errors.KernelDenied: connection_root_unsafe">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_actual_concurrent_symlink0/private')
+
+    def test_actual_concurrent_symlink_swaps_only_return_inside_bytes_or_deny(directory):
+        outside = directory.parent / "outside"
+        outside.write_bytes(OUTSIDE)
+        source = directory / "file"
+        stop, started = threading.Event(), threading.Event()
+        errors, swaps = [], []
+    
+        def swapper():
+            try:
+                while not stop.is_set():
+                    candidate = directory / "candidate"
+                    candidate.symlink_to(outside)
+                    candidate.replace(source)
+                    candidate.write_bytes(INSIDE)
+                    candidate.replace(source)
+                    swaps.append(1)
+                    started.set()
+            except BaseException as error:
+                errors.append(error)
+                started.set()
+    
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+&gt;           assert session.snapshot(ACTOR, reference, "file", max_bytes=64).content == INSIDE
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_connection_roots.py:330: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/connection_roots.py:251: in snapshot
+    before = _regular(path_fd, root, max_bytes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fd = 12
+root = os.stat_result(st_mode=16832, st_ino=36973319, st_dev=66306, st_nlink=2, st_uid=1000, st_gid=1000, st_size=4096, st_atime=1792293125, st_mtime=1792293125, st_ctime=1792293125)
+limit = 64
+
+    def _regular(fd: int, root: os.stat_result, limit: int) -&gt; os.stat_result:
+        info = os.fstat(fd)
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.getuid()
+            or info.st_dev != root.st_dev
+            or info.st_nlink != 1
+            or info.st_mode &amp; 0o022
+            or not 0 &lt;= info.st_size &lt;= limit
+        ):
+&gt;           raise KernelDenied("connection_root_unsafe")
+E           panestria.kernel.errors.KernelDenied: connection_root_unsafe
+
+src/panestria/kernel/connection_roots.py:127: KernelDenied</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_actual_mount_crossing_is_refused_before_content_read" file="tests/integration/test_connection_roots.py" line="346" time="0.000" /><testcase classname="tests.integration.test_connection_roots" name="test_descriptors_close_on_remove_context_failure_and_gc" file="tests/integration/test_connection_roots.py" line="357" time="0.001"><failure message="panestria.kernel.errors.KernelDenied: connection_root_unsafe">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_descriptors_close_on_remo0/private')
+
+    def test_descriptors_close_on_remove_context_failure_and_gc(directory):
+        baseline = set(os.listdir("/proc/self/fd"))
+        session = roots.ConnectionRootSession(ACTOR)
+        reference = session.enroll(ACTOR, str(directory))
+        assert all(not os.get_inheritable(fd) for fd in session._roots.values())
+        for _ in range(10):
+&gt;           session.snapshot(ACTOR, reference, "file", max_bytes=64)
+
+tests/integration/test_connection_roots.py:364: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/connection_roots.py:251: in snapshot
+    before = _regular(path_fd, root, max_bytes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fd = 12
+root = os.stat_result(st_mode=16832, st_ino=36973327, st_dev=66306, st_nlink=2, st_uid=1000, st_gid=1000, st_size=4096, st_atime=1792293125, st_mtime=1792293125, st_ctime=1792293125)
+limit = 64
+
+    def _regular(fd: int, root: os.stat_result, limit: int) -&gt; os.stat_result:
+        info = os.fstat(fd)
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.getuid()
+            or info.st_dev != root.st_dev
+            or info.st_nlink != 1
+            or info.st_mode &amp; 0o022
+            or not 0 &lt;= info.st_size &lt;= limit
+        ):
+&gt;           raise KernelDenied("connection_root_unsafe")
+E           panestria.kernel.errors.KernelDenied: connection_root_unsafe
+
+src/panestria/kernel/connection_roots.py:127: KernelDenied</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_enrollment_capacity_and_failed_enrollment_close_only_owned_fds" file="tests/integration/test_connection_roots.py" line="381" time="0.001" /><testcase classname="tests.integration.test_connection_roots" name="test_fork_cannot_reuse_reference_and_closes_child_copy_without_touching_parent" file="tests/integration/test_connection_roots.py" line="395" time="0.005"><failure message="panestria.kernel.errors.KernelDenied: connection_root_unsafe">directory = PosixPath('/tmp/pytest-of-yogesh/pytest-17/test_fork_cannot_reuse_referen0/private')
+
+    def test_fork_cannot_reuse_reference_and_closes_child_copy_without_touching_parent(directory):
+        with roots.ConnectionRootSession(ACTOR) as session:
+            reference = session.enroll(ACTOR, str(directory))
+            fd = session._roots[reference]
+            pid = os.fork()
+            if pid == 0:
+                try:
+                    try:
+                        session.snapshot(ACTOR, reference, "file", max_bytes=64)
+                    except KernelDenied:
+                        pass
+                    else:
+                        os._exit(10)
+                    try:
+                        os.fstat(fd)
+                    except OSError:
+                        os._exit(0)
+                    os._exit(11)
+                except BaseException:
+                    os._exit(12)
+            _pid, status = os.waitpid(pid, 0)
+            assert os.waitstatus_to_exitcode(status) == 0
+&gt;           assert session.snapshot(ACTOR, reference, "file", max_bytes=64).content == INSIDE
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_connection_roots.py:418: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/connection_roots.py:251: in snapshot
+    before = _regular(path_fd, root, max_bytes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fd = 13
+root = os.stat_result(st_mode=16832, st_ino=36973338, st_dev=66306, st_nlink=2, st_uid=1000, st_gid=1000, st_size=4096, st_atime=1792293125, st_mtime=1792293125, st_ctime=1792293125)
+limit = 64
+
+    def _regular(fd: int, root: os.stat_result, limit: int) -&gt; os.stat_result:
+        info = os.fstat(fd)
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.getuid()
+            or info.st_dev != root.st_dev
+            or info.st_nlink != 1
+            or info.st_mode &amp; 0o022
+            or not 0 &lt;= info.st_size &lt;= limit
+        ):
+&gt;           raise KernelDenied("connection_root_unsafe")
+E           panestria.kernel.errors.KernelDenied: connection_root_unsafe
+
+src/panestria/kernel/connection_roots.py:127: KernelDenied</failure></testcase><testcase classname="tests.integration.test_connection_roots" name="test_unknown_platform_and_actual_syscall_failure_never_fall_back" file="tests/integration/test_connection_roots.py" line="420" time="0.001" /></testsuite></testsuites>
