@@ -31,9 +31,13 @@ Applied R0 migrations are immutable. R1 revisions start at 0005, following
 0004_check_candidate. Earlier design revision numbers were prospective labels;
 implementation uses forward migrations rather than rewriting applied history.
 
-G1 remains incomplete until actual OS, Claude, paid SDK, hardware, local model,
-offline and resource-pressure cases pass. No mock substitutes for a live case.
-R1 owner review is separate from G1 evidence. R2/R3 implementation is not started.
+G1 remains incomplete until its actual required evidence passes. The owner's
+2026-10-18 subscription/local-only decision defers paid SDK AOS-016-TC04; it is
+not passed and its original gate requirement remains. OpenAI live calls remain
+unauthorized. No mock substitutes for a required live case. R1 owner review is
+separate from G1 evidence. R2/R3 components exist; their releases are not accepted.
+The current [progress page](../IMPLEMENTATION_PROGRESS.md) and
+[owner Build CLI](../testing/OWNER_BUILD_CLI.md) supersede older implementation-status assumptions.
 
 The owner previously expected a quota reset within about 24 hours; this is historical context, not a current usage observation. Keep successful
 native inference/conformance cases pending while continuing all independent

@@ -4,6 +4,7 @@ import base64
 import hashlib
 import json
 import threading
+import time
 from pathlib import Path
 from uuid import uuid4
 
@@ -15,7 +16,7 @@ from test_registered_check_authority import git, rows
 from panestria.contracts.goal import contract_sha256, load_contract
 from panestria.execution.build_merge import VerifiedGitTarget, prepare_merge
 from panestria.execution.outbox import EffectExecutor
-from panestria.execution.scoped_bash import ScopedBashController
+from panestria.execution.scoped_bash import ScopedBashController, ScopedBashUnavailable
 from panestria.kernel.approvals import ApprovalService
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
@@ -189,6 +190,42 @@ PY
     )
     assert receipt.outcome == "COMPLETED" and receipt.exit_code == 0
     assert (controller.workspace / "calculator.py").read_text() == "value = 44\n"
+
+
+def test_independent_check_uses_remaining_wall_budget_before_publication(build):
+    task, args, _cid, _policy = build
+    controller = ScopedBashController(*args)
+    assert execute(controller, "printf 'value = 43\\n' > calculator.py").outcome == "COMPLETED"
+    bare = Path(task["bare"])
+    reviewed = bare.parent / "deadline-check"
+    reviewed.mkdir(mode=0o700)
+    script = reviewed / "required.py"
+    script.write_text("import time\ntime.sleep(10)\n")
+    script.chmod(0o400)
+    registry = CommandRegistry(
+        reviewed,
+        "/reviewed/python",
+        (
+            RegisteredCommand(
+                "unit-check", ("/reviewed/python", str(script)), True, hashlib.sha256(script.read_bytes()).hexdigest()
+            ),
+        ),
+    )
+    started = time.monotonic()
+    with pytest.raises(ScopedBashUnavailable, match="cancelled_or_deadline"):
+        controller.verify_for_review(
+            Path(task["protected"]),
+            bare,
+            git(bare, "rev-parse", "HEAD"),
+            bare.parent / "deadline-frozen",
+            registry,
+            deadline=started + 0.4,
+        )
+    assert time.monotonic() - started < 4
+    with controller.connect() as c:
+        assert c.execute(
+            "SELECT count(*) FROM panestria.approval_request WHERE task_id=%s", (task["task"],)
+        ).fetchone() == (0,)
 
 
 @pytest.mark.parametrize("revoke", ["lease", "policy", "cancel"])

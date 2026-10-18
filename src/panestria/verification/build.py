@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import time
 from dataclasses import dataclass
 from typing import Literal
 
@@ -37,6 +38,7 @@ def verify_build(
     registry: CommandRegistry,
     *,
     policy: PolicyContext | None = None,
+    deadline: float | None = None,
 ) -> VerifiedBuild:
     verify_snapshot(snapshot)
     runner = SandboxedCheckRunner(registry, snapshot.directory.parent)
@@ -52,10 +54,13 @@ def verify_build(
             except KeyError:
                 verdict, reason, output_digest = "FAIL", "unregistered_command", hashlib.sha256(b"").hexdigest()
             else:
+                remaining = float(spec.timeout_seconds)
+                if deadline is not None:
+                    remaining = min(remaining, max(0.0, deadline - time.monotonic()))
                 result = runner.run(
                     spec.command_ref,
                     snapshot.directory,
-                    float(spec.timeout_seconds),
+                    remaining,
                     expected_exit_code=spec.expected_exit_code,
                 )
                 verdict, reason, output_digest = (

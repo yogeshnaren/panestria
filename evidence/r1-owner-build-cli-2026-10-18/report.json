@@ -1,0 +1,76 @@
+{
+  "purpose": "Owner-facing PUBLIC native Build CLI with actual runtime qualification and exact protected merge",
+  "candidate_commit": "7c4aef569d0589df9fd586a14db0526ba9d6a316",
+  "reports": [
+    {
+      "file": "runtime.xml",
+      "sha256": "3ad1db72f12112dce22fe8bd7532c5e5df732ecf40eb4d26f9739d34db82b762",
+      "passed": 11,
+      "seconds": "28.599",
+      "scope": "Real runtime conformance; no fixture certificate",
+      "candidate_commit": "7c4aef569d0589df9fd586a14db0526ba9d6a316",
+      "worktree_state": "clean"
+    },
+    {
+      "file": "default.xml",
+      "sha256": "f84acd49e208802ba54f2a3f2243f8544f7a62fbd25de56c7a6f91b177c45ed4",
+      "passed": 8,
+      "seconds": "10.458",
+      "scope": "TEST_FIXTURE_NOT_LIVE cert/native; actual PG/Docker/Git/CLI",
+      "candidate_commit": "7c4aef569d0589df9fd586a14db0526ba9d6a316",
+      "worktree_state": "clean"
+    },
+    {
+      "file": "live.xml",
+      "sha256": "42fa25a07319dad775af469afe4f537e54309ba6b9419160e8c35f7af19ca98f",
+      "passed": 1,
+      "seconds": "14.508",
+      "scope": "Real operator certificate and native transport; scripted test-owner approval",
+      "candidate_commit": "7c4aef569d0589df9fd586a14db0526ba9d6a316",
+      "worktree_state": "clean"
+    }
+  ],
+  "runtime_certificate_sha256": "d1f154a0247336fdb849f5c45137c830190ffdeebc1d0545893ef0ff902ea056",
+  "certificate_expires_at": "2026-10-19T13:43:26.715889+00:00",
+  "limitations": [
+    "PUBLIC synthetic source only; operator auth remains trusted-host, model tools in OS sandbox",
+    "Runtime certificate issued from real conformance; not a test certificate in the live CLI case",
+    "Scripted test-owner policy/merge approval is not human signoff",
+    "Source checkout unchanged; only protected destination Git ref advances after exact approval",
+    "The example scaffolder is checked locally after this candidate; package runtime source is unchanged",
+    "No full G1/G2/G3 pass, SDK TC04 DEFERRED NOT PASS, no manufactured trial or R4-R7 work"
+  ],
+  "final_candidate_commit": "966b69453254a708d8fc5d57daeafc343233f840",
+  "final_reports": [
+    {
+      "file": "final-default.xml",
+      "candidate_commit": "966b69453254a708d8fc5d57daeafc343233f840",
+      "worktree_state": "clean",
+      "sha256": "8aeb7e9df979b4c3d697722f8e7a7f058cddf53f3fa21a2a0765e3f5b45d2fb1",
+      "passed": 9,
+      "seconds": "12.433",
+      "scope": "Provider-free explicit fixture cert/transport; actual kernel/sandbox/Git plus remaining verifier wall-budget check"
+    },
+    {
+      "file": "final-runtime.xml",
+      "candidate_commit": "966b69453254a708d8fc5d57daeafc343233f840",
+      "worktree_state": "clean",
+      "sha256": "fe5d51451bcdbd516c633873eb91b5bf61ef0121e73f91b6ce98422ea71fa6a4",
+      "passed": 11,
+      "seconds": "25.809",
+      "scope": "Actual fixed runtime qualification; no fixture certificate"
+    },
+    {
+      "file": "final-live.xml",
+      "candidate_commit": "966b69453254a708d8fc5d57daeafc343233f840",
+      "worktree_state": "clean",
+      "sha256": "2d5de313104f7646c1755dded5dbbc00c1170877a56cdfe2768e1c8ea6d3bc25",
+      "passed": 1,
+      "seconds": "15.012",
+      "scope": "Actual owner CLI with real operator certificate and native subscription"
+    }
+  ],
+  "final_runtime_certificate_sha256": "f8213f4ad4ed419f9373de3eb9e7c7c8af8a6c70503c277dffcda89b7e031dda",
+  "final_certificate_expires_at": "2026-10-19T13:52:56.508085+00:00",
+  "review_correction": "Independent trusted checks inherit the remaining native/owner deadline; a slow check cannot publish passing evidence after budget exhaustion. Earlier source evidence retained unchanged."
+}
