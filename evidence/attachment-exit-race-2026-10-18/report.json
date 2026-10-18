@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-18T03:43:52.236023+00:00",
+  "source_commit": "c31d4577a563880d9957436e30e35cfc27505ad8",
+  "source_state_at_execution": "clean",
+  "result": "PASS_COMPONENT",
+  "scope": "reinspect actual worker state after observed attach-client exit; retain success, nonzero exit, running-worker and unstarted-container distinctions",
+  "source_sha256": {
+    "src/panestria/sandbox/runner.py": "05c2fd3c08ee93e2ca5d16a16e4221ab113ace8951ba3adc8ad1a22ffb5bcb4f",
+    "src/panestria/sandbox/profiles.py": "cf62ea23a6ac8ce0d2f49b33ac5bce2a3a9a5d8afc54c7ef4158685c6f4cafe9",
+    "src/panestria/sandbox/native_tool_input.py": "e7985673628502731b3e9cd317d769c1a094d65d7c136a260b001e5cca3c11f2",
+    "tests/unit/test_sandbox_stdin_contract.py": "faf08c27bc288fcc3eca442ec7ad06eb1e314e4b694c662d195abc5715dee2df",
+    "tests/integration/test_sandbox_framed_stdin.py": "23ac46139ed7f1a05b731f4e85fecae3fc70c2534ccfba73144012f515edba84",
+    "tests/integration/test_sandbox_stdin_admission.py": "73d54bb8f6c7ff187334c2fb59dfe8072c9157f50a976c042a474f2d8d944198",
+    "tests/integration/test_aos_008.py": "6f27572585d15b912f6b80d5e91f168438f51cb3285879857bb94e09508cc9bb",
+    "tests/integration/test_native_input_frame_container.py": "0ae0727aec265f69bf73101bade2f00e349ddd622a0e34391d0cfd121112a463",
+    "pyproject.toml": "51bb953a36e78a1139b5334ad8e76e847d87ef323f02ff05c20183d18cf8f95f",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d",
+    ".importlinter": "bc75998b077f693591daffc90a4672f50965ab3750e1c8e4d9346895cdea7bb8"
+  },
+  "artifacts": {
+    "before-fix-1a79a09-2-failed.xml": "13a7b21d18eb98f6bf3d6b9503f4d28917c6314df83b1140503dd6f94e2d8ce5",
+    "qualified-c31d457-55.xml": "91453fc48dbad25581429a70d70ad1112ea9cd644c2b3610fe754c84e097ee0f",
+    "invalid-node-selection-no-tests.xml": "87b702350eab34307f080e198388f6215e2faf8fb6d4966f117aa61560603abb"
+  },
+  "observed_tests": {
+    "before-fix-1a79a09-2-failed.xml": {
+      "source_state": "clean 1a79a095fe1cdde02d5201b80c2475564451d0fe",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "2",
+          "skipped": "0",
+          "tests": "2",
+          "time": "0.259",
+          "timestamp": "2026-10-17T20:41:39.646767-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "qualified-c31d457-55.xml": {
+      "source_state": "clean c31d4577a563880d9957436e30e35cfc27505ad8",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "55",
+          "time": "24.906",
+          "timestamp": "2026-10-17T20:42:42.028282-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "invalid-node-selection-no-tests.xml": {
+      "source_state": "c31d457; command exit4 from nonexistent test path; no tests ran and no pass is claimed",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "0",
+          "time": "0.002",
+          "timestamp": "2026-10-17T20:42:01.538965-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    }
+  },
+  "trigger": {
+    "pr": 99,
+    "run_id": 39093996729,
+    "head": "d5b8fd7f7c59ab02394965e923e09b993ca4227f",
+    "result": "1831PASS/1FAIL/51liveexcluded/oneupstreamwarning404.88s",
+    "case": "test_actual_small_os_pipes_do_not_require_a_writer_thread[duplex-pressure-completed]",
+    "full_original_log_sha256": "7f633e45533b7ff6fe2ab7272d7bb49fc5283e51ce673e917a317beb38264513",
+    "full_original_log_location": "project outputs/PANESTRIA_PR99_CI_39093996729_FAILED.log",
+    "url": "https://github.com/yogeshnaren/panestria/actions/runs/39093996729"
+  },
+  "checks": {
+    "focused_default_passed": 55,
+    "selected_live_excluded": 8,
+    "seconds": 24.91,
+    "new_real_child_cases": 2,
+    "ruff": "PASS",
+    "mypy_source_files": 199,
+    "import_contracts_kept": 11,
+    "secret_scan": "PASS",
+    "source_diff_check": "PASS"
+  },
+  "coverage": [
+    "deterministic real 4096-byte pipe/gated child0 and child7 exit after running observation before attach poll: original code fails both; fixed code preserves completed vs process_failed",
+    "existing real small-pipe pressure, EOF, cancellation/deadline, partial registration cleanup and no writer-thread cases",
+    "actual Docker stdin flags, input/output pressure, early exit, OOM, cancellation, killed attach while worker running and unstarted containers with client0/client42 still refuse",
+    "actual disposable PostgreSQL widening refusal and native parser/sandbox boundary regressions"
+  ],
+  "limitations": [
+    "The prior CI did not log the race interleaving; source inspection and deterministic real-child reproduction establish the matching mechanism",
+    "Container-state seam in the two deterministic OS-pipe cases is explicit; separate existing tests use actual Docker resources",
+    "One additional state inspection only; success still requires actual exited worker, exit0, completed input and successful attach status; failed attach diagnostics remain suppressed",
+    "Eight selected live cases excluded; no full gate or real vendor auth certificate",
+    "No provider/model/SDK/auth/new image/owner service or schema work; deadline/inspection latency limits retain their existing scope"
+  ],
+  "runtime_authority": false,
+  "release_authority": false
+}
