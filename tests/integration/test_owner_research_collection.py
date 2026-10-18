@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
 from uuid import uuid4
 
@@ -239,6 +240,36 @@ def test_contract_without_public_web_grant_is_not_upgraded_by_collect_flag(owner
     with pytest.raises(KernelDenied, match="research_collection_contract_or_policy_denied"):
         collected(q, receipt)
     assert task(q, receipt) == "CREATED" and not q.f.server["requests"] and not q.calls
+
+
+@pytest.mark.parametrize("admitted_search", [JOINT], indirect=True)
+def test_activation_takes_goal_lock_before_updating_task_and_cancellation_can_follow(owner_question):
+    q = owner_question
+    receipt = stage(q)
+    owner = OwnerCollection(q.f.dsn, q.settings)
+
+    def goal_is_locked():
+        with psycopg.connect(q.f.dsn) as other:
+            with pytest.raises(psycopg.errors.LockNotAvailable):
+                other.execute("SELECT id FROM panestria.goal WHERE id=%s FOR NO KEY UPDATE NOWAIT", (receipt.goal_id,))
+
+    with owner.connect() as c:
+        binding = owner.lifecycle.load(UnitOfWork(c), q.f.actor, receipt.request_id)
+        with ThreadPoolExecutor(1) as pool:
+            pool.submit(goal_is_locked).result(timeout=3)
+        owner.lifecycle.begin(UnitOfWork(c), q.f.actor, binding)
+    assert task(q, receipt) == "VALIDATING"
+    with psycopg.connect(q.f.dsn) as c:
+        version = c.execute("SELECT row_version FROM panestria.task WHERE id=%s", (receipt.task_id,)).fetchone()[0]
+        CancellationService().cancel(
+            UnitOfWork(c),
+            q.f.actor,
+            receipt.goal_id,
+            version,
+            "synthetic cancellation after activation",
+            correlation_id=str(uuid4()),
+        )
+    assert task(q, receipt) == "CANCELLED" and not q.f.server["requests"] and not q.calls
 
 
 @pytest.mark.parametrize("admitted_search", [JOINT], indirect=True)

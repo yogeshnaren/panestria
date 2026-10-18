@@ -149,6 +149,7 @@ class OwnerCollection:
                 if reason in {"source_limit", "body_limit"}:
                     break
             with self.connect() as c:
+                self.lifecycle.load(UnitOfWork(c), self.actor, request_id)  # Project -> goal -> task.
                 fetch._current(c)  # Same locked policy/lease transaction as known adapter termination.
                 self.lifecycle.finish(UnitOfWork(c), self.actor, binding, lease, reason=reason, known=True)
             return CollectionReceipt(request_id, binding.request.scope.task_id, reason)

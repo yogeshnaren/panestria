@@ -54,10 +54,21 @@ class CollectionLifecycle:
             raise KernelDenied("research_caller_transaction_required")
         lock_project(uow, actor)
         hint = uow.execute(
-            "SELECT task_id::text FROM panestria.research_request WHERE id=%s AND owner_id=%s AND project_id=%s",
+            "SELECT task_id::text,goal_id::text FROM panestria.research_request "
+            "WHERE id=%s AND owner_id=%s AND project_id=%s",
             (request_id, actor.owner_id, actor.project_id),
         ).fetchone()
         if hint is None:
+            raise KernelDenied("not_found")
+        # Activation updates the goal. Cancellation already locks goal -> task;
+        # taking the goal here first prevents the inverse task -> goal wait.
+        if (
+            uow.execute(
+                "SELECT id FROM panestria.goal WHERE id=%s AND owner_id=%s AND project_id=%s FOR NO KEY UPDATE",
+                (str(hint[1]), actor.owner_id, actor.project_id),
+            ).fetchone()
+            is None
+        ):
             raise KernelDenied("not_found")
         task = lock_task(uow, actor.owner_id, actor.project_id, str(hint[0]))
         if task is None:
