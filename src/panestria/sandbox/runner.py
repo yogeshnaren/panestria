@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
+from panestria.sandbox.native_tool_input import MAX_FRAME_BYTES
 from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile, SandboxRejected
 
 
@@ -111,8 +112,14 @@ class DockerSandbox:
         *,
         attempt_id: str | None = None,
         cancel: threading.Event | None = None,
+        input_frame: bytes | None = None,
     ) -> SandboxReceipt:
         profile.validate()
+        if (profile.stdin_mode == "closed" and input_frame is not None) or (
+            profile.stdin_mode == "native-frame-v1"
+            and (type(input_frame) is not bytes or not 1 <= len(input_frame) <= MAX_FRAME_BYTES)
+        ):
+            raise SandboxRejected("sandbox_input_binding_mismatch")
         if cancel is not None and cancel.is_set():
             raise SandboxRejected("cancelled_before_start")
         if workspace.is_symlink() or not workspace.is_dir():
@@ -199,6 +206,8 @@ class DockerSandbox:
         ]
         for mount in self.mounts:
             args.extend(["--mount", f"type=bind,src={mount.source.resolve()},dst={mount.destination},readonly"])
+        if profile.stdin_mode == "native-frame-v1":
+            args.extend(["--interactive", "--attach", "stdin", "--attach", "stdout", "--attach", "stderr"])
         args.extend([profile.image, "-I", "/runtime/panestria-no-network.py", *argv])
         if self._on_launch is not None:
             try:
@@ -229,7 +238,7 @@ class DockerSandbox:
             config_hash = hashlib.sha256(
                 json.dumps(effective, sort_keys=True, separators=(",", ":")).encode()
             ).hexdigest()
-            return self._execute(container_id, profile, config_hash, cancel=cancel)
+            return self._execute(container_id, profile, config_hash, cancel=cancel, input_frame=input_frame)
         finally:
             observed = self.reconcile_launch(launch, expected_container_id=container_id)
             if observed.status != "REMOVED":
@@ -312,6 +321,10 @@ class DockerSandbox:
         }
         if (
             actual["Image"] != image_id
+            or config.get("OpenStdin") is not (profile.stdin_mode == "native-frame-v1")
+            or config.get("AttachStdin") is not (profile.stdin_mode == "native-frame-v1")
+            or config.get("StdinOnce") is not (profile.stdin_mode == "native-frame-v1")
+            or config.get("Tty") is not False
             or config["User"] != f"{profile.uid}:{profile.gid}"
             or host["Privileged"]
             or not host["ReadonlyRootfs"]
@@ -359,6 +372,7 @@ class DockerSandbox:
         config_hash: str,
         *,
         cancel: threading.Event | None = None,
+        input_frame: bytes | None = None,
     ) -> SandboxReceipt:
         started = time.monotonic()
         if cancel is not None and cancel.is_set():
@@ -372,16 +386,42 @@ class DockerSandbox:
                 0,
                 False,
             )
+        args = ["docker", "start", "--attach"]
+        if input_frame is not None:
+            args.append("--interactive")
         process = subprocess.Popen(
-            ["docker", "start", "--attach", container_id], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+            [*args, container_id],
+            stdin=subprocess.PIPE if input_frame is not None else subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
         )
         assert process.stdout is not None
         output = bytearray()
         reason = "completed"
         selector = selectors.DefaultSelector()
-        os.set_blocking(process.stdout.fileno(), False)
-        selector.register(process.stdout, selectors.EVENT_READ)
+        pending = memoryview(input_frame if input_frame is not None else b"")
+        input_open = process.stdin is not None
+        output_open = True
+
+        def close_input() -> None:
+            nonlocal input_open
+            if input_open:
+                assert process.stdin is not None
+                try:
+                    selector.unregister(process.stdin)
+                except KeyError:
+                    pass  # Setup failed before stdin registration.
+                # os.write bypasses the buffered file object, so close cannot
+                # flush blocked payload bytes or need a writer thread.
+                process.stdin.close()
+                input_open = False
+
         try:
+            os.set_blocking(process.stdout.fileno(), False)
+            selector.register(process.stdout, selectors.EVENT_READ, "output")
+            if process.stdin is not None:
+                os.set_blocking(process.stdin.fileno(), False)
+                selector.register(process.stdin, selectors.EVENT_WRITE, "input")
             while True:
                 if cancel is not None and cancel.is_set():
                     reason = "cancelled"
@@ -392,6 +432,23 @@ class DockerSandbox:
                     break
                 events = selector.select(min(0.1, remaining))
                 for key, _ in events:
+                    if key.data == "input":
+                        try:
+                            count = os.write(key.fd, pending[:16_384])
+                        except BlockingIOError:
+                            continue
+                        except BrokenPipeError:
+                            reason = "input_incomplete"
+                            close_input()
+                            break
+                        if count <= 0:
+                            reason = "input_incomplete"
+                            close_input()
+                            break
+                        pending = pending[count:]
+                        if not pending:
+                            close_input()  # EOF after the last queued byte.
+                        continue
                     chunk = os.read(key.fd, 16_384)
                     if chunk:
                         capacity = profile.output_bytes - len(output)
@@ -401,15 +458,19 @@ class DockerSandbox:
                             break
                     else:
                         selector.unregister(process.stdout)
+                        output_open = False
                 if reason != "completed":
                     break
-                if not selector.get_map():
+                if not output_open:
                     # An attachment EOF does not prove the worker has exited.
                     # Continue checking cancellation/deadline until its state is
                     # stopped; otherwise a worker can close output and linger.
                     if not self._inspect(container_id)["State"]["Running"]:
+                        if pending:
+                            reason = "input_incomplete"
                         break
                     time.sleep(min(0.05, max(0, remaining)))
+            close_input()
             if reason != "completed" and self._inspect(container_id)["State"]["Running"]:
                 try:
                     self._docker(["kill", container_id])
@@ -445,6 +506,7 @@ class DockerSandbox:
                 bool(state["OOMKilled"]),
             )
         finally:
+            close_input()
             selector.close()
             process.stdout.close()
             if process.poll() is None:

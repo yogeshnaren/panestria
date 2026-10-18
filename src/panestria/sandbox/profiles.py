@@ -30,12 +30,15 @@ class SandboxProfile:
     wall_seconds: float = 30
     output_bytes: int = 128 * 1024
     tmp_bytes: int = 32 * 1024 * 1024
+    stdin_mode: Literal["closed", "native-frame-v1"] = "closed"
 
     @property
     def workspace_readonly(self) -> bool:
         return self.name in {"read-only-research", "restricted-offline"}
 
     def validate(self) -> None:
+        if type(self.stdin_mode) is not str or self.stdin_mode not in ("closed", "native-frame-v1"):
+            raise SandboxRejected("unknown_stdin_mode")
         if self.name not in {"mock-no-network", "read-only-research", "scoped-code-edit", "restricted-offline"}:
             raise SandboxRejected("unknown_profile")
         if re.fullmatch(r"[a-zA-Z0-9./_-]+@sha256:[0-9a-f]{64}", self.image) is None:
@@ -52,7 +55,12 @@ class SandboxProfile:
             raise SandboxRejected("invalid_tmp_cap")
 
     def sha256(self) -> str:
-        return hashlib.sha256(json.dumps(asdict(self), sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        body = asdict(self)
+        # Preserve historical closed-input identities. Opening stdin is an
+        # explicit new profile binding, never a widening under an old digest.
+        if self.stdin_mode == "closed":
+            del body["stdin_mode"]
+        return hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
 @dataclass(frozen=True)
