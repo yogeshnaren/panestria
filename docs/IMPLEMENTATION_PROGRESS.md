@@ -1,118 +1,87 @@
 # Implementation progress
 
-Updated 2026-10-18. The owner has authorized implementation through the R3 MVP,
-focused task PRs and verified sequential merges. Stop at the real owner trial and
-acceptance checkpoint. Revision 3 remains the active plan; R4–R7 are not started.
+Updated 2026-10-18. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
+The owner authorizes implementation, focused PRs and verified sequential merge
+commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
+An implemented component or passing CI is not a release-gate pass.
 
-| Outcome | Actual state | Remaining acceptance work |
+| Phase/outcome | Delivered behavior | Remaining acceptance work |
 | --- | --- | --- |
-| R0 durable synthetic kernel | Accepted for its historical candidate; preserved G0 evidence | Do not reopen accepted R0 work |
-| R1 offline Ask and hardware runtime | Working local GPU inference; all ten network-disabled Ask questions pass; restart and bounded GPU pressure pass | Reconcile all clauses and qualify the cumulative G1 candidate |
-| R1 browser/session access | PR104 merged; revoked sessions clear Ask output and cannot receive cached SSE resync data | Include in the cumulative candidate evaluation |
-| R1 one-worker Build | Owner CLI submits selected PUBLIC work through real runtime qualification, admitted Claude/Bash, independent checks, inspection, cancellation and exact protected merge; actual subscription journey passes | Reconcile and qualify the cumulative G1 candidate; human owner review remains |
-| R1 paid SDK compatibility | Deferred by owner; subscription/local-only operation selected | AOS-016-TC04 is not passed. Original required gate manifest remains intact |
-| R2 verified Delegate | Admitted search and fetch/read/retention now connect to quote checks and private brief inspection under one reviewed policy/certificate; semantic preflights are unqualified | Finish explicit bounded collection/orchestration, configure/qualify the real provider/runtime, and qualify support/G2 |
-| R3 complete MVP | Partial components; release not accepted | Finish remaining revision-3 outcomes, multi-worker integration, dashboard, quota/capture, release qualification and genuine owner trial |
+| R0 durable synthetic kernel | Historical accepted candidate/G0 evidence preserved | Do not reopen accepted R0 |
+| R1 offline Ask | Actual GPU Ask on ten offline questions; restart, pressure and process-memory observations retained | Qualify the cumulative G1 candidate against all original clauses |
+| R1 access and one-worker Build | Revoked sessions clear retained UI output; owner CLI submits PUBLIC work through admitted Claude/Bash, independent checks, exact review/merge and cancellation; actual subscription journey passed at its recorded source | Qualify the selected stable runtime/cumulative candidate; owner review remains |
+| R1 paid SDK | Owner selected subscription/local-only operation | AOS-016-TC04 deferred, **not passed**; original gate intact |
+| R2 research collection | New question staging, admitted search/fetch/read, exact retained excerpts, request-scoped diagnostics and private export under one reviewed policy | Operator policy commands, automatic planning/synthesis, qualified support, actual service/runtime and complete D-1/G2 |
+| R3 complete MVP | Existing partial components; no accepted MVP release | Remaining two-worker integration, Mission Control, revision-3 profile/context/connections, quota/capture/phone/resource outcomes, cumulative qualification and genuine owner trial |
 
-## Latest closed blocker
+## Usable research path and its boundary
 
-After the workstation restart, the host CUDA probe initializes successfully and
-observes one GPU. Five actual live checks pass at clean source
-`d1ee854145b8b689f294db5dd59a69be57128589`. Cold inference TTFT is 2.04 s;
-warm inference p95 is 0.041 s. All ten offline Ask questions pass quality and
-scope checks with warm p95 0.129 s (limit 3 s). The model uses 1.86 GB VRAM.
-A bounded 3 GiB pressure allocation makes admission wait, and admission permits
-again after release. A real model-container kill is recovered.
+1. [Stage a PUBLIC question](testing/OWNER_RESEARCH_SUBMISSION.md): retain the
+   question, contract/checks and limits atomically in canonical records, with
+   acknowledged private CAS bytes first. It stays CREATED with no I/O or grant.
+2. [Explicitly collect selected queries](testing/OWNER_RESEARCH_COLLECTION.md):
+   validate the current joint runtime, reviewed web policy, scope, capabilities,
+   zero API cash, lease and deadline. Connect existing search→fetch→isolated
+   reader→retained source excerpts. Stop further queries when capacity is spent.
+3. [Inspect/export privately](testing/RETAINED_EVIDENCE_BRIEF.md): resolve actual
+   snapshots and exact quotes; show fetch/search errors, UNKNOWN receipts,
+   reservations and stop/attempt state. HTML is inert and source text untrusted.
 
-The [raw report and limits](../evidence/r1-offline-qualification-2026-10-18/report.json)
-preserve the exact source and measurements. Earlier failing evidence is retained.
-Instantaneous cgroup memory is not peak memory or process RSS. GPU admission is
-not a hardware partition guarantee. These checks do not establish a full G1 pass.
+A normal collection stops at **VERIFYING**, goal ACTIVE, with **NOT_ASSESSED**
+factual support. It generates excerpts, not a synthesized answer or goal/check
+PASS. Ambiguous receipts stop in RECONCILING and cannot automatically redispatch.
+Late cancellation is preserved; an expired unreplaced attempt may only be fenced
+lost. A crash between acknowledged activation phases remains visible and needs
+inspection/reconciliation rather than a hidden retry loop.
 
-The subsequent [process-memory qualification](testing/MODEL_PROCESS_MEMORY.md)
-records real RSS/PSS separately: four processes, RSS 925,655,040 bytes and PSS
-892,785,664 bytes. It closes the benchmark's missing RSS observation while
-preserving earlier reports unchanged. It is a snapshot, not peak memory.
+The connected owner checks use actual disposable Postgres, loopback HTTP, private
+CAS, fixed Docker reader and CLI. **HTTPS and qualification certificates are
+explicitly synthetic fixtures**. They do not prove installed SearXNG/upstreams,
+public TLS, OS qualification or verified factual support. Search setup was
+explicitly deferred by the owner. No service, engine, credential, provider/model,
+download or paid call is silently selected by this work.
 
 ## Next concrete delivery
 
-Reconcile the remaining R1 gate clauses on one candidate, using the existing
-catalog and evidence. The [owner CLI guide](testing/OWNER_BUILD_CLI.md) now provides
-a fresh PUBLIC exercise, explicit policy review, submission, diff/check
-inspection, exact approval and cancellation. Its actual native journey uses a
-real operator-issued runtime certificate; earlier labeled fixture evidence stays
-unchanged. The [Bash report](../evidence/r1-native-bash-build-2026-10-18/report.json)
-records actual subscription conformance and exact scripted approval. The
-[admission guide](testing/ADMITTED_NATIVE_BUILD.md) covers selected source context,
-current cloud policy, one-use native launch and cancellation. Its changed-path
-native test uses a labeled certificate fixture; it does not certify production.
-The [operator qualification command](testing/BUILD_RUNTIME_QUALIFICATION.md)
-now issues an expiring runtime-only certificate from actual clean-source
-conformance. Its 11 real checks pass, with no fixture certificate. A runtime
-certificate grants no project policy. The owner CLI applies only an explicitly
-confirmed project grant; the website remains its fixed proposal demo.
+Finish the current collection task's independent exact-head CI/review/merge, then
+add owner-facing PUBLIC-web policy preparation/confirmation for a dedicated
+research project. Reuse the canonical review/effect-digest service; do not widen
+an existing offline Ask project or fabricate a live certificate. Continue ready
+planning/synthesis/support and R3 work while actual search setup remains deferred.
 
-Progress is measured by usable outcomes and their remaining acceptance clauses,
-not the number of commits, PRs or tests. The machine-readable phase and slice
-trackers retain IN_PROGRESS where only part of a slice is evidenced; they are
-not a percentage-complete estimate.
+The full Delegate gate still requires adversarial briefs, qualified semantic
+support/contradiction handling, an actual authorized public brief and Ask/Build
+independence. Current entailment preflights do not qualify support authority.
+Do not repeat unchanged paid/model probes or tune against the held-out evidence.
 
-The [search transport](testing/CONFIGURED_SEARCH_TRANSPORT.md) adds the missing
-configured client. Its real local HTTP fixture checks pass without external
-search or provider use. The R2 item/slice tracker now reflects existing component
-work as IN_PROGRESS with original source-bound evidence; stale NOT_STARTED flags
-must not trigger rebuilding those components. No original result is relabeled,
-no entire slice is marked complete and no release is promoted. The next concrete
-research task is connecting the bounded workflow. [Durable admission](testing/SEARCH_ADMISSION.md)
-now binds the query budget and acknowledged disclosure commit to canonical
-owner/task/request policy, lease and deadlines. Concurrency, lost acknowledgement,
-cancellation and backup/restore use real disposable Postgres/HTTP fixtures with
-explicitly synthetic certificates. No live public-search certificate is issued;
-real provider/OS qualification and semantic support remain pending.
+## Evidence and merge trail
 
-PR112 merged after exact-head CI39138503005 passed. Its initial schema snapshot
-failure/correction remain source-bound. The owner explicitly deferred search
-configuration while independent implementation continues.
+PRs [112](https://github.com/yogeshnaren/panestria/pull/112),
+[113](https://github.com/yogeshnaren/panestria/pull/113),
+[114](https://github.com/yogeshnaren/panestria/pull/114),
+[115](https://github.com/yogeshnaren/panestria/pull/115) and
+[116](https://github.com/yogeshnaren/panestria/pull/116) merged sequentially with
+passing exact-head CI, reviewed parents and complete tested trees. Their verified
+main endpoint is `491c7919266c477931fce76b8968cbfae5c8263f`. Subsequent task evidence
+remains separately bound to its source; no old report is relabeled:
 
-The [retained-evidence brief](testing/RETAINED_EVIDENCE_BRIEF.md) connects actual
-request/question bytes, current source provenance and deterministic quote checks
-to private HTML/JSON export. It shows missing/fabricated evidence and separate
-historical/current report hashes, without completing tasks or promoting claims
-to supported facts. This inspects existing records; new-request execution,
-qualified fetch execution, semantic qualification and full Delegate/G2 remain pending.
+- [Owner collection](../evidence/owner-research-collection-2026-10-18/report.json)
+- [Owner question staging](../evidence/owner-research-submission-2026-10-18/report.json)
+- [Joint runtime](../evidence/shared-research-runtime-2026-10-18/report.json)
+- [Admitted fetch](../evidence/admitted-research-fetch-2026-10-18/report.json)
+- [Retained evidence inspection](../evidence/retained-research-brief-2026-10-18/report.json)
+- [Durable search](../evidence/search-admission-2026-10-18/report.json)
 
-The next focused [fetch/read/retention controller](testing/ADMITTED_RESEARCH_FETCH.md)
-adds task-wide source/body reservations and committed per-hop disclosure before
-DNS, then connects the existing isolated reader and retained source store. Its
-component evidence is separate from actual live runtime qualification. New
-owner request submission, semantic support and full G2 still remain pending.
+The [R1 owner CLI](testing/OWNER_BUILD_CLI.md),
+[operator qualifier](testing/BUILD_RUNTIME_QUALIFICATION.md),
+[actual native Bash evidence](../evidence/r1-native-bash-build-2026-10-18/report.json),
+[offline GPU evidence](../evidence/r1-offline-qualification-2026-10-18/report.json)
+and [process-memory evidence](testing/MODEL_PROCESS_MEMORY.md) remain available.
+Certificates are source/runtime-bound: historical native proof is not current
+qualification after package changes. Cold TTFT2.04s, warm offline Ask p95.129s,
+1.86GB VRAM, restart/pressure and separately observed RSS/PSS are observations at
+those sources, not a current cumulative G1 pass or a hardware partition guarantee.
 
-PR113 private retained-evidence inspection is merged at04623ee after passing
-exact-head CI39156376222. Fetch admission and the joint runtime are subsequent
-focused tasks, with original failures/corrections retained separately from
-passing evidence.
-
-[PR114](https://github.com/yogeshnaren/panestria/pull/114) fetch admission is merged
-at `2ea8b1958ad9ec6149954461cd5af6f76b4fe1c0` after exact-head CI39157801800 passed
-on `669334b03b4ca38c7e7836cb2f547651361ef78c`. Both merge parents and the complete
-tree were verified against that tested head. The shared-runtime outcome is
-[PR115](https://github.com/yogeshnaren/panestria/pull/115); its independent review
-and exact-head CI/merge record remain separate from local component evidence.
-
-The [shared research runtime](testing/SHARED_RESEARCH_RUNTIME.md) removes the
-policy/certificate incompatibility between search and fetch. Both components
-require the explicit joint qualification and its complete report set, while
-retaining separate configuration/disclosure hashes and budgets. The connected
-actual-DB/loopback/reader fixture produces a retained inspectable brief under
-one policy; HTTPS/certificates remain synthetic and semantic support remains
-NOT_ASSESSED. Source-bound failure/correction are retained. Next: owner new-question
-admission and bounded collection, followed by real runtime/support qualification
-when prerequisites are ready. No release gate is promoted.
-
-The [owner question submission command](testing/OWNER_RESEARCH_SUBMISSION.md)
-now stages a selected PUBLIC question, canonical contract/checks and immutable
-limits without fixture SQL. It acknowledges private CAS bytes before an atomic
-DB transaction, handles concurrent/uncertain replay and exports the new question
-through the retained inspector. Goal/task remain CREATED: submission grants no
-execution or support authority. AOS-023-S1 is IN_PROGRESS for this component;
-explicit activation/collection, qualified semantic support and G2 remain pending.
+[Phase](phase-tracker.json) and [slice](implementation-slices.json) trackers retain
+IN_PROGRESS for partial work. Progress is usable behavior plus remaining
+acceptance gaps, not a PR/test count or an invented completion percentage.

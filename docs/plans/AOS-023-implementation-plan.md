@@ -1,6 +1,6 @@
 # AOS-023 — Bounded Delegate planner, research brief output and R2 gate: implementation plan
 
-**Release:** R2. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS (retained-evidence inspection component only). **Tests:** component checks; full item NOT_RUN. **Depends on:** AOS-019, AOS-020, AOS-021, AOS-022. **Repository baseline:** original main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; current continuation starts at 94ab5c103456f188608e9cd2d53255c33bd8f586.
+**Release:** R2. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS (owner staging/collection and retained-evidence components). **Tests:** component checks; full item NOT_RUN. **Depends on:** AOS-019, AOS-020, AOS-021, AOS-022. **Repository baseline:** original main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; current continuation starts at 94ab5c103456f188608e9cd2d53255c33bd8f586.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-023.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -8,25 +8,18 @@ Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../d
 
 A user can delegate a specific public-web research brief, inspect evidence and limitations, and obtain deterministic security guarantees around source retrieval.
 
-Current partial delivery: [offline retained-evidence brief](../design/51-RETAINED-EVIDENCE-BRIEF.md)
-and [owner command](../testing/RETAINED_EVIDENCE_BRIEF.md) connect existing
-request/source/claim records without new egress or semantic authority. S1
-admission/new-request execution and the rest of S2 remain pending. Dependency
-gates/original clauses are unchanged; exporting does not admit citation/rubric
-acceptance runners or complete the item.
-
-The subsequent [shared runtime](../design/53-SHARED-RESEARCH-RUNTIME.md) connects
-admitted search, fetch/read/retention and retained brief inspection under one
-reviewed policy/certificate, with separate component budgets and configuration
-hashes. The connected check uses synthetic HTTPS/certificates, actual disposable
-Postgres/loopback HTTP/reader and NOT_ASSESSED semantic status. Owner new-question
-submission/planning, live qualification and full S1/S2 remain incomplete.
-
-[Owner question staging](../design/54-OWNER-RESEARCH-SUBMISSION.md) now supplies
-new PUBLIC questions/limits and canonical goal/task/request/check records through
-a local CLI, with private inspection, transaction/replay checks and no execution.
-S1 is IN_PROGRESS for that component. Goal/task start CREATED; explicit qualified
-activation/collection, planner/support and full acceptance remain pending.
+Current partial delivery uses existing contracts, canonical kernel and retained
+source/claim stores. [Private evidence inspection](../design/51-RETAINED-EVIDENCE-BRIEF.md)
+rechecks retained bytes/quotes; [shared research qualification](../design/53-SHARED-RESEARCH-RUNTIME.md)
+binds admitted search and fetch to one policy; [owner question staging](../design/54-OWNER-RESEARCH-SUBMISSION.md)
+creates canonical records without I/O. [Explicit owner collection](../design/55-OWNER-RESEARCH-COLLECTION.md)
+now connects selected bounded PUBLIC queries to search→fetch→reader→retained
+excerpts/private export, stopping at VERIFYING with NOT_ASSESSED support or
+RECONCILING for uncertainty. S1/S2 remain IN_PROGRESS; automatic planning/synthesis,
+operator policy UI, qualified semantic support, real runtime/live cases and full
+Delegate/G2 are pending. Canonical citation/rubric acceptance runners remain
+refused until independently admitted. No artifact export or collected quote
+completes this item or promotes a release.
 
 Keep the release scope and dependencies above. Implement only the selected slice; other clauses remain pending until their work/tests complete. Models/UI cannot declare completion. Apply strict scopes, typed errors, transactions, limits and compatibility spikes from the global design.
 

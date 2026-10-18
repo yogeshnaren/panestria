@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "0585bba4ab2a7bc64e72863be5512cd4942f2e64",
+  "worktree_state": "clean",
+  "outcome": "COMPONENT_CHECKS_PASS_NOT_LIVE_OR_RELEASE_QUALIFICATION",
+  "command": "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_owner_research_collection.py -q --junitxml=/tmp/panestria-owner-research-collection-final.xml",
+  "passed": 9,
+  "failed": 0,
+  "duration_seconds": 32.78,
+  "execution_mode": "ACTUAL_DISPOSABLE_POSTGRES_LOOPBACK_HTTP_CAS_DOCKER_READER_AND_OWNER_CLI_WITH_SYNTHETIC_HTTPS_AND_TEST_FIXTURE_NOT_LIVE_CERTIFICATES",
+  "checks": [
+    "Owner stage -> explicit selected-query collection -> admitted search/fetch -> actual isolated reader -> retained exact normalized passage -> private export; task VERIFYING and NOT_ASSESSED support, no goal/check PASS",
+    "Capacity exhaustion stops remaining queries; failed/truncated transfers consume reservations and show closed errors",
+    "One unavailable search stops; no fallback/retry; intent/query/contract/config/certificate/question-byte denial before activation",
+    "Actual outbound reservation commit then lost acknowledgement leaves UNKNOWN receipt/RECONCILING and cannot redispatch",
+    "Actual PostgreSQL goal locking follows cancellation order; late cancellation never overwritten; expired unreplaced epoch only retrospectively LOST/RECONCILING"
+  ],
+  "static_checks": [
+    "Ruff all repository PASS",
+    "Mypy233 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "prior_observations": [
+    {
+      "candidate_commit": "44e504c901c94b4f3e158a1f331dad205f18b753",
+      "worktree_state": "clean",
+      "passed": 32,
+      "failed": 0,
+      "duration_seconds": 96.21,
+      "scope": "8owner +6brief +3joint +6staging +9admitted-fetch integrations, actual disposable components. Then manual review aligned goal/task lock ordering; final9 cases independently rerun."
+    },
+    {
+      "candidate_commit": "b304ca0065838c68a8df40d997abedcd5a6d8b64",
+      "worktree_state": "clean",
+      "passed": 6,
+      "failed": 2,
+      "duration_seconds": 31.62,
+      "scope": "Initial8owner cases. Quote test wrongly compared normalized reader text with raw stripped HTML; now compares exact CAS bytes/offsets. Actual lost-ack integration exposed a reservation mapped to unavailable search; known finish now refuses missing/UNKNOWN receipts. Initial XML retained FAILED, not relabeled."
+    }
+  ],
+  "limits": [
+    "HTTPS and OS certificates are synthetic fixtures, not actual installed SearXNG/upstream/public-TLS/runtime proof",
+    "No provider/model/inference/new credentials/download/spend or existing owner DB/service changes",
+    "Each canonical state/event phase is acknowledged in its own DB transaction; inter-phase crashes visible and no automatic restart/HTTP exactly-once claim",
+    "Collection excerpts only: no generated answer, qualified support, automatic acceptance or full Delegate/G2",
+    "Reservations are capacity, not measured traffic/quota/cash; missing receipts stay UNKNOWN",
+    "Actual search setup remains owner-deferred; live issuer/runtime qualification and operator web policy-review command remain separate",
+    "Original gates intact; SDK TC04 deferred, not passed; R3 owner trial not begun"
+  ],
+  "files": {
+    "local-checks.xml": "fdeb0a5583e76b25d38610f775c774002bed4266f67fb48ff324c41ba6be02a0",
+    "connected-regression.xml": "a00e0af678e7fcd0dea9c6f7748946e395cf38566c0bc771910b25b30a75c95b",
+    "initial-candidate.xml": "e9826a62331c9137746c4f4fa01d108c4c587ae63cb324473d3a0a08abebf999"
+  }
+}
