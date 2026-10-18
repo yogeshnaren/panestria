@@ -1528,8 +1528,13 @@
         "AOS-013-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-013-S1.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-013-S1.md",
+      "evidence_refs": [
+        "evidence/research-request-2026-10-15/report.json",
+        "evidence/research-blobs-2026-10-15/report.json",
+        "evidence/research-source-records-2026-10-16/report.json"
+      ]
     },
     {
       "id": "AOS-013-S2",
@@ -1551,8 +1556,13 @@
         "AOS-013-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-013-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-013-S2.md",
+      "evidence_refs": [
+        "evidence/research-request-2026-10-15/report.json",
+        "evidence/research-blobs-2026-10-15/report.json",
+        "evidence/research-source-records-2026-10-16/report.json"
+      ]
     },
     {
       "id": "AOS-013-S3",
@@ -1577,8 +1587,13 @@
         "AOS-013-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-013-S3.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-013-S3.md",
+      "evidence_refs": [
+        "evidence/research-request-2026-10-15/report.json",
+        "evidence/research-blobs-2026-10-15/report.json",
+        "evidence/research-source-records-2026-10-16/report.json"
+      ]
     },
     {
       "id": "AOS-019-S1",
@@ -1602,8 +1617,12 @@
         "AOS-019-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-019-S1.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-019-S1.md",
+      "evidence_refs": [
+        "evidence/research-public-fetch-2026-10-15/report.json",
+        "evidence/configured-search-transport-2026-10-18/report.json"
+      ]
     },
     {
       "id": "AOS-019-S2",
@@ -1625,8 +1644,12 @@
         "AOS-019-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-019-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-019-S2.md",
+      "evidence_refs": [
+        "evidence/research-public-fetch-2026-10-15/report.json",
+        "evidence/configured-search-transport-2026-10-18/report.json"
+      ]
     },
     {
       "id": "AOS-019-S3",
@@ -1651,8 +1674,12 @@
         "AOS-019-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-019-S3.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-019-S3.md",
+      "evidence_refs": [
+        "evidence/research-public-fetch-2026-10-15/report.json",
+        "evidence/configured-search-transport-2026-10-18/report.json"
+      ]
     },
     {
       "id": "AOS-020-S1",
@@ -1674,8 +1701,12 @@
         "AOS-020-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-020-S1.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-020-S1.md",
+      "evidence_refs": [
+        "evidence/isolated-research-reader-2026-10-15/report.json",
+        "evidence/research-source-provenance-2026-10-16/report.json"
+      ]
     },
     {
       "id": "AOS-020-S2",
@@ -1696,8 +1727,12 @@
         "AOS-020-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-020-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-020-S2.md",
+      "evidence_refs": [
+        "evidence/isolated-research-reader-2026-10-15/report.json",
+        "evidence/research-source-provenance-2026-10-16/report.json"
+      ]
     },
     {
       "id": "AOS-020-S3",
@@ -1721,8 +1756,12 @@
         "AOS-020-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-020-S3.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-020-S3.md",
+      "evidence_refs": [
+        "evidence/isolated-research-reader-2026-10-15/report.json",
+        "evidence/research-source-provenance-2026-10-16/report.json"
+      ]
     },
     {
       "id": "AOS-021-S1",
@@ -1742,8 +1781,12 @@
         "AOS-021-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-021-S1.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-021-S1.md",
+      "evidence_refs": [
+        "evidence/research-claim-evidence-2026-10-16/report.json",
+        "evidence/research-text-2026-10-15/report.json"
+      ]
     },
     {
       "id": "AOS-021-S2",
@@ -1763,8 +1806,12 @@
         "AOS-021-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-021-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-021-S2.md",
+      "evidence_refs": [
+        "evidence/research-claim-evidence-2026-10-16/report.json",
+        "evidence/research-text-2026-10-15/report.json"
+      ]
     },
     {
       "id": "AOS-021-S3",
@@ -1787,8 +1834,12 @@
         "AOS-021-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-021-S3.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-021-S3.md",
+      "evidence_refs": [
+        "evidence/research-claim-evidence-2026-10-16/report.json",
+        "evidence/research-text-2026-10-15/report.json"
+      ]
     },
     {
       "id": "AOS-022-S1",
@@ -1809,8 +1860,13 @@
         "AOS-022-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-022-S1.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-022-S1.md",
+      "evidence_refs": [
+        "evidence/entailment-corpus-2026-10-16/report.json",
+        "evidence/local-entailment-2026-10-16/report.json",
+        "evidence/native-entailment-2026-10-16/report.json"
+      ]
     },
     {
       "id": "AOS-022-S2",
@@ -1830,8 +1886,13 @@
         "AOS-022-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-022-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-022-S2.md",
+      "evidence_refs": [
+        "evidence/entailment-corpus-2026-10-16/report.json",
+        "evidence/local-entailment-2026-10-16/report.json",
+        "evidence/native-entailment-2026-10-16/report.json"
+      ]
     },
     {
       "id": "AOS-022-S3",
@@ -1854,8 +1915,13 @@
         "AOS-022-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-022-S3.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-022-S3.md",
+      "evidence_refs": [
+        "evidence/entailment-corpus-2026-10-16/report.json",
+        "evidence/local-entailment-2026-10-16/report.json",
+        "evidence/native-entailment-2026-10-16/report.json"
+      ]
     },
     {
       "id": "AOS-023-S1",

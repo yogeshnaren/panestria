@@ -1,0 +1,34 @@
+{
+  "purpose": "Bounded explicitly configured local search transport; not enabled Delegate or live search qualification",
+  "source_commit": "57af6b7e9d898491e88100803a26656fc720dc1f",
+  "worktree_state": "clean",
+  "command": ".venv/bin/pytest tests/integration/test_configured_search.py tests/unit/test_research_public_fetch.py -q --junitxml=/tmp/panestria-configured-search-qualified.xml",
+  "checks": 76,
+  "seconds": 5.41,
+  "junit_sha256": "010ccb3bab065edda4de8361734c6aa694d77c6235b63fec487d41a8f374382d",
+  "source_hashes": {
+    "src/panestria/contracts/search.py": "e2303f8438897071d92f84fb72f7cde351a236d43ddb834352074ad4a36613b4",
+    "src/panestria/brokers/research/search.py": "ed97f67f9f8b38aec2699a80534f7b20a2eafcca6ce98118096862987600f4d9",
+    "src/panestria/brokers/research/fetch.py": "e18333023b815f5efb3c2ae14d7b42345a2e6056eb763e559f3476adb7a5d62f",
+    "tests/integration/test_configured_search.py": "805525149ef48d369f5a43efdcf916436db6286fc077ae15d2eea41389d3d152"
+  },
+  "upstream_protocol_inspection": {
+    "repository": "searxng/searxng",
+    "commit": "1c10abe2d3e4ab7ddcc4e9da1a7d07dc7ca7f8f4",
+    "file": "searx/webutils.py",
+    "git_blob_sha": "43d42bf83cb27d1c3a7ce9af4b5da7407cc2637e",
+    "sha256": "0c193cc553ed8e7db20ddc6b2072f0226e4b2a408fc8e30a5a9e369a9ff14851",
+    "rights": "HTTP protocol/JSON interface inspection only; no upstream AGPL implementation copied, installed or executed",
+    "api_docs": "https://docs.searxng.org/dev/search_api.html",
+    "syntax_docs": "https://docs.searxng.org/user/search-syntax.html"
+  },
+  "limits": [
+    "Only a synthetic loopback HTTP fixture was contacted; no actual search engine or external search query",
+    "Existing public HTTPS fetch unit checks also pass; this report is not new live TLS/SSRF proof",
+    "Trusted before_send callback is required; durable admission/query-count/disclosure ledger and Delegate orchestration are next, not supplied by the transport",
+    "No service installed, credentials provisioned, paid provider selected or provider fallback",
+    "Search candidates remain untrusted/unfetched; exact JSON query echo is checked; fetching/citation/support authority is separate",
+    "Unknown actual search cash/remaining quota stays null; upstream forwarding is possible, not claimed observed",
+    "G1/G2/G3 not promoted; prior model preflights are unchanged and not qualified for automatic semantic support"
+  ]
+}
