@@ -39,6 +39,8 @@ def test_physical_cold_warm(offline_model: ModelRuntime, record_property: pytest
     stats = json.loads(
         offline_model._docker(["stats", "--no-stream", "--format", "{{json .}}", offline_model.id or ""])
     )
+    memory = offline_model.process_memory()
+    assert memory["rss_sum_bytes"] > 0 and memory["process_count"] >= 3
     record_property(
         "benchmark",
         json.dumps(
@@ -49,6 +51,9 @@ def test_physical_cold_warm(offline_model: ModelRuntime, record_property: pytest
                 "decode_tps": [r.decode_tokens_per_second for r in warm],
                 "size_vram_bytes": resident[0]["size_vram"],
                 "cgroup_memory": stats["MemUsage"],
+                "process_memory": memory,
+                "memory_is_peak": False,
+                "rss_may_double_count_shared_pages": True,
                 "network": "none",
                 "model_digest": resident[0]["digest"],
                 "samples": 5,

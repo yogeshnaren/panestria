@@ -11,7 +11,7 @@ acceptance checkpoint. Revision 3 remains the active plan; R4–R7 are not start
 | R1 browser/session access | PR104 merged; revoked sessions clear Ask output and cannot receive cached SSE resync data | Include in the cumulative candidate evaluation |
 | R1 one-worker Build | Bounded native Bash backend now edits two files, freezes the candidate, runs separate checks and requires exact approval before merge; fixed proposal and read-check profiles retained | Generic owner-project cloud admission/context/certificate integration and cumulative G1 qualification remain |
 | R1 paid SDK compatibility | Deferred by owner; subscription/local-only operation selected | AOS-016-TC04 is not passed. Original required gate manifest remains intact |
-| R2 verified Delegate | Source/request/blob components exist; release not accepted | Finish retrieval, isolation, evidence and the end-to-end research outcome |
+| R2 verified Delegate | HTTPS fetch, isolated readers and retained source/claim components exist; release not accepted | Connect the components into the verified research workflow and qualify G2 |
 | R3 complete MVP | Partial components; release not accepted | Finish remaining revision-3 outcomes, multi-worker integration, dashboard, quota/capture, release qualification and genuine owner trial |
 
 ## Latest closed blocker
@@ -28,6 +28,11 @@ The [raw report and limits](../evidence/r1-offline-qualification-2026-10-18/repo
 preserve the exact source and measurements. Earlier failing evidence is retained.
 Instantaneous cgroup memory is not peak memory or process RSS. GPU admission is
 not a hardware partition guarantee. These checks do not establish a full G1 pass.
+
+The subsequent [process-memory qualification](testing/MODEL_PROCESS_MEMORY.md)
+records real RSS/PSS separately: four processes, RSS 925,655,040 bytes and PSS
+892,785,664 bytes. It closes the benchmark's missing RSS observation while
+preserving earlier reports unchanged. It is a snapshot, not peak memory.
 
 ## Next concrete delivery
 
