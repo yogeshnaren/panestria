@@ -92,6 +92,13 @@ exact-head CI39156376222. Fetch admission and the joint runtime are subsequent
 focused tasks, with original failures/corrections retained separately from
 passing evidence.
 
+[PR114](https://github.com/yogeshnaren/panestria/pull/114) fetch admission is merged
+at `2ea8b1958ad9ec6149954461cd5af6f76b4fe1c0` after exact-head CI39157801800 passed
+on `669334b03b4ca38c7e7836cb2f547651361ef78c`. Both merge parents and the complete
+tree were verified against that tested head. The shared-runtime outcome is
+[PR115](https://github.com/yogeshnaren/panestria/pull/115); its independent review
+and exact-head CI/merge record remain separate from local component evidence.
+
 The [shared research runtime](testing/SHARED_RESEARCH_RUNTIME.md) removes the
 policy/certificate incompatibility between search and fetch. Both components
 require the explicit joint qualification and its complete report set, while
