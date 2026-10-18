@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.229" timestamp="2026-10-17T19:43:42.354512-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_memory_gateway_interface" name="test_actual_python_module_identity_supports_annotations_and_dataclasses" file="tests/integration/test_memory_gateway_interface.py" line="70" time="0.987"><failure message="AssertionError: assert ('failed' == 'completed'&#10;  &#10;  - completed&#10;  + failed)">tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-13/test_actual_python_module_iden0')
+
+    def test_actual_python_module_identity_supports_annotations_and_dataclasses(tmp_path):
+        code = '''from __future__ import annotations
+    import __main__,sys
+    from dataclasses import dataclass,fields
+    from typing import ClassVar
+    @dataclass
+    class Example:
+        shared: ClassVar[int] = 7
+        value: int = 1
+    assert [item.name for item in fields(Example)] == ['value']
+    assert __main__.Example is Example and sys.modules['__main__'].__dict__ is globals()
+    print('memory-module-ok')
+    '''
+        registry, request, permit, authority = setup(tmp_path, code)
+        result = NativeToolGateway(permit.workspace.parent, registry, authority).execute(request, permit)
+&gt;       assert result.outcome == "completed" and result.sandbox.output == b"memory-module-ok\n"
+E       AssertionError: assert ('failed' == 'completed'
+E         
+E         - completed
+E         + failed)
+
+tests/integration/test_memory_gateway_interface.py:86: AssertionError</failure></testcase></testsuite></testsuites>

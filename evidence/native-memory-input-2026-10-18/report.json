@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-18T02:49:01.155164+00:00",
+  "source_commit": "493078ff27ad2baca8fc21829ac5a458459acda8",
+  "source_state_at_execution": "clean",
+  "result": "PASS_COMPONENT",
+  "scope": "versioned memory NativeToolGateway input and actual scoped controller crash recovery; no vendor native auth certificate",
+  "source_sha256": {
+    "src/panestria/sandbox/native_tool_input.py": "e7985673628502731b3e9cd317d769c1a094d65d7c136a260b001e5cca3c11f2",
+    "src/panestria/sandbox/native_tool_gateway.py": "dc94e5bd60361b2208feae8d0857dc5c92d69297554aada0e400f46406b8251c",
+    "src/panestria/sandbox/native_tool_launch.py": "178cca1310f1ff3c4c88ffa36bf98ef7c3017f394b41ff6ae3c67e96a49c9cd9",
+    "src/panestria/sandbox/runner.py": "b1f1c04ff5dd4d9937c9ccc7866de28eb72c5633341cda1fb447c8aa082a861d",
+    "src/panestria/sandbox/profiles.py": "cf62ea23a6ac8ce0d2f49b33ac5bce2a3a9a5d8afc54c7ef4158685c6f4cafe9",
+    "src/panestria/execution/tool_authority.py": "d6fefb068873bc95c29a2f83501cf6c159ec7d0c9894e4479b483433ac27fd20",
+    "src/panestria/execution/registered_checks.py": "6c057dc13d477b3459190688c25d2ec11f2e871a5e1b9e79875e6ef404dcb750",
+    "src/panestria/execution/proposal_demo.py": "b33607a113d6996a3eb98cd3e5e1975d754f14338ba8e4c426045b8755e5d133",
+    "src/panestria/execution/demo_assets/apply.py": "cc90b7de58150ccc1af2e8bfb4c927b688d2074a5a49f61d6400e66b7333ab01",
+    "tests/integration/test_native_tool_gateway.py": "d08d316b04f2238ea875da1b531de413a891490815597b0e02093d0f33542618",
+    "tests/integration/test_invocations.py": "e35963e926541a5b9a17fb81a7e460d52c68bfb873894e0908cd0a7578ab95b3",
+    "tests/integration/test_sandbox_stdin_admission.py": "73d54bb8f6c7ff187334c2fb59dfe8072c9157f50a976c042a474f2d8d944198",
+    "tests/integration/test_memory_gateway_interface.py": "5ddedcb957758a7ebae7384f34eb4cf94f3e532eba8ff63b3bea504c822877cb",
+    "tests/integration/test_memory_gateway_crash.py": "72f1864f2a460aad6ef08359b608fd8c973563b24c0e7aa3fa7bded68f0921d4",
+    "tests/fixtures/memory_gateway_child.py": "6e5483623133e07eec7e52ed222336c58c7dde1fb15ddf0227e5633dc35261d7",
+    "pyproject.toml": "51bb953a36e78a1139b5334ad8e76e847d87ef323f02ff05c20183d18cf8f95f",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d",
+    ".importlinter": "bc75998b077f693591daffc90a4672f50965ab3750e1c8e4d9346895cdea7bb8"
+  },
+  "artifacts": {
+    "development-76.xml": "2ee36ac5dd1d07bd81f935a538b6a1bc801a13cae6120a947461df542f2729f2",
+    "development-os-5.xml": "dc4e801c42d023c0591d6a6c1da1acd8461c6e77b950803f088efc83b0e10972",
+    "development-crash-8.xml": "c5af8198b93226084a40144623f41891e157cb34d5559ce4f9317e889bd70ed9",
+    "development-interface-7-failed.xml": "d69be6843464a2f9d268812be9e9c844f83ad76524256ba0a307937fb4dafe2f",
+    "development-corrected-15.xml": "cc0893d811e3bb9d2f1e4c9b290e5b97e27360c0c8cb7c85a18b85a0c945f4c2",
+    "development-module-1-failed.xml": "778c7f7cdd2482df8e8e1512c3f5cb851704c6337fa02fc5abbbd35df71e02c7",
+    "development-module-1-pass.xml": "d054a657c1651659173219a653ed7a18897e563cc812605e8c6194496d646e1b",
+    "qualified-default-289.xml": "8ad7f0a7afde74e0ca0fcdd80f629115d2305522cf1ae4e0c8e1fa893daf8dd3",
+    "qualified-os-13.xml": "40fb63d1c3aea278b07c3661e7f46e550b5a037ba02e74a226259fae82ce36ff"
+  },
+  "observed_tests": {
+    "development-76.xml": {
+      "source_state": "dirty development",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "76",
+          "time": "28.296",
+          "timestamp": "2026-10-17T19:37:28.836393-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-os-5.xml": {
+      "source_state": "dirty development synthetic OS only",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "5",
+          "time": "8.845",
+          "timestamp": "2026-10-17T19:39:30.991183-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-crash-8.xml": {
+      "source_state": "dirty development before fixture state assertions hardened",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "8",
+          "time": "12.614",
+          "timestamp": "2026-10-17T19:41:04.089655-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-interface-7-failed.xml": {
+      "source_state": "dirty development; test queried nonexistent schema column",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "1",
+          "skipped": "0",
+          "tests": "7",
+          "time": "6.147",
+          "timestamp": "2026-10-17T19:41:53.428468-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-corrected-15.xml": {
+      "source_state": "dirty development; protected read API keeps scope assertion; real task/approval assertions",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "15",
+          "time": "15.203",
+          "timestamp": "2026-10-17T19:42:32.161330-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-module-1-failed.xml": {
+      "source_state": "dirty development before proper Python main-module context",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "1",
+          "skipped": "0",
+          "tests": "1",
+          "time": "1.229",
+          "timestamp": "2026-10-17T19:43:42.354512-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-module-1-pass.xml": {
+      "source_state": "dirty development after actual module context fix",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "1",
+          "time": "1.195",
+          "timestamp": "2026-10-17T19:44:38.537407-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "qualified-default-289.xml": {
+      "source_state": "clean d71ec94a5592ab795855ca7a99dbcd8cd5727ea3",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "289",
+          "time": "121.464",
+          "timestamp": "2026-10-17T19:45:18.037425-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "qualified-os-13.xml": {
+      "source_state": "clean 493078ff27ad2baca8fc21829ac5a458459acda8",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "13",
+          "time": "17.989",
+          "timestamp": "2026-10-17T19:47:52.510891-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    }
+  },
+  "default_qualification_source": "d71ec94a5592ab795855ca7a99dbcd8cd5727ea3",
+  "default_qualification_source_sha256": {
+    "src/panestria/sandbox/native_tool_input.py": "e7985673628502731b3e9cd317d769c1a094d65d7c136a260b001e5cca3c11f2",
+    "src/panestria/sandbox/native_tool_gateway.py": "dc94e5bd60361b2208feae8d0857dc5c92d69297554aada0e400f46406b8251c",
+    "src/panestria/sandbox/native_tool_launch.py": "178cca1310f1ff3c4c88ffa36bf98ef7c3017f394b41ff6ae3c67e96a49c9cd9",
+    "src/panestria/sandbox/runner.py": "b1f1c04ff5dd4d9937c9ccc7866de28eb72c5633341cda1fb447c8aa082a861d",
+    "src/panestria/sandbox/profiles.py": "cf62ea23a6ac8ce0d2f49b33ac5bce2a3a9a5d8afc54c7ef4158685c6f4cafe9",
+    "src/panestria/execution/tool_authority.py": "d6fefb068873bc95c29a2f83501cf6c159ec7d0c9894e4479b483433ac27fd20",
+    "src/panestria/execution/registered_checks.py": "6c057dc13d477b3459190688c25d2ec11f2e871a5e1b9e79875e6ef404dcb750",
+    "src/panestria/execution/proposal_demo.py": "b33607a113d6996a3eb98cd3e5e1975d754f14338ba8e4c426045b8755e5d133",
+    "src/panestria/execution/demo_assets/apply.py": "cc90b7de58150ccc1af2e8bfb4c927b688d2074a5a49f61d6400e66b7333ab01",
+    "tests/integration/test_native_tool_gateway.py": "d08d316b04f2238ea875da1b531de413a891490815597b0e02093d0f33542618",
+    "tests/integration/test_invocations.py": "e35963e926541a5b9a17fb81a7e460d52c68bfb873894e0908cd0a7578ab95b3",
+    "tests/integration/test_sandbox_stdin_admission.py": "73d54bb8f6c7ff187334c2fb59dfe8072c9157f50a976c042a474f2d8d944198",
+    "tests/integration/test_memory_gateway_interface.py": "5ddedcb957758a7ebae7384f34eb4cf94f3e532eba8ff63b3bea504c822877cb",
+    "tests/integration/test_memory_gateway_crash.py": "058e551f9f51b9ad7db628cf84e4599bca404a19a7b89144f17b11650e24e548",
+    "tests/fixtures/memory_gateway_child.py": "fa33b7cba705fb22198b1dd311b4eacb55f19ecd9ff05320601be59524f24e11",
+    "pyproject.toml": "51bb953a36e78a1139b5334ad8e76e847d87ef323f02ff05c20183d18cf8f95f",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d",
+    ".importlinter": "bc75998b077f693591daffc90a4672f50965ab3750e1c8e4d9346895cdea7bb8"
+  },
+  "production_runtime_unchanged_between_qualifications": true,
+  "checks": {
+    "focused_default_passed": 289,
+    "default_live_excluded": 22,
+    "default_qualification_seconds": 121.47,
+    "new_default_cases": 16,
+    "final_explicit_os_passed": 13,
+    "final_os_seconds": 17.99,
+    "actual_gateway_sigkill_cases": 8,
+    "existing_explicit_synthetic_gateway_os_cases": 5,
+    "ruff": "PASS",
+    "mypy_source_files": 198,
+    "import_contracts_kept": 11,
+    "secret_scan": "PASS",
+    "diff_check": "PASS"
+  },
+  "runtime_image": "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9",
+  "coverage": [
+    "registry python-memory-v1 binding rejects old registry digests and old closed-input permits before claim",
+    "no host input stage/fallback; mounted installed parser/launcher only, bounded stdin with separately bound expected hashes",
+    "normal Python main-module identity, annotations and dataclasses; virtual file/argv and deliberate self-inspection refusal",
+    "reviewed demo writer explicitly consumes global request; synthetic full demo, approvals and merge regressions pass",
+    "automatic actual durable runner factory journals scoped launch before create without explicit caller override",
+    "actual gateway/controller SIGKILL after claim, committed intent, created and running, each with/without lease release",
+    "historical recovery leaves UNKNOWN, refuses another claim, preserves task/approval states and unrelated same-attempt resources",
+    "actual readonly/seccomp/socket/host sentinel boundary, both script/request stream tamper rejected before execution",
+    "atomic fixture barrier publication and wait for complete execution marker; these coordination files contain only public test metadata"
+  ],
+  "development_failures": [
+    {
+      "artifact": "development-interface-7-failed.xml",
+      "cause": "test queried nonexistent scope_sha256 column; use actual protected SandboxLaunchService.read with same binding/scope assertions"
+    },
+    {
+      "artifact": "development-module-1-failed.xml",
+      "cause": "plain exec namespace did not install Python main-module identity; fixed with temporary ModuleType context and unchanged dataclass assertions"
+    }
+  ],
+  "limitations": [
+    "Only gateway dynamic input staging removed; unrelated worker/verifier/demo setup or workspace lifecycles and autonomous liveness remain separate",
+    "Direct file/self-source inspection is unsupported by explicit memory interface; no hidden file-mode fallback",
+    "Default broad proof belongs to d71ec94; later changes only harden crash-fixture publication/foreign-attempt label, production/runtime hashes unchanged; final13 proof belongs to493078f",
+    "All scripts/content public synthetic; no model, provider, native vendor CLI, SDK, credential, new image/model or owner service work",
+    "Durable launch/current checks preserved; no exactly-once external execution, fresh launch on replay or new authority from recovery",
+    "Old runtime/demo certificates are correctly invalidated by source changes; no new connected native auth/proxy/MCP/GrantBroker certificate",
+    "No full AOS003/008/010/G1/G2/G3 or R3 owner trial acceptance"
+  ],
+  "runtime_authority": false,
+  "release_authority": false
+}
