@@ -477,7 +477,7 @@ class ProposalDemo:
             request.sha256(),
             registry.sha256(),
             workspace,
-            SandboxProfile(name="scoped-code-edit", uid=os.getuid(), gid=os.getgid()),
+            SandboxProfile(name="scoped-code-edit", uid=os.getuid(), gid=os.getgid(), stdin_mode="native-frame-v1"),
             time.monotonic() + 30,
         )
         return request, permit, registry

@@ -2,9 +2,9 @@
 
 import json
 import os
-from pathlib import Path
 
-request = json.loads(Path("/runtime/native-request.json").read_text())
+# Bound by the explicit python-memory-v1 reviewed-command interface.
+request: dict[str, str] = globals()["PANESTRIA_TOOL_REQUEST"]
 proposal = json.loads(request["payload_json"])
 assert set(proposal) == {"path", "content"} and proposal["path"] == "calculator.py"
 content = proposal["content"].encode()

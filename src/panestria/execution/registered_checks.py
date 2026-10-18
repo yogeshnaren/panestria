@@ -121,6 +121,7 @@ class RegisteredCheckController:
                 gid=os.getgid(),
                 wall_seconds=self.wall_seconds,
                 output_bytes=8192,
+                stdin_mode="native-frame-v1",
             )
             self.profile.validate()
         except Exception:
