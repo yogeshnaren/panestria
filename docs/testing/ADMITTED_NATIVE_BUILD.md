@@ -64,9 +64,8 @@ context-digest guard is covered by the default run.
 
 ## Remaining owner-facing integration
 
-The admission backend and [real runtime qualification command](BUILD_RUNTIME_QUALIFICATION.md)
-are implemented. A supported owner task CLI entry point still needs completion.
-Keep the generic path disabled until qualification and explicit project policy
-review exist. The existing website remains its separately qualified fixed public
+The admission backend, [real runtime qualification command](BUILD_RUNTIME_QUALIFICATION.md)
+and [supported owner task CLI](OWNER_BUILD_CLI.md) are implemented. The CLI requires
+qualification and explicit project policy review. The existing website remains its separately qualified fixed public
 proposal demo. Full G1 clause evaluation and owner review remain separate;
 AOS-016-TC04 is deferred by the subscription/local-only decision, not passed.

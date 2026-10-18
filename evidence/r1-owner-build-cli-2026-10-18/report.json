@@ -1,0 +1,43 @@
+{
+  "purpose": "Owner-facing PUBLIC native Build CLI with actual runtime qualification and exact protected merge",
+  "candidate_commit": "7c4aef569d0589df9fd586a14db0526ba9d6a316",
+  "reports": [
+    {
+      "file": "runtime.xml",
+      "sha256": "3ad1db72f12112dce22fe8bd7532c5e5df732ecf40eb4d26f9739d34db82b762",
+      "passed": 11,
+      "seconds": "28.599",
+      "scope": "Real runtime conformance; no fixture certificate",
+      "candidate_commit": "7c4aef569d0589df9fd586a14db0526ba9d6a316",
+      "worktree_state": "clean"
+    },
+    {
+      "file": "default.xml",
+      "sha256": "f84acd49e208802ba54f2a3f2243f8544f7a62fbd25de56c7a6f91b177c45ed4",
+      "passed": 8,
+      "seconds": "10.458",
+      "scope": "TEST_FIXTURE_NOT_LIVE cert/native; actual PG/Docker/Git/CLI",
+      "candidate_commit": "7c4aef569d0589df9fd586a14db0526ba9d6a316",
+      "worktree_state": "clean"
+    },
+    {
+      "file": "live.xml",
+      "sha256": "42fa25a07319dad775af469afe4f537e54309ba6b9419160e8c35f7af19ca98f",
+      "passed": 1,
+      "seconds": "14.508",
+      "scope": "Real operator certificate and native transport; scripted test-owner approval",
+      "candidate_commit": "7c4aef569d0589df9fd586a14db0526ba9d6a316",
+      "worktree_state": "clean"
+    }
+  ],
+  "runtime_certificate_sha256": "d1f154a0247336fdb849f5c45137c830190ffdeebc1d0545893ef0ff902ea056",
+  "certificate_expires_at": "2026-10-19T13:43:26.715889+00:00",
+  "limitations": [
+    "PUBLIC synthetic source only; operator auth remains trusted-host, model tools in OS sandbox",
+    "Runtime certificate issued from real conformance; not a test certificate in the live CLI case",
+    "Scripted test-owner policy/merge approval is not human signoff",
+    "Source checkout unchanged; only protected destination Git ref advances after exact approval",
+    "The example scaffolder is checked locally after this candidate; package runtime source is unchanged",
+    "No full G1/G2/G3 pass, SDK TC04 DEFERRED NOT PASS, no manufactured trial or R4-R7 work"
+  ]
+}
