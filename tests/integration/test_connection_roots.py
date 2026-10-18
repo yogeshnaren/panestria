@@ -6,6 +6,8 @@ import gc
 import hashlib
 import os
 import re
+import select
+import signal
 import socket
 import stat
 import subprocess
@@ -505,3 +507,58 @@ def test_missing_libc_entrypoint_is_unavailable_without_fallback(directory, monk
         monkeypatch.setattr(roots.ctypes, "CDLL", lambda *args, **kwargs: object())
         with pytest.raises(KernelDenied, match="^connection_root_kernel_unsupported$"):
             session.enroll(ACTOR, str(directory))
+
+
+def test_actual_controller_sigkill_leaves_no_root_authority_or_persisted_locator(directory):
+    program = (
+        "import os,signal,sys\n"
+        "from panestria.kernel.connection_roots import ConnectionRootSession\n"
+        "from panestria.kernel.goals import Actor\n"
+        "a=Actor(sys.argv[2],sys.argv[3])\n"
+        "s=ConnectionRootSession(a)\n"
+        "r=s.enroll(a,sys.argv[1])\n"
+        "print(r,s._roots[r],flush=True)\n"
+        "signal.pause()\n"
+    )
+    child = subprocess.Popen(
+        [sys.executable, "-I", "-c", program, str(directory), ACTOR.owner_id, ACTOR.project_id],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env={},
+    )
+    try:
+        assert child.stdout is not None
+        assert select.select([child.stdout], [], [], 5)[0], "controller enrollment did not finish"
+        raw = os.read(child.stdout.fileno(), 256)
+        assert re.fullmatch(rb"[0-9a-f]{64} [0-9]+\n", raw)
+        reference, fd = raw.decode().strip().split()
+        descriptor_path = Path(f"/proc/{child.pid}/fd/{fd}")
+        observed = descriptor_path.stat()
+        assert (observed.st_dev, observed.st_ino) == (directory.stat().st_dev, directory.stat().st_ino)
+        child.kill()
+        out, error = child.communicate(timeout=5)
+        assert child.returncode == -signal.SIGKILL and out == b"" and error == b""
+        assert not descriptor_path.exists() and sorted(p.name for p in directory.iterdir()) == ["file"]
+        assert (directory / "file").read_bytes() == INSIDE
+        with roots.ConnectionRootSession(ACTOR) as restarted:
+            with pytest.raises(KernelDenied, match="^connection_root_unavailable$"):
+                restarted.snapshot(ACTOR, reference, "file", max_bytes=64)
+            fresh = restarted.enroll(ACTOR, str(directory))
+            assert fresh != reference
+            assert restarted.snapshot(ACTOR, fresh, "file", max_bytes=64).content == INSIDE
+    finally:
+        if child.poll() is None:
+            child.kill()
+        child.communicate(timeout=5)
+
+
+def test_reference_collision_refuses_without_retarget_or_fd_leak(directory, monkeypatch):
+    with roots.ConnectionRootSession(ACTOR) as session:
+        reference = session.enroll(ACTOR, str(directory))
+        baseline = set(os.listdir("/proc/self/fd"))
+        monkeypatch.setattr(roots.secrets, "token_hex", lambda count: reference)
+        with pytest.raises(KernelDenied, match="^connection_root_unavailable$"):
+            session.enroll(ACTOR, str(directory))
+        assert set(os.listdir("/proc/self/fd")) == baseline
+        assert session.snapshot(ACTOR, reference, "file", max_bytes=64).content == INSIDE
