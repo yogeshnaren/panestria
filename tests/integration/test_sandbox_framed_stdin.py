@@ -74,6 +74,7 @@ print(json.dumps({'sizes':[len(frame.script),len(frame.request)],'hashes':[hashl
         root,
         runtime_mounts=(ReadOnlyMount(Path(native_tool_input.__file__).resolve(), "/runtime/native_tool_input.py"),),
     )
+
     receipt = runner.run(
         workspace,
         ("/usr/local/bin/python", "-I", "-c", program, sh, rh),
@@ -96,6 +97,41 @@ print(json.dumps({'sizes':[len(frame.script),len(frame.request)],'hashes':[hashl
     assert receipt.profile_sha256 == profile.sha256()
     assert "PUBLIC_SYNTHETIC_NOT_JSON" not in json.dumps(actual)
     assert list(workspace.iterdir()) == []
+    removed(receipt)
+
+
+def test_failed_attach_cannot_report_an_unstarted_container_as_success(tmp_path, monkeypatch):
+    import sys
+
+    root, workspace, profile = setup(tmp_path)
+    real_popen = subprocess.Popen
+    captured = []
+
+    def fail_attach(args, **kwargs):
+        if args[:3] == ["docker", "start", "--attach"]:
+            captured.append(args[-1])
+            # Explicitly injected attach-client failure. Actual Docker create,
+            # inspection and exact cleanup still run; the worker never starts.
+            return real_popen(
+                [
+                    sys.executable,
+                    "-I",
+                    "-c",
+                    "import sys;sys.stdin.buffer.read();print('SYNTHETIC_HOST_DIAGNOSTIC');sys.exit(42)",
+                ],
+                **kwargs,
+            )
+        return real_popen(args, **kwargs)
+
+    monkeypatch.setattr("panestria.sandbox.runner.subprocess.Popen", fail_attach)
+    receipt = DockerSandbox(root).run(
+        workspace,
+        ("/usr/local/bin/python", "-c", "raise AssertionError('must never start')"),
+        profile,
+        input_frame=b"x",
+    )
+    assert receipt.reason == "attachment_failed" and receipt.exit_code == 0
+    assert receipt.output == b"" and captured == [receipt.container_id]
     removed(receipt)
 
 
@@ -146,7 +182,16 @@ def test_actual_input_adverse_cases_terminate_and_remove(tmp_path, case, expecte
     removed(receipt)
 
 
-@pytest.mark.parametrize("mode,tamper", [("closed", "open"), ("native-frame-v1", "close"), ("native-frame-v1", "tty")])
+@pytest.mark.parametrize(
+    "mode,tamper",
+    [
+        ("closed", "open"),
+        ("native-frame-v1", "close"),
+        ("native-frame-v1", "tty"),
+        ("native-frame-v1", "no-stdout"),
+        ("native-frame-v1", "no-stderr"),
+    ],
+)
 def test_actual_docker_input_flags_must_match_approved_profile(tmp_path, mode, tamper):
     root, workspace, profile = setup(tmp_path)
     profile = replace(profile, stdin_mode=mode)
@@ -160,6 +205,11 @@ def test_actual_docker_input_flags_must_match_approved_profile(tmp_path, mode, t
                     args = args[:index] + ["--interactive"] + args[index:]
                 elif tamper == "close":
                     args = [v for v in args if v != "--interactive"]
+                elif tamper.startswith("no-"):
+                    stream = tamper.removeprefix("no-")
+                    position = args.index(stream)
+                    assert args[position - 1] == "--attach"
+                    args = args[: position - 1] + args[position + 1 :]
                 else:
                     args = args[:index] + ["--tty"] + args[index:]
             result = super()._docker(args, **kwargs)
@@ -211,6 +261,52 @@ def test_actual_blocked_input_cancels_after_observed_running_state(tmp_path):
         )
         assert observed_running.is_set() and receipt.reason == "cancelled"
         assert time.monotonic() - started < 8
+        removed(receipt)
+    finally:
+        finished.set()
+        watcher.join(timeout=5)
+        assert not watcher.is_alive()
+
+
+def test_killed_actual_attach_client_cannot_hide_running_worker(tmp_path, monkeypatch):
+    root, workspace, profile = setup(tmp_path, seconds=15)
+    real_popen = subprocess.Popen
+    clients = []
+    observed_running = threading.Event()
+    finished = threading.Event()
+
+    def attach(args, **kwargs):
+        process = real_popen(args, **kwargs)
+        if args[:3] == ["docker", "start", "--attach"]:
+            clients.append((process, args[-1]))
+        return process
+
+    def watch():
+        while not finished.wait(0.05):
+            if not clients:
+                continue
+            client, cid = clients[0]
+            result = subprocess.run(["docker", "inspect", cid], capture_output=True, timeout=3)
+            if result.returncode == 0:
+                actual = json.loads(result.stdout)[0]
+                if actual["Id"] == cid and actual["State"]["Running"]:
+                    observed_running.set()
+                    client.kill()  # This fixture's attach client, not the controller or daemon.
+                    return
+
+    monkeypatch.setattr("panestria.sandbox.runner.subprocess.Popen", attach)
+    watcher = threading.Thread(target=watch)
+    watcher.start()
+    started = time.monotonic()
+    try:
+        receipt = DockerSandbox(root).run(
+            workspace,
+            ("/usr/local/bin/python", "-c", "import time;time.sleep(60)"),
+            profile,
+            input_frame=b"x" * native_tool_input.MAX_FRAME_BYTES,
+        )
+        assert observed_running.is_set() and receipt.reason in ("attachment_failed", "input_incomplete")
+        assert time.monotonic() - started < 8 and receipt.exit_code is not None
         removed(receipt)
     finally:
         finished.set()

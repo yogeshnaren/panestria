@@ -325,6 +325,8 @@ class DockerSandbox:
             or config.get("AttachStdin") is not (profile.stdin_mode == "native-frame-v1")
             or config.get("StdinOnce") is not (profile.stdin_mode == "native-frame-v1")
             or config.get("Tty") is not False
+            or config.get("AttachStdout") is not True
+            or config.get("AttachStderr") is not True
             or config["User"] != f"{profile.uid}:{profile.gid}"
             or host["Privileged"]
             or not host["ReadonlyRootfs"]
@@ -469,6 +471,9 @@ class DockerSandbox:
                         if pending:
                             reason = "input_incomplete"
                         break
+                    if process.poll() is not None:
+                        reason = "attachment_failed"
+                        break
                     time.sleep(min(0.05, max(0, remaining)))
             close_input()
             if reason != "completed" and self._inspect(container_id)["State"]["Running"]:
@@ -495,6 +500,10 @@ class DockerSandbox:
                 reason = "memory_limit"
             elif reason == "completed" and exit_code != 0:
                 reason = "process_failed"
+            elif reason == "completed" and process.returncode != 0:
+                reason = "attachment_failed"
+            if reason == "attachment_failed":
+                output.clear()  # Failed attach diagnostics can contain host paths.
             return SandboxReceipt(
                 container_id,
                 profile.sha256(),
