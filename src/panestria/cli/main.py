@@ -23,6 +23,7 @@ from panestria.cli.local import local_app
 from panestria.cli.native import native_app
 from panestria.cli.profile import profile_app
 from panestria.cli.quota import quota_app
+from panestria.cli.research import research_app
 from panestria.config import ProfileRejected, load_settings
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
@@ -33,6 +34,7 @@ app.add_typer(native_app, name="native")
 app.add_typer(build_app, name="build")
 app.add_typer(profile_app, name="profile")
 app.add_typer(quota_app, name="quota")
+app.add_typer(research_app, name="research")
 app.add_typer(local_app, name="local")
 app.command("approve")(approve_command)
 app.command("deny")(deny_command)

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "caac0b2bad7560cdeb654a6d45e3211d09efa9fc",
+  "worktree_state": "clean",
+  "outcome": "COMPONENT_CHECKS_PASS_NOT_RELEASE_QUALIFICATION",
+  "command": "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_research_brief.py -q --junitxml=/tmp/panestria-research-brief-qualified.xml --basetemp=/tmp/panestria-research-brief-clean-20261018",
+  "passed": 6,
+  "failed": 0,
+  "duration_seconds": 18.229,
+  "execution_mode": "SYNTHETIC_FETCH_REAL_POSTGRES_CAS_DOCKER_READER_AND_OWNER_CLI",
+  "fixture_export_notice": "Synthetic historical fixture only. Isolated database removed after checks. No live retrieval, supported facts, human acceptance or production runtime qualification.",
+  "checks": [
+    "retained request/question/source/quote chain, unrelated assertions never supported, fabricated quote/source IDs and no citations",
+    "later source and claim corruption visible with historical/current report separation",
+    "owner/project/request/task scopes and missing question bytes fail closed; empty requests not completed",
+    "no search/fetch/reader calls during inspection; unchanged canonical state/events",
+    "actual owner CLI private inert HTML/JSON, overwrite/symlink/public-parent refusal"
+  ],
+  "static_checks": [
+    "Ruff all repository PASS",
+    "Mypy 221 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "prior_development": {
+    "worktree_state": "dirty",
+    "first_run": "4 passed, 2 failed: test referenced task.version instead of actual row_version; mode0755 fixture masked by umask077. Corrected fixture assumptions, no implementation assertion weakened.",
+    "corrected_run": "6 passed in16.60s, followed by clean source-bound run above"
+  },
+  "limits": [
+    "Not new-request execution or admitted fetch workflow",
+    "No live search/fetch, provider/OS or semantic qualification",
+    "No automatic SUPPORTED labels, contradiction decision or task completion",
+    "No release G1/G2/G3 PASS; paid SDK TC04 remains deferred, not passed",
+    "No owner services/databases/caches/credentials used or changed"
+  ],
+  "files": {
+    "local-checks.xml": "b25d0aca418bdab7278e9c84daf20fbff72f86627e13ddbcaac606abf1de7a7a",
+    "synthetic-evidence.json": "e924ac2b35f968e0e4a17716215aa4c3626990a810b32e4a56dcb94eca93d54a",
+    "synthetic-evidence.html": "d9df26142d96bcb68e3032ffa3c0c72916482e0b624011b1667a88b057318e1b"
+  }
+}

@@ -472,12 +472,15 @@
             "AOS-021",
             "AOS-022"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/retained-research-brief-2026-10-18/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
-          "plan_ref": "plans/AOS-023-implementation-plan.md"
+          "plan_ref": "plans/AOS-023-implementation-plan.md",
+          "implementation_note": "Offline retained-evidence inspection and private export component only. New-request execution, admitted fetch, semantic support and full Delegate gate remain pending."
         }
       ]
     },

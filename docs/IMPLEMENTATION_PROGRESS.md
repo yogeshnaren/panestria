@@ -11,7 +11,7 @@ acceptance checkpoint. Revision 3 remains the active plan; R4–R7 are not start
 | R1 browser/session access | PR104 merged; revoked sessions clear Ask output and cannot receive cached SSE resync data | Include in the cumulative candidate evaluation |
 | R1 one-worker Build | Owner CLI submits selected PUBLIC work through real runtime qualification, admitted Claude/Bash, independent checks, inspection, cancellation and exact protected merge; actual subscription journey passes | Reconcile and qualify the cumulative G1 candidate; human owner review remains |
 | R1 paid SDK compatibility | Deferred by owner; subscription/local-only operation selected | AOS-016-TC04 is not passed. Original required gate manifest remains intact |
-| R2 verified Delegate | Configured bounded local search now has durable task-wide query admission/disclosure; HTTPS fetch, isolated readers and retained source/claim components exist; prior semantic preflights are not qualified | Connect the bounded brief workflow, configure/qualify a real provider and public-web runtime, and qualify support/G2 |
+| R2 verified Delegate | Durable search admission and an offline retained-evidence CLI connect source/quote checks to private brief export; fetch/read components exist; semantic preflights are unqualified | Finish admitted fetch/new-request orchestration, configure/qualify the real provider/runtime, and qualify support/G2 |
 | R3 complete MVP | Partial components; release not accepted | Finish remaining revision-3 outcomes, multi-worker integration, dashboard, quota/capture, release qualification and genuine owner trial |
 
 ## Latest closed blocker
@@ -69,3 +69,14 @@ owner/task/request policy, lease and deadlines. Concurrency, lost acknowledgemen
 cancellation and backup/restore use real disposable Postgres/HTTP fixtures with
 explicitly synthetic certificates. No live public-search certificate is issued;
 real provider/OS qualification and semantic support remain pending.
+
+PR112 merged after exact-head CI39138503005 passed. Its initial schema snapshot
+failure/correction remain source-bound. The owner explicitly deferred search
+configuration while independent implementation continues.
+
+The [retained-evidence brief](testing/RETAINED_EVIDENCE_BRIEF.md) connects actual
+request/question bytes, current source provenance and deterministic quote checks
+to private HTML/JSON export. It shows missing/fabricated evidence and separate
+historical/current report hashes, without completing tasks or promoting claims
+to supported facts. This inspects existing records; new-request execution,
+admitted fetch, semantic qualification and full Delegate/G2 remain pending.
