@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="7" time="6.147" timestamp="2026-10-17T19:41:53.428468-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_memory_gateway_interface" name="test_old_closed_profile_cannot_silently_adopt_memory_execution" file="tests/integration/test_memory_gateway_interface.py" line="18" time="0.002" /><testcase classname="tests.integration.test_memory_gateway_interface" name="test_old_file_registry_digest_cannot_authorize_new_interface" file="tests/integration/test_memory_gateway_interface.py" line="28" time="0.001" /><testcase classname="tests.integration.test_memory_gateway_interface" name="test_unknown_or_old_execution_interface_rejects_before_claim[file-v1]" file="tests/integration/test_memory_gateway_interface.py" line="46" time="0.001" /><testcase classname="tests.integration.test_memory_gateway_interface" name="test_unknown_or_old_execution_interface_rejects_before_claim[python-memory-v2]" file="tests/integration/test_memory_gateway_interface.py" line="46" time="0.001" /><testcase classname="tests.integration.test_memory_gateway_interface" name="test_unknown_or_old_execution_interface_rejects_before_claim[None]" file="tests/integration/test_memory_gateway_interface.py" line="46" time="0.001" /><testcase classname="tests.integration.test_memory_gateway_interface" name="test_script_self_read_fails_without_file_staging_fallback" file="tests/integration/test_memory_gateway_interface.py" line="56" time="1.027" /><testcase classname="tests.integration.test_memory_gateway_interface" name="test_actual_default_gateway_uses_durable_factory_and_retains_launch_scope" file="tests/integration/test_memory_gateway_interface.py" line="69" time="4.842"><failure message="psycopg.errors.UndefinedColumn: column &quot;scope_sha256&quot; does not exist&#10;LINE 1: SELECT binding_sha256,scope_sha256 FROM panestria.worker_inv...&#10;                              ^">configured = ({'owner': '4209a434-d0ed-4471-9eaa-8425198f0ac0', 'project': 'bc6fdb30-3a79-4fcf-9f3c-d8833fd9d701', 'goal': 'eab370f...), files=(('calculator.py', '88f92d58d9706e16b293aacf471dd930213780b70cbf773d31c716c3e1e84682', 11, '100644'),)), ...))
+
+    def test_actual_default_gateway_uses_durable_factory_and_retains_launch_scope(configured):
+        task, args = configured
+        controller = RegisteredCheckController(*args)
+        permit = ToolPermit(
+            controller.scope,
+            controller.request.sha256(),
+            controller.registry.sha256(),
+            controller.snapshot.directory,
+            controller.profile,
+            time.monotonic() + 10,
+        )
+        binding = tool_binding(permit)
+        with controller.connect() as c:
+            identity = InvocationService().prepare(UnitOfWork(c), controller.actor, binding, "automatic-factory-proof")
+            before = c.execute("SELECT state FROM panestria.task WHERE id=%s", (task["task"],)).fetchone()
+        authority = DurableToolAuthority(controller.connect, controller.actor, identity)
+        result = NativeToolGateway(controller.snapshot.directory.parent, controller.registry, authority).execute(
+            controller.request, permit
+        )
+        assert result.outcome == "completed" and result.sandbox.exit_code == 0
+        with controller.connect() as c:
+&gt;           row = c.execute(
+                "SELECT binding_sha256,scope_sha256 FROM panestria.worker_invocation_launch WHERE invocation_id=%s",
+                (identity,),
+            ).fetchone()
+
+tests/integration/test_memory_gateway_interface.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;psycopg.Connection [BAD] at 0x72380413f4d0&gt;
+query = 'SELECT binding_sha256,scope_sha256 FROM panestria.worker_invocation_launch WHERE invocation_id=%s'
+params = ('fae0d415-eec5-4fb4-9649-1f5ddb4e31b1',), prepare = None
+binary = False
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool = False,
+    ) -&gt; Cursor[Row]:
+        """Execute a query and return a cursor to read its results."""
+        try:
+            cur = self.cursor()
+            if binary:
+                cur.format = BINARY
+    
+            if isinstance(query, Template):
+                if params is not None:
+                    raise TypeError(
+                        "'execute()' with string template query doesn't support parameters"
+                    )
+                return cur.execute(query, prepare=prepare)
+            else:
+                return cur.execute(query, params, prepare=prepare)
+        except e._NO_TRACEBACK as ex:
+&gt;           raise ex.with_traceback(None)
+E           psycopg.errors.UndefinedColumn: column "scope_sha256" does not exist
+E           LINE 1: SELECT binding_sha256,scope_sha256 FROM panestria.worker_inv...
+E                                         ^
+
+.venv/lib/python3.12/site-packages/psycopg/connection.py:304: UndefinedColumn</failure></testcase></testsuite></testsuites>

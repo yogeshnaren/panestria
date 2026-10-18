@@ -8,15 +8,15 @@ import math
 import os
 import re
 import stat
-import tempfile
 import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import Literal, Protocol
+from typing import Literal, Protocol, runtime_checkable
 
 from panestria.contracts.native_tools import ToolRequest, ToolScope
+from panestria.sandbox.native_tool_input import encode_frame
 from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile, SandboxRejected
 from panestria.sandbox.runner import DockerSandbox, SandboxReceipt
 
@@ -31,6 +31,7 @@ class ReviewedCommand:
     script: Path
     sha256: str
     access: Literal["read", "edit"]
+    execution: Literal["python-memory-v1"] = "python-memory-v1"
 
 
 @dataclass(frozen=True)
@@ -40,7 +41,10 @@ class NativeCommandRegistry:
     commands: tuple[ReviewedCommand, ...]
 
     def sha256(self) -> str:
-        rows = [{"ref": cmd.ref, "sha256": cmd.sha256, "access": cmd.access} for cmd in self.commands]
+        rows = [
+            {"ref": cmd.ref, "sha256": cmd.sha256, "access": cmd.access, "execution": cmd.execution}
+            for cmd in self.commands
+        ]
         return hashlib.sha256(json.dumps(rows, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
     def resolve(self, ref: str) -> ReviewedCommand:
@@ -52,6 +56,7 @@ class NativeCommandRegistry:
                 re.fullmatch(r"[a-z][a-z0-9-]{0,63}", cmd.ref) is None
                 or re.fullmatch(r"[0-9a-f]{64}", cmd.sha256) is None
                 or cmd.access not in {"read", "edit"}
+                or cmd.execution != "python-memory-v1"
                 for cmd in self.commands
             )
         ):
@@ -104,6 +109,11 @@ class ToolReceipt:
 RunnerFactory = Callable[[Path, tuple[ReadOnlyMount, ...]], DockerSandbox]
 
 
+@runtime_checkable
+class BoundRunnerAuthority(Protocol):
+    def runner_factory(self, permit: ToolPermit) -> RunnerFactory: ...
+
+
 def _runner(root: Path, mounts: tuple[ReadOnlyMount, ...]) -> DockerSandbox:
     return DockerSandbox(root, runtime_mounts=mounts)
 
@@ -147,7 +157,7 @@ class NativeToolGateway:
         registry: NativeCommandRegistry,
         authority: ToolAuthority,
         *,
-        runner_factory: RunnerFactory = _runner,
+        runner_factory: RunnerFactory | None = None,
     ) -> None:
         self.root = workspace_root.resolve()
         self.registry = registry
@@ -182,6 +192,8 @@ class NativeToolGateway:
             permit.profile.validate()
         except SandboxRejected:
             raise GatewayRejected("invalid_tool_profile") from None
+        if permit.profile.stdin_mode != "native-frame-v1":
+            raise GatewayRejected("tool_input_mode_denied")
         if (command.access == "read" and permit.profile.name not in {"read-only-research", "restricted-offline"}) or (
             command.access == "edit" and permit.profile.name != "scoped-code-edit"
         ):
@@ -193,29 +205,26 @@ class NativeToolGateway:
             raise GatewayRejected("cancelled_before_claim")
         script_bytes = _script_bytes(command, self.root)
         envelope = request.canonical_bytes()
-        # Snapshot only the reviewed script and data, never a whole host bundle.
-        # The host directory is private; each individually mounted file is
-        # readable by the configured nonroot container UID and mounted readonly.
-        # Ignore inherited TMPDIR: it could point into an editable candidate.
-        with tempfile.TemporaryDirectory(prefix="panestria-native-call-", dir="/tmp") as directory:
-            stage = Path(directory)
-            script = stage / "command.py"
-            payload = stage / "request.json"
-            script.write_bytes(script_bytes)
-            payload.write_bytes(envelope)
-            script.chmod(0o444)
-            payload.chmod(0o444)
-            mounts = (
-                ReadOnlyMount(script, "/runtime/native-command.py"),
-                ReadOnlyMount(payload, "/runtime/native-request.json"),
-                ReadOnlyMount(Path(__file__).with_name("native_tool_launch.py"), "/runtime/native-launch.py"),
+        # Input snapshots exist only in bounded memory. Mount only installed
+        # trusted code, with no host input directory or staging fallback.
+        frame = encode_frame(script_bytes, envelope)
+        mounts = (
+            ReadOnlyMount(Path(__file__).with_name("native_tool_launch.py"), "/runtime/native-launch.py"),
+            ReadOnlyMount(Path(__file__).with_name("native_tool_input.py"), "/runtime/native-input.py"),
+        )
+        factory = self._runner
+        if factory is None:
+            # A durable authority supplies commit-before-create/start fences.
+            # Plain runners remain for explicitly non-durable component seams.
+            factory = (
+                self.authority.runner_factory(permit) if isinstance(self.authority, BoundRunnerAuthority) else _runner
             )
-            runner = self._runner(self.root, mounts)
-            try:
-                self.authority.claim(permit)
-            except Exception:
-                raise GatewayRejected("dispatch_claim_denied") from None
-            return self._dispatch(request_hash, registry_hash, permit, command, runner, cancel)
+        runner = factory(self.root, mounts)
+        try:
+            self.authority.claim(permit)
+        except Exception:
+            raise GatewayRejected("dispatch_claim_denied") from None
+        return self._dispatch(request_hash, registry_hash, permit, command, runner, cancel, frame)
 
     def _dispatch(
         self,
@@ -225,6 +234,7 @@ class NativeToolGateway:
         command: ReviewedCommand,
         runner: DockerSandbox,
         cancel: threading.Event | None,
+        frame: bytes,
     ) -> ToolReceipt:
         stop = threading.Event()
         done = threading.Event()
@@ -288,6 +298,7 @@ class NativeToolGateway:
                         # The invocation has its own identity; the attempt can
                         # contain multiple separately claimed tool calls.
                         cancel=stop,
+                        input_frame=frame,
                     )
                 except Exception:
                     # Claim is already committed. An exception cannot prove no

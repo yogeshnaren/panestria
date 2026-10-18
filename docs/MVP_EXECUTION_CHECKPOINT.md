@@ -414,3 +414,26 @@ proof remain next. The demo's reviewed apply.py reads the old request file and
 needs explicit migration; do not silently recreate staged files. Current framed
 transport alone does not remove that resource or certify native/grant/G1/G2/G3.
 No provider/model/vendor CLI/SDK/auth or owner database/service changes.
+
+### 2026-10-18 — memory gateway and actual controller recovery
+
+PR96 merged `0aeacd5254d3ffe1607a4388a39199378d7abed9` after exact `a18ed587`
+CI39090575864 passed1736/51 excluded/one upstream warning510.93s. The dependent
+memory-input task began at explicit PR96 then fast-forwarded verified main before
+its own commits. Gateway snapshots now stay in bounded memory and stdin, with
+versioned registry/profile bindings, proper Python main-module identity and
+explicit demo writer migration. Durable authorities automatically supply their
+fenced runner factory; there is no host-input stage or file-mode fallback.
+
+Clean `d71ec94` passes289 focused default checks/22 live excluded121.47s. Final
+fixture-only `493078f` passes13 explicit synthetic OS cases17.99s, including eight
+actual gateway/controller SIGKILL windows with/without lease release. Production/
+runtime hashes are unchanged between sources. Ruff/mypy198/11 imports/secret/diff
+pass. Evidence/native-memory-input-2026-10-18 preserves exact sources and original
+invalid-test-column/module-identity failures separately; design46 defines limits.
+
+Scoped recovery keeps UNKNOWN, prevents another claim, preserves task/approval
+state and unrelated matching-attempt resources. No provider/model/vendor CLI/
+SDK/auth or owner state changed. This fixes only gateway input staging; other
+lifecycles, autonomous liveness, full connected native/grants/semantic/R1–R3 gates
+and owner trial remain required. Do not promote this to native or release authority.

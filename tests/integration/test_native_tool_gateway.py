@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import os
 import subprocess
@@ -23,6 +24,7 @@ from panestria.sandbox.native_tool_gateway import (
     ReviewedCommand,
     ToolPermit,
 )
+from panestria.sandbox.native_tool_input import MAGIC, decode_frame
 from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile
 from panestria.sandbox.runner import DockerSandbox, SandboxReceipt
 
@@ -72,7 +74,12 @@ def setup(
         request.sha256(),
         registry.sha256(),
         workspace,
-        SandboxProfile(name="scoped-code-edit" if edit else "restricted-offline", uid=os.getuid(), gid=os.getgid()),
+        SandboxProfile(
+            name="scoped-code-edit" if edit else "restricted-offline",
+            uid=os.getuid(),
+            gid=os.getgid(),
+            stdin_mode="native-frame-v1",
+        ),
         time.monotonic() + seconds,
     )
     return registry, request, permit, SyntheticAuthority(permit)
@@ -91,18 +98,21 @@ class FakeRunner(DockerSandbox):
         *,
         attempt_id: str | None = None,
         cancel: threading.Event | None = None,
+        input_frame: bytes | None = None,
     ) -> SandboxReceipt:
         self.started = True
         assert cancel is not None
         assert "SYNTHETIC_PRIVATE_DATA" not in repr(argv)
         assert argv[:3] == ("/usr/local/bin/python", "-I", "/runtime/native-launch.py")
         by_destination = {mount.destination: mount.source for mount in self.mounts}
-        script = by_destination["/runtime/native-command.py"]
-        payload = by_destination["/runtime/native-request.json"]
-        assert hashlib.sha256(script.read_bytes()).hexdigest() == argv[3]
-        assert hashlib.sha256(payload.read_bytes()).hexdigest() == argv[4]
-        assert json.loads(payload.read_bytes())["payload_json"] == '{"text":"SYNTHETIC_PRIVATE_DATA"}'
-        assert script.parent.stat().st_mode & 0o777 == 0o700
+        assert set(by_destination) == {
+            "/runtime/native-launch.py",
+            "/runtime/native-input.py",
+            "/runtime/panestria-no-network.py",
+        }
+        assert input_frame is not None
+        frame = decode_frame(io.BytesIO(input_frame), script_sha256=argv[3], request_sha256=argv[4])
+        assert json.loads(frame.request)["payload_json"] == '{"text":"SYNTHETIC_PRIVATE_DATA"}'
         return SandboxReceipt("ef" * 32, profile.sha256(), "cd" * 32, 0, "completed", b"ok", 0.01, False)
 
 
@@ -128,7 +138,8 @@ def test_reviewed_input_is_snapshotted_and_claimed_before_execution(tmp_path: Pa
     receipt = gateway.execute(request, permit)
     assert receipt.outcome == "completed"
     assert receipt.scope_sha256 == permit.scope.sha256()
-    assert all(not source.exists() for source in sources)
+    assert all(source.exists() for source in sources) and original not in sources
+    assert {source.name for source in sources} == {"native_tool_launch.py", "native_tool_input.py"}
     with pytest.raises(GatewayRejected, match="command_digest_mismatch"):
         gateway.execute(request, permit)
 
@@ -138,6 +149,11 @@ def test_private_staging_cannot_be_redirected_into_the_candidate(
 ) -> None:
     registry, request, permit, authority = setup(tmp_path)
     monkeypatch.setattr("tempfile.tempdir", str(permit.workspace))
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("gateway must not allocate host input stages")
+
+    monkeypatch.setattr("tempfile.TemporaryDirectory", forbidden)
 
     def factory(root: Path, mounts: tuple[ReadOnlyMount, ...]) -> DockerSandbox:
         assert all(not mount.source.is_relative_to(permit.workspace) for mount in mounts)
@@ -370,9 +386,13 @@ import os, socket
 from pathlib import Path
 assert 'SYNTHETIC_PRIVATE_DATA' not in repr(__import__('sys').argv)
 assert PANESTRIA_TOOL_REQUEST['payload_json'] == '{"text":"SYNTHETIC_PRIVATE_DATA"}'
+assert __name__ == '__main__' and __package__ is None and __spec__ is None
+assert __file__ == __import__('sys').argv[0] and __file__.startswith('/virtual/panestria-command-')
+assert not Path(__file__).exists()
+assert not Path('/runtime/native-command.py').exists() and not Path('/runtime/native-request.json').exists()
 assert not any(key in os.environ for key in ('ANTHROPIC_API_KEY','OPENAI_API_KEY','PANESTRIA_DATABASE_URL'))
 assert not Path(HOST_SENTINEL_PATH).exists()
-for target in ('/etc/must-not-write','/runtime/native-command.py','/runtime/native-request.json'):
+for target in ('/etc/must-not-write','/runtime/native-launch.py','/runtime/native-input.py'):
     try: Path(target).write_text('forged')
     except OSError: pass
     else: raise AssertionError('protected mount writable')
@@ -407,18 +427,23 @@ print('gateway-boundary-ok')
 
 
 @pytest.mark.live
-@pytest.mark.parametrize("target", ["/runtime/native-command.py", "/runtime/native-request.json"])
-def test_actual_launcher_rechecks_snapshot_before_executing_code(tmp_path: Path, target: str) -> None:
+@pytest.mark.parametrize("section", ["script", "request"])
+def test_actual_launcher_rechecks_snapshot_before_executing_code(tmp_path: Path, section: str) -> None:
     registry, request, permit, authority = setup(
         tmp_path, "open('/workspace/must-not-exist','w').write('bad')", edit=True
     )
 
     def mutate(root: Path, mounts: tuple[ReadOnlyMount, ...]) -> DockerSandbox:
-        source = next(mount.source for mount in mounts if mount.destination == target)
-        source.chmod(0o600)
-        source.write_text("print('tampered')" if target.endswith(".py") else "{}")
-        source.chmod(0o444)
-        return DockerSandbox(root, runtime_mounts=mounts)
+        class TamperedFrame(DockerSandbox):
+            def run(self, workspace, argv, profile, *, input_frame=None, **kwargs):
+                changed = bytearray(input_frame)
+                offset = len(MAGIC) + 8
+                if section == "request":
+                    offset += int.from_bytes(changed[len(MAGIC) : len(MAGIC) + 4], "big")
+                changed[offset] ^= 1
+                return super().run(workspace, argv, profile, input_frame=bytes(changed), **kwargs)
+
+        return TamperedFrame(root, runtime_mounts=mounts)
 
     receipt = NativeToolGateway(permit.workspace.parent, registry, authority, runner_factory=mutate).execute(
         request, permit
