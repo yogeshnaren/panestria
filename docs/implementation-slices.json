@@ -1953,7 +1953,7 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-023-S1.md",
-      "implementation_note": "Owner staged-question collection now connects selected bounded PUBLIC queries to admitted search/fetch/read/excerpts/private inspection and VERIFYING/RECONCILING states. Synthetic HTTPS/certificates only; operator policy UI, planner/synthesis, qualified support/live runtime/G2 pending.",
+      "implementation_note": "Dedicated owner PUBLIC-web policy prepare/confirm now connects to staged-question collection, admitted search/fetch/read/excerpts/private inspection and VERIFYING/RECONCILING. Existing Ask scopes are preserved. Synthetic HTTPS/certificates only; guided TUI, planner/synthesis, qualified support/live runtime/G2 pending.",
       "evidence_refs": [
         "evidence/owner-research-submission-2026-10-18/report.json",
         "evidence/owner-research-collection-2026-10-18/report.json"
@@ -1980,7 +1980,7 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-023-S2.md",
-      "implementation_note": "Owner staged-question collection now connects selected bounded PUBLIC queries to admitted search/fetch/read/excerpts/private inspection and VERIFYING/RECONCILING states. Synthetic HTTPS/certificates only; operator policy UI, planner/synthesis, qualified support/live runtime/G2 pending.",
+      "implementation_note": "Dedicated owner PUBLIC-web policy prepare/confirm now connects to staged-question collection, admitted search/fetch/read/excerpts/private inspection and VERIFYING/RECONCILING. Existing Ask scopes are preserved. Synthetic HTTPS/certificates only; guided TUI, planner/synthesis, qualified support/live runtime/G2 pending.",
       "evidence_refs": [
         "evidence/retained-research-brief-2026-10-18/report.json",
         "evidence/admitted-research-fetch-2026-10-18/report.json",

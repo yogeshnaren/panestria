@@ -64,13 +64,14 @@ Do not repeat unchanged paid/model probes or tune against the held-out evidence.
 PRs [112](https://github.com/yogeshnaren/panestria/pull/112),
 [113](https://github.com/yogeshnaren/panestria/pull/113),
 [114](https://github.com/yogeshnaren/panestria/pull/114),
-[115](https://github.com/yogeshnaren/panestria/pull/115) and
+[115](https://github.com/yogeshnaren/panestria/pull/115),
 [116](https://github.com/yogeshnaren/panestria/pull/116) and
 [117](https://github.com/yogeshnaren/panestria/pull/117) merged sequentially with
 passing exact-head CI, reviewed parents and complete tested trees. Their verified
 main endpoint is `b9b61ae69b8f53a6cdfe1b97807eddb7d9cf01df`. Subsequent task evidence
 remains separately bound to its source; no old report is relabeled:
 
+- [Owner policy reviews](../evidence/owner-research-policy-2026-10-18/report.json)
 - [Owner collection](../evidence/owner-research-collection-2026-10-18/report.json)
 - [Owner question staging](../evidence/owner-research-submission-2026-10-18/report.json)
 - [Joint runtime](../evidence/shared-research-runtime-2026-10-18/report.json)
