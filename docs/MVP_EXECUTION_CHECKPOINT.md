@@ -460,6 +460,61 @@ changes. This is not atomic filesystem snapshotting or hard interruptible I/O.
 Actual GrantBroker/current authority/budgets/approval/account/capability/purpose,
 onboarding/secret boundary, other lifecycles and R1–R3 gates remain unfinished.
 
+## 2026-10-18 connection progress records
+
+PR98 actually merged `1017708f1c1c351d3bcfeb9658709c14cdcff0e6` after exact
+`222f154` CI39093271920 passed1832/51 live excluded/one upstream pypdf warning
+497.94s. The guarded merge verified currentmainfc0/exacthead/checks/16-file scope/
+original source and artifact pins/all six owner authors; both parents and the
+entire resulting tree match the reviewed base/head. No runtime connection or
+release gate was enabled.
+
+The next documentation-only branch begins from freshly fetched main1017708.
+It corrects stale MVP-X09/AOS-008-S4 NOT_STARTED records to IN_PROGRESS and links
+original declaration/root component reports in the slice/phase/backlog and main
+plan. S5 remains NOT_STARTED, all33 extension cases remain NOT_RUN, G3 retains
+157 cases/156 pretrial, R0 remains accepted and R1–R3 acceptance stays pending.
+No code, tests, historic evidence, gate manifests or original archives change.
+Source docs clarify logical read-request bounds, not physical disk/readahead or
+hard elapsed-time claims. Runtime broker/account/capability/source-purpose/
+current-authority/budget/approval/lifecycle/secret/onboarding remain outstanding.
+
+## 2026-10-18 attachment observation race follow-up
+
+PR99's docs-only exacthead d5b8fd7 CI39093996729 FAILED:1831PASS/1FAIL/51 live
+excluded/one upstream warning404.88s. The existing real-small-pipe duplex case
+returned attachment_failed. No merge or retry-pass was claimed. An independent
+task begins at freshly fetched main1017708; it adds deterministic real gated
+child0/7 regressions (both fail at clean1a79a09), then fixes the inspect/poll
+ordering at c31d457. Reinspect after client exit; never accept client exit alone.
+Actual worker exited/exit0, client success, complete input and all existing
+unstarted/running-worker/cleanup guards remain required.
+
+Clean c31d457 passes55 focused checks24.91s,8 selected live excluded, Ruff/mypy199/
+11 imports/secret/source diff pass. Evidence/attachment-exit-race-2026-10-18 and
+design48 keep exact original observations/source pins, including one invalid
+selection command that ran no tests. Original CI log is retained in project
+outputs. Full exact-head CI and guarded merge are still required for this task.
+
+PR99 stays pending until the fix is verified/merged and its branch incorporates
+current main with fresh CI. A separate connection-review API candidate at
+86db525 has31 new cases and passed120 focused checks30.07s; it is parked on
+task/connection-review-api, not in this main candidate, and not yet a PR/runtime
+grant. Its durable source bundle/raw observations are in project outputs.
+
+## 2026-10-18 planning branch synchronized after verified race fix
+
+PR100 actually merged36612043f6854d6a4beb39bbc5e9d9175b65ac61 after exact7bd2a3f
+CI39094761856 passed1834/51 live excluded/one upstream pypdf warning434.54s.
+The guarded merge verified currentbase101/head/allchecks/9files/source and raw
+artifact pins/four owner commits, then both parents and the entire merge tree.
+PR99 now incorporates that actual main with a normal merge; both independent
+checkpoint append histories are preserved. Only its intended seven documentation
+files differ from new main. Runtime/tests/evidence/gates remain identical to the
+verified base. Fresh exact-head CI is required; its original failed run remains
+historical and is not relabeled. Root/grant and release/trial authority stay
+unavailable pending the actual remaining work.
+
 ## 2026-10-18 connection review HTTP component candidate
 
 An independent owner-only declaration review API was qualified at clean86db525:
@@ -478,3 +533,19 @@ Source-bound original/corrected/qualified artifacts are retained in
 evidence/connection-review-api-2026-10-18. The candidate was parked for the
 independent sandbox CI race fix. Synchronize verified main and require fresh
 exact-head CI before publication/merge; no R1–R3 gate or owner trial is accepted.
+
+
+## 2026-10-18 connection API synchronized with current main
+
+PR99 actually merged e9487aa8cd08888d1cfa9d53ca101c2df05131d6 after exact
+head def8abf CI39095322775 passed1834/51 live excluded/one upstream pypdf
+warning510.20s. Review verified the seven documentation files, selected JSON
+field changes, original referenced artifact hashes and unchanged157/156 gate
+boundary. The actual merge parents and entire tree equal the reviewed base/head.
+
+This API branch incorporates that fetched main with a normal merge, preserving
+both independent checkpoint histories and the original86db525 qualification.
+API source/test and original evidence pins remain unchanged. Main includes the
+separately verified transport race correction. Fresh integrated checks and
+exact-head CI must be recorded separately; no historical result is relabeled.
+Connection review still conveys DECLARATION_ONLY/UNVERIFIED/runtime unavailable.

@@ -22,7 +22,7 @@ This is the full phased roadmap and planning contract. Detailed implementation p
 | R6 | SOTA | SOTA: evaluated adaptation and capability discovery | AOS-036 | G6 |
 | R7 | SOTA | SOTA: portability, multi-machine and public distribution | AOS-037 | G7 |
 
-An item being documented or merged is not proof that a release gate passed. The [machine-readable tracker](phase-tracker.json) records accepted R0 evidence, R1 in progress and later work not yet accepted. New revision-3 slices and cases remain NOT_STARTED/NOT_RUN. The [MVP checklist](MVP_ACCEPTANCE_CHECKLIST.md) defines the completion evidence. The [coverage register](FULL_TARGET_COVERAGE.md) accounts for 35 baseline subsystem rows, 16 preservation pillars and their finer features.
+An item being documented or merged is not proof that a release gate passed. The [machine-readable tracker](phase-tracker.json) records accepted R0 evidence, R1 in progress and later work not yet accepted. Revision-3 slice status distinguishes NOT_STARTED from IN_PROGRESS component work; all 33 extension acceptance cases remain NOT_RUN. Component evidence does not establish a release pass. The [MVP checklist](MVP_ACCEPTANCE_CHECKLIST.md) defines the completion evidence. The [coverage register](FULL_TARGET_COVERAGE.md) accounts for 35 baseline subsystem rows, 16 preservation pillars and their finer features.
 
 ## 2. Repository setup and planning rules
 
@@ -138,7 +138,7 @@ The frozen master and revised per-item specs have different levels of detail. Ca
 |---|---|---|
 | MVP-X07: Encrypted owner profile and canonical classification | 011, 002, 007, 009, 017 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07); 3 new R3 slices, 4 added scenarios; IN_PROGRESS / NOT_RUN |
 | MVP-X08: Portable assistant charter, communication style and model context | 017, 011, 016, 024 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x08); 3 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
-| MVP-X09: Explicit connection grants and secret boundary | 008, 007, 009, 010, 024, 028 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x09); 2 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
+| MVP-X09: Explicit connection grants and secret boundary | 008, 007, 009, 010, 024, 028 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x09); 2 new R3 slices, 4 added scenarios; IN_PROGRESS / NOT_RUN; [declaration](design/38-CONNECTION-GRANT-REVIEWS.md) and [root](design/47-CONNECTION-ROOT-SESSIONS.md) components only |
 | MVP-X10: Verified milestones, stall detection and bounded repair | 025, 006, 027a, 027b, 029 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x10); 2 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |
 | MVP-X11: Quota-aware useful work and automatic offline capture | 012, 006, 010, 011, 026, 029 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x11); 4 new R3 slices, 6 added scenarios; NOT_STARTED / NOT_RUN |
 | MVP-X12: Private read-only phone companion | 028, 009, 008, 029 | [Normative scope and cases](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x12); 3 new R3 slices, 4 added scenarios; NOT_STARTED / NOT_RUN |

@@ -1,6 +1,6 @@
 # R3 detailed sequence and gate
 
-**Status:** DRAFT / NOT_RUN; implementation NOT_STARTED. **Planning revision:** 3. **Gate:** G3. Detailed planning through R3 is authorized; code/live conformance remain pending.
+**Status:** DRAFT / NOT_RUN; component implementation IN_PROGRESS. **Planning revision:** 3. **Gate:** G3. Implementation through R3 is owner-authorized; full release evidence, live conformance and owner acceptance remain pending.
 
 | Step | Plan | Slices | Dependencies |
 |---|---|---|---|
@@ -37,6 +37,6 @@ After the relevant baseline interfaces exist, select extensions by their manifes
 | MVP-X13 | AOS-018 | AOS-018-S4, AOS-018-S5 | Measured lightweight resource and foreground contract |
 | MVP-X14 | AOS-030 | AOS-030-S4, AOS-030-S5 | Reuse, REA evidence and comparative engineering |
 
-Read [the active extension specification](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md) and [shared slice handoff](../cursor/prompts/MVP-REV3-SLICE.md). Each envelope targets about one developer-day; split it after repository inspection if needed. All 21 extension slices and 33 added cases remain NOT_STARTED/NOT_RUN. Baseline AOS-030-S3 owner trial must occur after extension completion and all 156 pretrial cases; AOS-030-TC04 then records the trial/owner decision and final G3 requires all 157 cases; numeric slice order does not permit an early trial. No skipped/unimplemented case can complete G3.
+Read [the active extension specification](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md) and [shared slice handoff](../cursor/prompts/MVP-REV3-SLICE.md). Each envelope targets about one developer-day; split it after repository inspection if needed. The 21 extension slices have individual NOT_STARTED/IN_PROGRESS status in the manifest; all 33 added acceptance cases remain NOT_RUN. MVP-X09 has owner-reviewed declaration and process-local root components with linked evidence, while the actual broker/current-authority/account/purpose/budget/secret/onboarding integration remains unfinished. Component checks do not complete a case or release gate. Baseline AOS-030-S3 owner trial must occur after extension completion and all 156 pretrial cases; AOS-030-TC04 then records the trial/owner decision and final G3 requires all 157 cases; numeric slice order does not permit an early trial. No skipped/unimplemented case can complete G3.
 
 Phone status/inbox is read-only over separately enabled private authenticated TLS ingress. Background push, voice, remote approvals, graph/fine-tuning and autonomous promotion remain later. Quota scheduling and verified offline retention are MVP capabilities; sophisticated forecasting and weight training are not prerequisites for using them.
