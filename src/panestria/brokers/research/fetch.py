@@ -110,7 +110,7 @@ def _remaining(deadline: float, cancel: threading.Event) -> float:
 
 
 class _DeadlineRead(io.RawIOBase):
-    def __init__(self, connection: ssl.SSLSocket, deadline: float, cancel: threading.Event) -> None:
+    def __init__(self, connection: socket.socket, deadline: float, cancel: threading.Event) -> None:
         super().__init__()
         self.connection, self.deadline, self.cancel = connection, deadline, cancel
 
@@ -127,7 +127,7 @@ class _DeadlineRead(io.RawIOBase):
 
 
 class _FramingRead(io.BufferedReader):
-    def __init__(self, connection: ssl.SSLSocket, deadline: float, cancel: threading.Event) -> None:
+    def __init__(self, connection: socket.socket, deadline: float, cancel: threading.Event) -> None:
         super().__init__(_DeadlineRead(connection, deadline, cancel), buffer_size=4096)
         self.framing_bytes = 0
 
@@ -141,7 +141,7 @@ class _FramingRead(io.BufferedReader):
 
 
 class _HttpSocket:
-    def __init__(self, connection: ssl.SSLSocket, deadline: float, cancel: threading.Event) -> None:
+    def __init__(self, connection: socket.socket, deadline: float, cancel: threading.Event) -> None:
         self.connection, self.deadline, self.cancel = connection, deadline, cancel
 
     def makefile(self, mode: str) -> _FramingRead:

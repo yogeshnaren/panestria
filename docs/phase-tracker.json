@@ -384,7 +384,11 @@
           "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/research-request-2026-10-15/report.json",
+            "evidence/research-blobs-2026-10-15/report.json",
+            "evidence/research-source-records-2026-10-16/report.json"
+          ],
           "plan_status": "PARTIAL_REQUEST_BLOBS_CONTRACTS_AND_TEXT",
           "plan_ref": "plans/AOS-013-implementation-plan.md",
           "implementation_note": "Contracts/text: 79 checks; request metadata: 13 actual PG checks; protected bytes: 34 actual filesystem/process checks. Source/claim schema, retained-fetch resolution and full cases pending."
@@ -397,10 +401,13 @@
             "AOS-009",
             "AOS-013"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/research-public-fetch-2026-10-15/report.json",
+            "evidence/configured-search-transport-2026-10-18/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-019-implementation-plan.md"
         },
@@ -411,10 +418,13 @@
             "AOS-013",
             "AOS-019"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/isolated-research-reader-2026-10-15/report.json",
+            "evidence/research-source-provenance-2026-10-16/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-020-implementation-plan.md"
         },
@@ -424,10 +434,13 @@
           "dependencies": [
             "AOS-020"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/research-claim-evidence-2026-10-16/report.json",
+            "evidence/research-text-2026-10-15/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-021-implementation-plan.md"
         },
@@ -438,10 +451,14 @@
             "AOS-021",
             "AOS-016"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/entailment-corpus-2026-10-16/report.json",
+            "evidence/local-entailment-2026-10-16/report.json",
+            "evidence/native-entailment-2026-10-16/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-022-implementation-plan.md"
         },
