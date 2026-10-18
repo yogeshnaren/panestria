@@ -119,6 +119,15 @@ class ClaudeEventParser:
     ) -> None:
         self.allowed_tools = allowed_tools
         self.allowed_mcp_servers = allowed_mcp_servers
+        self._mcp_display_names = {"panestria"}
+        # Display labels are pinned to the explicitly selected tool profile.
+        # A new label never grants another tool/server or widens the read mode.
+        for tool, label in (
+            ("mcp__panestria__run_registered_check", "panestria-registered-check"),
+            ("mcp__panestria__run_scoped_bash", "panestria-scoped-bash"),
+        ):
+            if allowed_tools == frozenset({tool}) and allowed_mcp_servers == frozenset({"panestria"}):
+                self._mcp_display_names.add(label)
         self.session: str | None = None
         self.result: NativeResult | None = None
         self._pending = bytearray()
@@ -428,7 +437,7 @@ class ClaudeEventParser:
                 seen.add(identity)
                 _text(item["display_name"], maximum=256)
                 server_name = _text(item.get("server_display_name", "panestria"), maximum=128)
-                if server_name not in {"panestria", "panestria-registered-check"}:
+                if server_name not in self._mcp_display_names:
                     raise ProtocolRejected("invalid_tool_display_metadata")
             indexes = body.get("narration_block_indexes", [])
             if (

@@ -203,6 +203,19 @@ def test_display_and_registered_receipt_metadata_never_grant_authority():
     assert state.result is None
 
 
+def test_bash_display_label_is_pinned_to_the_separately_enabled_bash_tool():
+    bash = "mcp__panestria__run_scoped_bash"
+    display = [{"id": "tool:one", "display_name": "Run Scoped Bash", "server_display_name": "panestria-scoped-bash"}]
+    read = parser()
+    read.feed(init())
+    with pytest.raises(ProtocolRejected, match="invalid_tool_display_metadata"):
+        read.feed(tool_message("assistant", tool_use_meta=display))
+    state = ClaudeEventParser(frozenset({bash}), allowed_mcp_servers=frozenset({"panestria"}))
+    state.feed(init(tools=[bash]))
+    raw = tool_message("assistant", tool_use_meta=display).replace(TOOL.encode(), bash.encode())
+    assert state.feed(raw)[0].kind == "message" and state.result is None
+
+
 @pytest.mark.parametrize(
     "display",
     [
