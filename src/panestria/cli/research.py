@@ -1,19 +1,56 @@
-"""Local owner inspection of retained research only; no search/fetch/model execution."""
+"""Local owner question staging and evidence inspection; no search/fetch/model execution."""
 
 import hashlib
 import json
 import os
 import stat
+from dataclasses import asdict
 from pathlib import Path
 from typing import Annotated, Literal
 
 import typer
+from pydantic import SecretStr
 
 from panestria.config import Settings
+from panestria.config_local import read_private
+from panestria.contracts.research import ResearchLimits
 from panestria.execution.research_brief import RetainedBrief, brief_html, brief_json
+from panestria.execution.research_submission import stage_question
 from panestria.kernel.goals import Actor
 
 research_app = typer.Typer(no_args_is_help=True)
+
+
+@research_app.command("stage")
+def stage_research(
+    owner_id: str,
+    project_id: str,
+    contract: Annotated[Path, typer.Option("--contract")],
+    question: Annotated[Path, typer.Option("--question")],
+    limits: Annotated[Path, typer.Option("--limits")],
+    store: Annotated[Path, typer.Option("--store")],
+    key: Annotated[str, typer.Option("--key")],
+    public_question: Annotated[bool, typer.Option("--public-question")] = False,
+) -> None:
+    """Stage one explicit PUBLIC question locally. Does not search, fetch, activate or complete a task."""
+    try:
+        if not public_question:
+            raise ValueError("explicit_public_question_required")
+        dsn = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
+        receipt = stage_question(
+            dsn.get_secret_value(),
+            Actor(owner_id, project_id),
+            store,
+            json.loads(read_private(contract, 256 * 1024)),
+            SecretStr(read_private(question, 65536).decode("utf-8")),
+            ResearchLimits.model_validate_json(read_private(limits, 8192)),
+            key,
+            public_question=public_question,
+        )
+        typer.echo(json.dumps(asdict(receipt)))
+    except Exception:
+        typer.echo('{"status":"UNAVAILABLE","reason":"research_question_not_staged"}', err=True)
+        raise typer.Exit(1) from None
 
 
 def _write_private(path: Path, raw: bytes) -> None:
