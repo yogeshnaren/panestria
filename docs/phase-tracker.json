@@ -294,7 +294,9 @@
           "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/r1-offline-qualification-2026-10-18/report.json"
+          ],
           "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-015-implementation-plan.md"
         },
@@ -308,7 +310,9 @@
           "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/r1-offline-qualification-2026-10-18/report.json"
+          ],
           "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-016-implementation-plan.md"
         },
@@ -322,7 +326,9 @@
           "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/r1-offline-qualification-2026-10-18/report.json"
+          ],
           "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-017-implementation-plan.md"
         },
@@ -337,7 +343,9 @@
           "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/r1-offline-qualification-2026-10-18/report.json"
+          ],
           "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-018-implementation-plan.md"
         }
