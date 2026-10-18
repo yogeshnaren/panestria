@@ -549,3 +549,10 @@ API source/test and original evidence pins remain unchanged. Main includes the
 separately verified transport race correction. Fresh integrated checks and
 exact-head CI must be recorded separately; no historical result is relabeled.
 Connection review still conveys DECLARATION_ONLY/UNVERIFIED/runtime unavailable.
+
+Clean integrated c61dd0d passes120 focused checks32.82s after the normal merge;
+Ruff/mypy200/11 imports/secret/source diff pass. A separate integration report
+and raw XML retain that observation without modifying original86db525 evidence.
+The first local static command had a nonexistent scanner path and exited2; the
+actual tools/secret_scan.py command subsequently passed. Publication still needs
+fresh exact-head full CI; no runtime connector or release acceptance is granted.

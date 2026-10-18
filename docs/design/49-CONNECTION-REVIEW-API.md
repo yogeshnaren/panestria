@@ -73,3 +73,10 @@ capability/source-purpose/current policy/lease/budget/approval/effect lifecycle,
 secret boundary, broker enforcement and onboarding UI remain required. Neither
 these metadata routes nor passing component tests promote G1/G2/G3 or start the
 14-day owner trial.
+
+Integrated main e9487aa includes the independently verified transport fix and
+planning records. Normal merge c61dd0d preserves the original API source pins;
+its clean integrated qualification passes the same120 checks32.82s. The separate
+[integration record](../../evidence/connection-review-api-2026-10-18/integration-report.json)
+retains its own raw XML and command corrections. Original86db525 artifacts are
+unchanged. Full exact-head CI remains a separate publication/merge prerequisite.
