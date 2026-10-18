@@ -459,7 +459,7 @@ owned PUBLIC fixtures. No provider/model/SDK/auth/image/owner service or schema
 changes. This is not atomic filesystem snapshotting or hard interruptible I/O.
 Actual GrantBroker/current authority/budgets/approval/account/capability/purpose,
 onboarding/secret boundary, other lifecycles and R1–R3 gates remain unfinished.
-# 2026-10-18 attachment observation race follow-up
+## 2026-10-18 attachment observation race follow-up
 
 PR99's docs-only exacthead d5b8fd7 CI39093996729 FAILED:1831PASS/1FAIL/51 live
 excluded/one upstream warning404.88s. The existing real-small-pipe duplex case
