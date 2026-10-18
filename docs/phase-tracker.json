@@ -225,7 +225,9 @@
           "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/r1-native-bash-build-2026-10-18/report.json"
+          ],
           "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-010-implementation-plan.md"
         },
@@ -240,7 +242,9 @@
           "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/r1-native-bash-build-2026-10-18/report.json"
+          ],
           "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-027a-implementation-plan.md"
         },
