@@ -81,6 +81,11 @@ class AdmittedFetch:
             raise KernelDenied("public_fetch_runtime_changed")
         return self.service.current(UnitOfWork(connection), self.actor, self.plan, self.attempt_id, self.epoch)
 
+    def prepare(self) -> None:
+        with self.connect() as connection:
+            self._current(connection)
+            self.service.prepare(UnitOfWork(connection), self.actor, self.plan, self.attempt_id, self.epoch)
+
     def collect(self, url: SecretStr, *, cancel: threading.Event | None = None) -> CollectedSource:
         if type(url) is not SecretStr:
             raise KernelDenied("explicit_public_url_required")
@@ -95,8 +100,7 @@ class AdmittedFetch:
                 return self._current(connection)
 
         check()
-        with self.connect() as connection:
-            self.service.prepare(UnitOfWork(connection), self.actor, self.plan, self.attempt_id, self.epoch)
+        self.prepare()
         with self.connect() as connection:
             dispatch = self.service.claim(
                 UnitOfWork(connection),
