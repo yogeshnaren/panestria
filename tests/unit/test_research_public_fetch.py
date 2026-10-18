@@ -349,3 +349,24 @@ def test_duplicate_folded_control_or_malformed_headers_cannot_redirect(wire, hea
     wire[0].append(b"HTTP/1.1 302 Found\r\n" + headers + b"\r\n")
     result = PublicHttpsFetcher().fetch("https://example.org/", limits())
     assert result.outcome == "ERROR" and len(wire[1]) == 1
+
+
+def test_disclosure_hook_precedes_each_dns_and_denial_stops_redirect(wire, monkeypatch):
+    responses, created, _ = wire
+    responses.append(b"HTTP/1.1 302 Found\r\nLocation: https://other.example/next\r\n\r\n")
+    timeline = []
+
+    def resolve(host, *_a, **_k):
+        timeline.append(("DNS", host))
+        return answer()
+
+    def before(url, host, ordinal):
+        timeline.append(("DISCLOSURE", host))
+        if ordinal == 1:
+            raise FetchDenied("redirect_disclosure_denied")
+
+    monkeypatch.setattr(module.socket, "getaddrinfo", resolve)
+    result = PublicHttpsFetcher().fetch("https://example.org/start", limits(), before_hop=before)
+    assert result.reason == "redirect_disclosure_denied"
+    assert timeline == [("DISCLOSURE", "example.org"), ("DNS", "example.org"), ("DISCLOSURE", "other.example")]
+    assert len(created) == 1

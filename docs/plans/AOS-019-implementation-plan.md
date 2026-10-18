@@ -85,6 +85,12 @@ Only then complete this item. A release cannot promote while its other required 
 
 ## Explicit web-policy preparation (2026-10-16)
 
+Current continuation: [admitted fetch/read/retention](../design/52-ADMITTED-FETCH-READ-RETENTION.md)
+connects the broker and isolated reader under task-wide source/body reservations,
+current policy/lease/deadline and per-hop disclosures. See the [component guide](../testing/ADMITTED_RESEARCH_FETCH.md).
+It does not issue live qualification, install search, admit semantic runners or
+complete this item/G2. Search admission shares the same canonical authority checks.
+
 [Public-web policy design](../design/37-PUBLIC-WEB-POLICY.md) adds an explicit closed
 web destination to the existing versioned policy transport, with unchanged
 serialized defaults and historical fingerprints. PUBLIC only, action external-send,

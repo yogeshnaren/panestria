@@ -17,7 +17,7 @@ from panestria.kernel.sandbox_launches import SandboxLaunchService
 from panestria.kernel.uow import UnitOfWork
 
 ROOT = Path(__file__).resolve().parents[2]
-HEAD = "0030_search_admission"
+HEAD = "0031_fetch_admission"
 
 
 def migrate(dsn, direction, target):

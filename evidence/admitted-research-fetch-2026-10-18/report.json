@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "f80916c3ad94a3d06090016f4de5b9de115278b7",
+  "worktree_state": "clean",
+  "outcome": "COMPONENT_CHECKS_PASS_NOT_LIVE_OR_RELEASE_QUALIFICATION",
+  "command": "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_fetch_admission.py tests/integration/test_aos_002_migration.py::test_kernel_migration_rejects_bad_scope_and_reapplies -q --junitxml=/tmp/panestria-admitted-fetch-final.xml",
+  "passed": 10,
+  "failed": 0,
+  "duration_seconds": 47.626,
+  "execution_mode": "ACTUAL_DISPOSABLE_POSTGRES_CAS_DOCKER_READER_WITH_SYNTHETIC_HTTPS_AND_TEST_FIXTURE_NOT_LIVE_CERTIFICATES",
+  "checks": [
+    "source/body cap+1 reservation and committed URL/host disclosure before synthetic transfer",
+    "fetch -> actual isolated reader -> retained source -> deterministic quote/claim -> offline owner brief; support remains NOT_ASSESSED",
+    "failed and truncated transfer diagnostics, count/body consumption and no refund/retry",
+    "concurrent source budget, actual commit then lost acknowledgement, redirect denial and cancellation after actual retention receipt",
+    "purpose and reader case admission, actual PostgreSQL dump/restore with existing CAS, global event sequence and populated downgrade refusal",
+    "existing actual R0 migration invariant: current observed fingerprint/doc snapshot, constraints/downgrade/reapply"
+  ],
+  "static_checks": [
+    "Ruff all repository PASS",
+    "Mypy226 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "prior_observations": [
+    {
+      "candidate_commit": "30c188be145b403e6af9b0cf22af651168a6da8a",
+      "worktree_state": "clean",
+      "passed": 109,
+      "failed": 1,
+      "duration_seconds": 124.63,
+      "scope": "8 fetch,19 shared search,56 HTTPS wire,6 brief,20 API,1 actual migration checks. Sole failure: restore test inserted event without required ID, after successful real restore. Preserved initial-candidate.xml is FAILED, not final pass. Later diagnostics were not present at this source."
+    },
+    {
+      "candidate_commit": "0e30988cf32eee0ebfcb0d0947720ce940f2d8ed",
+      "worktree_state": "clean",
+      "passed": 1,
+      "failed": 0,
+      "duration_seconds": 11.42,
+      "scope": "Only failed restore assertion corrected using canonical event writer. Preserved restore-correction.xml. Full current diagnostics validated separately above."
+    },
+    {
+      "worktree_state": "dirty",
+      "passed": 61,
+      "failed": 1,
+      "scope": "First development run: test used StoredSourceBytes.raw instead of actual .data; corrected fixture API usage, no assertion weakening."
+    }
+  ],
+  "limits": [
+    "Not actual public DNS/HTTPS/OS runtime qualification or live service configuration",
+    "No live certificate/issuer, new provider/credentials/model/download/spend or owner database access",
+    "Body reservations are conservative, not traffic/quota/spend measurements; framing separately bounded per hop",
+    "Source/outcome commit gap remains UNKNOWN with immutable consumed URL; no silent retry",
+    "Postgres restore reuses same protected CAS, not a full machine/CAS backup claim",
+    "Full owner new-request/search orchestration and qualified semantic support still pending",
+    "Original gates not promoted; SDK TC04 deferred, not passed"
+  ],
+  "files": {
+    "local-checks.xml": "8a69a31135e829fc47b81a1bec644e849fe43934e8215f95a2adc18597af82e4",
+    "restore-correction.xml": "9c3a8b03ce086833f21c9be11f745b70b7393d41b8cbb31f5f4ac4b3d2cb58f6",
+    "initial-candidate.xml": "67589db6aa4f6debf6a19e114f155d80089512c7b571a93e4d0d0f8d74e39a26"
+  }
+}
