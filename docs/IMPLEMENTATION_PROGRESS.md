@@ -11,19 +11,22 @@ An implemented component or passing CI is not a release-gate pass.
 | R1 offline Ask | Actual GPU Ask on ten offline questions; restart, pressure and process-memory observations retained | Qualify the cumulative G1 candidate against all original clauses |
 | R1 access and one-worker Build | Revoked sessions clear retained UI output; owner CLI submits PUBLIC work through admitted Claude/Bash, independent checks, exact review/merge and cancellation; actual subscription journey passed at its recorded source | Qualify the selected stable runtime/cumulative candidate; owner review remains |
 | R1 paid SDK | Owner selected subscription/local-only operation | AOS-016-TC04 deferred, **not passed**; original gate intact |
-| R2 research collection | New question staging, admitted search/fetch/read, exact retained excerpts, request-scoped diagnostics and private export under one reviewed policy | Operator policy commands, automatic planning/synthesis, qualified support, actual service/runtime and complete D-1/G2 |
+| R2 research collection | Dedicated owner policy prepare/confirm, new question staging, admitted search/fetch/read, exact retained excerpts, request-scoped diagnostics and private export | Automatic planning/synthesis, qualified support, actual service/runtime and complete D-1/G2 |
 | R3 complete MVP | Existing partial components; no accepted MVP release | Remaining two-worker integration, Mission Control, revision-3 profile/context/connections, quota/capture/phone/resource outcomes, cumulative qualification and genuine owner trial |
 
 ## Usable research path and its boundary
 
-1. [Stage a PUBLIC question](testing/OWNER_RESEARCH_SUBMISSION.md): retain the
+1. [Prepare and confirm a dedicated PUBLIC-web project](testing/OWNER_RESEARCH_POLICY.md):
+   display an exact pending grant and separately confirm it as owner, with both
+   joint certificate stores revalidated. Existing Ask projects cannot be widened.
+2. [Stage a PUBLIC question](testing/OWNER_RESEARCH_SUBMISSION.md): retain the
    question, contract/checks and limits atomically in canonical records, with
    acknowledged private CAS bytes first. It stays CREATED with no I/O or grant.
-2. [Explicitly collect selected queries](testing/OWNER_RESEARCH_COLLECTION.md):
+3. [Explicitly collect selected queries](testing/OWNER_RESEARCH_COLLECTION.md):
    validate the current joint runtime, reviewed web policy, scope, capabilities,
    zero API cash, lease and deadline. Connect existing search→fetch→isolated
    reader→retained source excerpts. Stop further queries when capacity is spent.
-3. [Inspect/export privately](testing/RETAINED_EVIDENCE_BRIEF.md): resolve actual
+4. [Inspect/export privately](testing/RETAINED_EVIDENCE_BRIEF.md): resolve actual
    snapshots and exact quotes; show fetch/search errors, UNKNOWN receipts,
    reservations and stop/attempt state. HTML is inert and source text untrusted.
 
@@ -43,11 +46,13 @@ download or paid call is silently selected by this work.
 
 ## Next concrete delivery
 
-Finish the current collection task's independent exact-head CI/review/merge, then
-add owner-facing PUBLIC-web policy preparation/confirmation for a dedicated
-research project. Reuse the canonical review/effect-digest service; do not widen
-an existing offline Ask project or fabricate a live certificate. Continue ready
-planning/synthesis/support and R3 work while actual search setup remains deferred.
+Review and merge the dedicated research-policy task after exact-head CI. Next
+owner-facing priority is a guided terminal interface: begin with local Ask setup
+status and question/answer, then expose canonical tasks/evidence and exact reviews.
+The owner explicitly prefers a TUI before GUI work. The existing individual CLI
+commands are not a TUI; no unified terminal application is claimed. Continue
+bounded planning/synthesis/support and R3 work while actual search setup remains
+deferred; do not fabricate a live certificate or silently configure engines.
 
 The full Delegate gate still requires adversarial briefs, qualified semantic
 support/contradiction handling, an actual authorized public brief and Ask/Build
@@ -60,9 +65,10 @@ PRs [112](https://github.com/yogeshnaren/panestria/pull/112),
 [113](https://github.com/yogeshnaren/panestria/pull/113),
 [114](https://github.com/yogeshnaren/panestria/pull/114),
 [115](https://github.com/yogeshnaren/panestria/pull/115) and
-[116](https://github.com/yogeshnaren/panestria/pull/116) merged sequentially with
+[116](https://github.com/yogeshnaren/panestria/pull/116) and
+[117](https://github.com/yogeshnaren/panestria/pull/117) merged sequentially with
 passing exact-head CI, reviewed parents and complete tested trees. Their verified
-main endpoint is `491c7919266c477931fce76b8968cbfae5c8263f`. Subsequent task evidence
+main endpoint is `b9b61ae69b8f53a6cdfe1b97807eddb7d9cf01df`. Subsequent task evidence
 remains separately bound to its source; no old report is relabeled:
 
 - [Owner collection](../evidence/owner-research-collection-2026-10-18/report.json)

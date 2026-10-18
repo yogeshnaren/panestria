@@ -252,6 +252,12 @@ def test_approval_commit_then_interruption_keeps_grant_off_until_revalidated_ret
             "SELECT state FROM panestria.policy_review WHERE id=%s", (review["review_id"],)
         ).fetchone() == ("APPROVED",)
     monkeypatch.setattr(PolicyService, "apply", apply)
+    report = q.f.reports.root / q.f.certificate["cases"][0]["report_sha256"]
+    retained = report.read_bytes()
+    report.unlink()
+    confirm(q, review, expected=1)
+    assert current(q) == offline_policy(q.service.actor)
+    report.write_bytes(retained)
     assert confirm(q, review)["state"] == "APPLIED"
     assert confirm(q, review)["replayed"]
 
@@ -261,6 +267,10 @@ def test_concurrent_preparation_and_stale_or_broader_reviews_cannot_widen_scope(
     with ThreadPoolExecutor(max_workers=2) as pool:
         reviews = list(pool.map(lambda _: q.service.prepare(public_web_policy=True), range(2)))
     assert all(review["state"] == "PENDING" for review in reviews)
+    other_scope = OwnerResearchPolicy(q.f.dsn, q.settings.model_copy(update={"project_id": uuid4()}))
+    other_scope.prepare(public_web_policy=True)
+    with pytest.raises(KernelDenied, match="not_found"):
+        other_scope.confirm(reviews[0]["review_id"], reviews[0]["effect_digest"], public_web_policy=True)
     proposed = PolicyContext.model_validate(reviews[0]["proposed_policy"])
     broader = proposed.model_copy(
         update={
