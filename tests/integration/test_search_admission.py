@@ -34,6 +34,7 @@ from panestria.contracts.research_admission import FetchPlan
 from panestria.contracts.search import LocalSearchSettings, SearchDisclosure, SearchQuery
 from panestria.contracts.search_admission import SearchPlan
 from panestria.execution.research_fetch import AdmittedFetch, fetch_runtime_versions
+from panestria.execution.research_runtime import research_runtime_versions
 from panestria.execution.search import AdmittedSearch, search_runtime_versions
 from panestria.kernel.build import BuildEvidenceStore
 from panestria.kernel.cancellation import CancellationService
@@ -45,6 +46,7 @@ from panestria.kernel.research_blobs import ResearchBlobStore
 from panestria.kernel.research_requests import ResearchRequestService
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.profiles import CertificateStore
+from panestria.policy.research import RESEARCH_CASES, RESEARCH_PURPOSE
 from panestria.policy.research_fetch import PublicFetchCertificateStore
 from panestria.policy.search import PublicSearchCertificateStore
 
@@ -59,18 +61,29 @@ def component_metadata(record_property):
 @pytest.fixture
 def admitted_search(r1_migration_task, search_server, tmp_path, request):  # noqa: F811
     changes = getattr(request, "param", {})
-    is_fetch = changes.get("fetch_runtime", False)
+    combined = changes.get("combined_runtime", False)
+    is_fetch = changes.get("fetch_runtime", False) or combined
     r1_task = r1_migration_task  # Isolated DB: do not add audit to another test's downgrade fixture.
     actor = Actor(r1_task["owner"], r1_task["project"])
     settings = LocalSearchSettings(provider="searxng-local", origin=search_server["origin"])
-    versions = fetch_runtime_versions() if is_fetch else search_runtime_versions(settings)
+    versions = (
+        research_runtime_versions(settings)
+        if combined
+        else fetch_runtime_versions()
+        if is_fetch
+        else search_runtime_versions(settings)
+    )
     reports = BuildEvidenceStore(tmp_path / "search-cert-FIXTURE-NOT-LIVE")
     report = reports.write_report(b'{"scope":"TEST_FIXTURE_NOT_LIVE"}')
     body = {
         "schema_version": 1,
         "profile": "PERSONAL_SANDBOX",
         "verdict": "PASS",
-        "purpose": "PUBLIC_FETCH_READER_RUNTIME_ONLY" if is_fetch else "PUBLIC_SEARCH_RUNTIME_ONLY",
+        "purpose": RESEARCH_PURPOSE
+        if combined
+        else "PUBLIC_FETCH_READER_RUNTIME_ONLY"
+        if is_fetch
+        else "PUBLIC_SEARCH_RUNTIME_ONLY",
         "scope": "TEST_FIXTURE_NOT_LIVE",
         "runtime_versions": versions,
         "candidate_commit": "ab" * 20,
@@ -79,7 +92,9 @@ def admitted_search(r1_migration_task, search_server, tmp_path, request):  # noq
         "cases": [
             {"case_id": case, "verdict": "PASS", "execution_mode": "OS_BOUNDARY", "report_sha256": report}
             for case in (
-                ("AOS-008-TC03", "AOS-010-TC03", "AOS-019-TC02", "AOS-019-TC03", "AOS-020-TC01")
+                ("AOS-008-TC03", "AOS-010-TC03", *RESEARCH_CASES)
+                if combined
+                else ("AOS-008-TC03", "AOS-010-TC03", "AOS-019-TC02", "AOS-019-TC03", "AOS-020-TC01")
                 if is_fetch
                 else ("AOS-008-TC03", "AOS-010-TC03", "AOS-019-TC04")
             )
@@ -132,7 +147,9 @@ def admitted_search(r1_migration_task, search_server, tmp_path, request):  # noq
         "constraints": {
             "allowed_paths": ["brief"],
             "forbidden_paths": [".git/**"],
-            "permitted_capabilities": ["public-fetch" if is_fetch else "public-search"],
+            "permitted_capabilities": ["public-fetch", "public-search"]
+            if combined
+            else ["public-fetch" if is_fetch else "public-search"],
             "cloud_egress": "allow",
         },
         "budget": {"max_attempts_per_task": 2, "max_wall_seconds": 60, "max_api_usd": "0"},
@@ -195,11 +212,22 @@ def admitted_search(r1_migration_task, search_server, tmp_path, request):  # noq
         request_sha256=prepared.request_sha256,
         contract_sha256=contract_sha256(contract),
         policy_sha256=policy.sha256(),
-        configuration_sha256=certificates.runtime_versions["configuration_sha256"],
+        configuration_sha256=certificates.runtime_versions[
+            "fetch_configuration_sha256" if combined else "configuration_sha256"
+        ],
     )
     plan = FetchPlan(**binding) if is_fetch else SearchPlan(**binding, max_queries=2)
     controller = (
-        AdmittedFetch(dsn, actor, plan, lease.attempt_id, lease.epoch, certificates, tmp_path)
+        AdmittedFetch(
+            dsn,
+            actor,
+            plan,
+            lease.attempt_id,
+            lease.epoch,
+            certificates,
+            tmp_path,
+            **({"search_settings": settings} if combined else {}),
+        )
         if is_fetch
         else AdmittedSearch(dsn, actor, plan, lease.attempt_id, lease.epoch, settings, certificates)
     )

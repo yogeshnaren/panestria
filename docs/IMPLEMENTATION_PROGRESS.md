@@ -11,7 +11,7 @@ acceptance checkpoint. Revision 3 remains the active plan; R4–R7 are not start
 | R1 browser/session access | PR104 merged; revoked sessions clear Ask output and cannot receive cached SSE resync data | Include in the cumulative candidate evaluation |
 | R1 one-worker Build | Owner CLI submits selected PUBLIC work through real runtime qualification, admitted Claude/Bash, independent checks, inspection, cancellation and exact protected merge; actual subscription journey passes | Reconcile and qualify the cumulative G1 candidate; human owner review remains |
 | R1 paid SDK compatibility | Deferred by owner; subscription/local-only operation selected | AOS-016-TC04 is not passed. Original required gate manifest remains intact |
-| R2 verified Delegate | Durable search admission and an offline retained-evidence CLI connect source/quote checks to private brief export; fetch/read components exist; semantic preflights are unqualified | Finish admitted fetch/new-request orchestration, configure/qualify the real provider/runtime, and qualify support/G2 |
+| R2 verified Delegate | Admitted search and fetch/read/retention now connect to quote checks and private brief inspection under one reviewed policy/certificate; semantic preflights are unqualified | Finish owner new-question orchestration, configure/qualify the real provider/runtime, and qualify support/G2 |
 | R3 complete MVP | Partial components; release not accepted | Finish remaining revision-3 outcomes, multi-worker integration, dashboard, quota/capture, release qualification and genuine owner trial |
 
 ## Latest closed blocker
@@ -88,5 +88,23 @@ component evidence is separate from actual live runtime qualification. New
 owner request submission, semantic support and full G2 still remain pending.
 
 PR113 private retained-evidence inspection is merged at04623ee after passing
-exact-head CI39156376222. Fetch admission is the next focused task, with original
-failed validation/correction retained separately from passing evidence.
+exact-head CI39156376222. Fetch admission and the joint runtime are subsequent
+focused tasks, with original failures/corrections retained separately from
+passing evidence.
+
+[PR114](https://github.com/yogeshnaren/panestria/pull/114) fetch admission is merged
+at `2ea8b1958ad9ec6149954461cd5af6f76b4fe1c0` after exact-head CI39157801800 passed
+on `669334b03b4ca38c7e7836cb2f547651361ef78c`. Both merge parents and the complete
+tree were verified against that tested head. The shared-runtime outcome is
+[PR115](https://github.com/yogeshnaren/panestria/pull/115); its independent review
+and exact-head CI/merge record remain separate from local component evidence.
+
+The [shared research runtime](testing/SHARED_RESEARCH_RUNTIME.md) removes the
+policy/certificate incompatibility between search and fetch. Both components
+require the explicit joint qualification and its complete report set, while
+retaining separate configuration/disclosure hashes and budgets. The connected
+actual-DB/loopback/reader fixture produces a retained inspectable brief under
+one policy; HTTPS/certificates remain synthetic and semantic support remains
+NOT_ASSESSED. Source-bound failure/correction are retained. Next: owner new-question
+admission and bounded collection, followed by real runtime/support qualification
+when prerequisites are ready. No release gate is promoted.

@@ -7,6 +7,7 @@ import re
 
 from panestria.contracts.policy import TrustAxis
 from panestria.policy.profiles import CertificateRejected, CertificateStore
+from panestria.policy.research import RESEARCH_CASES, RESEARCH_PROFILE, RESEARCH_PURPOSE
 
 FETCH_PROFILE = "public-fetch-reader-v1"
 
@@ -26,12 +27,16 @@ class PublicFetchCertificateStore(CertificateStore):
         try:
             assert trust.runtime_certificate_sha256 is not None
             body = json.loads((self.root / trust.runtime_certificate_sha256).read_bytes())
-            if (
-                self.runtime_versions.get("profile") != FETCH_PROFILE
-                or body.get("purpose") != "PUBLIC_FETCH_READER_RUNTIME_ONLY"
+            profile = self.runtime_versions.get("profile")
+            if (profile, body.get("purpose")) not in (
+                (FETCH_PROFILE, "PUBLIC_FETCH_READER_RUNTIME_ONLY"),
+                (RESEARCH_PROFILE, RESEARCH_PURPOSE),
             ):
                 raise CertificateRejected("public_fetch_runtime_uncertified")
-            for identifier in ("AOS-019-TC02", "AOS-019-TC03", "AOS-020-TC01"):
+            identifiers = (
+                RESEARCH_CASES if profile == RESEARCH_PROFILE else ("AOS-019-TC02", "AOS-019-TC03", "AOS-020-TC01")
+            )
+            for identifier in identifiers:
                 case = next(case for case in body["cases"] if case["case_id"] == identifier)
                 digest = case["report_sha256"]
                 if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:

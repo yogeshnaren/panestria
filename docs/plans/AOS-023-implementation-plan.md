@@ -15,6 +15,13 @@ admission/new-request execution and the rest of S2 remain pending. Dependency
 gates/original clauses are unchanged; exporting does not admit citation/rubric
 acceptance runners or complete the item.
 
+The subsequent [shared runtime](../design/53-SHARED-RESEARCH-RUNTIME.md) connects
+admitted search, fetch/read/retention and retained brief inspection under one
+reviewed policy/certificate, with separate component budgets and configuration
+hashes. The connected check uses synthetic HTTPS/certificates, actual disposable
+Postgres/loopback HTTP/reader and NOT_ASSESSED semantic status. Owner new-question
+submission/planning, live qualification and full S1/S2 remain incomplete.
+
 Keep the release scope and dependencies above. Implement only the selected slice; other clauses remain pending until their work/tests complete. Models/UI cannot declare completion. Apply strict scopes, typed errors, transactions, limits and compatibility spikes from the global design.
 
 ## Exact files and interfaces
