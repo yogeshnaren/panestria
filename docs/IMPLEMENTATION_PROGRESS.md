@@ -80,3 +80,9 @@ to private HTML/JSON export. It shows missing/fabricated evidence and separate
 historical/current report hashes, without completing tasks or promoting claims
 to supported facts. This inspects existing records; new-request execution,
 admitted fetch, semantic qualification and full Delegate/G2 remain pending.
+
+The next focused [fetch/read/retention controller](testing/ADMITTED_RESEARCH_FETCH.md)
+adds task-wide source/body reservations and committed per-hop disclosure before
+DNS, then connects the existing isolated reader and retained source store. Its
+component evidence is separate from actual live runtime qualification. New
+owner request submission, semantic support and full G2 still remain pending.
