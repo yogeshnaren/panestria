@@ -222,6 +222,17 @@ class CollectionLifecycle:
             raise KernelDenied("stale_lease")
         if known:
             LeaseService().require_current(uow, actor, lease.attempt_id, lease.epoch)
+            uncertain = uow.execute(
+                "SELECT EXISTS(SELECT 1 FROM panestria.search_dispatch d "
+                "LEFT JOIN panestria.search_outcome o ON o.dispatch_id=d.id "
+                "WHERE d.task_id=%s AND d.request_id=%s AND (o.status IS NULL OR o.status='UNKNOWN')) "
+                "OR EXISTS(SELECT 1 FROM panestria.fetch_dispatch d "
+                "LEFT JOIN panestria.fetch_outcome o ON o.dispatch_id=d.id "
+                "WHERE d.task_id=%s AND d.request_id=%s AND (o.status IS NULL OR o.status='UNKNOWN'))",
+                (task_id, binding.request.request_id, task_id, binding.request.request_id),
+            ).fetchone()
+            if uncertain is None or uncertain[0]:
+                raise KernelDenied("research_collection_outcome_unknown")
         # An expired, unreplaced epoch may only be retrospectively fenced LOST;
         # it cannot publish a known success or overwrite cancellation/reclamation.
         task = lock_task(uow, actor.owner_id, actor.project_id, task_id)

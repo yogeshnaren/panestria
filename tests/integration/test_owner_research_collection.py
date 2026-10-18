@@ -9,7 +9,7 @@ import psycopg
 import pytest
 from pydantic import SecretStr
 from test_configured_search import search_server  # noqa: F401 -- fixture dependency
-from test_fetch_admission import RAW, synthetic_https  # noqa: F401 -- fixture-only HTTPS
+from test_fetch_admission import synthetic_https  # noqa: F401 -- fixture-only HTTPS
 from test_search_admission import admitted_search  # noqa: F401 -- fixture dependency
 from typer.testing import CliRunner
 
@@ -149,9 +149,11 @@ def test_actual_owner_cli_stage_collect_private_export_and_verify_wait(owner_que
     assert (
         brief.claims[0].kind == "INTERPRETATION" and "not an assessed answer" in brief.claims[0].text.get_secret_value()
     )
-    assert brief.claims[0].citations[0].quote.get_secret_value().encode() in RAW.replace(b"<p>", b"").replace(
-        b"</p>", b""
-    )
+    citation = brief.claims[0].citations[0]
+    ref = citation.reference
+    retained_text = (q.root / q.f.actor.owner_id / q.f.actor.project_id / ref.text_sha256).read_bytes()
+    assert citation.quote.get_secret_value().encode() == retained_text[ref.start : ref.end]
+    assert b"PUBLIC SYNTHETIC source text" in retained_text
     assert brief.collection.stop_reason == "source_limit"
     assert brief.collection.latest_attempt_status == "SUCCEEDED"
     assert brief.collection.searches[0].status == "RETURNED" and brief.collection.fetches[0].status == "RETAINED"
@@ -253,7 +255,7 @@ def test_actual_outbound_commit_lost_ack_is_reconciling_unknown_and_never_auto_r
         raise OSError("SYNTHETIC_LOST_ACK_AFTER_ACTUAL_QUERY_RESERVATION")
 
     monkeypatch.setattr(SearchAdmissionService, "claim", lost)
-    with pytest.raises(OSError):
+    with pytest.raises(KernelDenied, match="research_collection_outcome_unknown"):
         collected(q, receipt)
     brief = inspect(q, receipt)
     assert brief.task_state == "RECONCILING" and brief.collection.stop_reason == "interrupted"
