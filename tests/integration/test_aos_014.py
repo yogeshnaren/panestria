@@ -120,7 +120,12 @@ def test_sse_reconnect_decimal_cursor(r1_task: dict[str, str], record_property: 
             parse_cursor(value)
 
 
-def test_sse_session_revocation_between_frames(r1_task: dict[str, str]) -> None:
+@pytest.mark.parametrize("snapshot", [False, True], ids=["events", "resync-snapshot"])
+def test_sse_session_revocation_between_frames(
+    r1_task: dict[str, str], snapshot: bool, record_property: pytest.RecordProperty
+) -> None:
+    record_property("gate_case_id", "AOS-009-TC04")
+    record_property("scope", "actual PostgreSQL session revocation before cached event/snapshot delivery")
     client = _client(r1_task)
     cli = {"Authorization": "Bearer test-only-cli-token-at-least-16"}
     origin = {"Origin": "http://127.0.0.1:8766"}
@@ -130,7 +135,7 @@ def test_sse_session_revocation_between_frames(r1_task: dict[str, str]) -> None:
     actor = Actor(r1_task["owner"], r1_task["project"])
     with psycopg.connect(r1_task["dsn"]) as c:
         for _ in range(2):
-            append_event(
+            seq = append_event(
                 UnitOfWork(c),
                 goal_id=r1_task["goal"],
                 task_id=r1_task["task"],
@@ -138,6 +143,9 @@ def test_sse_session_revocation_between_frames(r1_task: dict[str, str]) -> None:
                 kind="test.private",
                 payload={},
             )
+            c.commit()
+        if snapshot:
+            EventReplay().retire_before(UnitOfWork(c), actor, r1_task["goal"], seq, 0)
             c.commit()
 
     async def receive() -> dict[str, object]:
@@ -159,13 +167,22 @@ def test_sse_session_revocation_between_frames(r1_task: dict[str, str]) -> None:
 
     async def scenario() -> None:
         stream = await stream_events(request, client.app.state.goal_api, r1_task["goal"], "0")
-        assert b"test.private" in await anext(stream.body_iterator)
+        if not snapshot:
+            assert b"test.private" in await anext(stream.body_iterator)
         with psycopg.connect(r1_task["dsn"]) as c:
             access = client.app.state.browser_access
             access.service.revoke(UnitOfWork(c), actor, token, paired.json()["csrf_token"])
         denied = await anext(stream.body_iterator)
         assert b"event: error" in denied and b"unauthorized" in denied and b"test.private" not in denied
+        assert b"resync" not in denied and r1_task["goal"].encode() not in denied
         with pytest.raises(StopAsyncIteration):
             await anext(stream.body_iterator)
 
     asyncio.run(scenario())
+    assert client.get(
+        f"/v1/goals/{r1_task['goal']}/events", headers={"Accept": "text/event-stream"}
+    ).status_code == 401
+    assert client.get(f"/v1/artifacts/{uuid4()}").status_code == 401
+    assert client.post(
+        "/v1/goals", json={}, headers={**origin, "X-Panestria-CSRF": paired.json()["csrf_token"]}
+    ).status_code == 401
