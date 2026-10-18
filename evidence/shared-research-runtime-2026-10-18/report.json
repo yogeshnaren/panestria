@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "dd4841ab8341464d212328ca5c54d5d011b8ef04",
+  "worktree_state": "clean",
+  "outcome": "COMPONENT_CHECKS_PASS_NOT_LIVE_OR_RELEASE_QUALIFICATION",
+  "execution_mode": "ACTUAL_DISPOSABLE_POSTGRES_LOOPBACK_HTTP_CAS_DOCKER_READER_WITH_SYNTHETIC_HTTPS_AND_TEST_FIXTURE_NOT_LIVE_CERTIFICATES",
+  "command": "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_shared_research_runtime.py tests/integration/test_search_admission.py::test_real_http_sees_committed_disclosure_and_cannot_replay tests/integration/test_fetch_admission.py::test_connected_reserved_fetch_reader_retention_claim_and_owner_brief -q --junitxml=/tmp/panestria-shared-research-runtime-corrected.xml",
+  "passed": 5,
+  "failed": 0,
+  "duration_seconds": 20.52,
+  "checks": [
+    "Same reviewed policy/certificate, request/contract and task/attempt/lease across search and fetch ledgers; no policy switching",
+    "Actual loopback search HTTP -> durable query audit -> synthetic HTTPS hop disclosure/body reservation -> actual isolated reader -> retained source -> deterministic quote -> offline brief NOT_ASSESSED",
+    "Joint purpose and union case reports required by BOTH stores; missing search/reader cases denied",
+    "Missing or substituted search settings, aggregate hash substituted into component plan denied before dispatch; kernel also enforces component config",
+    "Existing standalone search and fetch connected cases pass under narrow original profiles"
+  ],
+  "static_checks": [
+    "Ruff all repository PASS",
+    "Mypy228 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "prior_observations": [
+    {
+      "candidate_commit": "d9e5ad4f4131ac4cffb062c6ed8c58dd8b45302a",
+      "worktree_state": "clean",
+      "passed": 29,
+      "failed": 2,
+      "duration_seconds": 106.09,
+      "scope": "31 focused checks. Joint kernel still expected aggregate config; corrected to certificate-bound component config. Test substituted invalid port9 instead of a valid different endpoint; changed to9099. Initial failure XML retained, not relabeled. Existing standalone19search/9fetch checks and joint certificate test passed at that source."
+    }
+  ],
+  "limits": [
+    "Certificates and HTTPS bytes are synthetic fixtures, not actual SearXNG/upstream/public-TLS/OS qualification",
+    "No live joint certificate issued or private owner service/database modified",
+    "Search setup remains explicitly owner-deferred; no provider/model/download/new credentials/spend",
+    "No new-question submission/planner or semantic support qualification; task remains RUNNING",
+    "G1/G2/G3 not promoted; SDK TC04 deferred, not passed; R3 owner trial pending"
+  ],
+  "files": {
+    "local-checks.xml": "abb2fa9d950f188f13e76c33eec91e8e25d1709337fc8d83fb6225cf22030df5",
+    "initial-candidate.xml": "d9560e7913568a5b4ca978ed50e3e50a632dde77705aab00bb2889ef7c80edff"
+  }
+}

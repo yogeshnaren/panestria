@@ -408,11 +408,12 @@
             "evidence/research-public-fetch-2026-10-15/report.json",
             "evidence/configured-search-transport-2026-10-18/report.json",
             "evidence/search-admission-2026-10-18/report.json",
-            "evidence/admitted-research-fetch-2026-10-18/report.json"
+            "evidence/admitted-research-fetch-2026-10-18/report.json",
+            "evidence/shared-research-runtime-2026-10-18/report.json"
           ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-019-implementation-plan.md",
-          "implementation_note": "Admitted source/body reservations, per-hop disclosures and fetch/read/retain/brief components; actual live runtime, new-request orchestration and semantic/G2 qualification remain pending."
+          "implementation_note": "Search and fetch/read/retain/brief connected under one pinned reviewed policy/certificate; fixture-only HTTPS/qualification. Owner new-question orchestration, live runtime and semantic/G2 qualification pending."
         },
         {
           "id": "AOS-020",
@@ -478,11 +479,12 @@
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [
-            "evidence/retained-research-brief-2026-10-18/report.json"
+            "evidence/retained-research-brief-2026-10-18/report.json",
+            "evidence/shared-research-runtime-2026-10-18/report.json"
           ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-023-implementation-plan.md",
-          "implementation_note": "Offline retained-evidence inspection and private export component only. New-request execution, admitted fetch, semantic support and full Delegate gate remain pending."
+          "implementation_note": "Search and fetch/read/retain/brief connected under one pinned reviewed policy/certificate; fixture-only HTTPS/qualification. Owner new-question orchestration, live runtime and semantic/G2 qualification pending."
         }
       ]
     },
