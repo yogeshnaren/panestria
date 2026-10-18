@@ -1192,8 +1192,12 @@
         "AOS-015-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-015-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-015-S2.md",
+      "evidence_refs": [
+        "evidence/r1-offline-qualification-2026-10-18/report.json"
+      ],
+      "implementation_note": "Actual clean-candidate live checks passed; complete slice clause review and cumulative gate evaluation remain pending. See report limits."
     },
     {
       "id": "AOS-015-S3",
@@ -1217,8 +1221,12 @@
         "AOS-015-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-015-S3.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-015-S3.md",
+      "evidence_refs": [
+        "evidence/r1-offline-qualification-2026-10-18/report.json"
+      ],
+      "implementation_note": "Actual clean-candidate live checks passed; complete slice clause review and cumulative gate evaluation remain pending. See report limits."
     },
     {
       "id": "AOS-016-S1",
@@ -1264,8 +1272,12 @@
         "AOS-016-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-016-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-016-S2.md",
+      "evidence_refs": [
+        "evidence/r1-offline-qualification-2026-10-18/report.json"
+      ],
+      "implementation_note": "Actual clean-candidate live checks passed; complete slice clause review and cumulative gate evaluation remain pending. See report limits."
     },
     {
       "id": "AOS-016-S3",
@@ -1290,8 +1302,12 @@
         "AOS-016-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-016-S3.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-016-S3.md",
+      "evidence_refs": [
+        "evidence/r1-offline-qualification-2026-10-18/report.json"
+      ],
+      "implementation_note": "Actual clean-candidate live checks passed; complete slice clause review and cumulative gate evaluation remain pending. See report limits."
     },
     {
       "id": "AOS-017-S1",
@@ -1363,8 +1379,12 @@
         "AOS-017-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-017-S3.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-017-S3.md",
+      "evidence_refs": [
+        "evidence/r1-offline-qualification-2026-10-18/report.json"
+      ],
+      "implementation_note": "Actual clean-candidate live checks passed; complete slice clause review and cumulative gate evaluation remain pending. See report limits."
     },
     {
       "id": "AOS-018-S1",
@@ -1409,8 +1429,12 @@
         "AOS-018-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-018-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-018-S2.md",
+      "evidence_refs": [
+        "evidence/r1-offline-qualification-2026-10-18/report.json"
+      ],
+      "implementation_note": "Actual clean-candidate live checks passed; complete slice clause review and cumulative gate evaluation remain pending. See report limits."
     },
     {
       "id": "AOS-018-S3",
@@ -1434,8 +1458,12 @@
         "AOS-018-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-018-S3.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-018-S3.md",
+      "evidence_refs": [
+        "evidence/r1-offline-qualification-2026-10-18/report.json"
+      ],
+      "implementation_note": "Actual clean-candidate live checks passed; complete slice clause review and cumulative gate evaluation remain pending. See report limits."
     },
     {
       "id": "AOS-013-S1",
