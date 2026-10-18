@@ -16,7 +16,9 @@ creates canonical records without I/O. [Explicit owner collection](../design/55-
 now connects selected bounded PUBLIC queries to search→fetch→reader→retained
 excerpts/private export, stopping at VERIFYING with NOT_ASSESSED support or
 RECONCILING for uncertainty. S1/S2 remain IN_PROGRESS; automatic planning/synthesis,
-operator policy UI, qualified semantic support, real runtime/live cases and full
+The [owner policy CLI](../design/56-OWNER-RESEARCH-POLICY.md) prepares and confirms
+an exact dedicated PUBLIC-web grant without widening Ask. A guided TUI,
+qualified semantic support, real runtime/live cases and full
 Delegate/G2 are pending. Canonical citation/rubric acceptance runners remain
 refused until independently admitted. No artifact export or collected quote
 completes this item or promotes a release.
