@@ -43,7 +43,7 @@ uv run --frozen pytest tests/integration/test_research_brief.py -q \
 ```
 
 Choose a fresh basetemp: pytest owns/removes that selected test directory. The CLI
-journey writes `test_real_owner_cli_exports_esc0/exports/evidence.html` and
+journey writes `test_real_owner_cli_exports_es0/exports/evidence.html` and
 `evidence.json` below it. These are **synthetic fixture reviews**: fetch
 observations are synthetic; DB, protected CAS, Docker reader, deterministic checks
 and CLI are actual. The isolated DB is removed afterward; the file is a historical
@@ -55,3 +55,7 @@ canonical state/events, inert HTML, private JSON and overwrite/symlink/public-pa
 refusal. See the [design and limits](../design/51-RETAINED-EVIDENCE-BRIEF.md).
 New-request execution, admitted fetch, semantic qualification and full G2 remain
 pending; no original gate or paid SDK obligation is waived.
+
+The [source-bound report](../../evidence/retained-research-brief-2026-10-18/report.json)
+records six clean-source checks and retains exact synthetic HTML/JSON fixture
+exports. Earlier development failures are recorded separately, not relabeled.
