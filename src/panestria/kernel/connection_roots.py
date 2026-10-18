@@ -66,7 +66,7 @@ def _open_path(parent: int, path: bytes, *, resolve: int, directory: bool = Fals
 def _scope(actor: Actor) -> tuple[str, str]:
     values = (actor.owner_id, actor.project_id)
     try:
-        if any(type(value) is not str or str(UUID(value)) != value for value in values):
+        if any(type(value) is not str or len(value) != 36 or str(UUID(value)) != value for value in values):
             raise ValueError
     except (ValueError, AttributeError):
         raise KernelDenied("connection_root_unavailable") from None
@@ -75,9 +75,11 @@ def _scope(actor: Actor) -> tuple[str, str]:
 
 def _path(value: str, *, absolute: bool) -> bytes:
     try:
-        if type(value) is not str or value.startswith("/") != absolute:
+        if type(value) is not str or not 1 <= len(value) <= 4095 or value.startswith("/") != absolute:
             raise ValueError
         encoded = value.encode("utf-8", errors="strict")
+        if len(encoded) > 4095:
+            raise ValueError
         pieces = (value[1:] if absolute else value).split("/")
         if (
             not 1 <= len(encoded) <= 4095
