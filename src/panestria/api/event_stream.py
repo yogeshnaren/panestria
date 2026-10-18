@@ -47,6 +47,9 @@ async def stream_events(request: Request, api: GoalApi, goal_id: str, after: str
                 if await request.is_disconnected():
                     return
                 if page.resync:
+                    # The initial page can predate revocation. A retained-event
+                    # snapshot is private data just like an ordinary event.
+                    await asyncio.to_thread(authorize, request, api)
                     yield f"event: resync\ndata: {json.dumps(page.snapshot, separators=(',', ':'))}\n\n".encode()
                     return
                 for event in page.events:

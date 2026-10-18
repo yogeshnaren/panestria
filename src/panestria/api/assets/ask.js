@@ -4,6 +4,8 @@ const ui = Object.fromEntries(["pair-form", "pair-code", "pair-button", "logout"
 let csrf = null;
 let project = null;
 let active = null;
+let sessionEpoch = 0;
+let sessionTimer = null;
 
 function controls() {
   ui.question.disabled = !project || Boolean(active);
@@ -17,15 +19,56 @@ function clearAnswer() {
   ui.sources.replaceChildren();
   ui.result.hidden = true;
 }
+function forgetSession() {
+  sessionEpoch += 1;
+  clearTimeout(sessionTimer);
+  sessionTimer = null;
+  if (active) {
+    active.cancelled = true;
+    active.controller.abort();
+    active = null;
+  }
+  csrf = null;
+  project = null;
+  ui.question.value = "";
+  ui["pair-code"].value = "";
+  clearAnswer();
+  ui.scope.textContent = "No project loaded.";
+  controls();
+}
+function monitorSession(epoch) {
+  clearTimeout(sessionTimer);
+  sessionTimer = setTimeout(async () => {
+    if (!project || epoch !== sessionEpoch) return;
+    try {
+      const status = await api("/v1/local/status");
+      if (epoch !== sessionEpoch) return;
+      if (status.project_id !== project || status.profiles !== "DISABLED") {
+        forgetSession();
+        ui.connection.textContent = "Session scope changed. Pair again.";
+      }
+    } catch (error) {
+      if (epoch === sessionEpoch && project) ui.connection.textContent = `Session check unavailable: ${reason(error)}.`;
+    } finally {
+      if (project && epoch === sessionEpoch) monitorSession(epoch);
+    }
+  }, 5000);
+}
 function safeCode(body) {
   return typeof body?.code === "string" && /^[a-z0-9_]{1,80}$/.test(body.code) ? body.code : "local_api_unavailable";
 }
 async function api(path, {body, signal} = {}) {
+  const epoch = sessionEpoch;
   const headers = body === undefined ? {} : {"Content-Type": "application/json"};
   if (csrf) headers["X-Panestria-CSRF"] = csrf;
   const response = await fetch(path, {method: body === undefined ? "GET" : "POST", headers,
     body: body === undefined ? undefined : JSON.stringify(body), credentials: "same-origin",
     mode: "same-origin", redirect: "error", cache: "no-store", signal: signal || AbortSignal.timeout(8000)});
+  if (!response.ok && (response.status === 401 || response.status === 403) && epoch === sessionEpoch) {
+    forgetSession();
+    ui.connection.textContent = "Session access ended. Current text cleared; pair again.";
+    ui.status.textContent = "Disconnected. Check any previous request receipt before retrying.";
+  }
   const text = await response.text();
   if (text.length > 1024 * 1024) throw new Error("response_size_limit");
   const result = JSON.parse(text);
@@ -40,11 +83,14 @@ ui["pair-form"].addEventListener("submit", async (event) => {
   event.preventDefault();
   const code = ui["pair-code"].value.trim().toUpperCase();
   if (!/^[0-9A-F]{8}$/.test(code) || active) return;
+  const epoch = ++sessionEpoch;
   ui["pair-button"].disabled = true;
   try {
     const paired = await api("/v1/session/pair", {body: {code}});
+    if (epoch !== sessionEpoch) return;
     csrf = paired.csrf_token;
     const status = await api("/v1/local/status");
+    if (epoch !== sessionEpoch) return;
     if (!/^[0-9a-f-]{36}$/.test(status.project_id) || status.profiles !== "DISABLED") throw new Error("local_scope_unavailable");
     project = status.project_id;
     ui["pair-code"].value = "";
@@ -53,9 +99,12 @@ ui["pair-form"].addEventListener("submit", async (event) => {
     ui.status.textContent = "Connected. Ask uses the local model and this project’s approved memory.";
     ui.question.disabled = false;
     ui.question.focus();
+    monitorSession(epoch);
   } catch (error) {
-    project = null;
-    ui.connection.textContent = `Connection failed: ${reason(error)}. Issue a fresh terminal code and retry.`;
+    if (epoch === sessionEpoch) {
+      forgetSession();
+      ui.connection.textContent = `Connection failed: ${reason(error)}. Issue a fresh terminal code and retry.`;
+    }
   } finally {
     ui["pair-button"].disabled = false;
     controls();
@@ -71,7 +120,7 @@ ui["ask-form"].addEventListener("submit", async (event) => {
     return;
   }
   clearAnswer();
-  const request = {id: crypto.randomUUID(), controller: new AbortController(), cancelled: false};
+  const request = {id: crypto.randomUUID(), controller: new AbortController(), cancelled: false, epoch: sessionEpoch};
   active = request;
   const deadline = setTimeout(() => request.controller.abort(), 65000);
   controls();
@@ -79,7 +128,7 @@ ui["ask-form"].addEventListener("submit", async (event) => {
   try {
     const answer = await api("/v1/ask", {body: {request_id: request.id, project_id: project, question,
       privacy_label: "RESTRICTED", offline: true, retain_response: false, deadline_seconds: 60.0}, signal: request.controller.signal});
-    if (request.cancelled) return;
+    if (request.cancelled || request.epoch !== sessionEpoch || active !== request || !project) return;
     ui.result.hidden = false;
     ui.answer.textContent = answer.text || "No answer text retained. Only the receipt is available.";
     ui.receipt.textContent = `Request ${request.id} · ${answer.state} · ${answer.privacy_label} · offline · response not retained`;
@@ -93,7 +142,7 @@ ui["ask-form"].addEventListener("submit", async (event) => {
     }
     ui.status.textContent = `${answer.state}. This is the current response; no conversation history is saved by this page.`;
   } catch (error) {
-    if (!request.cancelled) ui.status.textContent = `Request stopped: ${reason(error)}. Receipt ID: ${request.id}. No retry or cloud fallback was started.`;
+    if (!request.cancelled && request.epoch === sessionEpoch) ui.status.textContent = `Request stopped: ${reason(error)}. Receipt ID: ${request.id}. No retry or cloud fallback was started.`;
   } finally {
     clearTimeout(deadline);
     if (active === request) active = null;
@@ -108,9 +157,9 @@ async function cancel() {
   ui.cancel.disabled = true;
   try {
     const receipt = await api(`/v1/ask/${request.id}/cancel`, {body: {}});
-    if (active === request || !active) ui.status.textContent = `Request ${request.id} · ${receipt.state}. Its durable receipt is authoritative.`;
+    if (request.epoch === sessionEpoch && (active === request || !active)) ui.status.textContent = `Request ${request.id} · ${receipt.state}. Its durable receipt is authoritative.`;
   } catch (error) {
-    if (active === request || !active) ui.status.textContent = `Cancellation could not be confirmed: ${reason(error)}. Request ${request.id}; check its receipt before retrying.`;
+    if (request.epoch === sessionEpoch && (active === request || !active)) ui.status.textContent = `Cancellation could not be confirmed: ${reason(error)}. Request ${request.id}; check its receipt before retrying.`;
   } finally {
     request.controller.abort();
   }
@@ -118,28 +167,27 @@ async function cancel() {
 ui.cancel.addEventListener("click", cancel);
 ui.logout.addEventListener("click", async () => {
   ui.logout.disabled = true;
-  if (active) await cancel();
-  ui.question.value = "";
-  clearAnswer();
-  project = null;
+  // Capture the authenticated operations before forgetting local CSRF state.
+  // Erase the view immediately, even if cancellation/revocation is slow.
+  const previousCsrf = csrf;
+  if (active) void cancel();
+  const revocation = api("/v1/session/logout", {body: {}});
+  forgetSession();
+  const epoch = sessionEpoch;
   try {
-    await api("/v1/session/logout", {body: {}});
-    csrf = null;
+    await revocation;
+    if (epoch !== sessionEpoch) return;
     ui.connection.textContent = "Disconnected. The session was revoked and current text cleared.";
     ui.status.textContent = "Disconnected. Pair again to ask.";
   } catch (error) {
-    ui.connection.textContent = `Text cleared; session revocation failed: ${reason(error)}. Retry Disconnect.`;
-    ui.status.textContent = "Text cleared. Retry Disconnect to revoke the session.";
+    if (epoch !== sessionEpoch) return;
+    csrf = previousCsrf; // Only a retry handle; project and private text remain cleared.
+    ui.connection.textContent = `Text cleared; session revocation unconfirmed: ${reason(error)}. Retry Disconnect.`;
+    ui.status.textContent = "Disconnected locally. Retry Disconnect to confirm server revocation.";
   }
   ui.scope.textContent = "No project loaded.";
   controls();
 });
 window.addEventListener("pagehide", () => {
-  if (active) active.controller.abort();
-  csrf = null;
-  project = null;
-  ui.question.value = "";
-  ui["pair-code"].value = "";
-  clearAnswer();
-  controls();
+  forgetSession();
 });
