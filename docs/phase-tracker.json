@@ -311,7 +311,8 @@
           "planning_format": "full",
           "slice_developer_days_target": 1,
           "evidence_refs": [
-            "evidence/r1-offline-qualification-2026-10-18/report.json"
+            "evidence/r1-offline-qualification-2026-10-18/report.json",
+            "evidence/r1-model-process-memory-2026-10-18/report.json"
           ],
           "plan_status": "IMPLEMENTING",
           "plan_ref": "plans/AOS-016-implementation-plan.md"

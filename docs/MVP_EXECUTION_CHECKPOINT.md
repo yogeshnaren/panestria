@@ -1,5 +1,10 @@
 # Panestria MVP execution checkpoint
 
+> Historical checkpoint captured 2026-10-15. The history below is preserved.
+> Use [current capability progress](IMPLEMENTATION_PROGRESS.md), the revision-3
+> plan and fresh Git/GitHub state for current work; old next-work entries below
+> do not reopen tasks that have since merged.
+
 Updated 2026-10-15. Follow the revision-3 [main plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md)
 and its active specification. The owner authorizes implementation through R3,
 focused task branches with coherent owner-authored commits, exact-head CI,
