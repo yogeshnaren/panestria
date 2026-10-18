@@ -132,6 +132,16 @@ def _regular(fd: int, root: os.stat_result, limit: int) -> os.stat_result:
     return info
 
 
+def _chunks(fd: int, limit: int) -> Iterator[bytes]:
+    size = 0
+    while size <= limit:
+        chunk = os.read(fd, min(65536, limit + 1 - size))
+        if not chunk:
+            return
+        size += len(chunk)
+        yield chunk
+
+
 @dataclass(frozen=True)
 class RootSnapshot:
     content: bytes = field(repr=False)
@@ -259,26 +269,30 @@ class ConnectionRootSession:
                 data_fd = os.open(f"/proc/self/fd/{path_fd}", os.O_RDONLY | os.O_CLOEXEC | os.O_NONBLOCK)
                 if _identity(_regular(data_fd, root, max_bytes)) != _identity(before):
                     raise KernelDenied("connection_root_changed")
-                chunks: list[bytes] = []
-                size = 0
-                while size <= max_bytes:
-                    chunk = os.read(data_fd, min(65536, max_bytes + 1 - size))
-                    if not chunk:
-                        break
-                    chunks.append(chunk)
-                    size += len(chunk)
+                raw = b"".join(_chunks(data_fd, max_bytes))
+                digest = hashlib.sha256(raw).hexdigest()
+                # Timestamp resolution alone cannot establish unchanged bytes.
+                # Check a second bounded read of the same held regular object.
+                # This is conservative observation, not an atomic FS snapshot.
+                os.lseek(data_fd, 0, os.SEEK_SET)
+                confirmed = hashlib.sha256()
+                confirmed_size = 0
+                for chunk in _chunks(data_fd, max_bytes):
+                    confirmed.update(chunk)
+                    confirmed_size += len(chunk)
                 after = _regular(data_fd, root, max_bytes)
                 check_fd = _open_path(root_fd, relative, resolve=_DESCENDANT)
                 current = _regular(check_fd, root, max_bytes)
                 _directory(root_fd)
                 if (
-                    size != before.st_size
+                    len(raw) != before.st_size
+                    or confirmed_size != len(raw)
+                    or confirmed.hexdigest() != digest
                     or _identity(before) != _identity(after)
                     or _identity(before) != _identity(current)
                 ):
                     raise KernelDenied("connection_root_changed")
-                raw = b"".join(chunks)
-                return RootSnapshot(raw, hashlib.sha256(raw).hexdigest())
+                return RootSnapshot(raw, digest)
             finally:
                 for descriptor in (check_fd, data_fd, path_fd):
                     if descriptor >= 0:

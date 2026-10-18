@@ -29,7 +29,11 @@ resolution constraints. Unknown ABI, unsupported syscall/flags or uncertainty
 refuses without a weaker fallback. An `O_PATH` descriptor is checked for a
 single-link, owner-owned regular file before reopening that exact held object
 through the process's private descriptor entry. Size/type/link/identity/change
-and fresh relative lookup checks precede returning bounded snapshot bytes.
+and fresh relative lookup checks precede returning bounded snapshot bytes. Two
+bounded reads of the held object must agree on length and content hash; metadata
+alone missed an actual same-length rewrite in qualification. Total read requests
+are bounded by twice (max_bytes + 1), not one pass. This observes agreement and
+does not provide an atomic snapshot against an arbitrary concurrent writer.
 Special files never reach a readable open. Root locators and snapshots stay out
 of automatic diagnostics, DB writes, events and worker arguments.
 

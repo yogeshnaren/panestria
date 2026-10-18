@@ -562,3 +562,26 @@ def test_reference_collision_refuses_without_retarget_or_fd_leak(directory, monk
             session.enroll(ACTOR, str(directory))
         assert set(os.listdir("/proc/self/fd")) == baseline
         assert session.snapshot(ACTOR, reference, "file", max_bytes=64).content == INSIDE
+
+
+def test_same_size_rewrite_with_coarse_timestamp_observation_still_denies(directory, monkeypatch):
+    actual_read, actual_identity = os.read, roots._identity
+    changed = False
+
+    def change_after_first_read(fd, count):
+        nonlocal changed
+        raw = actual_read(fd, count)
+        if not changed:
+            changed = True
+            (directory / "file").write_bytes(b"X" * len(INSIDE))
+        return raw
+
+    with roots.ConnectionRootSession(ACTOR) as session:
+        reference = session.enroll(ACTOR, str(directory))
+        # Inject a coarse timestamp observation only. The file, FD and same-size
+        # content mutation are real; timestamp fields cannot decide this result.
+        monkeypatch.setattr(roots, "_identity", lambda info: actual_identity(info)[:7])
+        monkeypatch.setattr(roots.os, "read", change_after_first_read)
+        with pytest.raises(KernelDenied, match="^connection_root_changed$"):
+            session.snapshot(ACTOR, reference, "file", max_bytes=64)
+        assert changed
