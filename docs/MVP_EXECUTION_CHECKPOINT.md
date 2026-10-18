@@ -373,3 +373,22 @@ shutdown. Static checks pass. Original69PASS/2FAIL input-mode fixtures and corre
 71PASS stay separate; no guard weakened. No provider/native/model/SDK/owner-state
 change or release promotion. UI/actual supported telemetry/queue/capture/full
 native/grants/R1–R3 gates and trial remain required.
+
+### 2026-10-18 — native input framing prerequisite
+
+PR94 merged `a65400c5c5d4164f9994e02cd28c58583ea3723f` after exact `a9ac576`
+CI38923007712 passed1657/51 live excluded. Main remains at that verified commit.
+The agent-owned temporary checkout and unpublished Oct16 frame work disappeared;
+cause is unknown. Approval review had also become unavailable because of account
+usage, so the publication command never ran. Usage/review availability recovered,
+and a fresh independent clone/branch starts from verified main. The owner checkout
+remains untouched. No original missing JUnit file is invented or relabeled.
+
+Fresh clean `58b56a36e5388ef982d351cc8793d7fb20f3a9a8` passes41 focused checks
+in8.30s, including six actual fixed synthetic parser containers. Ruff/mypy198/
+11 import contracts/secret scan/diff check pass. Evidence is source-bound in
+`evidence/native-input-frame-2026-10-18`; design44 specifies the wire protocol,
+scope and next integration work. All input stays opaque data. Production runner,
+profile, gateway and launcher are unchanged; the host-stage controller-crash gap
+is still open. This is not native task conformance or G1/G2/G3/R3 acceptance.
+No provider/model/vendor CLI/SDK/credentials or owner database/service changes.

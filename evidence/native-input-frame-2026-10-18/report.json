@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-18T02:16:42.674253+00:00",
+  "source_commit": "58b56a36e5388ef982d351cc8793d7fb20f3a9a8",
+  "source_state_at_execution": "clean",
+  "result": "PASS_COMPONENT",
+  "scope": "standalone bounded native input framing and six fixed synthetic parser containers",
+  "source_sha256": {
+    "src/panestria/sandbox/native_tool_input.py": "e7985673628502731b3e9cd317d769c1a094d65d7c136a260b001e5cca3c11f2",
+    "tests/unit/test_native_input_frame.py": "c80372fe33a5f1b7935961664f06fe4ce6e5840e16fae320641fe2afc1628758",
+    "tests/integration/test_native_input_frame_container.py": "0ae0727aec265f69bf73101bade2f00e349ddd622a0e34391d0cfd121112a463",
+    "src/panestria/sandbox/profiles.py": "e010646b1d289175672e3e579d41df18e099d973d0fc7820afa950753f5484a5",
+    "src/panestria/sandbox/runner.py": "2df4bf50f57a3c7ffd6535d8531b8b0c2085e5f60c81da8e67e7dfb4e7d76347",
+    "src/panestria/sandbox/native_tool_launch.py": "b3cafb6175b9d76bc8796839600b728958ae31d441f6c33044b6f326c509c763",
+    "src/panestria/sandbox/native_tool_gateway.py": "316209ab9103912237a6f4dec25e42a8ffafa9de4bac2412786182d4d1012bf1",
+    "pyproject.toml": "51bb953a36e78a1139b5334ad8e76e847d87ef323f02ff05c20183d18cf8f95f",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d",
+    ".importlinter": "bc75998b077f693591daffc90a4672f50965ab3750e1c8e4d9346895cdea7bb8"
+  },
+  "artifacts": {
+    "development-41.xml": "bab7606d4ac3d7e376fd3a40b5a184f556c6378a450a40187fdbb22ff32842f6",
+    "qualified-41.xml": "a3ecbe4371dfe0fa25a6f45874e24e7c4ff6cb5bb34f15fca496551bf99daae4"
+  },
+  "observed_tests": {
+    "development-41.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "41",
+        "time": "9.404",
+        "timestamp": "2026-10-17T19:10:17.605436-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    ],
+    "qualified-41.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "41",
+        "time": "8.298",
+        "timestamp": "2026-10-17T19:10:52.619668-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    ]
+  },
+  "checks": {
+    "focused_default_passed": 41,
+    "new_cases": 41,
+    "actual_fixed_parser_container_cases": 6,
+    "ruff": "PASS",
+    "mypy_source_files": 198,
+    "import_contracts_kept": 11,
+    "secret_scan": "PASS",
+    "diff_check": "PASS"
+  },
+  "runtime_image": "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9",
+  "observed_container_assertions": [
+    "exact maximum opaque script/request lengths and digests, stdin EOF and exit0",
+    "reject truncated, trailing, wrong-version, oversize-length and mismatched-digest data with exit2",
+    "effective network none, nonroot UID/GID, read-only root and single parser module mount",
+    "cap-drop ALL, no-new-privileges, pids16, memory64MiB, CPU0.25 and core0",
+    "OpenStdin/AttachStdin/StdinOnce true and TTY false",
+    "exact owned name/purpose/ID cleanup and subsequent absence"
+  ],
+  "historical_unavailable": {
+    "status": "NOT_RELABELED_OR_RECREATED_AS_ORIGINAL",
+    "detail": "Prior unpublished temporary clone, commits e61a9da/20ef074 and three Oct16 JUnit files disappeared before publication. The recorded 33-case runs are historical checkpoint claims only; those original bytes are unavailable. Freshly recreated source and Oct18 observations above replace no published evidence."
+  },
+  "limitations": [
+    "Bytes only: no script execution or request JSON parsing",
+    "No production DockerSandbox, profile, gateway or launcher enablement; host temporary-stage crash gap remains unresolved",
+    "Caller must bound blocking reads and waiting for EOF; this parser has no timeout or cancellation guarantee",
+    "Fixed container checks use Docker default seccomp, not production custom-profile or native conformance certification",
+    "No PostgreSQL, vendor CLI, model, provider, authentication or paid SDK calls in these checks",
+    "No completed AOS003/AOS008/AOS010/G1/G2/G3, owner trial or release acceptance"
+  ],
+  "runtime_authority": false,
+  "release_authority": false
+}
