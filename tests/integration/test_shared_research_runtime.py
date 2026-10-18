@@ -135,7 +135,7 @@ def test_joint_certificate_requires_correct_purpose_and_both_component_case_sets
 def test_joint_settings_or_plan_substitution_denied_before_any_dispatch(synthetic_https):  # noqa: F811
     f, calls, _ = synthetic_https
     certificates = f.controller.service.certificates
-    for settings in (None, f.settings.model_copy(update={"origin": "http://127.0.0.1:9"})):
+    for settings in (None, f.settings.model_copy(update={"origin": "http://127.0.0.1:9099"})):
         with pytest.raises(KernelDenied, match="public_fetch_(search_settings|runtime)_mismatch"):
             AdmittedFetch(
                 f.dsn,
@@ -171,4 +171,9 @@ def test_joint_settings_or_plan_substitution_denied_before_any_dispatch(syntheti
             f.root,
             search_settings=f.settings,
         )
+    # The kernel also enforces component identity if a trusted caller bypasses
+    # controller construction; a certificate's aggregate hash is not a plan.
+    with psycopg.connect(f.dsn) as c:
+        with pytest.raises(KernelDenied, match="search_contract_or_policy_mismatch"):
+            f.controller.service.current(UnitOfWork(c), f.actor, changed, f.lease.attempt_id, f.lease.epoch)
     assert not f.server["requests"] and not calls

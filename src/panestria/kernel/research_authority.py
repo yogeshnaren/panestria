@@ -17,6 +17,7 @@ from panestria.kernel.repositories.policy import lock_project
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.engine import PolicyEngine
 from panestria.policy.profiles import CertificateStore
+from panestria.policy.research import RESEARCH_PROFILE
 
 
 def require_public_research(
@@ -53,6 +54,11 @@ def require_public_research(
     except ContractRejected:
         raise KernelDenied("search_contract_invalid") from None
     policy = PolicyService(certificates).get(uow, actor)
+    configuration_key = (
+        ("search_configuration_sha256" if capability == "public-search" else "fetch_configuration_sha256")
+        if certificates.runtime_versions.get("profile") == RESEARCH_PROFILE
+        else "configuration_sha256"
+    )
     if (
         str(row[1]).strip() != plan.contract_sha256
         or contract_sha256(contract) != plan.contract_sha256
@@ -66,7 +72,7 @@ def require_public_research(
         or policy.sha256() != plan.policy_sha256
         or contract.autonomy_profile_ref != f"project-policy:{policy.version}:{policy.sha256()}"
         or contract.trust_profile_id != policy.trust.profile
-        or certificates.runtime_versions.get("configuration_sha256") != plan.configuration_sha256
+        or certificates.runtime_versions.get(configuration_key) != plan.configuration_sha256
     ):
         raise KernelDenied("search_contract_or_policy_mismatch")
     decision = PolicyEngine().authorize(
