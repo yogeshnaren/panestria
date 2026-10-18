@@ -137,6 +137,7 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_build_invocation_fence.py",
         "test_claude_proposal.py",
         "test_proposal_demo.py",
+        "test_scoped_bash.py",
         "test_aos_011.py",
         "test_aos_012.py",
         "test_aos_014.py",
@@ -174,6 +175,8 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         fixture_bytes += path.with_name("build_support.py").read_bytes()
     if path.name == "test_approval_revocation.py":
         fixture_bytes += path.with_name("test_aos_027a.py").read_bytes()
+    if path.name == "test_scoped_bash.py":
+        fixture_bytes += path.with_name("test_registered_check_authority.py").read_bytes()
     fingerprint = hashlib.sha256(fixture_bytes).hexdigest()
     record_property("candidate_commit", candidate)
     record_property("fixture_digest", fingerprint)
