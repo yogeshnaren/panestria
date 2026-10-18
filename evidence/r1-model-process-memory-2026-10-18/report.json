@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "PROCESS_MEMORY_MEASURED_R1_INCOMPLETE",
+  "candidate_commit": "24c461b873d0f6dbead18ef53ab91cfe1439aeb3",
+  "worktree_state": "clean",
+  "report": "qualified.xml",
+  "sha256": "3ef977e9f325908e8ff8f616b2c424ba572f69392cd4f789e42e163b2af253a4",
+  "tests": 17,
+  "failures": 0,
+  "benchmark": {
+    "cold_ttft_seconds": 1.0388033949998317,
+    "warm_ttft_seconds": [
+      0.03134421899994777,
+      0.03694029500002216,
+      0.03861327999993591,
+      0.038778178000029584,
+      0.045056618000216986
+    ],
+    "warm_p95_ttft_seconds": 0.045056618000216986,
+    "decode_tps": [
+      146.72011582672823,
+      136.5894528766046,
+      138.67344428503162,
+      119.83426681231323,
+      139.47216341339708
+    ],
+    "size_vram_bytes": 1864415744,
+    "cgroup_memory": "475.5MiB / 2.5GiB",
+    "process_memory": {
+      "method": "procfs-smaps-rollup-sum-v1",
+      "process_count": 4,
+      "processes": [
+        {
+          "pid": 1,
+          "pss_bytes": 438272,
+          "rss_bytes": 827392
+        },
+        {
+          "pid": 7,
+          "pss_bytes": 21458944,
+          "rss_bytes": 25157632
+        },
+        {
+          "pid": 8,
+          "pss_bytes": 85838848,
+          "rss_bytes": 100274176
+        },
+        {
+          "pid": 34,
+          "pss_bytes": 785049600,
+          "rss_bytes": 799395840
+        }
+      ],
+      "pss_sum_bytes": 892785664,
+      "rss_sum_bytes": 925655040
+    },
+    "memory_is_peak": false,
+    "rss_may_double_count_shared_pages": true,
+    "network": "none",
+    "model_digest": "65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "samples": 5
+  },
+  "command": "uv run --frozen pytest tests/unit/test_model_process_memory.py tests/unit/test_gpu_startup.py tests/integration/test_local_benchmark.py -q --junitxml=/tmp/panestria-model-memory-qualified.xml",
+  "limits": [
+    "Read-only numeric RSS/PSS data from the owned private model PID namespace only; no credentials, cmdline, environment or memory-map addresses retained.",
+    "smaps_rollup observations span processes, not one atomic instant; RSS may double-count shared pages.",
+    "The measurement helper is excluded. This is not peak memory and is not the cgroup working-memory snapshot.",
+    "Missing, denied, malformed or changing process observations are unavailable, never zero or an invented value.",
+    "No CUDA/kernel/driver changes, model downloads, provider API use or inference fallback.",
+    "Source-bound component benchmark, not a full same-candidate cumulative G1/G3 release pass."
+  ],
+  "source_reference": "https://docs.kernel.org/filesystems/proc.html",
+  "release_gate": "NOT_EVALUATED",
+  "owner_services_modified": false
+}

@@ -15,6 +15,7 @@ from typing import Any
 from uuid import uuid4
 
 from panestria.contracts.inference import InferenceUnavailable
+from panestria.inference import process_memory
 from panestria.resources.primary import PrimaryLease
 
 IMAGE = "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9"
@@ -281,3 +282,43 @@ class ModelRuntime:
         self.id = None
         self.socket_path.unlink(missing_ok=True)
         self.primary.release()
+
+    def process_memory(self) -> dict[str, Any]:
+        """Observe RSS/PSS only inside this running, private model PID namespace.
+
+        The measurement process is excluded. Sums across processes are not an
+        atomic/peak/cgroup measurement; RSS can double-count shared pages.
+        """
+        identity = self.id
+        if identity is None:
+            raise InferenceUnavailable("process_memory_unavailable")
+
+        def current() -> None:
+            actual = json.loads(self._docker(["inspect", identity]))[0]
+            if (
+                self.id != identity
+                or actual["Id"] != identity
+                or actual["State"]["Running"] is not True
+                or actual["Config"]["Labels"].get("panestria.runtime") != self.identity
+                or actual["Config"]["User"] != f"{self.uid}:{self.gid}"
+                or actual["HostConfig"].get("PidMode", "") != ""
+            ):
+                raise ValueError
+
+        try:
+            current()
+            script = Path(process_memory.__file__).read_text()
+            raw = self._docker(["exec", identity, "/usr/local/bin/python", "-I", "-c", script])
+            observation = process_memory.validate(raw)
+            current()
+            return observation
+        except (
+            InferenceUnavailable,
+            process_memory.MemoryObservationUnavailable,
+            OSError,
+            ValueError,
+            KeyError,
+            IndexError,
+            TypeError,
+        ):
+            raise InferenceUnavailable("process_memory_unavailable") from None
