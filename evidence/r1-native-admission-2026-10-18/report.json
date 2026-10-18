@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "ADMISSION_CONTROLLER_COMPONENT_QUALIFIED_RUNTIME_RELEASE_NOT_CERTIFIED",
+  "reports": [
+    {
+      "path": "qualified-default.xml",
+      "candidate_commit": "51bafec70fba8d3dcacd4baa40cad273a3be5bc6",
+      "worktree_state": "clean",
+      "sha256": "534f9bccf2b4d2453a90136ab2ba714371ca09ec92b40fc2e630369a4f2badd9",
+      "tests": 131,
+      "failures": 0
+    },
+    {
+      "path": "qualified-live.xml",
+      "candidate_commit": "f4742d7c602aa8e3760986660ae751d3409ca9c9",
+      "worktree_state": "clean",
+      "sha256": "db75ac601bd8398d16ff0bca9004292d90bacb25285b1e669a67162dcedd7004",
+      "tests": 1,
+      "failures": 0
+    }
+  ],
+  "outcomes": [
+    "Context is compiled only from explicitly selected protected source paths and a PUBLIC, cloud-enabled current task contract; selected context is bounded, hashed and not editable after admission without detection.",
+    "The matching general runtime certificate, current project policy, independent local read/edit and Claude subscription export permission are required. Narrow proposal-demo certificates do not qualify this worker.",
+    "One-use native intent commits before launch; a final policy/lease check and honest disclosure event commit immediately before the pinned CLI starts.",
+    "Active lease/policy, cancellation and deadline monitoring stop the native call; quota/auth failures finish the current attempt without automatic retry.",
+    "Native output is never task acceptance. Separate frozen-tree checks produce an exact owner approval request. Cancellation before publication cannot publish PASS."
+  ],
+  "scope": [
+    "Default lane uses labeled native transport and certificate fixtures with actual PostgreSQL/Docker/Bash/Git.",
+    "Changed-path live test uses actual pinned Claude subscription with PUBLIC synthetic selected context and actual PG/Docker/Git, but its runtime certificate is EXPLICITLY a disposable TEST_FIXTURE_NOT_LIVE.",
+    "No test certificate is installed, issued or promoted for production. The live test is not runtime-security qualification or a full G1 pass.",
+    "The live evidence remains pinned to f4742d7. A later context-digest sealing guard is covered by the clean51bafec default run; evidence is not relabeled.",
+    "Generic admission controller is implemented. Operator runtime qualification and a supported owner CLI entry point still need completion before the general owner-project pilot.",
+    "Existing demo website remains its separately qualified fixed proposal profile. SDK TC04 remains owner-deferred; no direct SDK, OpenAI live call, paid overflow or provider fallback."
+  ],
+  "native_actual_cash": "UNKNOWN_SUBSCRIPTION_NO_DIRECT_SDK_CALL",
+  "release_gate": "NOT_EVALUATED",
+  "owner_services_modified": false
+}

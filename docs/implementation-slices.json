@@ -807,8 +807,12 @@
         "AOS-010-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-010-S1.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-010-S1.md",
+      "evidence_refs": [
+        "evidence/r1-native-admission-2026-10-18/report.json"
+      ],
+      "implementation_note": "Native inspection, bounded Bash and admitted selected-context controller implemented. Current certificate/owner CLI qualification and complete clause evaluation remain; test-only certificate is not a release pass."
     },
     {
       "id": "AOS-010-S2",
@@ -833,9 +837,10 @@
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-010-S2.md",
       "evidence_refs": [
-        "evidence/r1-native-bash-build-2026-10-18/report.json"
+        "evidence/r1-native-bash-build-2026-10-18/report.json",
+        "evidence/r1-native-admission-2026-10-18/report.json"
       ],
-      "implementation_note": "Bounded Bash backend and actual synthetic native-to-verifier-to-exact-merge flow qualified; generic owner-project cloud admission/certificate integration and complete clause evaluation remain pending."
+      "implementation_note": "Native inspection, bounded Bash and admitted selected-context controller implemented. Current certificate/owner CLI qualification and complete clause evaluation remain; test-only certificate is not a release pass."
     },
     {
       "id": "AOS-010-S3",
@@ -863,9 +868,10 @@
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-010-S3.md",
       "evidence_refs": [
-        "evidence/r1-native-bash-build-2026-10-18/report.json"
+        "evidence/r1-native-bash-build-2026-10-18/report.json",
+        "evidence/r1-native-admission-2026-10-18/report.json"
       ],
-      "implementation_note": "Bounded Bash backend and actual synthetic native-to-verifier-to-exact-merge flow qualified; generic owner-project cloud admission/certificate integration and complete clause evaluation remain pending."
+      "implementation_note": "Native inspection, bounded Bash and admitted selected-context controller implemented. Current certificate/owner CLI qualification and complete clause evaluation remain; test-only certificate is not a release pass."
     },
     {
       "id": "AOS-027a-S1",
