@@ -118,8 +118,11 @@ def test_actual_gateway_crash_has_only_exact_durable_runtime_recovery(
                 witness = json.loads(ready.read_text())
                 assert witness == {"phase": phase, "mounts": ["/runtime/native-launch.py", "/runtime/native-input.py"]}
                 break
-            if phase == "running" and (workspace / "executed").exists():
-                assert (workspace / "executed").read_text() == "PUBLIC_EXECUTED\n"
+            if (
+                phase == "running"
+                and (workspace / "executed").exists()
+                and (workspace / "executed").read_text() == "PUBLIC_EXECUTED\n"
+            ):
                 break
             time.sleep(0.02)
         matches = []
@@ -164,7 +167,7 @@ def test_actual_gateway_crash_has_only_exact_durable_runtime_recovery(
             name="panestria-unrelated-memory-" + uuid4().hex,
             labels={
                 "panestria.purpose": "worker",
-                "panestria.attempt": str(scope.attempt_id),
+                "panestria.attempt": str(intent.runtime_attempt_id) if intent is not None else str(scope.attempt_id),
                 "panestria.launch": str(uuid4()),
             },
         ) as unrelated:

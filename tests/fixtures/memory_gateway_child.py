@@ -42,7 +42,10 @@ def main():
     targets = []
 
     def barrier():
-        Path(data["ready"]).write_text(json.dumps({"phase": data["phase"], "mounts": targets}))
+        ready = Path(data["ready"])
+        pending = ready.with_name(ready.name + ".pending")
+        pending.write_text(json.dumps({"phase": data["phase"], "mounts": targets}))
+        pending.replace(ready)  # Parent sees a complete fixture witness.
         while True:
             time.sleep(0.1)
 
