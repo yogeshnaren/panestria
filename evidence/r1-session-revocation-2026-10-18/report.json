@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "3502bd6f397134249f8abd5cb311df43aca879a3",
+  "worktree_state": "clean",
+  "qualified_default_cases": 17,
+  "javascript_scenarios": 7,
+  "default_junit_sha256": "eec6282a06eec5d3e832ab0e73622390f6ae379baad0126e942fa887984fab5a",
+  "browser": {
+    "source_commit": "3502bd6f397134249f8abd5cb311df43aca879a3",
+    "fixture": "PUBLIC synthetic independent browser/DB/real local CPU model",
+    "revocation": "injected in the disposable fixture database only",
+    "observed_at": "2026-10-18T08:12:45.567610+00:00",
+    "sessions_revoked": 1,
+    "cpu_profile": true,
+    "g1_pass": false,
+    "answer_observed": "R1_BROWSER_READY",
+    "answer_receipt": "COMPLETED / RESTRICTED / offline / response not retained",
+    "after_revocation": {
+      "ask_enabled": false,
+      "answer_visible": false,
+      "question": ""
+    },
+    "console_errors_or_warnings": [],
+    "screenshots": {
+      "answer.jpg": "8f14067fa362ba9c7af19688d467a65d958146b107abbf8d941c8896b0a12f99",
+      "revoked.jpg": "0cc7f011992c044523237ffdf231043378d00bd8f5a8bdace72c6bd24b969a78"
+    },
+    "screenshot_directory": "owner-local outputs/r1-session-2026-10-18; not a portable release receipt"
+  },
+  "scope": [
+    "Actual in-app browser, actual HTTP/API/PostgreSQL and existing local CPU model; no API provider or mock answer",
+    "External revocation injected only into a dedicated disposable synthetic database",
+    "Node executes packaged JS with deterministic DOM/HTTP seams, including malformed denials and delayed responses; that lane is not real browser conformance",
+    "SSE tests use actual PostgreSQL revocation before event or cached resync snapshot; artifact, mutation and reconnect then refuse",
+    "No owner services, database, checkout, credentials or cache altered; owned browser tab/model/listener/DB shut down after the check"
+  ],
+  "g1_pass": false,
+  "remaining": [
+    "Native general worker/shell qualification and current-candidate cumulative G1 coverage",
+    "Actual GPU initialization/latency/pressure qualification remains blocked by host error 999",
+    "Paid SDK AOS-016-TC04 deferred by owner subscription/local-only direction"
+  ]
+}

@@ -29,6 +29,15 @@ The old R0 server and native review demo are separate applications.
 5. Press **Disconnect and clear**. Expect revoked-session confirmation, cleared
    text and disabled Ask controls. Reload also clears text and requires a fresh
    terminal code; it does not claim to revoke every prior server session.
+6. While paired, the page checks session access every five seconds plus request
+   time. Browser timer throttling or connection loss can delay detection. A
+   detected 401/403 clears the question, answer, sources and scope and stops new
+   Ask input; a fresh pairing is required. This is UI suppression, not physical
+   erasure or a claim that an in-flight model request was cancelled on the server.
+   Disconnect clears the view immediately while revocation is pending. An
+   unconfirmed revocation retains only the in-memory retry handle and enables
+   **Disconnect** again. Reload/page exit discards that handle. Late Ask/pairing
+   responses cannot restore a departed session's text or scope.
 
 The page keeps only its current text and an in-memory CSRF value. No localStorage,
 sessionStorage, IndexedDB, analytics, external assets or conversation store. Model
@@ -39,6 +48,14 @@ layout testing is not remote phone access. Do not publicly forward its port.
 Personal profiles, Build/tools and cloud routes remain disabled/unmounted here.
 This thin AOS-017 surface is separate from R3 React Mission Control, connection
 grants and phone obligations. R1/G1 and R3 acceptance remain pending.
+
+The [current session correction](../../evidence/r1-session-revocation-2026-10-18/report.json)
+records a real in-app-browser/HTTP/PostgreSQL/local-CPU-model answer followed by
+injected revocation in its disposable database. The page cleared the answer and
+question, hid the result and disabled Ask; browser console errors/warnings were
+empty. Seventeen related checks also pass, including seven executable JavaScript
+seam scenarios and actual PostgreSQL cached-snapshot/event revocation. CPU browser
+evidence does not pass the unresolved GPU latency/pressure cases or complete G1.
 
 [Actual browser/model observations](../../evidence/local-browser-2026-10-15/report.json)
 include synthetic local-model HTML completion, literal DOM rendering, durable
