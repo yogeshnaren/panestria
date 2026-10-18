@@ -80,3 +80,12 @@ its clean integrated qualification passes the same120 checks32.82s. The separate
 [integration record](../../evidence/connection-review-api-2026-10-18/integration-report.json)
 retains its own raw XML and command corrections. Original86db525 artifacts are
 unchanged. Full exact-head CI remains a separate publication/merge prerequisite.
+
+Full CI39106917587 at a1342c0 found the checked-in OpenAPI snapshot missing the
+four new mounted routes:1864PASS/1FAIL/51 live excluded/one warning524.08s. The
+unchanged parity assertion was retained. Regeneration changes only those four
+paths; every older path/component is identical. Dirty correction32 passes15.87s;
+clean21bfa80 parity1 passes0.63s. The separate
+[correction record](../../evidence/connection-review-api-2026-10-18/openapi-correction-report.json)
+preserves both source states and the original failed full-log hash. Fresh full
+exact-head CI is required; no runtime or acceptance authority changes.

@@ -556,3 +556,12 @@ and raw XML retain that observation without modifying original86db525 evidence.
 The first local static command had a nonexistent scanner path and exited2; the
 actual tools/secret_scan.py command subsequently passed. Publication still needs
 fresh exact-head full CI; no runtime connector or release acceptance is granted.
+
+PR101 initial exacta1342c0 CI39106917587 FAILED1864PASS/1FAIL/51 live excluded/
+one warning524.08s: the checked-in OpenAPI artifact lacked the four mounted
+connection routes. Full original log retained unchanged in execution outputs.
+Regenerated snapshot at21bfa80 adds exactly those four paths, preserving every
+prior path/component and the original parity assertion. Correction32 passes
+15.87s with only that snapshot dirty; clean21bfa80 parity1 passes0.63s. Separate
+correction evidence preserves both observations; fresh exact-head CI is pending.
+The independent native gateway runbook candidate remains parked separately.
