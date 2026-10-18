@@ -514,3 +514,54 @@ files differ from new main. Runtime/tests/evidence/gates remain identical to the
 verified base. Fresh exact-head CI is required; its original failed run remains
 historical and is not relabeled. Root/grant and release/trial authority stay
 unavailable pending the actual remaining work.
+
+## 2026-10-18 connection review HTTP component candidate
+
+An independent owner-only declaration review API was qualified at clean86db525:
+120PASS30.07s,31 new real HTTP/PG cases plus89 existing declaration/contracts/
+quota/session regressions. It mounts with GoalApi; health-only applications
+remain unmounted. Same-owner exact manifest/digest/version/deadline views and
+decisions never enable roots, native clients, credentials, dispatch or runtime
+permission. Every success says DECLARATION_ONLY/UNVERIFIED/runtime unavailable.
+
+Actual transaction-time session revoke, scope, policy staleness, review/grant
+expiry, revoke/historical replay, JSON/type/credential/flag/path refusal, cap,
+redaction, unchanged task state/no invocation and caller rollback are verified.
+The initial dirty28PASS1FAIL oversized request lacked JSON Content-Type and
+correctly returned415; fixing only that fixture header preserves413 enforcement.
+Source-bound original/corrected/qualified artifacts are retained in
+evidence/connection-review-api-2026-10-18. The candidate was parked for the
+independent sandbox CI race fix. Synchronize verified main and require fresh
+exact-head CI before publication/merge; no R1–R3 gate or owner trial is accepted.
+
+
+## 2026-10-18 connection API synchronized with current main
+
+PR99 actually merged e9487aa8cd08888d1cfa9d53ca101c2df05131d6 after exact
+head def8abf CI39095322775 passed1834/51 live excluded/one upstream pypdf
+warning510.20s. Review verified the seven documentation files, selected JSON
+field changes, original referenced artifact hashes and unchanged157/156 gate
+boundary. The actual merge parents and entire tree equal the reviewed base/head.
+
+This API branch incorporates that fetched main with a normal merge, preserving
+both independent checkpoint histories and the original86db525 qualification.
+API source/test and original evidence pins remain unchanged. Main includes the
+separately verified transport race correction. Fresh integrated checks and
+exact-head CI must be recorded separately; no historical result is relabeled.
+Connection review still conveys DECLARATION_ONLY/UNVERIFIED/runtime unavailable.
+
+Clean integrated c61dd0d passes120 focused checks32.82s after the normal merge;
+Ruff/mypy200/11 imports/secret/source diff pass. A separate integration report
+and raw XML retain that observation without modifying original86db525 evidence.
+The first local static command had a nonexistent scanner path and exited2; the
+actual tools/secret_scan.py command subsequently passed. Publication still needs
+fresh exact-head full CI; no runtime connector or release acceptance is granted.
+
+PR101 initial exacta1342c0 CI39106917587 FAILED1864PASS/1FAIL/51 live excluded/
+one warning524.08s: the checked-in OpenAPI artifact lacked the four mounted
+connection routes. Full original log retained unchanged in execution outputs.
+Regenerated snapshot at21bfa80 adds exactly those four paths, preserving every
+prior path/component and the original parity assertion. Correction32 passes
+15.87s with only that snapshot dirty; clean21bfa80 parity1 passes0.63s. Separate
+correction evidence preserves both observations; fresh exact-head CI is pending.
+The independent native gateway runbook candidate remains parked separately.
