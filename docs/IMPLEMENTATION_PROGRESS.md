@@ -11,7 +11,7 @@ acceptance checkpoint. Revision 3 remains the active plan; R4–R7 are not start
 | R1 browser/session access | PR104 merged; revoked sessions clear Ask output and cannot receive cached SSE resync data | Include in the cumulative candidate evaluation |
 | R1 one-worker Build | Owner CLI submits selected PUBLIC work through real runtime qualification, admitted Claude/Bash, independent checks, inspection, cancellation and exact protected merge; actual subscription journey passes | Reconcile and qualify the cumulative G1 candidate; human owner review remains |
 | R1 paid SDK compatibility | Deferred by owner; subscription/local-only operation selected | AOS-016-TC04 is not passed. Original required gate manifest remains intact |
-| R2 verified Delegate | Configured bounded local search transport, HTTPS fetch, isolated readers and retained source/claim components exist; prior semantic preflights are not qualified | Bind durable search admission/disclosure, connect the bounded brief workflow, configure/validate a real provider and qualify support/G2 |
+| R2 verified Delegate | Configured bounded local search now has durable task-wide query admission/disclosure; HTTPS fetch, isolated readers and retained source/claim components exist; prior semantic preflights are not qualified | Connect the bounded brief workflow, configure/qualify a real provider and public-web runtime, and qualify support/G2 |
 | R3 complete MVP | Partial components; release not accepted | Finish remaining revision-3 outcomes, multi-worker integration, dashboard, quota/capture, release qualification and genuine owner trial |
 
 ## Latest closed blocker
@@ -63,5 +63,9 @@ search or provider use. The R2 item/slice tracker now reflects existing componen
 work as IN_PROGRESS with original source-bound evidence; stale NOT_STARTED flags
 must not trigger rebuilding those components. No original result is relabeled,
 no entire slice is marked complete and no release is promoted. The next concrete
-research task is durable query admission/disclosure and the bounded workflow,
-while real provider setup and semantic qualification remain explicit.
+research task is connecting the bounded workflow. [Durable admission](testing/SEARCH_ADMISSION.md)
+now binds the query budget and acknowledged disclosure commit to canonical
+owner/task/request policy, lease and deadlines. Concurrency, lost acknowledgement,
+cancellation and backup/restore use real disposable Postgres/HTTP fixtures with
+explicitly synthetic certificates. No live public-search certificate is issued;
+real provider/OS qualification and semantic support remain pending.
