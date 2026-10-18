@@ -9,6 +9,7 @@ import re
 import selectors
 import signal
 import subprocess
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
@@ -27,7 +28,11 @@ class GitSnapshot:
     files: tuple[tuple[str, str, int, str], ...]
 
 
-def protected_git(repository: Path, args: tuple[str, ...], *, limit: int = 4 * 1024 * 1024) -> bytes:
+def protected_git(
+    repository: Path, args: tuple[str, ...], *, limit: int = 4 * 1024 * 1024, input_data: bytes | None = None
+) -> bytes:
+    if input_data is not None and (type(input_data) is not bytes or len(input_data) > 8 * 1024 * 1024):
+        raise SnapshotRejected("git_input_limit")
     env = {
         "PATH": "/usr/bin:/bin",
         "LANG": "C.UTF-8",
@@ -39,14 +44,29 @@ def protected_git(repository: Path, args: tuple[str, ...], *, limit: int = 4 * 1
         "GIT_NO_REPLACE_OBJECTS": "1",
         "GIT_ALLOW_PROTOCOL": "file",
     }
-    process = subprocess.Popen(
-        ("git", "-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false", "--git-dir", str(repository), *args),
-        env=env,
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        start_new_session=True,
-    )
+    # A private seekable input avoids pipe deadlocks and never exposes candidate
+    # bytes as argv, shell syntax, filters or repository-owned commands.
+    with tempfile.TemporaryFile() as source:
+        if input_data is not None:
+            source.write(input_data)
+            source.seek(0)
+        process = subprocess.Popen(
+            (
+                "git",
+                "-c",
+                "core.hooksPath=/dev/null",
+                "-c",
+                "core.fsmonitor=false",
+                "--git-dir",
+                str(repository),
+                *args,
+            ),
+            env=env,
+            stdin=source if input_data is not None else subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            start_new_session=True,
+        )
     assert process.stdout is not None and process.stderr is not None
     output = bytearray()
     total = 0

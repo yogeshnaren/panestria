@@ -62,6 +62,8 @@ def _params(body: dict[str, Any], allowed: set[str]) -> dict[str, Any]:
 
 
 class RegisteredCheckSession:
+    server_name = "panestria-registered-check"
+
     def __init__(
         self,
         command_refs: tuple[str, ...],
@@ -158,7 +160,7 @@ class RegisteredCheckSession:
             {
                 "protocolVersion": VERSION,
                 "capabilities": {"tools": {"listChanged": False}},
-                "serverInfo": {"name": "panestria-registered-check", "version": "1"},
+                "serverInfo": {"name": self.server_name, "version": "1"},
             },
         )
 
@@ -190,6 +192,19 @@ class RegisteredCheckSession:
     def handle(self, raw: bytes) -> bytes | None:
         prepared = self.prepare(raw)
         return self.run(prepared) if isinstance(prepared, PreparedCheck) else prepared
+
+    def _command(self, params: dict[str, Any]) -> str:
+        args = params.get("arguments")
+        if (
+            params.get("name") != "run_registered_check"
+            or not isinstance(args, dict)
+            or set(args) != {"command_ref", "candidate_ref"}
+            or type(args["command_ref"]) is not str
+            or args["command_ref"] not in self._commands
+            or args["candidate_ref"] != self._candidate
+        ):
+            raise ValueError
+        return args["command_ref"]
 
     def prepare(self, raw: bytes) -> bytes | PreparedCheck | None:
         """Accept frames in wire order before moving only actual execution to a worker."""
@@ -249,23 +264,14 @@ class RegisteredCheckSession:
                     response = _result(identity, self._tool_list())
                 elif method == "tools/call":
                     params = _params(body, {"name", "arguments"})
-                    args = params.get("arguments")
-                    if (
-                        params.get("name") != "run_registered_check"
-                        or not isinstance(args, dict)
-                        or set(args) != {"command_ref", "candidate_ref"}
-                        or type(args["command_ref"]) is not str
-                        or args["command_ref"] not in self._commands
-                        or args["candidate_ref"] != self._candidate
-                    ):
-                        raise ValueError
+                    requested = self._command(params)
                     if self._active:
                         response = _error(identity, -32000, "session_busy")
                     elif self._calls >= self._max_calls:
                         response = _error(identity, -32000, "call_budget_exhausted")
                     else:
                         self._calls += 1
-                        command, signal = args["command_ref"], threading.Event()
+                        command, signal = requested, threading.Event()
                         self._active[key] = PreparedCheck(identity, key, digest, command, signal)
                         response = None
                 else:

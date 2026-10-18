@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "status": "BOUNDED_NATIVE_BASH_BUILD_QUALIFIED_R1_INCOMPLETE",
+  "reports": [
+    {
+      "path": "qualified-default.xml",
+      "candidate_commit": "48ba9d6dc4b036f3fccc398f459710dd96e9177d",
+      "worktree_state": "clean",
+      "sha256": "c19d9fc225c9d6a7949d444d41f9ec12f3ac7c5d938c432aa3cd5a4295ae09d5",
+      "counts": {
+        "tests": 149,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "path": "qualified-live.xml",
+      "candidate_commit": "48ba9d6dc4b036f3fccc398f459710dd96e9177d",
+      "worktree_state": "clean",
+      "sha256": "0f7b4ba92314c563d669cea9d9ff6eb2833f13d07db481e81ade276aeb3fc383",
+      "counts": {
+        "tests": 1,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "path": "first-live-failed.xml",
+      "candidate_commit": "bc5c915bc22b0478b184f45947e5c78e8cd2703e",
+      "worktree_state": "clean",
+      "sha256": "bd84fc491a9f826f8057dafa3f4c3f4ef21cdd53f9dc6a85d55ce3657af0e210",
+      "counts": {
+        "tests": 3,
+        "failure": 1,
+        "error": 0,
+        "skipped": 0
+      }
+    }
+  ],
+  "outcomes": [
+    "Pinned Claude subscription requests one Bash job over the private MCP transport. Built-in native tools remain disabled.",
+    "The actual network-none/seccomp worker edits calculator.py and creates notes/build.txt with no host credentials or Git metadata.",
+    "Current policy, owner/project, contract, lease/epoch and one-use invocation are checked before Docker create/start and receipt publication.",
+    "Stopped worker bytes become protected Git objects with no worker Git/config/hooks/filters; no protected ref changes during capture.",
+    "A separate read-only verifier checks the frozen tree and path/policy clauses; worker self-declared pass does not establish acceptance.",
+    "Exact scripted test-owner approval is required for protected Git CAS. Wrong digest and redispatch are rejected.",
+    "SessionStart, PreToolUse, repository MCP and hostile CLAUDE.md remain inert in the actual native launch."
+  ],
+  "limits": [
+    "V1 is one bounded command per durable job, up to 30s and 8KiB output; output stays in protected evidence and MCP returns metadata only.",
+    "PUBLIC synthetic native conformance uses explicit operator authorization; local edit authority does not authorize cloud context export.",
+    "Generic owner-project cloud admission/context selection and runtime certificate wiring still require a controller integration. No arbitrary project launch endpoint is exposed.",
+    "Scripted disposable test-owner approval is not human acceptance. No unqualified G1/G3 release pass.",
+    "AOS-016-TC04 is owner-deferred; existing subscription/local-only and no provider fallback restrictions remain.",
+    "The first live run failed closed on the new server display label; its raw evidence is preserved. The correction binds that label only to the separately enabled Bash profile."
+  ],
+  "native_actual_cash": "UNKNOWN_SUBSCRIPTION_ESTIMATE_ONLY_NO_DIRECT_SDK_CALL",
+  "release_gate": "NOT_EVALUATED",
+  "owner_services_modified": false
+}
