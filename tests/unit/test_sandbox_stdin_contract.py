@@ -1,5 +1,6 @@
 """Profile compatibility and real OS-pipe pressure, without Docker authority."""
 
+import os
 import subprocess
 import sys
 import threading
@@ -178,6 +179,74 @@ def test_actual_small_os_pipes_do_not_require_a_writer_thread(tmp_path, monkeypa
         if timer:
             timer.cancel()
             timer.join()
+        for child in children:
+            if child.poll() is None:
+                child.kill()
+                child.wait(timeout=3)
+
+
+@pytest.mark.parametrize("exit_code,expected", [(0, "completed"), (7, "process_failed")])
+def test_actual_child_exit_between_running_observation_and_attach_poll(tmp_path, monkeypatch, exit_code, expected):
+    # Real child and pipes; the container-state seam intentionally returns the
+    # running observation captured just before this exact child exits.
+    original_popen = subprocess.Popen
+    gate_read, gate_write = os.pipe()
+    children = []
+    observations = []
+
+    def attach(*args, **kwargs):
+        program = (
+            "import os,sys;sys.stdin.buffer.read();os.write(1,b'PUBLIC_RESULT');"
+            f"os.close(1);os.close(2);os.read({gate_read},1);sys.exit({exit_code})"
+        )
+        child = original_popen(
+            [sys.executable, "-I", "-c", program],
+            stdin=kwargs["stdin"],
+            stdout=kwargs["stdout"],
+            stderr=kwargs["stderr"],
+            pass_fds=(gate_read,),
+            pipesize=4096,
+        )
+        children.append(child)
+        return child
+
+    class ExitingState(DockerSandbox):
+        def _inspect(self, identity):
+            code = children[0].poll()
+            if not observations:
+                assert code is None
+                observations.append("running_then_exited")
+                os.write(gate_write, b"x")
+                assert children[0].wait(timeout=3) == exit_code
+                # Return the earlier real observation, not the new state.
+                return {"State": {"Running": True, "ExitCode": 0, "OOMKilled": False, "Status": "running"}}
+            return {
+                "State": {
+                    "Running": code is None,
+                    "ExitCode": code or 0,
+                    "OOMKilled": False,
+                    "Status": "running" if code is None else "exited",
+                }
+            }
+
+        def _docker(self, *args, **kwargs):
+            raise AssertionError("already exited worker must not be killed")
+
+    monkeypatch.setattr("panestria.sandbox.runner.subprocess.Popen", attach)
+    try:
+        receipt = ExitingState(tmp_path)._execute(
+            "ab" * 32,
+            SandboxProfile(stdin_mode="native-frame-v1", wall_seconds=3),
+            "cd" * 32,
+            input_frame=b"PUBLIC_INPUT",
+        )
+        assert observations == ["running_then_exited"]
+        assert receipt.reason == expected and receipt.exit_code == exit_code
+        assert receipt.output == b"PUBLIC_RESULT"
+        assert children[0].stdin.closed and children[0].stdout.closed
+    finally:
+        os.close(gate_read)
+        os.close(gate_write)
         for child in children:
             if child.poll() is None:
                 child.kill()

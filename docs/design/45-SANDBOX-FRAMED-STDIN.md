@@ -71,3 +71,11 @@ Then validate actual gateway/controller-death recovery with PostgreSQL and Docke
 No vendor CLI, model, provider, SDK, authentication, new credentials/images or
 owner service was used here. No full AOS003/AOS008/AOS010, G1/G2/G3 or R3 owner
 acceptance follows from this transport component.
+## Exit observation follow-up (2026-10-18)
+
+[Design48](48-ATTACHMENT-EXIT-ORDERING.md) fixes a real inspect/client-poll
+ordering race exposed by PR99 CI. A fresh worker-state inspection follows the
+observed attachment exit; all original exit/input/status/cleanup refusal guards
+remain. Original failed CI and deterministic child reproductions are preserved.
+This later component evidence does not rewrite or relabel this document's
+original source qualification or promote a runtime/release certificate.

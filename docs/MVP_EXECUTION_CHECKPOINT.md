@@ -459,3 +459,25 @@ owned PUBLIC fixtures. No provider/model/SDK/auth/image/owner service or schema
 changes. This is not atomic filesystem snapshotting or hard interruptible I/O.
 Actual GrantBroker/current authority/budgets/approval/account/capability/purpose,
 onboarding/secret boundary, other lifecycles and R1–R3 gates remain unfinished.
+## 2026-10-18 attachment observation race follow-up
+
+PR99's docs-only exacthead d5b8fd7 CI39093996729 FAILED:1831PASS/1FAIL/51 live
+excluded/one upstream warning404.88s. The existing real-small-pipe duplex case
+returned attachment_failed. No merge or retry-pass was claimed. An independent
+task begins at freshly fetched main1017708; it adds deterministic real gated
+child0/7 regressions (both fail at clean1a79a09), then fixes the inspect/poll
+ordering at c31d457. Reinspect after client exit; never accept client exit alone.
+Actual worker exited/exit0, client success, complete input and all existing
+unstarted/running-worker/cleanup guards remain required.
+
+Clean c31d457 passes55 focused checks24.91s,8 selected live excluded, Ruff/mypy199/
+11 imports/secret/source diff pass. Evidence/attachment-exit-race-2026-10-18 and
+design48 keep exact original observations/source pins, including one invalid
+selection command that ran no tests. Original CI log is retained in project
+outputs. Full exact-head CI and guarded merge are still required for this task.
+
+PR99 stays pending until the fix is verified/merged and its branch incorporates
+current main with fresh CI. A separate connection-review API candidate at
+86db525 has31 new cases and passed120 focused checks30.07s; it is parked on
+task/connection-review-api, not in this main candidate, and not yet a PR/runtime
+grant. Its durable source bundle/raw observations are in project outputs.

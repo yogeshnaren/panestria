@@ -472,7 +472,14 @@ class DockerSandbox:
                             reason = "input_incomplete"
                         break
                     if process.poll() is not None:
-                        reason = "attachment_failed"
+                        # The worker may have exited after the running
+                        # observation above and before the attach-client poll.
+                        # Reinspect after observing client exit; never promote
+                        # that exit alone into a successful worker result.
+                        if self._inspect(container_id)["State"]["Running"]:
+                            reason = "attachment_failed"
+                        elif pending:
+                            reason = "input_incomplete"
                         break
                     time.sleep(min(0.05, max(0, remaining)))
             close_input()
