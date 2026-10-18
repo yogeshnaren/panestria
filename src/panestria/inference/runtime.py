@@ -8,6 +8,7 @@ import os
 import re
 import stat
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,42 @@ from panestria.resources.primary import PrimaryLease
 IMAGE = "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9"
 MODEL = "qwen2.5:1.5b-instruct"
 MODEL_DIGEST = "65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b"
+
+# NVML inventory (including nvidia-smi) can succeed while the compute driver is
+# unusable after a host suspend/driver failure. A separate trusted process keeps
+# driver initialization out of the controller and puts a deadline on this probe.
+_CUDA_PROBE = """import ctypes,sys
+try:
+ driver=ctypes.CDLL('/usr/lib/x86_64-linux-gnu/libcuda.so.1')
+ driver.cuInit.argtypes=[ctypes.c_uint];driver.cuInit.restype=ctypes.c_int
+ driver.cuDeviceGetCount.argtypes=[ctypes.POINTER(ctypes.c_int)];driver.cuDeviceGetCount.restype=ctypes.c_int
+ count=ctypes.c_int()
+ if driver.cuInit(0)!=0 or driver.cuDeviceGetCount(ctypes.byref(count))!=0 or count.value<1:sys.exit(1)
+ print('CUDA_READY')
+except (OSError,AttributeError):sys.exit(1)
+"""
+
+
+def require_gpu_driver() -> None:
+    """Read-only compute readiness; never reload a module or fall back to CPU.
+
+    This is a necessary host prerequisite, not proof of container GPU offload,
+    model quality, measured performance or foreground resource isolation.
+    """
+    try:
+        result = subprocess.run(
+            [sys.executable, "-I", "-c", _CUDA_PROBE],
+            cwd="/",
+            env={"PATH": "/usr/bin:/bin"},
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            timeout=5,
+            check=False,
+        )
+        if result.returncode != 0 or result.stdout != b"CUDA_READY\n" or result.stderr:
+            raise InferenceUnavailable("gpu_initialization_unavailable")
+    except (OSError, subprocess.TimeoutExpired):
+        raise InferenceUnavailable("gpu_initialization_unavailable") from None
 
 
 class ModelRuntime:
@@ -102,6 +139,8 @@ class ModelRuntime:
     def _start(self) -> None:
         if self.id is not None:
             raise InferenceUnavailable("model_already_running")
+        if self.gpu:
+            require_gpu_driver()
         self._reap_orphans()
         manifest = self.models / "manifests/registry.ollama.ai/library/qwen2.5/1.5b-instruct"
         if not manifest.is_file() or hashlib.sha256(manifest.read_bytes()).hexdigest() != MODEL_DIGEST:
