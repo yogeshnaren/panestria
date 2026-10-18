@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "result": "PASS_COMPONENT_CORRECTION",
+  "source_commit": "21bfa80f1626bd7fee52492fef179bfeb656b49a",
+  "source_state_at_execution": "clean for parity1; correction32 at a1342c0 with only generated OpenAPI snapshot dirty",
+  "artifacts": {
+    "openapi-correction-a1342c0-dirty-32.xml": "8aedbd5837bdb525eda8239061f5c6c36cdf1565696766315869f44cf2f0b6ca",
+    "openapi-clean-21bfa80-1.xml": "6f10071645056b58d5e02d3c20c917fcf38386707cb7b6791d5b73659e354fd5"
+  },
+  "observed_suites": {
+    "openapi-correction-a1342c0-dirty-32.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "32",
+        "time": "15.861",
+        "timestamp": "2026-10-18T00:24:44.317331-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    ],
+    "openapi-clean-21bfa80-1.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "1",
+        "time": "0.627",
+        "timestamp": "2026-10-18T00:27:10.914546-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    ]
+  },
+  "original_ci_failure": {
+    "run_id": "39106917587",
+    "head": "a1342c0b8bfed77f7f0f41d0e0750e8fea13504b",
+    "failed": 1,
+    "passed": 1864,
+    "live_deselected": 51,
+    "warnings": 1,
+    "seconds": 524.08,
+    "node": "tests/e2e/test_aos_005.py::test_openapi_matches_the_mounted_routes",
+    "cause": "checked-in snapshot omitted the four newly mounted connection paths",
+    "full_log_output": "PANESTRIA_PR101_CI_39106917587_FAILED.log",
+    "full_log_sha256": "5364b5c159520a066e05ea282760e5ce9e1fd24525fbf1fcb50b75ca57e4fca5"
+  },
+  "correction": "regenerated app.openapi() snapshot; assert removing exactly the four new connection paths yields the entire previous document; no runtime/test/old schema changes",
+  "corrected_snapshot_sha256": "5e8a1a6b0575d238cfc5d069f2e736ddcbacd275157458b307c41332e40b5bde",
+  "checks": {
+    "dirty_correction_passed": 32,
+    "dirty_seconds": 15.87,
+    "clean_parity_passed": 1,
+    "clean_seconds": 0.63
+  },
+  "limitations": [
+    "Original full CI remains a failure and is not relabeled; new full exact-head CI required.",
+    "Original86db525 and integratedc61dd0d reports remain unchanged and bound to their own source.",
+    "No runtime/acceptance authority from a generated schema artifact."
+  ],
+  "runtime_authority": false,
+  "conformance_authority": false,
+  "release_authority": false
+}

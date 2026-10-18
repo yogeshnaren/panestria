@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "source_commit": "c61dd0d79a9d64def10f84f9f037d3577df163de",
+  "source_state_at_execution": "clean",
+  "base_main": "e9487aa8cd08888d1cfa9d53ca101c2df05131d6",
+  "result": "PASS_COMPONENT",
+  "original_report": "report.json",
+  "original_report_sha256": "92975eccc6eb46336118050d58a2a29221f4012a31fb85358fe96749589d37db",
+  "original_source_pins_still_match": true,
+  "artifacts": {
+    "integrated-c61dd0d-120.xml": "b9b52c8cc61e4d029d6faf2ba568aeddd4ecf56844476c144ba80416df5e83a7"
+  },
+  "observed_suites": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "120",
+      "time": "32.813",
+      "timestamp": "2026-10-18T00:13:00.510598-07:00",
+      "hostname": "yogesh-verisim"
+    }
+  ],
+  "checks": {
+    "passed": 120,
+    "new_api_cases": 31,
+    "selected_live_excluded": 0,
+    "seconds": 32.82,
+    "ruff": "PASS",
+    "mypy_ci_command_source_files": 200,
+    "import_contracts_kept": 11,
+    "secret_scan": "PASS",
+    "source_diff_check": "PASS"
+  },
+  "command_notes": [
+    "Initial local static command used nonexistent scripts/secret_scan.py and exited2 before running the scanner; corrected to actual tools/secret_scan.py and completed successfully. No test failure or scan pass is inferred from the invalid command.",
+    "Initial bare mypy package command reported203 items including imported test helpers; the actual CI command mypy src/panestria passed200 source files."
+  ],
+  "limitations": [
+    "Fresh exact-head full CI is required before merge.",
+    "Owner-only declaration metadata; no connected account/root/capability/broker/dispatch authority or completed onboarding.",
+    "Original86db525 qualification and failed development artifacts remain unchanged.",
+    "No G1/G2/G3 acceptance or owner trial is claimed."
+  ],
+  "runtime_authority": false,
+  "conformance_authority": false,
+  "release_authority": false
+}

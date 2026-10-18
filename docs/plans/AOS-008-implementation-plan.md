@@ -216,3 +216,18 @@ This covers one registered-tool recovery path. Other worker/verifier/private
 control-stage lifecycle recovery, connected native auth/proxy/MCP, full grant/
 lease/budget/capability enforcement and G1/G2/G3 evidence remain required.
 No provider inference, credentials or paid API are used or enabled here.
+
+## Owner-only connection review HTTP component (2026-10-18)
+
+[Design49](../design/49-CONNECTION-REVIEW-API.md) exposes the existing scoped
+declaration proposal/preview/decision/current views through owner bearer or
+paired browser authentication and transaction reauthorization. Exact manifests,
+versions, review digests, actual deadlines and policy staleness are visible;
+every success remains DECLARATION_ONLY/conformanceUNVERIFIED/runtime unavailable.
+No root, account, credential, tool, task dispatch or connector is enabled.
+
+Clean86db525 passes120 focused HTTP/real PostgreSQL/contract/session checks
+30.07s,31 new. Original failed/corrected development observations remain
+source-bound evidence. This is a metadata review component, not full onboarding,
+runtime GrantBroker or TC05–TC08 acceptance; current-authority/budget/purpose/
+capability/secret/effect lifecycle and UI still remain required.
