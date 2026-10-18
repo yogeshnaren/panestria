@@ -6,7 +6,7 @@ from typing import Literal
 from uuid import uuid4
 
 from panestria.contracts.build import canonical_sha256
-from panestria.contracts.research_admission import FetchPlan
+from panestria.contracts.research_admission import FetchDiagnostic, FetchPlan
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.tasks import append_event, lock_task
@@ -192,6 +192,7 @@ class FetchAdmissionService:
         dispatch_id: str,
         status: Literal["RETAINED", "FETCH_ERROR", "READER_ERROR", "UNKNOWN"],
         snapshot_id: str | None = None,
+        diagnostic: FetchDiagnostic = "unconfirmed",
     ) -> None:
         # Historical-only receipt after cancellation; no authority or refund.
         if uow.connection.autocommit:
@@ -214,17 +215,26 @@ class FetchAdmissionService:
             if source is None:
                 raise KernelDenied("fetch_retained_source_mismatch")
         old = uow.execute(
-            "SELECT status,snapshot_id::text FROM panestria.fetch_outcome WHERE dispatch_id=%s", (dispatch_id,)
+            "SELECT status,snapshot_id::text,diagnostic FROM panestria.fetch_outcome WHERE dispatch_id=%s",
+            (dispatch_id,),
         ).fetchone()
         if old is not None:
-            if old != (status, snapshot_id):
+            if old != (status, snapshot_id, diagnostic):
                 raise KernelDenied("fetch_outcome_conflict")
             return
         uow.execute(
             "INSERT INTO panestria.fetch_outcome(dispatch_id,task_id,request_id,status,snapshot_id,"
-            "source_metadata_sha256) "
-            "VALUES(%s,%s,%s,%s,%s,%s)",
-            (dispatch_id, task_id, dispatch[0], status, snapshot_id, str(source[0]).strip() if source else None),
+            "source_metadata_sha256,diagnostic) "
+            "VALUES(%s,%s,%s,%s,%s,%s,%s)",
+            (
+                dispatch_id,
+                task_id,
+                dispatch[0],
+                status,
+                snapshot_id,
+                str(source[0]).strip() if source else None,
+                diagnostic,
+            ),
         )
         append_event(
             uow,
@@ -232,5 +242,10 @@ class FetchAdmissionService:
             task_id=task_id,
             actor=actor.owner_id,
             kind="fetch.outbound.finished",
-            payload={"dispatch_id": dispatch_id, "status": status, "snapshot_id": snapshot_id},
+            payload={
+                "dispatch_id": dispatch_id,
+                "status": status,
+                "snapshot_id": snapshot_id,
+                "diagnostic": diagnostic,
+            },
         )

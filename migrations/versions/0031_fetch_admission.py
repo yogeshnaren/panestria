@@ -40,9 +40,16 @@ def upgrade() -> None:
     op.execute("""CREATE TABLE panestria.fetch_outcome (
         dispatch_id uuid PRIMARY KEY,task_id uuid NOT NULL,request_id uuid NOT NULL,
         status text NOT NULL CHECK(status IN('RETAINED','FETCH_ERROR','READER_ERROR','UNKNOWN')),
+        diagnostic text NOT NULL CHECK(diagnostic IN('retained','fetch_size_limit','fetch_timeout','fetch_http_error',
+            'fetch_denied_or_unavailable','reader_truncated','reader_unsupported','reader_unavailable','unconfirmed')),
         snapshot_id uuid REFERENCES panestria.research_source_capture(snapshot_id),
         source_metadata_sha256 char(64),
         created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+        CHECK((status='RETAINED' AND diagnostic='retained') OR
+            (status='FETCH_ERROR' AND diagnostic IN('fetch_size_limit','fetch_timeout',
+                'fetch_http_error','fetch_denied_or_unavailable')) OR
+            (status='READER_ERROR' AND diagnostic IN('reader_truncated','reader_unsupported','reader_unavailable')) OR
+            (status='UNKNOWN' AND diagnostic='unconfirmed')),
         CHECK((status='RETAINED' AND snapshot_id IS NOT NULL AND source_metadata_sha256 IS NOT NULL)
             OR (status<>'RETAINED' AND snapshot_id IS NULL AND source_metadata_sha256 IS NULL)),
         FOREIGN KEY(dispatch_id,task_id,request_id) REFERENCES panestria.fetch_dispatch(id,task_id,request_id),

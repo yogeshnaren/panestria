@@ -1,6 +1,20 @@
 """Common immutable authority binding; a serialized binding grants no execution."""
 
+from typing import Literal
+
 from panestria.contracts.research import ResearchContract, ResearchId, ResearchScope, Sha256
+
+FetchDiagnostic = Literal[
+    "retained",
+    "fetch_size_limit",
+    "fetch_timeout",
+    "fetch_http_error",
+    "fetch_denied_or_unavailable",
+    "reader_truncated",
+    "reader_unsupported",
+    "reader_unavailable",
+    "unconfirmed",
+]
 
 
 class ResearchAuthorityBinding(ResearchContract):

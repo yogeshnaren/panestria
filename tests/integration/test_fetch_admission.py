@@ -124,15 +124,19 @@ def test_connected_reserved_fetch_reader_retention_claim_and_owner_brief(synthet
     [{**FETCH, "research_limits": {"max_sources": 2, "max_source_bytes": 64, "max_total_bytes": 65}}],
     indirect=True,
 )
-def test_failed_transfer_consumes_body_reservation_and_url_without_refund(synthetic_https, monkeypatch):
+@pytest.mark.parametrize("mode", ["network", "size"])
+def test_failed_transfer_consumes_body_reservation_and_url_without_refund(synthetic_https, monkeypatch, mode):
     f, calls, _ = synthetic_https
 
     def denied(*_a, **_k):
         calls.append("ATTEMPTED_SYNTHETIC_TRANSFER")
         raise FetchDenied("network_or_protocol_error")
 
-    monkeypatch.setattr(PublicHttpsFetcher, "_one", denied)
-    assert f.controller.collect(SecretStr("https://example.org/one")).status == "FETCH_ERROR"
+    if mode == "network":
+        monkeypatch.setattr(PublicHttpsFetcher, "_one", denied)
+    result = f.controller.collect(SecretStr("https://example.org/one"))
+    assert result.status == "FETCH_ERROR"
+    assert result.diagnostic == ("fetch_size_limit" if mode == "size" else "fetch_denied_or_unavailable")
     with pytest.raises(KernelDenied, match="fetch_already_dispatched"):
         f.controller.collect(SecretStr("https://example.org/one"))
     with pytest.raises(KernelDenied, match="fetch_budget_exhausted"):

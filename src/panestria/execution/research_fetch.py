@@ -16,7 +16,7 @@ from pydantic import SecretStr
 from panestria.brokers.research.fetch import PublicHttpsFetcher, https_target
 from panestria.brokers.research.reader import IsolatedTextReader
 from panestria.contracts.research import ResearchLimits
-from panestria.contracts.research_admission import FetchPlan
+from panestria.contracts.research_admission import FetchDiagnostic, FetchPlan
 from panestria.execution.research_sources import SourceStore
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -50,6 +50,7 @@ def fetch_runtime_versions() -> dict[str, str]:
 class CollectedSource:
     dispatch_id: str
     status: Literal["RETAINED", "FETCH_ERROR", "READER_ERROR"]
+    diagnostic: FetchDiagnostic
     snapshot_id: str | None = None
 
 
@@ -155,7 +156,16 @@ class AdmittedFetch:
             )
             check()
             if fetched.outcome != "COMPLETE":
-                result = CollectedSource(dispatch.dispatch_id, "FETCH_ERROR")
+                diagnostic: FetchDiagnostic = (
+                    "fetch_size_limit"
+                    if fetched.outcome == "TRUNCATED" or fetched.reason == "declared_body_limit"
+                    else "fetch_timeout"
+                    if fetched.reason == "fetch_deadline"
+                    else "fetch_http_error"
+                    if fetched.reason == "http_error"
+                    else "fetch_denied_or_unavailable"
+                )
+                result = CollectedSource(dispatch.dispatch_id, "FETCH_ERROR", diagnostic)
             else:
                 extracted = IsolatedTextReader().extract(
                     fetched.body,
@@ -165,7 +175,15 @@ class AdmittedFetch:
                 )
                 check()
                 if extracted.outcome != "COMPLETE":
-                    result = CollectedSource(dispatch.dispatch_id, "READER_ERROR")
+                    result = CollectedSource(
+                        dispatch.dispatch_id,
+                        "READER_ERROR",
+                        "reader_truncated"
+                        if extracted.outcome == "TRUNCATED"
+                        else "reader_unsupported"
+                        if extracted.outcome == "UNSUPPORTED"
+                        else "reader_unavailable",
+                    )
                 else:
                     with self.connect() as connection:
                         self._current(connection)
@@ -177,7 +195,7 @@ class AdmittedFetch:
                             extracted=extracted,
                             source_label="PUBLIC",
                         )
-                    result = CollectedSource(dispatch.dispatch_id, "RETAINED", retained.snapshot_id)
+                    result = CollectedSource(dispatch.dispatch_id, "RETAINED", "retained", retained.snapshot_id)
             check()
         finally:
             done.set()
@@ -192,6 +210,7 @@ class AdmittedFetch:
                     dispatch.dispatch_id,
                     result.status if result is not None else "UNKNOWN",
                     result.snapshot_id if result is not None else None,
+                    result.diagnostic if result is not None else "unconfirmed",
                 )
         check()  # Receipt commit/cleanup cannot revive a cancelled task or return a late result.
         assert result is not None

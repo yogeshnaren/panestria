@@ -66,3 +66,8 @@ schema fingerprint, documented snapshot and API schema head advance together.
 Original archives/specs and historical evidence are unchanged. New-request
 owner submission, configured search, semantic qualification and G2 remain pending;
 SDK TC04 stays deferred, not passed. No release or owner acceptance is inferred.
+
+Closed diagnostics distinguish body-size/truncation, fetch deadline, HTTP error,
+reader truncation/unsupported output and unavailable operations. Raw exception
+text/URLs are not added to events. The DB restore test preserves the same CAS
+root; it is a Postgres restore check, not a complete machine/CAS backup claim.

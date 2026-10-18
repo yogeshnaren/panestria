@@ -43,3 +43,8 @@ must precede live calls. The owner chose to configure search later; no service,
 engine, credential or issuer is installed by these checks. No original gate or
 semantic obligation is waived. Do not manufacture an operator certificate from
 fixture reports or retry an UNKNOWN URL to replenish the budget.
+
+Closed diagnostics distinguish body-size/truncation, fetch deadline, HTTP error,
+reader truncation/unsupported output and unavailable operations. Raw exception
+text/URLs are not added to events. The DB restore test preserves the same CAS
+root; it is a Postgres restore check, not a complete machine/CAS backup claim.

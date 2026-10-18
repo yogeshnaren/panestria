@@ -176,6 +176,7 @@ column fetch_hop ordinal int4 NO
 column fetch_hop url_bytes int4 NO
 column fetch_hop url_sha256 bpchar NO
 column fetch_outcome created_at timestamptz NO
+column fetch_outcome diagnostic text NO
 column fetch_outcome dispatch_id uuid NO
 column fetch_outcome request_id uuid NO
 column fetch_outcome snapshot_id uuid YES
@@ -745,7 +746,9 @@ constraint panestria.fetch_hop c CHECK ((url_sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.fetch_hop f FOREIGN KEY (dispatch_id) REFERENCES panestria.fetch_dispatch(id)
 constraint panestria.fetch_hop p PRIMARY KEY (dispatch_id, ordinal)
 constraint panestria.fetch_hop u UNIQUE (dispatch_id, url_sha256)
+constraint panestria.fetch_outcome c CHECK ((((status = 'RETAINED'::text) AND (diagnostic = 'retained'::text)) OR ((status = 'FETCH_ERROR'::text) AND (diagnostic = ANY (ARRAY['fetch_size_limit'::text, 'fetch_timeout'::text, 'fetch_http_error'::text, 'fetch_denied_or_unavailable'::text]))) OR ((status = 'READER_ERROR'::text) AND (diagnostic = ANY (ARRAY['reader_truncated'::text, 'reader_unsupported'::text, 'reader_unavailable'::text]))) OR ((status = 'UNKNOWN'::text) AND (diagnostic = 'unconfirmed'::text))))
 constraint panestria.fetch_outcome c CHECK ((((status = 'RETAINED'::text) AND (snapshot_id IS NOT NULL) AND (source_metadata_sha256 IS NOT NULL)) OR ((status <> 'RETAINED'::text) AND (snapshot_id IS NULL) AND (source_metadata_sha256 IS NULL))))
+constraint panestria.fetch_outcome c CHECK ((diagnostic = ANY (ARRAY['retained'::text, 'fetch_size_limit'::text, 'fetch_timeout'::text, 'fetch_http_error'::text, 'fetch_denied_or_unavailable'::text, 'reader_truncated'::text, 'reader_unsupported'::text, 'reader_unavailable'::text, 'unconfirmed'::text])))
 constraint panestria.fetch_outcome c CHECK ((status = ANY (ARRAY['RETAINED'::text, 'FETCH_ERROR'::text, 'READER_ERROR'::text, 'UNKNOWN'::text])))
 constraint panestria.fetch_outcome f FOREIGN KEY (dispatch_id, task_id, request_id) REFERENCES panestria.fetch_dispatch(id, task_id, request_id)
 constraint panestria.fetch_outcome f FOREIGN KEY (snapshot_id) REFERENCES panestria.research_source_capture(snapshot_id)
