@@ -459,3 +459,22 @@ owned PUBLIC fixtures. No provider/model/SDK/auth/image/owner service or schema
 changes. This is not atomic filesystem snapshotting or hard interruptible I/O.
 Actual GrantBroker/current authority/budgets/approval/account/capability/purpose,
 onboarding/secret boundary, other lifecycles and R1–R3 gates remain unfinished.
+
+## 2026-10-18 connection progress records
+
+PR98 actually merged `1017708f1c1c351d3bcfeb9658709c14cdcff0e6` after exact
+`222f154` CI39093271920 passed1832/51 live excluded/one upstream pypdf warning
+497.94s. The guarded merge verified currentmainfc0/exacthead/checks/16-file scope/
+original source and artifact pins/all six owner authors; both parents and the
+entire resulting tree match the reviewed base/head. No runtime connection or
+release gate was enabled.
+
+The next documentation-only branch begins from freshly fetched main1017708.
+It corrects stale MVP-X09/AOS-008-S4 NOT_STARTED records to IN_PROGRESS and links
+original declaration/root component reports in the slice/phase/backlog and main
+plan. S5 remains NOT_STARTED, all33 extension cases remain NOT_RUN, G3 retains
+157 cases/156 pretrial, R0 remains accepted and R1–R3 acceptance stays pending.
+No code, tests, historic evidence, gate manifests or original archives change.
+Source docs clarify logical read-request bounds, not physical disk/readahead or
+hard elapsed-time claims. Runtime broker/account/capability/source-purpose/
+current-authority/budget/approval/lifecycle/secret/onboarding remain outstanding.
