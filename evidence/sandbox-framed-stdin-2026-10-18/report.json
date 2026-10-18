@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-18T02:32:57.899422+00:00",
+  "source_commit": "c1963e29a2577e14b71f6aa9aad0303abacf930b",
+  "source_state_at_execution": "clean",
+  "result": "PASS_COMPONENT",
+  "scope": "explicit bounded stdin profile and nonblocking production DockerSandbox transport; gateway input remains staged",
+  "source_sha256": {
+    "src/panestria/sandbox/native_tool_input.py": "e7985673628502731b3e9cd317d769c1a094d65d7c136a260b001e5cca3c11f2",
+    "src/panestria/sandbox/profiles.py": "cf62ea23a6ac8ce0d2f49b33ac5bce2a3a9a5d8afc54c7ef4158685c6f4cafe9",
+    "src/panestria/sandbox/runner.py": "b1f1c04ff5dd4d9937c9ccc7866de28eb72c5633341cda1fb447c8aa082a861d",
+    "src/panestria/sandbox/native_tool_gateway.py": "316209ab9103912237a6f4dec25e42a8ffafa9de4bac2412786182d4d1012bf1",
+    "src/panestria/sandbox/native_tool_launch.py": "b3cafb6175b9d76bc8796839600b728958ae31d441f6c33044b6f326c509c763",
+    "src/panestria/execution/tool_authority.py": "d6fefb068873bc95c29a2f83501cf6c159ec7d0c9894e4479b483433ac27fd20",
+    "tests/unit/test_sandbox_stdin_contract.py": "b851d47359bcd969b68a87895fe2f6896ce54760772622d43ec2e33ec479e415",
+    "tests/integration/test_sandbox_framed_stdin.py": "23ac46139ed7f1a05b731f4e85fecae3fc70c2534ccfba73144012f515edba84",
+    "tests/integration/test_sandbox_stdin_admission.py": "262c05658f8397c9c41a9d770410a1fd80410accdfd4124d69b1bc5551970110",
+    "pyproject.toml": "51bb953a36e78a1139b5334ad8e76e847d87ef323f02ff05c20183d18cf8f95f",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d",
+    ".importlinter": "bc75998b077f693591daffc90a4672f50965ab3750e1c8e4d9346895cdea7bb8"
+  },
+  "artifacts": {
+    "development-31.xml": "7df41b0c65d72cdd415142d04c315e9a036664935d8239ff4ffa28df159e2d2f",
+    "development-32.xml": "58a8b403aeafc3aa77fa2a9f7543cd5b9405184424e20700b8d44dd18623d53a",
+    "development-admission-1.xml": "2f8f26e2d919ac41053ec4b3fa60868aff21e61863cf519526b9331d09a90341",
+    "pre-review-faef075-206.xml": "e91e99dae4d7da7c6103e8b021cf3b1c3743b0573d2b282d120ee49feccb5765",
+    "development-attach-13.xml": "804568f85adacff34bd2b16fcba3ae01bb6df6dd47500f2d9cbd63735530dccf",
+    "development-output-15.xml": "6bf4d06d97508c6890f4fc5e24bf07a7f3b3946ea59b3535a213444e7c5b7087",
+    "pre-exit-review-4b953ac-210.xml": "7062ce0bf67f23ce3f849fb47fff8430fea2c9e8f2589d7ca1e018c02192445c",
+    "qualified-211.xml": "2a8eb002ba59bce2adfc9109cde1c1e1a480da7982b200e6554b6db2a8449dcf"
+  },
+  "observed_tests": {
+    "development-31.xml": {
+      "source_state": "dirty development",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "31",
+          "time": "9.097",
+          "timestamp": "2026-10-17T19:22:18.384100-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-32.xml": {
+      "source_state": "dirty development after partial registration review",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "32",
+          "time": "9.037",
+          "timestamp": "2026-10-17T19:23:25.407545-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-admission-1.xml": {
+      "source_state": "dirty development actual PG",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "1",
+          "time": "4.944",
+          "timestamp": "2026-10-17T19:23:56.395487-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "pre-review-faef075-206.xml": {
+      "source_state": "clean faef07579a0be976d33e147c4908461d9486f910 before attachment review",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "206",
+          "time": "76.256",
+          "timestamp": "2026-10-17T19:24:35.075693-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-attach-13.xml": {
+      "source_state": "dirty development attachment review",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "13",
+          "time": "8.964",
+          "timestamp": "2026-10-17T19:28:12.633117-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-output-15.xml": {
+      "source_state": "dirty development output capture review",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "15",
+          "time": "9.633",
+          "timestamp": "2026-10-17T19:28:53.681002-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "pre-exit-review-4b953ac-210.xml": {
+      "source_state": "clean 4b953acd58c9a4e498c38e3188af7e158ec402a6 before actual-exit review",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "210",
+          "time": "77.121",
+          "timestamp": "2026-10-17T19:29:22.685976-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "qualified-211.xml": {
+      "source_state": "clean c1963e29a2577e14b71f6aa9aad0303abacf930b",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "211",
+          "time": "75.399",
+          "timestamp": "2026-10-17T19:31:11.567580-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    }
+  },
+  "checks": {
+    "focused_default_passed": 211,
+    "live_cases_excluded": 20,
+    "new_cases": 38,
+    "new_contract_and_os_pipe_cases": 21,
+    "new_actual_docker_resource_cases": 16,
+    "new_actual_pg_authority_case": 1,
+    "ruff": "PASS",
+    "mypy_source_files": 198,
+    "import_contracts_kept": 11,
+    "secret_scan": "PASS",
+    "diff_check": "PASS"
+  },
+  "runtime_image": "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9",
+  "coverage": [
+    "four historical default closed-input hashes unchanged; explicit framed hash distinct; wrong mode/type/size rejects before runtime",
+    "actual 4096-byte OS pipes: simultaneous pressure, blocked/closed-output reader, cancel, EPIPE and partial registration cleanup; no writer thread",
+    "actual Docker maximum frame with EOF/digests and inherited seccomp2/AF_INET+AF_INET6 denial/nonroot/caps0/NoNewPrivs",
+    "actual default stdin EOF, blocked-reader deadline, closed-output linger, output/memory pressure and early exit",
+    "actual created configuration mismatch rejects opening/closing stdin, TTY, disabled stdout or stderr before start",
+    "actual Running observed before cancellation or exact owned attach-client kill; no completed result and worker cleanup",
+    "two injected attach-client exit0/42 cases use actual unstarted containers; actual exited-state check prevents false success and suppresses diagnostics",
+    "actual PG closed-permit widening injection: UNKNOWN, zero launch intents and zero Docker creates",
+    "existing six direct-runner SIGKILL/PG/reconciliation/gateway/offline-bootstrap regressions retained under their original scope"
+  ],
+  "development_review": "No test failure in these eight retained runs. Initial Ruff reported two style issues, fixed before tests. Review then added partial registration cleanup, attach-client/state checks and output capture checks; prior passing observations remain bound to their earlier source.",
+  "limitations": [
+    "Gateway, launcher, ReviewedCommand interface and production controllers still use closed-input host staging; actual gateway stage leak is not fixed",
+    "run validates transport type/size, not frame digests or script consumption: the trusted consumer must decode/validate before execution",
+    "Two unstarted-container cases inject a client program; they are not actual Docker start-failure transport certificates",
+    "OS-pipe fixtures substitute container-state seam; actual OS child/pipes are tested but they are not Docker conformance evidence",
+    "Existing SIGKILL fixtures are direct runner regressions, not actual gateway crash proof",
+    "Runtime inspection/cleanup retain existing bounded Docker-operation timeouts; profile wall time is not a certified end-to-end recovery SLA",
+    "No model/provider/native vendor CLI/SDK/authentication, new credentials, images or owner service access",
+    "No full AOS003/008/010/G1/G2/G3 or R3 owner trial acceptance"
+  ],
+  "runtime_authority": false,
+  "release_authority": false
+}

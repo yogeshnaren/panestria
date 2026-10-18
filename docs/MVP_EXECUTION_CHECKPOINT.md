@@ -392,3 +392,25 @@ scope and next integration work. All input stays opaque data. Production runner,
 profile, gateway and launcher are unchanged; the host-stage controller-crash gap
 is still open. This is not native task conformance or G1/G2/G3/R3 acceptance.
 No provider/model/vendor CLI/SDK/credentials or owner database/service changes.
+
+### 2026-10-18 — explicit sandbox stdin transport
+
+PR95 merged `238025b168083179f5737719552b0515679d22bc` after exact `d13a524`
+CI39089580257 passed1698/51 excluded/one upstream warning437.92s. The dependent
+`task/sandbox-framed-stdin` started from explicit PR95, then fetched and merged
+verified main with original commits preserved. Closed profile hashes remain
+stable; framed input gets a distinct profile binding, inspected effective flags
+and single-selector bounded nonblocking input/output with EOF and exact cleanup.
+
+Clean `c1963e29a2577e14b71f6aa9aad0303abacf930b` passes211 focused checks in75.40s,
+20 existing live cases excluded;38 new cases include16 actual Docker resource
+cases and one actual PG widening denial. Ruff/mypy198/11 imports/secret/diff pass.
+Earlier clean206/210 results remain bound to their original sources, before
+review added attach-client/exited-state and output-capture guards. Raw evidence
+and fixture limits: `evidence/sandbox-framed-stdin-2026-10-18`; design45.
+
+Gateway/launcher/registered-command interface migration and actual gateway crash
+proof remain next. The demo's reviewed apply.py reads the old request file and
+needs explicit migration; do not silently recreate staged files. Current framed
+transport alone does not remove that resource or certify native/grant/G1/G2/G3.
+No provider/model/vendor CLI/SDK/auth or owner database/service changes.
