@@ -38,6 +38,8 @@ uv run --frozen panestria research stage OWNER_UUID PROJECT_UUID \
 ```
 
 Expect `STAGED_NO_EXECUTION` and goal/task/request IDs plus a request hash.
+This describes the submission operation, not any later execution history;
+inspect the canonical goal/task for their current state when replaying a receipt.
 Retain these IDs. The same command/key/input safely returns `replayed:true`.
 Changing the question, contract or bounds with that key fails; it cannot create
 another task or silently alter retained intent. A late local failure can leave

@@ -1951,8 +1951,12 @@
         "AOS-023-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-023-S1.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-023-S1.md",
+      "implementation_note": "Owner PUBLIC question staging/CLI and atomic canonical records plus private inspection; no activation or egress. Explicit bounded collection, live runtime and semantic/G2 qualification remain pending.",
+      "evidence_refs": [
+        "evidence/owner-research-submission-2026-10-18/report.json"
+      ]
     },
     {
       "id": "AOS-023-S2",

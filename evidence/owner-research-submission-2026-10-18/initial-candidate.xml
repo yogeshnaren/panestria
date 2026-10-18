@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="7" time="20.976" timestamp="2026-10-18T12:31:12.646774-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_research_submission" name="test_owner_question_to_retained_inspection_is_staged_and_cannot_acquire_lease" file="tests/integration/test_research_submission.py" line="94" time="5.413"><properties><property name="candidate_commit" value="c163ade7192df5f0901ba7e29fcb3ecf6ab36f6c" /><property name="fixture_digest" value="1a52692ce9b1b26a72d5985151fe1fc6531843d5e7bc5409a77a604a1e8e0317" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_submission" name="test_replay_and_concurrent_submission_preserve_one_request_and_reject_changed_question_or_limits" file="tests/integration/test_research_submission.py" line="115" time="2.314"><properties><property name="candidate_commit" value="c163ade7192df5f0901ba7e29fcb3ecf6ab36f6c" /><property name="fixture_digest" value="1a52692ce9b1b26a72d5985151fe1fc6531843d5e7bc5409a77a604a1e8e0317" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_submission" name="test_actual_commit_then_lost_ack_replays_without_duplicate_rows_or_events" file="tests/integration/test_research_submission.py" line="128" time="2.129"><properties><property name="candidate_commit" value="c163ade7192df5f0901ba7e29fcb3ecf6ab36f6c" /><property name="fixture_digest" value="1a52692ce9b1b26a72d5985151fe1fc6531843d5e7bc5409a77a604a1e8e0317" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AttributeError: 'ResearchSubmissionService' object has no attribute 'connection'">staged = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_lease_migration_b2061f3cde4a4eea...bc3d3263-c2f7-43db-b027-07d06dd7bf2d', 'contract_version': 1, 'owner_id': 'ae3e31ca-a10c-48f0-90ab-d86f0a50811c', ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x71c5611c7fe0&gt;
+
+    def test_actual_commit_then_lost_ack_replays_without_duplicate_rows_or_events(staged, monkeypatch):
+        original = ResearchSubmissionService.stage
+    
+        def lost(uow, *a, **kw):
+            original(uow, *a, **kw)
+            uow.connection.commit()
+            raise OSError("SYNTHETIC_ACK_LOST_AFTER_ACTUAL_COMMIT")
+    
+        monkeypatch.setattr(ResearchSubmissionService, "stage", lost)
+        with pytest.raises(OSError):
+&gt;           submit(staged)
+
+tests/integration/test_research_submission.py:139: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_research_submission.py:82: in submit
+    return stage_question(
+src/panestria/execution/research_submission.py:64: in stage_question
+    return ResearchSubmissionService().stage(UnitOfWork(c), actor, document, request, idempotency_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+uow = &lt;panestria.kernel.research_submission.ResearchSubmissionService object at 0x71c5611c4170&gt;
+a = (&lt;panestria.kernel.uow.UnitOfWork object at 0x71c5611c7410&gt;, &lt;panestria.kernel.goals.Actor object at 0x71c5611c4560&gt;, ...ax_source_bytes=1048576, max_total_bytes=8388608, max_redirects=3, deadline_seconds=60.0)), 'synthetic-research-stage')
+kw = {}
+
+    def lost(uow, *a, **kw):
+        original(uow, *a, **kw)
+&gt;       uow.connection.commit()
+        ^^^^^^^^^^^^^^
+E       AttributeError: 'ResearchSubmissionService' object has no attribute 'connection'
+
+tests/integration/test_research_submission.py:134: AttributeError</failure></testcase><testcase classname="tests.integration.test_research_submission" name="test_late_failure_rolls_back_all_db_rows_events_but_preserves_acknowledged_private_blob" file="tests/integration/test_research_submission.py" line="144" time="2.226"><properties><property name="candidate_commit" value="c163ade7192df5f0901ba7e29fcb3ecf6ab36f6c" /><property name="fixture_digest" value="1a52692ce9b1b26a72d5985151fe1fc6531843d5e7bc5409a77a604a1e8e0317" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_submission" name="test_no_public_intent_cross_owner_or_stale_policy_cannot_stage" file="tests/integration/test_research_submission.py" line="167" time="2.187"><properties><property name="candidate_commit" value="c163ade7192df5f0901ba7e29fcb3ecf6ab36f6c" /><property name="fixture_digest" value="1a52692ce9b1b26a72d5985151fe1fc6531843d5e7bc5409a77a604a1e8e0317" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_submission" name="test_actual_cli_stage_and_private_inspect_export_redact_terminal_and_preserve_no_execution" file="tests/integration/test_research_submission.py" line="180" time="2.231"><properties><property name="candidate_commit" value="c163ade7192df5f0901ba7e29fcb3ecf6ab36f6c" /><property name="fixture_digest" value="1a52692ce9b1b26a72d5985151fe1fc6531843d5e7bc5409a77a604a1e8e0317" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_brief" name="test_connected_inspection_rechecks_citations_offline_and_never_promotes_unrelated_fact" file="tests/integration/test_research_brief.py" line="98" time="3.900"><properties><property name="candidate_commit" value="c163ade7192df5f0901ba7e29fcb3ecf6ab36f6c" /><property name="fixture_digest" value="098dfca7ba520ac642a1481aae72434c65ad79d9261d023f52fc34a6448ac079" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase></testsuite></testsuites>
