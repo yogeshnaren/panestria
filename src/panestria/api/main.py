@@ -23,6 +23,7 @@ from panestria.api.health import (
 )
 from panestria.api.routes.approvals import router as approvals_router
 from panestria.api.routes.artifacts import router as artifacts_router
+from panestria.api.routes.connections import router as connections_router
 from panestria.api.routes.events import router as events_router
 from panestria.api.routes.goals import router as goals_router
 from panestria.api.routes.quota import router as quota_router
@@ -86,6 +87,7 @@ def mount_goal_api(app: FastAPI, goal_api: GoalApi) -> None:
     app.include_router(approvals_router)
     app.include_router(artifacts_router)
     app.include_router(quota_router)
+    app.include_router(connections_router)
 
 
 def mount_browser_api(app: FastAPI, access: object) -> None:
