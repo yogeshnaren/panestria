@@ -481,11 +481,12 @@
           "evidence_refs": [
             "evidence/retained-research-brief-2026-10-18/report.json",
             "evidence/shared-research-runtime-2026-10-18/report.json",
-            "evidence/owner-research-submission-2026-10-18/report.json"
+            "evidence/owner-research-submission-2026-10-18/report.json",
+            "evidence/owner-research-collection-2026-10-18/report.json"
           ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-023-implementation-plan.md",
-          "implementation_note": "Owner question staging/private inspection and connected same-policy search/fetch components; activation/collection, live runtime and semantic/G2 qualification pending."
+          "implementation_note": "Owner staged-question collection now connects selected bounded PUBLIC queries to admitted search/fetch/read/excerpts/private inspection and VERIFYING/RECONCILING states. Synthetic HTTPS/certificates only; operator policy UI, planner/synthesis, qualified support/live runtime/G2 pending."
         }
       ]
     },

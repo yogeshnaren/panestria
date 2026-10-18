@@ -13,12 +13,63 @@ from pydantic import SecretStr
 
 from panestria.config import Settings
 from panestria.config_local import read_private
+from panestria.config_research import load_research_settings
 from panestria.contracts.research import ResearchLimits
 from panestria.execution.research_brief import RetainedBrief, brief_html, brief_json
+from panestria.execution.research_collection import OwnerCollection
 from panestria.execution.research_submission import stage_question
 from panestria.kernel.goals import Actor
 
 research_app = typer.Typer(no_args_is_help=True)
+
+
+@research_app.command("collect")
+def collect_research(
+    request_id: str,
+    config: Annotated[Path, typer.Option("--config")],
+    queries: Annotated[Path, typer.Option("--queries")],
+    output: Annotated[Path, typer.Option("--output")],
+    public_web: Annotated[bool, typer.Option("--public-web")] = False,
+    output_format: Annotated[Literal["html", "json"], typer.Option("--format")] = "html",
+) -> None:
+    """Explicit qualified PUBLIC collection; retained excerpts await synthesis/support."""
+    try:
+        if not public_web:
+            raise ValueError("explicit_public_collection_required")
+        # Catch ordinary export setup mistakes before any outward effect. The
+        # final exclusive descriptor-based writer still enforces the boundary.
+        if (
+            not output.is_absolute()
+            or output.parent.resolve(strict=True) != output.parent
+            or stat.S_IMODE(output.parent.stat().st_mode) != 0o700
+            or output.parent.stat().st_uid != os.getuid()
+            or output.exists()
+            or output.is_symlink()
+        ):
+            raise ValueError("new_private_output_required")
+        settings = load_research_settings(config)
+        raw_queries = json.loads(read_private(queries, 16 * 1024))
+        if (
+            type(raw_queries) is not list
+            or not 1 <= len(raw_queries) <= 16
+            or any(type(q) is not str for q in raw_queries)
+        ):
+            raise ValueError("bounded_public_queries_required")
+        dsn = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
+        owner = OwnerCollection(dsn.get_secret_value(), settings)
+        receipt = owner.collect(request_id, tuple(SecretStr(q) for q in raw_queries), public_web=public_web)
+        brief = RetainedBrief(settings.root, owner.actor).inspect(dsn.get_secret_value(), request_id, receipt.task_id)
+        raw = brief_html(brief) if output_format == "html" else brief_json(brief)
+        _write_private(output, raw)
+        typer.echo(
+            json.dumps(
+                {**asdict(receipt), "sha256": hashlib.sha256(raw).hexdigest(), "retained_excerpts": len(brief.claims)}
+            )
+        )
+    except (Exception, KeyboardInterrupt):
+        # Some work may already be committed. Never imply that retry is safe.
+        typer.echo('{"status":"UNAVAILABLE","reason":"research_collection_unavailable_inspect_state"}', err=True)
+        raise typer.Exit(1) from None
 
 
 @research_app.command("stage")

@@ -14,7 +14,14 @@ from pydantic import SecretStr
 from panestria.contracts.build import canonical_sha256
 from panestria.contracts.classification import derive_classification
 from panestria.contracts.research import ResearchArtifactRef, ResearchLimits, ResearchRequestRecord, ResearchScope
-from panestria.contracts.research_brief import BriefCitation, BriefClaim, EvidenceBrief
+from panestria.contracts.research_brief import (
+    BriefCitation,
+    BriefClaim,
+    CollectionObservation,
+    EvidenceBrief,
+    FetchObservation,
+    SearchObservation,
+)
 from panestria.execution.research_claims import ClaimStore
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -183,9 +190,54 @@ class RetainedBrief:
             goal_status=row[12],
             privacy_label=label,
             claims=tuple(claims),
+            collection=_collection(uow, task_id, request_id),
         )
         brief_json(brief)  # Enforce one aggregate output bound, including explicitly unwrapped protected text.
         return brief
+
+
+def _collection(uow: UnitOfWork, task_id: str, request_id: str) -> CollectionObservation | None:
+    # Historical dispatch/receipt observation; never runtime or semantic authority.
+    prepared = uow.execute(
+        "SELECT EXISTS(SELECT 1 FROM panestria.search_plan WHERE task_id=%s AND request_id=%s) "
+        "OR EXISTS(SELECT 1 FROM panestria.fetch_plan WHERE task_id=%s AND request_id=%s)",
+        (task_id, request_id, task_id, request_id),
+    ).fetchone()
+    if prepared is None or not prepared[0]:
+        return None
+    searches = uow.execute(
+        "SELECT d.id::text,coalesce(o.status,'UNKNOWN'),o.candidate_count "
+        "FROM panestria.search_dispatch d LEFT JOIN panestria.search_outcome o ON o.dispatch_id=d.id "
+        "WHERE d.task_id=%s AND d.request_id=%s ORDER BY d.ordinal LIMIT 17",
+        (task_id, request_id),
+    ).fetchall()
+    fetches = uow.execute(
+        "SELECT d.id::text,coalesce(o.status,'UNKNOWN'),coalesce(o.diagnostic,'unconfirmed'),"
+        "o.snapshot_id::text,d.reserved_body_bytes FROM panestria.fetch_dispatch d "
+        "LEFT JOIN panestria.fetch_outcome o ON o.dispatch_id=d.id WHERE d.task_id=%s AND d.request_id=%s "
+        "ORDER BY d.ordinal LIMIT 17",
+        (task_id, request_id),
+    ).fetchall()
+    stopped = uow.execute(
+        "SELECT payload->>'reason' FROM panestria.task_event WHERE task_id=%s "
+        "AND kind='research.collection.stopped' AND payload->>'request_id'=%s ORDER BY seq DESC LIMIT 1",
+        (task_id, request_id),
+    ).fetchone()
+    attempt = uow.execute(
+        "SELECT status,lease_expires_at>clock_timestamp() FROM panestria.task_attempt "
+        "WHERE task_id=%s ORDER BY attempt_number DESC LIMIT 1",
+        (task_id,),
+    ).fetchone()
+    return CollectionObservation(
+        searches=tuple(SearchObservation(dispatch_id=r[0], status=r[1], candidate_count=r[2]) for r in searches),
+        fetches=tuple(
+            FetchObservation(dispatch_id=r[0], status=r[1], diagnostic=r[2], snapshot_id=r[3], reserved_body_bytes=r[4])
+            for r in fetches
+        ),
+        stop_reason=stopped[0] if stopped else None,
+        latest_attempt_status=attempt[0] if attempt else None,
+        lease_unexpired=bool(attempt and attempt[1]),
+    )
 
 
 def brief_json(brief: EvidenceBrief) -> bytes:
@@ -218,8 +270,31 @@ def brief_html(brief: EvidenceBrief) -> bytes:
         f"observed: {brief.observed_at.isoformat()}; request SHA256: {brief.request_sha256}</p>",
         "<h2>Limitations</h2><ul>",
         *(f"<li>{escape(value)}</li>" for value in brief.limitations),
-        "</ul><h2>Draft statements</h2>",
+        "</ul>",
     ]
+    if brief.collection is not None:
+        observed = brief.collection
+        parts.extend(
+            [
+                "<h2>Collection observations</h2>",
+                f"<p>Stop: {observed.stop_reason or 'no confirmed stop'}; "
+                f"attempt: {observed.latest_attempt_status or 'none'}; "
+                f"lease unexpired: {observed.lease_unexpired}.</p>",
+                "<p>Dispatch and reserved body capacity are not measured upstream usage, cash or quota.</p><ul>",
+                *(
+                    f"<li>Search {s.dispatch_id}: {s.status}; candidates: {s.candidate_count}.</li>"
+                    for s in observed.searches
+                ),
+                *(
+                    f"<li>Fetch {f.dispatch_id}: {f.status}; {f.diagnostic}; "
+                    f"reserved body bytes: {f.reserved_body_bytes}; "
+                    f"snapshot: {f.snapshot_id or 'none'}.</li>"
+                    for f in observed.fetches
+                ),
+                "</ul>",
+            ]
+        )
+    parts.append("<h2>Draft statements</h2>")
     if not brief.claims:
         parts.append("<p>No retained claims. This is not a completed research brief.</p>")
     for claim in brief.claims:

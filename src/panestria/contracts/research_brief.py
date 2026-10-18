@@ -7,6 +7,34 @@ from pydantic import Field, SecretStr, StrictInt
 
 from panestria.contracts.classification import CanonicalClass
 from panestria.contracts.research import PassageRef, ResearchContract, ResearchId, ResearchScope, Sha256
+from panestria.contracts.research_admission import CollectionStop, FetchDiagnostic
+
+
+class SearchObservation(ResearchContract):
+    dispatch_id: ResearchId
+    status: Literal["RETURNED", "UNAVAILABLE", "UNKNOWN"]
+    candidate_count: StrictInt | None = Field(default=None, ge=0, le=16)
+
+
+class FetchObservation(ResearchContract):
+    dispatch_id: ResearchId
+    status: Literal["RETAINED", "FETCH_ERROR", "READER_ERROR", "UNKNOWN"]
+    diagnostic: FetchDiagnostic
+    snapshot_id: ResearchId | None = None
+    reserved_body_bytes: StrictInt = Field(ge=2, le=32 * 1024 * 1024)
+
+
+class CollectionObservation(ResearchContract):
+    searches: tuple[SearchObservation, ...] = Field(default=(), max_length=16)
+    fetches: tuple[FetchObservation, ...] = Field(default=(), max_length=16)
+    stop_reason: CollectionStop | None = None
+    latest_attempt_status: (
+        Literal["PENDING", "RUNNING", "SUCCEEDED", "FAILED", "LOST", "CANCELLING", "CANCELLED"] | None
+    ) = None
+    lease_unexpired: bool = False
+    usage_authority: Literal["DISPATCH_AND_CAPACITY_NOT_MEASURED_UPSTREAM_USAGE"] = (
+        "DISPATCH_AND_CAPACITY_NOT_MEASURED_UPSTREAM_USAGE"
+    )
 
 
 class BriefCitation(ResearchContract):
@@ -43,6 +71,7 @@ class EvidenceBrief(ResearchContract):
     goal_status: str
     privacy_label: CanonicalClass
     claims: tuple[BriefClaim, ...] = Field(default=(), max_length=64)
+    collection: CollectionObservation | None = None
     semantic_support: Literal["NOT_ASSESSED"] = "NOT_ASSESSED"
     contradictions: Literal["NOT_ASSESSED"] = "NOT_ASSESSED"
     task_completion_authority: Literal["NONE"] = "NONE"

@@ -15,6 +15,7 @@ FetchDiagnostic = Literal[
     "reader_unavailable",
     "unconfirmed",
 ]
+CollectionStop = Literal["queries_exhausted", "source_limit", "body_limit", "search_unavailable", "interrupted"]
 
 
 class ResearchAuthorityBinding(ResearchContract):
