@@ -1621,7 +1621,8 @@
       "prompt_ref": "cursor/prompts/AOS-019-S1.md",
       "evidence_refs": [
         "evidence/research-public-fetch-2026-10-15/report.json",
-        "evidence/configured-search-transport-2026-10-18/report.json"
+        "evidence/configured-search-transport-2026-10-18/report.json",
+        "evidence/search-admission-2026-10-18/report.json"
       ]
     },
     {

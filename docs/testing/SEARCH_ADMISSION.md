@@ -39,6 +39,11 @@ cancellation, setup/quota errors, immutable audit and actual backup/restore.
 Migration checks preserve prior rows and compare the observed schema fingerprint.
 It makes no external search, inference, paid API or owner-database call.
 
+The [clean-source report](../../evidence/search-admission-2026-10-18/report.json)
+records 40 passing checks: 19 for the new component, historical connection-audit
+restore and the local API suite. Prior failures and their corrections are listed;
+they are not counted as passing evidence.
+
 Live search still requires a separately configured owner-approved SearXNG service,
 its inspected upstream/no-extra-spend configuration and actual source-bound OS
 qualification. `PublicSearchCertificateStore` rejects a native Build-only purpose;

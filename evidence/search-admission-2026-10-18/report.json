@@ -1,0 +1,41 @@
+{
+  "purpose": "Durable task-wide PUBLIC search admission and acknowledged outbound disclosure; not live search qualification or release acceptance",
+  "source_commit": "30eebfc8f6d0fa3ad40ba6888756cfaeea157c1c",
+  "worktree_state": "clean",
+  "command": "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_search_admission.py tests/integration/test_connection_reviews.py::test_audit_actual_dump_restore_and_downgrade_refusal tests/integration/test_local_server.py -q --junitxml=/tmp/panestria-search-admission-qualified.xml",
+  "checks": 40,
+  "new_search_admission_checks": 19,
+  "seconds": 58.65,
+  "junit_sha256": "36464fe7aace85cc04838a69ae48ab223086793314025f9f7f1d080975686e68",
+  "source_hashes": {
+    "src/panestria/contracts/search_admission.py": "8ad3f39663d4bd4e923552d7c2aca3e04e0d7ea49d269a5a7c6e6ea70fe8c11f",
+    "src/panestria/kernel/search.py": "75c2f005cdb0585d31d7332e53523c10b9fc548640b65fae0a734a61bb5e0b36",
+    "src/panestria/execution/search.py": "3151f38d8bb6a4011d242602d85f1a290a7ee1bc9f0de81b397f44977a0fe9c3",
+    "src/panestria/policy/search.py": "4e3778de0eb5d0a2a1366e0f6ffd098201daba790a830f13b33a6ca440818c81",
+    "src/panestria/api/local_server.py": "09d0f4e6cff5ce2ca7fa5306eb80ed27947ad794768438122fe714ce6d9682ef",
+    "migrations/versions/0030_search_admission.py": "1c0f777beaa243112f5b52233680288f1b088cf05a728a168ce23b91c2229a36",
+    "migrations/schema_fingerprint.txt": "2e4a1df9de8da81cca2ad74ffca8f0b6a1c9bed8687a34ddd2587eaaddd3c568",
+    "tests/integration/test_search_admission.py": "68d13c75a58a794c08c2639e553469c94a54b053c37c69de6c58d0c1012b441c",
+    "tests/integration/test_configured_search.py": "268b9f2390f9d177032259032e6ad7a4627ef73371c313de9450675c83583ac1"
+  },
+  "development_validation": [
+    "Initial test-contract fixture omissions, row-version assumption and SQL percent escaping were corrected without weakening contracts",
+    "Earlier affected-suite run: 141 passed, one local API schema-head compatibility failure; source constant updated to migration 0030 and final historical-audit/API checks passed",
+    "A final-command selection initially named a nonexistent migration node; zero tests ran and it is not counted as validation",
+    "Review found cancellation could overlap receipt commit; final current-authority recheck and actual-PG regression were added"
+  ],
+  "other_validation": [
+    "Ruff PASS",
+    "Mypy PASS (218 source files)",
+    "11 import boundaries PASS",
+    "Secret scan PASS"
+  ],
+  "limits": [
+    "Actual disposable PostgreSQL databases, loopback HTTP, cancellation and dump/restore; certificate explicitly TEST_FIXTURE_NOT_LIVE",
+    "No installed SearXNG or upstream engine queried, no actual public-search OS certificate issued",
+    "Claims consume possible disclosure budget, not measured upstream quota/cash; unknown usage is not presented as known",
+    "No raw query, URL, title or snippet stored in admission audit; successful local response never proves semantic support",
+    "Native Build certificate is not public-search authority; no provider/service installation, credentials, downloads, inference or paid calls",
+    "Complete owner-facing Delegate workflow, actual provider/upstream/no-extra-spend/OS qualification, semantic support and cumulative G1/G2/G3 remain pending; paid SDK TC04 stays DEFERRED NOT PASS"
+  ]
+}
