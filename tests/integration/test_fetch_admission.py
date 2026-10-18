@@ -23,6 +23,7 @@ from panestria.execution.research_brief import RetainedBrief
 from panestria.execution.research_claims import ClaimStore
 from panestria.kernel.cancellation import CancellationService
 from panestria.kernel.errors import KernelDenied
+from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.research_sources import SourceRecordService
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.profiles import CertificateRejected
@@ -306,11 +307,14 @@ def test_actual_dump_restore_preserves_fetch_fences_global_sequence_and_downgrad
                     "RETAINED",
                     result.snapshot_id,
                 )
-                next_event = c.execute(
-                    "INSERT INTO panestria.task_event(goal_id,task_id,actor,kind,payload) "
-                    "VALUES(%s,%s,%s,'synthetic.restore','{}') RETURNING seq",
-                    (f.plan.scope.goal_id, f.plan.scope.task_id, f.actor.owner_id),
-                ).fetchone()[0]
+                next_event = append_event(
+                    UnitOfWork(c),
+                    goal_id=f.plan.scope.goal_id,
+                    task_id=f.plan.scope.task_id,
+                    actor=f.actor.owner_id,
+                    kind="synthetic.restore",
+                    payload={},
+                )
                 assert next_event > before
         finally:
             admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))
