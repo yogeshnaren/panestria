@@ -12,6 +12,7 @@ from uuid import uuid4
 
 import psycopg
 import pytest
+from psycopg import sql
 
 ROOT = Path(__file__).resolve().parents[2]
 R1_DSN = "postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic"
@@ -72,6 +73,31 @@ def r1_database() -> Iterator[str]:
 
 @pytest.fixture
 def r1_task(r1_database: str) -> dict[str, str]:
+    return _seed_r1_task(r1_database)
+
+
+@pytest.fixture
+def r1_migration_task(r1_database: str) -> Iterator[dict[str, str]]:
+    """Old-schema roundtrips must not downgrade another test's retained audits."""
+    name = "panestria_lease_migration_" + uuid4().hex
+    dsn = r1_database.rsplit("/", 1)[0] + "/" + name
+    with psycopg.connect(r1_database, autocommit=True) as admin:
+        admin.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
+        try:
+            result = subprocess.run(
+                ["uv", "run", "--frozen", "alembic", "-c", "migrations/alembic.ini", "upgrade", "head"],
+                cwd=ROOT,
+                env={**os.environ, "PANESTRIA_DATABASE_URL": dsn},
+                capture_output=True,
+                timeout=60,
+            )
+            assert result.returncode == 0, result.stderr
+            yield _seed_r1_task(dsn)
+        finally:
+            admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))
+
+
+def _seed_r1_task(r1_database: str) -> dict[str, str]:
     ids = {key: str(uuid4()) for key in ("owner", "project", "goal", "contract", "task", "check")}
     ids["dsn"] = r1_database
     with psycopg.connect(r1_database) as c:
