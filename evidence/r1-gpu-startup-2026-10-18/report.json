@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "status": "COMPONENT_FIX_QUALIFIED_R1_INCOMPLETE",
+  "reports": [
+    {
+      "path": "baseline-native.xml",
+      "candidate_commit": "9a7d5d547ace91486eca5b47c8719cf0181c9147",
+      "clean": true,
+      "sha256": "64825aa37ded2641abad81716037b427030aa97959d49cf51f1cdf4183033019",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "path": "baseline-offline-failed.xml",
+      "candidate_commit": "9a7d5d547ace91486eca5b47c8719cf0181c9147",
+      "clean": true,
+      "sha256": "1a00e9b7e95871012d98fbae16d553910f06c521b2a9941b5bb5efc8f7a24c8e",
+      "counts": {
+        "tests": 5,
+        "failures": 3,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "path": "qualified-default.xml",
+      "candidate_commit": "d9fac6751b19d6b4abe2a4276ba3c8a1f9b21104",
+      "clean": true,
+      "sha256": "da312c67cd3504d67d43085dcbac782060f17910a0dbc45e3da6f3d50f9555aa",
+      "counts": {
+        "tests": 40,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    }
+  ],
+  "observations": {
+    "host_cuda_init": 999,
+    "owned_container_cuda_init": 999,
+    "offline_answers": "all ten fixed questions passed content/scope checks before latency assertion",
+    "warm_ask_p95_seconds": 14.940630195000267,
+    "observed_model_size_vram_bytes": 0,
+    "gpu_pressure_cuda_malloc_result": 999,
+    "native_subscription_checks_passed": 3
+  },
+  "scope": [
+    "Existing pinned Claude subscription and public synthetic content only; no API call or fallback",
+    "Failed original GPU/latency evidence retained unchanged; default checks do not satisfy those live cases",
+    "Host prerequisite check is necessary, not proof of container GPU offload/performance or isolation",
+    "Requested GPU launch now refuses before Docker enumeration/cleanup/create; explicit CPU startup is unchanged"
+  ],
+  "owner_direction": "2026-10-18: subscription and local inference only; paid SDK case AOS-016-TC04 deferred, not passed",
+  "release_gate": "NOT_EVALUATED",
+  "owner_state_changed": false
+}

@@ -11,6 +11,18 @@ adequate foreground headroom/AC power, and a dedicated current PostgreSQL databa
 Nothing downloads models/images, creates provider credentials or uses paid APIs.
 Missing or busy prerequisites return an error; there is no fallback.
 
+The supported local server currently selects CPU explicitly. A separately
+requested GPU `ModelRuntime` must first pass bounded, read-only CUDA compute
+initialization. `gpu_initialization_unavailable` means the driver could not
+initialize, find a compute device, or complete the probe within five seconds.
+GPU inventory from `nvidia-smi` alone is insufficient. The controller refuses
+before enumerating or changing model containers and releases its primary lease;
+it does not silently switch a requested GPU run to CPU or reload driver modules.
+Retry GPU qualification after the owner restores host compute availability.
+An explicit CPU run has its own measured performance; it cannot establish the
+GPU latency or pressure acceptance cases. A successful host probe is only a
+prerequisite: actual container offload and performance still require live proof.
+
 1. Set your existing database connection in `PANESTRIA_DATABASE_URL` outside Git.
    Apply migrations and run [explicit owner setup](LOCAL_ASK_SETUP.md). Retain
    the same owner/project UUIDs. Setup is an uncertified local-read-only scope.
