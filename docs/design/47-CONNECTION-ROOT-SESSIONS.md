@@ -51,8 +51,9 @@ entry, never from a second unvalidated worker pathname; identity is rechecked.
 Two bounded reads of that exact object must agree in length and SHA256. Each
 requests at most max_bytes+1; total requested data is at most twice that bound.
 max_bytes is a strict integer1..64MiB, not a promise to allocate only64MiB:
-first-pass assembly has temporary chunk/join overhead. A second fresh contained
-relative lookup plus type/link/size/mode/UID/GID/device/inode/mtime/ctime checks
+first-pass assembly has temporary chunk/join overhead. These bounds concern
+logical read requests; they do not bound physical disk I/O, filesystem readahead
+or elapsed time. A second fresh contained relative lookup plus type/link/size/mode/UID/GID/device/inode/mtime/ctime checks
 must match before returning immutable bytes and their hash. Snapshot repr hides
 content. Errors expose stable codes, not paths or OS messages. No automatic
 persistence, indexing, event, subprocess argument or telemetry contains content.
