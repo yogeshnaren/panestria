@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.259" timestamp="2026-10-17T20:41:39.646767-07:00" hostname="yogesh-verisim"><testcase classname="tests.unit.test_sandbox_stdin_contract" name="test_actual_child_exit_between_running_observation_and_attach_poll[0-completed]" file="tests/unit/test_sandbox_stdin_contract.py" line="187" time="0.033"><failure message="AssertionError: assert ('attachment_failed' == 'completed'&#10;  &#10;  - completed&#10;  + attachment_failed)">tests/unit/test_sandbox_stdin_contract.py:244: in test_actual_child_exit_between_running_observation_and_attach_poll
+    assert receipt.reason == expected and receipt.exit_code == exit_code
+E   AssertionError: assert ('attachment_failed' == 'completed'
+E     
+E     - completed
+E     + attachment_failed)</failure></testcase><testcase classname="tests.unit.test_sandbox_stdin_contract" name="test_actual_child_exit_between_running_observation_and_attach_poll[7-process_failed]" file="tests/unit/test_sandbox_stdin_contract.py" line="187" time="0.018"><failure message="AssertionError: assert ('attachment_failed' == 'process_failed'&#10;  &#10;  - process_failed&#10;  + attachment_failed)">tests/unit/test_sandbox_stdin_contract.py:244: in test_actual_child_exit_between_running_observation_and_attach_poll
+    assert receipt.reason == expected and receipt.exit_code == exit_code
+E   AssertionError: assert ('attachment_failed' == 'process_failed'
+E     
+E     - process_failed
+E     + attachment_failed)</failure></testcase></testsuite></testsuites>
