@@ -11,7 +11,7 @@ acceptance checkpoint. Revision 3 remains the active plan; R4–R7 are not start
 | R1 browser/session access | PR104 merged; revoked sessions clear Ask output and cannot receive cached SSE resync data | Include in the cumulative candidate evaluation |
 | R1 one-worker Build | Owner CLI submits selected PUBLIC work through real runtime qualification, admitted Claude/Bash, independent checks, inspection, cancellation and exact protected merge; actual subscription journey passes | Reconcile and qualify the cumulative G1 candidate; human owner review remains |
 | R1 paid SDK compatibility | Deferred by owner; subscription/local-only operation selected | AOS-016-TC04 is not passed. Original required gate manifest remains intact |
-| R2 verified Delegate | Admitted search and fetch/read/retention now connect to quote checks and private brief inspection under one reviewed policy/certificate; semantic preflights are unqualified | Finish owner new-question orchestration, configure/qualify the real provider/runtime, and qualify support/G2 |
+| R2 verified Delegate | Admitted search and fetch/read/retention now connect to quote checks and private brief inspection under one reviewed policy/certificate; semantic preflights are unqualified | Finish explicit bounded collection/orchestration, configure/qualify the real provider/runtime, and qualify support/G2 |
 | R3 complete MVP | Partial components; release not accepted | Finish remaining revision-3 outcomes, multi-worker integration, dashboard, quota/capture, release qualification and genuine owner trial |
 
 ## Latest closed blocker
@@ -108,3 +108,11 @@ one policy; HTTPS/certificates remain synthetic and semantic support remains
 NOT_ASSESSED. Source-bound failure/correction are retained. Next: owner new-question
 admission and bounded collection, followed by real runtime/support qualification
 when prerequisites are ready. No release gate is promoted.
+
+The [owner question submission command](testing/OWNER_RESEARCH_SUBMISSION.md)
+now stages a selected PUBLIC question, canonical contract/checks and immutable
+limits without fixture SQL. It acknowledges private CAS bytes before an atomic
+DB transaction, handles concurrent/uncertain replay and exports the new question
+through the retained inspector. Goal/task remain CREATED: submission grants no
+execution or support authority. AOS-023-S1 is IN_PROGRESS for this component;
+explicit activation/collection, qualified semantic support and G2 remain pending.

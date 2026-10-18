@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "4c1ea1644c514506828df82b7e54115352815f11",
+  "worktree_state": "clean",
+  "outcome": "COMPONENT_CHECKS_PASS_NO_EXECUTION_OR_RELEASE_QUALIFICATION",
+  "execution_mode": "ACTUAL_DISPOSABLE_POSTGRES_PRIVATE_CAS_AND_OWNER_CLI_WITHOUT_NETWORK_OR_MODEL_CALLS",
+  "command": "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_research_submission.py tests/integration/test_research_brief.py::test_connected_inspection_rechecks_citations_offline_and_never_promotes_unrelated_fact -q --junitxml=/tmp/panestria-owner-question-submission-final.xml",
+  "passed": 7,
+  "failed": 0,
+  "duration_seconds": 19.16,
+  "checks": [
+    "New owner question -> canonical goal/task/contract/acceptance/artifact/request/events -> private retained inspection; goal/task CREATED, no lease or semantic authority",
+    "Actual owner CLI with explicit PUBLIC intent and private input/output, terminal redaction and original offline evidence inspection",
+    "Concurrent idempotent submission, changed question/limits denied and no duplicate rows/events",
+    "Actual DB commit then lost acknowledgement safely replays; actual late failure rolls back all new DB rows/events while acknowledged private CAS bytes survive",
+    "Wrong owner, stale pinned policy and absent PUBLIC declaration denied; CREATED task cannot be leased"
+  ],
+  "static_checks": [
+    "Ruff all repository PASS",
+    "Mypy230 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "prior_observations": [
+    {
+      "candidate_commit": "c163ade7192df5f0901ba7e29fcb3ecf6ab36f6c",
+      "worktree_state": "clean_as_recorded_in_each_case",
+      "passed": 6,
+      "failed": 1,
+      "duration_seconds": 20.98,
+      "scope": "Fault-injection test method omitted self; failed before committing due to wrapper binding. Fixed wrapper, no production assertion weakened. Raw initial XML retained. Documentation was subsequently added; final result independently rerun at4c1ea16."
+    }
+  ],
+  "limits": [
+    "Staging creates no policy grant, task activation, worker, acceptance verdict, search/fetch/reader or model call",
+    "CAS and DB are not a single filesystem transaction; rollback can leave an unreferenced protected question blob",
+    "Local administrative DB credential operation, not remote authentication proof",
+    "PUBLIC owner declaration is explicit; no claim of automatic content classification or semantic truth",
+    "Live provider/runtime setup remains owner-deferred; activation/collection and qualified semantic support are pending",
+    "No gate promoted; SDK TC04 deferred, not passed; R3 owner trial pending"
+  ],
+  "files": {
+    "local-checks.xml": "9acad6e34bb732863adbfad32a8ac198b09dbf319994b9d1f5d8adb3a2659653",
+    "initial-candidate.xml": "de1548a1f9ca4f9c74c3ae5fcc792b4de31b88fe16342670a2e885adfe99ae87"
+  }
+}

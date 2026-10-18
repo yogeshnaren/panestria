@@ -22,6 +22,12 @@ hashes. The connected check uses synthetic HTTPS/certificates, actual disposable
 Postgres/loopback HTTP/reader and NOT_ASSESSED semantic status. Owner new-question
 submission/planning, live qualification and full S1/S2 remain incomplete.
 
+[Owner question staging](../design/54-OWNER-RESEARCH-SUBMISSION.md) now supplies
+new PUBLIC questions/limits and canonical goal/task/request/check records through
+a local CLI, with private inspection, transaction/replay checks and no execution.
+S1 is IN_PROGRESS for that component. Goal/task start CREATED; explicit qualified
+activation/collection, planner/support and full acceptance remain pending.
+
 Keep the release scope and dependencies above. Implement only the selected slice; other clauses remain pending until their work/tests complete. Models/UI cannot declare completion. Apply strict scopes, typed errors, transactions, limits and compatibility spikes from the global design.
 
 ## Exact files and interfaces
