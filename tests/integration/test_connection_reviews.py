@@ -525,7 +525,7 @@ def test_empty_migration_downgrade_and_reupgrade_preserve_existing_schema(r1_dat
                     timeout=30,
                 )
             with psycopg.connect(dsn) as c:
-                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0030_search_admission",)
+                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0031_fetch_admission",)
                 assert c.execute("SELECT count(*) FROM panestria.connection_grant").fetchone() == (0,)
         finally:
             admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))

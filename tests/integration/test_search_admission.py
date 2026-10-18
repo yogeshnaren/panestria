@@ -30,8 +30,10 @@ from panestria.brokers.research.search import SearchUnavailable
 from panestria.contracts.goal import contract_sha256, load_contract
 from panestria.contracts.policy import AutonomyAxis, PrivacyAxis, TrustAxis
 from panestria.contracts.research import ResearchArtifactRef, ResearchLimits, ResearchRequestRecord, ResearchScope
+from panestria.contracts.research_admission import FetchPlan
 from panestria.contracts.search import LocalSearchSettings, SearchDisclosure, SearchQuery
 from panestria.contracts.search_admission import SearchPlan
+from panestria.execution.research_fetch import AdmittedFetch, fetch_runtime_versions
 from panestria.execution.search import AdmittedSearch, search_runtime_versions
 from panestria.kernel.build import BuildEvidenceStore
 from panestria.kernel.cancellation import CancellationService
@@ -39,9 +41,11 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor, GoalService
 from panestria.kernel.leases import LeaseService
 from panestria.kernel.policy import PolicyService
+from panestria.kernel.research_blobs import ResearchBlobStore
 from panestria.kernel.research_requests import ResearchRequestService
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.profiles import CertificateStore
+from panestria.policy.research_fetch import PublicFetchCertificateStore
 from panestria.policy.search import PublicSearchCertificateStore
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -54,28 +58,39 @@ def component_metadata(record_property):
 
 @pytest.fixture
 def admitted_search(r1_migration_task, search_server, tmp_path, request):  # noqa: F811
+    changes = getattr(request, "param", {})
+    is_fetch = changes.get("fetch_runtime", False)
     r1_task = r1_migration_task  # Isolated DB: do not add audit to another test's downgrade fixture.
     actor = Actor(r1_task["owner"], r1_task["project"])
     settings = LocalSearchSettings(provider="searxng-local", origin=search_server["origin"])
+    versions = fetch_runtime_versions() if is_fetch else search_runtime_versions(settings)
     reports = BuildEvidenceStore(tmp_path / "search-cert-FIXTURE-NOT-LIVE")
     report = reports.write_report(b'{"scope":"TEST_FIXTURE_NOT_LIVE"}')
     body = {
         "schema_version": 1,
         "profile": "PERSONAL_SANDBOX",
         "verdict": "PASS",
-        "purpose": "PUBLIC_SEARCH_RUNTIME_ONLY",
+        "purpose": "PUBLIC_FETCH_READER_RUNTIME_ONLY" if is_fetch else "PUBLIC_SEARCH_RUNTIME_ONLY",
         "scope": "TEST_FIXTURE_NOT_LIVE",
-        "runtime_versions": search_runtime_versions(settings),
+        "runtime_versions": versions,
         "candidate_commit": "ab" * 20,
         "expires_at": (datetime.now(UTC) + timedelta(hours=1)).isoformat(),
         "allowed_actions": ["read", "external-send"],
         "cases": [
             {"case_id": case, "verdict": "PASS", "execution_mode": "OS_BOUNDARY", "report_sha256": report}
-            for case in ("AOS-008-TC03", "AOS-010-TC03", "AOS-019-TC04")
+            for case in (
+                ("AOS-008-TC03", "AOS-010-TC03", "AOS-019-TC02", "AOS-019-TC03", "AOS-020-TC01")
+                if is_fetch
+                else ("AOS-008-TC03", "AOS-010-TC03", "AOS-019-TC04")
+            )
         ],
     }
     digest = reports.write_report(json.dumps(body).encode())
-    certificates = PublicSearchCertificateStore(reports.root, search_runtime_versions(settings))
+    certificates = (
+        PublicFetchCertificateStore(reports.root, versions)
+        if is_fetch
+        else PublicSearchCertificateStore(reports.root, versions)
+    )
     service = PolicyService(certificates)
     dsn = r1_task["dsn"]
     with psycopg.connect(dsn) as c:
@@ -117,7 +132,7 @@ def admitted_search(r1_migration_task, search_server, tmp_path, request):  # noq
         "constraints": {
             "allowed_paths": ["brief"],
             "forbidden_paths": [".git/**"],
-            "permitted_capabilities": ["public-search"],
+            "permitted_capabilities": ["public-fetch" if is_fetch else "public-search"],
             "cloud_egress": "allow",
         },
         "budget": {"max_attempts_per_task": 2, "max_wall_seconds": 60, "max_api_usd": "0"},
@@ -132,7 +147,6 @@ def admitted_search(r1_migration_task, search_server, tmp_path, request):  # noq
         ],
         "non_goals": [],
     }
-    changes = getattr(request, "param", {})
     for key in ("privacy_class", "trust_profile_id"):
         if key in changes:
             document[key] = changes[key]
@@ -149,20 +163,25 @@ def admitted_search(r1_migration_task, search_server, tmp_path, request):  # noq
             (scope.task_id, scope.goal_id, cid),
         )
         artifact = str(uuid4())
+        question_sha, question_size, store_key = "ab" * 32, 25, "synthetic-metadata-only"
+        if is_fetch:
+            with ResearchBlobStore(tmp_path, actor) as blobs:
+                blob = blobs.put(b"PUBLIC synthetic fetch question")
+            question_sha, question_size, store_key = blob.sha256, blob.size_bytes, blob.sha256
         c.execute(
             "INSERT INTO panestria.artifact(id,task_id,kind,store_key,sha256,privacy_class,size_bytes) "
-            "VALUES(%s,%s,'question','synthetic-metadata-only',%s,%s,25)",
-            (artifact, scope.task_id, "ab" * 32, changes.get("question_label", "PUBLIC")),
+            "VALUES(%s,%s,'question',%s,%s,%s,%s)",
+            (artifact, scope.task_id, store_key, question_sha, changes.get("question_label", "PUBLIC"), question_size),
         )
     request = ResearchRequestRecord(
         request_id=str(uuid4()),
         scope=scope,
-        limits=ResearchLimits(),
+        limits=ResearchLimits(**changes.get("research_limits", {})),
         question=ResearchArtifactRef(
             artifact_id=artifact,
             task_id=scope.task_id,
-            sha256="ab" * 32,
-            size_bytes=25,
+            sha256=question_sha,
+            size_bytes=question_size,
             privacy_label=changes.get("question_label", "PUBLIC"),
         ),
     )
@@ -170,18 +189,23 @@ def admitted_search(r1_migration_task, search_server, tmp_path, request):  # noq
         prepared = ResearchRequestService().prepare(UnitOfWork(c), actor, request)
     with psycopg.connect(dsn) as c:
         lease = LeaseService().acquire(UnitOfWork(c), actor, scope.task_id, "configured-search", 0, ttl_seconds=60)
-    plan = SearchPlan(
+    binding = dict(
         scope=scope,
         request_id=request.request_id,
         request_sha256=prepared.request_sha256,
         contract_sha256=contract_sha256(contract),
         policy_sha256=policy.sha256(),
         configuration_sha256=certificates.runtime_versions["configuration_sha256"],
-        max_queries=2,
     )
-    controller = AdmittedSearch(dsn, actor, plan, lease.attempt_id, lease.epoch, settings, certificates)
+    plan = FetchPlan(**binding) if is_fetch else SearchPlan(**binding, max_queries=2)
+    controller = (
+        AdmittedFetch(dsn, actor, plan, lease.attempt_id, lease.epoch, certificates, tmp_path)
+        if is_fetch
+        else AdmittedSearch(dsn, actor, plan, lease.attempt_id, lease.epoch, settings, certificates)
+    )
     yield SimpleNamespace(
         controller=controller,
+        root=tmp_path,
         dsn=dsn,
         actor=actor,
         plan=plan,
@@ -538,7 +562,7 @@ def test_actual_backup_restore_retains_query_fence_and_global_events(admitted_se
     refused = migrate(f.dsn, "downgrade", "0029_quota_observations")
     assert refused.returncode != 0 and b"search admission audit exists" in refused.stderr
     with psycopg.connect(f.dsn) as c:
-        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0030_search_admission",)
+        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0031_fetch_admission",)
         row = c.execute("SELECT to_jsonb(d) FROM panestria.search_dispatch d").fetchone()[0]
         for change in ({"query_bytes": 0}, {"privacy_class": "INTERNAL"}, {"request_id": str(uuid4())}):
             malformed = {
