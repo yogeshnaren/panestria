@@ -194,6 +194,8 @@ class ScopedBashController:
         registry: CommandRegistry,
         *,
         destination_ref: str = "refs/heads/main",
+        cancel: threading.Event | None = None,
+        deadline: float | None = None,
     ) -> BuildReview:
         """Trusted controller continuation, after a confirmed and reaped tool run.
 
@@ -201,6 +203,12 @@ class ScopedBashController:
         set. This creates an exact review request; it never approves or merges it.
         """
         expected = protected_root.resolve() / self.actor.owner_id / self.actor.project_id / "destination.git"
+
+        def active() -> None:
+            if (cancel is not None and cancel.is_set()) or (deadline is not None and time.monotonic() >= deadline):
+                raise ScopedBashUnavailable("build_verification_cancelled_or_deadline")
+
+        active()
         if repository.is_symlink() or repository.resolve() != expected or not re.fullmatch(r"[0-9a-f]{40}", base):
             raise ScopedBashUnavailable("build_repository_scope_mismatch")
         verify_snapshot(self.snapshot)
@@ -271,6 +279,7 @@ class ScopedBashController:
                 ).fetchall()
             )
         candidate = capture_candidate(repository, base, self.workspace)
+        active()
         snapshot = materialize(repository, base, candidate, frozen_directory)
         verified = verify_build(
             self.contract,
@@ -287,6 +296,7 @@ class ScopedBashController:
         )
         for raw in verified.reports:
             self.reports.write_report(raw)
+        active()
         evidence = BuildEvidenceService(self.reports)
         with self.connect() as connection:
             self.authorize(connection)

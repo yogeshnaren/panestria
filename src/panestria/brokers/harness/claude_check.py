@@ -15,6 +15,7 @@ import sys
 import tempfile
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -130,6 +131,7 @@ class ClaudeRegisteredCheckAdapter:
         profile: str,
         startup_only: bool,
         cancel: threading.Event | None,
+        before_launch: Callable[[], None] | None = None,
     ) -> CheckProfileObservation:
         if not startup_only:
             self.native.inspect()  # Official redacted subscription metadata, no credential reads.
@@ -241,6 +243,10 @@ class ClaudeRegisteredCheckAdapter:
                     )
                     parser = ClaudeEventParser(frozenset({tool}), allowed_mcp_servers=frozenset({"panestria"}))
                     process: ProcessReceipt | None
+                    if cancel is not None and cancel.is_set():
+                        raise ProposalUnavailable("native_check_cancelled_before_launch")
+                    if before_launch is not None:
+                        before_launch()  # Trusted controller dispatch point, never worker metadata.
                     if startup_only:
                         output = run_metadata(binary_fd, args, root, env, deadline, config_fd)
                         lines = output.stdout.splitlines(keepends=True)

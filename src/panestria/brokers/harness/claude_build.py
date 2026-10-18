@@ -6,6 +6,7 @@ controller itself cannot grant cloud permission or accept the resulting task.
 
 import json
 import threading
+from collections.abc import Callable
 
 from panestria.brokers.harness.bash_protocol import ScopedBashSession
 from panestria.brokers.harness.claude_check import CheckProfileObservation, ClaudeRegisteredCheckAdapter
@@ -23,6 +24,7 @@ class ClaudeScopedBashAdapter(ClaudeRegisteredCheckAdapter):
         public_context: str,
         cancel: threading.Event | None = None,
         startup_only: bool = False,
+        before_launch: Callable[[], None] | None = None,
     ) -> CheckProfileObservation:
         """Controller-reviewed PUBLIC task/context, not an API request-body entry point.
 
@@ -63,4 +65,5 @@ class ClaudeScopedBashAdapter(ClaudeRegisteredCheckAdapter):
             profile=PROFILE,
             startup_only=startup_only,
             cancel=cancel,
+            before_launch=before_launch,
         )
