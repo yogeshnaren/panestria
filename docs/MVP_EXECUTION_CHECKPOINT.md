@@ -565,3 +565,22 @@ prior path/component and the original parity assertion. Correction32 passes
 15.87s with only that snapshot dirty; clean21bfa80 parity1 passes0.63s. Separate
 correction evidence preserves both observations; fresh exact-head CI is pending.
 The independent native gateway runbook candidate remains parked separately.
+
+## 2026-10-18 native gateway runbook synchronized after API merge
+
+PR101 actually merged9a7d5d547ace91486eca5b47c8719cf0181c9147 after exact
+head e5e358d CI39107738253 passed1865/51 live excluded/one upstream pypdf
+warning545.70s. Guard verified currentbasee948/head/allchecks/16files/seven owner
+commits/original source and artifact hashes/only four new OpenAPI paths. Both
+merge parents and the entire merge tree matched the tested candidate. Its first
+failed snapshot CI stays historical; no release or runtime grant was promoted.
+
+The native gateway runbook branch began at freshly fetched e948 and now normal-
+merges that verified main. It corrects obsolete staging/missing-authority/branch/
+count/live-selection guidance against actual code. Existing exact commands pass
+62 defaults8.32s/8 live excluded at clean e948, then13 synthetic OS/PG/Docker/
+controller-death cases18.23s with only the guide dirty. Original source pins and
+raw XML still match after this merge. No runtime/tests/manifest or owner state
+changes; evidence is component command qualification, not new acceptance cases.
+The app attachment list is full (100 identities); attempted attachment of101
+failed for that UI limit. PR links and merge evidence remain available normally.

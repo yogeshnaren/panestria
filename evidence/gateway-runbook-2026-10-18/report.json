@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "source_commit": "e9487aa8cd08888d1cfa9d53ca101c2df05131d6",
+  "source_state_at_execution": "default command started clean; OS command started with only docs/testing/NATIVE_TOOL_GATEWAY.md modified; runtime/tests identical to recorded commit",
+  "source_sha256": {
+    "src/panestria/sandbox/native_tool_gateway.py": "dc94e5bd60361b2208feae8d0857dc5c92d69297554aada0e400f46406b8251c",
+    "src/panestria/sandbox/native_tool_input.py": "e7985673628502731b3e9cd317d769c1a094d65d7c136a260b001e5cca3c11f2",
+    "src/panestria/sandbox/native_tool_launch.py": "178cca1310f1ff3c4c88ffa36bf98ef7c3017f394b41ff6ae3c67e96a49c9cd9",
+    "src/panestria/sandbox/runner.py": "05c2fd3c08ee93e2ca5d16a16e4221ab113ace8951ba3adc8ad1a22ffb5bcb4f",
+    "src/panestria/execution/tool_authority.py": "d6fefb068873bc95c29a2f83501cf6c159ec7d0c9894e4479b483433ac27fd20",
+    "src/panestria/kernel/invocations.py": "f1d3823a32e31d9d282795ad1ad2976729a1df5f59294dc76ee041c0432838a5",
+    "src/panestria/kernel/sandbox_launches.py": "b43c3ee45ce33a8ee4ffdedca1f7e14f21e9028c22abea9a5a269dbe1bebd489",
+    "tests/integration/test_native_tool_gateway.py": "d08d316b04f2238ea875da1b531de413a891490815597b0e02093d0f33542618",
+    "tests/integration/test_invocations.py": "e35963e926541a5b9a17fb81a7e460d52c68bfb873894e0908cd0a7578ab95b3",
+    "tests/integration/test_memory_gateway_crash.py": "72f1864f2a460aad6ef08359b608fd8c973563b24c0e7aa3fa7bded68f0921d4",
+    "tests/fixtures/memory_gateway_child.py": "6e5483623133e07eec7e52ed222336c58c7dde1fb15ddf0227e5633dc35261d7",
+    "tests/conftest.py": "f4b27c570e82e39c450af6cf5a933d3615939a006fd24705d4bbf7fd9537e809",
+    "tests/integration/conftest.py": "42faf11d0a4e59336a3f758d5852336b833e12b3ed0d6961c0167c0680654675",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d",
+    "pyproject.toml": "51bb953a36e78a1139b5334ad8e76e847d87ef323f02ff05c20183d18cf8f95f"
+  },
+  "result": "PASS_COMPONENT_COMMANDS",
+  "scope": "current runbook exact existing synthetic gateway contract/PG/Docker/controller death commands; no provider inference or full release conformance",
+  "artifacts": {
+    "default-e9487aa-62.xml": "d7da53c7a0d77106a691bf555448f625ae470c0dbe662cde69bd0f1d75742d09",
+    "os-e9487aa-docs-dirty-13.xml": "699c03547635d4240ca45733119589404927c177c4d46430e8b81a8d142afdd6"
+  },
+  "observed_suites": {
+    "default-e9487aa-62.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "62",
+        "time": "8.313",
+        "timestamp": "2026-10-18T00:20:05.352829-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    ],
+    "os-e9487aa-docs-dirty-13.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "13",
+        "time": "18.227",
+        "timestamp": "2026-10-18T00:21:36.964225-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    ]
+  },
+  "checks": {
+    "default_passed": 62,
+    "default_live_deselected": 8,
+    "default_seconds": 8.32,
+    "explicit_os_passed": 13,
+    "explicit_os_seconds": 18.23
+  },
+  "docs_patch_at_os_execution_sha256": "b5abd0e1ee26a9dd69c0e232a7e77e4e4fed100aebe4107f0db2fddc7388cbca",
+  "rea_workflow": {
+    "repository_commit": "8f7d12e30d63f3d3b4cfe2a90336362841438f56",
+    "route": "complete own source inspection; no REA engine, installation, third-party code incorporation or target execution",
+    "skill_url": "https://github.com/morluto/rea/blob/8f7d12e30d63f3d3b4cfe2a90336362841438f56/.agents/skills/reverse-engineer-anything/SKILL.md"
+  },
+  "limitations": [
+    "Default began on clean e9487aa; OS command began after editing only the runbook. Runtime/tests remained identical to e9487aa; no dirty run is labeled clean.",
+    "These are existing assertions, not new completed acceptance cases. Counts are not full scenario coverage.",
+    "Two actual gateway boundary cases use synthetic interface authority; the durable dispatch and eight crash cases exercise real PostgreSQL journal/recovery.",
+    "No new Claude/Cursor account, native configuration, root/account/purpose/budget grant or G1/G2/G3 capability is certified.",
+    "No owner service/database/checkout/image/model/credential changes and no provider/API calls."
+  ],
+  "runtime_authority": false,
+  "conformance_authority": false,
+  "release_authority": false
+}
