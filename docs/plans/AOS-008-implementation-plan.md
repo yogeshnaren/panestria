@@ -125,6 +125,26 @@ approval bindings, future-effect revocation/reconciliation, narrow secret/OS
 boundary and onboarding UI remain required. No connector, credential, runtime
 permission, network/provider call or release is enabled by these declarations.
 
+## Process-local root resolution component (2026-10-18)
+
+[Scoped descriptor roots](../design/47-CONNECTION-ROOT-SESSIONS.md) implement a
+trusted-controller prerequisite to resolving declared root references.
+[ADR0004](../../adr/0004-connection-root-lifetime.md) requires explicit fresh
+enrollment/review after restart or restore, with no persisted private locator or
+device/inode identity guess. Root/parent replacement cannot retarget held objects;
+contained descriptor lookup, special-object/link/identity checks and two bounded
+content observations precede returning bytes. Only the verified Linux x86-64 ABI
+is supported; unavailable capability refuses without a weaker fallback.
+
+Clean `dda07c3` passes196 focused checks17.86s, including80 new cases with actual
+owned filesystem races, fork/exec and controller SIGKILL/restart. Original failed
+observations, including a metadata-only same-size rewrite miss repaired by the
+content check, remain source-bound evidence. This is neither atomic filesystem
+snapshotting nor hard interruptible I/O. No API/CLI/worker/connector is wired;
+declarations stay DECLARATION_ONLY/conformanceUNVERIFIED. Account/capability,
+actual GrantBroker/authority/budget/approval/purpose/lifecycle and owner setup UI
+remain required; no full TC05–TC08 or release pass is claimed.
+
 ## Private native egress relay prerequisite (2026-10-16)
 
 [The standalone private relay](../design/39-NATIVE-PRIVATE-PROXY-RELAY.md) provides

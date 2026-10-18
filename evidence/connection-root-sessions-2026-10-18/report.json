@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-18T03:19:41.505731+00:00",
+  "source_commit": "dda07c3dfee4e37a1131201c1cf3e5f7f7053113",
+  "source_state_at_execution": "clean",
+  "result": "PASS_COMPONENT",
+  "scope": "controller-only ephemeral connection root descriptors and conservative bounded snapshots; no runtime grant or connector integration",
+  "source_sha256": {
+    "src/panestria/kernel/connection_roots.py": "f7fa44b405f4b3d910244f5100c9730de7740f1eac8f189331b213a4de225973",
+    "src/panestria/kernel/goals.py": "882b48369591ba53d68f8b2c978c13c03659240b6ccac058067211b513cfb2d2",
+    "src/panestria/kernel/errors.py": "eccecfa93cdd71605d2162027ff335061ecb4e13c95a488d71b09e8da0a55329",
+    "src/panestria/contracts/connections.py": "20da565c9d4298eed325c22cc85716d921d878a02100059d77e8dd486503373d",
+    "src/panestria/kernel/connections.py": "8118e10b6ad7c16a96f35ed6c290610ded8f8b48b54eb58666d07608871447c0",
+    "src/panestria/policy/engine.py": "f050038a32fda26153dd804a42597b1afe9f6a33031d4a47a8a6ff44f36434cb",
+    "tests/integration/test_connection_roots.py": "9720fdc9a46550959ef9a415d2f991f3f415ed01eb6565513d91b84437b78443",
+    "tests/unit/test_connection_contracts.py": "7a473e4541d90bbbaae2fd2a093df7c388a2af08ac9ff37ac689ef0b28222356",
+    "tests/integration/test_connection_reviews.py": "a71eee62295dc6b9ace518f0c47b91f3af6d83e8da9d3772f641db4e053ee4ec",
+    "tests/unit/test_public_web_policy.py": "d3597023e11ef42b0a997203f2c8112bf6ea6e3c5712be49870d08e29f629667",
+    "tests/integration/test_public_web_policy_store.py": "a798773ccc852a9d4e822213d8284dc1ac1fa86d20cfaf2907bf9a0c9b615685",
+    "tests/connection_support.py": "38d1836f60919c393c4d2b991a64b7705c72e0ff42d68eaf0d3b0cafa6572bfd",
+    "tests/conftest.py": "f4b27c570e82e39c450af6cf5a933d3615939a006fd24705d4bbf7fd9537e809",
+    "pyproject.toml": "51bb953a36e78a1139b5334ad8e76e847d87ef323f02ff05c20183d18cf8f95f",
+    "uv.lock": "d91bebf6359a2ba7cd1b1ef0d244108259e196bf30fcdf481f68a301a77e963d",
+    ".importlinter": "bc75998b077f693591daffc90a4672f50965ab3750e1c8e4d9346895cdea7bb8"
+  },
+  "artifacts": {
+    "development-initial-72-failed.xml": "dc482cbc79d7d3cb2432e96c76c43f3e9ee7f8adf65177f10f3047b79a1ba313",
+    "development-private-fixtures-72.xml": "e754058e2bba18138163312672f7ff85819ac7f8549901711543b106124fdf9c",
+    "development-extended-127.xml": "7e49fe1d4e08510e33c85fa800010c21801e686d6994b72224e8fae960435d2c",
+    "development-controller-death-2.xml": "934094c0872c2edd90aef0023bdfed8b32b3ef7e5ebe44a98d4ad2809ae2daa6",
+    "qualified-d227c83-193.xml": "290d981dc0082d358b5acbff548173f39931759e57266d5c29a16dfa54174eb4",
+    "qualified-de5789d-195-failed.xml": "7523619eab0d9d47655023c1a812616093ee52bf2b64e6bdad188ed997d1e4a2",
+    "development-content-check-80.xml": "3a4a37799b997aaefd7c4c8fcae4bbacd8ccdc4ccd64b2d91c3d7209cf7a3876",
+    "qualified-92a8015-196.xml": "1cce1d64fa54dbe8ea8b7fcc057b1366265d4a7110f7ce9617ee0848a4b06b45",
+    "qualified-dda07c3-196.xml": "134d4bc3e079c7ea21006643c81a18ddf9c2cd0433bd5d9b0758d99ea01e4d53"
+  },
+  "observed_tests": {
+    "development-initial-72-failed.xml": {
+      "source_state": "dirty development at main fc0c52c; private-file fixture permissions not explicit",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "18",
+          "skipped": "0",
+          "tests": "72",
+          "time": "0.450",
+          "timestamp": "2026-10-17T20:12:05.130926-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-private-fixtures-72.xml": {
+      "source_state": "dirty development; explicit0600 files; production permission check retained",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "72",
+          "time": "0.314",
+          "timestamp": "2026-10-17T20:12:22.961805-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-extended-127.xml": {
+      "source_state": "dirty development; missing-libc and lifetime cases added",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "127",
+          "time": "0.405",
+          "timestamp": "2026-10-17T20:13:24.489890-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-controller-death-2.xml": {
+      "source_state": "dirty test extension over d227c83; production unchanged",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "2",
+          "time": "0.477",
+          "timestamp": "2026-10-17T20:14:48.721006-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "qualified-d227c83-193.xml": {
+      "source_state": "clean d227c83c95b789cca4850aa5cd0c089665e6493a",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "193",
+          "time": "17.749",
+          "timestamp": "2026-10-17T20:14:03.241604-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "qualified-de5789d-195-failed.xml": {
+      "source_state": "clean de5789d8316cf72777914d1245ba81048aa785dd; metadata-only same-size rewrite miss",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "1",
+          "skipped": "0",
+          "tests": "195",
+          "time": "18.879",
+          "timestamp": "2026-10-17T20:15:04.095662-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "development-content-check-80.xml": {
+      "source_state": "dirty development over de5789d; actual-content check plus injected coarse-timestamp regression",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "80",
+          "time": "0.611",
+          "timestamp": "2026-10-17T20:16:26.367309-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "qualified-92a8015-196.xml": {
+      "source_state": "clean 92a801572f825a0cd0ee21d7061765cc060858c3",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "196",
+          "time": "19.304",
+          "timestamp": "2026-10-17T20:16:46.125294-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    },
+    "qualified-dda07c3-196.xml": {
+      "source_state": "clean dda07c3dfee4e37a1131201c1cf3e5f7f7053113",
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "196",
+          "time": "17.844",
+          "timestamp": "2026-10-17T20:17:38.917642-07:00",
+          "hostname": "yogesh-verisim"
+        }
+      ]
+    }
+  },
+  "checks": {
+    "focused_default_passed": 196,
+    "new_cases": 80,
+    "focused_live_excluded": 0,
+    "qualification_xml_seconds": 17.844,
+    "qualification_pytest_summary_seconds": 17.86,
+    "ruff": "PASS",
+    "mypy_source_files": 199,
+    "import_contracts_kept": 11,
+    "secret_scan": "PASS",
+    "source_diff_check": "PASS"
+  },
+  "coverage": [
+    "canonical owner/project/session/ref scoping; private existing roots only; no locator persistence or automatic discovery",
+    "actual held-root and parent replacement cannot retarget; restart/reenrollment/foreign session cannot resurrect old references",
+    "bounded exact UTF8 names; absolute/parent/alias/magic/hardlink/special-object/mount escape denial",
+    "actual concurrent swaps and eight read-time mutations; second bounded content hash repairs observed metadata-only same-size miss",
+    "cleanup on success/refusal/remove/context exception/GC; collision refuses without retarget/leak",
+    "actual fork use refusal with child-copy cleanup, CLOEXEC despite close_fds=False, actual controller SIGKILL/restart",
+    "known /proc mount and /dev/null type probes are metadata only; injected UID/architecture/libc/coarse-timestamp seams are explicit",
+    "existing declaration review, real disposable PostgreSQL and policy regressions retain DECLARATION_ONLY/UNVERIFIED"
+  ],
+  "development_failures": [
+    {
+      "artifact": "development-initial-72-failed.xml",
+      "cause": "18 failures from default group-writable fixture creation; corrected only owned synthetic fixtures to0600, production check retained; 54 passed"
+    },
+    {
+      "artifact": "qualified-de5789d-195-failed.xml",
+      "cause": "194PASS/1FAIL: actual same-length rewrite with old mtime restored escaped metadata-only checks; fixed second bounded read/hash plus coarse-timestamp regression"
+    }
+  ],
+  "initial_dirty_source_backup": {
+    "PANESTRIA_ROOTS_INITIAL_connection_roots.py": "e520cc6bd62a7a49330d5fd249f2aa23ddd1e101f08a18e6e3208241de9418c4",
+    "PANESTRIA_ROOTS_INITIAL_test_connection_roots.py": "3c4ed4a571de4f56cfb601f8281311305a8a6a55e03c63d8b1fcafc6e0afe846"
+  },
+  "limitations": [
+    "No API/CLI/UI/worker/broker connection enabled; declaration root refs do not authorize reads",
+    "Root refs are session/object scoped, not durable: explicit owner reenrollment and new reviewed declaration required after loss/restore; no raw locator or inode persistence",
+    "Linux x86-64 only; unavailable capability refuses; no other-platform certificate or weaker fallback",
+    "Two matching bounded reads and metadata observations are not an atomic filesystem snapshot or historical provenance proof against an arbitrary writer",
+    "Physical reads bounded at twice(max_bytes+1); chunk/join overhead exists; regular filesystem IO/lookup/close may stall; no hard deadline/cancellation/resource certification",
+    "No actual bind mount creation; known-system metadata probes do not enroll those system paths or read their contents",
+    "All private roots/content are owned PUBLIC synthetic fixtures; no owner folder/home/credential/service/schema/provider/model/SDK/image changes",
+    "Actual GrantBroker/capability/account/purpose/current policy/lease/budget/approval/revoke/lifecycle/secret boundary/onboarding remain pending",
+    "No full AOS008TC05-TC08/G1/G2/G3 or R3 owner trial acceptance"
+  ],
+  "runtime_authority": false,
+  "release_authority": false
+}
