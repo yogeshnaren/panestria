@@ -146,10 +146,11 @@ and an owner-authored contract. Do not classify private repositories as PUBLIC t
 make this pilot accept them. The implementation does not add interactive shell
 debugging, private repository cloud support or other provider agents.
 
-At clean `7c4aef5`, the [source-bound report](../../evidence/r1-owner-build-cli-2026-10-18/report.json)
-records 8 default checks with labeled transport/certificate fixtures, 11 actual
-runtime conformance passes and one actual owner CLI journey using the real
-operator-issued certificate and Claude subscription. The latter is a scripted
+At clean `966b694`, the [source-bound report](../../evidence/r1-owner-build-cli-2026-10-18/report.json)
+records 9 default checks with labeled transport/certificate fixtures, including
+remaining verifier wall-budget enforcement, 11 actual runtime conformance passes
+and one actual owner CLI journey using the real operator-issued certificate and
+Claude subscription. Earlier `7c4aef5` evidence is preserved separately. The live journey is a scripted
 synthetic owner decision, not human acceptance. To repeat only the changed-path
 live check after deliberate opt-in:
 
