@@ -187,3 +187,19 @@ source-graph head assertions and observed0032 schema snapshots are corrected;
 The actual incremental memory-pressure check passed without relaxing the cgroup
 cap or classifier. Keep the feature PR draft until required verification passes;
 original CPU/style evidence remains at its recorded source. No gate is promoted.
+
+## Canonical plan and handoff storage component
+
+[Plan storage](testing/CANONICAL_BUILD_PLAN.md) retains exact scoped version1
+proposals, owner consent and canonical CREATED DAG references atomically.
+Handoffs resolve actual current protected candidate/check/attempt evidence; notes
+remain advisory and runtime qualification is NOT_ASSESSED. Accepting a plan grants
+no execution, completion or merge authority.
+
+[Source-bound PG/Git/CAS observations](../evidence/canonical-plans-2026-10-18/report.json)
+cover scoped immutability, concurrent consent, rollback and fenced handoff; an
+initial fixture transition error and its correction remain recorded. The older
+style downgrade guard also preserves the new schema. This is partial AOS-025-S2;
+direct local proposals, revisions/repair, two-worker admission/conflicts and
+final-tree verification remain pending. PR125 is still a draft because host
+runtime timing is unqualified, despite its passing exact-head CI.

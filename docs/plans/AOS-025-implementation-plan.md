@@ -100,3 +100,17 @@ Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the
 | AOS-025-TC08 | security | Replans cannot enlarge scope, privacy, cost or tool authority without corresponding authorization; final approval binds the integrated candidate and evidence. |
 
 These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.
+
+## Initial canonical storage component
+
+The [version1 plan/handoff component](../testing/CANONICAL_BUILD_PLAN.md) uses
+actual migration0033_canonical_plans (the early0006 migration label was
+provisional). Immutable proposal/consent/task membership/handoff tables reference
+the existing canonical task/attempt/contract stores and global task_event.
+Owner acceptance creates CREATED nodes only. Actual adapter and declared worker
+inventory are separate; runtime qualification stays NOT_ASSESSED.
+
+S2 remains IN_PROGRESS: five controller PG/Git/CAS cases observe storage, consent,
+rollback and verified-source binding at their recorded sources; direct structured
+local proposal remains pending. S3 still supplies bounded revisions/repair.
+No task/goal completion, automatic worker admission or full TC02/G3 is claimed.
