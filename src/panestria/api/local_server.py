@@ -40,7 +40,7 @@ from panestria.kernel.uow import UnitOfWork
 from panestria.resources.admission import admit
 from panestria.resources.hardware import HardwareProbe, ProbeUnavailable
 
-SCHEMA_HEAD = "0032_structured_style"
+SCHEMA_HEAD = "0033_canonical_plans"
 
 
 def require_setup(settings: ValidatedSettings, actor: Actor) -> str:
