@@ -139,7 +139,9 @@ class OwnerResearchPolicy:
                 (self.actor.owner_id,),
             )
             created = c.execute(
-                "INSERT INTO panestria.project(id,owner_id) VALUES(%s,%s) ON CONFLICT(id) DO NOTHING RETURNING id",
+                # Concurrent inserts can collide with either the primary key or
+                # the (id, owner_id) key. Scope is still checked by lock_project.
+                "INSERT INTO panestria.project(id,owner_id) VALUES(%s,%s) ON CONFLICT DO NOTHING RETURNING id",
                 (self.actor.project_id, self.actor.owner_id),
             ).fetchone()
             if created is not None:
