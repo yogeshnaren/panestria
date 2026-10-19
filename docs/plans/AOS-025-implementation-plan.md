@@ -1,12 +1,18 @@
 # AOS-025 — Build task DAG and bounded LangGraph reasoning/replan: implementation plan
 
-**Release:** R3. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-003, AOS-016. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R3. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS (S1 proposal preflight delivered). **Tests:** component PASS; full item NOT_RUN. **Depends on:** AOS-003, AOS-016. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-025.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
 ## Outcome and scope
 
 A user intent is converted into an executable acyclic work plan with dependencies, acceptance checks and conservative bounded replanning.
+
+[Bounded proposal preflight](../design/60-BOUNDED-BUILD-DAG.md) delivers S1's typed
+schema and deterministic scope/capability/graph/retry-budget validator with a
+private-file CLI. [Observed component evidence](../../evidence/build-plan-preflight-2026-10-18/report.json)
+is pure/fixture-only. S2/S3, current certified inventory, canonical plan/task
+persistence, two-worker dispatch and full TC01/G3 remain pending.
 
 Keep the release scope and dependencies above. Implement only the selected slice; other clauses remain pending until their work/tests complete. Models/UI cannot declare completion. Apply strict scopes, typed errors, transactions, limits and compatibility spikes from the global design.
 

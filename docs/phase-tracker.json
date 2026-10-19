@@ -523,10 +523,12 @@
             "AOS-003",
             "AOS-016"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/build-plan-preflight-2026-10-18/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-025-implementation-plan.md"
         },
