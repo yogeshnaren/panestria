@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "outcome": "READ_ONLY_STORAGE_COMPONENT_PASS_NOT_RELEASE_QUALIFICATION",
+  "candidate_commit": "857046bef33c1cf614fd33489174a42358abf9c4",
+  "worktree_state": "clean",
+  "observations": {
+    "tests": 54,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 1.098,
+    "scope": "22 storage component cases plus32 Build DAG prerequisite regressions"
+  },
+  "command": ".venv/bin/pytest -q tests/unit/test_storage_awareness.py tests/contract/test_build_plan.py --junitxml=/tmp/panestria-storage-checks.xml",
+  "static_checks": [
+    "Ruff PASS",
+    "Mypy246 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "host_observations": [
+    {
+      "source_commit": "857046bef33c1cf614fd33489174a42358abf9c4",
+      "time": "2026-10-19T05:17:34.055759+00:00",
+      "scope": "Restricted-environment actual CLI capacity and Timeshift config; Docker correctly UNKNOWN without host access",
+      "result": "OBSERVED_WITH_EXPLICIT_DOCKER_UNKNOWN"
+    },
+    {
+      "source_commit": "857046bef33c1cf614fd33489174a42358abf9c4",
+      "time": "2026-10-19T05:18:44.626645+00:00",
+      "scope": "Actual host CLI capacity, local Docker df categories and Timeshift config; private raw report retained outside Git",
+      "result": "PASS_READ_ONLY; four Docker estimates with no invented physical shares; cleanup authority NONE"
+    }
+  ],
+  "delivered": [
+    "One-time capacity report with owner free/reserved blocks and explicit anticipated-write reserve preview",
+    "Bounded opt-in selected directories/local Docker/Timeshift observations, unknown/shared estimates separate",
+    "Opt-in foreground terminal warnings with pressure/growth/component/backup-change and recommendation-only options",
+    "Private config, unchanged-warning deduplication and notification revocation on reload"
+  ],
+  "limits": [
+    "AOS-018-S4 and MVP-X13 partial; original TC05-TC08 and G1/G2/G3 NOT_RUN",
+    "No cleanup, pruning, volume removal, backup-setting change, scheduled monitor or provider call",
+    "No exclusive physical Docker attribution or privileged snapshot scan; daemon-wide estimates may overlap",
+    "No automatic worker/download admission, persistent growth provenance, GUI/unified TUI notification settings or inbox yet",
+    "No storage was cleared; independent existing backup may continue to grow"
+  ],
+  "files": {
+    "checks.xml": "dcae9495d5d631359a3302701ba7f3886969a11b979db8dca02d5964f7532e71"
+  }
+}
