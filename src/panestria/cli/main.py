@@ -24,6 +24,7 @@ from panestria.cli.native import native_app
 from panestria.cli.profile import profile_app
 from panestria.cli.quota import quota_app
 from panestria.cli.research import research_app
+from panestria.cli.storage import storage_app
 from panestria.cli.tui import tui_command
 from panestria.config import ProfileRejected, load_settings
 
@@ -37,6 +38,7 @@ app.add_typer(profile_app, name="profile")
 app.add_typer(quota_app, name="quota")
 app.add_typer(research_app, name="research")
 app.add_typer(local_app, name="local")
+app.add_typer(storage_app, name="storage")
 app.command("approve")(approve_command)
 app.command("deny")(deny_command)
 app.command("approvals")(list_command)
