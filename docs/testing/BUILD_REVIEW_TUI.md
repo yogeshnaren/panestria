@@ -28,7 +28,8 @@ the displayed last state can become stale as another process changes the task.
   kernel rechecks the displayed task version; the UI does not invent cancellation.
 - **Escape** discards an unsent confirmation. **F5** discards it and refreshes.
   A stale preview is never silently replaced with a newer approved action.
-- **q/F10** closes the view. During a decision, quit twice acknowledges leaving
+- **q** outside confirmation or **F10** anytime closes the view. During a decision,
+  quit twice acknowledges leaving
   an unconfirmed outcome. Closing the client stops only its own CLI child;
   it cannot undo an effect already committed. Reopen and refresh canonical state.
 
