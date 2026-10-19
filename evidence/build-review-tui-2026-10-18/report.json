@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "outcome": "PENDING_CORRECTED_CHECKS",
+  "observations": [
+    {
+      "candidate_commit": "05c954bd70102c5210b1cdd324dac56c387d329d",
+      "worktree_state": "clean",
+      "passed": 20,
+      "failed": 1,
+      "duration_seconds": 41.79,
+      "file": "initial-checks.xml",
+      "scope": "5 new Build TUI +8 Ask TUI +8 existing owner CLI, actual PG/Docker/Git and model fixtures",
+      "failure": "Stale-review test matched the immediate pending-state UNCONFIRMED heading before the operation finished, so F5 was still busy. Corrected assertion waits for the explicit failed-decision/view-cleared notice. No production change."
+    }
+  ],
+  "files": {
+    "initial-checks.xml": "df74ed12c0bd5fb7d3aa29153434d9c59e463dbe69b5c0ac063697f5f7a89a55"
+  }
+}

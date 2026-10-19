@@ -57,7 +57,7 @@ def test_actual_build_terminal_stale_frozen_review_cannot_merge_after_cancellati
         t.until(b"Review the frozen preview")
         invoke(f, "cancel", doc["goal_id"], str(result["row_version"]))
         os.write(t.master, b"MERGE\r")
-        t.until(b"UNCONFIRMED", timeout=10)
+        t.until(b"UNCONFIRMED; view cleared.", timeout=10)
         assert git(f.bare, "rev-parse", "HEAD") == f.base
         curses.setupterm(term="xterm-256color")
         os.write(t.master, curses.tigetstr("kf5"))
