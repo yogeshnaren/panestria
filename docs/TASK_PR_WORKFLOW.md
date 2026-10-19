@@ -27,8 +27,10 @@ ancestry. Do not automatically merge or rewrite branches.
 
 Task branches run CI on `pull_request` events. Other branches retain push CI.
 This avoids duplicate push and PR runs for each task. CI checks the full
-candidate tree, including prerequisites, using frozen dependencies, lint, type
-checks, import boundaries, default tests and the secret scan. New pushes cancel
+candidate tree, including prerequisites: one quality job and four isolated
+behavioral lanes cover the complete non-live suite. The aggregate `test` check
+requires every job; JUnit artifacts and slowest-test timings aid diagnosis.
+See the [test audit and lane commands](testing/CI_TEST_AUDIT.md). New pushes cancel
 obsolete runs for the same PR. Required live/GPU/provider cases remain separate
 and must be reported explicitly; default CI is not a release gate substitute.
 

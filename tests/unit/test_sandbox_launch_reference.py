@@ -1,7 +1,7 @@
 """Controller reconciliation reference validation; no Docker or native execution."""
 
 from dataclasses import replace
-from uuid import uuid1, uuid4
+from uuid import uuid4
 
 import pytest
 
@@ -14,7 +14,7 @@ from panestria.sandbox.runner import DockerSandbox, SandboxLaunchReference
     [
         ("attempt_id", "not-a-uuid"),
         ("attempt_id", True),
-        ("launch_id", str(uuid1())),
+        pytest.param("launch_id", "00000000-0000-1000-8000-000000000001", id="launch-id-wrong-uuid-version"),
         ("launch_id", "--all"),
         ("profile_sha256", "0" * 63),
         ("image_id", "latest"),
