@@ -70,7 +70,7 @@
   },
   "static_checks": [
     "Ruff PASS",
-    "Mypy244 source files PASS",
+    "Mypy243 source files PASS",
     "11 import boundaries PASS",
     "secret scan PASS"
   ]
