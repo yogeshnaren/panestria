@@ -20,6 +20,14 @@ build_app = typer.Typer(no_args_is_help=True)
 Config = Annotated[Path, typer.Option("--config")]
 
 
+@build_app.command("tui")
+def terminal_review(config: Config, goal_id: str) -> None:
+    """Inspect one existing PUBLIC Build and explicitly review exact merge/cancel decisions."""
+    from panestria.cli.build_tui import build_tui
+
+    build_tui(config, goal_id)
+
+
 def _service(config: Path) -> OwnerBuild:
     settings = load_build_settings(config)
     url = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url

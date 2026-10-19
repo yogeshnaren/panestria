@@ -6,6 +6,11 @@ Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../d
 
 ## Outcome and scope
 
+The [Build review terminal](../design/58-BUILD-REVIEW-TUI.md) adds a keyboard
+surface over the existing owner CLI: canonical checks/diff, frozen exact merge
+review and separate explicit cancellation. Original AOS-027a gates remain
+intact; this usability component is not a new native-runtime qualification.
+
 One worker candidate is independently verified and can merge only with an exact scoped effect_digest-bound approval.
 
 Keep the release scope and dependencies above. Implement only the selected slice; other clauses remain pending until their work/tests complete. Models/UI cannot declare completion. Apply strict scopes, typed errors, transactions, limits and compatibility spikes from the global design.
