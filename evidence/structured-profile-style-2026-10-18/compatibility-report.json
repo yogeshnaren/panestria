@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "9b0e390af1ec1673be9e914b9caf880a4e0872a5",
+  "worktree_state": "clean",
+  "outcome": "SCHEMA_AND_STYLE_CHECKS_PASS_LOCAL_RUNTIME_TIMING_NOT_QUALIFIED",
+  "observations": {
+    "tests": 43,
+    "passed": 38,
+    "failures": 4,
+    "errors": 1,
+    "live_deselected": 1,
+    "seconds": 780.004
+  },
+  "failed_cases": [
+    {
+      "node": "tests.integration.test_fetch_admission::test_actual_dump_restore_preserves_fetch_fences_global_sequence_and_downgrade_guard[admitted_search0]",
+      "outcome": "FAILURE",
+      "message": "AssertionError: assert ('READER_ERROR', None) == ('RETAINED', None)\n  \n  At index 0 diff: 'READER_ERROR' != 'RETAINED'\n  Use -v to get more diff"
+    },
+    {
+      "node": "tests.integration.test_research_source_provenance::test_actual_capture_dump_restore_and_guard_preserve_proof_and_offline_passages",
+      "outcome": "ERROR",
+      "message": "failed on setup with \"AssertionError: assert 'UNKNOWN' == 'COMPLETE'\n  \n  - COMPLETE\n  + UNKNOWN\""
+    },
+    {
+      "node": "tests.integration.test_sandbox_framed_stdin::test_actual_maximum_frame_eof_and_inherited_isolation",
+      "outcome": "FAILURE",
+      "message": "panestria.sandbox.runner.SandboxLaunchUncertain: sandbox_launch_reconciliation_required"
+    },
+    {
+      "node": "tests.integration.test_sandbox_framed_stdin::test_actual_input_adverse_cases_terminate_and_remove[blocked-reader-deadline_exceeded]",
+      "outcome": "FAILURE",
+      "message": "AssertionError: assert (0 <= 4096 and 19.606546404000255 < (1 + 6))\n +  where 0 = len(b'')\n +    where b'' = SandboxReceipt(container_id='1ce28850a52bcf1e0062564b580a1b2569a794195a400d20b2292aadd12d366a', profile_sha256='2684b8...b2677c8c', exit_code=137, reason='deadline_exceeded', output=b'', elapsed_seconds=19.606546404000255, oom_killed=False).output\n +  and   4096 = SandboxProfile(name='restr"
+    },
+    {
+      "node": "tests.integration.test_sandbox_framed_stdin::test_actual_input_adverse_cases_terminate_and_remove[closed-output-deadline_exceeded]",
+      "outcome": "FAILURE",
+      "message": "AssertionError: assert (0 <= 4096 and 41.59976240500691 < (1 + 6))\n +  where 0 = len(b'')\n +    where b'' = SandboxReceipt(container_id='6073c4d10d682d7d8a06d5ef45491e16e723722c08d1e8011b16f3077aa0aafc', profile_sha256='2684b8...ea0355e35', exit_code=137, reason='deadline_exceeded', output=b'', elapsed_seconds=41.59976240500691, oom_killed=False).output\n +  and   4096 = SandboxProfile(name='restri"
+    }
+  ],
+  "changes": [
+    "Expected current revision is read from the source Alembic graph; intentional historical downgrade targets remain fixed",
+    "Both current schema fingerprints regenerated from actual isolated Postgres0032; the only changed constraint permits render versions1/2",
+    "Memory fixture drains framed input and faults incremental4MiB blocks; asserts actual OOM observation without widening production classification"
+  ],
+  "observed_schema": {
+    "revision": "0032_structured_style",
+    "lines": 1272,
+    "sha256": "6faf6be5ec536a9d457b4eac647c79632d4492187a51d96c04e9161dd9e2fad7",
+    "source": "actual isolated synthetic Postgres; no owner DB migrated"
+  },
+  "static_checks": [
+    "Ruff PASS",
+    "Mypy248 files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "limits": [
+    "Full local batch did NOT pass. Reader/container creation and stopped-container timing failed; actual blocked/closed-output termination took19.61/41.60seconds against the unchanged7second bound",
+    "The memory-pressure case did pass with oom_killed=True; no production timeout, assertion or result classifier was relaxed",
+    "Source-provenance setup UNKNOWN and fetch READER_ERROR are not promoted to retained proof or qualification",
+    "A preceding dirty single memory run never reached the worker because container creation timed out; no OOM pass claimed from that run",
+    "CI and host qualification remain separate. Keep PR draft pending passing required evidence; do not repeat unchanged local runtime probes while host conditions are unchanged",
+    "Original68 checks and actual CPU prompt remain bound to accbe736; no new model/provider/paid call or release gate pass"
+  ],
+  "files": {
+    "compatibility-checks.xml": "834a83f8235d8ffca1bb127347f1303acecf9a655ccbaa43a5281fe2b8947b3b"
+  }
+}

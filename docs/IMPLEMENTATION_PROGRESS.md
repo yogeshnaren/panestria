@@ -179,3 +179,11 @@ conflict handling (026), and final integrated-tree verification/approval (027b).
 Personal-platform charter/context, grants, quota useful-work/capture and Mission
 Control/phone/resource integration remain separate unfinished R3 work. No G3 or
 owner acceptance is claimed by the preflight.
+
+Structured-style follow-up validation keeps actual local failures visible in
+[the compatibility report](../evidence/structured-profile-style-2026-10-18/compatibility-report.json):
+source-graph head assertions and observed0032 schema snapshots are corrected;
+38 checks passed,4 failed and1 errored on host runtime-start/termination timing.
+The actual incremental memory-pressure check passed without relaxing the cgroup
+cap or classifier. Keep the feature PR draft until required verification passes;
+original CPU/style evidence remains at its recorded source. No gate is promoted.
