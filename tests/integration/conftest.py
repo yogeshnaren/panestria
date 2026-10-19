@@ -193,6 +193,7 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_ask_cli.py",
         "test_ask_tui.py",
         "test_ask_tui_live.py",
+        "test_build_tui.py",
         "test_resource_admission.py",
         "test_telemetry.py",
         "test_memory_api.py",

@@ -124,12 +124,12 @@ def terminal_server(configured, tmp_path, record_property):  # noqa: F811
 
 
 @contextmanager
-def terminal(path):
+def terminal(path, *, entry=("tui",), arguments=()):
     master, slave = pty.openpty()
     before = termios.tcgetattr(slave)
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 26, 110, 0, 0))
     process = subprocess.Popen(
-        [str(ROOT / ".venv/bin/python"), "-m", "panestria.cli.main", "tui", "--config", str(path)],
+        [str(ROOT / ".venv/bin/python"), "-m", "panestria.cli.main", *entry, "--config", str(path), *arguments],
         stdin=slave,
         stdout=slave,
         stderr=slave,
