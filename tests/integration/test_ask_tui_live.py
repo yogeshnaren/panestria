@@ -78,7 +78,7 @@ def test_actual_terminal_answers_with_existing_local_cpu_model(r1_database, tmp_
                 time.sleep(0.1)
         with terminal(config) as t:
             t.until(b"CONNECTED")
-            os.write(t.master, b"nReply with only READY. PUBLIC synthetic terminal review.\r")
+            os.write(t.master, b"nReply with only the uppercase version of ready. PUBLIC synthetic terminal review.\r")
             t.until(b"COMPLETED", timeout=65)
             assert b"READY" in t.transcript
             assert token.read_bytes().strip() not in t.transcript and r1_database.encode() not in t.transcript
