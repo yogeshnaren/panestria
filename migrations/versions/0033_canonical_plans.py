@@ -38,7 +38,7 @@ def upgrade() -> None:
         plan_id uuid NOT NULL, task_id uuid PRIMARY KEY, goal_id uuid NOT NULL, contract_id uuid NOT NULL,
         node_sha256 char(64) NOT NULL CHECK(node_sha256 ~ '^[0-9a-f]{64}$'),
         UNIQUE(plan_id,task_id),
-        FOREIGN KEY(plan_id,goal_id,contract_id) 
+        FOREIGN KEY(plan_id,goal_id,contract_id)
             REFERENCES panestria.build_plan_acceptance(plan_id,goal_id,contract_id),
         FOREIGN KEY(task_id,goal_id) REFERENCES panestria.task(id,goal_id),
         FOREIGN KEY(task_id,contract_id) REFERENCES panestria.task(id,contract_id))""")

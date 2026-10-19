@@ -159,6 +159,8 @@ class RetainedHandoff(PlanContract):
     candidate_commit: str = Field(pattern=r"^[0-9a-f]{40}$")
     candidate_tree: str = Field(pattern=r"^[0-9a-f]{40}$")
     snapshot_sha256: PlanSha
-    worker: WorkerInventory
+    actual_adapter: Ref
+    declared_worker: WorkerInventory
+    runtime_qualification: Literal["NOT_ASSESSED"] = "NOT_ASSESSED"
     summary_authority: Literal["UNTRUSTED_NOTE"] = "UNTRUSTED_NOTE"
     task_completion_authority: Literal["NONE"] = "NONE"

@@ -7,7 +7,7 @@ canonical task rows only; it neither authorizes a worker nor completes a task.
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import UTC, datetime
 
 from psycopg.pq import TransactionStatus
 
@@ -135,7 +135,7 @@ class PlanStore:
         # this caller with the pre-lock PROPOSED snapshot.
         plan = self._read(uow, actor, identifier)
         checked = PlanValidator().validate(actor, plan.proposal, contract, plan.inventory)
-        if checked != plan.validation:
+        if checked != plan.validation or plan.consent.policy_ref != contract.autonomy_profile_ref:
             raise KernelDenied("plan_validation_unconfirmed")
         if plan.state == "ACCEPTED":
             acceptance = uow.execute(
@@ -174,7 +174,7 @@ class PlanStore:
             contract_sha256=proposal.contract_sha256,
             inventory_sha256=inventory.sha256(),
             policy_ref=contract.autonomy_profile_ref,
-            expires_at=expiry[0].isoformat(),
+            expires_at=expiry[0].astimezone(UTC).isoformat(),
         )
         uow.execute(
             "INSERT INTO panestria.build_plan(id,owner_id,project_id,goal_id,contract_id,version,body,inventory,"
@@ -324,7 +324,8 @@ class PlanStore:
             candidate_commit=bundle.candidate_commit,
             candidate_tree=bundle.candidate_tree,
             snapshot_sha256=bundle.snapshot_sha256,
-            worker=worker,
+            actual_adapter=adapter[0],
+            declared_worker=worker,
         )
         prior = uow.execute(
             "SELECT body,sha256 FROM panestria.build_handoff WHERE task_id=%s AND attempt_id=%s AND lease_epoch=%s",
