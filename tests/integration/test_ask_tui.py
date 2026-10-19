@@ -138,9 +138,9 @@ def terminal(path):
     )
     transcript = bytearray()
 
-    def until(value, timeout=6):
+    def until(value, timeout=6, *, after=None):
         deadline = time.monotonic() + timeout
-        start = len(transcript)
+        start = len(transcript) if after is None else after
         while value not in transcript[start:]:
             assert process.poll() is None and time.monotonic() < deadline, bytes(transcript[-3000:])
             if select.select([master], [], [], 0.05)[0]:
@@ -175,9 +175,13 @@ def test_actual_terminal_question_answer_resize_quit_and_terminal_restoration(te
             assert time.monotonic() < deadline, "F5 did not refresh while editing"
             time.sleep(0.01)
         assert f.state.calls == 0  # Refresh must not submit or discard the draft.
+        response_start = len(t.transcript)
         os.write(t.master, b"\r")
         t.until(b"COMPLETED")
-        assert f.state.calls == 1 and b"SYNTHETIC TUI ANSWER" in t.transcript
+        # A PTY read can split a curses refresh between the status and answer.
+        # Also accept answer bytes already read with the status from this response.
+        t.until(b"SYNTHETIC TUI ANSWER", after=response_start)
+        assert f.state.calls == 1
         assert b"\x1b]52" not in t.transcript and "\u202e".encode() not in t.transcript
         assert f.token.encode() not in t.transcript and f.dsn.encode() not in t.transcript
         fcntl.ioctl(t.slave, termios.TIOCSWINSZ, struct.pack("HHHH", 12, 50, 0, 0))
