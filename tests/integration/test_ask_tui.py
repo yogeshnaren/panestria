@@ -1,6 +1,7 @@
 """Actual PTY/keyboard and scoped PG/HTTP; explicitly fixture-only model output."""
 
 import asyncio
+import curses
 import fcntl
 import json
 import os
@@ -48,11 +49,19 @@ def terminal_server(configured, tmp_path, record_property):  # noqa: F811
     old.state.health.shutdown()
     server_app = local_server.build_local_app(config, settings, token)
     state = SimpleNamespace(
-        started=threading.Event(), delay=False, slow_status=False, calls=0, requests=[], text="SYNTHETIC TUI ANSWER"
+        started=threading.Event(),
+        delay=False,
+        slow_status=False,
+        status_reads=0,
+        calls=0,
+        requests=[],
+        text="SYNTHETIC TUI ANSWER",
     )
 
     @server_app.middleware("http")
     async def slow_status(request, call_next):
+        if request.url.path == "/v1/local/status":
+            state.status_reads += 1
         if state.slow_status and request.url.path == "/v1/local/status":
 
             async def drip():
@@ -157,7 +166,16 @@ def test_actual_terminal_question_answer_resize_quit_and_terminal_restoration(te
     f.state.text += " \x1b]52;c;SYNTHETIC_CLIPBOARD\x07 \u202eread literally 中文"
     with terminal(f.config) as t:
         t.until(b"CONNECTED")
-        os.write(t.master, "nPUBLIC question 中文\r".encode())
+        os.write(t.master, "nPUBLIC question 中文".encode())
+        baseline = f.state.status_reads
+        curses.setupterm(term="xterm-256color")
+        os.write(t.master, curses.tigetstr("kf5"))
+        deadline = time.monotonic() + 1.5
+        while f.state.status_reads == baseline:
+            assert time.monotonic() < deadline, "F5 did not refresh while editing"
+            time.sleep(0.01)
+        assert f.state.calls == 0  # Refresh must not submit or discard the draft.
+        os.write(t.master, b"\r")
         t.until(b"COMPLETED")
         assert f.state.calls == 1 and b"SYNTHETIC TUI ANSWER" in t.transcript
         assert b"\x1b]52" not in t.transcript and "\u202e".encode() not in t.transcript

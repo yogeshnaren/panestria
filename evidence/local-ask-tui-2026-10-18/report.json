@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "0a34a47fe49e7795b0c1d04d66ff0b520a7dd717",
+  "worktree_state": "clean",
+  "outcome": "LOCAL_TERMINAL_COMPONENT_AND_ACTUAL_CPU_JOURNEY_PASS_NOT_CUMULATIVE_RELEASE_QUALIFICATION",
+  "observations": [
+    {
+      "candidate_commit": "fa402cd4493df2deb3bd0900391cfae63789aad2",
+      "worktree_state": "clean",
+      "passed": 8,
+      "failed": 0,
+      "duration_seconds": 9.603,
+      "file": "initial-checks.xml",
+      "scope": "Actual PTY/HTTP/Postgres; explicit model fixture, not real inference"
+    },
+    {
+      "candidate_commit": "21e863fcca61c6f86d879ff70f1690001ae5487b",
+      "worktree_state": "clean",
+      "passed": 14,
+      "failed": 0,
+      "duration_seconds": 11.52,
+      "file": "connected-checks.xml",
+      "scope": "8TUI +existing Ask CLI/API, actual PTY/HTTP/Postgres with model fixtures"
+    },
+    {
+      "candidate_commit": "0a34a47fe49e7795b0c1d04d66ff0b520a7dd717",
+      "worktree_state": "clean",
+      "passed": 1,
+      "failed": 0,
+      "duration_seconds": 11.792,
+      "file": "actual-local-terminal.xml",
+      "scope": "Actual CLI server +PTY/keyboard +TCP HTTP +disposable Postgres +existing pinned local CPU model; no model fixture"
+    }
+  ],
+  "commands": [
+    "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py -q --junitxml=/tmp/panestria-ask-tui-initial.xml",
+    "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py tests/integration/test_ask_cli.py tests/integration/test_ask_api.py -q --junitxml=/tmp/panestria-ask-tui-connected.xml",
+    "PANESTRIA_PROFILE_TEST_MODEL_CACHE=<EXISTING_PUBLIC_MODEL_CACHE> UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui_live.py -m live -q --junitxml=/tmp/panestria-ask-tui-live.xml"
+  ],
+  "checks": [
+    "Actual terminal keyboard question/answer, resize/small window, scroll layout and normal quit restore original terminal attributes",
+    "Default actual PG/HTTP cancellation and fresh-request reuse; injected expected-token change causes actual auth denial/view clearing",
+    "Actual committed Ask then injected lost response leaves known ID, prevents redispatch and recovers only canonical receipt, not unretained text",
+    "Wrong server scope refuses before question dispatch; absolute control timeout includes actual slow HTTP body",
+    "Old view generations/auth-loss callbacks cannot restore text or regress terminal state; ESC/OSC activators and bidi controls are removed",
+    "Actual existing CPU model answers through new terminal; completion and model metadata confirmed in scoped database; only owned server/model/socket cleaned up"
+  ],
+  "static_checks": [
+    "Ruff all repository PASS",
+    "Mypy236 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "limits": [
+    "Ask-only terminal: existing local server/private config required; no setup wizard, Build/research screens or full Mission Control",
+    "One actual synthetic local model journey is not new GPU/latency/OS-egress/quality qualification or owner acceptance",
+    "No Claude/Anthropic SDK/OpenAI live call, new provider credential, download, spend, driver reset or owner database/service change",
+    "App keeps no question/answer history; physical erasure and terminal recording control not claimed",
+    "No automatic POST retry; unconfirmed submissions require receipt/cancel; closing terminal does not assert server shutdown or cancellation",
+    "SDKTC04 deferred, original gates unchanged, cumulativeG1/G2/G3 NOT_RUN and no owner trial"
+  ],
+  "files": {
+    "initial-checks.xml": "e8996a49e0a01286ead36b911205011125c039215ee68578633979ead22fefad",
+    "connected-checks.xml": "734724b6b04ae04228e536ddab757ea531989c4e228e26c105451f934f1dbf50",
+    "actual-local-terminal.xml": "c36d45ea92290d4849f91be16f4a6ce52354513cd3d7c0ff6949edbc7d894acd"
+  }
+}

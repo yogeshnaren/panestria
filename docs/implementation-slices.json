@@ -1395,8 +1395,12 @@
         "AOS-017-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-017-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-017-S2.md",
+      "implementation_note": "Ask-only keyboard TUI now supports actual scoped server status, question/answer, receipt refresh, cancellation and safe transient rendering. Existing configuration/server required; guided setup, other task screens and full item/release evidence remain pending.",
+      "evidence_refs": [
+        "evidence/local-ask-tui-2026-10-18/report.json"
+      ]
     },
     {
       "id": "AOS-017-S3",
@@ -1966,7 +1970,7 @@
       "depends_on": [
         "AOS-023-S1"
       ],
-      "title": "Fetch\u2192read\u2192claim\u2192cite\u2192support pipeline with complete errors/truncation/uncertainty and deterministic offline fixture mode.",
+      "title": "Fetch→read→claim→cite→support pipeline with complete errors/truncation/uncertainty and deterministic offline fixture mode.",
       "planned_files": [
         "src/panestria/research/delegate.py",
         "src/panestria/api/routes/research.py",

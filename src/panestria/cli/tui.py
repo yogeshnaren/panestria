@@ -160,6 +160,16 @@ class AskTerminal:
             except queue.Empty:
                 break
 
+    def refresh(self) -> None:
+        self.start("status", self.client.status)
+        if self.view.request_id:
+            self.start("receipt", partial(self.client.receipt, self.view.request_id))
+
+    def cancel(self) -> None:
+        if self.view.request_id:
+            self.start("cancel", partial(self.client.cancel, self.view.request_id))
+            self.view.notice = "Cancellation requested, awaiting the server's decision."
+
     def run(self, screen: Any) -> None:
         import curses
 
@@ -230,6 +240,12 @@ class AskTerminal:
                 if key == curses.KEY_F10:
                     key = "q"
                     v.editing = False
+                if key == curses.KEY_F5:
+                    self.refresh()
+                    continue
+                if key == curses.KEY_F6:
+                    self.cancel()
+                    continue
                 if v.editing:
                     if key in {"\n", "\r", curses.KEY_ENTER}:
                         self.submit()
@@ -252,14 +268,9 @@ class AskTerminal:
                         v.question, v.editing = "", True
                         leaving = False
                 elif key in {curses.KEY_F5, "r"}:
-                    self.start("status", self.client.status)
-                    if v.request_id:
-                        identity = v.request_id
-                        self.start("receipt", partial(self.client.receipt, identity))
+                    self.refresh()
                 elif key in {curses.KEY_F6, "c"} and v.request_id:
-                    identity = v.request_id
-                    self.start("cancel", partial(self.client.cancel, identity))
-                    v.notice = "Cancellation requested, awaiting the server's decision."
+                    self.cancel()
                 elif key == curses.KEY_NPAGE:
                     v.scroll += max(1, rows - 15)
                 elif key == curses.KEY_PPAGE:

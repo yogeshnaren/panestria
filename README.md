@@ -6,7 +6,11 @@ The main build document is [the revision-3 phased plan](docs/PANESTRIA_PHASED_IM
 
 For local Ask, follow [explicit project setup](docs/testing/LOCAL_ASK_SETUP.md),
 [server launch](docs/testing/LOCAL_ASK_SERVER.md) and
-[browser pairing/testing](docs/testing/LOCAL_ASK_BROWSER.md). The local browser
+[keyboard terminal application](docs/testing/LOCAL_ASK_TUI.md). After setup,
+run `panestria tui --config /absolute/private/local.json` in a second terminal
+while the local server runs. The TUI supports Ask, readiness, receipts and
+cancellation; Build/research screens and automatic setup remain pending.
+[Browser pairing/testing](docs/testing/LOCAL_ASK_BROWSER.md) is also available. The local browser
 uses the offline model and scoped memory; profiles and Build/tools are disabled
 there. The R0 commands and native proposal demo below remain separate.
 

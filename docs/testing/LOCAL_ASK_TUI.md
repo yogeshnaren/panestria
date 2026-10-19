@@ -58,3 +58,17 @@ uv run --frozen pytest tests/integration/test_ask_tui.py -q
 ```
 
 They do not establish actual model quality, full A-1/G1 or R3 acceptance.
+
+The separately scoped live terminal observation uses the existing model cache,
+an isolated database/project/port and actual CPU inference. It refuses an
+existing controller rather than stopping it. Run only with explicit synthetic
+local-test intent and sufficient foreground capacity:
+
+```bash
+PANESTRIA_PROFILE_TEST_MODEL_CACHE=/absolute/existing/public/model-cache \
+  uv run --frozen pytest tests/integration/test_ask_tui_live.py -m live -q
+```
+
+Missing prerequisites or a skipped/failed case is not live qualification. The
+recorded [terminal evidence](../../evidence/local-ask-tui-2026-10-18/report.json)
+distinguishes default model fixtures from the actual local-model journey.
