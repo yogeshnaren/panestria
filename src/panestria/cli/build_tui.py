@@ -243,7 +243,7 @@ class BuildReviewTerminal:
                         line(row, value)
                     line(rows - 4, ("Confirmation: " + v.typed) if v.mode else "No decision pending.")
                     line(rows - 3, v.notice)
-                    line(rows - 2, "Tab views | PgUp/PgDn | a Merge review | c Cancel review | F5 Refresh | F10 Quit")
+                    line(rows - 2, "Tab Views | PgUp/Dn | a Merge | c Cancel | F5 Refresh | F10 Quit")
                     line(rows - 1, "Existing owner CLI owns grants/checks/protected CAS. No model call or auto-submit.")
                 screen.refresh()
                 try:

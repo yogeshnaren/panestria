@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "outcome": "PENDING_CORRECTED_CHECKS",
+  "outcome": "BUILD_REVIEW_TERMINAL_COMPONENT_PASS_NOT_LIVE_OR_RELEASE_QUALIFICATION",
   "observations": [
     {
       "candidate_commit": "05c954bd70102c5210b1cdd324dac56c387d329d",
@@ -11,9 +11,44 @@
       "file": "initial-checks.xml",
       "scope": "5 new Build TUI +8 Ask TUI +8 existing owner CLI, actual PG/Docker/Git and model fixtures",
       "failure": "Stale-review test matched the immediate pending-state UNCONFIRMED heading before the operation finished, so F5 was still busy. Corrected assertion waits for the explicit failed-decision/view-cleared notice. No production change."
+    },
+    {
+      "candidate_commit": "40a68f7b8389efeae44ef00d3615d96d181fc60b",
+      "worktree_state": "clean",
+      "passed": 5,
+      "failed": 0,
+      "duration_seconds": 24.418,
+      "file": "corrected-checks.xml",
+      "scope": "All5 new Build terminal cases pass after assertion-only synchronization fix; actual PTY/CLI/PG/Docker/Git/CAS with explicit native/certificate fixtures"
     }
   ],
   "files": {
-    "initial-checks.xml": "df74ed12c0bd5fb7d3aa29153434d9c59e463dbe69b5c0ac063697f5f7a89a55"
-  }
+    "initial-checks.xml": "df74ed12c0bd5fb7d3aa29153434d9c59e463dbe69b5c0ac063697f5f7a89a55",
+    "corrected-checks.xml": "57c4e565401d7cf630733f0b5ff31702b8e978a381ef45461be30138d1d0b604"
+  },
+  "checks": [
+    "Actual keyboard checks/diff/frozen preview and separate MERGE confirmation update only the exact protected candidate; original source preserved and no further native call",
+    "Concurrent actual cancellation invalidates frozen approval; protected ref unchanged; explicit refresh shows CANCELLED",
+    "Separate CANCEL confirmation uses actual row-version cancellation and authoritative reread",
+    "Actual protected CAS then injected response loss clears view, never replays and recovers COMPLETED from canonical read; frozen digest survives later displayed-object mutation",
+    "Private configuration access loss clears retained view; headless invocation prints no private path; actual PTY restores terminal modes"
+  ],
+  "static_checks": [
+    "Ruff repository PASS",
+    "Mypy237 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "commands": [
+    "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_build_tui.py tests/integration/test_ask_tui.py tests/integration/test_owner_build_cli.py -m 'not live' -q --junitxml=/tmp/panestria-build-tui.xml",
+    "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_build_tui.py -q --junitxml=/tmp/panestria-build-tui-corrected.xml"
+  ],
+  "limits": [
+    "Existing private Build config, explicit PUBLIC project policy, contract submission and qualified runtime remain prerequisites; no automatic grant/submit/model call",
+    "UI uses local owner CLI authority, not browser/phone sessions or offline Ask scope; only one goal is displayed",
+    "Initial20 passing existing/new observations remain at originalsource05c; only5 changed synchronization cases rerun at40a68f7; shortened help text later does not relabel observations",
+    "Stopping owned CLI can leave a committed or ambiguous effect; it does not undo Git or claim task cancellation",
+    "No actual native/subscription/provider test repeated; fake transport/certificates cannot qualify a runtime or full G1/G3/owner acceptance",
+    "Task surface is not full Mission Control; no owner trial or gate promoted"
+  ]
 }
