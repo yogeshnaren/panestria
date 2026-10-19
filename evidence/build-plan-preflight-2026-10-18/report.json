@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "outcome": "BOUNDED_BUILD_PROPOSAL_PREFLIGHT_PASS_NOT_WORKER_ADMISSION",
+  "candidate_commit": "fa19ad2a03d1c98e8503d1e90f1079fd222efc51",
+  "worktree_state": "clean",
+  "observations": {
+    "tests": 39,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 1.15,
+    "scope": "32 new pure Build proposal cases +7 goal contract regressions"
+  },
+  "initial_observation": {
+    "tests": 32,
+    "passed": 32,
+    "worktree_state": "dirty",
+    "file": "initial-dirty-checks.xml"
+  },
+  "command": ".venv/bin/pytest -q tests/contract/test_build_plan.py tests/contract/test_aos_002.py --junitxml=/tmp/panestria-build-plan-clean.xml",
+  "static_checks": [
+    "Ruff PASS",
+    "Mypy241 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "delivered": [
+    "Typed goal/inventory-bound DAG proposals and deterministic ready layers",
+    "Reject cycles, unknown/self/duplicate dependencies, node/depth bounds, unavailable worker/capability and out-of-contract paths",
+    "Reject missing or invented checks, changed scopes/hashes/classes and retry-inclusive cash/time overbudget",
+    "Private-file CLI preflight; forged typed instances cannot bypass validation; no dispatch/database or authority grant"
+  ],
+  "limits": [
+    "AOS-025-S1 component only; actual proposal inference/canonical persistence/handoff/replans remain S2/S3",
+    "Caller-provided inventory has no current runtime/certificate authority; no live worker/model/provider call performed",
+    "Ready layers do not override per-worker/global concurrency or quotas/resources/conflict/lease/policy checks",
+    "No two-worker execution, final integrated verification, original full TC01/G3 or owner trial claimed"
+  ],
+  "files": {
+    "initial-dirty-checks.xml": "6096a081eb583f1282fcae180b3a267b57821db35c704d55b2b099dd264405c9",
+    "checks.xml": "8d83d40b8e50c5b0b54aab8342b9aea8d67187d4a0b7f7ae586ab0d320df34ad"
+  }
+}

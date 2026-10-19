@@ -523,10 +523,12 @@
             "AOS-003",
             "AOS-016"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/build-plan-preflight-2026-10-18/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-025-implementation-plan.md"
         },
@@ -909,7 +911,7 @@
       "name": "Long-running work",
       "source_section": "2",
       "baseline_target_text": "Milestone contracts, intermittent verification, context refresh, safe checkpoint/resume",
-      "baseline_mvp_text": "Goal → plan → work → tests → review with bounded attempts",
+      "baseline_mvp_text": "Goal \u2192 plan \u2192 work \u2192 tests \u2192 review with bounded attempts",
       "mvp_aos": [
         "002",
         "003",

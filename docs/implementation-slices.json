@@ -1970,7 +1970,7 @@
       "depends_on": [
         "AOS-023-S1"
       ],
-      "title": "Fetch→read→claim→cite→support pipeline with complete errors/truncation/uncertainty and deterministic offline fixture mode.",
+      "title": "Fetch\u2192read\u2192claim\u2192cite\u2192support pipeline with complete errors/truncation/uncertainty and deterministic offline fixture mode.",
       "planned_files": [
         "src/panestria/research/delegate.py",
         "src/panestria/api/routes/research.py",
@@ -2103,13 +2103,17 @@
         "src/panestria/execution/build_plan.py",
         "src/panestria/memory/context.py"
       ],
-      "planned_test_file": "tests/integration/test_aos_025.py",
+      "planned_test_file": "tests/contract/test_build_plan.py",
       "case_ids": [
         "AOS-025-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-025-S1.md"
+      "status": "COMPLETE",
+      "prompt_ref": "cursor/prompts/AOS-025-S1.md",
+      "implementation_note": "S1 typed bounded proposal and deterministic scope/capability/DAG/acceptance/retry-budget preflight delivered with private-file CLI. This is proposal-only fixture evidence, not current runtime authority, task persistence, scheduling or complete parent/gate evidence.",
+      "evidence_refs": [
+        "evidence/build-plan-preflight-2026-10-18/report.json"
+      ]
     },
     {
       "id": "AOS-025-S2",

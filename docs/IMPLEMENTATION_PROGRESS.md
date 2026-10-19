@@ -117,3 +117,19 @@ those sources, not a current cumulative G1 pass or a hardware partition guarante
 [Phase](phase-tracker.json) and [slice](implementation-slices.json) trackers retain
 IN_PROGRESS for partial work. Progress is usable behavior plus remaining
 acceptance gaps, not a PR/test count or an invented completion percentage.
+
+## Two-worker prerequisite delivered: bounded Build DAG preflight
+
+AOS-025-S1 now supplies [typed task proposals and a private-file CLI](testing/BUILD_PLAN_PREFLIGHT.md)
+with deterministic dependency layers, exact goal/inventory bindings and conservative
+retry-inclusive budgets. [Source-bound checks](../evidence/build-plan-preflight-2026-10-18/report.json)
+cover valid independent branches/join and refusal of cycles, scope, path, capability,
+check and budget violations. S1 is complete as a pure proposal component; AOS-025
+remains IN_PROGRESS. It does not launch a worker or confer current authority.
+
+Next within this track: direct local proposal and immutable canonical plan/task
+bindings/handoff (S2), then bounded revisions/repair (S3), two-worker admission and
+conflict handling (026), and final integrated-tree verification/approval (027b).
+Personal-platform charter/context, grants, quota useful-work/capture and Mission
+Control/phone/resource integration remain separate unfinished R3 work. No G3 or
+owner acceptance is claimed by the preflight.
