@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "f041f770c812146dc890a4783f730537db2e4d3d",
+  "worktree_state": "clean",
+  "outcome": "FIRST_RUN_COMPONENT_PASS_NOT_RELEASE_QUALIFICATION",
+  "passed": 11,
+  "failed": 0,
+  "duration_seconds": 7.779,
+  "command": "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_local_init.py tests/integration/test_local_setup.py -q --junitxml=/tmp/panestria-local-init.xml",
+  "checks": [
+    "Actual CLI creates private stable settings and one read-only offline setup policy/audit in disposable Postgres; no fake goal or model process",
+    "Same initialization preserves all token/config bytes and scope; unavailable DB then retry uses same identities",
+    "Changed configuration, non-private/mixed directory, mixed model cache, missing intent, concurrent initializer and missing/symlink token refuse without replacing user files",
+    "Existing setup scope/privacy, concurrency, rollback and actual pg_dump/restore checks remain passing"
+  ],
+  "static_checks": [
+    "Ruff modified code PASS",
+    "Mypy237 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "limits": [
+    "Existing migrated database and dedicated cached model directory remain prerequisites; no automatic database/model install or migration",
+    "No inference, provider or OS qualification claim; no owner database/service/config change",
+    "A crash during initial file publication is preserved and may need explicit missing-token recovery; no automatic token rotation",
+    "No release gate or owner trial promoted; SDK TC04 remains deferred"
+  ],
+  "files": {
+    "checks.xml": "8c947fe960ea24c8836af326558a9099128277c0c26bbafcb470426b019ccc35"
+  }
+}

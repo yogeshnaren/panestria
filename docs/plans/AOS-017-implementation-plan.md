@@ -6,6 +6,13 @@ Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../d
 
 ## Outcome and scope
 
+The first-run continuation removes manual UUID/JSON assembly: explicit
+`local init --offline-ask` writes private stable settings and uses the existing
+scoped setup transaction, with resumable database errors and no overwrite,
+automatic installation or service launch. See [setup](../testing/LOCAL_ASK_SETUP.md).
+This is usability work within the current Ask surface; it does not complete the
+remaining S2 memory-write surface, full A-1 or cumulative G1.
+
 A user can quickly ask the primary local AI offline and retrieve previously approved project memory without leaking information across scopes.
 
 The owner requested a usable terminal application before GUI expansion. The
