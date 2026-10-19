@@ -168,6 +168,8 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_owner_build_cli.py",
         "test_search_admission.py",
         "test_research_brief.py",
+        "test_research_synthesis.py",
+        "test_research_synthesis_live.py",
         "test_fetch_admission.py",
         "test_shared_research_runtime.py",
         "test_research_submission.py",
