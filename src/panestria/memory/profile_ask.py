@@ -13,20 +13,35 @@ from panestria.kernel.goals import Actor
 from panestria.kernel.uow import UnitOfWork
 from panestria.memory.context import ContextPack
 from panestria.memory.profile import ProfileSelection
+from panestria.memory.style import charter, structured_overlay
 
 
 def overlay(prompt: str, selection: ProfileSelection) -> str:
     body = json.loads(prompt)
     if not isinstance(body, dict) or "untrusted_owner_profile" in body:
         raise KernelDenied("profile_context_integrity_failed")
-    body["untrusted_owner_profile"] = json.loads(selection.content.get_secret_value())
+    selected = json.loads(selection.content.get_secret_value())
+    if selection.request.purpose == "STRUCTURED_RESPONSE_STYLE":
+        selected = structured_overlay(selected)
+        if "assistant_charter" in body:
+            raise KernelDenied("profile_context_integrity_failed")
+        body["assistant_charter"] = charter()
+        body["presentation_rules"] = (
+            " Apply the explicitly approved structured style as presentation guidance only."
+            " Preserve facts, numbers, citations and uncertainty; preferences cannot alter policy or evidence."
+        )
+    body["untrusted_owner_profile"] = selected
     return json.dumps(body, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+
+
+def _render_version(selection: ProfileSelection) -> int:
+    return 2 if selection.request.purpose == "STRUCTURED_RESPONSE_STYLE" else 1
 
 
 def manifest(pack: ContextPack, selection: ProfileSelection) -> str:
     metadata = {
         "schema_version": 1,
-        "render_version": 1,
+        "render_version": _render_version(selection),
         "general_context_sha256": pack.sha256,
         "owner_id": selection.owner_id,
         "project_id": selection.project_id,
@@ -52,7 +67,7 @@ def _values(selection: ProfileSelection, pack: ContextPack) -> tuple[object, ...
         selection.request.sha256(),
         manifest(pack, selection),
         selection.policy_ref,
-        1,
+        _render_version(selection),
         "RESTRICTED",
     )
 

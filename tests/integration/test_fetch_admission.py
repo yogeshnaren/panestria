@@ -28,6 +28,7 @@ from panestria.kernel.research_sources import SourceRecordService
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.profiles import CertificateRejected
 from panestria.policy.search import PublicSearchCertificateStore
+from schema_support import current_schema_revision
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -259,7 +260,7 @@ def test_actual_dump_restore_preserves_fetch_fences_global_sequence_and_downgrad
     )
     assert refused.returncode != 0 and b"fetch admission audit exists" in refused.stderr
     with psycopg.connect(f.dsn) as c:
-        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0031_fetch_admission",)
+        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (current_schema_revision(),)
         for table in ("fetch_plan", "fetch_dispatch", "fetch_hop", "fetch_outcome"):
             with pytest.raises(psycopg.Error), c.transaction():
                 c.execute(f"DELETE FROM panestria.{table}")

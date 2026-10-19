@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "outcome": "STRUCTURED_LOCAL_STYLE_COMPONENT_PASS_NOT_STYLE_QUALITY_OR_RELEASE_QUALIFICATION",
+  "candidate_commit": "accbe736422057fb46e0b1b79614488842d365ab",
+  "worktree_state": "clean",
+  "observations": {
+    "tests": 68,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 73.791,
+    "scope": "New structured style/migration cases and actual CPU model + legacy restricted Ask/context/restore, local setup and research synthesis regressions"
+  },
+  "live_properties": {
+    "candidate_commit": "accbe736422057fb46e0b1b79614488842d365ab",
+    "fixture_digest": "0bdcfcd1f4389fe4470ea4b065cbf32ce2e9e9a32d82b890ff3cf50826a8fc20",
+    "worktree_state": "clean",
+    "lane": "live",
+    "execution_mode": "ACTUAL_POSTGRES_CRYPTO_NETWORK_NONE_CPU_MODEL_SYNTHETIC_KEY_FIXTURE",
+    "paid_provider_calls": "0",
+    "runtime_identity": "69292e2ae4a548a2a8df3afba7065a1c",
+    "input_tokens": "343",
+    "output_tokens": "2",
+    "response_faithfulness_style_quality": "NOT_QUALIFIED",
+    "os_key_backend": "SYNTHETIC_TEST_KEYS_NOT_ACTUAL_SECRET_SERVICE_QUALIFICATION"
+  },
+  "development_observations": [
+    {
+      "file": "initial-fixture-errors.xml",
+      "passed": 23,
+      "errors": 4,
+      "worktree_state": "dirty",
+      "reason": "New test supplied profile UUID instead of required scoped key handle; fixture corrected."
+    },
+    {
+      "file": "initial-renderer-failures.xml",
+      "passed": 2,
+      "failed": 5,
+      "worktree_state": "dirty",
+      "reason": "New overlay appended to absent standing_rules during empty-object byte-reserve computation. Fixed to a separate fixed presentation_rules field, which is counted in the reserve."
+    },
+    {
+      "file": "corrected-dirty-checks.xml",
+      "passed": 7,
+      "worktree_state": "dirty",
+      "reason": "Corrected component/migration checks before clean committed validation."
+    }
+  ],
+  "checks": [
+    "Explicit structured purpose permits only independently approved communication field; legacy renderer remains v1",
+    "Fixed charter and typed preferences remain separate; malformed values/actions refuse without fallback",
+    "Ciphertext/source/request/policy/render-version binding, restricted output and no unkeyed input/output hash retention",
+    "Correction/purpose/forged-label changes cannot replace a prepared request",
+    "Migration roundtrip preserves old task; populated renderer2 audit refuses downgrade",
+    "Actual network-none CPU model accepts the new protected prompt; synthetic keys are not OS key-backend qualification"
+  ],
+  "command": "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 PANESTRIA_PROFILE_TEST_MODEL_CACHE=<existing-cache> .venv/bin/pytest -q tests/integration/test_profile_style.py tests/integration/test_profile_ask.py tests/integration/test_profile_context.py tests/integration/test_profile_ask_restore.py tests/integration/test_local_init.py tests/integration/test_research_synthesis.py --junitxml=/tmp/panestria-profile-style-clean.xml",
+  "limits": [
+    "MVP-X08/S4 component only; private-example provenance, style/faithfulness evaluation, model manifests/replacement and owner preference remain pending",
+    "Actual local prompt smoke is not factual/style/OS key-backend or cumulative G1/G3 qualification",
+    "No owner database migrated, server restarted, credential created, model downloaded or external provider called",
+    "Structured style is opt-in through existing enabled profile Ask API; ordinary Ask/TUI remains unchanged",
+    "Original gates and owner trial/acceptance remain open; historical evidence remains at its original source"
+  ],
+  "files": {
+    "initial-renderer-failures.xml": "c88a3a615f3efcbed135fc62175341b217eb8db7d86149a4fb350c5b0400e16a",
+    "corrected-dirty-checks.xml": "fffdd5b89bf4421a653322aa3169f213847e7edf6ecb0b85ee1dfc442fe436ac",
+    "initial-fixture-errors.xml": "cd7dc08d6c78842789ca9ac34f74dc99898987a82dcb728bf5fa0349900e79d4",
+    "checks.xml": "fc4c1883ad4677ca8564119fd6735877661d57f73900c394100310a99644b8ec"
+  },
+  "static_checks": [
+    "Ruff PASS",
+    "Mypy243 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ]
+}

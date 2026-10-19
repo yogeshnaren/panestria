@@ -1781,7 +1781,7 @@
         "AOS-016",
         "AOS-024"
       ],
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "gate_status": "NOT_RUN",
       "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x08",
       "slice_ids": [
@@ -1795,7 +1795,10 @@
         "AOS-017-TC07",
         "AOS-017-TC08"
       ],
-      "evidence_refs": []
+      "evidence_refs": [
+        "evidence/structured-profile-style-2026-10-18/report.json"
+      ],
+      "implementation_note": "Explicit encrypted structured-style/charter Ask renderer component only. Style fidelity/preferences, private example refs, full editor/model-context compatibility and added acceptance cases remain pending."
     },
     {
       "id": "MVP-X09",

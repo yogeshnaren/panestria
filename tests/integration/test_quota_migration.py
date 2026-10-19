@@ -17,9 +17,10 @@ from panestria.kernel.goals import Actor
 from panestria.kernel.quota import QuotaService
 from panestria.kernel.uow import UnitOfWork
 from quota_support import observation
+from schema_support import current_schema_revision
 
 ROOT = Path(__file__).resolve().parents[2]
-HEAD = "0031_fetch_admission"
+HEAD = current_schema_revision()
 
 
 def migrate(dsn, direction, target):

@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="4" skipped="0" tests="43" time="780.004" timestamp="2026-10-18T22:39:38.280606-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_profile_style" name="test_structured_style_uses_approved_ciphertext_binding_and_never_persists_plain_preferences" file="tests/integration/test_profile_style.py" line="51" time="84.376"><properties><property name="candidate_commit" value="9b0e390af1ec1673be9e914b9caf880a4e0872a5" /><property name="fixture_digest" value="0bdcfcd1f4389fe4470ea4b065cbf32ce2e9e9a32d82b890ff3cf50826a8fc20" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_profile_style" name="test_style_and_source_changes_cannot_replace_a_pinned_prepared_request[correction]" file="tests/integration/test_profile_style.py" line="89" time="26.459"><properties><property name="candidate_commit" value="9b0e390af1ec1673be9e914b9caf880a4e0872a5" /><property name="fixture_digest" value="0bdcfcd1f4389fe4470ea4b065cbf32ce2e9e9a32d82b890ff3cf50826a8fc20" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_profile_style" name="test_style_and_source_changes_cannot_replace_a_pinned_prepared_request[purpose]" file="tests/integration/test_profile_style.py" line="89" time="9.512"><properties><property name="candidate_commit" value="9b0e390af1ec1673be9e914b9caf880a4e0872a5" /><property name="fixture_digest" value="0bdcfcd1f4389fe4470ea4b065cbf32ce2e9e9a32d82b890ff3cf50826a8fc20" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_profile_style" name="test_style_and_source_changes_cannot_replace_a_pinned_prepared_request[permissions]" file="tests/integration/test_profile_style.py" line="89" time="2.639"><properties><property name="candidate_commit" value="9b0e390af1ec1673be9e914b9caf880a4e0872a5" /><property name="fixture_digest" value="0bdcfcd1f4389fe4470ea4b065cbf32ce2e9e9a32d82b890ff3cf50826a8fc20" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_profile_style" name="test_malformed_style_refuses_without_fallback_and_legacy_profile_renderer_remains_v1" file="tests/integration/test_profile_style.py" line="130" time="6.229"><properties><property name="candidate_commit" value="9b0e390af1ec1673be9e914b9caf880a4e0872a5" /><property name="fixture_digest" value="0bdcfcd1f4389fe4470ea4b065cbf32ce2e9e9a32d82b890ff3cf50826a8fc20" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_profile_style" name="test_populated_style_audit_blocks_lossy_downgrade" file="tests/integration/test_profile_style.py" line="166" time="15.221"><properties><property name="candidate_commit" value="9b0e390af1ec1673be9e914b9caf880a4e0872a5" /><property name="fixture_digest" value="0bdcfcd1f4389fe4470ea4b065cbf32ce2e9e9a32d82b890ff3cf50826a8fc20" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_profile_style" name="test_empty_renderer_migration_roundtrip_preserves_existing_task" file="tests/integration/test_profile_style.py" line="179" time="4.170"><properties><property name="candidate_commit" value="9b0e390af1ec1673be9e914b9caf880a4e0872a5" /><property name="fixture_digest" value="0bdcfcd1f4389fe4470ea4b065cbf32ce2e9e9a32d82b890ff3cf50826a8fc20" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_aos_002_migration" name="test_kernel_migration_rejects_bad_scope_and_reapplies" file="tests/integration/test_aos_002_migration.py" line="81" time="183.496"><properties><property name="gate_case_id" value="AOS-002-TC02" /><property name="candidate_commit" value="9b0e390af1ec1673be9e914b9caf880a4e0872a5" /><property name="fixture_digest" value="271a413bd339c5709fdceaec41f14f11e9fbfb5042d72d331c65f32b284cd09a" /><property name="lane" value="migration" /><property name="execution_mode" value="OS_BOUNDARY" /><property name="worktree_state" value="clean" /></properties></testcase><testcase classname="tests.integration.test_connection_reviews" name="test_empty_migration_downgrade_and_reupgrade_preserve_existing_schema" file="tests/integration/test_connection_reviews.py" line="505" time="3.894" /><testcase classname="tests.integration.test_durable_launch_migration" name="test_actual_empty_downgrade_reapply_matches_observed_current_schema" file="tests/integration/test_durable_launch_migration.py" line="33" time="7.103" /><testcase classname="tests.integration.test_durable_launch_migration" name="test_actual_backup_restore_retains_immutable_intent_and_event_counter_after_reconciliation" file="tests/integration/test_durable_launch_migration.py" line="57" time="19.256" /><testcase classname="tests.integration.test_fetch_admission" name="test_actual_dump_restore_preserves_fetch_fences_global_sequence_and_downgrade_guard[admitted_search0]" file="tests/integration/test_fetch_admission.py" line="247" time="61.783"><properties><property name="candidate_commit" value="9b0e390af1ec1673be9e914b9caf880a4e0872a5" /><property name="fixture_digest" value="7da16ab9d59a0e262b9aec1f685cda1b2337ee4518f323fef12195e4e0d8194b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual disposable DB/CAS/reader; SYNTHETIC HTTPS and TEST_FIXTURE_NOT_LIVE certificate" /></properties><failure message="AssertionError: assert ('READER_ERROR', None) == ('RETAINED', None)&#10;  &#10;  At index 0 diff: 'READER_ERROR' != 'RETAINED'&#10;  Use -v to get more diff">synthetic_https = (namespace(controller=&lt;panestria.execution.research_fetch.AdmittedFetch object at 0x795c6f36cb60&gt;, root=PosixPath('/tm... 'http://127.0.0.1:39351'}), ['https://example.org/backup'], &lt;function synthetic_https.&lt;locals&gt;.one at 0x795c6f5f94e0&gt;)
+
+    @pytest.mark.parametrize("admitted_search", [FETCH], indirect=True)
+    def test_actual_dump_restore_preserves_fetch_fences_global_sequence_and_downgrade_guard(synthetic_https):
+        from panestria.execution.research_fetch import AdmittedFetch
+    
+        f, calls, _ = synthetic_https
+        result = f.controller.collect(SecretStr("https://example.org/backup"))
+        refused = subprocess.run(
+            [str(ROOT / ".venv/bin/alembic"), "-c", "migrations/alembic.ini", "downgrade", "0030_search_admission"],
+            cwd=ROOT,
+            env={**os.environ, "PANESTRIA_DATABASE_URL": f.dsn},
+            capture_output=True,
+            timeout=30,
+        )
+        assert refused.returncode != 0 and b"fetch admission audit exists" in refused.stderr
+        with psycopg.connect(f.dsn) as c:
+            assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (current_schema_revision(),)
+            for table in ("fetch_plan", "fetch_dispatch", "fetch_hop", "fetch_outcome"):
+                with pytest.raises(psycopg.Error), c.transaction():
+                    c.execute(f"DELETE FROM panestria.{table}")
+            before = c.execute("SELECT max(seq) FROM panestria.task_event").fetchone()[0]
+        container = _fixture_container()
+        original_db = f.dsn.rsplit("/", 1)[1]
+        backup = subprocess.run(
+            ["docker", "exec", container, "pg_dump", "-U", "panestria_synthetic", "-d", original_db, "-Fc"],
+            capture_output=True,
+            check=True,
+            timeout=30,
+        ).stdout
+        name = "panestria_fetch_restore_" + uuid4().hex
+        restored_dsn = f.dsn.rsplit("/", 1)[0] + "/" + name
+        with psycopg.connect(f.dsn, autocommit=True) as admin:
+            admin.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
+            try:
+                subprocess.run(
+                    [
+                        "docker",
+                        "exec",
+                        "-i",
+                        container,
+                        "pg_restore",
+                        "-U",
+                        "panestria_synthetic",
+                        "-d",
+                        name,
+                        "--exit-on-error",
+                    ],
+                    input=backup,
+                    capture_output=True,
+                    check=True,
+                    timeout=30,
+                )
+                restarted = AdmittedFetch(
+                    restored_dsn,
+                    f.actor,
+                    f.plan,
+                    f.lease.attempt_id,
+                    f.lease.epoch,
+                    f.controller.service.certificates,
+                    f.root,
+                )
+                with pytest.raises(KernelDenied, match="fetch_already_dispatched"):
+                    restarted.collect(SecretStr("https://example.org/backup"))
+                with psycopg.connect(restored_dsn) as c:
+&gt;                   assert c.execute("SELECT status,snapshot_id::text FROM panestria.fetch_outcome").fetchone() == (
+                        "RETAINED",
+                        result.snapshot_id,
+                    )
+E                   AssertionError: assert ('READER_ERROR', None) == ('RETAINED', None)
+E                     
+E                     At index 0 diff: 'READER_ERROR' != 'RETAINED'
+E                     Use -v to get more diff
+
+tests/integration/test_fetch_admission.py:311: AssertionError</failure></testcase><testcase classname="tests.integration.test_quota_migration" name="test_actual_empty_downgrade_and_reapply_match_head29_schema" file="tests/integration/test_quota_migration.py" line="35" time="3.986" /><testcase classname="tests.integration.test_quota_migration" name="test_actual_dump_restore_refuses_audit_loss_and_continues_global_events" file="tests/integration/test_quota_migration.py" line="56" time="25.050"><properties><property name="backup_sha256" value="7cbc6f4aa3a21ca9eeab0ff851e1dd9135ee59fa15255019a3c5149a5e2f8c03" /></properties></testcase><testcase classname="tests.integration.test_quota_migration" name="test_direct_database_constraints_cannot_bypass_scope_or_projected_metadata[scope_fk]" file="tests/integration/test_quota_migration.py" line="113" time="0.302" /><testcase classname="tests.integration.test_quota_migration" name="test_direct_database_constraints_cannot_bypass_scope_or_projected_metadata[json_identity]" file="tests/integration/test_quota_migration.py" line="113" time="0.224" /><testcase classname="tests.integration.test_quota_migration" name="test_direct_database_constraints_cannot_bypass_scope_or_projected_metadata[json_time]" file="tests/integration/test_quota_migration.py" line="113" time="0.206" /><testcase classname="tests.integration.test_quota_migration" name="test_direct_database_constraints_cannot_bypass_scope_or_projected_metadata[unknown_balance]" file="tests/integration/test_quota_migration.py" line="113" time="0.195" /><testcase classname="tests.integration.test_quota_migration" name="test_direct_database_constraints_cannot_bypass_scope_or_projected_metadata[numeric_not_string]" file="tests/integration/test_quota_migration.py" line="113" time="0.226" /><testcase classname="tests.integration.test_quota_migration" name="test_direct_database_constraints_cannot_bypass_scope_or_projected_metadata[missing_unit]" file="tests/integration/test_quota_migration.py" line="113" time="0.166" /><testcase classname="tests.integration.test_quota_migration" name="test_direct_database_constraints_cannot_bypass_scope_or_projected_metadata[bad_percent]" file="tests/integration/test_quota_migration.py" line="113" time="0.184" /><testcase classname="tests.integration.test_quota_migration" name="test_direct_database_constraints_cannot_bypass_scope_or_projected_metadata[fractional_count]" file="tests/integration/test_quota_migration.py" line="113" time="0.205" /><testcase classname="tests.integration.test_research_requests" name="test_database_enforces_limits_without_service_and_guard_preserves_receipt" file="tests/integration/test_research_requests.py" line="185" time="19.143" /><testcase classname="tests.integration.test_research_source_provenance" name="test_actual_capture_dump_restore_and_guard_preserve_proof_and_offline_passages" file="tests/integration/test_research_source_provenance.py" line="347" time="30.074"><error message="failed on setup with &quot;AssertionError: assert 'UNKNOWN' == 'COMPLETE'&#10;  &#10;  - COMPLETE&#10;  + UNKNOWN&quot;">@pytest.fixture(scope="module")
+    def observations():
+        # The fetch is an EXPLICIT SYNTHETIC transport observation. It is not evidence
+        # of TLS/SSRF/actual retrieval. Reader is actual isolated Docker.
+        first, last = "https://example.org/start", "https://example.org/"
+        fetched = FetchObservation(
+            SecretStr(first),
+            SecretStr(last),
+            datetime.now(UTC),
+            "COMPLETE",
+            "fetched",
+            (
+                FetchHop(hashlib.sha256(first.encode()).hexdigest(), "93.184.215.14", 302, "ab" * 32),
+                FetchHop(hashlib.sha256(last.encode()).hexdigest(), "93.184.215.14", 200, "ab" * 32),
+            ),
+            "text/html",
+            RAW,
+        )
+        extracted = IsolatedTextReader().extract(
+            RAW, expected_sha256=hashlib.sha256(RAW).hexdigest(), content_type="text/html"
+        )
+&gt;       assert extracted.outcome == "COMPLETE"
+E       AssertionError: assert 'UNKNOWN' == 'COMPLETE'
+E         
+E         - COMPLETE
+E         + UNKNOWN
+
+tests/integration/test_research_source_provenance.py:52: AssertionError</error></testcase><testcase classname="tests.integration.test_research_source_records" name="test_source_audit_downgrade_is_refused_without_history_loss" file="tests/integration/test_research_source_records.py" line="283" time="5.867" /><testcase classname="tests.integration.test_search_admission" name="test_empty_search_migration_roundtrip_preserves_old_rows_and_schema" file="tests/integration/test_search_admission.py" line="572" time="5.226"><properties><property name="candidate_commit" value="9b0e390af1ec1673be9e914b9caf880a4e0872a5" /><property name="fixture_digest" value="02878c9e0e4de1d58a5524294c2ccbd18cea5f13ea6f50cc67fb1361167d8cd0" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual disposable PG/loopback HTTP; TEST_FIXTURE_NOT_LIVE certificate; no release proof" /></properties></testcase><testcase classname="tests.integration.test_search_admission" name="test_actual_backup_restore_retains_query_fence_and_global_events" file="tests/integration/test_search_admission.py" line="584" time="30.977"><properties><property name="candidate_commit" value="9b0e390af1ec1673be9e914b9caf880a4e0872a5" /><property name="fixture_digest" value="02878c9e0e4de1d58a5524294c2ccbd18cea5f13ea6f50cc67fb1361167d8cd0" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual disposable PG/loopback HTTP; TEST_FIXTURE_NOT_LIVE certificate; no release proof" /><property name="backup_sha256" value="9112702d551f3c60946df8175f5e3311dd81b86d4dea86ff8321742311dfab13" /></properties></testcase><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_maximum_frame_eof_and_inherited_isolation" file="tests/integration/test_sandbox_framed_stdin.py" line="51" time="30.068"><failure message="panestria.sandbox.runner.SandboxLaunchUncertain: sandbox_launch_reconciliation_required">tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-25/test_actual_maximum_frame_eof_0')
+
+    def test_actual_maximum_frame_eof_and_inherited_isolation(tmp_path):
+        root, workspace, profile = setup(tmp_path)
+        script = b"raise RuntimeError('DO_NOT_EXECUTE')".ljust(native_tool_input.MAX_SCRIPT_BYTES, b" ")
+        body = b"PUBLIC_SYNTHETIC_NOT_JSON".ljust(native_tool_input.MAX_REQUEST_BYTES, b" ")
+        sh, rh = hashlib.sha256(script).hexdigest(), hashlib.sha256(body).hexdigest()
+        program = """
+    import hashlib,json,os,socket,sys
+    from pathlib import Path
+    sys.path.insert(0,'/runtime')
+    from native_tool_input import decode_frame
+    frame=decode_frame(sys.stdin.buffer,script_sha256=sys.argv[1],request_sha256=sys.argv[2])
+    denied=[]
+    for family in (socket.AF_INET,socket.AF_INET6):
+     try: socket.socket(family);denied.append(False)
+     except OSError: denied.append(True)
+    status=Path('/proc/self/status').read_text().splitlines()
+    prefixes=('Seccomp:','CapEff:','NoNewPrivs:')
+    controls={line.split(':')[0]:line.split()[1] for line in status if line.startswith(prefixes)}
+    print(json.dumps({'sizes':[len(frame.script),len(frame.request)],'hashes':[hashlib.sha256(frame.script).hexdigest(),
+     hashlib.sha256(frame.request).hexdigest()],'uid':os.getuid(),'denied':denied,'controls':controls}))
+    """
+        runner = Observed(
+            root,
+            runtime_mounts=(ReadOnlyMount(Path(native_tool_input.__file__).resolve(), "/runtime/native_tool_input.py"),),
+        )
+    
+&gt;       receipt = runner.run(
+            workspace,
+            ("/usr/local/bin/python", "-I", "-c", program, sh, rh),
+            profile,
+            input_frame=native_tool_input.encode_frame(script, body),
+        )
+
+tests/integration/test_sandbox_framed_stdin.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;test_sandbox_framed_stdin.Observed object at 0x795c6f52bd10&gt;
+workspace = PosixPath('/tmp/pytest-of-yogesh/pytest-25/test_actual_maximum_frame_eof_0/attempts/workspace')
+argv = ('/usr/local/bin/python', '-I', '-c', "\nimport hashlib,json,os,socket,sys\nfrom pathlib import Path\nsys.path.insert(...e413bd76286dd9288bcec9facc89ae4938adcf3b3426df5be', 'bcf85bea832af1aa05cd2e544176d3dea17847e083e41ed689e472170413674e')
+profile = SandboxProfile(name='restricted-offline', image='python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd...64, cpu_nanos=500000000, pids=32, wall_seconds=10, output_bytes=4096, tmp_bytes=33554432, stdin_mode='native-frame-v1')
+attempt_id = None, cancel = None
+input_frame = b"PANESTRIA-TOOL-1\n\x00\x04\x00\x00\x00\x01\x00\x00raise RuntimeError('DO_NOT_EXECUTE')                              ...                                                                                                                      "
+
+    def run(
+        self,
+        workspace: Path,
+        argv: tuple[str, ...],
+        profile: SandboxProfile,
+        *,
+        attempt_id: str | None = None,
+        cancel: threading.Event | None = None,
+        input_frame: bytes | None = None,
+    ) -&gt; SandboxReceipt:
+        profile.validate()
+        if (profile.stdin_mode == "closed" and input_frame is not None) or (
+            profile.stdin_mode == "native-frame-v1"
+            and (type(input_frame) is not bytes or not 1 &lt;= len(input_frame) &lt;= MAX_FRAME_BYTES)
+        ):
+            raise SandboxRejected("sandbox_input_binding_mismatch")
+        if cancel is not None and cancel.is_set():
+            raise SandboxRejected("cancelled_before_start")
+        if workspace.is_symlink() or not workspace.is_dir():
+            raise SandboxRejected("invalid_workspace")
+        workspace = workspace.resolve()
+        if workspace == self.root or not workspace.is_relative_to(self.root) or "," in str(workspace):
+            raise SandboxRejected("workspace_scope_denied")
+        for entry in workspace.rglob("*"):
+            if entry.is_symlink():
+                if not entry.resolve().is_relative_to(workspace):
+                    raise SandboxRejected("workspace_link_escape")
+            elif entry.is_file() and entry.stat().st_nlink &gt; 1:
+                raise SandboxRejected("workspace_hardlink_denied")
+            if entry.name in {".ssh", ".aws", ".credentials.json", "secrets"} or entry.name.startswith(".env"):
+                raise SandboxRejected("private_workspace_path")
+        if not argv or any("\x00" in arg for arg in argv) or sum(map(len, argv)) &gt; 256_000:
+            raise SandboxRejected("invalid_command")
+        allowed_executables = {
+            "/usr/local/bin/python",
+            *(mount.destination for mount in self.mounts if mount.source.is_file()),
+        }
+        if argv[0] not in allowed_executables:
+            raise SandboxRejected("unregistered_executable")
+        identity = UUID(attempt_id) if attempt_id else uuid4()
+        name = f"panestria-worker-{identity.hex}"
+        image = json.loads(self._docker(["image", "inspect", profile.image]).stdout)[0]
+        image_id = str(image["Id"])
+        launch = SandboxLaunchReference(str(identity), str(uuid4()), profile.sha256(), image_id)
+        launch.validate()
+        if cancel is not None and cancel.is_set():
+            raise SandboxRejected("cancelled_before_start")
+        args = [
+            "create",
+            "--name",
+            name,
+            "--label",
+            "panestria.purpose=worker",
+            "--label",
+            f"panestria.attempt={identity}",
+            "--label",
+            f"panestria.launch={launch.launch_id}",
+            "--label",
+            f"panestria.profile={launch.profile_sha256}",
+            "--pull",
+            "never",
+            "--network",
+            "none",
+            "--user",
+            f"{profile.uid}:{profile.gid}",
+            "--read-only",
+            "--log-driver",
+            "none",
+            "--cap-drop",
+            "ALL",
+            "--security-opt",
+            "no-new-privileges=true",
+            "--memory",
+            str(profile.memory_bytes),
+            "--memory-swap",
+            str(profile.memory_bytes),
+            "--cpus",
+            str(profile.cpu_nanos / 1_000_000_000),
+            "--pids-limit",
+            str(profile.pids),
+            "--ulimit",
+            "nofile=128:128",
+            "--ulimit",
+            "core=0:0",
+            "--init",
+            "--tmpfs",
+            f"/tmp:rw,nosuid,nodev,size={profile.tmp_bytes},mode=1777",
+            "--mount",
+            f"type=bind,src={workspace},dst=/workspace" + (",readonly" if profile.workspace_readonly else ""),
+            "--workdir",
+            "/workspace",
+            "--env",
+            "HOME=/tmp/home",
+            "--env",
+            "PYTHONDONTWRITEBYTECODE=1",
+            "--env",
+            "PYTHONNOUSERSITE=1",
+            "--entrypoint",
+            "/usr/local/bin/python",
+        ]
+        for mount in self.mounts:
+            args.extend(["--mount", f"type=bind,src={mount.source.resolve()},dst={mount.destination},readonly"])
+        if profile.stdin_mode == "native-frame-v1":
+            args.extend(["--interactive", "--attach", "stdin", "--attach", "stdout", "--attach", "stderr"])
+        args.extend([profile.image, "-I", "/runtime/panestria-no-network.py", *argv])
+        if self._on_launch is not None:
+            try:
+                self._on_launch(launch, profile)  # Must commit before returning.
+            except Exception:
+                raise SandboxRejected("launch_intent_unconfirmed") from None
+        if cancel is not None and cancel.is_set():
+            raise SandboxRejected("cancelled_before_start")
+        try:
+            container_id = self._docker(args).stdout.strip()
+            if re.fullmatch(r"[0-9a-f]{64}", container_id) is None:
+                raise SandboxRejected("invalid_container_identity")
+            effective = self._inspect(container_id)
+            if not self._owned_launch(effective, container_id, launch):
+                raise SandboxRejected("launch_identity_mismatch")
+        except SandboxRejected:
+            # Create can commit before its client loses the reply. The launch
+            # nonce distinguishes this request even from the same attempt/name.
+            observed = self.reconcile_launch(launch)
+&gt;           raise SandboxLaunchUncertain(launch, observed) from None
+E           panestria.sandbox.runner.SandboxLaunchUncertain: sandbox_launch_reconciliation_required
+
+src/panestria/sandbox/runner.py:230: SandboxLaunchUncertain</failure></testcase><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_failed_attach_cannot_report_an_unstarted_container_as_success[0]" file="tests/integration/test_sandbox_framed_stdin.py" line="102" time="24.455" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_failed_attach_cannot_report_an_unstarted_container_as_success[42]" file="tests/integration/test_sandbox_framed_stdin.py" line="102" time="2.447" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_default_profile_stdin_is_closed" file="tests/integration/test_sandbox_framed_stdin.py" line="138" time="6.704" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_input_adverse_cases_terminate_and_remove[blocked-reader-deadline_exceeded]" file="tests/integration/test_sandbox_framed_stdin.py" line="151" time="22.691"><failure message="AssertionError: assert (0 &lt;= 4096 and 19.606546404000255 &lt; (1 + 6))&#10; +  where 0 = len(b'')&#10; +    where b'' = SandboxReceipt(container_id='1ce28850a52bcf1e0062564b580a1b2569a794195a400d20b2292aadd12d366a', profile_sha256='2684b8...b2677c8c', exit_code=137, reason='deadline_exceeded', output=b'', elapsed_seconds=19.606546404000255, oom_killed=False).output&#10; +  and   4096 = SandboxProfile(name='restricted-offline', image='python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd...864, cpu_nanos=500000000, pids=32, wall_seconds=1, output_bytes=4096, tmp_bytes=33554432, stdin_mode='native-frame-v1').output_bytes&#10; +  and   19.606546404000255 = SandboxReceipt(container_id='1ce28850a52bcf1e0062564b580a1b2569a794195a400d20b2292aadd12d366a', profile_sha256='2684b8...b2677c8c', exit_code=137, reason='deadline_exceeded', output=b'', elapsed_seconds=19.606546404000255, oom_killed=False).elapsed_seconds&#10; +  and   1 = SandboxProfile(name='restricted-offline', image='python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd...864, cpu_nanos=500000000, pids=32, wall_seconds=1, output_bytes=4096, tmp_bytes=33554432, stdin_mode='native-frame-v1').wall_seconds">tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-25/test_actual_input_adverse_case0')
+case = 'blocked-reader', expected = 'deadline_exceeded'
+
+    @pytest.mark.parametrize(
+        "case,expected",
+        [
+            ("blocked-reader", "deadline_exceeded"),
+            ("closed-output", "deadline_exceeded"),
+            ("output-pressure", "output_limit"),
+            ("memory-pressure", "memory_limit"),
+            ("early-exit", "failed"),
+        ],
+    )
+    def test_actual_input_adverse_cases_terminate_and_remove(tmp_path, case, expected):
+        root, workspace, profile = setup(tmp_path, seconds=1 if expected == "deadline_exceeded" else 10)
+        programs = {
+            "blocked-reader": "import time;time.sleep(60)",
+            "closed-output": "import os,time;os.close(1);os.close(2);time.sleep(60)",
+            "output-pressure": "import os,time;os.write(1,b'x'*1000000);time.sleep(60)",
+            # Consume stdin first, then fault in small bounded allocations until the
+            # actual 64MiB cgroup cap is hit. One huge malloc can instead be refused
+            # by host overcommit policy with MemoryError before cgroup OOM is tested.
+            "memory-pressure": (
+                "import sys;sys.stdin.buffer.read();blocks=[]\n"
+                "while True: blocks.append(bytearray(4*1024*1024))"
+            ),
+            "early-exit": "raise SystemExit(7)",
+        }
+        receipt = DockerSandbox(root).run(
+            workspace,
+            ("/usr/local/bin/python", "-u", "-c", programs[case]),
+            profile,
+            input_frame=b"x" * native_tool_input.MAX_FRAME_BYTES,
+        )
+        if expected == "failed":
+            assert receipt.reason in ("process_failed", "input_incomplete")
+        else:
+            assert receipt.reason == expected, (receipt.reason, receipt.exit_code, receipt.oom_killed, receipt.output)
+            if case == "memory-pressure":
+                assert receipt.oom_killed is True
+&gt;       assert len(receipt.output) &lt;= profile.output_bytes and receipt.elapsed_seconds &lt; profile.wall_seconds + 6
+E       AssertionError: assert (0 &lt;= 4096 and 19.606546404000255 &lt; (1 + 6))
+E        +  where 0 = len(b'')
+E        +    where b'' = SandboxReceipt(container_id='1ce28850a52bcf1e0062564b580a1b2569a794195a400d20b2292aadd12d366a', profile_sha256='2684b8...b2677c8c', exit_code=137, reason='deadline_exceeded', output=b'', elapsed_seconds=19.606546404000255, oom_killed=False).output
+E        +  and   4096 = SandboxProfile(name='restricted-offline', image='python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd...864, cpu_nanos=500000000, pids=32, wall_seconds=1, output_bytes=4096, tmp_bytes=33554432, stdin_mode='native-frame-v1').output_bytes
+E        +  and   19.606546404000255 = SandboxReceipt(container_id='1ce28850a52bcf1e0062564b580a1b2569a794195a400d20b2292aadd12d366a', profile_sha256='2684b8...b2677c8c', exit_code=137, reason='deadline_exceeded', output=b'', elapsed_seconds=19.606546404000255, oom_killed=False).elapsed_seconds
+E        +  and   1 = SandboxProfile(name='restricted-offline', image='python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd...864, cpu_nanos=500000000, pids=32, wall_seconds=1, output_bytes=4096, tmp_bytes=33554432, stdin_mode='native-frame-v1').wall_seconds
+
+tests/integration/test_sandbox_framed_stdin.py:189: AssertionError</failure></testcase><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_input_adverse_cases_terminate_and_remove[closed-output-deadline_exceeded]" file="tests/integration/test_sandbox_framed_stdin.py" line="151" time="52.800"><failure message="AssertionError: assert (0 &lt;= 4096 and 41.59976240500691 &lt; (1 + 6))&#10; +  where 0 = len(b'')&#10; +    where b'' = SandboxReceipt(container_id='6073c4d10d682d7d8a06d5ef45491e16e723722c08d1e8011b16f3077aa0aafc', profile_sha256='2684b8...ea0355e35', exit_code=137, reason='deadline_exceeded', output=b'', elapsed_seconds=41.59976240500691, oom_killed=False).output&#10; +  and   4096 = SandboxProfile(name='restricted-offline', image='python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd...864, cpu_nanos=500000000, pids=32, wall_seconds=1, output_bytes=4096, tmp_bytes=33554432, stdin_mode='native-frame-v1').output_bytes&#10; +  and   41.59976240500691 = SandboxReceipt(container_id='6073c4d10d682d7d8a06d5ef45491e16e723722c08d1e8011b16f3077aa0aafc', profile_sha256='2684b8...ea0355e35', exit_code=137, reason='deadline_exceeded', output=b'', elapsed_seconds=41.59976240500691, oom_killed=False).elapsed_seconds&#10; +  and   1 = SandboxProfile(name='restricted-offline', image='python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd...864, cpu_nanos=500000000, pids=32, wall_seconds=1, output_bytes=4096, tmp_bytes=33554432, stdin_mode='native-frame-v1').wall_seconds">tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-25/test_actual_input_adverse_case1')
+case = 'closed-output', expected = 'deadline_exceeded'
+
+    @pytest.mark.parametrize(
+        "case,expected",
+        [
+            ("blocked-reader", "deadline_exceeded"),
+            ("closed-output", "deadline_exceeded"),
+            ("output-pressure", "output_limit"),
+            ("memory-pressure", "memory_limit"),
+            ("early-exit", "failed"),
+        ],
+    )
+    def test_actual_input_adverse_cases_terminate_and_remove(tmp_path, case, expected):
+        root, workspace, profile = setup(tmp_path, seconds=1 if expected == "deadline_exceeded" else 10)
+        programs = {
+            "blocked-reader": "import time;time.sleep(60)",
+            "closed-output": "import os,time;os.close(1);os.close(2);time.sleep(60)",
+            "output-pressure": "import os,time;os.write(1,b'x'*1000000);time.sleep(60)",
+            # Consume stdin first, then fault in small bounded allocations until the
+            # actual 64MiB cgroup cap is hit. One huge malloc can instead be refused
+            # by host overcommit policy with MemoryError before cgroup OOM is tested.
+            "memory-pressure": (
+                "import sys;sys.stdin.buffer.read();blocks=[]\n"
+                "while True: blocks.append(bytearray(4*1024*1024))"
+            ),
+            "early-exit": "raise SystemExit(7)",
+        }
+        receipt = DockerSandbox(root).run(
+            workspace,
+            ("/usr/local/bin/python", "-u", "-c", programs[case]),
+            profile,
+            input_frame=b"x" * native_tool_input.MAX_FRAME_BYTES,
+        )
+        if expected == "failed":
+            assert receipt.reason in ("process_failed", "input_incomplete")
+        else:
+            assert receipt.reason == expected, (receipt.reason, receipt.exit_code, receipt.oom_killed, receipt.output)
+            if case == "memory-pressure":
+                assert receipt.oom_killed is True
+&gt;       assert len(receipt.output) &lt;= profile.output_bytes and receipt.elapsed_seconds &lt; profile.wall_seconds + 6
+E       AssertionError: assert (0 &lt;= 4096 and 41.59976240500691 &lt; (1 + 6))
+E        +  where 0 = len(b'')
+E        +    where b'' = SandboxReceipt(container_id='6073c4d10d682d7d8a06d5ef45491e16e723722c08d1e8011b16f3077aa0aafc', profile_sha256='2684b8...ea0355e35', exit_code=137, reason='deadline_exceeded', output=b'', elapsed_seconds=41.59976240500691, oom_killed=False).output
+E        +  and   4096 = SandboxProfile(name='restricted-offline', image='python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd...864, cpu_nanos=500000000, pids=32, wall_seconds=1, output_bytes=4096, tmp_bytes=33554432, stdin_mode='native-frame-v1').output_bytes
+E        +  and   41.59976240500691 = SandboxReceipt(container_id='6073c4d10d682d7d8a06d5ef45491e16e723722c08d1e8011b16f3077aa0aafc', profile_sha256='2684b8...ea0355e35', exit_code=137, reason='deadline_exceeded', output=b'', elapsed_seconds=41.59976240500691, oom_killed=False).elapsed_seconds
+E        +  and   1 = SandboxProfile(name='restricted-offline', image='python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd...864, cpu_nanos=500000000, pids=32, wall_seconds=1, output_bytes=4096, tmp_bytes=33554432, stdin_mode='native-frame-v1').wall_seconds
+
+tests/integration/test_sandbox_framed_stdin.py:189: AssertionError</failure></testcase><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_input_adverse_cases_terminate_and_remove[output-pressure-output_limit]" file="tests/integration/test_sandbox_framed_stdin.py" line="151" time="17.576" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_input_adverse_cases_terminate_and_remove[memory-pressure-memory_limit]" file="tests/integration/test_sandbox_framed_stdin.py" line="151" time="9.397" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_input_adverse_cases_terminate_and_remove[early-exit-failed]" file="tests/integration/test_sandbox_framed_stdin.py" line="151" time="10.584" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_docker_input_flags_must_match_approved_profile[closed-open]" file="tests/integration/test_sandbox_framed_stdin.py" line="193" time="3.243" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_docker_input_flags_must_match_approved_profile[native-frame-v1-close]" file="tests/integration/test_sandbox_framed_stdin.py" line="193" time="20.625" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_docker_input_flags_must_match_approved_profile[native-frame-v1-tty]" file="tests/integration/test_sandbox_framed_stdin.py" line="193" time="6.823" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_docker_input_flags_must_match_approved_profile[native-frame-v1-no-stdout]" file="tests/integration/test_sandbox_framed_stdin.py" line="193" time="2.467" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_docker_input_flags_must_match_approved_profile[native-frame-v1-no-stderr]" file="tests/integration/test_sandbox_framed_stdin.py" line="193" time="3.243" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_actual_blocked_input_cancels_after_observed_running_state" file="tests/integration/test_sandbox_framed_stdin.py" line="239" time="6.953" /><testcase classname="tests.integration.test_sandbox_framed_stdin" name="test_killed_actual_attach_client_cannot_hide_running_worker" file="tests/integration/test_sandbox_framed_stdin.py" line="279" time="12.752" /></testsuite></testsuites>

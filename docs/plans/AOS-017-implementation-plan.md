@@ -109,3 +109,15 @@ Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the
 | AOS-017-TC08 | security | Private profile/examples stay local; cross-harness export requires explicit permitted context and retains provenance/labels; consumer clients do not silently share chats or memory. |
 
 These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.
+
+## Current R3 extension component: encrypted structured style
+
+[Design61](../design/61-STRUCTURED-LOCAL-STYLE.md) connects an explicitly selected
+StyleProfile/charter renderer to the existing encrypted approved-field profile
+Ask path. Renderer2 binds ciphertext/source/request/policy and preserves legacy
+renderer1; migration0032 refuses loss of populated v2 audit. [Component evidence](../../evidence/structured-profile-style-2026-10-18/report.json)
+includes actual crypto/PG/local CPU smoke with synthetic test keys, not qualified
+style fidelity, owner preference or a current OS-key-backend/release certificate.
+S4 remains IN_PROGRESS; private example refs, full editing/onboarding, S5's paired
+presentation evaluation and S6's portable model manifests/replacement remain
+pending. No owner database/key/service was configured by this task.
