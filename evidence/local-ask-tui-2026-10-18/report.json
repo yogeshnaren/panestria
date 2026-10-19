@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "candidate_commit": "0a34a47fe49e7795b0c1d04d66ff0b520a7dd717",
+  "candidate_commit": "f319a9a87ce98b4e38f5c1aa41a9e33b06530d97",
   "worktree_state": "clean",
   "outcome": "LOCAL_TERMINAL_COMPONENT_AND_ACTUAL_CPU_JOURNEY_PASS_NOT_CUMULATIVE_RELEASE_QUALIFICATION",
   "observations": [
@@ -30,12 +30,32 @@
       "duration_seconds": 11.792,
       "file": "actual-local-terminal.xml",
       "scope": "Actual CLI server +PTY/keyboard +TCP HTTP +disposable Postgres +existing pinned local CPU model; no model fixture"
+    },
+    {
+      "candidate_commit": "f319a9a87ce98b4e38f5c1aa41a9e33b06530d97",
+      "worktree_state": "clean",
+      "passed": 8,
+      "failed": 0,
+      "duration_seconds": 9.763,
+      "file": "final-terminal-checks.xml",
+      "scope": "8 final actual PTY/HTTP/Postgres checks with model fixtures, including F5 while editing"
+    },
+    {
+      "candidate_commit": "f319a9a87ce98b4e38f5c1aa41a9e33b06530d97",
+      "worktree_state": "clean",
+      "passed": 1,
+      "failed": 0,
+      "duration_seconds": 10.451,
+      "file": "final-actual-local-terminal.xml",
+      "scope": "One actual PTY/keyboard/HTTP/Postgres/existing local CPU model journey at final implementation source"
     }
   ],
   "commands": [
     "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py -q --junitxml=/tmp/panestria-ask-tui-initial.xml",
     "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py tests/integration/test_ask_cli.py tests/integration/test_ask_api.py -q --junitxml=/tmp/panestria-ask-tui-connected.xml",
-    "PANESTRIA_PROFILE_TEST_MODEL_CACHE=<EXISTING_PUBLIC_MODEL_CACHE> UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui_live.py -m live -q --junitxml=/tmp/panestria-ask-tui-live.xml"
+    "PANESTRIA_PROFILE_TEST_MODEL_CACHE=<EXISTING_PUBLIC_MODEL_CACHE> UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui_live.py -m live -q --junitxml=/tmp/panestria-ask-tui-live.xml",
+    "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py -q --junitxml=/tmp/panestria-ask-tui-final.xml",
+    "PANESTRIA_PROFILE_TEST_MODEL_CACHE=<EXISTING_PUBLIC_MODEL_CACHE> UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui_live.py -m live -q --junitxml=/tmp/panestria-ask-tui-live-final.xml"
   ],
   "checks": [
     "Actual terminal keyboard question/answer, resize/small window, scroll layout and normal quit restore original terminal attributes",
@@ -43,7 +63,8 @@
     "Actual committed Ask then injected lost response leaves known ID, prevents redispatch and recovers only canonical receipt, not unretained text",
     "Wrong server scope refuses before question dispatch; absolute control timeout includes actual slow HTTP body",
     "Old view generations/auth-loss callbacks cannot restore text or regress terminal state; ESC/OSC activators and bidi controls are removed",
-    "Actual existing CPU model answers through new terminal; completion and model metadata confirmed in scoped database; only owned server/model/socket cleaned up"
+    "Actual existing CPU model answers through new terminal; completion and model metadata confirmed in scoped database; only owned server/model/socket cleaned up",
+    "F5 refresh works while editing without submitting or discarding the draft; F6/F10 remain global controls"
   ],
   "static_checks": [
     "Ruff all repository PASS",
@@ -60,8 +81,10 @@
     "SDKTC04 deferred, original gates unchanged, cumulativeG1/G2/G3 NOT_RUN and no owner trial"
   ],
   "files": {
-    "initial-checks.xml": "e8996a49e0a01286ead36b911205011125c039215ee68578633979ead22fefad",
+    "actual-local-terminal.xml": "c36d45ea92290d4849f91be16f4a6ce52354513cd3d7c0ff6949edbc7d894acd",
     "connected-checks.xml": "734724b6b04ae04228e536ddab757ea531989c4e228e26c105451f934f1dbf50",
-    "actual-local-terminal.xml": "c36d45ea92290d4849f91be16f4a6ce52354513cd3d7c0ff6949edbc7d894acd"
+    "final-actual-local-terminal.xml": "3cd6229d329f6039e2b41f615a1c0b29bb9bb761b46805fe4860c36a136a56af",
+    "final-terminal-checks.xml": "7ed78436c09ac70deb004ed53de5fd4ea8477a7138b651c31fd60e0b070f0333",
+    "initial-checks.xml": "e8996a49e0a01286ead36b911205011125c039215ee68578633979ead22fefad"
   }
 }
