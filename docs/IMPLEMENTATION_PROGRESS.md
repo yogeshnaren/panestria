@@ -8,7 +8,7 @@ An implemented component or passing CI is not a release-gate pass.
 | Phase/outcome | Delivered behavior | Remaining acceptance work |
 | --- | --- | --- |
 | R0 durable synthetic kernel | Historical accepted candidate/G0 evidence preserved | Do not reopen accepted R0 |
-| R1 offline Ask | Actual GPU Ask on ten offline questions; restart, pressure and process-memory observations retained | Qualify the cumulative G1 candidate against all original clauses |
+| R1 offline Ask | Keyboard Ask TUI with readiness, question/answer, receipts and cancellation; actual CPU terminal/model journey plus historical GPU Ask/restart/pressure observations | Guided first-run setup, other TUI task screens and cumulative G1 qualification |
 | R1 access and one-worker Build | Revoked sessions clear retained UI output; owner CLI submits PUBLIC work through admitted Claude/Bash, independent checks, exact review/merge and cancellation; actual subscription journey passed at its recorded source | Qualify the selected stable runtime/cumulative candidate; owner review remains |
 | R1 paid SDK | Owner selected subscription/local-only operation | AOS-016-TC04 deferred, **not passed**; original gate intact |
 | R2 research collection | Dedicated owner policy prepare/confirm, new question staging, admitted search/fetch/read, exact retained excerpts, request-scoped diagnostics and private export | Automatic planning/synthesis, qualified support, actual service/runtime and complete D-1/G2 |
@@ -46,13 +46,14 @@ download or paid call is silently selected by this work.
 
 ## Next concrete delivery
 
-Review and merge the dedicated research-policy task after exact-head CI. Next
-owner-facing priority is a guided terminal interface: begin with local Ask setup
-status and question/answer, then expose canonical tasks/evidence and exact reviews.
-The owner explicitly prefers a TUI before GUI work. The existing individual CLI
-commands are not a TUI; no unified terminal application is claimed. Continue
-bounded planning/synthesis/support and R3 work while actual search setup remains
-deferred; do not fabricate a live certificate or silently configure engines.
+Finish the Ask TUI task's exact-head CI/review/merge. The owner can then use
+`panestria tui --config ...` against the separately configured local Ask server.
+Next improve first-run setup/readiness guidance, then bring canonical Build
+task/diff/check/approval review into the terminal. This is an Ask TUI, not yet a
+unified Build/research terminal or completed R3 Mission Control. The owner prefers
+TUI before GUI work; original dashboard/phone/gate requirements remain pending.
+Continue bounded planning/synthesis/support and R3 work while actual search setup
+remains deferred; do not fabricate a live certificate or silently configure engines.
 
 The full Delegate gate still requires adversarial briefs, qualified semantic
 support/contradiction handling, an actual authorized public brief and Ask/Build
@@ -66,11 +67,13 @@ PRs [112](https://github.com/yogeshnaren/panestria/pull/112),
 [114](https://github.com/yogeshnaren/panestria/pull/114),
 [115](https://github.com/yogeshnaren/panestria/pull/115),
 [116](https://github.com/yogeshnaren/panestria/pull/116) and
-[117](https://github.com/yogeshnaren/panestria/pull/117) merged sequentially with
+[117](https://github.com/yogeshnaren/panestria/pull/117) and
+[118](https://github.com/yogeshnaren/panestria/pull/118) merged sequentially with
 passing exact-head CI, reviewed parents and complete tested trees. Their verified
-main endpoint is `b9b61ae69b8f53a6cdfe1b97807eddb7d9cf01df`. Subsequent task evidence
+main endpoint is `cfe09d0463af039b50fb52eab51920037df3a19f`. Subsequent task evidence
 remains separately bound to its source; no old report is relabeled:
 
+- [Keyboard Ask TUI](../evidence/local-ask-tui-2026-10-18/report.json)
 - [Owner policy reviews](../evidence/owner-research-policy-2026-10-18/report.json)
 - [Owner collection](../evidence/owner-research-collection-2026-10-18/report.json)
 - [Owner question staging](../evidence/owner-research-submission-2026-10-18/report.json)

@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "f319a9a87ce98b4e38f5c1aa41a9e33b06530d97",
+  "worktree_state": "clean",
+  "outcome": "LOCAL_TERMINAL_COMPONENT_AND_ACTUAL_CPU_JOURNEY_PASS_NOT_CUMULATIVE_RELEASE_QUALIFICATION",
+  "observations": [
+    {
+      "candidate_commit": "fa402cd4493df2deb3bd0900391cfae63789aad2",
+      "worktree_state": "clean",
+      "passed": 8,
+      "failed": 0,
+      "duration_seconds": 9.603,
+      "file": "initial-checks.xml",
+      "scope": "Actual PTY/HTTP/Postgres; explicit model fixture, not real inference"
+    },
+    {
+      "candidate_commit": "21e863fcca61c6f86d879ff70f1690001ae5487b",
+      "worktree_state": "clean",
+      "passed": 14,
+      "failed": 0,
+      "duration_seconds": 11.52,
+      "file": "connected-checks.xml",
+      "scope": "8TUI +existing Ask CLI/API, actual PTY/HTTP/Postgres with model fixtures"
+    },
+    {
+      "candidate_commit": "0a34a47fe49e7795b0c1d04d66ff0b520a7dd717",
+      "worktree_state": "clean",
+      "passed": 1,
+      "failed": 0,
+      "duration_seconds": 11.792,
+      "file": "actual-local-terminal.xml",
+      "scope": "Actual CLI server +PTY/keyboard +TCP HTTP +disposable Postgres +existing pinned local CPU model; no model fixture"
+    },
+    {
+      "candidate_commit": "f319a9a87ce98b4e38f5c1aa41a9e33b06530d97",
+      "worktree_state": "clean",
+      "passed": 8,
+      "failed": 0,
+      "duration_seconds": 9.763,
+      "file": "final-terminal-checks.xml",
+      "scope": "8 final actual PTY/HTTP/Postgres checks with model fixtures, including F5 while editing"
+    },
+    {
+      "candidate_commit": "f319a9a87ce98b4e38f5c1aa41a9e33b06530d97",
+      "worktree_state": "clean",
+      "passed": 1,
+      "failed": 0,
+      "duration_seconds": 10.451,
+      "file": "final-actual-local-terminal.xml",
+      "scope": "One actual PTY/keyboard/HTTP/Postgres/existing local CPU model journey at final implementation source"
+    },
+    {
+      "candidate_commit": "75a059d1f0c339cf8cbc14c18f5624c3d968517a",
+      "worktree_state": "clean",
+      "passed": 8,
+      "failed": 0,
+      "duration_seconds": 9.71,
+      "file": "ci-correction-terminal-checks.xml",
+      "scope": "Existing 8 focused PTY/HTTP/Postgres checks with model fixtures after correcting partial-frame assertion; production implementation unchanged"
+    }
+  ],
+  "commands": [
+    "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py -q --junitxml=/tmp/panestria-ask-tui-initial.xml",
+    "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py tests/integration/test_ask_cli.py tests/integration/test_ask_api.py -q --junitxml=/tmp/panestria-ask-tui-connected.xml",
+    "PANESTRIA_PROFILE_TEST_MODEL_CACHE=<EXISTING_PUBLIC_MODEL_CACHE> UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui_live.py -m live -q --junitxml=/tmp/panestria-ask-tui-live.xml",
+    "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py -q --junitxml=/tmp/panestria-ask-tui-final.xml",
+    "PANESTRIA_PROFILE_TEST_MODEL_CACHE=<EXISTING_PUBLIC_MODEL_CACHE> UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui_live.py -m live -q --junitxml=/tmp/panestria-ask-tui-live-final.xml",
+    "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py -q --junitxml=/tmp/panestria-ask-tui-ci-correction.xml"
+  ],
+  "checks": [
+    "Actual terminal keyboard question/answer, resize/small window, scroll layout and normal quit restore original terminal attributes",
+    "Default actual PG/HTTP cancellation and fresh-request reuse; injected expected-token change causes actual auth denial/view clearing",
+    "Actual committed Ask then injected lost response leaves known ID, prevents redispatch and recovers only canonical receipt, not unretained text",
+    "Wrong server scope refuses before question dispatch; absolute control timeout includes actual slow HTTP body",
+    "Old view generations/auth-loss callbacks cannot restore text or regress terminal state; ESC/OSC activators and bidi controls are removed",
+    "Actual existing CPU model answers through new terminal; completion and model metadata confirmed in scoped database; only owned server/model/socket cleaned up",
+    "F5 refresh works while editing without submitting or discarding the draft; F6/F10 remain global controls"
+  ],
+  "static_checks": [
+    "Ruff all repository PASS",
+    "Mypy236 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "limits": [
+    "Ask-only terminal: existing local server/private config required; no setup wizard, Build/research screens or full Mission Control",
+    "One actual synthetic local model journey is not new GPU/latency/OS-egress/quality qualification or owner acceptance",
+    "No Claude/Anthropic SDK/OpenAI live call, new provider credential, download, spend, driver reset or owner database/service change",
+    "App keeps no question/answer history; physical erasure and terminal recording control not claimed",
+    "No automatic POST retry; unconfirmed submissions require receipt/cancel; closing terminal does not assert server shutdown or cancellation",
+    "SDKTC04 deferred, original gates unchanged, cumulativeG1/G2/G3 NOT_RUN and no owner trial"
+  ],
+  "files": {
+    "actual-local-terminal.xml": "c36d45ea92290d4849f91be16f4a6ce52354513cd3d7c0ff6949edbc7d894acd",
+    "connected-checks.xml": "734724b6b04ae04228e536ddab757ea531989c4e228e26c105451f934f1dbf50",
+    "final-actual-local-terminal.xml": "3cd6229d329f6039e2b41f615a1c0b29bb9bb761b46805fe4860c36a136a56af",
+    "final-terminal-checks.xml": "7ed78436c09ac70deb004ed53de5fd4ea8477a7138b651c31fd60e0b070f0333",
+    "initial-checks.xml": "e8996a49e0a01286ead36b911205011125c039215ee68578633979ead22fefad",
+    "ci-correction-terminal-checks.xml": "34bb7fb79542beeec5b511e66e989bd1b9c10391efc47e74e93acdb0485bb810"
+  },
+  "ci_observations": [
+    {
+      "candidate_commit": "59fe874ad6ea21476d97bb1c88d511144e9956ff",
+      "run_id": 39183794694,
+      "url": "https://github.com/yogeshnaren/panestria/actions/runs/39183794694",
+      "conclusion": "FAILURE",
+      "passed": 2026,
+      "failed": 1,
+      "deselected": 55,
+      "reason": "PTY test asserted answer immediately after reading COMPLETED; a valid curses frame can arrive in multiple reads. Assertion now waits for answer bytes from the same submission, including already buffered bytes. No production change or live requalification claim."
+    }
+  ]
+}

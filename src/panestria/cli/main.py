@@ -24,6 +24,7 @@ from panestria.cli.native import native_app
 from panestria.cli.profile import profile_app
 from panestria.cli.quota import quota_app
 from panestria.cli.research import research_app
+from panestria.cli.tui import tui_command
 from panestria.config import ProfileRejected, load_settings
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
@@ -40,6 +41,7 @@ app.command("approve")(approve_command)
 app.command("deny")(deny_command)
 app.command("approvals")(list_command)
 app.command("ask")(ask_command)
+app.command("tui")(tui_command)
 
 
 @artifact_app.command("show")

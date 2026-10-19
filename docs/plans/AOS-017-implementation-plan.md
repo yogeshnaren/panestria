@@ -1,12 +1,18 @@
 # AOS-017 — Offline Ask and source-scoped memory interaction: implementation plan
 
-**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-011, AOS-016. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS (supported offline Ask and operator surfaces). **Tests:** component/source-bound evidence; full item NOT_RUN. **Depends on:** AOS-011, AOS-016. **Repository baseline:** original main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; terminal usability continuation starts at cfe09d0463af039b50fb52eab51920037df3a19f.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-017.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
 ## Outcome and scope
 
 A user can quickly ask the primary local AI offline and retrieve previously approved project memory without leaking information across scopes.
+
+The owner requested a usable terminal application before GUI expansion. The
+[Ask TUI](../design/57-LOCAL-ASK-TUI.md) extends S2 with keyboard question/answer,
+actual scope/status, canonical receipt/cancel and transient literal rendering.
+It uses the supported local server; it does not install/start services, provide
+Build/research screens, replace React/phone clauses or pass the full item/gate.
 
 Keep the release scope and dependencies above. Implement only the selected slice; other clauses remain pending until their work/tests complete. Models/UI cannot declare completion. Apply strict scopes, typed errors, transactions, limits and compatibility spikes from the global design.
 
