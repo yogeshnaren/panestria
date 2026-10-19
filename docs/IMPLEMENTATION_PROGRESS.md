@@ -8,7 +8,7 @@ An implemented component or passing CI is not a release-gate pass.
 | Phase/outcome | Delivered behavior | Remaining acceptance work |
 | --- | --- | --- |
 | R0 durable synthetic kernel | Historical accepted candidate/G0 evidence preserved | Do not reopen accepted R0 |
-| R1 offline Ask | Keyboard Ask TUI with readiness, question/answer, receipts and cancellation; actual CPU terminal/model journey plus historical GPU Ask/restart/pressure observations | Guided first-run setup, other TUI task screens and cumulative G1 qualification |
+| R1 offline Ask | Keyboard Ask TUI with readiness, question/answer, receipts and cancellation; explicit first-run command generates private stable settings; actual CPU terminal/model journey plus historical GPU Ask/restart/pressure observations | Other TUI task screens and cumulative G1 qualification |
 | R1 access and one-worker Build | Revoked sessions clear retained UI output; owner CLI submits PUBLIC work through admitted Claude/Bash, independent checks, exact review/merge and cancellation; actual subscription journey passed at its recorded source | Qualify the selected stable runtime/cumulative candidate; owner review remains |
 | R1 paid SDK | Owner selected subscription/local-only operation | AOS-016-TC04 deferred, **not passed**; original gate intact |
 | R2 research collection | Dedicated owner policy prepare/confirm, new question staging, admitted search/fetch/read, exact retained excerpts, request-scoped diagnostics and private export | Automatic planning/synthesis, qualified support, actual service/runtime and complete D-1/G2 |
@@ -46,10 +46,11 @@ download or paid call is silently selected by this work.
 
 ## Next concrete delivery
 
-Finish the Ask TUI task's exact-head CI/review/merge. The owner can then use
-`panestria tui --config ...` against the separately configured local Ask server.
-Next improve first-run setup/readiness guidance, then bring canonical Build
-task/diff/check/approval review into the terminal. This is an Ask TUI, not yet a
+Use `panestria tui --config ...` against the separately configured local Ask server.
+The [first-run command](testing/LOCAL_ASK_SETUP.md) generates stable IDs and private
+settings using the existing setup policy; it still needs a migrated database
+and an existing model cache. Next bring canonical Build task/diff/check/approval
+review into the terminal. This is an Ask TUI, not yet a
 unified Build/research terminal or completed R3 Mission Control. The owner prefers
 TUI before GUI work; original dashboard/phone/gate requirements remain pending.
 Continue bounded planning/synthesis/support and R3 work while actual search setup
@@ -73,7 +74,16 @@ passing exact-head CI, reviewed parents and complete tested trees. Their verifie
 main endpoint is `cfe09d0463af039b50fb52eab51920037df3a19f`. Subsequent task evidence
 remains separately bound to its source; no old report is relabeled:
 
+PR [119](https://github.com/yogeshnaren/panestria/pull/119) added the keyboard Ask
+application at merge `7a0e5eb3363d267806221287e3038db0f81a43d7`, after exact-head
+CI `39187924099` passed on `bc49faac139141715d8d52234e7a09d3cefc264c`.
+Its merge parents and full tested tree were verified. The initial CI failure
+was a PTY assertion that read only the first part of a valid redraw; the fix
+waits for the complete response. Original failure and live observations remain
+source-bound in the terminal report. This did not require another provider probe.
+
 - [Keyboard Ask TUI](../evidence/local-ask-tui-2026-10-18/report.json)
+- [First-run CLI](../evidence/local-first-run-2026-10-18/report.json)
 - [Owner policy reviews](../evidence/owner-research-policy-2026-10-18/report.json)
 - [Owner collection](../evidence/owner-research-collection-2026-10-18/report.json)
 - [Owner question staging](../evidence/owner-research-submission-2026-10-18/report.json)

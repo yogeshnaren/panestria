@@ -7,6 +7,7 @@ import os
 import re
 from dataclasses import asdict
 from pathlib import Path
+from typing import Annotated
 
 import httpx2 as httpx
 import psycopg
@@ -14,6 +15,7 @@ import typer
 from pydantic import ValidationError
 
 from panestria.api.db import DatabaseUnavailable, open_database
+from panestria.cli.local_init import configured_message, first_run_files
 from panestria.config import ProfileRejected, Settings
 from panestria.config_local import LocalApplicationRejected, create_local_token, load_local_settings
 from panestria.contracts.inference import InferenceUnavailable
@@ -24,6 +26,41 @@ from panestria.kernel.uow import UnitOfWork
 local_app = typer.Typer(no_args_is_help=True)
 _TOKEN_FILE = typer.Option(..., "--token-file")
 _CONFIG_FILE = typer.Option(..., "--config")
+
+
+@local_app.command("init")
+def initialize(
+    directory: Annotated[Path, typer.Option("--directory")],
+    model_cache: Annotated[Path, typer.Option("--model-cache")],
+    port: Annotated[int, typer.Option("--port")] = 8768,
+    offline_ask: Annotated[bool, typer.Option("--offline-ask")] = False,
+) -> None:
+    """Prepare private Ask settings and stable IDs; use an already migrated database."""
+    try:
+        if not offline_ask:
+            raise KernelDenied("offline_ask_intent_required")
+        url = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
+        with first_run_files(directory, model_cache, port) as config:
+            from panestria.api.local_server import SCHEMA_HEAD
+
+            with open_database(url.get_secret_value()) as c:
+                if c.execute("SELECT version_num FROM alembic_version").fetchone() != (SCHEMA_HEAD,):
+                    raise LocalApplicationRejected("database_schema_not_current")
+                intent = LocalSetupIntent(owner_id=config.owner_id, project_id=config.project_id, intent="OFFLINE_ASK")
+                receipt = LocalSetupService().initialize(UnitOfWork(c), intent)
+        # The connection context has committed before claiming CONFIGURED.
+        typer.echo(configured_message(directory, asdict(receipt)))
+        return
+    except (LocalApplicationRejected, ProfileRejected, KernelDenied) as exc:
+        code = exc.code
+    except psycopg.errors.UndefinedTable:
+        code = "database_schema_not_current"
+    except (DatabaseUnavailable, psycopg.Error):
+        code = "database_unavailable"
+    except (OSError, ValueError):
+        code = "local_initialization_unavailable"
+    typer.echo(json.dumps({"code": code, "files_preserved": True}), err=True)
+    raise typer.Exit(2)
 
 
 @local_app.command("pair-code")
