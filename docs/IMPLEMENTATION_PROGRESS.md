@@ -124,3 +124,17 @@ those sources, not a current cumulative G1 pass or a hardware partition guarante
 [Phase](phase-tracker.json) and [slice](implementation-slices.json) trackers retain
 IN_PROGRESS for partial work. Progress is usable behavior plus remaining
 acceptance gaps, not a PR/test count or an invented completion percentage.
+
+## Storage visibility and owner recommendations
+
+The [storage CLI](testing/STORAGE_AWARENESS.md) adds read-only capacity reports,
+explicit Docker/Timeshift/directory probes and opt-in terminal monitoring. It
+warns about pressure, reserves, growth, large selected components and observed
+backup-policy changes. Unknown/shared estimates stay distinct. Recommendations
+never delete data, prune Docker or alter backups. Monitoring defaults off,
+suppresses unchanged warnings and respects settings revocation.
+
+This is partial AOS-018-S4/MVP-X13 delivery. Unified notifications, automatic
+large-write admission, persistent growth attribution and actual host qualification
+remain pending. Original specs and G1/G2/G3 gates are preserved. Private machine
+diagnosis and system logs are kept out of Git.

@@ -106,6 +106,20 @@ Reuse the attached checksum-gated hardware probe and existing native serving/run
 
 Use detected Linux cgroup/service/container CPU/RAM/process/I/O capabilities and PSI where available. Bound queues/contexts/worker concurrency, protect controller recovery, load specialists on demand and use event-driven supervision. Model roles need not be separate resident models/processes. CPU/RAM cgroups are not guaranteed per-model VRAM partitions; observe/reserve device memory and fail admission honestly under pressure. Advanced engine/cache/quantization tuning belongs in R4 after paired measurements, not a new OS or inference implementation.
 
+**Owner storage clarification, 2026-10-18:** Opt-in storage notifications are
+required in R3. Show capacity, available/reserved bytes and bounded component/
+growth observations with source/time/confidence. Keep Docker-wide logical/shared/
+reclaimable estimates separate from physical allocation and Panestria attribution;
+denied/unknown measurements stay unknown. Handle backup scope/schedules without
+double-counting shared snapshot bytes. Warn about large components, low reserves
+and expected large writes; integrate with admission and local notifications.
+Present keep/defer, inspect, backup-scope/target review, cache-candidate review and
+capacity expansion/migration options with scope, uncertain reclaimable range,
+rebuild/offline/restore impact and protected dependencies. **Agents must not delete
+storage, prune caches/volumes or change backup settings as remediation.** The owner
+performs any chosen cleanup. Initial [terminal visibility](../../testing/STORAGE_AWARENESS.md)
+is partial delivery; unified notifications and operation preflight remain pending.
+
 ## MVP-X14
 
 ### Reuse, REA evidence and comparative engineering

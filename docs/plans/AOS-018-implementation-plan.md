@@ -77,6 +77,21 @@ Only then complete this item. A release cannot promote while its other required 
 
 ## Revision 3 extension — MVP-X13, delivered in R3
 
+Owner clarification (2026-10-18): S4 includes an initial
+[read-only storage component](../testing/STORAGE_AWARENESS.md): reserves, bounded
+opt-in directory/Docker/Timeshift observations and terminal warning/recovery output.
+`tests/unit/test_storage_awareness.py` covers thresholds, reserve/growth, hardlinks,
+symlinks, denied/timed-out scans, local-only Docker estimates, read-only backup
+policy, private settings and disabled/deduplicated/revoked notifications. This is
+partial TC05/TC07 behavior, not qualification of those whole cases.
+
+Remaining S4/S5: connect expected writes/headroom to worker/download/artifact
+admission, integrate opt-in settings/local inbox with AOS-029, retain bounded
+source-bound growth observations across restarts and qualify real host budgets.
+Offer keep/defer, inspect, backup-scope/target review, unused-cache review with
+rebuild/offline impact, or owner-managed capacity expansion/migration. Never delete
+storage, prune caches/volumes or change backup settings. Preserve historical gates.
+
 The [active personal-platform contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x13) adds **Measured lightweight resource and foreground contract**. Original parent scope and historical results remain intact. These new slices deliver in **R3**, even when the parent AOS item originally ships in R1; they do not reopen historical G0 acceptance or fabricate G1 evidence. Inspect the current repository before choosing exact new files/migration revisions.
 
 | Slice | Concrete outcome, narrowed to about one developer-day | Prerequisites |
