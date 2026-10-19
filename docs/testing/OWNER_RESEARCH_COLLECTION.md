@@ -35,8 +35,9 @@ Create a private `research.json` (mode0600) with this shape, using actual values
 
 Both directories must already be canonical, owner-only (mode0700), and neither
 may contain the other. The search settings must match the actual qualification.
-Prepare the project grant before staging a contract pinned to it. Do not widen
-your existing offline Ask project. A changed policy does not upgrade an old goal.
+[Prepare and confirm the dedicated project grant](OWNER_RESEARCH_POLICY.md)
+before staging a contract pinned to it. Do not widen your existing offline Ask
+project. A changed policy does not upgrade an old goal.
 
 [Stage the PUBLIC question](OWNER_RESEARCH_SUBMISSION.md) with that exact current
 policy and a compatible canonical contract: PUBLIC class, cloud_egress allow,

@@ -486,7 +486,7 @@
           ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-023-implementation-plan.md",
-          "implementation_note": "Owner staged-question collection now connects selected bounded PUBLIC queries to admitted search/fetch/read/excerpts/private inspection and VERIFYING/RECONCILING states. Synthetic HTTPS/certificates only; operator policy UI, planner/synthesis, qualified support/live runtime/G2 pending."
+          "implementation_note": "Dedicated owner PUBLIC-web policy prepare/confirm now connects to staged-question collection, admitted search/fetch/read/excerpts/private inspection and VERIFYING/RECONCILING. Existing Ask scopes are preserved. Synthetic HTTPS/certificates only; guided TUI, planner/synthesis, qualified support/live runtime/G2 pending."
         }
       ]
     },

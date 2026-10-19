@@ -1,4 +1,4 @@
-"""Local owner question staging and evidence inspection; no search/fetch/model execution."""
+"""Local owner research reviews, staging, explicit collection and evidence inspection."""
 
 import hashlib
 import json
@@ -17,10 +17,53 @@ from panestria.config_research import load_research_settings
 from panestria.contracts.research import ResearchLimits
 from panestria.execution.research_brief import RetainedBrief, brief_html, brief_json
 from panestria.execution.research_collection import OwnerCollection
+from panestria.execution.research_policy import OwnerResearchPolicy
 from panestria.execution.research_submission import stage_question
+from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 
 research_app = typer.Typer(no_args_is_help=True)
+
+
+@research_app.command("prepare-policy")
+def prepare_research_policy(
+    config: Annotated[Path, typer.Option("--config")],
+    public_web_policy: Annotated[bool, typer.Option("--public-web-policy")] = False,
+) -> None:
+    """Show an exact pending PUBLIC-web grant for a dedicated research project; no I/O."""
+    _research_policy(config, public_web_policy, None, None)
+
+
+@research_app.command("confirm-policy")
+def confirm_research_policy(
+    review_id: str,
+    effect_digest: str,
+    config: Annotated[Path, typer.Option("--config")],
+    public_web_policy: Annotated[bool, typer.Option("--public-web-policy")] = False,
+) -> None:
+    """Confirm the exact reviewed PUBLIC-web policy as local owner; no collection."""
+    _research_policy(config, public_web_policy, review_id, effect_digest)
+
+
+def _research_policy(config: Path, intent: bool, review: str | None, digest: str | None) -> None:
+    try:
+        if not intent:
+            raise KernelDenied("explicit_public_web_policy_required")
+        settings = load_research_settings(config)
+        dsn = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
+        service = OwnerResearchPolicy(dsn.get_secret_value(), settings)
+        if review is None:
+            result = service.prepare(public_web_policy=intent)
+        else:
+            assert digest is not None
+            result = service.confirm(review, digest, public_web_policy=intent)
+    except KernelDenied as error:
+        typer.echo(json.dumps({"status": "UNAVAILABLE", "reason": error.code}), err=True)
+        raise typer.Exit(1) from None
+    except Exception:
+        typer.echo('{"status":"UNAVAILABLE","reason":"research_policy_not_confirmed"}', err=True)
+        raise typer.Exit(1) from None
+    typer.echo(json.dumps(result, sort_keys=True))
 
 
 @research_app.command("collect")

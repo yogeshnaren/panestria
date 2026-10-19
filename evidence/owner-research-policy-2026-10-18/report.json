@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "f75a5cbac42a21d58902b3488d009d3150687887",
+  "worktree_state": "clean",
+  "outcome": "COMPONENT_CHECKS_PASS_NOT_LIVE_OR_RELEASE_QUALIFICATION",
+  "command": "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_owner_research_policy.py tests/integration/test_owner_research_collection.py -q --junitxml=/tmp/panestria-owner-research-policy-final.xml",
+  "passed": 18,
+  "failed": 0,
+  "skipped": 0,
+  "duration_seconds": 63.269,
+  "execution_mode": "ACTUAL_DISPOSABLE_POSTGRES_OWNER_CLI_LOOPBACK_HTTP_CAS_AND_DOCKER_READER_WITH_TEST_FIXTURE_NOT_LIVE_CERTIFICATES_AND_SYNTHETIC_HTTPS",
+  "checks": [
+    "9 owner policy cases and9 connected collection cases; exact source and clean worktree recorded in every final XML case",
+    "Pending proposal leaves offline read-only grant; explicit intent/digest confirmation enables only PUBLIC web/read and no model/private-cloud/edit/spend/merge grant",
+    "Reviewed dedicated policy -> actual owner CLI stage -> admitted collection -> reader -> exact retained excerpt/private export, VERIFYING and NOT_ASSESSED with no check PASS",
+    "Existing Ask and other-owner projects unchanged; invalid purpose/source/expiry/report certificates create no project",
+    "Stable marker and selected certificate renewal change only trust/overall versions; identical current preparation creates no revision",
+    "Committed APPROVED followed by injected application interruption retains denied egress; missing report then denies retry; restored fixture report permits exact revalidation/application",
+    "Concurrent preparation, foreign/stale/broader review denial and preserved cancellation/expiry/UNKNOWN collection outcomes"
+  ],
+  "static_checks": [
+    "Ruff all repository PASS",
+    "Mypy234 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "prior_observations": [
+    {
+      "candidate_commit": "3aec80d685a1da88f6ec383a3fa3830145ed9e74",
+      "passed": 9,
+      "failed": 0,
+      "duration_seconds": 29.492,
+      "scope": "Initial owner-policy component run; candidate was observed clean at execution, but XML lacks embedded commit/worktree metadata. Retained as initial observation, not the final source-bound proof."
+    }
+  ],
+  "limits": [
+    "No live search service, public TLS/OS qualification, model/provider/inference call, new credential, download, spend or owner database/service change",
+    "Certificates and HTTPS explicitly synthetic fixtures; no live certificate issued or qualification fabricated",
+    "Policy commands grant permission only; no TUI, automatic planner/synthesizer, qualified semantic support or complete Delegate/G2",
+    "Original gates unchanged; SDK TC04 deferred not passed; no cumulative G1/G2/G3 pass or owner trial",
+    "Decision and application have separately acknowledged transactions; APPROVED can exist without grant until exact revalidation",
+    "Historical XML/evidence retained at original sources, not relabeled after documentation or merge changes"
+  ],
+  "files": {
+    "initial-checks.xml": "09e5011624b52808ed6cfb8488fdcc896875319e834c845cc842d6e58ceccb87",
+    "local-checks.xml": "6eef321ec2375398668ccfe471db1b03b6fb99f470127d8e72d0255876d496d6"
+  }
+}

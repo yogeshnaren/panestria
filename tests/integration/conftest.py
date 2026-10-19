@@ -172,6 +172,7 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_shared_research_runtime.py",
         "test_research_submission.py",
         "test_owner_research_collection.py",
+        "test_owner_research_policy.py",
         "test_aos_011.py",
         "test_aos_012.py",
         "test_aos_014.py",
