@@ -91,6 +91,44 @@ column build_evidence created_at timestamptz NO
 column build_evidence id uuid NO
 column build_evidence sha256 bpchar NO
 column build_evidence task_id uuid NO
+column build_handoff attempt_id uuid NO
+column build_handoff body jsonb NO
+column build_handoff created_at timestamptz NO
+column build_handoff id uuid NO
+column build_handoff lease_epoch int8 NO
+column build_handoff plan_id uuid NO
+column build_handoff sha256 bpchar NO
+column build_handoff task_id uuid NO
+column build_handoff task_version int8 NO
+column build_plan body jsonb NO
+column build_plan consent jsonb NO
+column build_plan contract_id uuid NO
+column build_plan created_at timestamptz NO
+column build_plan effect_digest bpchar NO
+column build_plan expires_at timestamptz NO
+column build_plan goal_id uuid NO
+column build_plan id uuid NO
+column build_plan inventory jsonb NO
+column build_plan inventory_sha256 bpchar NO
+column build_plan owner_id uuid NO
+column build_plan parent_id uuid YES
+column build_plan project_id uuid NO
+column build_plan proposal_sha256 bpchar NO
+column build_plan validation jsonb NO
+column build_plan version int4 NO
+column build_plan_acceptance accepted_at timestamptz NO
+column build_plan_acceptance accepted_by uuid NO
+column build_plan_acceptance contract_id uuid NO
+column build_plan_acceptance effect_digest bpchar NO
+column build_plan_acceptance goal_id uuid NO
+column build_plan_acceptance owner_id uuid NO
+column build_plan_acceptance plan_id uuid NO
+column build_plan_acceptance project_id uuid NO
+column build_plan_task contract_id uuid NO
+column build_plan_task goal_id uuid NO
+column build_plan_task node_sha256 bpchar NO
+column build_plan_task plan_id uuid NO
+column build_plan_task task_id uuid NO
 column check_run acceptance_check_id uuid NO
 column check_run attempt_id uuid NO
 column check_run candidate_sha256 bpchar YES
@@ -663,6 +701,43 @@ constraint panestria.build_evidence f FOREIGN KEY (task_id, contract_id) REFEREN
 constraint panestria.build_evidence p PRIMARY KEY (id)
 constraint panestria.build_evidence u UNIQUE (artifact_id)
 constraint panestria.build_evidence u UNIQUE (task_id, sha256)
+constraint panestria.build_handoff c CHECK ((jsonb_typeof(body) = 'object'::text))
+constraint panestria.build_handoff c CHECK ((lease_epoch > 0))
+constraint panestria.build_handoff c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.build_handoff c CHECK ((task_version >= 0))
+constraint panestria.build_handoff f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
+constraint panestria.build_handoff f FOREIGN KEY (plan_id, task_id) REFERENCES panestria.build_plan_task(plan_id, task_id)
+constraint panestria.build_handoff p PRIMARY KEY (id)
+constraint panestria.build_handoff u UNIQUE (task_id, attempt_id, lease_epoch)
+constraint panestria.build_plan c CHECK ((((body ->> 'plan_id'::text) = (id)::text) AND ((body ->> 'goal_id'::text) = (goal_id)::text) AND ((body ->> 'owner_id'::text) = (owner_id)::text) AND ((body ->> 'project_id'::text) = (project_id)::text)))
+constraint panestria.build_plan c CHECK ((((version = 1) AND (parent_id IS NULL)) OR ((version > 1) AND (parent_id IS NOT NULL))))
+constraint panestria.build_plan c CHECK ((effect_digest ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.build_plan c CHECK ((inventory_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.build_plan c CHECK ((jsonb_typeof(body) = 'object'::text))
+constraint panestria.build_plan c CHECK ((jsonb_typeof(consent) = 'object'::text))
+constraint panestria.build_plan c CHECK ((jsonb_typeof(inventory) = 'object'::text))
+constraint panestria.build_plan c CHECK ((jsonb_typeof(validation) = 'object'::text))
+constraint panestria.build_plan c CHECK ((proposal_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.build_plan c CHECK ((version > 0))
+constraint panestria.build_plan f FOREIGN KEY (contract_id, goal_id) REFERENCES panestria.goal_contract(id, goal_id)
+constraint panestria.build_plan f FOREIGN KEY (goal_id, project_id, owner_id) REFERENCES panestria.goal(id, project_id, owner_id)
+constraint panestria.build_plan f FOREIGN KEY (parent_id, goal_id) REFERENCES panestria.build_plan(id, goal_id)
+constraint panestria.build_plan p PRIMARY KEY (id)
+constraint panestria.build_plan u UNIQUE (goal_id, version)
+constraint panestria.build_plan u UNIQUE (id, goal_id)
+constraint panestria.build_plan u UNIQUE (id, goal_id, contract_id)
+constraint panestria.build_plan_acceptance c CHECK ((accepted_by = owner_id))
+constraint panestria.build_plan_acceptance c CHECK ((effect_digest ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.build_plan_acceptance f FOREIGN KEY (goal_id, project_id, owner_id) REFERENCES panestria.goal(id, project_id, owner_id)
+constraint panestria.build_plan_acceptance f FOREIGN KEY (plan_id, goal_id, contract_id) REFERENCES panestria.build_plan(id, goal_id, contract_id)
+constraint panestria.build_plan_acceptance p PRIMARY KEY (plan_id)
+constraint panestria.build_plan_acceptance u UNIQUE (plan_id, goal_id, contract_id)
+constraint panestria.build_plan_task c CHECK ((node_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.build_plan_task f FOREIGN KEY (plan_id, goal_id, contract_id) REFERENCES panestria.build_plan_acceptance(plan_id, goal_id, contract_id)
+constraint panestria.build_plan_task f FOREIGN KEY (task_id, contract_id) REFERENCES panestria.task(id, contract_id)
+constraint panestria.build_plan_task f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
+constraint panestria.build_plan_task p PRIMARY KEY (task_id)
+constraint panestria.build_plan_task u UNIQUE (plan_id, task_id)
 constraint panestria.check_run c CHECK (((candidate_sha256 IS NULL) OR (candidate_sha256 ~ '^[0-9a-f]{64}$'::text)))
 constraint panestria.check_run c CHECK (((verdict <> 'PASS'::text) OR (candidate_sha256 IS NOT NULL)))
 constraint panestria.check_run c CHECK (((verdict <> 'PASS'::text) OR (evidence_artifact_id IS NOT NULL)))
@@ -1158,6 +1233,16 @@ index CREATE UNIQUE INDEX budget_reservation_pkey ON panestria.budget_reservatio
 index CREATE UNIQUE INDEX build_evidence_artifact_id_key ON panestria.build_evidence USING btree (artifact_id)
 index CREATE UNIQUE INDEX build_evidence_pkey ON panestria.build_evidence USING btree (id)
 index CREATE UNIQUE INDEX build_evidence_task_id_sha256_key ON panestria.build_evidence USING btree (task_id, sha256)
+index CREATE UNIQUE INDEX build_handoff_pkey ON panestria.build_handoff USING btree (id)
+index CREATE UNIQUE INDEX build_handoff_task_id_attempt_id_lease_epoch_key ON panestria.build_handoff USING btree (task_id, attempt_id, lease_epoch)
+index CREATE UNIQUE INDEX build_plan_acceptance_pkey ON panestria.build_plan_acceptance USING btree (plan_id)
+index CREATE UNIQUE INDEX build_plan_acceptance_plan_id_goal_id_contract_id_key ON panestria.build_plan_acceptance USING btree (plan_id, goal_id, contract_id)
+index CREATE UNIQUE INDEX build_plan_goal_id_version_key ON panestria.build_plan USING btree (goal_id, version)
+index CREATE UNIQUE INDEX build_plan_id_goal_id_contract_id_key ON panestria.build_plan USING btree (id, goal_id, contract_id)
+index CREATE UNIQUE INDEX build_plan_id_goal_id_key ON panestria.build_plan USING btree (id, goal_id)
+index CREATE UNIQUE INDEX build_plan_pkey ON panestria.build_plan USING btree (id)
+index CREATE UNIQUE INDEX build_plan_task_pkey ON panestria.build_plan_task USING btree (task_id)
+index CREATE UNIQUE INDEX build_plan_task_plan_id_task_id_key ON panestria.build_plan_task USING btree (plan_id, task_id)
 index CREATE UNIQUE INDEX check_run_pkey ON panestria.check_run USING btree (id)
 index CREATE UNIQUE INDEX connection_grant_decision_pkey ON panestria.connection_grant_decision USING btree (review_id)
 index CREATE UNIQUE INDEX connection_grant_decision_review_id_grant_id_granted_versio_key ON panestria.connection_grant_decision USING btree (review_id, grant_id, granted_version, decision)
