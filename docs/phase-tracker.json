@@ -909,7 +909,7 @@
       "name": "Long-running work",
       "source_section": "2",
       "baseline_target_text": "Milestone contracts, intermittent verification, context refresh, safe checkpoint/resume",
-      "baseline_mvp_text": "Goal → plan → work → tests → review with bounded attempts",
+      "baseline_mvp_text": "Goal \u2192 plan \u2192 work \u2192 tests \u2192 review with bounded attempts",
       "mvp_aos": [
         "002",
         "003",
@@ -1779,7 +1779,7 @@
         "AOS-016",
         "AOS-024"
       ],
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "gate_status": "NOT_RUN",
       "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x08",
       "slice_ids": [
@@ -1793,7 +1793,10 @@
         "AOS-017-TC07",
         "AOS-017-TC08"
       ],
-      "evidence_refs": []
+      "evidence_refs": [
+        "evidence/structured-profile-style-2026-10-18/report.json"
+      ],
+      "implementation_note": "Explicit encrypted structured-style/charter Ask renderer component only. Style fidelity/preferences, private example refs, full editor/model-context compatibility and added acceptance cases remain pending."
     },
     {
       "id": "MVP-X09",
