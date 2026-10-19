@@ -46,8 +46,7 @@ download or paid call is silently selected by this work.
 
 ## Next concrete delivery
 
-Finish the Ask TUI and first-run tasks' exact-head CI/review/merges. The owner can then use
-`panestria tui --config ...` against the separately configured local Ask server.
+Use `panestria tui --config ...` against the separately configured local Ask server.
 The [first-run command](testing/LOCAL_ASK_SETUP.md) generates stable IDs and private
 settings using the existing setup policy; it still needs a migrated database
 and an existing model cache. Next bring canonical Build task/diff/check/approval
@@ -74,6 +73,14 @@ PRs [112](https://github.com/yogeshnaren/panestria/pull/112),
 passing exact-head CI, reviewed parents and complete tested trees. Their verified
 main endpoint is `cfe09d0463af039b50fb52eab51920037df3a19f`. Subsequent task evidence
 remains separately bound to its source; no old report is relabeled:
+
+PR [119](https://github.com/yogeshnaren/panestria/pull/119) added the keyboard Ask
+application at merge `7a0e5eb3363d267806221287e3038db0f81a43d7`, after exact-head
+CI `39187924099` passed on `bc49faac139141715d8d52234e7a09d3cefc264c`.
+Its merge parents and full tested tree were verified. The initial CI failure
+was a PTY assertion that read only the first part of a valid redraw; the fix
+waits for the complete response. Original failure and live observations remain
+source-bound in the terminal report. This did not require another provider probe.
 
 - [Keyboard Ask TUI](../evidence/local-ask-tui-2026-10-18/report.json)
 - [First-run CLI](../evidence/local-first-run-2026-10-18/report.json)
