@@ -264,7 +264,10 @@ def test_transport_lifetime_without_peer_and_single_connection(root):
                 another.connect(str(server.path))
 
 
-@pytest.mark.parametrize("data", [b"PRIVATE_SENTINEL", b"x" * (MAX_PAYLOAD_BYTES + 1), b"\xff\n", b"\n"])
+@pytest.mark.parametrize(
+    "data", [b"PRIVATE_SENTINEL", b"x" * (MAX_PAYLOAD_BYTES + 1), b"\xff\n", b"\n"],
+    ids=["unterminated", "oversize", "invalid-utf8", "empty-frame"],
+)
 def test_bad_or_partial_frames_close_private_session(root, monkeypatch, data):
     monkeypatch.setattr(transport, "_FRAME_SECONDS", 0.05)
     with RegisteredCheckSocket(root / "attempt", session()) as server, connect(server) as client:
@@ -384,7 +387,10 @@ def test_stdio_child_denies_controller_identity_mismatch(root, mismatch):
             stop_child(child)
 
 
-@pytest.mark.parametrize("data", [b"PRIVATE_SENTINEL", b"\xff\n", b"x" * (MAX_PAYLOAD_BYTES + 1) + b"\n"])
+@pytest.mark.parametrize(
+    "data", [b"PRIVATE_SENTINEL", b"\xff\n", b"x" * (MAX_PAYLOAD_BYTES + 1) + b"\n"],
+    ids=["unterminated", "invalid-utf8", "oversize"],
+)
 def test_stdio_child_bad_input_is_bounded_and_redacted(root, data):
     with RegisteredCheckSocket(root / "attempt", session()) as server:
         child = start_shim(server)

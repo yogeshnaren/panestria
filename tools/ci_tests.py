@@ -8,9 +8,11 @@ file-level partitioning, not a changed-files heuristic or a smoke-test allowlist
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import json
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,7 +33,16 @@ RESEARCH = (
 
 def partition() -> dict[str, list[str]]:
     suites: dict[str, list[str]] = {name: [] for name in SUITES}
-    for path in sorted((ROOT / "tests").rglob("test_*.py")):
+    with (ROOT / "pyproject.toml").open("rb") as stream:
+        options = tomllib.load(stream)["tool"]["pytest"]["ini_options"]
+    patterns = options.get("python_files", ["test_*.py", "*_test.py"])
+    if isinstance(patterns, str):
+        patterns = patterns.split()
+    if not isinstance(patterns, list) or not patterns or not all(isinstance(p, str) and p for p in patterns):
+        raise ValueError("Invalid pytest file patterns")
+    for path in sorted((ROOT / "tests").rglob("*.py")):
+        if not any(fnmatch.fnmatchcase(path.name, pattern) for pattern in patterns):
+            continue
         relative = path.relative_to(ROOT)
         directory = relative.parts[1]
         if directory in ("unit", "contract"):

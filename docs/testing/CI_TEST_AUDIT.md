@@ -57,6 +57,8 @@ Live tests, original evidence and release requirements are unchanged.
 One invalid-version UUID parameter is now a fixed UUIDv1 with a descriptive ID;
 its former collection-time `uuid1()` changed the node ID on every collection.
 The rejection behavior remains covered, with reproducible rerun/evidence IDs.
+Two adversarial-frame groups also use concise parameter IDs instead of printing
+thousands of payload bytes in failure/duration names; all original payloads stay.
 
 ## CI structure
 
@@ -76,7 +78,8 @@ synthetic database ports and Docker fixtures therefore cannot collide across
 lanes, and no pytest-xdist/shared-database concurrency is introduced. The fast
 lane does not prepare a Docker image. No additional Python dependency is needed.
 
-`tools/ci_tests.py` discovers all `tests/**/test_*.py` files, assigns each once and
+`tools/ci_tests.py` uses pytest's configured file patterns (both default forms,
+`test_*.py` and `*_test.py`, when unspecified), assigns each file once and
 rejects unknown test directories or empty lanes. New integration files default
 to platform; no changed-files guess or manually maintained test allowlist can
 silently omit them. Local `make test` still runs the complete non-live suite.
