@@ -19,6 +19,7 @@ from panestria.contracts.style import StyleProfile
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.uow import UnitOfWork
 from panestria.memory.style import charter
+from schema_support import current_schema_revision
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -171,7 +172,7 @@ def test_populated_style_audit_blocks_lossy_downgrade(styled):
     result = migrate(dsn, ["downgrade", "0031_fetch_admission"])
     assert result.returncode != 0 and "structured style audit exists" in result.stderr
     with psycopg.connect(dsn) as c:
-        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0032_structured_style",)
+        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (current_schema_revision(),)
         assert c.execute(
             "SELECT render_version FROM panestria.ask_profile_context WHERE request_id=%s", (request.request_id,)
         ).fetchone() == (2,)
