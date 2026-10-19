@@ -9,7 +9,15 @@ For local Ask, follow [explicit project setup](docs/testing/LOCAL_ASK_SETUP.md),
 [keyboard terminal application](docs/testing/LOCAL_ASK_TUI.md). After setup,
 run `panestria tui --config /absolute/private/local.json` in a second terminal
 while the local server runs. The TUI supports Ask, readiness, receipts and
-cancellation; Build/research screens and automatic setup remain pending.
+cancellation. The explicit `local init --offline-ask` command creates private
+settings and stable IDs using an existing migrated database and model cache.
+
+For an existing PUBLIC Build goal, the separate
+[Build review terminal](docs/testing/BUILD_REVIEW_TUI.md) displays checks/diff
+and confirms the frozen exact merge or cancellation:
+`panestria build tui --config /absolute/private/build.json GOAL_UUID`.
+It uses Build's separate owner configuration and grants. Research screens,
+unified Mission Control and service provisioning remain pending.
 [Browser pairing/testing](docs/testing/LOCAL_ASK_BROWSER.md) is also available. The local browser
 uses the offline model and scoped memory; profiles and Build/tools are disabled
 there. The R0 commands and native proposal demo below remain separate.

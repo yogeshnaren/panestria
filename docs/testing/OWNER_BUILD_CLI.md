@@ -75,6 +75,10 @@ policy change as usual.
 
 ## Submit, inspect and approve
 
+After submission you may use the [keyboard review screen](BUILD_REVIEW_TUI.md)
+instead of copying approval fields between commands. It reads the same goal,
+checks and diff and requires separate confirmation of the frozen exact action.
+
 Replace `BASE_SHA` with the helper's `expected_base`, and `GOAL_UUID` with the
 contract's goal ID. Choose a stable submission key for this contract.
 
