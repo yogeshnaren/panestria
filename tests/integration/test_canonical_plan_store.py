@@ -196,6 +196,18 @@ def test_handoff_reconstructs_current_verified_source_without_completing_or_merg
             task,
             0,
             0,
+            "VALIDATING",
+            "fixture",
+            policy_version=build.contract.autonomy_profile_ref,
+            correlation_id=str(uuid4()),
+        )
+    with psycopg.connect(build.task["dsn"]) as c:
+        TaskService().transition(
+            UnitOfWork(c),
+            build.actor,
+            task,
+            1,
+            0,
             "READY",
             "fixture",
             policy_version=build.contract.autonomy_profile_ref,
@@ -203,7 +215,7 @@ def test_handoff_reconstructs_current_verified_source_without_completing_or_merg
         )
     with psycopg.connect(build.task["dsn"]) as c:
         lease = LeaseService().acquire(
-            UnitOfWork(c), build.actor, task, "synthetic-controller-fixture", 1, ttl_seconds=120
+            UnitOfWork(c), build.actor, task, "synthetic-controller-fixture", 2, ttl_seconds=120
         )
     current = replace(build, task={**build.task, "task": task}, attempt=lease.attempt_id)
     bundle = _bundle(current)
