@@ -3098,10 +3098,12 @@
         "AOS-018-TC08"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "evidence_refs": [],
+      "status": "IN_PROGRESS",
+      "evidence_refs": [
+        "evidence/storage-awareness-2026-10-18/report.json"
+      ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code. Initial read-only storage/opt-in terminal component; host budgets, admission and unified notification qualification remain pending."
     },
     {
       "id": "AOS-018-S5",

@@ -134,6 +134,8 @@ backup-policy changes. Unknown/shared estimates stay distinct. Recommendations
 never delete data, prune Docker or alter backups. Monitoring defaults off,
 suppresses unchanged warnings and respects settings revocation.
 
+[Component evidence](../evidence/storage-awareness-2026-10-18/report.json) records
+54 selected checks, static checks and actual read-only host observations.
 This is partial AOS-018-S4/MVP-X13 delivery. Unified notifications, automatic
 large-write admission, persistent growth attribution and actual host qualification
 remain pending. Original specs and G1/G2/G3 gates are preserved. Private machine
