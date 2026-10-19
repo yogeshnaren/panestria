@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "outcome": "LOCAL_RESEARCH_DRAFT_COMPONENT_PASS_NOT_G2",
+  "candidate_commit": "fb028a8f172b8572368c90da2e52a91348d9e09a",
+  "worktree_state": "clean",
+  "observations": {
+    "tests": 23,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 118.792,
+    "scope": "10 synthesis integration cases +1 actual CPU model journey +12 local provider cases"
+  },
+  "live_properties": {
+    "candidate_commit": "fb028a8f172b8572368c90da2e52a91348d9e09a",
+    "fixture_digest": "7381d6d7c7b05bef409915262a5113229a36627e78557adddab004483d7115ab",
+    "worktree_state": "clean",
+    "lane": "live",
+    "execution_mode": "ACTUAL_POSTGRES_CAS_READER_NETWORK_NONE_LOCAL_CPU_MODEL",
+    "fetch_transport": "SYNTHETIC_NOT_PUBLIC_TLS_OR_SEARCH",
+    "model_mocked": "False",
+    "input_sha256": "9451ece2d3ee9273a51c2022851ae127b34f7010a306b3b758f4911ee0697937",
+    "output_sha256": "23b04a7749a46c6537962620efdf6ca89c0b64110f56e81e43ad707899e3807a",
+    "model_ref": "qwen2.5:1.5b-instruct",
+    "model_digest": "65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "runtime_bridge_sha256": "e8557e63bf3e03581a245f9738eb475ee02b0fc204bb1424b9feda14c6865d51",
+    "input_tokens": "201",
+    "output_tokens": "46",
+    "release_gate": "NOT_EVALUATED"
+  },
+  "initial_observation": {
+    "file": "initial-dirty-checks.xml",
+    "tests": 10,
+    "passed": 10,
+    "scope": "Development tree before commits, actual PG/CAS/reader with synthetic fetch/model fixtures; not clean evidence"
+  },
+  "checks": [
+    "Owner CLI private JSON/HTML with retained source lineage and unverified claims; no task/goal promotion",
+    "Same-key and concurrent ambiguous intent return without duplicate inference; different key refused",
+    "Invented citation/extra field/partial output/unknown usage rejected; cancellation/version change fence publication",
+    "Source corruption blocks reread/replay; explicit intent and new private output required before model",
+    "Default Ask request unchanged; local JSON output explicitly selected",
+    "Actual pinned local CPU model generated typed cited draft from synthetic retained transport data; paid/provider calls zero"
+  ],
+  "static_checks": [
+    "Ruff PASS",
+    "Mypy241 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "command": "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 PANESTRIA_PROFILE_TEST_MODEL_CACHE=<existing-cache> .venv/bin/pytest -q tests/integration/test_research_synthesis.py tests/integration/test_research_synthesis_live.py tests/integration/test_local_provider.py --junitxml=/tmp/panestria-synthesis-clean.xml",
+  "limits": [
+    "Unverified local draft only: support/contradictions NOT_ASSESSED, completion NONE, task VERIFYING, goal ACTIVE",
+    "At most4 passage prefixes384B and question512B; omitted/shortened data visible; model quality not qualified",
+    "Synthetic fetch observations are not actual public TLS/search; no new service/certificate/provider/model configured",
+    "Only PUBLIC retained input, explicit CPU slot with existing pinned cache; preserves owner controllers/services",
+    "No automatic query planner, entailment qualification, required release case/G2/G3 or real owner trial completed",
+    "Historical reports/certificates remain source-bound; runtime bridge changes require current qualification before release"
+  ],
+  "files": {
+    "initial-dirty-checks.xml": "76eb9782b87f62c1c5537908118059d7196d4914438cdc06df1466bb7025bef9",
+    "checks.xml": "313aaa990627614995223e9b716eaa58eed52cdb37172f68daf5d8160fd4c25b"
+  }
+}

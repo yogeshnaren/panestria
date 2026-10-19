@@ -28,10 +28,14 @@ class LocalProvider:
     capabilities = ("chat", "generate", "stream")
 
     def __init__(
-        self, socket_path: Path, *, gpu: bool = False, transport: httpx.AsyncBaseTransport | None = None
+        self, socket_path: Path, *, gpu: bool = False, transport: httpx.AsyncBaseTransport | None = None,
+        json_output: bool = False,
     ) -> None:
         self.socket_path, self.gpu, self.transport = socket_path, gpu, transport
         self.capacity = BoundedSemaphore(1)
+        if type(json_output) is not bool:
+            raise ValueError("invalid_local_output_format")
+        self.json_output = json_output
 
     def _client(self, deadline: float) -> httpx.AsyncClient:
         transport = self.transport or httpx.AsyncHTTPTransport(uds=str(self.socket_path), retries=0, trust_env=False)
@@ -101,6 +105,7 @@ class LocalProvider:
                         "prompt": request.prompt,
                         "stream": True,
                         "keep_alive": "5m",
+                        **({"format": "json"} if self.json_output else {}),
                         "options": {
                             "num_ctx": request.context_tokens,
                             "num_predict": request.max_output_tokens,
