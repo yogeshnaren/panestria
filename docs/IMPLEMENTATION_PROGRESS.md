@@ -99,6 +99,7 @@ and full tested tree were verified. No owner configuration/database was created
 by that validation. Current terminal-review observations remain separately
 source-bound; provider probes were not repeated for UI changes.
 
+- [Local cited draft synthesis](../evidence/local-research-synthesis-2026-10-18/report.json)
 - [Keyboard Ask TUI](../evidence/local-ask-tui-2026-10-18/report.json)
 - [First-run CLI](../evidence/local-first-run-2026-10-18/report.json)
 - [Build review terminal](../evidence/build-review-tui-2026-10-18/report.json)
