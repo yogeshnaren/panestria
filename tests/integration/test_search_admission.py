@@ -49,6 +49,7 @@ from panestria.policy.profiles import CertificateStore
 from panestria.policy.research import RESEARCH_CASES, RESEARCH_PURPOSE
 from panestria.policy.research_fetch import PublicFetchCertificateStore
 from panestria.policy.search import PublicSearchCertificateStore
+from schema_support import current_schema_revision
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -590,7 +591,7 @@ def test_actual_backup_restore_retains_query_fence_and_global_events(admitted_se
     refused = migrate(f.dsn, "downgrade", "0029_quota_observations")
     assert refused.returncode != 0 and b"search admission audit exists" in refused.stderr
     with psycopg.connect(f.dsn) as c:
-        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0031_fetch_admission",)
+        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (current_schema_revision(),)
         row = c.execute("SELECT to_jsonb(d) FROM panestria.search_dispatch d").fetchone()[0]
         for change in ({"query_bytes": 0}, {"privacy_class": "INTERNAL"}, {"request_id": str(uuid4())}):
             malformed = {

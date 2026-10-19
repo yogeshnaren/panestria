@@ -625,7 +625,7 @@ constraint panestria.artifact u UNIQUE (id, task_id, sha256, size_bytes, privacy
 constraint panestria.ask_profile_context c CHECK ((jsonb_typeof(request_body) = 'object'::text))
 constraint panestria.ask_profile_context c CHECK ((manifest_sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.ask_profile_context c CHECK ((privacy_label = 'RESTRICTED'::text))
-constraint panestria.ask_profile_context c CHECK ((render_version = 1))
+constraint panestria.ask_profile_context c CHECK ((render_version = ANY (ARRAY[1, 2])))
 constraint panestria.ask_profile_context c CHECK ((row_version >= 0))
 constraint panestria.ask_profile_context c CHECK ((selection_sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.ask_profile_context f FOREIGN KEY (request_id, owner_id, project_id) REFERENCES panestria.ask_request(id, owner_id, project_id)

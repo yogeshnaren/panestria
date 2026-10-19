@@ -19,6 +19,7 @@ from panestria.kernel.research_blobs import ResearchBlobStore
 from panestria.kernel.research_requests import ResearchRequestService
 from panestria.kernel.research_sources import SourceRecordService
 from panestria.kernel.uow import UnitOfWork
+from schema_support import current_schema_revision
 
 
 @pytest.fixture
@@ -293,7 +294,7 @@ def test_source_audit_downgrade_is_refused_without_history_loss(source_record):
     )
     assert done.returncode != 0 and b"source snapshot audit exists" in done.stderr
     with psycopg.connect(dsn) as c:
-        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0031_fetch_admission",)
+        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (current_schema_revision(),)
         assert commit(c, actor, evidence).seq == receipt.seq
 
 

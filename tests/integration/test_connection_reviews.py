@@ -18,6 +18,7 @@ from panestria.kernel.policy import PolicyService
 from panestria.kernel.repositories.policy import active_policy_ref
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.profiles import CertificateStore
+from schema_support import current_schema_revision
 
 
 @pytest.fixture
@@ -525,7 +526,7 @@ def test_empty_migration_downgrade_and_reupgrade_preserve_existing_schema(r1_dat
                     timeout=30,
                 )
             with psycopg.connect(dsn) as c:
-                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0031_fetch_admission",)
+                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (current_schema_revision(),)
                 assert c.execute("SELECT count(*) FROM panestria.connection_grant").fetchone() == (0,)
         finally:
             admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))

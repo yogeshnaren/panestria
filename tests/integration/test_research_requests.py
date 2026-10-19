@@ -18,6 +18,7 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.research_requests import ResearchRequestService
 from panestria.kernel.uow import UnitOfWork
+from schema_support import current_schema_revision
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -214,7 +215,7 @@ def test_database_enforces_limits_without_service_and_guard_preserves_receipt(re
     )
     assert before.returncode != 0 and "research request audit exists" in before.stderr
     with psycopg.connect(dsn) as c:
-        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0031_fetch_admission",)
+        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (current_schema_revision(),)
         assert ResearchRequestService().prepare(UnitOfWork(c), actor, request).replayed
 
 
