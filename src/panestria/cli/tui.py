@@ -100,6 +100,7 @@ class AskTerminal:
                         v.connected = False
                     if kind == "ask" and not result.uncertain:
                         v.request_id, v.state = None, "Not submitted"
+                        v.notice = result.code + "; question was not sent. Check the server, then submit explicitly."
                 continue
             if kind == "status":
                 if not v.connected:
@@ -175,7 +176,8 @@ class AskTerminal:
             rows, cols = screen.getmaxyx()
             if 0 <= row < rows:
                 try:
-                    screen.addnstr(row, 1, literal(value).replace("\n", " "), max(0, cols - 2))
+                    fitted = wrapped(value.replace("\n", " "), max(1, cols - 2))[0]
+                    screen.addnstr(row, 1, fitted, max(0, cols - 2))
                 except curses.error:
                     pass  # Small/wide-character edge: redraw on resize, never interpret content.
 
