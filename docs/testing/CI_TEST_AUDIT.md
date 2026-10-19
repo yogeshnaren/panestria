@@ -54,6 +54,9 @@ inputs test **Panestria's own production verifier/evidence code**, including
 false-done and mock-for-live rejection. They are not merely tests of pytest.
 Older R0 recovery, ownership and approval tests still protect current code.
 Live tests, original evidence and release requirements are unchanged.
+One invalid-version UUID parameter is now a fixed UUIDv1 with a descriptive ID;
+its former collection-time `uuid1()` changed the node ID on every collection.
+The rejection behavior remains covered, with reproducible rerun/evidence IDs.
 
 ## CI structure
 
