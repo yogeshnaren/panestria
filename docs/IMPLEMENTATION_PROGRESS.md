@@ -11,7 +11,7 @@ An implemented component or passing CI is not a release-gate pass.
 | R1 offline Ask | Keyboard Ask TUI with readiness, question/answer, receipts and cancellation; explicit first-run command generates private stable settings; actual CPU terminal/model journey plus historical GPU Ask/restart/pressure observations | Other TUI task screens and cumulative G1 qualification |
 | R1 access and one-worker Build | Owner CLI submits bounded PUBLIC work through Claude/Bash; keyboard review shows canonical checks/diff and separately confirms exact merge/cancellation; actual subscription journey retained at its recorded source | Qualify the selected stable runtime/cumulative candidate; owner review remains |
 | R1 paid SDK | Owner selected subscription/local-only operation | AOS-016-TC04 deferred, **not passed**; original gate intact |
-| R2 research collection | Dedicated owner policy prepare/confirm, new question staging, admitted search/fetch/read, exact retained excerpts, request-scoped diagnostics and private export | Automatic planning/synthesis, qualified support, actual service/runtime and complete D-1/G2 |
+| R2 research collection and draft | Dedicated owner policy prepare/confirm, new question staging, admitted search/fetch/read, exact retained excerpts, request-scoped diagnostics, private export and bounded local answer drafts with retained citations | Automatic planning and qualified synthesis/support, qualified support, actual service/runtime and complete D-1/G2 |
 | R3 complete MVP | Existing partial components; no accepted MVP release | Remaining two-worker integration, Mission Control, revision-3 profile/context/connections, quota/capture/phone/resource outcomes, cumulative qualification and genuine owner trial |
 
 ## Usable research path and its boundary
@@ -30,9 +30,15 @@ An implemented component or passing CI is not a release-gate pass.
    snapshots and exact quotes; show fetch/search errors, UNKNOWN receipts,
    reservations and stop/attempt state. HTML is inert and source text untrusted.
 
+5. [Draft locally](testing/LOCAL_RESEARCH_SYNTHESIS.md): one explicitly retained
+   CPU model answer draft from up to four bounded PUBLIC passage prefixes. Typed
+   claims cite controller IDs; immutable input/output receipts and current policy,
+   source, task version/epoch checks fence publication and replay. Private review
+   exports preserve omissions and unassessed support.
+
 A normal collection stops at **VERIFYING**, goal ACTIVE, with **NOT_ASSESSED**
-factual support. It generates excerpts, not a synthesized answer or goal/check
-PASS. Ambiguous receipts stop in RECONCILING and cannot automatically redispatch.
+factual support. Collection generates excerpts. The separate synthesis command generates an
+unverified answer draft; neither grants a goal/check PASS. Ambiguous receipts stop in RECONCILING and cannot automatically redispatch.
 Late cancellation is preserved; an expired unreplaced attempt may only be fenced
 lost. A crash between acknowledged activation phases remains visible and needs
 inspection/reconciliation rather than a hidden retry loop.
@@ -53,11 +59,11 @@ and an existing model cache. For an existing PUBLIC Build goal, use the separate
 [Build review terminal](testing/BUILD_REVIEW_TUI.md) with its own private Build
 config and database environment. It shows checks/diff and freezes the exact
 merge/cancel review; it does not grant or submit work from the offline Ask scope.
-Next deliver bounded research planning/synthesis and qualified support, then
+Next deliver bounded research planning and qualified support, then
 the remaining two-worker and personal-platform R3 integration. These are still
 separate terminal surfaces, not completed R3 Mission Control. The owner prefers
 TUI before GUI work; original dashboard/phone/gate requirements remain pending.
-Continue bounded planning/synthesis/support and R3 work while actual search setup
+Continue bounded planning/support and R3 work while actual search setup
 remains deferred; do not fabricate a live certificate or silently configure engines.
 
 The full Delegate gate still requires adversarial briefs, qualified semantic

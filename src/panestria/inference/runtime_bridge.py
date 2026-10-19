@@ -51,6 +51,10 @@ class Handler(BaseHTTPRequestHandler):
                 if not isinstance(payload, dict) or payload.get("model") != MODEL:
                     raise ValueError()
                 allowed = {"model", "prompt", "messages", "stream", "options", "keep_alive"}
+                if self.path == "/api/generate":
+                    allowed.add("format")
+                if "format" in payload and payload["format"] != "json":
+                    raise ValueError()
                 if self.path == "/api/show":
                     allowed = {"model"}
                 if set(payload) - allowed or payload.get("keep_alive", "5m") not in {"5m", 0}:

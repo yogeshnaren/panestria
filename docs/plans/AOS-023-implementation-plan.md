@@ -17,7 +17,11 @@ now connects selected bounded PUBLIC queries to search→fetch→reader→retain
 excerpts/private export, stopping at VERIFYING with NOT_ASSESSED support or
 RECONCILING for uncertainty. The [owner policy CLI](../design/56-OWNER-RESEARCH-POLICY.md)
 prepares and confirms an exact dedicated PUBLIC-web grant without widening Ask.
-S1/S2 remain IN_PROGRESS; automatic planning/synthesis, a guided TUI,
+[Local research draft synthesis](../design/59-LOCAL-RESEARCH-SYNTHESIS.md)
+adds one explicitly retained local CPU draft from bounded PUBLIC passages, typed
+controller-owned citations and immutable input/output receipts. It leaves support
+NOT_ASSESSED and task completion authority NONE. It is not qualified synthesis.
+S1/S2 remain IN_PROGRESS; automatic planning, qualified synthesis/support, a guided TUI,
 qualified semantic support, real runtime/live cases and full
 Delegate/G2 are pending. Canonical citation/rubric acceptance runners remain
 refused until independently admitted. No artifact export or collected quote
