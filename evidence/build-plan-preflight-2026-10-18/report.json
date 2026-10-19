@@ -37,6 +37,17 @@
   ],
   "files": {
     "initial-dirty-checks.xml": "6096a081eb583f1282fcae180b3a267b57821db35c704d55b2b099dd264405c9",
-    "checks.xml": "8d83d40b8e50c5b0b54aab8342b9aea8d67187d4a0b7f7ae586ab0d320df34ad"
+    "checks.xml": "8d83d40b8e50c5b0b54aab8342b9aea8d67187d4a0b7f7ae586ab0d320df34ad",
+    "current-main-checks.xml": "bc89599f849eb7af3923c07f789d9ac5eecf5fb6fb56f691fbf07694f6df6ee9"
+  },
+  "current_main_observation": {
+    "candidate_commit": "9e5fe689ca0fa18ab01d568805e7c085528f1753",
+    "worktree_state": "clean",
+    "base_main": "54118ec21109de34f80fcd474f9f54614c84195b",
+    "tests": 39,
+    "passed": 39,
+    "seconds": 1.892,
+    "file": "current-main-checks.xml",
+    "scope": "Same pure proposal/goal regressions after merging verified synthesis main; no model probe repeated"
   }
 }
