@@ -48,6 +48,15 @@
       "duration_seconds": 10.451,
       "file": "final-actual-local-terminal.xml",
       "scope": "One actual PTY/keyboard/HTTP/Postgres/existing local CPU model journey at final implementation source"
+    },
+    {
+      "candidate_commit": "75a059d1f0c339cf8cbc14c18f5624c3d968517a",
+      "worktree_state": "clean",
+      "passed": 8,
+      "failed": 0,
+      "duration_seconds": 9.71,
+      "file": "ci-correction-terminal-checks.xml",
+      "scope": "Existing 8 focused PTY/HTTP/Postgres checks with model fixtures after correcting partial-frame assertion; production implementation unchanged"
     }
   ],
   "commands": [
@@ -55,7 +64,8 @@
     "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py tests/integration/test_ask_cli.py tests/integration/test_ask_api.py -q --junitxml=/tmp/panestria-ask-tui-connected.xml",
     "PANESTRIA_PROFILE_TEST_MODEL_CACHE=<EXISTING_PUBLIC_MODEL_CACHE> UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui_live.py -m live -q --junitxml=/tmp/panestria-ask-tui-live.xml",
     "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py -q --junitxml=/tmp/panestria-ask-tui-final.xml",
-    "PANESTRIA_PROFILE_TEST_MODEL_CACHE=<EXISTING_PUBLIC_MODEL_CACHE> UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui_live.py -m live -q --junitxml=/tmp/panestria-ask-tui-live-final.xml"
+    "PANESTRIA_PROFILE_TEST_MODEL_CACHE=<EXISTING_PUBLIC_MODEL_CACHE> UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui_live.py -m live -q --junitxml=/tmp/panestria-ask-tui-live-final.xml",
+    "UV_CACHE_DIR=/home/yogesh/.cache/uv UV_OFFLINE=1 .venv/bin/pytest tests/integration/test_ask_tui.py -q --junitxml=/tmp/panestria-ask-tui-ci-correction.xml"
   ],
   "checks": [
     "Actual terminal keyboard question/answer, resize/small window, scroll layout and normal quit restore original terminal attributes",
@@ -85,6 +95,19 @@
     "connected-checks.xml": "734724b6b04ae04228e536ddab757ea531989c4e228e26c105451f934f1dbf50",
     "final-actual-local-terminal.xml": "3cd6229d329f6039e2b41f615a1c0b29bb9bb761b46805fe4860c36a136a56af",
     "final-terminal-checks.xml": "7ed78436c09ac70deb004ed53de5fd4ea8477a7138b651c31fd60e0b070f0333",
-    "initial-checks.xml": "e8996a49e0a01286ead36b911205011125c039215ee68578633979ead22fefad"
-  }
+    "initial-checks.xml": "e8996a49e0a01286ead36b911205011125c039215ee68578633979ead22fefad",
+    "ci-correction-terminal-checks.xml": "34bb7fb79542beeec5b511e66e989bd1b9c10391efc47e74e93acdb0485bb810"
+  },
+  "ci_observations": [
+    {
+      "candidate_commit": "59fe874ad6ea21476d97bb1c88d511144e9956ff",
+      "run_id": 39183794694,
+      "url": "https://github.com/yogeshnaren/panestria/actions/runs/39183794694",
+      "conclusion": "FAILURE",
+      "passed": 2026,
+      "failed": 1,
+      "deselected": 55,
+      "reason": "PTY test asserted answer immediately after reading COMPLETED; a valid curses frame can arrive in multiple reads. Assertion now waits for answer bytes from the same submission, including already buffered bytes. No production change or live requalification claim."
+    }
+  ]
 }
