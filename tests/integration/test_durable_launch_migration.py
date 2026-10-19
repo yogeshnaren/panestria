@@ -15,9 +15,10 @@ from durable_launch_support import prepared
 from panestria.contracts.sandbox_launch import SandboxLaunchObservation
 from panestria.kernel.sandbox_launches import SandboxLaunchService
 from panestria.kernel.uow import UnitOfWork
+from schema_support import current_schema_revision
 
 ROOT = Path(__file__).resolve().parents[2]
-HEAD = "0031_fetch_admission"
+HEAD = current_schema_revision()
 
 
 def migrate(dsn, direction, target):

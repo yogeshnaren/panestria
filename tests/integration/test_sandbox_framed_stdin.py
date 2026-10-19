@@ -165,7 +165,13 @@ def test_actual_input_adverse_cases_terminate_and_remove(tmp_path, case, expecte
         "blocked-reader": "import time;time.sleep(60)",
         "closed-output": "import os,time;os.close(1);os.close(2);time.sleep(60)",
         "output-pressure": "import os,time;os.write(1,b'x'*1000000);time.sleep(60)",
-        "memory-pressure": "x=bytearray(256*1024*1024)",
+        # Consume stdin first, then fault in small bounded allocations until the
+        # actual 64MiB cgroup cap is hit. One huge malloc can instead be refused
+        # by host overcommit policy with MemoryError before cgroup OOM is tested.
+        "memory-pressure": (
+            "import sys;sys.stdin.buffer.read();blocks=[]\n"
+            "while True: blocks.append(bytearray(4*1024*1024))"
+        ),
         "early-exit": "raise SystemExit(7)",
     }
     receipt = DockerSandbox(root).run(
@@ -177,7 +183,9 @@ def test_actual_input_adverse_cases_terminate_and_remove(tmp_path, case, expecte
     if expected == "failed":
         assert receipt.reason in ("process_failed", "input_incomplete")
     else:
-        assert receipt.reason == expected
+        assert receipt.reason == expected, (receipt.reason, receipt.exit_code, receipt.oom_killed, receipt.output)
+        if case == "memory-pressure":
+            assert receipt.oom_killed is True
     assert len(receipt.output) <= profile.output_bytes and receipt.elapsed_seconds < profile.wall_seconds + 6
     assert receipt.exit_code is not None
     removed(receipt)
