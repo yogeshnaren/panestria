@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="4" failures="0" skipped="0" tests="27" time="6.611" timestamp="2026-10-18T20:16:00.673906-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_profile_style" name="test_structured_style_uses_approved_ciphertext_binding_and_never_persists_plain_preferences" file="tests/integration/test_profile_style.py" line="41" time="3.284"><error message="failed on setup with &quot;AttributeError: 'str' object has no attribute 'owner_id'&quot;">ask_profile = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', &lt;panestria.kernel.go...a.memory.vault.ProfileVault object at 0x775822226300&gt;, &lt;panestria.kernel.ask.AskService object at 0x7758222248f0&gt;, ...)
+
+    @pytest.fixture
+    def styled(ask_profile):  # noqa: F811
+        dsn, actor, handle, keys, vault, service, request = ask_profile
+        style = StyleProfile(language="fr", detail="concise", audience="beginner", formatting="bullets")
+        with psycopg.connect(dsn) as c:
+&gt;           vault.revise(
+                UnitOfWork(c),
+                actor,
+                handle.profile_id,
+                0,
+                ProfileDocument(
+                    fields={"communication": SecretStr(style.model_dump_json())},
+                    approved_for_local_context=("communication",),
+                ),
+                consent_ref=str(uuid4()),
+            )
+
+tests/integration/test_profile_style.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/memory/vault.py:198: in revise
+    self._handle(actor, handle)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;panestria.memory.vault.ProfileVault object at 0x775822226300&gt;
+actor = &lt;panestria.kernel.goals.Actor object at 0x775822224b30&gt;
+handle = '683199aa-6097-4dd7-9441-d325cb724ed5'
+
+    def _handle(self, actor: Actor, handle: ProfileKeyHandle) -&gt; None:
+        self._enabled()
+&gt;       if (handle.owner_id, handle.project_id) != (actor.owner_id, actor.project_id):
+            ^^^^^^^^^^^^^^^
+E       AttributeError: 'str' object has no attribute 'owner_id'
+
+src/panestria/memory/vault.py:71: AttributeError</error></testcase><testcase classname="tests.integration.test_profile_style" name="test_style_and_source_changes_cannot_replace_a_pinned_prepared_request[correction]" file="tests/integration/test_profile_style.py" line="79" time="0.044"><error message="failed on setup with &quot;AttributeError: 'str' object has no attribute 'owner_id'&quot;">ask_profile = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', &lt;panestria.kernel.go...a.memory.vault.ProfileVault object at 0x775822227b60&gt;, &lt;panestria.kernel.ask.AskService object at 0x7758222272c0&gt;, ...)
+
+    @pytest.fixture
+    def styled(ask_profile):  # noqa: F811
+        dsn, actor, handle, keys, vault, service, request = ask_profile
+        style = StyleProfile(language="fr", detail="concise", audience="beginner", formatting="bullets")
+        with psycopg.connect(dsn) as c:
+&gt;           vault.revise(
+                UnitOfWork(c),
+                actor,
+                handle.profile_id,
+                0,
+                ProfileDocument(
+                    fields={"communication": SecretStr(style.model_dump_json())},
+                    approved_for_local_context=("communication",),
+                ),
+                consent_ref=str(uuid4()),
+            )
+
+tests/integration/test_profile_style.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/memory/vault.py:198: in revise
+    self._handle(actor, handle)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;panestria.memory.vault.ProfileVault object at 0x775822227b60&gt;
+actor = &lt;panestria.kernel.goals.Actor object at 0x775822227500&gt;
+handle = '2738292e-678f-44b2-a42e-9b7d8e4167c2'
+
+    def _handle(self, actor: Actor, handle: ProfileKeyHandle) -&gt; None:
+        self._enabled()
+&gt;       if (handle.owner_id, handle.project_id) != (actor.owner_id, actor.project_id):
+            ^^^^^^^^^^^^^^^
+E       AttributeError: 'str' object has no attribute 'owner_id'
+
+src/panestria/memory/vault.py:71: AttributeError</error></testcase><testcase classname="tests.integration.test_profile_style" name="test_style_and_source_changes_cannot_replace_a_pinned_prepared_request[purpose]" file="tests/integration/test_profile_style.py" line="79" time="0.043"><error message="failed on setup with &quot;AttributeError: 'str' object has no attribute 'owner_id'&quot;">ask_profile = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', &lt;panestria.kernel.go...a.memory.vault.ProfileVault object at 0x775822226d80&gt;, &lt;panestria.kernel.ask.AskService object at 0x775822225460&gt;, ...)
+
+    @pytest.fixture
+    def styled(ask_profile):  # noqa: F811
+        dsn, actor, handle, keys, vault, service, request = ask_profile
+        style = StyleProfile(language="fr", detail="concise", audience="beginner", formatting="bullets")
+        with psycopg.connect(dsn) as c:
+&gt;           vault.revise(
+                UnitOfWork(c),
+                actor,
+                handle.profile_id,
+                0,
+                ProfileDocument(
+                    fields={"communication": SecretStr(style.model_dump_json())},
+                    approved_for_local_context=("communication",),
+                ),
+                consent_ref=str(uuid4()),
+            )
+
+tests/integration/test_profile_style.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/memory/vault.py:198: in revise
+    self._handle(actor, handle)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;panestria.memory.vault.ProfileVault object at 0x775822226d80&gt;
+actor = &lt;panestria.kernel.goals.Actor object at 0x775822225310&gt;
+handle = '6bd81fd2-4b91-47e4-9ff6-5512b12930a0'
+
+    def _handle(self, actor: Actor, handle: ProfileKeyHandle) -&gt; None:
+        self._enabled()
+&gt;       if (handle.owner_id, handle.project_id) != (actor.owner_id, actor.project_id):
+            ^^^^^^^^^^^^^^^
+E       AttributeError: 'str' object has no attribute 'owner_id'
+
+src/panestria/memory/vault.py:71: AttributeError</error></testcase><testcase classname="tests.integration.test_profile_style" name="test_style_and_source_changes_cannot_replace_a_pinned_prepared_request[permissions]" file="tests/integration/test_profile_style.py" line="79" time="0.065"><error message="failed on setup with &quot;AttributeError: 'str' object has no attribute 'owner_id'&quot;">ask_profile = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', &lt;panestria.kernel.go...a.memory.vault.ProfileVault object at 0x775822227e60&gt;, &lt;panestria.kernel.ask.AskService object at 0x7758222268d0&gt;, ...)
+
+    @pytest.fixture
+    def styled(ask_profile):  # noqa: F811
+        dsn, actor, handle, keys, vault, service, request = ask_profile
+        style = StyleProfile(language="fr", detail="concise", audience="beginner", formatting="bullets")
+        with psycopg.connect(dsn) as c:
+&gt;           vault.revise(
+                UnitOfWork(c),
+                actor,
+                handle.profile_id,
+                0,
+                ProfileDocument(
+                    fields={"communication": SecretStr(style.model_dump_json())},
+                    approved_for_local_context=("communication",),
+                ),
+                consent_ref=str(uuid4()),
+            )
+
+tests/integration/test_profile_style.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/memory/vault.py:198: in revise
+    self._handle(actor, handle)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;panestria.memory.vault.ProfileVault object at 0x775822227e60&gt;
+actor = &lt;panestria.kernel.goals.Actor object at 0x7758222279b0&gt;
+handle = '1b67c5a0-1164-417a-b820-19caf1ee8b32'
+
+    def _handle(self, actor: Actor, handle: ProfileKeyHandle) -&gt; None:
+        self._enabled()
+&gt;       if (handle.owner_id, handle.project_id) != (actor.owner_id, actor.project_id):
+            ^^^^^^^^^^^^^^^
+E       AttributeError: 'str' object has no attribute 'owner_id'
+
+src/panestria/memory/vault.py:71: AttributeError</error></testcase><testcase classname="tests.integration.test_profile_style" name="test_malformed_style_refuses_without_fallback_and_legacy_profile_renderer_remains_v1" file="tests/integration/test_profile_style.py" line="120" time="0.139" /><testcase classname="tests.integration.test_profile_ask" name="test_profile_ask_omits_cleartext_and_input_output_fingerprints" file="tests/integration/test_profile_ask.py" line="64" time="0.093" /><testcase classname="tests.integration.test_profile_ask" name="test_forged_inference_denied[offline-False]" file="tests/integration/test_profile_ask.py" line="93" time="0.117" /><testcase classname="tests.integration.test_profile_ask" name="test_forged_inference_denied[offline-1]" file="tests/integration/test_profile_ask.py" line="93" time="0.137" /><testcase classname="tests.integration.test_profile_ask" name="test_forged_inference_denied[label-PUBLIC]" file="tests/integration/test_profile_ask.py" line="93" time="0.105" /><testcase classname="tests.integration.test_profile_ask" name="test_forged_inference_denied[max_output_tokens-1024]" file="tests/integration/test_profile_ask.py" line="93" time="0.139" /><testcase classname="tests.integration.test_profile_ask" name="test_forged_inference_denied[context_tokens-512]" file="tests/integration/test_profile_ask.py" line="93" time="0.117" /><testcase classname="tests.integration.test_profile_ask" name="test_forged_inference_denied[model_ref-unapproved-model]" file="tests/integration/test_profile_ask.py" line="93" time="0.108" /><testcase classname="tests.integration.test_profile_ask" name="test_forged_selection_or_persisted_binding_denied[missing_selection]" file="tests/integration/test_profile_ask.py" line="113" time="0.134" /><testcase classname="tests.integration.test_profile_ask" name="test_forged_selection_or_persisted_binding_denied[content]" file="tests/integration/test_profile_ask.py" line="113" time="0.119" /><testcase classname="tests.integration.test_profile_ask" name="test_forged_selection_or_persisted_binding_denied[source]" file="tests/integration/test_profile_ask.py" line="113" time="0.106" /><testcase classname="tests.integration.test_profile_ask" name="test_forged_selection_or_persisted_binding_denied[binding]" file="tests/integration/test_profile_ask.py" line="113" time="0.131" /><testcase classname="tests.integration.test_profile_ask" name="test_lifecycle_change_denies_pending_claim[correction]" file="tests/integration/test_profile_ask.py" line="138" time="0.130" /><testcase classname="tests.integration.test_profile_ask" name="test_lifecycle_change_denies_pending_claim[suppression]" file="tests/integration/test_profile_ask.py" line="138" time="0.145" /><testcase classname="tests.integration.test_profile_ask" name="test_lifecycle_change_denies_pending_claim[rotation]" file="tests/integration/test_profile_ask.py" line="138" time="0.150" /><testcase classname="tests.integration.test_profile_ask" name="test_profile_budget_and_default_service_deny_without_partial_admission" file="tests/integration/test_profile_ask.py" line="163" time="0.078" /><testcase classname="tests.integration.test_profile_ask" name="test_ordinary_ask_cannot_disable_digest_or_gain_late_profile_binding" file="tests/integration/test_profile_ask.py" line="175" time="0.157" /><testcase classname="tests.integration.test_profile_ask" name="test_profile_ask_contract_rejects_downgrade_or_invalid_version[mutation0]" file="tests/integration/test_profile_ask.py" line="202" time="0.068" /><testcase classname="tests.integration.test_profile_ask" name="test_profile_ask_contract_rejects_downgrade_or_invalid_version[mutation1]" file="tests/integration/test_profile_ask.py" line="202" time="0.077" /><testcase classname="tests.integration.test_profile_ask" name="test_profile_ask_contract_rejects_downgrade_or_invalid_version[mutation2]" file="tests/integration/test_profile_ask.py" line="202" time="0.068" /><testcase classname="tests.integration.test_profile_ask" name="test_profile_ask_contract_rejects_downgrade_or_invalid_version[mutation3]" file="tests/integration/test_profile_ask.py" line="202" time="0.057" /><testcase classname="tests.integration.test_profile_ask" name="test_profile_ask_contract_rejects_downgrade_or_invalid_version[mutation4]" file="tests/integration/test_profile_ask.py" line="202" time="0.073" /><testcase classname="tests.integration.test_profile_ask" name="test_profile_ask_contract_rejects_downgrade_or_invalid_version[mutation5]" file="tests/integration/test_profile_ask.py" line="202" time="0.392" /></testsuite></testsuites>

@@ -124,3 +124,26 @@ those sources, not a current cumulative G1 pass or a hardware partition guarante
 [Phase](phase-tracker.json) and [slice](implementation-slices.json) trackers retain
 IN_PROGRESS for partial work. Progress is usable behavior plus remaining
 acceptance gaps, not a PR/test count or an invented completion percentage.
+
+## Personal-platform integration: explicit encrypted structured style
+
+[Structured profile style](testing/STRUCTURED_PROFILE_STYLE.md) now connects a
+closed language/audience/detail/formatting preference contract to approved encrypted
+communication data and restricted offline Ask. Renderer2 binds exact ciphertext,
+source, request and policy; a fixed assistant charter stays separate from private
+preferences. Ordinary Ask and legacy profile renderer1 keep their behavior. The
+migration permits v2 audit without rewriting history and refuses lossy downgrade.
+
+[Source-bound checks](../evidence/structured-profile-style-2026-10-18/report.json)
+include actual crypto/PG, legacy Ask/restore, schema guards and one actual CPU
+model prompt with synthetic keys. This is an S4 component; private-example
+provenance, style/faithfulness and owner-preference evaluation, model compatibility,
+TUI style editing and the remaining R3 integrations are unfinished. No owner
+profile/key/service was created or migrated, and no gate/owner acceptance promoted.
+
+Research synthesis PR [123](https://github.com/yogeshnaren/panestria/pull/123)
+merged at `54118ec21109de34f80fcd474f9f54614c84195b` after exact-head CI39192849084
+passed on5146b47f99b4a6c7328f45e6618f83d4b5d8f9d6 (2047 default tests;56 live
+excluded). Expected parents and complete tested tree were verified. Its actual
+CPU observation remains separately source-bound; no historical qualification
+was relabeled for the merged package.

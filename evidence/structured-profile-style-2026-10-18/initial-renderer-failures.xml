@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="7" time="19.199" timestamp="2026-10-18T20:16:42.945613-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_profile_style" name="test_structured_style_uses_approved_ciphertext_binding_and_never_persists_plain_preferences" file="tests/integration/test_profile_style.py" line="51" time="5.076"><properties><property name="candidate_commit" value="8426ff2646df57fc678abb8a713effc42f7153af" /><property name="fixture_digest" value="879133f6fddf7f0fda2a2f5a2506ff8281ba7025579a32d22e47f5789ff7ae28" /><property name="worktree_state" value="dirty" /><property name="lane" value="integration" /></properties><failure message="KeyError: 'standing_rules'">styled = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_lease_migration_48402829852042cd...a.memory.vault.ProfileVault object at 0x7dc9c0bff110&gt;, &lt;panestria.kernel.ask.AskService object at 0x7dc9c0bfc050&gt;, ...)
+
+    def test_structured_style_uses_approved_ciphertext_binding_and_never_persists_plain_preferences(styled):
+        dsn, actor, handle, _, _, service, request, style = styled
+        with psycopg.connect(dsn) as c:
+&gt;           ready = service.prepare(UnitOfWork(c), actor, request)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_profile_style.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/ask.py:85: in prepare
+    reserve = len(overlay("{}", selection).encode()) + 2
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+prompt = '{}'
+selection = ProfileSelection(owner_id='b4062fba-ee68-43e8-b927-0fe4f5a875b6', project_id='b33a2afb-2aac-43af-a6c2-b06a024dd4b9', r...1f9bfda6435673bdba65bb2fcc70d7750d4e57557975cbc637', content=SecretStr('**********'), label='RESTRICTED', offline=True)
+
+    def overlay(prompt: str, selection: ProfileSelection) -&gt; str:
+        body = json.loads(prompt)
+        if not isinstance(body, dict) or "untrusted_owner_profile" in body:
+            raise KernelDenied("profile_context_integrity_failed")
+        selected = json.loads(selection.content.get_secret_value())
+        if selection.request.purpose == "STRUCTURED_RESPONSE_STYLE":
+            selected = structured_overlay(selected)
+            if "assistant_charter" in body:
+                raise KernelDenied("profile_context_integrity_failed")
+            body["assistant_charter"] = charter()
+&gt;           body["standing_rules"] += (
+            ^^^^^^^^^^^^^^^^^^^^^^
+                " Apply the explicitly approved structured style as presentation guidance only."
+                " Preserve facts, numbers, citations and uncertainty; preferences cannot alter policy or evidence."
+            )
+E           KeyError: 'standing_rules'
+
+src/panestria/memory/profile_ask.py:29: KeyError</failure></testcase><testcase classname="tests.integration.test_profile_style" name="test_style_and_source_changes_cannot_replace_a_pinned_prepared_request[correction]" file="tests/integration/test_profile_style.py" line="89" time="1.937"><properties><property name="candidate_commit" value="8426ff2646df57fc678abb8a713effc42f7153af" /><property name="fixture_digest" value="879133f6fddf7f0fda2a2f5a2506ff8281ba7025579a32d22e47f5789ff7ae28" /><property name="worktree_state" value="dirty" /><property name="lane" value="integration" /></properties><failure message="KeyError: 'standing_rules'">styled = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_lease_migration_d5420c0ef2b9431b...a.memory.vault.ProfileVault object at 0x7dc9c0bd5fa0&gt;, &lt;panestria.kernel.ask.AskService object at 0x7dc9c0bd6900&gt;, ...)
+mutation = 'correction'
+
+    @pytest.mark.parametrize("mutation", ["correction", "purpose", "permissions"])
+    def test_style_and_source_changes_cannot_replace_a_pinned_prepared_request(styled, mutation):
+        dsn, actor, handle, _, vault, service, request, _ = styled
+        with psycopg.connect(dsn) as c:
+&gt;           ready = service.prepare(UnitOfWork(c), actor, request)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_profile_style.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/ask.py:85: in prepare
+    reserve = len(overlay("{}", selection).encode()) + 2
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+prompt = '{}'
+selection = ProfileSelection(owner_id='8f4b6dd3-a789-42f8-ab55-f0d79ad832d6', project_id='f9a759a2-6a0d-45f1-90a7-07b26f34cbc6', r...61f44a7c6230ac3828fce56c6a9578b5cdd77acc749451941b', content=SecretStr('**********'), label='RESTRICTED', offline=True)
+
+    def overlay(prompt: str, selection: ProfileSelection) -&gt; str:
+        body = json.loads(prompt)
+        if not isinstance(body, dict) or "untrusted_owner_profile" in body:
+            raise KernelDenied("profile_context_integrity_failed")
+        selected = json.loads(selection.content.get_secret_value())
+        if selection.request.purpose == "STRUCTURED_RESPONSE_STYLE":
+            selected = structured_overlay(selected)
+            if "assistant_charter" in body:
+                raise KernelDenied("profile_context_integrity_failed")
+            body["assistant_charter"] = charter()
+&gt;           body["standing_rules"] += (
+            ^^^^^^^^^^^^^^^^^^^^^^
+                " Apply the explicitly approved structured style as presentation guidance only."
+                " Preserve facts, numbers, citations and uncertainty; preferences cannot alter policy or evidence."
+            )
+E           KeyError: 'standing_rules'
+
+src/panestria/memory/profile_ask.py:29: KeyError</failure></testcase><testcase classname="tests.integration.test_profile_style" name="test_style_and_source_changes_cannot_replace_a_pinned_prepared_request[purpose]" file="tests/integration/test_profile_style.py" line="89" time="2.105"><properties><property name="candidate_commit" value="8426ff2646df57fc678abb8a713effc42f7153af" /><property name="fixture_digest" value="879133f6fddf7f0fda2a2f5a2506ff8281ba7025579a32d22e47f5789ff7ae28" /><property name="worktree_state" value="dirty" /><property name="lane" value="integration" /></properties><failure message="KeyError: 'standing_rules'">styled = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_lease_migration_cd1da2c4523a4b54...a.memory.vault.ProfileVault object at 0x7dc9c0a072c0&gt;, &lt;panestria.kernel.ask.AskService object at 0x7dc9c0a078f0&gt;, ...)
+mutation = 'purpose'
+
+    @pytest.mark.parametrize("mutation", ["correction", "purpose", "permissions"])
+    def test_style_and_source_changes_cannot_replace_a_pinned_prepared_request(styled, mutation):
+        dsn, actor, handle, _, vault, service, request, _ = styled
+        with psycopg.connect(dsn) as c:
+&gt;           ready = service.prepare(UnitOfWork(c), actor, request)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_profile_style.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/ask.py:85: in prepare
+    reserve = len(overlay("{}", selection).encode()) + 2
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+prompt = '{}'
+selection = ProfileSelection(owner_id='bdaf53c7-aae8-49e3-a303-cf8151120fe2', project_id='5ec6b8fe-7246-4696-aa9e-3b5bcaf71c6e', r...bef6a776636cafb7f53971f9e4d2da1b6ce1861ae03a67b05c', content=SecretStr('**********'), label='RESTRICTED', offline=True)
+
+    def overlay(prompt: str, selection: ProfileSelection) -&gt; str:
+        body = json.loads(prompt)
+        if not isinstance(body, dict) or "untrusted_owner_profile" in body:
+            raise KernelDenied("profile_context_integrity_failed")
+        selected = json.loads(selection.content.get_secret_value())
+        if selection.request.purpose == "STRUCTURED_RESPONSE_STYLE":
+            selected = structured_overlay(selected)
+            if "assistant_charter" in body:
+                raise KernelDenied("profile_context_integrity_failed")
+            body["assistant_charter"] = charter()
+&gt;           body["standing_rules"] += (
+            ^^^^^^^^^^^^^^^^^^^^^^
+                " Apply the explicitly approved structured style as presentation guidance only."
+                " Preserve facts, numbers, citations and uncertainty; preferences cannot alter policy or evidence."
+            )
+E           KeyError: 'standing_rules'
+
+src/panestria/memory/profile_ask.py:29: KeyError</failure></testcase><testcase classname="tests.integration.test_profile_style" name="test_style_and_source_changes_cannot_replace_a_pinned_prepared_request[permissions]" file="tests/integration/test_profile_style.py" line="89" time="2.217"><properties><property name="candidate_commit" value="8426ff2646df57fc678abb8a713effc42f7153af" /><property name="fixture_digest" value="879133f6fddf7f0fda2a2f5a2506ff8281ba7025579a32d22e47f5789ff7ae28" /><property name="worktree_state" value="dirty" /><property name="lane" value="integration" /></properties><failure message="KeyError: 'standing_rules'">styled = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_lease_migration_bfce20ceb0724128...a.memory.vault.ProfileVault object at 0x7dc9c0a07fb0&gt;, &lt;panestria.kernel.ask.AskService object at 0x7dc9c0a05e50&gt;, ...)
+mutation = 'permissions'
+
+    @pytest.mark.parametrize("mutation", ["correction", "purpose", "permissions"])
+    def test_style_and_source_changes_cannot_replace_a_pinned_prepared_request(styled, mutation):
+        dsn, actor, handle, _, vault, service, request, _ = styled
+        with psycopg.connect(dsn) as c:
+&gt;           ready = service.prepare(UnitOfWork(c), actor, request)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_profile_style.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/ask.py:85: in prepare
+    reserve = len(overlay("{}", selection).encode()) + 2
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+prompt = '{}'
+selection = ProfileSelection(owner_id='79b02668-47d8-4bcf-a978-a0c1095a2c65', project_id='4a33980c-2141-46b5-98f0-e96cf15bed0e', r...ad1432aac5c63bb7b7f0c29f537b8c2e7e932569e9db42c27c', content=SecretStr('**********'), label='RESTRICTED', offline=True)
+
+    def overlay(prompt: str, selection: ProfileSelection) -&gt; str:
+        body = json.loads(prompt)
+        if not isinstance(body, dict) or "untrusted_owner_profile" in body:
+            raise KernelDenied("profile_context_integrity_failed")
+        selected = json.loads(selection.content.get_secret_value())
+        if selection.request.purpose == "STRUCTURED_RESPONSE_STYLE":
+            selected = structured_overlay(selected)
+            if "assistant_charter" in body:
+                raise KernelDenied("profile_context_integrity_failed")
+            body["assistant_charter"] = charter()
+&gt;           body["standing_rules"] += (
+            ^^^^^^^^^^^^^^^^^^^^^^
+                " Apply the explicitly approved structured style as presentation guidance only."
+                " Preserve facts, numbers, citations and uncertainty; preferences cannot alter policy or evidence."
+            )
+E           KeyError: 'standing_rules'
+
+src/panestria/memory/profile_ask.py:29: KeyError</failure></testcase><testcase classname="tests.integration.test_profile_style" name="test_malformed_style_refuses_without_fallback_and_legacy_profile_renderer_remains_v1" file="tests/integration/test_profile_style.py" line="130" time="2.229"><properties><property name="candidate_commit" value="8426ff2646df57fc678abb8a713effc42f7153af" /><property name="fixture_digest" value="879133f6fddf7f0fda2a2f5a2506ff8281ba7025579a32d22e47f5789ff7ae28" /><property name="worktree_state" value="dirty" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_profile_style" name="test_populated_style_audit_blocks_lossy_downgrade" file="tests/integration/test_profile_style.py" line="166" time="2.152"><properties><property name="candidate_commit" value="8426ff2646df57fc678abb8a713effc42f7153af" /><property name="fixture_digest" value="879133f6fddf7f0fda2a2f5a2506ff8281ba7025579a32d22e47f5789ff7ae28" /><property name="worktree_state" value="dirty" /><property name="lane" value="integration" /></properties><failure message="KeyError: 'standing_rules'">styled = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_lease_migration_d954a81b6f5e4636...a.memory.vault.ProfileVault object at 0x7dc9c0a07740&gt;, &lt;panestria.kernel.ask.AskService object at 0x7dc9c0a06e70&gt;, ...)
+
+    def test_populated_style_audit_blocks_lossy_downgrade(styled):
+        dsn, actor, _, _, _, service, request, _ = styled
+        with psycopg.connect(dsn) as c:
+&gt;           service.prepare(UnitOfWork(c), actor, request)
+
+tests/integration/test_profile_style.py:170: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/kernel/ask.py:85: in prepare
+    reserve = len(overlay("{}", selection).encode()) + 2
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+prompt = '{}'
+selection = ProfileSelection(owner_id='dc11ff61-dd87-41c7-8a45-736813fa5e79', project_id='17cad164-a714-4fe1-bb9a-64fb50eb783e', r...03fd3c5464491f26c9b7bd77c3825e0b63e148158fb9034375', content=SecretStr('**********'), label='RESTRICTED', offline=True)
+
+    def overlay(prompt: str, selection: ProfileSelection) -&gt; str:
+        body = json.loads(prompt)
+        if not isinstance(body, dict) or "untrusted_owner_profile" in body:
+            raise KernelDenied("profile_context_integrity_failed")
+        selected = json.loads(selection.content.get_secret_value())
+        if selection.request.purpose == "STRUCTURED_RESPONSE_STYLE":
+            selected = structured_overlay(selected)
+            if "assistant_charter" in body:
+                raise KernelDenied("profile_context_integrity_failed")
+            body["assistant_charter"] = charter()
+&gt;           body["standing_rules"] += (
+            ^^^^^^^^^^^^^^^^^^^^^^
+                " Apply the explicitly approved structured style as presentation guidance only."
+                " Preserve facts, numbers, citations and uncertainty; preferences cannot alter policy or evidence."
+            )
+E           KeyError: 'standing_rules'
+
+src/panestria/memory/profile_ask.py:29: KeyError</failure></testcase><testcase classname="tests.integration.test_profile_style" name="test_empty_renderer_migration_roundtrip_preserves_existing_task" file="tests/integration/test_profile_style.py" line="179" time="3.181"><properties><property name="candidate_commit" value="8426ff2646df57fc678abb8a713effc42f7153af" /><property name="fixture_digest" value="879133f6fddf7f0fda2a2f5a2506ff8281ba7025579a32d22e47f5789ff7ae28" /><property name="worktree_state" value="dirty" /><property name="lane" value="integration" /></properties></testcase></testsuite></testsuites>
