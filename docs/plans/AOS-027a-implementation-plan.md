@@ -1,6 +1,6 @@
 # AOS-027a — Single-worker verification and protected merge approval: implementation plan
 
-**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS. **Tests:** PARTIAL; native worker generation pending. **Depends on:** AOS-004, AOS-009, AOS-010. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R1. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS. **Tests:** PARTIAL; historical native evidence retained, current cumulative qualification open. **Depends on:** AOS-004, AOS-009, AOS-010. **Repository baseline:** original main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; terminal review integrated with main 988324f99ba8496b20e658fc19fe121cb812d9c6.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-027a.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
