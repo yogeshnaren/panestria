@@ -5,6 +5,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 evidence/ci.xml
+evidence/ci-*.xml
 .env
 .env.*
 !.env.example

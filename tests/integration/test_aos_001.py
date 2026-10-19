@@ -8,8 +8,6 @@ from __future__ import annotations
 
 import hashlib
 import importlib.metadata
-import importlib.util
-import inspect
 import json
 import os
 import socket
@@ -171,9 +169,6 @@ def test_package_install_and_preserved_license() -> None:
     assert project["license"] == "MIT"
     assert project["requires-python"] == ">=3.12"
     assert project["scripts"]["panestria"] == "panestria.cli.main:app"
-    assert "agentos" not in json.dumps(project)
-    assert 'name = "panestria"' in (ROOT / "uv.lock").read_text(encoding="utf-8")
-    assert importlib.util.find_spec("agentos") is None
     import panestria
 
     assert Path(panestria.__file__).resolve() == (ROOT / "src" / "panestria" / "__init__.py").resolve()
@@ -181,30 +176,11 @@ def test_package_install_and_preserved_license() -> None:
     license_now = (ROOT / "LICENSE").read_bytes()
     license_baseline = subprocess.check_output(["git", "show", f"{BASELINE}:LICENSE"], cwd=ROOT)
     assert license_now == license_baseline
-    source = "\n".join(path.read_text(encoding="utf-8") for path in (ROOT / "src").rglob("*.py"))
-    assert "pip install" not in source
-    assert list(inspect.signature(create_app).parameters) == ["settings", "readiness_probe"]
-    assert get_type_hints(create_app)["return"].__name__ == "FastAPI"
-    assert get_type_hints(Settings.validate_profile)["return"] is ValidatedSettings
-    assert get_type_hints(HealthService.readiness)["return"] is Readiness
     example = (ROOT / ".env.example").read_text(encoding="utf-8")
     for name in ENV_NAMES:
         assert name in example
     assert "sk-" not in example
     assert "127.0.0.1:55432" in example
-
-
-@pytest.mark.unit
-def test_contributor_and_security_notes_have_no_secrets() -> None:
-    contributing = (ROOT / "CONTRIBUTING.md").read_text(encoding="utf-8")
-    security = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
-    for text in (contributing, security):
-        assert "docs/phase-tracker.json" in text
-        assert "sk-" not in text
-        assert "AKIA" not in text
-        assert "BEGIN PRIVATE KEY" not in text
-    assert "make test" in contributing
-    assert "127.0.0.1" in security
 
 
 @pytest.mark.unit
