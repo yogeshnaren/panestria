@@ -523,10 +523,12 @@
             "AOS-003",
             "AOS-016"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/build-plan-preflight-2026-10-18/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-025-implementation-plan.md"
         },
@@ -1922,7 +1924,7 @@
         "AOS-026",
         "AOS-029"
       ],
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "gate_status": "NOT_RUN",
       "spec_ref": "specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x13",
       "slice_ids": [
@@ -1935,7 +1937,9 @@
         "AOS-018-TC07",
         "AOS-018-TC08"
       ],
-      "evidence_refs": []
+      "evidence_refs": [
+        "evidence/storage-awareness-2026-10-18/report.json"
+      ]
     },
     {
       "id": "MVP-X14",

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "notifications_enabled": false,
+  "filesystem": "/",
+  "warning_percent": 80,
+  "critical_percent": 90,
+  "minimum_free_bytes": 21474836480,
+  "component_warning_percent": 20,
+  "growth_warning_bytes": 5368709120,
+  "interval_seconds": 300,
+  "include_docker": true,
+  "include_timeshift": true,
+  "components": []
+}

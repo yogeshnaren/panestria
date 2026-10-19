@@ -147,3 +147,35 @@ passed on5146b47f99b4a6c7328f45e6618f83d4b5d8f9d6 (2047 default tests;56 live
 excluded). Expected parents and complete tested tree were verified. Its actual
 CPU observation remains separately source-bound; no historical qualification
 was relabeled for the merged package.
+
+## Storage visibility and owner recommendations
+
+The [storage CLI](testing/STORAGE_AWARENESS.md) adds read-only capacity reports,
+explicit Docker/Timeshift/directory probes and opt-in terminal monitoring. It
+warns about pressure, reserves, growth, large selected components and observed
+backup-policy changes. Unknown/shared estimates stay distinct. Recommendations
+never delete data, prune Docker or alter backups. Monitoring defaults off,
+suppresses unchanged warnings and respects settings revocation.
+
+[Component evidence](../evidence/storage-awareness-2026-10-18/report.json) records
+54 selected checks, static checks and actual read-only host observations.
+This is partial AOS-018-S4/MVP-X13 delivery. Unified notifications, automatic
+large-write admission, persistent growth attribution and actual host qualification
+remain pending. Original specs and G1/G2/G3 gates are preserved. Private machine
+diagnosis and system logs are kept out of Git.
+
+## Two-worker prerequisite delivered: bounded Build DAG preflight
+
+AOS-025-S1 now supplies [typed task proposals and a private-file CLI](testing/BUILD_PLAN_PREFLIGHT.md)
+with deterministic dependency layers, exact goal/inventory bindings and conservative
+retry-inclusive budgets. [Source-bound checks](../evidence/build-plan-preflight-2026-10-18/report.json)
+cover valid independent branches/join and refusal of cycles, scope, path, capability,
+check and budget violations. S1 is complete as a pure proposal component; AOS-025
+remains IN_PROGRESS. It does not launch a worker or confer current authority.
+
+Next within this track: direct local proposal and immutable canonical plan/task
+bindings/handoff (S2), then bounded revisions/repair (S3), two-worker admission and
+conflict handling (026), and final integrated-tree verification/approval (027b).
+Personal-platform charter/context, grants, quota useful-work/capture and Mission
+Control/phone/resource integration remain separate unfinished R3 work. No G3 or
+owner acceptance is claimed by the preflight.

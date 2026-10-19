@@ -6,6 +6,13 @@ Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../d
 
 ## Outcome and scope
 
+Owner storage clarification (2026-10-18): connect MVP-X13 opt-in storage warnings
+to local settings/inbox and capacity views, with source/time/confidence, reserves,
+component/growth estimates and owner options/impact. Never sum overlapping Docker
+estimates as physical totals, infer project ownership, or execute cleanup/deletion/
+backup changes. The standalone [terminal monitor](../testing/STORAGE_AWARENESS.md)
+does not yet satisfy the unified dashboard/inbox obligation; AOS-029 remains open.
+
 A user can trace every relevant model/tool decision and inspect what data was authorized or accessible to cloud workers versus observed network traffic, without leaking secrets.
 
 Keep the release scope and dependencies above. Implement only the selected slice; other clauses remain pending until their work/tests complete. Models/UI cannot declare completion. Apply strict scopes, typed errors, transactions, limits and compatibility spikes from the global design.

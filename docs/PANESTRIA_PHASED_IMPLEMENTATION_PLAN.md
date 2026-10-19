@@ -111,6 +111,13 @@ Each worker uses an isolated worktree and the same kernel-owned policy/attempt p
 
 ## 7. Mandatory MVP review checkpoint — stop before SOTA
 
+Owner storage clarification (2026-10-18): MVP-X13 includes opt-in storage-pressure/
+growth notifications, honest Docker/backup attribution, anticipated large-write
+warnings and owner review options with impact/uncertainty. Agent storage deletion,
+pruning and backup-setting remediation are prohibited. The initial
+[read-only terminal component](testing/STORAGE_AWARENESS.md) is partial delivery;
+admission and unified notifications remain required by R3.
+
 Use [the MVP acceptance checklist](MVP_ACCEPTANCE_CHECKLIST.md) and AOS-030 to review the candidate. Freeze feature additions; perform the full gate suite and a 14-day daily-use trial on explicitly consented scope. A release-blocking fix changes the candidate; re-run affected tests and extend/restart the relevant observation interval so the final accepted candidate has defensible evidence. Document code/version/hardware changes; never mix trial evidence silently.
 
 The owner reviews actual outcomes, source evidence, privacy/egress decisions, approval burden, usability, resource impact, restarts, setup and restore. Existing security/integrity defects block acceptance. Non-blocking issues may be listed with owner, priority and follow-up scope; mandatory gate failures cannot be waived into PASS.

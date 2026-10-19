@@ -2104,13 +2104,17 @@
         "src/panestria/execution/build_plan.py",
         "src/panestria/memory/context.py"
       ],
-      "planned_test_file": "tests/integration/test_aos_025.py",
+      "planned_test_file": "tests/contract/test_build_plan.py",
       "case_ids": [
         "AOS-025-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-025-S1.md"
+      "status": "COMPLETE",
+      "prompt_ref": "cursor/prompts/AOS-025-S1.md",
+      "implementation_note": "S1 typed bounded proposal and deterministic scope/capability/DAG/acceptance/retry-budget preflight delivered with private-file CLI. This is proposal-only fixture evidence, not current runtime authority, task persistence, scheduling or complete parent/gate evidence.",
+      "evidence_refs": [
+        "evidence/build-plan-preflight-2026-10-18/report.json"
+      ]
     },
     {
       "id": "AOS-025-S2",
@@ -3097,10 +3101,12 @@
         "AOS-018-TC08"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "evidence_refs": [],
+      "status": "IN_PROGRESS",
+      "evidence_refs": [
+        "evidence/storage-awareness-2026-10-18/report.json"
+      ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code. Initial read-only storage/opt-in terminal component; host budgets, admission and unified notification qualification remain pending."
     },
     {
       "id": "AOS-018-S5",
