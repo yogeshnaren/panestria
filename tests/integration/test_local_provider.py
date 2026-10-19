@@ -135,3 +135,14 @@ def test_absolute_timeout_and_cancel_release() -> None:
         provider.capacity.release()
 
     asyncio.run(cancel())
+
+
+def test_structured_output_is_explicit_local_json_only() -> None:
+    mocked, calls = transport(valid_frames())
+    LocalProvider(Path("/synthetic"), transport=mocked, json_output=True).generate(request())
+    assert json.loads(calls[-1].content)["format"] == "json"
+    mocked, calls = transport(valid_frames())
+    LocalProvider(Path("/synthetic"), transport=mocked).generate(request())
+    assert "format" not in json.loads(calls[-1].content)
+    with pytest.raises(ValueError, match="invalid_local_output_format"):
+        LocalProvider(Path("/synthetic"), json_output="json")  # type: ignore[arg-type]

@@ -200,3 +200,67 @@ def inspect_research(
         # No DSN, question, claim, URL, path or raw exception in terminal output.
         typer.echo('{"status":"UNAVAILABLE","reason":"research_inspection_not_exported"}', err=True)
         raise typer.Exit(1) from None
+
+
+def _draft_output_preflight(output: Path) -> None:
+    if (
+        not output.is_absolute() or output.parent.resolve(strict=True) != output.parent
+        or stat.S_IMODE(output.parent.stat().st_mode) != 0o700
+        or output.parent.stat().st_uid != os.getuid() or output.exists() or output.is_symlink()
+    ):
+        raise ValueError("new_private_output_required")
+
+
+@research_app.command("synthesize")
+def synthesize_research(
+    request_id: str,
+    config: Annotated[Path, typer.Option("--config")],
+    key: Annotated[str, typer.Option("--key")],
+    output: Annotated[Path, typer.Option("--output")],
+    retain_local_draft: Annotated[bool, typer.Option("--retain-local-draft")] = False,
+    output_format: Annotated[Literal["html", "json"], typer.Option("--format")] = "html",
+) -> None:
+    """Retain one bounded local CPU draft from PUBLIC passages; support is not assessed."""
+    _research_draft(request_id, config, output, output_format, key, retain_local_draft)
+
+
+@research_app.command("inspect-draft")
+def inspect_research_draft(
+    request_id: str,
+    config: Annotated[Path, typer.Option("--config")],
+    output: Annotated[Path, typer.Option("--output")],
+    output_format: Annotated[Literal["html", "json"], typer.Option("--format")] = "html",
+) -> None:
+    """Revalidate and export a retained draft without inference or network access."""
+    _research_draft(request_id, config, output, output_format, None, False)
+
+
+def _research_draft(request: str, config: Path, output: Path, format: str, key: str | None, intent: bool) -> None:
+    from panestria.config_synthesis import load_synthesis_settings
+    from panestria.contracts.research_synthesis import synthesis_json
+    from panestria.execution.research_synthesis import OwnerSynthesis, synthesis_html
+
+    try:
+        _draft_output_preflight(output)
+        settings = load_synthesis_settings(config, need_model=key is not None)
+        dsn = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
+        service = OwnerSynthesis(dsn.get_secret_value(), settings)
+        receipt = service.synthesize(request, key, retain_local_draft=intent) if key is not None else None
+        if receipt is not None and receipt.status != "DRAFT_RETAINED":
+            typer.echo(json.dumps(asdict(receipt)))
+            raise typer.Exit(1)
+        draft = service.inspect(request)
+        raw = synthesis_html(draft) if format == "html" else synthesis_json(draft)
+        _write_private(output, raw)
+        typer.echo(json.dumps({
+            "status": "DRAFT_EXPORTED", "synthesis_id": draft.synthesis_id,
+            "claim_count": len(draft.response.claims), "sha256": hashlib.sha256(raw).hexdigest(),
+            "semantic_support": "NOT_ASSESSED", "task_completion_authority": "NONE",
+            "replayed": receipt.replayed if receipt is not None else True,
+        }))
+    except typer.Exit:
+        raise
+    except (Exception, KeyboardInterrupt):
+        # Intent may already be committed; this never promises a safe redispatch.
+        typer.echo('{"status":"UNAVAILABLE","reason":"research_draft_unavailable_inspect_state"}', err=True)
+        raise typer.Exit(1) from None
