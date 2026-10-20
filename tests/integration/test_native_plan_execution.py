@@ -11,8 +11,9 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 import pytest
-from test_owner_build_cli import contract, prepare
+from test_owner_build_cli import contract, invoke, prepare
 from test_owner_build_cli import owner_cli as owner_cli  # noqa: F401
+from test_registered_check_authority import git
 
 from panestria.brokers.harness.claude_build import PROFILE, ClaudeScopedBashAdapter
 from panestria.brokers.harness.claude_check import CheckProfileObservation
@@ -32,7 +33,7 @@ from panestria.resources.hardware import PROBE_SHA256, HardwareProbe
 
 
 @pytest.fixture
-def native_plan(owner_cli, r1_migration_task, monkeypatch):
+def prepared_plan(owner_cli, r1_migration_task, monkeypatch):
     f = owner_cli
     f.dsn = r1_migration_task["dsn"]
     monkeypatch.setenv("PANESTRIA_DATABASE_URL", f.dsn)
@@ -76,6 +77,12 @@ def native_plan(owner_cli, r1_migration_task, monkeypatch):
         staged = PlanSubmissionService().stage(UnitOfWork(c), owner.actor, document, proposal, inventory, "native-plan")
     with owner.connect() as c:
         PlanStore().accept(UnitOfWork(c), owner.actor, proposal.plan_id, staged.effect_digest, accept_plan=True)
+    return f, owner, runner, proposal
+
+
+@pytest.fixture
+def native_plan(prepared_plan, monkeypatch):
+    _f, owner, runner, proposal = prepared_plan
     state = {
         "launches": 0,
         "active": 0,
@@ -265,3 +272,69 @@ def test_plan_cancel_fences_both_running_calls_and_keeps_uncertain_capacity(nati
         assert c.execute(
             "SELECT count(*) FROM panestria.build_active_worker_claim WHERE plan_id=%s", (plan.plan_id,)
         ).fetchone() == (2,)
+
+
+@pytest.mark.live
+def test_actual_public_two_claude_plan_and_exact_final_merge(prepared_plan, record_property):
+    f, owner, runner, plan = prepared_plan
+    assert f.actual
+    record_property(
+        "scope",
+        "Actual PUBLIC two-Claude fork/join and real runtime certificate; "
+        "scripted test-owner approval, no human signoff",
+    )
+    record_property("runtime_certificate_sha256", f.cfg["certificate_sha256"])
+    result = runner.run(plan.plan_id, public_subscription_run=True)
+    record_property("plan_result", json.dumps(result, sort_keys=True))
+    assert result["status"] == "WAITING_APPROVAL", result
+    assert git(f.bare, "rev-parse", "HEAD") == f.base
+    review = owner.status(plan.goal_id, diff=True)
+    assert all(check["verdict"] == "PASS" for check in review["checks"])
+    assert "+value = 43" in review["diff"] and "+bounded Bash build" in review["diff"]
+    with owner.connect() as c:
+        calls = c.execute(
+            "SELECT i.id::text,i.binding->>'kind',i.state,i.receipt_sha256::text,i.finished_at::text "
+            "FROM panestria.worker_invocation i JOIN panestria.task t ON t.id=i.task_id "
+            "WHERE t.goal_id=%s ORDER BY i.created_at,i.id",
+            (plan.goal_id,),
+        ).fetchall()
+        record_property("actual_invocations", json.dumps(calls))
+        assert sum(call[1] == "native-proposal" for call in calls) == 2
+        assert len(calls) >= 4 and all(call[2] == "RETURNED" and call[3] for call in calls)
+        events = c.execute(
+            "SELECT e.seq,e.kind,e.payload->>'invocation_id' FROM panestria.task_event e "
+            "WHERE e.goal_id=%s AND e.kind IN ('native_build.context_disclosure','invocation.returned') "
+            "ORDER BY seq",
+            (plan.goal_id,),
+        ).fetchall()
+        record_property("invocation_order", json.dumps(events))
+        native_ids = {call[0] for call in calls if call[1] == "native-proposal"}
+        disclosed = [
+            seq
+            for seq, kind, identity in events
+            if kind == "native_build.context_disclosure" and identity in native_ids
+        ]
+        returned = [seq for seq, kind, identity in events if kind == "invocation.returned" and identity in native_ids]
+        assert len(disclosed) == len(returned) == 2 and max(disclosed) < min(returned)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.build_handoff WHERE plan_id=%s", (plan.plan_id,)
+        ).fetchone() == (2,)
+    approval = review["approval"]
+    args = (
+        approval["approval_id"],
+        approval["effect_digest"],
+        str(approval["expected_version"]),
+        "exact-two-worker-test-owner",
+    )
+    invoke(f, "approve", args[0], "ff" * 32, *args[2:], expected=1)
+    assert git(f.bare, "rev-parse", "HEAD") == f.base
+    merged = invoke(f, "approve", *args)
+    assert merged["task_state"] == "COMPLETED"
+    assert git(f.bare, "rev-parse", "HEAD") == review["candidate_commit"]
+    assert git(f.source, "rev-parse", "HEAD") == f.base
+    with owner.connect() as c:
+        assert c.execute("SELECT status FROM panestria.goal WHERE id=%s", (plan.goal_id,)).fetchone() == ("COMPLETED",)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.build_active_worker_claim WHERE plan_id=%s", (plan.plan_id,)
+        ).fetchone() == (0,)
+    record_property("native_actual_cash", "UNKNOWN_SUBSCRIPTION_ESTIMATE_ONLY_NO_DIRECT_SDK_CALL")
