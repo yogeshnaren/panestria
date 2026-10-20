@@ -93,7 +93,8 @@ class BuildProgressService:
                     fingerprint = canonical_sha256(
                         {
                             "contract_sha256": bundle.contract_sha256,
-                            "candidate_commit": bundle.candidate_commit,
+                            "candidate_tree": bundle.candidate_tree,
+                            "verifier_bundle_sha256": bundle.verifier_bundle_sha256,
                             "failed_checks": [
                                 (c.check_key, c.spec_sha256, c.verdict)
                                 for c in bundle.checks

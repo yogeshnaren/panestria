@@ -9,6 +9,7 @@ import pytest
 from test_native_plan_execution import native_plan as native_plan  # noqa: F401
 from test_native_plan_execution import owner_cli as owner_cli  # noqa: F401
 from test_native_plan_execution import prepared_plan as prepared_plan  # noqa: F401
+from test_plan_revisions import fresh
 from typer.testing import CliRunner
 
 from panestria.cli.main import app
@@ -16,6 +17,9 @@ from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.build_progress import BuildProgressService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
+from panestria.kernel.plan_returns import ReturnedBuildRelease
+from panestria.kernel.plan_revisions import PlanRevisionService
+from panestria.kernel.plan_store import PlanStore
 from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.uow import UnitOfWork
 
@@ -121,6 +125,7 @@ def test_progress_tracks_real_candidate_and_merge_without_promoting_heartbeat_or
     assert all(r.verdict == "UNCONFIRMED" for r in missing.requirements)
 
 
+@pytest.mark.parametrize("prepared_plan", [{"wall_seconds": 900}], indirect=True)
 def test_failed_final_check_is_visible_but_has_no_merge_authority_and_scope_is_checked(native_plan):
     owner, runner, plan, _state = native_plan
     script = owner.settings.root / "reviewed" / "required.py"
@@ -136,6 +141,29 @@ def test_failed_final_check_is_visible_but_has_no_merge_authority_and_scope_is_c
     final = progress.plans[-1].milestones[-1]
     assert final.evidence_status == "CONFIRMED" and final.failure_fingerprint
     assert progress.repair.repeated_failure_count == 1 and progress.repair.held_claims == 1
+    # Repeating the same independently failed tree across a newly reviewed plan
+    # is still a stall even when new task IDs/commit timestamps are assigned.
+    with owner.connect() as c:
+        attempt = c.execute(
+            "SELECT attempt_id::text FROM panestria.build_active_worker_claim WHERE plan_id=%s", (plan.plan_id,)
+        ).fetchone()[0]
+        proof = ReturnedBuildRelease(owner.reports).release(UnitOfWork(c), owner.actor, plan.plan_id, attempt)
+    with owner.connect() as c:
+        parent = PlanStore().get(UnitOfWork(c), owner.actor, plan.plan_id)
+        revised = PlanRevisionService().propose(
+            UnitOfWork(c), owner.actor, plan.plan_id, plan.sha256(), fresh(plan), parent.inventory, proof
+        )
+    with owner.connect() as c:
+        PlanStore().accept(
+            UnitOfWork(c), owner.actor, revised.proposal.plan_id, revised.effect_digest, accept_plan=True
+        )
+    assert runner.run(revised.proposal.plan_id, public_subscription_run=True)["status"] == "FAILED"
+    stalled = inspect(owner, plan)
+    assert stalled.repair.repeated_failure_count == 2
+    assert stalled.attention_reason == "REPEATED_UNCHANGED_FAILURE"
+    assert stalled.repair.versions_used == 2 and stalled.repair.maximum_versions == 3
+    assert stalled.repair.wall_envelope_charged_seconds == 540
+    assert stalled.repair.wall_envelope_remaining_seconds == 360
     with owner.connect() as c:
         with pytest.raises(KernelDenied, match="stale_build_evidence"), c.transaction():
             BuildEvidenceService(owner.reports).current(
