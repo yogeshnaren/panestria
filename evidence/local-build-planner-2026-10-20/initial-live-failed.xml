@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="25.319" timestamp="2026-10-20T08:56:44.305444-07:00" hostname="yogesh-verisim"><testcase classname="tests.unit.test_local_build_planner" name="test_actual_cpu_produces_an_offline_validated_plan" file="tests/unit/test_local_build_planner.py" line="211" time="24.713"><properties><property name="candidate_commit" value="18d0f23eba21a12930f1c8a589ff907b07adea70" /><property name="worktree_state" value="clean" /><property name="fixture_digest" value="f2cfe6ff890f631e1b940e568e82a5c7cbac490ed0701d6067b8282fe63127ed" /></properties><failure message="panestria.kernel.errors.KernelDenied: local_plan_final_checks_incomplete">planner_context = namespace(goal=GoalContract(schema_version=1, goal_id='00000000-0000-4000-8000-000000000001', contract_version=1, owne...ual_cpu_produces_an_of0/proposal'), root=PosixPath('/tmp/pytest-of-yogesh/pytest-250/test_actual_cpu_produces_an_of0'))
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x7dcb11e64540&gt;
+
+    @pytest.mark.live
+    def test_actual_cpu_produces_an_offline_validated_plan(planner_context, record_property):
+        import os
+    
+        from panestria.inference.runtime import MODEL_DIGEST
+    
+        cache = os.environ.get("PANESTRIA_PROFILE_TEST_MODEL_CACHE")
+        if not cache:
+            pytest.skip("Explicit existing model cache required; no download")
+        controllers = subprocess.check_output(
+            ["docker", "ps", "-a", "-q", "--filter", "label=panestria.purpose=local-model"], text=True
+        ).split()
+        assert not controllers, "Owner model controller preserved; live draft not run"
+        f = planner_context
+        body = f.goal.model_dump(mode="json")
+        body["intent"] = "Create src/example.py with a double(value) function returning value * 2. Change no other file."
+        body["budget"]["max_wall_seconds"] = 270
+        settings = f.settings.model_copy(update={"model_cache": Path(cache)})
+&gt;       receipt = LocalBuildPlanner(settings).propose(load_contract(body), f.inventory, f.output, local_model_run=True)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_local_build_planner.py:230: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/execution/local_plan.py:222: in propose
+    proposal, validated = validate_draft(result.text, self.actor, contract, inventory)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = '{\n  "nodes": [\n    {\n      "task_id": "edit-one",\n      "worker_ref": "worker-one",\n      "capabilities": ["scop...e_keys": ["AC-001", "AC-002", "AC-003"],\n      "depends_on": [],\n      "wall_seconds_per_attempt": 90\n    }\n  ]\n}'
+actor = &lt;panestria.kernel.goals.Actor object at 0x7dcb11e334d0&gt;
+contract = GoalContract(schema_version=1, goal_id='00000000-0000-4000-8000-000000000001', contract_version=1, owner_id='00000000-...ed=True, kind='policy-decision-report'))], non_goals=['real provider use', 'public publishing', 'dependency upgrades'])
+inventory = ProjectInventory(schema_version=1, owner_id='00000000-0000-4000-8000-000000000002', project_id='00000000-0000-4000-800...f', capabilities=('trusted-test-runner',), maximum_parallel=1)), maximum_nodes=16, maximum_depth=8, maximum_parallel=2)
+
+    def validate_draft(
+        text: str, actor: Actor, contract: GoalContract, inventory: ProjectInventory
+    ) -&gt; tuple[PlanProposal, ValidatedDAG]:
+        if type(text) is not str or len(text.encode()) &gt; 16 * 1024:
+            raise KernelDenied("local_plan_response_limit")
+        draft = ModelPlanDraft.model_validate_json(canonical_payload(text))
+        names = {n.task_id: str(uuid4()) for n in draft.nodes}
+        if len(names) != len(draft.nodes) or any(set(n.depends_on) - names.keys() for n in draft.nodes):
+            raise KernelDenied("local_plan_task_references_invalid")
+        proposal = PlanProposal(
+            plan_id=str(uuid4()),
+            owner_id=actor.owner_id,
+            project_id=actor.project_id,
+            goal_id=contract.goal_id,
+            contract_sha256=contract_sha256(contract),
+            inventory_sha256=inventory.sha256(),
+            privacy_class=contract.privacy_class,
+            nodes=tuple(
+                PlanNode.model_validate(
+                    {
+                        **n.model_dump(),
+                        "task_id": names[n.task_id],
+                        "depends_on": tuple(names[key] for key in n.depends_on),
+                    }
+                )
+                for n in draft.nodes
+            ),
+        )
+        validation = PlanValidator().validate(actor, proposal, contract, inventory)
+        sources = {key for n in proposal.nodes for key in n.depends_on}
+        terminal = [n for n in proposal.nodes if n.task_id not in sources]
+        if len(terminal) != 1 or set(terminal[0].acceptance_keys) != {c.id for c in contract.acceptance}:
+&gt;           raise KernelDenied("local_plan_final_checks_incomplete")
+E           panestria.kernel.errors.KernelDenied: local_plan_final_checks_incomplete
+
+src/panestria/execution/local_plan.py:134: KernelDenied</failure></testcase></testsuite></testsuites>
