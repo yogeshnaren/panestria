@@ -137,6 +137,19 @@ class AdmittedNativeBuild:
         if runtime_versions() != self.versions or controller.certificates.runtime_versions != self.versions:
             raise KernelDenied("native_build_runtime_changed")
         controller.authorize(connection)  # Current local edit, contract and policy.
+        if self.plan_scope is not None:
+            claim = connection.execute(
+                "SELECT 1 FROM panestria.build_active_worker_claim WHERE plan_id=%s AND task_id=%s "
+                "AND attempt_id=%s AND lease_epoch=%s",
+                (
+                    self.plan_scope.plan_id,
+                    str(controller.scope.task_id),
+                    str(controller.scope.attempt_id),
+                    controller.scope.lease_epoch,
+                ),
+            ).fetchone()
+            if claim is None:
+                raise KernelDenied("native_plan_claim_missing")
         policy = PolicyService(controller.certificates).get(UnitOfWork(connection), controller.actor)
         if policy.trust.profile == "SYNTHETIC_DEV":
             raise KernelDenied("native_build_runtime_uncertified")

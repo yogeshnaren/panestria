@@ -40,11 +40,22 @@ class PlanStore:
         if uow.connection.autocommit and uow.connection.info.transaction_status != TransactionStatus.INTRANS:
             raise KernelDenied("plan_caller_transaction_required")
 
-    def _goal(self, uow: UnitOfWork, actor: Actor, goal: str) -> tuple[str, str, GoalContract]:
+    def _goal(
+        self, uow: UnitOfWork, actor: Actor, goal: str, *, read_only: bool = False
+    ) -> tuple[str, str, GoalContract]:
         self._transaction(uow)
-        lock_project(uow, actor)
+        if read_only:
+            project = uow.execute(
+                "SELECT 1 FROM panestria.project WHERE id=%s AND owner_id=%s FOR SHARE",
+                (actor.project_id, actor.owner_id),
+            ).fetchone()
+            if project is None:
+                raise KernelDenied("not_found")
+        else:
+            lock_project(uow, actor)
         row = uow.execute(
-            "SELECT status FROM panestria.goal WHERE id=%s AND owner_id=%s AND project_id=%s FOR UPDATE",
+            "SELECT status FROM panestria.goal WHERE id=%s AND owner_id=%s AND project_id=%s"
+            + ("" if read_only else " FOR UPDATE"),
             (goal, actor.owner_id, actor.project_id),
         ).fetchone()
         if row is None:
@@ -133,9 +144,9 @@ class PlanStore:
         ).fetchone()
         if hint is None:
             raise KernelDenied("not_found")
-        _, cid, contract = self._goal(uow, actor, hint[0])
-        # Reread after project/goal locks: a concurrent acceptance cannot leave
-        # this caller with the pre-lock PROPOSED snapshot.
+        _, cid, contract = self._goal(uow, actor, hint[0], read_only=True)
+        # Read under the project share guard. Plan/policy writers take the
+        # exclusive guard first; verifier reads do not upgrade shared locks.
         plan = self._read(uow, actor, identifier)
         checked = PlanValidator().validate(actor, plan.proposal, contract, plan.inventory)
         if checked != plan.validation or plan.consent.policy_ref != contract.autonomy_profile_ref:
@@ -224,6 +235,8 @@ class PlanStore:
     def accept(self, uow: UnitOfWork, actor: Actor, identifier: str, digest: str, *, accept_plan: bool) -> StoredPlan:
         if accept_plan is not True:
             raise KernelDenied("explicit_plan_acceptance_required")
+        self._transaction(uow)
+        lock_project(uow, actor)
         plan = self.get(uow, actor, identifier)
         status, cid, contract = self._goal(uow, actor, plan.proposal.goal_id)
         if digest != plan.effect_digest or plan.consent.policy_ref != contract.autonomy_profile_ref:
@@ -297,18 +310,34 @@ class PlanStore:
             raise KernelDenied("plan_dependencies_changed")
 
     def handoff(
-        self, uow: UnitOfWork, actor: Actor, submitted: HandoffSubmission, evidence: BuildEvidenceService
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        submitted: HandoffSubmission,
+        evidence: BuildEvidenceService,
+        *,
+        replay_only: bool = False,
     ) -> RetainedHandoff:
         submitted = HandoffSubmission.model_validate(submitted)
+        self._transaction(uow)
+        if not replay_only:
+            lock_project(uow, actor)
         plan = self.get(uow, actor, submitted.plan_id)
-        _, cid, contract = self._goal(uow, actor, plan.proposal.goal_id)
+        _, cid, contract = self._goal(uow, actor, plan.proposal.goal_id, read_only=replay_only)
         if plan.state != "ACCEPTED" or plan.consent.policy_ref != contract.autonomy_profile_ref:
             raise KernelDenied("plan_not_accepted_or_current")
         self._members(uow, plan, cid)
         members = {n.task_id: n for n in plan.proposal.nodes}
         if submitted.task_id not in members or set(submitted.next_tasks) - members.keys():
             raise KernelDenied("handoff_scope_mismatch")
-        task = lock_task(uow, actor.owner_id, actor.project_id, submitted.task_id)
+        if replay_only:
+            task = uow.execute(
+                "SELECT goal_id::text,state,row_version,lease_epoch FROM panestria.task "
+                "WHERE id=%s AND goal_id=%s FOR SHARE",
+                (submitted.task_id, plan.proposal.goal_id),
+            ).fetchone()
+        else:
+            task = lock_task(uow, actor.owner_id, actor.project_id, submitted.task_id)
         if task is None or task[1] not in {"VERIFYING", "WAITING_APPROVAL", "COMPLETED"}:
             raise KernelDenied("handoff_task_not_verified")
         bundle = evidence.current(uow, actor, submitted.task_id, submitted.evidence_sha256)
@@ -341,6 +370,8 @@ class PlanStore:
             ):
                 raise KernelDenied("handoff_conflict")
             return result
+        if replay_only:
+            raise KernelDenied("handoff_record_unconfirmed")
         if submitted.expected_task_version != task[2]:
             raise KernelDenied("handoff_task_version_changed")
         uow.execute(
@@ -387,4 +418,4 @@ class PlanStore:
             raise KernelDenied("handoff_record_unconfirmed")
         # Same reconstruction validates current source/candidate/task membership;
         # prior receipt prevents a second record/event or inference/tool effect.
-        return self.handoff(uow, actor, record.submission, evidence)
+        return self.handoff(uow, actor, record.submission, evidence, replay_only=True)
