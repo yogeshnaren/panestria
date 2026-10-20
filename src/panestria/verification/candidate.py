@@ -9,6 +9,7 @@ from __future__ import annotations
 import os
 import re
 import stat
+from functools import partial
 from pathlib import Path
 
 from panestria.verification.git_snapshot import SnapshotRejected, _safe_path, protected_git
@@ -18,7 +19,8 @@ def _walk_error(_error: OSError) -> None:
     raise SnapshotRejected("candidate_capture_unavailable")
 
 
-def capture_candidate(repository: Path, base: str, workspace: Path) -> str:
+def capture_candidate(repository: Path, base: str, workspace: Path, *, deadline: float | None = None) -> str:
+    git = partial(protected_git, repository, deadline=deadline)
     if (
         not re.fullmatch(r"[0-9a-f]{40}", base)
         or repository.is_symlink()
@@ -31,9 +33,9 @@ def capture_candidate(repository: Path, base: str, workspace: Path) -> str:
         or repository.is_relative_to(workspace)
     ):
         raise SnapshotRejected("invalid_candidate_scope")
-    if protected_git(repository, ("rev-parse", "--is-bare-repository")).strip() != b"true":
+    if git(("rev-parse", "--is-bare-repository")).strip() != b"true":
         raise SnapshotRejected("candidate_repository_not_bare")
-    protected_git(repository, ("cat-file", "-e", base + "^{commit}"))
+    git(("cat-file", "-e", base + "^{commit}"))
     # Snapshot bytes first. The object importer never runs in the workspace,
     # never reads .git/config or .gitattributes, and never runs worker tests.
     files: list[tuple[str, bytes, str]] = []
@@ -75,9 +77,7 @@ def capture_candidate(repository: Path, base: str, workspace: Path) -> str:
     for path, raw, mode in sorted(files):
         file_path = Path(path)
         parent = "" if file_path.parent.as_posix() == "." else file_path.parent.as_posix()
-        oid = (
-            protected_git(repository, ("hash-object", "-w", "--no-filters", "--stdin"), input_data=raw).decode().strip()
-        )
+        oid = git(("hash-object", "-w", "--no-filters", "--stdin"), input_data=raw).decode().strip()
         if not re.fullmatch(r"[0-9a-f]{40}", oid):
             raise SnapshotRejected("invalid_candidate_object")
         trees.setdefault(parent, []).append((mode, "blob", oid, file_path.name))
@@ -91,7 +91,7 @@ def capture_candidate(repository: Path, base: str, workspace: Path) -> str:
         listing = b"".join(
             f"{mode} {kind} {oid}\t{name}".encode() + b"\0" for mode, kind, oid, name in trees[directory]
         )
-        tree = protected_git(repository, ("mktree", "-z"), input_data=listing).decode().strip()
+        tree = git(("mktree", "-z"), input_data=listing).decode().strip()
         if not re.fullmatch(r"[0-9a-f]{40}", tree):
             raise SnapshotRejected("invalid_candidate_tree")
         if directory:
@@ -99,8 +99,7 @@ def capture_candidate(repository: Path, base: str, workspace: Path) -> str:
             parent = "" if directory_path.parent.as_posix() == "." else directory_path.parent.as_posix()
             trees.setdefault(parent, []).append(("040000", "tree", tree, directory_path.name))
     candidate = (
-        protected_git(
-            repository,
+        git(
             (
                 "-c",
                 "user.name=Panestria worker candidate",

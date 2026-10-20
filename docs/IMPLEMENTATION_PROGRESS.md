@@ -6,8 +6,9 @@ commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 w
 An implemented component or passing CI is not a release-gate pass.
 
 The owner explicitly resumed implementation through R3 on 2026-10-20. Current
-critical path: canonical plans/handoffs merged in PR127, then bounded two-worker scheduling,
-conflict handling and final-tree verification. CI/mutation/metrics PRs128–131 are
+critical path: canonical plans/handoffs (PR127), scoped verification (PR132) and
+bounded admission/handoff completion (PR133) are merged. Combined-tree verification
+and owner review are in PR134; actual native orchestration is next. CI/mutation/metrics PRs128–131 are
 merged; performance history is delivered, continuous task metrics remain pending.
 Deliver usable slices and required evidence; avoid unrelated test expansion.
 
@@ -59,7 +60,7 @@ download or paid call is silently selected by this work.
 ## Current Build integration
 
 Canonical plans/consent/handoffs merged in [PR127](https://github.com/yogeshnaren/panestria/pull/127) with passing exact-head CI39385719878 and verified merge tree.
-Accepted plan-node verification now binds checks and literal paths to immutable membership; intermediate NODE_VERIFIED results cannot request, dispatch or complete a protected merge. The unique final task still requires every goal check and exact owner approval. [Component evidence](../evidence/plan-task-verification-2026-10-20/report.json) preserves the scratch-permission failures and the scoped correction. Durable ready-node admission and verified handoff/completion are now implemented: [commands](testing/PLAN_SCHEDULER.md), [source-bound evidence](../evidence/plan-scheduler-2026-10-20/report.json). Across accepted plans, claims cap at two, overlapping paths wait, expiry retains capacity, and protected intermediate handoffs unlock dependencies. Capacity/identity fixtures do not qualify native dispatch. Next connect actual workers, uncertain/final resource release, conflict handling and final-tree assembly. This is not an accepted two-worker demo or G3 pass.
+Accepted plan-node verification now binds checks and literal paths to immutable membership; intermediate NODE_VERIFIED results cannot request, dispatch or complete a protected merge. The unique final task still requires every goal check and exact owner approval. [Component evidence](../evidence/plan-task-verification-2026-10-20/report.json) preserves the scratch-permission failures and the scoped correction. Durable ready-node admission and verified handoff/completion are now implemented: [commands](testing/PLAN_SCHEDULER.md), [source-bound evidence](../evidence/plan-scheduler-2026-10-20/report.json). Across accepted plans, claims cap at two, overlapping paths wait, expiry retains capacity, and protected intermediate handoffs unlock dependencies. Capacity/identity fixtures do not qualify native dispatch. [Final-tree integration](testing/FINAL_TREE_INTEGRATION.md) now connects actual protected sibling results, conservative conflict stops, complete independent final checks and the existing owner review/merge path. [Evidence](../evidence/final-tree-integration-2026-10-20/report.json) includes actual owner-approved protected Git CAS, individually-passing/combined-failing checks, conflicts and cancellation fencing. Next connect actual native workers, multi-task cancellation and uncertain/final resource release. This is not an accepted two-worker demo or G3 pass.
 
 ## Next concrete delivery
 
@@ -196,8 +197,9 @@ Structured-style follow-up validation keeps actual local failures visible in
 source-graph head assertions and observed0032 schema snapshots are corrected;
 38 checks passed,4 failed and1 errored on host runtime-start/termination timing.
 The actual incremental memory-pressure check passed without relaxing the cgroup
-cap or classifier. Keep the feature PR draft until required verification passes;
-original CPU/style evidence remains at its recorded source. No gate is promoted.
+cap or classifier. At that source the feature remained draft pending qualification. PR125 has since
+merged separately; that does not retroactively qualify these original failures.
+Original CPU/style evidence remains at its recorded source. No gate is promoted.
 
 ## Canonical plan and handoff storage component
 
@@ -212,5 +214,5 @@ cover scoped immutability, concurrent consent, rollback and fenced handoff; an
 initial fixture transition error and its correction remain recorded. The older
 style downgrade guard also preserves the new schema. This is partial AOS-025-S2;
 direct local proposals, revisions/repair, two-worker admission/conflicts and
-final-tree verification remain pending. PR125 is still a draft because host
-runtime timing is unqualified, despite its passing exact-head CI.
+final-tree verification remain pending. PR125 has since merged separately; its older host timing failures remain
+unqualified observations at their original sources.

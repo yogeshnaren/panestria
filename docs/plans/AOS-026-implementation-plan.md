@@ -1,6 +1,6 @@
 # AOS-026 — Concurrent two-worker scheduler, worktree conflict control and admission: implementation plan
 
-**Release:** R3. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-006, AOS-010, AOS-024, AOS-025. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R3. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS. **Tests:** component observations; release scenarios NOT_RUN. **Depends on:** AOS-006, AOS-010, AOS-024, AOS-025. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-026.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -77,3 +77,7 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Component delivery observed 2026-10-20
+
+Durable zero-API-cash CPU reservations, real cross-controller concurrency/rollback, path waits and canonical verified dependency completion are implemented in [the scheduler component](../testing/PLAN_SCHEDULER.md). This is partial S1/S3 behavior: priority classes, full native orchestration/accounting, final/uncertain claim reconciliation and live two-worker footprint remain required. Original scenario IDs/gates are not marked passed by controller fixtures.

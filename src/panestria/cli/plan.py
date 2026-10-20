@@ -298,3 +298,47 @@ def inspect_claims(owner_id: str, project_id: str, plan_id: str) -> None:
         typer.echo(json.dumps({"claims": result, "dispatch_authority": "NONE"}, default=str))
     except Exception:
         _unavailable()
+
+
+@plan_app.command("integrate")
+def integrate_plan(
+    config: Annotated[Path, typer.Option("--config")],
+    plan_id: str,
+    attempt_id: str,
+    epoch: int,
+) -> None:
+    """Combine verified completed nodes and run full final-tree checks; stop at owner review."""
+    from uuid import uuid4
+
+    from panestria.cli.build import _finish, _service
+    from panestria.config_build import _directory
+    from panestria.execution.build_plan import BuildIntegrator
+    from panestria.kernel.build import BuildEvidenceService
+
+    def run() -> dict[str, Any]:
+        owner = _service(config)
+        parent = owner.settings.root / "plan-integration"
+        parent.mkdir(mode=0o700, exist_ok=True)
+        _directory(parent)
+        result = BuildIntegrator(owner.connect, owner.actor, BuildEvidenceService(owner.reports), owner.certificates)
+        outcome = result.verify_for_review(
+            plan_id,
+            attempt_id,
+            epoch,
+            owner.settings.protected,
+            owner.settings.repository,
+            parent / str(uuid4()),
+            owner.registry,
+        )
+        payload: dict[str, Any] = {"status": outcome.status, "report_sha256": outcome.report_sha256}
+        if outcome.review is not None:
+            review = outcome.review
+            payload["review"] = {
+                "candidate_commit": review.candidate_commit,
+                "evidence_sha256": review.evidence_sha256,
+                "passed": review.passed,
+                "approval": vars(review.approval) if review.approval else None,
+            }
+        return payload
+
+    _finish(run)
