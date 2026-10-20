@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="5" time="15.547" timestamp="2026-10-20T00:43:06.939871-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_plan_scheduler" name="test_eight_competing_claims_reserve_only_two_and_expiry_does_not_free_capacity[build0]" file="tests/integration/test_plan_scheduler.py" line="111" time="6.048"><failure message="assert (0 == 2)&#10; +  where 0 = len([])">build = BuildFixture(task={'owner': '7a1c1ecb-87a9-4c7f-aae5-bd100b60964a', 'project': '657ab179-0e32-4cac-b02f-bd80bc8f740a',...olicy-change': 'approve-first', 'read': 'act-and-report', 'spend': 'approve-first', 'tool-install': 'approve-first'})))
+
+    @pytest.mark.parametrize("build", [PATHS], indirect=True)
+    def test_eight_competing_claims_reserve_only_two_and_expiry_does_not_free_capacity(build):
+        plan = accepted(build, 8)
+        barrier = Barrier(8)
+    
+        def one():
+            barrier.wait(timeout=10)
+            return claim(build, plan)
+    
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            futures = [pool.submit(one) for _ in range(8)]
+            results = [future.result(timeout=20) for future in futures]
+        leased = [r for r in results if isinstance(r, Scheduled)]
+&gt;       assert len(leased) == 2 and len({r.lease.task_id for r in leased}) == 2
+E       assert (0 == 2)
+E        +  where 0 = len([])
+
+tests/integration/test_plan_scheduler.py:125: AssertionError</failure></testcase><testcase classname="tests.integration.test_plan_scheduler" name="test_claim_rolls_back_with_lease_and_event_and_preserves_scope_and_resource_waits[build0]" file="tests/integration/test_plan_scheduler.py" line="143" time="2.114"><failure message="AssertionError: assert False&#10; +  where False = isinstance((Queued(task_id='e7d5e954-d9df-4377-a217-af18f9d23a47', reason='current_edit_policy_denied'), Queued(task_id='da897c2d...current_edit_policy_denied'), Queued(task_id='2670ab9b-a158-4de8-a226-184ae8152f39', reason='dependency_not_verified')), Scheduled)">build = BuildFixture(task={'owner': 'e6b5f40f-a0e7-4e99-9d0a-8fc787070181', 'project': '49d1fab5-5d0d-4171-890e-5e89cf183fca',...olicy-change': 'approve-first', 'read': 'act-and-report', 'spend': 'approve-first', 'tool-install': 'approve-first'})))
+
+    @pytest.mark.parametrize("build", [PATHS], indirect=True)
+    def test_claim_rolls_back_with_lease_and_event_and_preserves_scope_and_resource_waits(build):
+        plan = accepted(build)
+        with psycopg.connect(build.task["dsn"]) as c:
+            result = Scheduler().claim_ready(UnitOfWork(c), build.actor, plan.plan_id, capacity(), build.service)
+&gt;           assert isinstance(result, Scheduled)
+E           AssertionError: assert False
+E            +  where False = isinstance((Queued(task_id='e7d5e954-d9df-4377-a217-af18f9d23a47', reason='current_edit_policy_denied'), Queued(task_id='da897c2d...current_edit_policy_denied'), Queued(task_id='2670ab9b-a158-4de8-a226-184ae8152f39', reason='dependency_not_verified')), Scheduled)
+
+tests/integration/test_plan_scheduler.py:149: AssertionError</failure></testcase><testcase classname="tests.integration.test_plan_scheduler" name="test_overlapping_paths_queue_without_overwriting_other_work[build0]" file="tests/integration/test_plan_scheduler.py" line="171" time="2.131"><failure message="AssertionError: assert False&#10; +  where False = isinstance((Queued(task_id='b9f73bb1-b7d7-4fc5-8811-aab00c2cd9f1', reason='current_edit_policy_denied'), Queued(task_id='7792505d...current_edit_policy_denied'), Queued(task_id='0be18333-d39b-4685-b688-769a9db19c71', reason='dependency_not_verified')), Scheduled)&#10; +    where (Queued(task_id='b9f73bb1-b7d7-4fc5-8811-aab00c2cd9f1', reason='current_edit_policy_denied'), Queued(task_id='7792505d...current_edit_policy_denied'), Queued(task_id='0be18333-d39b-4685-b688-769a9db19c71', reason='dependency_not_verified')) = claim(BuildFixture(task={'owner': 'ef6d67a9-dbb8-4981-8052-b44954590732', 'project': '47eaf3c0-7841-4665-80c8-805a4c013f6e',...olicy-change': 'approve-first', 'read': 'act-and-report', 'spend': 'approve-first', 'tool-install': 'approve-first'}))), PlanProposal(schema_version=1, plan_id='296b5f3f-14b5-460f-98d1-7157b5991468', owner_id='ef6d67a9-dbb8-4981-8052-b4495...-002', 'AC-003'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=40, api_microusd_per_attempt=0))))">build = BuildFixture(task={'owner': 'ef6d67a9-dbb8-4981-8052-b44954590732', 'project': '47eaf3c0-7841-4665-80c8-805a4c013f6e',...olicy-change': 'approve-first', 'read': 'act-and-report', 'spend': 'approve-first', 'tool-install': 'approve-first'})))
+
+    @pytest.mark.parametrize("build", [PATHS], indirect=True)
+    def test_overlapping_paths_queue_without_overwriting_other_work(build):
+        plan = accepted(build, overlap=True)
+&gt;       assert isinstance(claim(build, plan), Scheduled)
+E       AssertionError: assert False
+E        +  where False = isinstance((Queued(task_id='b9f73bb1-b7d7-4fc5-8811-aab00c2cd9f1', reason='current_edit_policy_denied'), Queued(task_id='7792505d...current_edit_policy_denied'), Queued(task_id='0be18333-d39b-4685-b688-769a9db19c71', reason='dependency_not_verified')), Scheduled)
+E        +    where (Queued(task_id='b9f73bb1-b7d7-4fc5-8811-aab00c2cd9f1', reason='current_edit_policy_denied'), Queued(task_id='7792505d...current_edit_policy_denied'), Queued(task_id='0be18333-d39b-4685-b688-769a9db19c71', reason='dependency_not_verified')) = claim(BuildFixture(task={'owner': 'ef6d67a9-dbb8-4981-8052-b44954590732', 'project': '47eaf3c0-7841-4665-80c8-805a4c013f6e',...olicy-change': 'approve-first', 'read': 'act-and-report', 'spend': 'approve-first', 'tool-install': 'approve-first'}))), PlanProposal(schema_version=1, plan_id='296b5f3f-14b5-460f-98d1-7157b5991468', owner_id='ef6d67a9-dbb8-4981-8052-b4495...-002', 'AC-003'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=40, api_microusd_per_attempt=0))))
+
+tests/integration/test_plan_scheduler.py:175: AssertionError</failure></testcase><testcase classname="tests.integration.test_plan_scheduler" name="test_actual_node_checks_and_handoffs_unlock_final_node_without_completing_goal[build0]" file="tests/integration/test_plan_scheduler.py" line="216" time="2.155"><failure message="AssertionError: assert (False)&#10; +  where False = isinstance((Queued(task_id='23394d29-fd60-4700-a257-a531c8607e3d', reason='current_edit_policy_denied'), Queued(task_id='93349694...current_edit_policy_denied'), Queued(task_id='bd88c056-298c-47c8-a0a8-8bb14af9902a', reason='dependency_not_verified')), Scheduled)">build = BuildFixture(task={'owner': 'bfd24bfb-dae8-403d-abe6-c70b481e2e72', 'project': '77ec273a-0488-4b89-a201-4d1b42244882',...olicy-change': 'approve-first', 'read': 'act-and-report', 'spend': 'approve-first', 'tool-install': 'approve-first'})))
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-224/test_actual_node_checks_and_ha0')
+
+    @pytest.mark.parametrize("build", [PATHS], indirect=True)
+    def test_actual_node_checks_and_handoffs_unlock_final_node_without_completing_goal(build, tmp_path):
+        plan = accepted(build)
+        first, second = claim(build, plan), claim(build, plan)
+&gt;       assert isinstance(first, Scheduled) and isinstance(second, Scheduled)
+E       AssertionError: assert (False)
+E        +  where False = isinstance((Queued(task_id='23394d29-fd60-4700-a257-a531c8607e3d', reason='current_edit_policy_denied'), Queued(task_id='93349694...current_edit_policy_denied'), Queued(task_id='bd88c056-298c-47c8-a0a8-8bb14af9902a', reason='dependency_not_verified')), Scheduled)
+
+tests/integration/test_plan_scheduler.py:221: AssertionError</failure></testcase><testcase classname="tests.integration.test_plan_scheduler" name="test_failed_node_keeps_dependents_blocked_and_does_not_forge_handoff[build0]" file="tests/integration/test_plan_scheduler.py" line="260" time="2.467"><failure message="AssertionError: assert (False)&#10; +  where False = isinstance((Queued(task_id='67c90d8d-7199-44d5-a458-6a82475a6e57', reason='current_edit_policy_denied'), Queued(task_id='ea754a91...current_edit_policy_denied'), Queued(task_id='9dee5d19-d5a4-4ae0-b813-013b7a613050', reason='dependency_not_verified')), Scheduled)">build = BuildFixture(task={'owner': 'fea1c653-0ec8-48c4-b201-17f7ad2be167', 'project': 'd97d2d43-3342-4da6-ac3b-48243fb26f5b',...olicy-change': 'approve-first', 'read': 'act-and-report', 'spend': 'approve-first', 'tool-install': 'approve-first'})))
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-224/test_failed_node_keeps_depende0')
+
+    @pytest.mark.parametrize("build", [PATHS], indirect=True)
+    def test_failed_node_keeps_dependents_blocked_and_does_not_forge_handoff(build, tmp_path):
+        plan = accepted(build)
+        first, second = claim(build, plan), claim(build, plan)
+&gt;       assert isinstance(first, Scheduled) and isinstance(second, Scheduled)
+E       AssertionError: assert (False)
+E        +  where False = isinstance((Queued(task_id='67c90d8d-7199-44d5-a458-6a82475a6e57', reason='current_edit_policy_denied'), Queued(task_id='ea754a91...current_edit_policy_denied'), Queued(task_id='9dee5d19-d5a4-4ae0-b813-013b7a613050', reason='dependency_not_verified')), Scheduled)
+
+tests/integration/test_plan_scheduler.py:265: AssertionError</failure></testcase></testsuite></testsuites>
