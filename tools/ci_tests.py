@@ -68,14 +68,24 @@ def main() -> int:
     parser.add_argument("suite", choices=SUITES)
     parser.add_argument("--list", action="store_true", help="Print the complete file partition without running tests")
     parser.add_argument("--collect-only", action="store_true", help="Collect this suite without setting up fixtures")
+    parser.add_argument("--critical", action="store_true", help="Fast mutation-witness subset; never a full CI pass")
     args = parser.parse_args()
     suites = partition()
     if args.list:
         print(json.dumps(suites, indent=2))
         return 0
+    selected = suites[args.suite]
+    suffix = ""
+    if args.critical:
+        if args.suite != "fast":
+            parser.error("--critical applies only to fast; it cannot replace full CI")
+        selected = json.loads((ROOT / "docs/testing/mutation-critical.json").read_text())["tests"]
+        if not selected or any(node.split("::")[0] not in suites["fast"] for node in selected):
+            raise ValueError("Critical witness test no longer belongs to the fast suite; refresh mutation evidence")
+        suffix = "-critical"
     command = [
-        sys.executable, "-m", "pytest", *suites[args.suite],
-        "-m", "not live", "--durations=25", f"--junitxml=evidence/ci-{args.suite}.xml",
+        sys.executable, "-m", "pytest", *selected,
+        "-m", "not live", "--durations=25", f"--junitxml=evidence/ci-{args.suite}{suffix}.xml",
     ]
     if args.collect_only:
         command.append("--collect-only")

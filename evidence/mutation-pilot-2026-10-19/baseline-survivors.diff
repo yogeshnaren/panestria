@@ -1,0 +1,847 @@
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_100: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -37,7 +37,7 @@
+     outcome = "DENY" if denied else "APPROVAL_NEEDED" if approval else "PERMIT"
+     enforcement: tuple[str, ...]
+     if public_web:
+-        enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
++        enforcement = ("XXscoped-filesystemXX", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
+     else:
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_101: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -37,7 +37,7 @@
+     outcome = "DENY" if denied else "APPROVAL_NEEDED" if approval else "PERMIT"
+     enforcement: tuple[str, ...]
+     if public_web:
+-        enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
++        enforcement = ("SCOPED-FILESYSTEM", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
+     else:
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_102: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -37,7 +37,7 @@
+     outcome = "DENY" if denied else "APPROVAL_NEEDED" if approval else "PERMIT"
+     enforcement: tuple[str, ...]
+     if public_web:
+-        enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
++        enforcement = ("scoped-filesystem", "XXsecret-free-toolsXX", "public-fetch-broker", "outbound-disclosure")
+     else:
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_103: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -37,7 +37,7 @@
+     outcome = "DENY" if denied else "APPROVAL_NEEDED" if approval else "PERMIT"
+     enforcement: tuple[str, ...]
+     if public_web:
+-        enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
++        enforcement = ("scoped-filesystem", "SECRET-FREE-TOOLS", "public-fetch-broker", "outbound-disclosure")
+     else:
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_108: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -39,11 +39,7 @@
+     if public_web:
+         enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
+     else:
+-        enforcement = (
+-            ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+-            if cloud
+-            else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+-        )
++        enforcement = None
+     request_hash = hashlib.sha256(
+         json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+     ).hexdigest()
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_109: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -41,7 +41,7 @@
+     else:
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+-            if cloud
++            if (cloud) and False
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_110: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -41,7 +41,7 @@
+     else:
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+-            if cloud
++            if (cloud) or True
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_111: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -40,7 +40,7 @@
+         enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
+     else:
+         enforcement = (
+-            ("scoped-filesystem", "secret-free-tools", "provider-gateway")
++            ("XXscoped-filesystemXX", "secret-free-tools", "provider-gateway")
+             if cloud
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_112: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -40,7 +40,7 @@
+         enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
+     else:
+         enforcement = (
+-            ("scoped-filesystem", "secret-free-tools", "provider-gateway")
++            ("SCOPED-FILESYSTEM", "secret-free-tools", "provider-gateway")
+             if cloud
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_113: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -40,7 +40,7 @@
+         enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
+     else:
+         enforcement = (
+-            ("scoped-filesystem", "secret-free-tools", "provider-gateway")
++            ("scoped-filesystem", "XXsecret-free-toolsXX", "provider-gateway")
+             if cloud
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_114: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -40,7 +40,7 @@
+         enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
+     else:
+         enforcement = (
+-            ("scoped-filesystem", "secret-free-tools", "provider-gateway")
++            ("scoped-filesystem", "SECRET-FREE-TOOLS", "provider-gateway")
+             if cloud
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_115: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -40,7 +40,7 @@
+         enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
+     else:
+         enforcement = (
+-            ("scoped-filesystem", "secret-free-tools", "provider-gateway")
++            ("scoped-filesystem", "secret-free-tools", "XXprovider-gatewayXX")
+             if cloud
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_116: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -40,7 +40,7 @@
+         enforcement = ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure")
+     else:
+         enforcement = (
+-            ("scoped-filesystem", "secret-free-tools", "provider-gateway")
++            ("scoped-filesystem", "secret-free-tools", "PROVIDER-GATEWAY")
+             if cloud
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_117: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -42,7 +42,7 @@
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+             if cloud
+-            else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
++            else ("XXscoped-filesystemXX", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+         json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_118: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -42,7 +42,7 @@
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+             if cloud
+-            else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
++            else ("SCOPED-FILESYSTEM", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+         json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_119: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -42,7 +42,7 @@
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+             if cloud
+-            else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
++            else ("scoped-filesystem", "XXsecret-free-toolsXX", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+         json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_120: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -42,7 +42,7 @@
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+             if cloud
+-            else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
++            else ("scoped-filesystem", "SECRET-FREE-TOOLS", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+         json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_121: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -42,7 +42,7 @@
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+             if cloud
+-            else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
++            else ("scoped-filesystem", "secret-free-tools", "XXno-public-egressXX")
+         )
+     request_hash = hashlib.sha256(
+         json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_122: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -42,7 +42,7 @@
+         enforcement = (
+             ("scoped-filesystem", "secret-free-tools", "provider-gateway")
+             if cloud
+-            else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
++            else ("scoped-filesystem", "secret-free-tools", "NO-PUBLIC-EGRESS")
+         )
+     request_hash = hashlib.sha256(
+         json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_123: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -44,9 +44,7 @@
+             if cloud
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+-    request_hash = hashlib.sha256(
+-        json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+-    ).hexdigest()
++    request_hash = None
+     return PolicyDecision(
+         outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), request_hash
+     )
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_125: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -45,7 +45,7 @@
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+-        json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
++        json.dumps(None, sort_keys=True, separators=(",", ":")).encode()
+     ).hexdigest()
+     return PolicyDecision(
+         outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), request_hash
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_126: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -45,7 +45,7 @@
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+-        json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
++        json.dumps(request.model_dump(), sort_keys=None, separators=(",", ":")).encode()
+     ).hexdigest()
+     return PolicyDecision(
+         outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), request_hash
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_127: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -45,7 +45,7 @@
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+-        json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
++        json.dumps(request.model_dump(), sort_keys=True, separators=None).encode()
+     ).hexdigest()
+     return PolicyDecision(
+         outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), request_hash
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_129: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -45,7 +45,7 @@
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+-        json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
++        json.dumps(request.model_dump(), separators=(",", ":")).encode()
+     ).hexdigest()
+     return PolicyDecision(
+         outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), request_hash
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_130: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -45,7 +45,7 @@
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+-        json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
++        json.dumps(request.model_dump(), sort_keys=True, ).encode()
+     ).hexdigest()
+     return PolicyDecision(
+         outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), request_hash
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_131: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -45,7 +45,7 @@
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+-        json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
++        json.dumps(request.model_dump(), sort_keys=False, separators=(",", ":")).encode()
+     ).hexdigest()
+     return PolicyDecision(
+         outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), request_hash
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_132: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -45,7 +45,7 @@
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+-        json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
++        json.dumps(request.model_dump(), sort_keys=True, separators=("XX,XX", ":")).encode()
+     ).hexdigest()
+     return PolicyDecision(
+         outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), request_hash
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_133: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -45,7 +45,7 @@
+             else ("scoped-filesystem", "secret-free-tools", "no-public-egress")
+         )
+     request_hash = hashlib.sha256(
+-        json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
++        json.dumps(request.model_dump(), sort_keys=True, separators=(",", "XX:XX")).encode()
+     ).hexdigest()
+     return PolicyDecision(
+         outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), request_hash
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_137: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -48,5 +48,5 @@
+         json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+     ).hexdigest()
+     return PolicyDecision(
+-        outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), request_hash
++        outcome, tuple(sorted(denied or approval)), enforcement, None, context.sha256(), request_hash
+     )
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_139: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -48,5 +48,5 @@
+         json.dumps(request.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+     ).hexdigest()
+     return PolicyDecision(
+-        outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), request_hash
++        outcome, tuple(sorted(denied or approval)), enforcement, context.version, context.sha256(), None
+     )
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_20: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -8,7 +8,7 @@
+     if (request.owner_id, request.project_id) != (context.owner_id, context.project_id):
+         denied.append("scope_mismatch")
+     if request.action not in context.trust.allowed_actions:
+-        denied.append("trust_action_denied")
++        denied.append("XXtrust_action_deniedXX")
+     if context.trust.profile != "SYNTHETIC_DEV" and context.trust.runtime_certificate_sha256 is None:
+         denied.append("runtime_uncertified")
+     if cloud and context.trust.profile == "SYNTHETIC_DEV":
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_21: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -8,7 +8,7 @@
+     if (request.owner_id, request.project_id) != (context.owner_id, context.project_id):
+         denied.append("scope_mismatch")
+     if request.action not in context.trust.allowed_actions:
+-        denied.append("trust_action_denied")
++        denied.append("TRUST_ACTION_DENIED")
+     if context.trust.profile != "SYNTHETIC_DEV" and context.trust.runtime_certificate_sha256 is None:
+         denied.append("runtime_uncertified")
+     if cloud and context.trust.profile == "SYNTHETIC_DEV":
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_24: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -9,7 +9,7 @@
+         denied.append("scope_mismatch")
+     if request.action not in context.trust.allowed_actions:
+         denied.append("trust_action_denied")
+-    if context.trust.profile != "SYNTHETIC_DEV" and context.trust.runtime_certificate_sha256 is None:
++    if context.trust.profile != "XXSYNTHETIC_DEVXX" and context.trust.runtime_certificate_sha256 is None:
+         denied.append("runtime_uncertified")
+     if cloud and context.trust.profile == "SYNTHETIC_DEV":
+         denied.append("synthetic_cloud_denied")
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_25: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -9,7 +9,7 @@
+         denied.append("scope_mismatch")
+     if request.action not in context.trust.allowed_actions:
+         denied.append("trust_action_denied")
+-    if context.trust.profile != "SYNTHETIC_DEV" and context.trust.runtime_certificate_sha256 is None:
++    if context.trust.profile != "synthetic_dev" and context.trust.runtime_certificate_sha256 is None:
+         denied.append("runtime_uncertified")
+     if cloud and context.trust.profile == "SYNTHETIC_DEV":
+         denied.append("synthetic_cloud_denied")
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_39: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -14,7 +14,7 @@
+     if cloud and context.trust.profile == "SYNTHETIC_DEV":
+         denied.append("synthetic_cloud_denied")
+     if classification.effective is None:
+-        denied.append("classification_unknown")
++        denied.append("XXclassification_unknownXX")
+     if public_web and request.action != "external-send":
+         denied.append("public_web_external_send_required")
+     if cloud:
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_40: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -14,7 +14,7 @@
+     if cloud and context.trust.profile == "SYNTHETIC_DEV":
+         denied.append("synthetic_cloud_denied")
+     if classification.effective is None:
+-        denied.append("classification_unknown")
++        denied.append("CLASSIFICATION_UNKNOWN")
+     if public_web and request.action != "external-send":
+         denied.append("public_web_external_send_required")
+     if cloud:
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_54: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -19,7 +19,7 @@
+         denied.append("public_web_external_send_required")
+     if cloud:
+         if classification.effective in {"INTERNAL", "CONFIDENTIAL"}:
+-            denied.append("canonical_private_cloud_denied")
++            denied.append("XXcanonical_private_cloud_deniedXX")
+         if classification.effective == "RESTRICTED":
+             denied.append(
+                 "legacy_private_cloud_denied"
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_55: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -19,7 +19,7 @@
+         denied.append("public_web_external_send_required")
+     if cloud:
+         if classification.effective in {"INTERNAL", "CONFIDENTIAL"}:
+-            denied.append("canonical_private_cloud_denied")
++            denied.append("CANONICAL_PRIVATE_CLOUD_DENIED")
+         if classification.effective == "RESTRICTED":
+             denied.append(
+                 "legacy_private_cloud_denied"
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_61: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -23,7 +23,7 @@
+         if classification.effective == "RESTRICTED":
+             denied.append(
+                 "legacy_private_cloud_denied"
+-                if classification.interpretation == "LEGACY_RESTRICTED"
++                if (classification.interpretation == "LEGACY_RESTRICTED") or True
+                 else "restricted_cloud_denied"
+             )
+         if request.destination not in context.privacy.cloud_destinations:
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_67: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -24,7 +24,7 @@
+             denied.append(
+                 "legacy_private_cloud_denied"
+                 if classification.interpretation == "LEGACY_RESTRICTED"
+-                else "restricted_cloud_denied"
++                else "XXrestricted_cloud_deniedXX"
+             )
+         if request.destination not in context.privacy.cloud_destinations:
+             denied.append("destination_denied")
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_68: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -24,7 +24,7 @@
+             denied.append(
+                 "legacy_private_cloud_denied"
+                 if classification.interpretation == "LEGACY_RESTRICTED"
+-                else "restricted_cloud_denied"
++                else "RESTRICTED_CLOUD_DENIED"
+             )
+         if request.destination not in context.privacy.cloud_destinations:
+             denied.append("destination_denied")
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_71: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -27,7 +27,7 @@
+                 else "restricted_cloud_denied"
+             )
+         if request.destination not in context.privacy.cloud_destinations:
+-            denied.append("destination_denied")
++            denied.append("XXdestination_deniedXX")
+     mode = context.autonomy.actions[request.action]
+     if mode in {"observe", "suggest"}:
+         denied.append("autonomy_execution_denied")
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_72: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -27,7 +27,7 @@
+                 else "restricted_cloud_denied"
+             )
+         if request.destination not in context.privacy.cloud_destinations:
+-            denied.append("destination_denied")
++            denied.append("DESTINATION_DENIED")
+     mode = context.autonomy.actions[request.action]
+     if mode in {"observe", "suggest"}:
+         denied.append("autonomy_execution_denied")
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_80: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -30,7 +30,7 @@
+             denied.append("destination_denied")
+     mode = context.autonomy.actions[request.action]
+     if mode in {"observe", "suggest"}:
+-        denied.append("autonomy_execution_denied")
++        denied.append("XXautonomy_execution_deniedXX")
+     elif mode == "approve-first":
+         approval.append("action_review")
+     outcome: Literal["PERMIT", "DENY", "APPROVAL_NEEDED"]
+
+# panestria.policy.engine.xǁPolicyEngineǁauthorize__mutmut_81: survived
+--- src/panestria/policy/engine.py
++++ src/panestria/policy/engine.py
+@@ -30,7 +30,7 @@
+             denied.append("destination_denied")
+     mode = context.autonomy.actions[request.action]
+     if mode in {"observe", "suggest"}:
+-        denied.append("autonomy_execution_denied")
++        denied.append("AUTONOMY_EXECUTION_DENIED")
+     elif mode == "approve-first":
+         approval.append("action_review")
+     outcome: Literal["PERMIT", "DENY", "APPROVAL_NEEDED"]
+
+# panestria.sandbox.egress.x__verify_peer__mutmut_19: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -6,4 +6,4 @@
+         or peer[1] != expected_port
+         or (len(peer) == 4 and peer[3] != 0)
+     ):
+-        raise EgressDenied("private_or_unpinned_peer_denied")
++        raise EgressDenied("XXprivate_or_unpinned_peer_deniedXX")
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_15: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -1,7 +1,7 @@
+ def resolve_destination(authority: str, allowed_hosts: frozenset[str]) -> tuple[str, int]:
+     host, separator, port = authority.rpartition(":")
+     if not separator or port != "443" or host.lower() not in allowed_hosts or host != host.lower():
+-        raise EgressDenied("destination_denied")
++        raise EgressDenied(None)
+     try:
+         answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+     except OSError:
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_16: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -1,7 +1,7 @@
+ def resolve_destination(authority: str, allowed_hosts: frozenset[str]) -> tuple[str, int]:
+     host, separator, port = authority.rpartition(":")
+     if not separator or port != "443" or host.lower() not in allowed_hosts or host != host.lower():
+-        raise EgressDenied("destination_denied")
++        raise EgressDenied("XXdestination_deniedXX")
+     try:
+         answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+     except OSError:
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_17: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -1,7 +1,7 @@
+ def resolve_destination(authority: str, allowed_hosts: frozenset[str]) -> tuple[str, int]:
+     host, separator, port = authority.rpartition(":")
+     if not separator or port != "443" or host.lower() not in allowed_hosts or host != host.lower():
+-        raise EgressDenied("destination_denied")
++        raise EgressDenied("DESTINATION_DENIED")
+     try:
+         answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+     except OSError:
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_21: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -3,7 +3,7 @@
+     if not separator or port != "443" or host.lower() not in allowed_hosts or host != host.lower():
+         raise EgressDenied("destination_denied")
+     try:
+-        answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
++        answers = socket.getaddrinfo(host, 443, type=None)
+     except OSError:
+         raise EgressDenied("dns_unavailable") from None
+     addresses = {str(answer[4][0]) for answer in answers}
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_24: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -3,7 +3,7 @@
+     if not separator or port != "443" or host.lower() not in allowed_hosts or host != host.lower():
+         raise EgressDenied("destination_denied")
+     try:
+-        answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
++        answers = socket.getaddrinfo(host, 443, )
+     except OSError:
+         raise EgressDenied("dns_unavailable") from None
+     addresses = {str(answer[4][0]) for answer in answers}
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_26: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -5,7 +5,7 @@
+     try:
+         answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+     except OSError:
+-        raise EgressDenied("dns_unavailable") from None
++        raise EgressDenied(None) from None
+     addresses = {str(answer[4][0]) for answer in answers}
+     if (
+         not addresses
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_27: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -5,7 +5,7 @@
+     try:
+         answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+     except OSError:
+-        raise EgressDenied("dns_unavailable") from None
++        raise EgressDenied("XXdns_unavailableXX") from None
+     addresses = {str(answer[4][0]) for answer in answers}
+     if (
+         not addresses
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_28: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -5,7 +5,7 @@
+     try:
+         answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+     except OSError:
+-        raise EgressDenied("dns_unavailable") from None
++        raise EgressDenied("DNS_UNAVAILABLE") from None
+     addresses = {str(answer[4][0]) for answer in answers}
+     if (
+         not addresses
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_3: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -1,5 +1,5 @@
+ def resolve_destination(authority: str, allowed_hosts: frozenset[str]) -> tuple[str, int]:
+-    host, separator, port = authority.rpartition(":")
++    host, separator, port = authority.partition(":")
+     if not separator or port != "443" or host.lower() not in allowed_hosts or host != host.lower():
+         raise EgressDenied("destination_denied")
+     try:
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_46: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -10,7 +10,7 @@
+     if (
+         not addresses
+         or any(_public_unicast(ip) is None for ip in addresses)
+-        or any(len(answer[4]) == 4 and answer[4][3] != 0 for answer in answers)
++        or any(len(answer[4]) == 4 and answer[4][3] != 1 for answer in answers)
+     ):
+         raise EgressDenied("private_destination_denied")
+     # Return an IP, not a hostname: connect cannot perform a second DNS lookup.
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_48: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -12,6 +12,6 @@
+         or any(_public_unicast(ip) is None for ip in addresses)
+         or any(len(answer[4]) == 4 and answer[4][3] != 0 for answer in answers)
+     ):
+-        raise EgressDenied("private_destination_denied")
++        raise EgressDenied("XXprivate_destination_deniedXX")
+     # Return an IP, not a hostname: connect cannot perform a second DNS lookup.
+     return sorted(addresses)[0], 443
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_5: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -1,6 +1,6 @@
+ def resolve_destination(authority: str, allowed_hosts: frozenset[str]) -> tuple[str, int]:
+     host, separator, port = authority.rpartition(":")
+-    if not separator or port != "443" or host.lower() not in allowed_hosts or host != host.lower():
++    if not separator or port != "443" or host.lower() not in allowed_hosts and host != host.lower():
+         raise EgressDenied("destination_denied")
+     try:
+         answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_6: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -1,6 +1,6 @@
+ def resolve_destination(authority: str, allowed_hosts: frozenset[str]) -> tuple[str, int]:
+     host, separator, port = authority.rpartition(":")
+-    if not separator or port != "443" or host.lower() not in allowed_hosts or host != host.lower():
++    if not separator or port != "443" and host.lower() not in allowed_hosts or host != host.lower():
+         raise EgressDenied("destination_denied")
+     try:
+         answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+
+# panestria.sandbox.egress.x_resolve_destination__mutmut_7: survived
+--- src/panestria/sandbox/egress.py
++++ src/panestria/sandbox/egress.py
+@@ -1,6 +1,6 @@
+ def resolve_destination(authority: str, allowed_hosts: frozenset[str]) -> tuple[str, int]:
+     host, separator, port = authority.rpartition(":")
+-    if not separator or port != "443" or host.lower() not in allowed_hosts or host != host.lower():
++    if not separator and port != "443" or host.lower() not in allowed_hosts or host != host.lower():
+         raise EgressDenied("destination_denied")
+     try:
+         answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+
+# panestria.verification.entailment.x_score_predictions__mutmut_13: survived
+--- src/panestria/verification/entailment.py
++++ src/panestria/verification/entailment.py
+@@ -10,7 +10,7 @@
+             raise ValueError
+         parsed = tuple(EntailmentPrediction.model_validate(p) for p in predictions)
+         by_id = {p.case_id: p.verdict for p in parsed}
+-        if len(by_id) != len(parsed) or set(by_id) != {c.case_id for c in cases}:
++        if len(by_id) != len(parsed) and set(by_id) != {c.case_id for c in cases}:
+             raise ValueError
+         correct = sum(by_id[c.case_id] == c.expected for c in cases)
+         answered = sum(p.verdict != "UNKNOWN" for p in parsed)
+
+# panestria.verification.entailment.x_score_predictions__mutmut_41: survived
+--- src/panestria/verification/entailment.py
++++ src/panestria/verification/entailment.py
+@@ -17,7 +17,7 @@
+         supported = sum(p.verdict == "SUPPORTED" for p in parsed)
+         false_supported = sum(by_id[c.case_id] == "SUPPORTED" and c.expected != "SUPPORTED" for c in cases)
+         confusion = tuple(
+-            ConfusionCell(gold, label, sum(c.expected == gold and by_id[c.case_id] == label for c in cases))
++            ConfusionCell(None, label, sum(c.expected == gold and by_id[c.case_id] == label for c in cases))
+             for gold in _GOLD
+             for label in _LABELS
+         )
+
+# panestria.verification.entailment.x_score_predictions__mutmut_42: survived
+--- src/panestria/verification/entailment.py
++++ src/panestria/verification/entailment.py
+@@ -17,7 +17,7 @@
+         supported = sum(p.verdict == "SUPPORTED" for p in parsed)
+         false_supported = sum(by_id[c.case_id] == "SUPPORTED" and c.expected != "SUPPORTED" for c in cases)
+         confusion = tuple(
+-            ConfusionCell(gold, label, sum(c.expected == gold and by_id[c.case_id] == label for c in cases))
++            ConfusionCell(gold, None, sum(c.expected == gold and by_id[c.case_id] == label for c in cases))
+             for gold in _GOLD
+             for label in _LABELS
+         )
+
+# panestria.verification.entailment.x_score_predictions__mutmut_5: survived
+--- src/panestria/verification/entailment.py
++++ src/panestria/verification/entailment.py
+@@ -6,7 +6,7 @@
+     try:
+         corpus = EntailmentCorpus.model_validate(corpus)
+         cases = corpus.cases(fold)
+-        if type(predictions) is not tuple or len(predictions) != len(cases):
++        if type(predictions) is not tuple and len(predictions) != len(cases):
+             raise ValueError
+         parsed = tuple(EntailmentPrediction.model_validate(p) for p in predictions)
+         by_id = {p.case_id: p.verdict for p in parsed}
+
+# panestria.verification.entailment.x_score_predictions__mutmut_72: survived
+--- src/panestria/verification/entailment.py
++++ src/panestria/verification/entailment.py
+@@ -26,7 +26,7 @@
+             answered,
+             correct,
+             answered / len(cases),
+-            correct / len(cases),
++            correct * len(cases),
+             correct / answered if answered else None,
+             supported,
+             (supported - false_supported) / supported if supported else None,
+
+# panestria.verification.entailment.x_score_predictions__mutmut_81: survived
+--- src/panestria/verification/entailment.py
++++ src/panestria/verification/entailment.py
+@@ -34,4 +34,4 @@
+             confusion,
+         )
+     except Exception:
+-        raise ValueError("entailment_predictions_unconfirmed") from None
++        raise ValueError("XXentailment_predictions_unconfirmedXX") from None
