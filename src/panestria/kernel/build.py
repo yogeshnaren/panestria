@@ -489,6 +489,7 @@ class BuildEvidenceService:
         return bundle
 
     def complete_confirmed(self, uow: UnitOfWork, actor: Actor, task_id: str, digest: str, effect_id: str) -> None:
+        require_final_task(uow, actor, task_id)
         hint = uow.execute(
             "SELECT c.body->>'autonomy_profile_ref' FROM panestria.task t"
             " JOIN panestria.goal_contract c ON c.id=t.contract_id WHERE t.id=%s",

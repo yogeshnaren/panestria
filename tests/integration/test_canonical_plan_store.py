@@ -308,6 +308,8 @@ def test_intermediate_all_check_pass_cannot_request_any_protected_merge(planned)
         assert build.service.current(UnitOfWork(c), build.actor, current.task["task"], digest) == bundle
         with pytest.raises(KernelDenied, match="plan_node_cannot_merge_goal"), c.transaction():
             build.service.request_merge(UnitOfWork(c), build.actor, current.task["task"], digest, "refs/heads/main")
+        with pytest.raises(KernelDenied, match="plan_node_cannot_merge_goal"), c.transaction():
+            build.service.complete_confirmed(UnitOfWork(c), build.actor, current.task["task"], digest, str(uuid4()))
         # Even the generic approval API cannot turn this intermediate result
         # into a merge. The same complete check set remains required there.
         original = _bundle(build)

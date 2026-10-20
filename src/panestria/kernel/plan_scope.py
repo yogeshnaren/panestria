@@ -1,6 +1,6 @@
 """Derive verifier scope from accepted plans; individual nodes cannot merge a goal."""
 
-from panestria.contracts.goal import GoalContract
+from panestria.contracts.goal import GoalContract, load_contract
 from panestria.contracts.plan import PlanTaskScope
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -37,8 +37,6 @@ def task_plan_scope(uow: UnitOfWork, actor: Actor, task_id: str) -> PlanTaskScop
         (plan.proposal.plan_id,),
     ).fetchone()
     assert contract_row is not None
-    from panestria.contracts.goal import load_contract
-
     contract = load_contract(contract_row[0])
     if set(nodes[integration].acceptance_keys) != {c.id for c in contract.acceptance}:
         raise KernelDenied("plan_integration_requires_full_checks")
