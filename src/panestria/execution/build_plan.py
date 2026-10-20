@@ -60,7 +60,7 @@ class BuildIntegrator:
         if scope is None or not scope.integration or scope.plan_id != plan_id:
             raise KernelDenied("integration_final_task_required")
         claim = uow.execute(
-            "SELECT 1 FROM panestria.build_worker_claim WHERE plan_id=%s AND task_id=%s AND attempt_id=%s "
+            "SELECT 1 FROM panestria.build_active_worker_claim WHERE plan_id=%s AND task_id=%s AND attempt_id=%s "
             "AND lease_epoch=%s AND released_at IS NULL",
             (plan_id, task, attempt_id, epoch),
         ).fetchone()

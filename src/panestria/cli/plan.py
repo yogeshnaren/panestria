@@ -342,3 +342,44 @@ def integrate_plan(
         return payload
 
     _finish(run)
+
+
+@plan_app.command("cancel")
+def cancel_plan(owner_id: str, project_id: str, plan_id: str, proposal_sha256: str) -> None:
+    """Withdraw the exact accepted plan across all tasks, even after policy revocation."""
+    from dataclasses import asdict
+
+    from panestria.kernel.plan_lifecycle import PlanLifecycle
+    from panestria.kernel.uow import UnitOfWork
+
+    try:
+        with _connection() as c:
+            receipt = PlanLifecycle().cancel(UnitOfWork(c), Actor(owner_id, project_id), plan_id, proposal_sha256)
+        typer.echo(json.dumps(asdict(receipt)))
+    except Exception:
+        _unavailable()
+
+
+@plan_app.command("release-final")
+def release_final_capacity(
+    owner_id: str,
+    project_id: str,
+    plan_id: str,
+    task_id: str,
+    evidence_sha256: str,
+    effect_id: str,
+    evidence_store: Annotated[Path, typer.Option("--evidence-store")],
+) -> None:
+    """Reconcile only a completed, confirmed final merge's capacity hold; never dispatch."""
+    from panestria.kernel.plan_lifecycle import PlanLifecycle
+    from panestria.kernel.uow import UnitOfWork
+
+    try:
+        evidence = _evidence_store(evidence_store)
+        with _connection() as c:
+            proof = PlanLifecycle().release_final(
+                UnitOfWork(c), Actor(owner_id, project_id), plan_id, task_id, evidence_sha256, effect_id, evidence
+            )
+        typer.echo(json.dumps({"status": "RELEASED", "proof_sha256": proof, "dispatch_authority": "NONE"}))
+    except Exception:
+        _unavailable()

@@ -31,6 +31,8 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor, GoalService
 from panestria.kernel.leases import AttemptLease, LeaseService
 from panestria.kernel.local_setup import LocalSetupIntent, LocalSetupService
+from panestria.kernel.plan_lifecycle import PlanLifecycle
+from panestria.kernel.plan_store import PlanStore
 from panestria.kernel.policy import PolicyService
 from panestria.kernel.repositories.policy import current_policy, lock_project
 from panestria.kernel.repositories.tasks import append_event
@@ -320,7 +322,6 @@ class OwnerBuild:
                 # the legacy single-worker task name. The same review/approve
                 # surface can then display and finish an integrated candidate.
                 from panestria.kernel.plan_scope import task_plan_scope
-                from panestria.kernel.plan_store import PlanStore
 
                 hint = c.execute(
                     "SELECT p.id::text FROM panestria.build_plan p "
@@ -386,6 +387,20 @@ class OwnerBuild:
     def cancel(self, goal: str, version: int) -> dict[str, Any]:
         # Do not take operation.lock: revocation must interrupt a running submit.
         with self.connect() as c:
+            hint = c.execute(
+                "SELECT p.id::text FROM panestria.build_plan p "
+                "JOIN panestria.build_plan_acceptance a ON a.plan_id=p.id "
+                "WHERE p.goal_id=%s AND p.owner_id=%s "
+                "AND p.project_id=%s ORDER BY p.version DESC LIMIT 1",
+                (goal, self.actor.owner_id, self.actor.project_id),
+            ).fetchone()
+            if hint is not None:
+                plan = PlanStore()._read(UnitOfWork(c), self.actor, hint[0])
+                return asdict(
+                    PlanLifecycle().cancel(
+                        UnitOfWork(c), self.actor, hint[0], plan.proposal.sha256(), expected_final_version=version
+                    )
+                )
             receipt = CancellationService().cancel(
                 UnitOfWork(c), self.actor, goal, version, "owner_requested_cancel", correlation_id=str(uuid4())
             )
@@ -430,4 +445,18 @@ class OwnerBuild:
                     kind="owner_build.merge_confirmed",
                     payload={"effect_id": effect.effect_id},
                 )
+            with self.connect() as c:
+                membership = c.execute(
+                    "SELECT plan_id::text FROM panestria.build_plan_task WHERE task_id=%s", (task,)
+                ).fetchone()
+                if membership is not None:
+                    PlanLifecycle().release_final(
+                        UnitOfWork(c),
+                        self.actor,
+                        membership[0],
+                        task,
+                        str(preview.preview["candidate_sha256"]),
+                        effect.effect_id,
+                        evidence,
+                    )
             return self.status(goal[0])
