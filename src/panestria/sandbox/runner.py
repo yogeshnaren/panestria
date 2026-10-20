@@ -545,7 +545,8 @@ class DockerSandbox:
             state = self._inspect(container_id)["State"]
             if state["Running"]:
                 raise SandboxRejected("termination_unconfirmed")
-            state = self._settle_killed_state(container_id, state)
+            if reason == "completed":
+                state = self._settle_killed_state(container_id, state)
             exit_code = int(state["ExitCode"])
             if state["OOMKilled"]:
                 reason = "memory_limit"
