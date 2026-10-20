@@ -101,6 +101,47 @@ def test_confirmed_native_rejections_release_once_without_retry_and_preserve_aud
     )
     assert refused.returncode and b"returned Build release audit exists" in refused.stderr
 
+    # Restore the actual populated new-proof schema into a separately created
+    # fixture database; keep owner/review databases outside this operation.
+    from psycopg import sql
+    from test_memory_restore import _fixture_container
+
+    container = _fixture_container()
+    dump = subprocess.run(
+        ["docker", "exec", container, "pg_dump", "-U", "panestria_synthetic", "-d", owner.dsn.rsplit("/", 1)[1], "-Fc"],
+        capture_output=True,
+        check=True,
+        timeout=30,
+    )
+    restored_name = "panestria_return_restore_" + uuid4().hex
+    restored_dsn = owner.dsn.rsplit("/", 1)[0] + "/" + restored_name
+    with psycopg.connect(owner.dsn, autocommit=True) as admin:
+        admin.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(restored_name)))
+        try:
+            subprocess.run(
+                ["docker", "exec", "-i", container, "pg_restore", "-U", "panestria_synthetic", "-d", restored_name],
+                input=dump.stdout,
+                capture_output=True,
+                check=True,
+                timeout=30,
+            )
+            with psycopg.connect(restored_dsn) as c:
+                assert c.execute(
+                    "SELECT count(*) FROM panestria.build_claim_release WHERE reason='VERIFIED_RETURN'"
+                ).fetchone() == (len(claims),)
+                assert c.execute(
+                    "SELECT count(*) FROM panestria.build_active_worker_claim WHERE plan_id=%s", (plan.plan_id,)
+                ).fetchone() == (0,)
+                old = c.execute(
+                    "SELECT proof_sha256 FROM panestria.build_claim_release WHERE attempt_id=%s", (claims[0],)
+                ).fetchone()[0]
+                assert (
+                    ReturnedBuildRelease(owner.reports).release(UnitOfWork(c), owner.actor, plan.plan_id, claims[0])
+                    == old
+                )
+        finally:
+            admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(restored_name)))
+
 
 def test_unknown_cancelled_native_work_stays_held_and_is_never_reclassified(native_plan):
     owner, runner, plan, state = native_plan
