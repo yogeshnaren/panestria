@@ -1,5 +1,6 @@
 """Profile compatibility and real OS-pipe pressure, without Docker authority."""
 
+import json
 import os
 import subprocess
 import sys
@@ -251,3 +252,72 @@ def test_actual_child_exit_between_running_observation_and_attach_poll(tmp_path,
             if child.poll() is None:
                 child.kill()
                 child.wait(timeout=3)
+
+
+@pytest.mark.parametrize("reported_oom", [True, False])
+def test_real_sigkill_requires_explicit_daemon_oom_metadata_and_settlement_is_bounded(
+    tmp_path, monkeypatch, reported_oom
+):
+    real_popen = subprocess.Popen
+    children = []
+    reads = []
+    identity = "ab" * 32
+
+    def attach(*args, **kwargs):
+        child = real_popen(
+            [sys.executable, "-I", "-c", "import os,signal;os.kill(os.getpid(),signal.SIGKILL)"],
+            stdin=kwargs["stdin"],
+            stdout=kwargs["stdout"],
+            stderr=kwargs["stderr"],
+        )
+        children.append(child)
+        return child
+
+    class KilledState(DockerSandbox):
+        def _inspect(self, identifier):
+            code = children[0].poll()
+            return {
+                "State": {
+                    "Running": code is None,
+                    "ExitCode": 137 if code is not None else 0,
+                    "OOMKilled": False,
+                    "Status": "exited" if code is not None else "running",
+                }
+            }
+
+        def _docker(self, args, **kwargs):
+            assert args == ["inspect", identity]  # No kill, retry or relaunch.
+            assert 0 < kwargs["timeout"] <= 0.2
+            reads.append(time.monotonic())
+            return subprocess.CompletedProcess(
+                args,
+                0,
+                json.dumps(
+                    [
+                        {
+                            "Id": identity,
+                            "State": {
+                                "Running": False,
+                                "Status": "exited",
+                                "ExitCode": 137,
+                                "OOMKilled": reported_oom and len(reads) >= 2,
+                            },
+                        }
+                    ]
+                ),
+                "",
+            )
+
+    monkeypatch.setattr("panestria.sandbox.runner.subprocess.Popen", attach)
+    started = time.monotonic()
+    try:
+        receipt = KilledState(tmp_path)._execute(identity, SandboxProfile(wall_seconds=3), "cd" * 32)
+        assert children[0].poll() == -9 and receipt.exit_code == 137
+        assert receipt.reason == ("memory_limit" if reported_oom else "process_failed")
+        assert receipt.oom_killed is reported_oom
+        assert 0 < len(reads) <= 4 and time.monotonic() - started < 2
+    finally:
+        for child in children:
+            if child.poll() is None:
+                child.kill()
+            child.wait(timeout=3)

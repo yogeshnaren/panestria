@@ -39,6 +39,16 @@ class Observed(DockerSandbox):
     def __init__(self, root, **kwargs):
         super().__init__(root, **kwargs)
         self.actual = None
+        self.exit_metadata = None
+
+    def _settle_killed_state(self, identity, state):
+        before = {key: state[key] for key in ("ExitCode", "OOMKilled", "Running")}
+        result = super()._settle_killed_state(identity, state)
+        self.exit_metadata = {
+            "before": before,
+            "after": {key: result[key] for key in ("ExitCode", "OOMKilled", "Running")},
+        }
+        return result
 
     def _validate_effective(self, actual, *args):
         self.actual = actual
@@ -159,7 +169,7 @@ def test_actual_default_profile_stdin_is_closed(tmp_path):
         ("early-exit", "failed"),
     ],
 )
-def test_actual_input_adverse_cases_terminate_and_remove(tmp_path, case, expected):
+def test_actual_input_adverse_cases_terminate_and_remove(tmp_path, case, expected, record_property):
     root, workspace, profile = setup(tmp_path, seconds=1 if expected == "deadline_exceeded" else 10)
     programs = {
         "blocked-reader": "import time;time.sleep(60)",
@@ -169,17 +179,18 @@ def test_actual_input_adverse_cases_terminate_and_remove(tmp_path, case, expecte
         # actual 64MiB cgroup cap is hit. One huge malloc can instead be refused
         # by host overcommit policy with MemoryError before cgroup OOM is tested.
         "memory-pressure": (
-            "import sys;sys.stdin.buffer.read();blocks=[]\n"
-            "while True: blocks.append(bytearray(4*1024*1024))"
+            "import sys;sys.stdin.buffer.read();blocks=[]\nwhile True: blocks.append(bytearray(4*1024*1024))"
         ),
         "early-exit": "raise SystemExit(7)",
     }
-    receipt = DockerSandbox(root).run(
+    runner = Observed(root)
+    receipt = runner.run(
         workspace,
         ("/usr/local/bin/python", "-u", "-c", programs[case]),
         profile,
         input_frame=b"x" * native_tool_input.MAX_FRAME_BYTES,
     )
+    record_property("exit_metadata", json.dumps(runner.exit_metadata, sort_keys=True))
     if expected == "failed":
         assert receipt.reason in ("process_failed", "input_incomplete")
     else:

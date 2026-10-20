@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "trigger": {
+    "pr": 144,
+    "source_head": "6d6f1b52f25be087b179fc6ba993978f45671797",
+    "ci_run": 39465342810,
+    "case": "test_actual_input_adverse_cases_terminate_and_remove[memory-pressure-memory_limit]",
+    "actual_reason": "process_failed",
+    "exit_code": 137,
+    "oom_killed": false,
+    "unchanged_sandbox_source_blob": "eb9064c33189bef03d0c5f58b21a64f255232677"
+  },
+  "scope": "Actual Docker framed transport and real OS pipes; delayed daemon flag and ordinary SIGKILL classification seams are explicitly substituted",
+  "runs": [
+    {
+      "report": "initial.xml",
+      "source_commit": "93f589e29c90215ec58e46e50e8fe12a9639729e",
+      "worktree_state": "clean",
+      "tests": 41,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 11.716,
+      "sha256": "46a5423ff1835e89f2c9eb58e4aa9b68e89eeaea1198e6ede3610e0e288ba0f0"
+    },
+    {
+      "report": "qualified.xml",
+      "source_commit": "22660e12eccc11a53bf7a469dec439f65f860505",
+      "worktree_state": "clean",
+      "tests": 41,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 9.901,
+      "sha256": "a5e157f85da6cd59ecf375ffba9f3215818c0920e1a56407b6f79fb65f337409"
+    },
+    {
+      "report": "oom-trial-1.xml",
+      "source_commit": "22660e12eccc11a53bf7a469dec439f65f860505",
+      "worktree_state": "clean",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 0.653,
+      "sha256": "7670f53b740da3dd8689ed9cc4313b3fa3768b03926e0454eb45400e6ee06759"
+    },
+    {
+      "report": "oom-trial-2.xml",
+      "source_commit": "22660e12eccc11a53bf7a469dec439f65f860505",
+      "worktree_state": "clean",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 0.682,
+      "sha256": "c2b6cbc7f257786cb70362fee9e08f2c276b4d3d50160bcc7e0006acaab34a56"
+    },
+    {
+      "report": "oom-trial-3.xml",
+      "source_commit": "22660e12eccc11a53bf7a469dec439f65f860505",
+      "worktree_state": "clean",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 0.686,
+      "sha256": "c18f808744b1d9736838094dc6c9544ccce8d29afabe130c44af7d9358fc0ec9"
+    }
+  ],
+  "observed": [
+    "Late explicit OOM metadata can refine a stopped failed receipt, bounded without another launch",
+    "Ordinary SIGKILL without explicit daemon OOM flag remains process_failed",
+    "Existing real Docker memory-pressure oracle is unchanged and confirmed owned cleanup still required",
+    "Known controller kills skip extra OOM settlement observations",
+    "Full41-case focused transport suite passes; exact failed Docker case also passed3local diagnostic runs"
+  ],
+  "limits": [
+    "Local actual Docker runs had OOM flag present initially and do not reproduce or prove the hosted discrepancy cause",
+    "Initial/qualified41case runs overlap; three trials repeat one existing case, not extra distinct coverage",
+    "No live model/provider call or full runtime/release qualification"
+  ],
+  "static_checks": [
+    "Ruff",
+    "Mypy265"
+  ],
+  "release_gate": "NOT_EVALUATED"
+}

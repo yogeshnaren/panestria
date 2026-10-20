@@ -306,6 +306,49 @@ class DockerSandbox:
             raise SandboxRejected("invalid_runtime_inspection")
         return inspected[0]
 
+    def _settle_killed_state(self, container_id: str, state: dict[str, Any]) -> dict[str, Any]:
+        """Briefly reread stopped SIGKILL metadata; never infer OOM from exit137.
+
+        A late explicit daemon OOM observation may refine a failed receipt. If
+        it stays absent/unavailable, retain process_failed and the stopped state.
+        This is read-only reconciliation, not another launch or cleanup attempt.
+        """
+        if int(state["ExitCode"]) != 137 or state["OOMKilled"]:
+            return state
+        deadline = time.monotonic() + 1
+        for _ in range(4):
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                break
+            time.sleep(min(0.05, remaining))
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                break
+            try:
+                actual = json.loads(self._docker(["inspect", container_id], timeout=min(0.2, remaining)).stdout)
+            except (SandboxRejected, ValueError):
+                break
+            if (
+                not isinstance(actual, list)
+                or len(actual) != 1
+                or not isinstance(actual[0], dict)
+                or actual[0].get("Id") != container_id
+                or not isinstance(actual[0].get("State"), dict)
+            ):
+                raise SandboxRejected("exit_state_unconfirmed")
+            observed = actual[0]["State"]
+            if (
+                observed.get("Running") is not False
+                or observed.get("Status") != "exited"
+                or type(observed.get("OOMKilled")) is not bool
+                or observed.get("ExitCode") != 137
+            ):
+                raise SandboxRejected("exit_state_unconfirmed")
+            state = observed
+            if state["OOMKilled"]:
+                break
+        return state
+
     def _validate_effective(
         self, actual: dict[str, Any], image_id: str, workspace: Path, profile: SandboxProfile, attempt_id: str
     ) -> None:
@@ -502,6 +545,8 @@ class DockerSandbox:
             state = self._inspect(container_id)["State"]
             if state["Running"]:
                 raise SandboxRejected("termination_unconfirmed")
+            if reason == "completed":
+                state = self._settle_killed_state(container_id, state)
             exit_code = int(state["ExitCode"])
             if state["OOMKilled"]:
                 reason = "memory_limit"
