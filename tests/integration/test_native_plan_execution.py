@@ -33,7 +33,7 @@ from panestria.resources.hardware import PROBE_SHA256, HardwareProbe
 
 
 @pytest.fixture
-def prepared_plan(owner_cli, r1_migration_task, monkeypatch):
+def prepared_plan(owner_cli, r1_migration_task, monkeypatch, request):
     f = owner_cli
     f.dsn = r1_migration_task["dsn"]
     monkeypatch.setenv("PANESTRIA_DATABASE_URL", f.dsn)
@@ -43,7 +43,7 @@ def prepared_plan(owner_cli, r1_migration_task, monkeypatch):
     inventory = runner.inventory(f.base)
     document = contract(f, ref)
     document["constraints"]["permitted_capabilities"].append("trusted-test-runner")
-    document["budget"]["max_wall_seconds"] = 270
+    document["budget"]["max_wall_seconds"] = getattr(request, "param", {}).get("wall_seconds", 270)
     goal = load_contract(document)
     ids = [str(uuid4()) for _ in range(3)]
     nodes = tuple(

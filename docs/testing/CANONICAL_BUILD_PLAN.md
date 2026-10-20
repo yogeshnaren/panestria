@@ -2,9 +2,7 @@
 
 This component retains validated proposals, exact owner consent, canonical task
 references and source-bound handoffs in the same PostgreSQL transaction as their
-events. It does not launch a worker or complete/merge a task. Initial versions are
-one per goal; direct model proposal, bounded revisions/repair and two-worker
-admission remain AOS-025/026 integration work.
+events. It does not launch a worker or complete/merge a task. This page describes the initial V1 storage boundary. Subsequent [direct local proposals](LOCAL_BUILD_PLANNER.md), [two-worker admission](PLAN_SCHEDULER.md), [native execution](NATIVE_PLAN_EXECUTION.md) and [bounded revisions](BOUNDED_PLAN_REVISIONS.md) extend it with separate explicit commands.
 
 Use a separate trial database migrated to `0033_canonical_plans` and explicitly
 configured `PANESTRIA_DATABASE_URL`. No database is selected or migrated by these
@@ -20,8 +18,7 @@ panestria plan inspect OWNER_UUID PROJECT_UUID PLAN_UUID --output /private/new-p
 `prepare` binds the canonical latest contract, owner/project, declared inventory,
 DAG/checks/budget, current policy and a 15-minute UTC consent expiry. It returns the
 plan ID and exact `effect_digest`. It creates no task or grant. Lost replies replay
-the exact proposal; a changed proposal is refused until bounded revision support
-is implemented. Inspect the retained private review before accepting its digest:
+the exact proposal; a changed proposal is refused through this V1 preparation command. Use the separate bounded revision command for an eligible new version. Inspect the retained private review before accepting its digest:
 
 ```bash
 panestria plan accept OWNER_UUID PROJECT_UUID PLAN_UUID EFFECT_DIGEST --accept-plan

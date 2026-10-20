@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "scope": "Finite same-contract revisions and revised exact merge; native/auth/capacity explicit fixtures, actual PG/Git/MCP/Docker/final checks",
+  "runs": [
+    {
+      "report": "initial.xml",
+      "source_commit": "543ccbb0f303b5165aa9f746fddc3c0220429a40",
+      "worktree_state": "dirty",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 19.501,
+      "sha256": "a0d097956ef8c84b21734b809a5f4001f73a84eec019db32b34ca0be0a00acf0",
+      "provenance_note": "Uncommitted feature before83c6c98; original XML retained. Diagnostic only."
+    },
+    {
+      "report": "qualified.xml",
+      "source_commit": "066eb6e64b919efe65d3fba408533464f4b08fea",
+      "worktree_state": "clean",
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 79.732,
+      "sha256": "e7e2857f3585c0fa25d48a86af8882f714012b2359d1e699e52ddff6fd10ddfa"
+    },
+    {
+      "report": "final.xml",
+      "source_commit": "99c9216ea73d9c6683c2e4a609a0fe883446959a",
+      "worktree_state": "clean",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 17.922,
+      "sha256": "d92f959b39868a0e6edf070590524cce0211e0740ebe6604335743dfbc1409ba"
+    }
+  ],
+  "observed": [
+    "Original V1 stored bytes unchanged after child proposals and revised merge",
+    "Identical concurrent child proposal replays exact immutable version/digest without task creation",
+    "Unaccepted drafts consume finite versions and cumulative full wall envelopes",
+    "Stale acceptance/dispatch/cancellation cannot affect latest accepted version",
+    "Changed contract and original wall-budget exhaustion refuse without child records",
+    "Unreleased previous claim prevents repair despite another valid return proof",
+    "Current third version executes two-worker scoped path and exact scripted owner merge completes goal while retaining old FAILED tasks"
+  ],
+  "static_checks": [
+    "Ruff",
+    "Mypy263",
+    "11 import boundaries",
+    "secret scan"
+  ],
+  "limits": [
+    "Overlapping three-case final run extends the earlier22-case compatibility run; counts are not28distinct scenarios",
+    "Initial dirty run is diagnostic; later source commits remain separately bound",
+    "No automatic model repair, live provider check, generic graph execution or changed-contract consent flow",
+    "No cumulative TC02/03/04 or G3 pass and no human acceptance"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "owner_acceptance": "NOT_GRANTED"
+}

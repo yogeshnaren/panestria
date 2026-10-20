@@ -498,3 +498,61 @@ def release_returned_build(
         typer.echo(json.dumps({"status": "RELEASED", "proof_sha256": digest, "execution_authority": "NONE"}))
     except Exception:
         _unavailable()
+
+
+@plan_app.command("revise")
+def propose_plan_revision(
+    owner_id: str,
+    project_id: str,
+    parent_plan_id: str,
+    parent_sha256: str,
+    return_proof_sha256: str,
+    proposal: Annotated[Path, typer.Option("--proposal")],
+    inventory: Annotated[Path, typer.Option("--inventory")],
+    maximum_versions: int = 3,
+) -> None:
+    """Retain a bounded same-contract repair review; requires separate exact acceptance."""
+    from panestria.kernel.plan_revisions import PlanRevisionService
+    from panestria.kernel.uow import UnitOfWork
+
+    try:
+        with _connection() as c:
+            result = PlanRevisionService().propose(
+                UnitOfWork(c),
+                Actor(owner_id, project_id),
+                parent_plan_id,
+                parent_sha256,
+                PlanProposal.model_validate_json(read_private(proposal, 128 * 1024)),
+                ProjectInventory.model_validate_json(read_private(inventory, 16384)),
+                return_proof_sha256,
+                maximum_versions=maximum_versions,
+            )
+        typer.echo(
+            json.dumps(
+                {
+                    "plan_id": result.proposal.plan_id,
+                    "version": result.version,
+                    "parent_sha256": result.parent_sha256,
+                    "effect_digest": result.effect_digest,
+                    "state": result.state,
+                    "execution_authority": "NONE",
+                }
+            )
+        )
+    except Exception as error:
+        from panestria.kernel.errors import KernelDenied
+
+        safe = {
+            "plan_repair_limit_exhausted",
+            "plan_repair_budget_exhausted",
+            "plan_previous_work_unconfirmed",
+            "plan_scope_change_requires_new_authorization",
+            "plan_parent_superseded",
+            "plan_repair_limit_change_requires_authorization",
+            "plan_return_proof_unconfirmed",
+        }
+        reason = (
+            error.code if isinstance(error, KernelDenied) and error.code in safe else "canonical_revision_not_confirmed"
+        )
+        typer.echo(json.dumps({"status": "STOPPED", "reason": reason, "execution_authority": "NONE"}), err=True)
+        raise typer.Exit(1) from None

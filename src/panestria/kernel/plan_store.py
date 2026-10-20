@@ -17,6 +17,7 @@ from panestria.contracts.plan import (
     HandoffSubmission,
     PlanConsent,
     PlanProposal,
+    PlanRevisionConsent,
     ProjectInventory,
     RetainedHandoff,
     StoredPlan,
@@ -105,7 +106,7 @@ class PlanStore:
         proposal = PlanProposal.model_validate_json(json.dumps(row[0]))
         inventory = ProjectInventory.model_validate_json(json.dumps(row[1]))
         validation = ValidatedDAG.model_validate_json(json.dumps(row[2]))
-        consent = PlanConsent.model_validate_json(json.dumps(row[3]))
+        consent = (PlanConsent if row[5] == 1 else PlanRevisionConsent).model_validate_json(json.dumps(row[3]))
         if (
             proposal.sha256() != str(row[7]).strip()
             or inventory.sha256() != str(row[8]).strip()
@@ -126,6 +127,14 @@ class PlanStore:
             if parent_row is None:
                 raise KernelDenied("plan_parent_unconfirmed")
             parent = str(parent_row[0]).strip()
+        if row[5] > 1:
+            if (
+                not isinstance(consent, PlanRevisionConsent)
+                or consent.version != row[5]
+                or consent.parent_sha256 != parent
+                or consent.maximum_versions < consent.version
+            ):
+                raise KernelDenied("plan_revision_consent_unconfirmed")
         return StoredPlan(
             proposal=proposal,
             inventory=inventory,
@@ -244,6 +253,12 @@ class PlanStore:
         if plan.state == "ACCEPTED":
             self._members(uow, plan, cid)
             return plan
+        latest = uow.execute(
+            "SELECT id::text FROM panestria.build_plan WHERE goal_id=%s ORDER BY version DESC LIMIT 1",
+            (plan.proposal.goal_id,),
+        ).fetchone()
+        if latest != (identifier,):
+            raise KernelDenied("plan_parent_superseded")
         fresh = uow.execute(
             "SELECT expires_at>clock_timestamp() FROM panestria.build_plan WHERE id=%s", (identifier,)
         ).fetchone()
