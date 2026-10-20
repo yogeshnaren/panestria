@@ -19,10 +19,15 @@ from panestria.kernel.uow import UnitOfWork
 def staged_draft(owner, original, edits):
     with owner.connect() as c:
         body = c.execute(
-            "SELECT c.body FROM panestria.build_plan p JOIN panestria.goal_contract c ON c.id=p.contract_id WHERE p.id=%s",
+            "SELECT c.body FROM panestria.build_plan p "
+            "JOIN panestria.goal_contract c ON c.id=p.contract_id WHERE p.id=%s",
             (original.plan_id,),
         ).fetchone()[0]
         inventory = PlanStore().get(UnitOfWork(c), owner.actor, original.plan_id).inventory
+    if any(edit["depends_on"] for edit in edits):
+        # Explicit declared general planner inventory, beyond the narrow native
+        # shape. Declaration must never be mistaken for execution support.
+        inventory = inventory.model_copy(update={"maximum_depth": 3})
     contract = load_contract({**body, "goal_id": str(uuid4())})
     proposal, _validated = validate_draft(json.dumps({"edits": edits}), owner.actor, contract, inventory)
     with owner.connect() as c:

@@ -136,13 +136,16 @@ def native_plan(prepared_plan, monkeypatch):
             if state["block"]:
                 assert cancel is not None and cancel.wait(10)
             elif not state["unavailable"]:
-                state["barrier"].wait(timeout=10)
+                if state.get("expected_workers", 2) > 1:
+                    state["barrier"].wait(timeout=10)
                 paths = context["assignment"]["paths"]
-                script = (
-                    "printf 'value = 43\\n' > calculator.py"
-                    if paths == ["calculator.py"]
-                    else "mkdir -p notes; printf 'bounded Bash build\\n' > notes/build.txt"
-                )
+                assert paths and set(paths) <= {"calculator.py", "notes/build.txt"}
+                commands = []
+                if "calculator.py" in paths:
+                    commands.append("printf 'value = 43\\n' > calculator.py")
+                if "notes/build.txt" in paths:
+                    commands.append("mkdir -p notes; printf 'bounded Bash build\\n' > notes/build.txt")
+                script = "; ".join(commands)
                 for body in (
                     {
                         "jsonrpc": "2.0",

@@ -91,6 +91,8 @@ class NativePlanRunner:
         with owner.connect() as c:
             uow = UnitOfWork(c)
             plan = PlanStore().get(uow, owner.actor, plan_id)
+            if plan.state != "ACCEPTED":
+                raise KernelDenied("plan_not_accepted")
             scope = task_plan_scope(uow, owner.actor, plan.proposal.nodes[0].task_id)
             assert scope is not None
             policy = PolicyService(owner.certificates).get(uow, owner.actor)
