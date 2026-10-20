@@ -64,6 +64,7 @@ def test_native_public_unicast_remains_pinned_with_one_dns_resolution(monkeypatc
     calls = []
 
     def resolve(host, port, **kwargs):
+        assert kwargs == {"type": socket.SOCK_STREAM}
         calls.append((host, port))
         return answers(address)
 
@@ -85,18 +86,46 @@ def test_equivalent_ipv6_spelling_is_the_same_pinned_address():
     _verify_peer(("2606:4700:4700:0:0:0:0:1111", 443), "2606:4700:4700::1111", 443)
 
 
-def test_numeric_ipv6_socket_scope_is_not_discarded(monkeypatch):
+@pytest.mark.parametrize("scope", [1, 2])
+def test_numeric_ipv6_socket_scope_is_not_discarded(monkeypatch, scope):
     address = "2606:4700:4700::1111"
     monkeypatch.setattr(
         socket,
         "getaddrinfo",
-        lambda *args, **kwargs: [(socket.AF_INET6, socket.SOCK_STREAM, 6, "", (address, 443, 0, 2))],
+        lambda *args, **kwargs: [(socket.AF_INET6, socket.SOCK_STREAM, 6, "", (address, 443, 0, scope))],
     )
     with pytest.raises(EgressDenied, match="private_destination_denied"):
         resolve_destination("api.anthropic.com:443", ALLOWED)
     with pytest.raises(EgressDenied, match="private_or_unpinned_peer_denied"):
         _verify_peer((address, 443, 0, 2), address, 443)
     _verify_peer((address, 443, 0, 0), address, 443)
+    monkeypatch.setattr(
+        socket, "getaddrinfo", lambda *a, **kw: [(socket.AF_INET6, socket.SOCK_STREAM, 6, "", (address, 443, 0, 0))]
+    )
+    assert resolve_destination("api.anthropic.com:443", ALLOWED) == (address, 443)
+
+
+@pytest.mark.parametrize("authority", ["api.anthropic.com:80", "evil.example:443", "API.ANTHROPIC.COM:443", "", ":443"])
+def test_bad_authority_is_denied_before_any_dns_lookup(monkeypatch, authority):
+    def forbidden(*args, **kwargs):
+        raise AssertionError("unapproved authority reached DNS")
+
+    monkeypatch.setattr(socket, "getaddrinfo", forbidden)
+    with pytest.raises(EgressDenied):
+        resolve_destination(authority, ALLOWED)
+
+
+def test_missing_or_failed_dns_never_returns_a_destination(monkeypatch):
+    monkeypatch.setattr(socket, "getaddrinfo", lambda *args, **kwargs: [])
+    with pytest.raises(EgressDenied):
+        resolve_destination("api.anthropic.com:443", ALLOWED)
+
+    def unavailable(*args, **kwargs):
+        raise OSError("synthetic DNS unavailable")
+
+    monkeypatch.setattr(socket, "getaddrinfo", unavailable)
+    with pytest.raises(EgressDenied):
+        resolve_destination("api.anthropic.com:443", ALLOWED)
 
 
 def test_actual_unix_gateway_never_calls_connector_for_multicast_or_scoped_dns(tmp_path, monkeypatch):

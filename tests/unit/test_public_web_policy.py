@@ -1,5 +1,7 @@
 """Pure policy intersections; injected references do not certify a runtime or send."""
 
+import hashlib
+import json
 from itertools import product
 
 import pytest
@@ -9,6 +11,31 @@ from panestria.contracts.policy import AutonomyAxis, PolicyContext, PolicyReques
 from panestria.policy.engine import PolicyEngine
 
 ACTIONS = ["read", "edit", "tool-install", "external-send", "spend", "merge", "delete", "policy-change"]
+
+
+def test_decision_seals_effect_and_policy_and_prescribes_each_transport():
+    body = context().model_dump()
+    body["privacy"]["cloud_destinations"] = ["public-web", "claude-subscription"]
+    body["autonomy"]["actions"]["external-send"] = "act-and-report"
+    policy = PolicyContext.model_validate(body)
+    expected = {
+        "local": ("scoped-filesystem", "secret-free-tools", "no-public-egress"),
+        "claude-subscription": ("scoped-filesystem", "secret-free-tools", "provider-gateway"),
+        "public-web": ("scoped-filesystem", "secret-free-tools", "public-fetch-broker", "outbound-disclosure"),
+    }
+    for destination, enforcement in expected.items():
+        original = request(policy, destination=destination)
+        decision = PolicyEngine().authorize(original, policy)
+        assert decision.outcome == "PERMIT" and decision.enforcement == enforcement
+        assert decision.policy_version == 7 and decision.policy_sha256 == policy.sha256()
+        canonical = json.dumps(original.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+        assert decision.request_sha256 == hashlib.sha256(canonical).hexdigest()
+        changed = request(policy, destination=destination, effect_digest="ef" * 32)
+        assert PolicyEngine().authorize(changed, policy).request_sha256 != decision.request_sha256
+    body["trust"].update(profile="SYNTHETIC_DEV", runtime_certificate_sha256=None)
+    synthetic = PolicyContext.model_validate(body)
+    assert PolicyEngine().authorize(request(synthetic, destination="local"), synthetic).outcome == "PERMIT"
+    assert PolicyEngine().authorize(request(synthetic, destination="public-web"), synthetic).outcome == "DENY"
 
 
 def context():
