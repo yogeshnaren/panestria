@@ -114,3 +114,9 @@ S2 remains IN_PROGRESS: five controller PG/Git/CAS cases observe storage, consen
 rollback and verified-source binding at their recorded sources; direct structured
 local proposal remains pending. S3 still supplies bounded revisions/repair.
 No task/goal completion, automatic worker admission or full TC02/G3 is claimed.
+
+## Direct local proposal component
+
+[The local planner runbook](../testing/LOCAL_BUILD_PLANNER.md) and [boundary design](../design/64-LOCAL-BUILD-PROPOSALS.md) add an explicit one-call offline draft. The model proposes editing assignments; trusted code reserves the final verification budget and compiles all original checks/path coverage. The complete graph passes the existing scope/graph/budget validator before private publication. No database, acceptance, worker or merge effect occurs. The owner separately stages/reviews/accepts exact canonical references.
+
+S2 remains IN_PROGRESS: the direct proposal and existing handoff/storage components now have source-bound observations, including an actual pinned CPU-model draft; general quality/qualified inventory/integration and full TC02 are not established by that example. Original failed model graph evidence remains preserved. S3 finite canonical revisions, recovery and X10 progress/repair accounting remain the next dependencies.
