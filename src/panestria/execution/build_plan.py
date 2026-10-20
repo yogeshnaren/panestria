@@ -14,15 +14,20 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
+from uuid import UUID
 
 import psycopg
 
+from panestria.contracts.acceptance import TrustedCommandRef
 from panestria.contracts.build import canonical_sha256
 from panestria.contracts.goal import load_contract
+from panestria.contracts.invocation import InvocationBinding
+from panestria.contracts.native_tools import ToolScope
 from panestria.execution.scoped_bash import BuildReview
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
+from panestria.kernel.invocations import InvocationService
 from panestria.kernel.leases import LeaseService
 from panestria.kernel.plan_scope import task_plan_scope
 from panestria.kernel.plan_store import PlanStore
@@ -31,7 +36,7 @@ from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.scheduler import Scheduler
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.profiles import CertificateStore
-from panestria.verification.build import verify_build
+from panestria.verification.build import VerifiedBuild, verifier_bundle_digest, verify_build
 from panestria.verification.git_snapshot import materialize
 from panestria.verification.merge import integrate
 from panestria.verification.registry import CommandRegistry
@@ -92,7 +97,15 @@ class BuildIntegrator:
                 "SELECT check_key,id::text FROM panestria.acceptance_check WHERE contract_id=%s", (record[0],)
             ).fetchall()
         )
+        remaining = uow.execute(
+            "SELECT extract(epoch FROM lease_expires_at-clock_timestamp())::float "
+            "FROM panestria.task_attempt WHERE id=%s",
+            (attempt_id,),
+        ).fetchone()
+        if remaining is None or remaining[0] is None or remaining[0] <= 0:
+            raise KernelDenied("integration_deadline")
         return {
+            "remaining_seconds": remaining[0],
             "plan": plan,
             "scope": scope,
             "handoffs": tuple(handoffs),
@@ -140,11 +153,112 @@ class BuildIntegrator:
             or protected_root.is_relative_to(staging)
         ):
             raise KernelDenied("integration_private_scope_required")
+        # This acknowledged invocation covers trusted Git assembly and independent
+        # verification. Cancellation must not mistake active checks for no dispatch.
+        with self.connect() as c:
+            inputs = self._inputs(UnitOfWork(c), plan_id, attempt_id, epoch)
+            scope = inputs["scope"]
+            binding = InvocationBinding(
+                scope=ToolScope(
+                    owner_id=UUID(self.actor.owner_id),
+                    project_id=UUID(self.actor.project_id),
+                    task_id=UUID(scope.node.task_id),
+                    attempt_id=UUID(attempt_id),
+                    lease_epoch=epoch,
+                    contract_sha256=inputs["plan"].proposal.contract_sha256,
+                    policy_ref=inputs["contract"].autonomy_profile_ref,
+                ),
+                kind="build-integration",
+                request_sha256=self._fingerprint(inputs),
+                configuration_sha256=verifier_bundle_digest(inputs["contract"], registry),
+            )
+            identity = InvocationService().prepare(
+                UnitOfWork(c),
+                self.actor,
+                binding,
+                "build-integration:" + attempt_id,
+                ttl_seconds=min(900, scope.node.wall_seconds_per_attempt + 5),
+            )
+        with self.connect() as c:
+            self._inputs(UnitOfWork(c), plan_id, attempt_id, epoch)
+            InvocationService().claim(UnitOfWork(c), self.actor, binding, identity)
+        finished = False
+
+        def returned(report: str, checked: VerifiedBuild | None = None) -> bool:
+            nonlocal finished
+            safe = True
+            if checked is not None:
+                command_keys = {
+                    check.id for check in inputs["contract"].acceptance if isinstance(check.verifier, TrustedCommandRef)
+                }
+                # These reasons come only after an actual stopped-and-cleaned
+                # runner receipt, or the trusted prelaunch deadline check. All
+                # unrecognized/uncertain cleanup failures retain UNKNOWN capacity.
+                safe = all(
+                    json.loads(raw)["reason"]
+                    in {
+                        "ok",
+                        "process_failed",
+                        "deadline_exceeded",
+                        "memory_limit",
+                        "output_limit",
+                        "deadline",
+                        "unregistered_command",
+                        "unreviewed_executable_or_args",
+                        "unreviewed_path",
+                        "bundle_tampered",
+                    }
+                    for raw in checked.reports
+                    if json.loads(raw)["check_key"] in command_keys
+                )
+            receipt = self.evidence.store.write_report(
+                json.dumps(
+                    {
+                        "kind": "build-integration-return",
+                        "binding_sha256": binding.sha256(),
+                        "integration_report_sha256": report,
+                        "verifier_report_sha256": []
+                        if checked is None
+                        else [canonical_sha256(json.loads(raw)) for raw in checked.reports],
+                        "physical_return": "CONFIRMED" if safe else "UNCONFIRMED",
+                        "scope_sha256": binding.scope.sha256(),
+                    },
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode()
+            )
+            with self.connect() as c:
+                InvocationService().finish(UnitOfWork(c), self.actor, binding, identity, receipt if safe else None)
+            finished = True  # Historical return may be acknowledged after cancellation.
+            return safe
+
+        try:
+            return self._verify(plan_id, attempt_id, epoch, protected_root, repository, staging, registry, returned)
+        except BaseException:
+            if not finished:
+                try:
+                    with self.connect() as c:
+                        InvocationService().finish(UnitOfWork(c), self.actor, binding, identity, None)
+                except Exception:
+                    pass  # Never turn an uncertain/lost reply into retry permission.
+            raise
+
+    def _verify(
+        self,
+        plan_id: str,
+        attempt_id: str,
+        epoch: int,
+        protected_root: Path,
+        repository: Path,
+        staging: Path,
+        registry: CommandRegistry,
+        returned: Callable[[str, VerifiedBuild | None], bool],
+    ) -> IntegrationOutcome:
         with self.connect() as c:
             inputs = self._inputs(UnitOfWork(c), plan_id, attempt_id, epoch)
         plan, scope = inputs["plan"], inputs["scope"]
         fingerprint = self._fingerprint(inputs)
-        deadline = time.monotonic() + min(120, scope.node.wall_seconds_per_attempt)
+        deadline = time.monotonic() + min(120, scope.node.wall_seconds_per_attempt, inputs["remaining_seconds"])
         staging.mkdir(mode=0o700)
         base = plan.inventory.base_commit
         base_snapshot = materialize(repository, base, base, staging / "base", deadline=deadline)
@@ -180,6 +294,7 @@ class BuildIntegrator:
         }
         digest = self.evidence.store.write_report(json.dumps(report, sort_keys=True, separators=(",", ":")).encode())
         if combined.conflicts:
+            returned(digest, None)  # No verifier was launched; trusted Git calls have returned.
             # Retain the exact blocked outcome canonically, without a candidate,
             # verifier PASS, merge approval or protected-ref update.
             with self.connect() as c:
@@ -225,6 +340,22 @@ class BuildIntegrator:
         )
         for raw in verified.reports:
             self.evidence.store.write_report(raw)
+        if not returned(digest, verified):
+            with self.connect() as c:
+                self._inputs(UnitOfWork(c), plan_id, attempt_id, epoch)
+                c.execute(
+                    "UPDATE panestria.task SET state='RECONCILING',row_version=row_version+1 WHERE id=%s",
+                    (scope.node.task_id,),
+                )
+                append_event(
+                    UnitOfWork(c),
+                    goal_id=plan.proposal.goal_id,
+                    task_id=scope.node.task_id,
+                    actor=self.actor.owner_id,
+                    kind="build.plan.integration_unconfirmed",
+                    payload={"plan_id": plan_id, "report_sha256": digest, "reason": "verification_cleanup_unconfirmed"},
+                )
+            return IntegrationOutcome("RECONCILING", digest)
         if time.monotonic() >= deadline:
             raise KernelDenied("integration_deadline")
         with self.connect() as c:

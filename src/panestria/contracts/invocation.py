@@ -14,7 +14,7 @@ from panestria.contracts.native_tools import ToolScope
 class InvocationBinding(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
     scope: ToolScope
-    kind: Literal["native-proposal", "native-tool"]
+    kind: Literal["native-proposal", "native-tool", "build-integration"]
     request_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     configuration_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
