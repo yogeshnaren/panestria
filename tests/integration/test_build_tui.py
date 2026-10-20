@@ -138,8 +138,10 @@ def test_actual_canonical_plan_progress_is_visible_in_terminal_without_starting_
     with terminal(f.config, entry=("build", "tui"), arguments=(plan.goal_id,)) as t:
         t.until(b"WAITING_APPROVAL")
         os.write(t.master, b"p")
-        t.until(b"OWNER_MERGE_REVIEW_REQUIRED")
+        # One PTY read can contain both lines; waiting again from a new cursor
+        # would incorrectly discard the already received attention line.
         t.until(b"release acceptance: NOT_ASSESSED")
+        assert b"OWNER_MERGE_REVIEW_REQUIRED" in t.transcript
         assert f.dsn.encode() not in t.transcript
         assert git(f.bare, "rev-parse", "HEAD") == f.base
         os.write(t.master, b"q")
