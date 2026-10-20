@@ -111,3 +111,56 @@ class ValidatedDAG(PlanContract):
     upper_wall_seconds: StrictInt = Field(ge=1)
     upper_api_microusd: StrictInt = Field(ge=0)
     authority: Literal["PROPOSAL_ONLY"] = "PROPOSAL_ONLY"
+
+
+class PlanConsent(PlanContract):
+    plan_sha256: PlanSha
+    contract_sha256: PlanSha
+    inventory_sha256: PlanSha
+    policy_ref: str = Field(pattern=r"^project-policy:[1-9][0-9]*:[0-9a-f]{64}$")
+    expires_at: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}T.*[+]00:00$")
+
+
+class StoredPlan(PlanContract):
+    proposal: PlanProposal
+    inventory: ProjectInventory
+    validation: ValidatedDAG
+    consent: PlanConsent
+    effect_digest: PlanSha
+    version: StrictInt = Field(ge=1)
+    parent_sha256: PlanSha | None = None
+    state: Literal["PROPOSED", "ACCEPTED"]
+    execution_authority: Literal["NONE"] = "NONE"
+
+
+class HandoffSubmission(PlanContract):
+    handoff_id: PlanId
+    plan_id: PlanId
+    task_id: PlanId
+    expected_task_version: StrictInt = Field(ge=0)
+    evidence_sha256: PlanSha
+    next_tasks: tuple[PlanId, ...] = Field(default=(), max_length=16)
+    summary: str = Field(default="", max_length=2048, repr=False)
+
+    @model_validator(mode="after")
+    def bounded_note(self) -> Self:
+        if len(self.summary.encode()) > 2048 or len(set(self.next_tasks)) != len(self.next_tasks):
+            raise ValueError("invalid_handoff_note")
+        return self
+
+
+class RetainedHandoff(PlanContract):
+    submission: HandoffSubmission
+    plan_sha256: PlanSha
+    contract_sha256: PlanSha
+    inventory_sha256: PlanSha
+    attempt_id: PlanId
+    lease_epoch: StrictInt = Field(ge=1)
+    candidate_commit: str = Field(pattern=r"^[0-9a-f]{40}$")
+    candidate_tree: str = Field(pattern=r"^[0-9a-f]{40}$")
+    snapshot_sha256: PlanSha
+    actual_adapter: Ref
+    declared_worker: WorkerInventory
+    runtime_qualification: Literal["NOT_ASSESSED"] = "NOT_ASSESSED"
+    summary_authority: Literal["UNTRUSTED_NOTE"] = "UNTRUSTED_NOTE"
+    task_completion_authority: Literal["NONE"] = "NONE"

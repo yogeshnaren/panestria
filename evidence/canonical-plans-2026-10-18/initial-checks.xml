@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="5" time="90.240" timestamp="2026-10-18T23:01:11.404529-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_canonical_plan_store" name="test_proposal_is_scoped_immutable_and_does_not_create_tasks_or_permissions" file="tests/integration/test_canonical_plan_store.py" line="101" time="25.348" /><testcase classname="tests.integration.test_canonical_plan_store" name="test_exact_owner_acceptance_and_concurrency_create_one_canonical_dag" file="tests/integration/test_canonical_plan_store.py" line="130" time="3.845" /><testcase classname="tests.integration.test_canonical_plan_store" name="test_acceptance_state_tasks_and_event_rollback_together" file="tests/integration/test_canonical_plan_store.py" line="169" time="10.832" /><testcase classname="tests.integration.test_canonical_plan_store" name="test_handoff_reconstructs_current_verified_source_without_completing_or_merging" file="tests/integration/test_canonical_plan_store.py" line="186" time="13.487"><failure message="panestria.kernel.errors.KernelDenied: illegal_transition">planned = (BuildFixture(task={'owner': '5f92022c-8421-4490-9702-b5bc80fa5b63', 'project': '66a52a85-a03b-4204-8ddd-ff38129b936f'...ximum_nodes=16, maximum_depth=8, maximum_parallel=2), &lt;panestria.kernel.plan_store.PlanStore object at 0x7ee454911be0&gt;)
+
+    def test_handoff_reconstructs_current_verified_source_without_completing_or_merging(planned):
+        build, proposal, _, service = planned
+        retained = prepare(planned)
+        accept(planned, retained)
+        task = proposal.nodes[0].task_id
+        with psycopg.connect(build.task["dsn"]) as c:
+&gt;           TaskService().transition(
+                UnitOfWork(c),
+                build.actor,
+                task,
+                0,
+                0,
+                "READY",
+                "fixture",
+                policy_version=build.contract.autonomy_profile_ref,
+                correlation_id=str(uuid4()),
+            )
+
+tests/integration/test_canonical_plan_store.py:193: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;panestria.kernel.tasks.TaskService object at 0x7ee454910530&gt;
+uow = &lt;panestria.kernel.uow.UnitOfWork object at 0x7ee4549123f0&gt;
+actor = &lt;panestria.kernel.goals.Actor object at 0x7ee454913e30&gt;
+task_id = '0f5694e1-bd48-47d2-9dc3-3f887aa70b9d', expected_version = 0
+epoch = 0, target = 'READY', cause = 'fixture'
+policy_version = 'project-policy:1:eb7058a77fb401151ba217b44c4305e0ad79cdd8df96fc35172580a0267d6119'
+correlation_id = 'c75074c4-c069-4b02-af0e-afa1a97814ad'
+
+    def transition(
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        task_id: str,
+        expected_version: int,
+        epoch: int,
+        target: str,
+        cause: str,
+        *,
+        policy_version: str,
+        correlation_id: str,
+    ) -&gt; TransitionReceipt:
+        policy = require_policy(policy_version)
+        correlation = require_correlation(correlation_id)
+        current = lock_task(uow, actor.owner_id, actor.project_id, task_id)
+        if current is None:
+            raise KernelDenied("not_found")
+        goal_id, state, row_version, lease_epoch = current
+        if row_version != expected_version or lease_epoch != epoch:
+            raise KernelDenied("version_conflict")
+        if state in {"LEASED", "RUNNING"} and target not in {"CANCELLING", "FAILED"}:
+            live = uow.execute(
+                "SELECT lease_expires_at, lease_expires_at &gt; clock_timestamp(), status"
+                " FROM panestria.task_attempt WHERE task_id=%s AND lease_epoch=%s",
+                (task_id, epoch),
+            ).fetchone()
+            if live is not None and live[0] is not None and (live[1] is not True or live[2] != "RUNNING"):
+                raise KernelDenied("stale_lease")
+        stored = uow.execute(
+            "SELECT contract.body-&gt;&gt;'autonomy_profile_ref'"
+            " FROM panestria.task AS task"
+            " JOIN panestria.goal_contract AS contract ON contract.id = task.contract_id"
+            " WHERE task.id = %s",
+            (task_id,),
+        ).fetchone()
+        if stored is None or stored[0] != policy:
+            raise KernelDenied("policy_mismatch")
+        if (state, target) not in ALLOWED_TRANSITIONS:
+&gt;           raise KernelDenied("illegal_transition")
+E           panestria.kernel.errors.KernelDenied: illegal_transition
+
+src/panestria/kernel/tasks.py:151: KernelDenied</failure></testcase><testcase classname="tests.integration.test_canonical_plan_store" name="test_caller_transaction_and_populated_migration_preserve_audit" file="tests/integration/test_canonical_plan_store.py" line="243" time="36.443" /></testsuite></testsuites>

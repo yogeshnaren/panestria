@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "source_commit": "4de463b8b0df2fb707292709e7863736ed4d3205",
+  "base_commit": "8f4f18cefd846866731b5ee942ebf14cf27e549d",
+  "worktree_state": "clean",
+  "scope": "Canonical owner plan/consent/handoff storage; controller fixtures, not worker execution or release qualification",
+  "passed": 37,
+  "failed": 0,
+  "seconds": 19.75,
+  "report_sha256": "5e20fb4993782a65ebc17304442a2031f4131d66af8a7dd18ce1471905f5b294",
+  "previous_failure": "Old PR127 CI policy-setup race addressed by merged PR128; new source refreshed with current main. Historical reports unchanged.",
+  "remaining": [
+    "Direct model proposal and bounded revisions",
+    "Ready-node scheduling and actual two-worker execution",
+    "Conflict handling and final integrated verification",
+    "G1/G2/G3 and owner trial"
+  ]
+}

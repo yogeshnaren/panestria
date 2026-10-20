@@ -2135,8 +2135,9 @@
         "AOS-025-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-025-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-025-S2.md",
+      "scope_note": "Initial version1 canonical storage/consent/handoff only. Direct local proposals, bounded revisions and actual runtime/scheduler qualification remain pending; no worker or merge permission."
     },
     {
       "id": "AOS-025-S3",

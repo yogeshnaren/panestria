@@ -1,9 +1,15 @@
 # Implementation progress
 
-Updated 2026-10-18. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
+Updated 2026-10-20. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
 The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
+
+The owner explicitly resumed implementation through R3 on 2026-10-20. Current
+critical path: canonical plans/handoffs (PR127), then bounded two-worker scheduling,
+conflict handling and final-tree verification. CI/mutation/metrics PRs128–131 are
+merged; performance history is delivered, continuous task metrics remain pending.
+Deliver usable slices and required evidence; avoid unrelated test expansion.
 
 | Phase/outcome | Delivered behavior | Remaining acceptance work |
 | --- | --- | --- |
@@ -187,3 +193,19 @@ source-graph head assertions and observed0032 schema snapshots are corrected;
 The actual incremental memory-pressure check passed without relaxing the cgroup
 cap or classifier. Keep the feature PR draft until required verification passes;
 original CPU/style evidence remains at its recorded source. No gate is promoted.
+
+## Canonical plan and handoff storage component
+
+[Plan storage](testing/CANONICAL_BUILD_PLAN.md) retains exact scoped version1
+proposals, owner consent and canonical CREATED DAG references atomically.
+Handoffs resolve actual current protected candidate/check/attempt evidence; notes
+remain advisory and runtime qualification is NOT_ASSESSED. Accepting a plan grants
+no execution, completion or merge authority.
+
+[Source-bound PG/Git/CAS observations](../evidence/canonical-plans-2026-10-18/report.json)
+cover scoped immutability, concurrent consent, rollback and fenced handoff; an
+initial fixture transition error and its correction remain recorded. The older
+style downgrade guard also preserves the new schema. This is partial AOS-025-S2;
+direct local proposals, revisions/repair, two-worker admission/conflicts and
+final-tree verification remain pending. PR125 is still a draft because host
+runtime timing is unqualified, despite its passing exact-head CI.

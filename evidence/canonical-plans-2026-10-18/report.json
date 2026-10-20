@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "outcome": "INITIAL_CANONICAL_STORAGE_COMPONENT_OBSERVED_NOT_FULL_AOS025_OR_RUNTIME_QUALIFICATION",
+  "observations": [
+    {
+      "candidate_commit": "209fd68fc6430ea1e43ee7496a06a306d90e7396",
+      "worktree_state": "clean",
+      "file": "initial-checks.xml",
+      "tests": 5,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 90.24
+    },
+    {
+      "candidate_commit": "b34de1d9b5faa4f1a7797e83ef1078a7e1676a3e",
+      "worktree_state": "clean",
+      "file": "handoff-check.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 78.63
+    },
+    {
+      "candidate_commit": "4fc11fd8a13c62a21354d90dcea154ea1ee7a5c7",
+      "worktree_state": "clean",
+      "file": "prior-style-guard.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 324.167
+    }
+  ],
+  "initial_failure": "One fixture tried CREATED to READY directly. Corrected fixture follows existing CREATED to VALIDATING to READY; production transition rules were not changed. Four other behavior cases passed initially; only the failed handoff case was rerun.",
+  "delivered": [
+    "Immutable goal/contract/inventory-bound version1 proposals and exact expiring owner consent",
+    "Concurrent/idempotent confirmation creates one canonical CREATED DAG and event atomically; rollback does not retain acceptance",
+    "Source-bound handoff reconstruction from protected current Build evidence, epoch/contract/check/hash fences and advisory untrusted note",
+    "Explicit actual adapter vs declared worker inventory; no invented runtime qualification or completion/merge authority",
+    "Private-file CLI prepare/accept/inspect/handoff/inspect-handoff; no worker/model/provider dispatch"
+  ],
+  "schema_observation": {
+    "revision": "0033_canonical_plans",
+    "lines": 1357,
+    "sha256": "b56d1e6b9a006bf263fe0aa6793ed60c6a2036965e629df1cd6fcedc38bddfe0",
+    "source": "actual isolated synthetic Postgres, current snapshots; owner database not migrated"
+  },
+  "static_checks": [
+    "Ruff PASS",
+    "Mypy249 source files PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "limits": [
+    "Source-bound observations are not relabeled as one full passing run on a later head; exact-head full CI remains required",
+    "Controller report fixtures with actual PG/Git/CAS are not native worker or independent OS-verifier qualification",
+    "AOS-025-S2 remains partial: direct local proposal, parent revisions/finite repair and actual runtime/scheduler admission remain pending",
+    "All acceptance receipts have execution authority NONE; handoff completion authority NONE and runtime qualification NOT_ASSESSED",
+    "No original TC02/G3, owner trial, paid/model/provider call or storage cleanup claimed",
+    "Depends on draft PR125; its CI passed but current host reader/start/termination timing remains unqualified"
+  ],
+  "files": {
+    "initial-checks.xml": "d7a8c33192c8b5ec02283f9c17b904f8bb476274eb560ace299bd14a01fd1633",
+    "handoff-check.xml": "c36ee9192c811b19433a7862294e9b45869421b1480ee35c2d500b078b372496",
+    "prior-style-guard.xml": "7cf656bef577fd122732a32de7d5f455731d56d15f0e5488ad8ddffce9e3d90e"
+  }
+}
