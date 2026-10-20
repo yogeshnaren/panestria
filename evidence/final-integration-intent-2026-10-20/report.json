@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "source_commit": "3b183b5b83671b87a46a9d8b912e3e201d1fbc5c",
+  "scope": "Durable trusted final integration prepare/claim/return, remaining-lease deadline, cancellation hold and uncertain cleanup; actual PG/Git/Docker with synthetic native/capacity fixtures",
+  "runs": [
+    {
+      "report": "initial.xml",
+      "tests": 11,
+      "failures": 0,
+      "seconds": 50.587
+    },
+    {
+      "report": "component.xml",
+      "tests": 11,
+      "failures": 0,
+      "seconds": 54.299
+    }
+  ],
+  "sha256": {
+    "initial.xml": "8a8a32a62a09014c90f4816406d3515c54ccd59d1a3ea9bf630911b1bbc144e5",
+    "component.xml": "e014f4f25a3ce4db913e6d9c8795d265fccf29863cd7c8987dd2cea3d776b134"
+  },
+  "source_notes": [
+    "Initial run used in-progress uncommitted code before the remaining-lease deadline correction; it is diagnostic only and not a frozen candidate.",
+    "Component run began on clean3b183b5. All native-plan case properties record that clean source. Documentation/evidence writes followed while no application/test code changed. New final-integration/lifecycle modules are not in the shared metadata whitelist; no synthetic properties were inserted into original XML.",
+    "The uncertain-cleanup test runs/cleans the actual owned Docker check, then injects a lost cleanup receipt. UNKNOWN/refusal is component fault evidence, not proof of an actual cleanup failure or native conformance."
+  ],
+  "validated": [
+    "Claim commits before protected assembly/checks; cancellation sees dispatched work and keeps the active final claim",
+    "Historical physical return after cancellation does not permit stale PASS publication or merge approval",
+    "Existing combined-tree checks, exact owner approval/confirmed final release, conflicts and no-dispatch lifecycle remain working",
+    "Uncertain cleanup becomes UNKNOWN/RECONCILING with no evidence PASS/approval; reentry cannot launch the invocation again",
+    "Native fork/join now observes a fifth RETURNED invocation for final integration, distinct from two native/two tool invocations",
+    "Deadline uses the current attempt remaining lease time within the node wall envelope"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "native_live": "NOT_RUN_FOR_THIS_SLICE",
+  "remaining": [
+    "Safe historical returned-failure release and unknown native/OS process reconciliation",
+    "Finite canonical plan revisions/repair/progress ledger",
+    "Full revision-3 platform/cumulative gates and genuine owner trial"
+  ]
+}

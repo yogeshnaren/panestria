@@ -221,3 +221,7 @@ unqualified observations at their original sources.
 ## Native two-worker delivery evidence
 
 PR137 connects inventory declarations, explicit accepted-plan execution, scoped native contexts, verified handoffs, final-tree checks and exact owner review. At clean `6a1f39c`, 8 affected default checks passed, 11 actual OS/subscription qualification checks passed, and one actual two-Claude journey passed in22.29seconds. The two native disclosures preceded both returns; actual Docker tools edited separate files; wrong approval digest failed; the exact protected merge completed and all plan claims released. A prior 36-case compatibility run at clean `ca357e3` passed. Original failed native protocol and sibling-scope runs are preserved in the report, not promoted into passes. Default fixture checks are separate from real native evidence. Paid SDKTC04 remains DEFERRED. Full revision-3 code/integration and cumulative release qualification still remain; the real owner trial has not started.
+
+## Final-controller recovery boundary
+
+[Final integration tracking](testing/FINAL_INTEGRATION_RECOVERY.md) adds a committed invocation before trusted assembly/checks. Plan cancellation therefore retains active verification capacity, and an uncertain cleanup receipt cannot publish PASS, approve, release or redispatch. Historical return remains separate from current acceptance. This is the prerequisite for safe failed-work release and bounded repair; physical UNKNOWN/native recovery and the full cumulative gate remain pending.
