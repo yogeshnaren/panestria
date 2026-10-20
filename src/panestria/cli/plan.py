@@ -475,3 +475,26 @@ def propose_local_plan(
     except Exception:
         typer.echo('{"status":"UNAVAILABLE","reason":"local_plan_not_published_inspect_private_run"}', err=True)
         raise typer.Exit(1) from None
+
+
+@plan_app.command("release-returned")
+def release_returned_build(
+    owner_id: str,
+    project_id: str,
+    plan_id: str,
+    attempt_id: str,
+    evidence_store: Annotated[Path, typer.Option("--evidence-store")],
+) -> None:
+    """Release only a fenced, physically confirmed historical Build return; no retry or PASS."""
+    from panestria.kernel.plan_returns import ReturnedBuildRelease
+    from panestria.kernel.uow import UnitOfWork
+
+    try:
+        evidence = _evidence_store(evidence_store)
+        with _connection() as c:
+            digest = ReturnedBuildRelease(evidence.store).release(
+                UnitOfWork(c), Actor(owner_id, project_id), plan_id, attempt_id
+            )
+        typer.echo(json.dumps({"status": "RELEASED", "proof_sha256": digest, "execution_authority": "NONE"}))
+    except Exception:
+        _unavailable()
