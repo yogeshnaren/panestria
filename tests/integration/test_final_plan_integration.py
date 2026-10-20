@@ -3,7 +3,9 @@
 Workers/capacity are controller fixtures, not native vendor/OS qualification.
 """
 
+import hashlib
 import json
+from uuid import uuid4
 
 import psycopg
 import pytest
@@ -17,6 +19,45 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.scheduler import Scheduled, Scheduler
 from panestria.kernel.uow import UnitOfWork
 from panestria.verification.git_snapshot import materialize
+
+
+def owner_review(build, tmp_path):
+    """Actual private Build settings, reviewed script, CAS and merge target; no native call."""
+    from panestria.config_build import BuildSettings
+    from panestria.execution.owner_build import OwnerBuild
+    from panestria.kernel.build import BuildEvidenceService
+
+    reviewed = tmp_path / "reviewed"
+    reviewed.mkdir(mode=0o700)
+    script = reviewed / "required_check.py"
+    script.write_bytes((build.registry.bundle_root / "required_check.py").read_bytes())
+    script.chmod(0o600)
+    settings = BuildSettings.model_validate_json(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "owner_id": build.actor.owner_id,
+                "project_id": build.actor.project_id,
+                "root": str(tmp_path),
+                "certificates": str(tmp_path / "unused-synthetic-certificates"),
+                "certificate_sha256": "ab" * 32,
+                "native_binary": str(tmp_path / "native-not-run"),
+                "native_config": str(tmp_path / "auth-not-used"),
+                "skills_archive": str(tmp_path / "probe-not-run"),
+                "checks": [
+                    {
+                        "ref": "synthetic-test-suite",
+                        "script": script.name,
+                        "sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
+                    }
+                ],
+            }
+        )
+    )
+    owner = OwnerBuild(settings, build.task["dsn"])
+    build.service = BuildEvidenceService(owner.reports)
+    build.registry = owner.registry
+    return owner
 
 
 def connected(build):
@@ -56,6 +97,7 @@ def test_two_verified_siblings_require_full_exact_combined_checks_before_owner_r
     from panestria.verification.registry import CommandRegistry
 
     build.registry = CommandRegistry.load(build.registry.bundle_root, "/synthetic/reviewed-python")
+    owner = owner_review(build, tmp_path)
     plan = accepted(
         build, base_snapshot_sha=materialize(build.bare, build.base, build.base, tmp_path / "inventory").manifest_sha256
     )
@@ -92,6 +134,17 @@ def test_two_verified_siblings_require_full_exact_combined_checks_before_owner_r
         assert c.execute(
             "SELECT count(*) FROM panestria.approval_request WHERE goal_id=%s", (plan.goal_id,)
         ).fetchone() == ((0 if wrong_combined_output else 1),)
+
+    if not wrong_combined_output:
+        pending = owner.status(plan.goal_id, diff=True)
+        assert pending["task_id"] == final.lease.task_id and "part1.txt" in pending["diff"]
+        approval = pending["approval"]
+        merged = owner.approve(
+            approval["approval_id"], approval["effect_digest"], approval["expected_version"], str(uuid4())
+        )
+        assert merged["task_state"] == "COMPLETED"
+        assert _git(build.bare, "rev-parse", "refs/heads/main") == result.review.candidate_commit
+        assert _git(build.source, "rev-parse", "HEAD") == candidate2  # Original worker checkout preserved.
 
 
 @pytest.mark.parametrize("build", [PATHS], indirect=True)
