@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "source_commit": "adb38e9021febe6b6d32c4732fd29bdbf717adf6",
+  "base_commit": "a3263610cd7560cd3576f26a9c51116aad22fa61",
+  "worktree_state": "clean before evidence and progress writes",
+  "scope": "Accepted plan-node verification and protected final merge authority; no native qualification or completed scheduler",
+  "runs": [
+    {
+      "report": "initial-selection.xml",
+      "result": "COMMAND_SELECTION_ERROR",
+      "reason": "Nonexistent test file; zero collected; not a validation pass"
+    },
+    {
+      "source_commit": "d24c709db9fac114949c115613463101254a3711",
+      "report": "component-run.xml",
+      "passed": 20,
+      "failed": 2,
+      "live_deselected": 2,
+      "seconds": 34.21,
+      "failure_reason": "Native fixtures refused group-writable scratch source at trusted script guard; guard unchanged"
+    },
+    {
+      "source_commit": "d24c709db9fac114949c115613463101254a3711",
+      "report": "native-correction.xml",
+      "passed": 2,
+      "failed": 0,
+      "seconds": 10.43,
+      "correction": "Removed group/other write permission only in agent scratch src; reran only the two failed tests"
+    },
+    {
+      "source_commit": "adb38e9021febe6b6d32c4732fd29bdbf717adf6",
+      "report": "final-merge-guard.xml",
+      "passed": 1,
+      "failed": 0,
+      "seconds": 7.07,
+      "scope": "Additional complete_confirmed final-task guard"
+    }
+  ],
+  "static_checks": [
+    "ruff",
+    "mypy 252 files",
+    "11 import boundaries",
+    "secret scan"
+  ],
+  "release_gate": "NOT_ASSESSED",
+  "remaining": [
+    "Ready-node bounded admission",
+    "Canonical verified-node completion and handoff",
+    "Actual two-worker execution, conflicts and final integrated tree",
+    "Cumulative live qualification and owner trial"
+  ],
+  "sha256": {
+    "initial-selection.xml": "01a53cf4580fda3976fcd8134eb0f63100408d8292afd9866d130be86a9d9889",
+    "component-run.xml": "9be716eeaf0f53a8f101360929fbe903f3c42df2888c129fea6f749549ad084f",
+    "native-correction.xml": "cd050a4cb81a3ece0f10d7bc7ad4072e2de6124e9753b38dbfbedef2041ff17a",
+    "final-merge-guard.xml": "779b50f827ba03aad6efd7a01219bfb2e11bd64c656fe9cb320ce65e2c21b09e"
+  }
+}

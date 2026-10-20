@@ -6,7 +6,7 @@ commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 w
 An implemented component or passing CI is not a release-gate pass.
 
 The owner explicitly resumed implementation through R3 on 2026-10-20. Current
-critical path: canonical plans/handoffs (PR127), then bounded two-worker scheduling,
+critical path: canonical plans/handoffs merged in PR127, then bounded two-worker scheduling,
 conflict handling and final-tree verification. CI/mutation/metrics PRs128–131 are
 merged; performance history is delivered, continuous task metrics remain pending.
 Deliver usable slices and required evidence; avoid unrelated test expansion.
@@ -55,6 +55,11 @@ explicitly synthetic fixtures**. They do not prove installed SearXNG/upstreams,
 public TLS, OS qualification or verified factual support. Search setup was
 explicitly deferred by the owner. No service, engine, credential, provider/model,
 download or paid call is silently selected by this work.
+
+## Current Build integration
+
+Canonical plans/consent/handoffs merged in [PR127](https://github.com/yogeshnaren/panestria/pull/127) with passing exact-head CI39385719878 and verified merge tree.
+Accepted plan-node verification now binds checks and literal paths to immutable membership; intermediate NODE_VERIFIED results cannot request, dispatch or complete a protected merge. The unique final task still requires every goal check and exact owner approval. [Component evidence](../evidence/plan-task-verification-2026-10-20/report.json) preserves the scratch-permission failures and the scoped correction. Next implement durable ready-node admission, verified handoff/completion, then actual two-worker conflict handling and final-tree assembly. This is not an accepted two-worker demo or G3 pass.
 
 ## Next concrete delivery
 

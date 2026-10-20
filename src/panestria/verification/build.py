@@ -11,6 +11,7 @@ from typing import Literal
 from panestria.contracts.acceptance import GitDiffPathCheck, PolicyDecision, TrustedCommandRef
 from panestria.contracts.build import BuildCheck, BuildEvidenceBundle, canonical_sha256
 from panestria.contracts.goal import GoalContract, contract_sha256
+from panestria.contracts.plan import PlanTaskScope
 from panestria.contracts.policy import Action, PolicyContext, PolicyRequest
 from panestria.policy.engine import PolicyEngine
 from panestria.verification.git_snapshot import GitSnapshot, verify_snapshot
@@ -39,6 +40,7 @@ def verify_build(
     *,
     policy: PolicyContext | None = None,
     deadline: float | None = None,
+    plan_scope: PlanTaskScope | None = None,
 ) -> VerifiedBuild:
     verify_snapshot(snapshot)
     runner = SandboxedCheckRunner(registry, snapshot.directory.parent)
@@ -46,9 +48,20 @@ def verify_build(
     observed = []
     reports = []
     bundle_digest = verifier_bundle_digest(contract, registry)
+    if plan_scope is not None:
+        plan_scope = PlanTaskScope.model_validate(plan_scope)
+        if plan_scope.node.task_id != task_id or set(plan_scope.node.acceptance_keys) - {
+            c.id for c in contract.acceptance
+        }:
+            raise ValueError("plan_verification_scope_invalid")
+    denied_paths = plan_scope is not None and any(path not in plan_scope.node.paths for path in snapshot.changed_paths)
     for check in sorted(contract.acceptance, key=lambda check: check.id):
+        if plan_scope is not None and check.id not in plan_scope.node.acceptance_keys:
+            continue
         spec = check.verifier
-        if isinstance(spec, TrustedCommandRef):
+        if denied_paths:
+            verdict, reason, output_digest = "FAIL", "plan_path_denied", ""
+        elif isinstance(spec, TrustedCommandRef):
             try:
                 registry.resolve(spec.command_ref)
             except KeyError:
@@ -118,6 +131,7 @@ def verify_build(
                 "output_sha256": output_digest,
                 "attempt_id": attempt_id,
                 "lease_epoch": epoch,
+                **({"plan_scope_sha256": plan_scope.sha256()} if plan_scope else {}),
             },
             sort_keys=True,
             separators=(",", ":"),

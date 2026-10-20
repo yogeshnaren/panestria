@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from psycopg.pq import TransactionStatus
 
@@ -22,7 +23,6 @@ from panestria.contracts.plan import (
     ValidatedDAG,
 )
 from panestria.contracts.policy import PolicyRequest
-from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.plans import PlanValidator
@@ -30,6 +30,9 @@ from panestria.kernel.repositories.policy import current_policy, lock_project
 from panestria.kernel.repositories.tasks import append_event, lock_task
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.engine import PolicyEngine
+
+if TYPE_CHECKING:
+    from panestria.kernel.build import BuildEvidenceService
 
 
 class PlanStore:

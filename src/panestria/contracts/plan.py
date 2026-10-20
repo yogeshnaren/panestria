@@ -164,3 +164,17 @@ class RetainedHandoff(PlanContract):
     runtime_qualification: Literal["NOT_ASSESSED"] = "NOT_ASSESSED"
     summary_authority: Literal["UNTRUSTED_NOTE"] = "UNTRUSTED_NOTE"
     task_completion_authority: Literal["NONE"] = "NONE"
+
+
+class PlanTaskScope(PlanContract):
+    """Derived from immutable accepted membership, never selected by a worker."""
+
+    plan_id: PlanId
+    plan_sha256: PlanSha
+    inventory_sha256: PlanSha
+    node: PlanNode
+    integration_task_id: PlanId
+
+    @property
+    def integration(self) -> bool:
+        return self.node.task_id == self.integration_task_id
