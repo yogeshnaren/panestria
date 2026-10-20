@@ -450,3 +450,28 @@ def run_native_plan(
     from panestria.execution.native_plan import NativePlanRunner
 
     _finish(lambda: NativePlanRunner(_service(config)).run(plan_id, public_subscription_run=public_subscription_run))
+
+
+@plan_app.command("propose")
+def propose_local_plan(
+    config: Annotated[Path, typer.Option("--config")],
+    contract: Annotated[Path, typer.Option("--contract")],
+    inventory: Annotated[Path, typer.Option("--inventory")],
+    output_directory: Annotated[Path, typer.Option("--output-directory")],
+    local_model_run: bool = False,
+) -> None:
+    """Generate one bounded offline draft; no canonical staging, acceptance or worker launch."""
+    from panestria.config_plan import load_plan_settings
+    from panestria.execution.local_plan import LocalBuildPlanner
+
+    try:
+        result = LocalBuildPlanner(load_plan_settings(config)).propose(
+            load_contract(json.loads(read_private(contract, 256 * 1024))),
+            ProjectInventory.model_validate_json(read_private(inventory, 16384)),
+            output_directory,
+            local_model_run=local_model_run,
+        )
+        typer.echo(json.dumps(result))
+    except Exception:
+        typer.echo('{"status":"UNAVAILABLE","reason":"local_plan_not_published_inspect_private_run"}', err=True)
+        raise typer.Exit(1) from None

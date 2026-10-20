@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "source_commit": "256be15a794dde6f7a4d358c7c31bf14164984a9",
+  "scope": "One direct offline editing proposal, trusted final verifier compilation, private receipt and separate owner review; no canonical task mutation or dispatch",
+  "runs": [
+    {
+      "report": "initial.xml",
+      "source_commit": "896a61d2b22b933b2ba72b4f7a929c00bf714243",
+      "worktree_state": "dirty",
+      "tests": 7,
+      "failures": 1,
+      "seconds": 1.777
+    },
+    {
+      "report": "corrected-fixture.xml",
+      "source_commit": "896a61d2b22b933b2ba72b4f7a929c00bf714243",
+      "worktree_state": "dirty",
+      "tests": 7,
+      "failures": 0,
+      "seconds": 0.884
+    },
+    {
+      "report": "compiled-component.xml",
+      "source_commit": "18d0f23eba21a12930f1c8a589ff907b07adea70",
+      "worktree_state": "dirty",
+      "tests": 7,
+      "failures": 0,
+      "seconds": 0.892
+    },
+    {
+      "report": "qualified.xml",
+      "source_commit": "256be15a794dde6f7a4d358c7c31bf14164984a9",
+      "worktree_state": "clean",
+      "tests": 39,
+      "failures": 0,
+      "seconds": 1.372
+    },
+    {
+      "report": "initial-live-failed.xml",
+      "source_commit": "18d0f23eba21a12930f1c8a589ff907b07adea70",
+      "worktree_state": "clean",
+      "tests": 1,
+      "failures": 1,
+      "seconds": 25.319
+    },
+    {
+      "report": "live.xml",
+      "source_commit": "256be15a794dde6f7a4d358c7c31bf14164984a9",
+      "worktree_state": "clean",
+      "tests": 1,
+      "failures": 0,
+      "seconds": 19.633
+    }
+  ],
+  "sha256": {
+    "initial.xml": "3dd74b61c68a9fccf222e6b6d9f236026c848c355614c1fcf519cb07bfe78c3a",
+    "corrected-fixture.xml": "82f989453d110f77856af2fe1d77ddb30bcbd23d6dcf2634b112c37bc85f5e83",
+    "compiled-component.xml": "62fe0cf814a877f34bd16a6ed89c005bfdbb72d5b7ea0b35218c741356ead956",
+    "qualified.xml": "6e9969bb25887f93b176b5d34914366100d7086592ba302dc86bc25c06ea2942",
+    "initial-live-failed.xml": "ab5193d22957b0b25876a54c8703442fd92e855f33fcb8d330165afd272e3e76",
+    "live.xml": "25da45f83e6739207d97c1fde005b96ccb189c22e769e578614ebb99f413a113"
+  },
+  "observed": [
+    "Actual private CLI writes frozen input, compiled proposal and metadata while omitting intent from stdout",
+    "Controller supplies UUIDs and contract/inventory hashes; final node covers all original checks and editing paths within a reserved wall budget",
+    "Invalid path/cycle/authority fields/truncation retain failure and cannot publish or implicitly retry",
+    "Missing explicit intent, foreign scope and oversized context refuse before inference",
+    "Current corrected actual CPU call used existing pinned model/cache, no cloud or downloads,560input/95output tokens,17.46075s generation; runtime and owned cleanup completed",
+    "Initial live model-generated graph omitted final dependencies and was rejected; corrected edit-only interface with trusted final compilation passed"
+  ],
+  "provenance_notes": [
+    "Initial component fixture asked for an intent exceeding the goal schema maximum and expected a later context-limit error;6passed/1failed. The corrected fixture remains within the goal schema and proves pre-call context refusal. Original failure retained.",
+    "Corrected-fixture and compiled-component reports observed uncommitted test/source changes at their original heads, not release candidates. Qualified39default checks and the actual local live case ran on clean256be15.",
+    "The first actual local model call at clean18d0f23 failed final graph validation; no proposal or task was published. Original JUnit and private input/response journal retained.",
+    "New interface asks only for edits; deterministic final compilation was a design correction, not silent repair of the old response. No invalid output was relabeled.",
+    "Default generator/inventory are explicit fixtures. Actual CPU inference uses the fixed local model/runtime with declared synthetic worker inventory; no native worker dispatch or conformance is claimed."
+  ],
+  "model_ref": "qwen2.5:1.5b-instruct",
+  "model_digest": "65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+  "planning_quality": "NOT_ASSESSED_GENERALIZATION",
+  "release_gate": "NOT_EVALUATED",
+  "owner_acceptance": "NOT_GRANTED",
+  "remaining": [
+    "Canonical bounded revisions/finite repair and progress ledger",
+    "Qualified general worker DAG/second adapter/recovery",
+    "All other revision-3 and cumulative release evidence/real owner trial"
+  ]
+}
