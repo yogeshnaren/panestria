@@ -346,6 +346,27 @@ class OwnerBuild:
             ).fetchone()
             result: dict[str, Any] = {"goal_id": goal, "task_id": task, "task_state": state, "row_version": version}
             evidence_digest = None
+            conflict = c.execute(
+                "SELECT payload->>'report_sha256' FROM panestria.task_event WHERE task_id=%s "
+                "AND kind='build.plan.integration_conflict' ORDER BY seq DESC LIMIT 1",
+                (task,),
+            ).fetchone()
+            if conflict and state == "RECONCILING":
+                import json
+
+                report = json.loads(self.reports.read_blob(conflict[0]))
+                current = c.execute(
+                    "SELECT 1 FROM panestria.task_attempt a JOIN panestria.task t ON t.id=a.task_id "
+                    "WHERE a.id=%s AND a.task_id=%s AND a.lease_epoch=t.lease_epoch",
+                    (report.get("attempt_id"), task),
+                ).fetchone()
+                if current is None or report.get("kind") != "plan-integrated-candidate":
+                    raise KernelDenied("integration_conflict_unconfirmed")
+                result["integration_conflict"] = {
+                    "report_sha256": conflict[0],
+                    "conflicts": report["conflicts"],
+                    "resolution": "OWNER_REVIEW_REQUIRED",
+                }
             if approvals:
                 view = ApprovalService().preview(UnitOfWork(c), self.actor, approvals[0])
                 result["approval"] = vars(view)
