@@ -78,22 +78,13 @@ def planner_context(tmp_path):
         runtime_directory=tmp_path / "model-runtime",
     )
     draft = {
-        "nodes": [
+        "edits": [
             {
                 "task_id": "edit-one",
                 "worker_ref": "worker-one",
                 "capabilities": ["scoped-file-edit"],
                 "paths": ["src/example.py"],
                 "acceptance_keys": ["AC-002"],
-                "wall_seconds_per_attempt": 60,
-            },
-            {
-                "task_id": "integration",
-                "depends_on": ["edit-one"],
-                "worker_ref": "trusted-integrator",
-                "capabilities": ["trusted-test-runner"],
-                "paths": ["src/example.py"],
-                "acceptance_keys": [c.id for c in goal.acceptance],
                 "wall_seconds_per_attempt": 60,
             },
         ]
@@ -143,11 +134,11 @@ def test_one_private_draft_is_validated_bound_to_inputs_and_never_implicitly_rep
 def test_bad_model_output_retains_failure_but_cannot_publish_or_retry(planner_context, fault):
     f = planner_context
     if fault == "outside-path":
-        f.state.draft["nodes"][0]["paths"] = ["secrets/escape.txt"]
+        f.state.draft["edits"][0]["paths"] = ["secrets/escape.txt"]
     elif fault == "cycle":
-        f.state.draft["nodes"][0]["depends_on"] = ["integration"]
+        f.state.draft["edits"][0]["depends_on"] = ["edit-one"]
     elif fault == "authority-field":
-        f.state.draft["nodes"][0]["shell_command"] = "arbitrary command is not authority"
+        f.state.draft["edits"][0]["shell_command"] = "arbitrary command is not authority"
     else:
         f.state.finish_reason = "length"
     planner = LocalBuildPlanner(f.settings, f.model)

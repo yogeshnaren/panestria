@@ -15,4 +15,4 @@ class DraftNode(PlanNode):
 
 
 class ModelPlanDraft(PlanContract):
-    nodes: tuple[DraftNode, ...] = Field(min_length=1, max_length=16)
+    edits: tuple[DraftNode, ...] = Field(min_length=1, max_length=15)
