@@ -86,3 +86,15 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Owner-requested metrics foundation (2026-10-19)
+
+The focused performance-history component adds explicit local capture/show of
+existing source-bound quality, latency, resource, CI and mutation observations.
+See [PERFORMANCE_METRICS.md](../testing/PERFORMANCE_METRICS.md). This is a derived
+private read model; it neither replaces canonical PostgreSQL state nor completes
+this item's runtime instrumentation, Mission Control, exposure or live cases.
+New experiments must retain their original source, cohort, units, denominator,
+artifact hashes and failure/unknown outcomes. Current end-to-end and task-domain
+accuracy remain unmeasured where no qualifying evidence exists. No original
+acceptance requirement or release gate is weakened by adding this component.
