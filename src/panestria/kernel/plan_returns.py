@@ -253,6 +253,10 @@ class ReturnedBuildRelease:
         }
         digest = lifecycle._release(uow, attempt_id, "VERIFIED_RETURN", proof)
         if state == "CANCELLING" or (state == "RECONCILING" and worker_ref == "trusted-integrator"):
+            if state == "RECONCILING":
+                uow.execute(
+                    "UPDATE panestria.task SET state='CANCELLING',row_version=row_version+1 WHERE id=%s", (task,)
+                )
             uow.execute("UPDATE panestria.task SET state='CANCELLED',row_version=row_version+1 WHERE id=%s", (task,))
             uow.execute(
                 "UPDATE panestria.task_attempt SET status='CANCELLED',finished_at=clock_timestamp() "
