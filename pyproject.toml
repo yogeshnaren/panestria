@@ -80,7 +80,7 @@ only_mutate = [
   "src/panestria/sandbox/egress.py",
   "src/panestria/verification/entailment.py",
 ]
-also_copy = ["tools/mutation_observer.py"]
+also_copy = ["tools/"]
 pytest_add_cli_args = ["-p", "mutation_observer", "--maxfail=0"]
 pytest_add_cli_args_test_selection = [
   "tests/unit/test_public_web_policy.py",
