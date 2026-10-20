@@ -9,7 +9,8 @@ The owner explicitly resumed implementation through R3 on 2026-10-20. Current
 critical path: canonical plans/handoffs (PR127), scoped verification (PR132) and
 bounded admission/handoff completion (PR133) are merged. Combined-tree verification
 and owner review are merged in PR134; the native two-worker execution slice is merged in PR137 after actual live validation
-and all six exact-head CI checks. Local structured proposals are the next focused slice. CI/mutation/metrics PRs128–131 are
+and all six exact-head CI checks. Direct local proposals are merged in PR138. The next focused outcome is physical-return
+recovery and finite repair/version admission. CI/mutation/metrics PRs128–131 are
 merged; performance history is delivered, continuous task metrics remain pending.
 Deliver usable slices and required evidence; avoid unrelated test expansion.
 
@@ -225,3 +226,7 @@ PR137 connects inventory declarations, explicit accepted-plan execution, scoped 
 ## Direct local plan proposals
 
 The [offline planner](testing/LOCAL_BUILD_PLANNER.md) now produces bounded editing assignments and a trusted compiled final verifier without a graph runtime, DB writes or worker admission. It preserves private frozen inputs/response/model/token/latency/proposal records and requires separate canonical stage/accept. [Evidence](../evidence/local-build-planner-2026-10-20/report.json) at clean `256be15` records39default checks and one actual CPU-model draft PASS19.63s (17.46s generation,560input/95output tokens). Original invalid graph output and a fixture error are retained, not promoted. This is the direct proposal component of AOS-025-S2; general planning quality, canonical bounded revisions/repair, qualified inventory and cumulative TC02/G3 still remain. Next concrete task is physical-return reconciliation and finite repair/version admission; uncertain work must not be retried merely because a lease expired.
+
+## Final-controller recovery boundary
+
+[Final integration tracking](testing/FINAL_INTEGRATION_RECOVERY.md) adds a committed invocation before trusted assembly/checks. Plan cancellation therefore retains active verification capacity, and an uncertain cleanup receipt cannot publish PASS, approve, release or redispatch. Historical return remains separate from current acceptance. This is the prerequisite for safe failed-work release and bounded repair; physical UNKNOWN/native recovery and the full cumulative gate remain pending.

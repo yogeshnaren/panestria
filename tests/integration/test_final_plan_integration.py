@@ -235,10 +235,8 @@ def test_conflicting_verified_edits_stop_without_candidate_pass_or_merge(build, 
 
 @pytest.mark.parametrize("build", [PATHS], indirect=True)
 def test_cancellation_after_actual_full_checks_cannot_publish_or_request_merge(build, tmp_path, monkeypatch):
-    from uuid import uuid4
-
     import panestria.execution.build_plan as module
-    from panestria.kernel.tasks import TaskService
+    from panestria.kernel.plan_lifecycle import PlanLifecycle
 
     plan = accepted(
         build, base_snapshot_sha=materialize(build.bare, build.base, build.base, tmp_path / "inventory").manifest_sha256
@@ -255,20 +253,16 @@ def test_cancellation_after_actual_full_checks_cannot_publish_or_request_merge(b
         actual = original(*args, **kwargs)
         assert actual.bundle.passed()
         with connected(build)() as c:
-            version = c.execute(
-                "SELECT row_version FROM panestria.task WHERE id=%s", (final.lease.task_id,)
-            ).fetchone()[0]
-            TaskService().transition(
-                UnitOfWork(c),
-                build.actor,
-                final.lease.task_id,
-                version,
-                final.lease.epoch,
+            stop = PlanLifecycle().cancel(UnitOfWork(c), build.actor, plan.plan_id, plan.sha256())
+            assert stop.status == "CANCEL_REQUESTED" and stop.held_claims == 1
+            assert c.execute("SELECT state FROM panestria.task WHERE id=%s", (final.lease.task_id,)).fetchone() == (
                 "CANCELLING",
-                "owner-cancel",
-                policy_version=build.contract.autonomy_profile_ref,
-                correlation_id=str(uuid4()),
             )
+            assert c.execute(
+                "SELECT state FROM panestria.worker_invocation WHERE attempt_id=%s "
+                "AND binding->>'kind'='build-integration'",
+                (final.lease.attempt_id,),
+            ).fetchone() == ("CLAIMED",)
         return actual
 
     monkeypatch.setattr(module, "verify_build", checked_then_cancelled)
@@ -289,4 +283,62 @@ def test_cancellation_after_actual_full_checks_cannot_publish_or_request_merge(b
         assert c.execute(
             "SELECT count(*) FROM panestria.approval_request WHERE goal_id=%s", (plan.goal_id,)
         ).fetchone() == (0,)
+    assert _git(build.bare, "rev-parse", "refs/heads/main") == build.base
+
+
+@pytest.mark.parametrize("build", [PATHS], indirect=True)
+def test_uncertain_verifier_cleanup_retains_claim_and_cannot_publish_or_redispatch(build, tmp_path, monkeypatch):
+    from panestria.verification.runner import CheckResult
+    from panestria.verification.sandboxed import SandboxedCheckRunner
+
+    plan = accepted(
+        build, base_snapshot_sha=materialize(build.bare, build.base, build.base, tmp_path / "inventory").manifest_sha256
+    )
+    one, two = claim(build, plan), claim(build, plan)
+    assert isinstance(one, Scheduled) and isinstance(two, Scheduled)
+    sibling(build, plan, one, build.candidate, tmp_path / "verified-one")
+    sibling(build, plan, two, second_candidate(build, "part1.txt", "second worker"), tmp_path / "verified-two")
+    final = claim(build, plan)
+    assert isinstance(final, Scheduled)
+    actual = SandboxedCheckRunner.run
+
+    def lost_cleanup(self, *args, **kwargs):
+        actual(self, *args, **kwargs)  # Real owned Docker job runs and cleans; simulate a lost cleanup receipt.
+        return CheckResult(args[0], "FAIL", "sandbox_launch_reconciliation_required")
+
+    monkeypatch.setattr(SandboxedCheckRunner, "run", lost_cleanup)
+    integrator = BuildIntegrator(connected(build), build.actor, build.service, build.certificates)
+    outcome = integrator.verify_for_review(
+        plan.plan_id,
+        final.lease.attempt_id,
+        final.lease.epoch,
+        build.protected,
+        build.bare,
+        tmp_path / "unconfirmed",
+        build.registry,
+    )
+    assert outcome.status == "RECONCILING" and outcome.review is None
+    with connected(build)() as c:
+        assert c.execute(
+            "SELECT state FROM panestria.worker_invocation WHERE attempt_id=%s "
+            "AND binding->>'kind'='build-integration'",
+            (final.lease.attempt_id,),
+        ).fetchone() == ("UNKNOWN",)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.build_active_worker_claim WHERE plan_id=%s", (plan.plan_id,)
+        ).fetchone() == (1,)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.build_evidence WHERE task_id=%s", (final.lease.task_id,)
+        ).fetchone() == (0,)
+    with pytest.raises(KernelDenied):
+        integrator.verify_for_review(
+            plan.plan_id,
+            final.lease.attempt_id,
+            final.lease.epoch,
+            build.protected,
+            build.bare,
+            tmp_path / "do-not-replay",
+            build.registry,
+        )
+    assert not (tmp_path / "do-not-replay").exists()
     assert _git(build.bare, "rev-parse", "refs/heads/main") == build.base

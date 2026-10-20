@@ -206,7 +206,7 @@ def test_two_scoped_workers_and_create_only_node_reach_exact_owner_review(native
             "SELECT count(*) FROM panestria.worker_invocation i "
             "JOIN panestria.task t ON t.id=i.task_id WHERE t.goal_id=%s AND i.state='RETURNED'",
             (plan.goal_id,),
-        ).fetchone() == (4,)
+        ).fetchone() == (5,)
         assert c.execute(
             "SELECT count(*) FROM panestria.build_handoff WHERE plan_id=%s", (plan.plan_id,)
         ).fetchone() == (2,)
