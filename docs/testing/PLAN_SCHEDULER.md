@@ -6,13 +6,14 @@ Use an already migrated disposable/review configuration and an accepted executab
 plan from [canonical storage](CANONICAL_BUILD_PLAN.md). Do not recreate owner data.
 
 ```bash
+panestria plan claims OWNER_UUID PROJECT_UUID PLAN_UUID
 panestria plan queue OWNER_UUID PROJECT_UUID PLAN_UUID --evidence-store /absolute/private/build-evidence
 panestria plan claim OWNER_UUID PROJECT_UUID PLAN_UUID --evidence-store /absolute/private/build-evidence --skills-archive /absolute/path/agentos-skills-v0.1.0.zip
 panestria plan complete-node OWNER_UUID PROJECT_UUID PLAN_UUID HANDOFF_UUID --evidence-store /absolute/private/build-evidence
 ```
 
 `PANESTRIA_DATABASE_URL` supplies the existing database; no command migrates it.
-Queue shows ready/wait reasons. Claim runs the pinned read-only CPU hardware probe,
+Claims shows historical attempt IDs, capacity holds, expiry and unresolved invocations, including after policy changes. Queue shows ready/wait reasons. Claim runs the pinned read-only CPU hardware probe,
 then reserves one ready node atomically with its fenced lease and event. RESERVED
 means capacity held, **dispatch authority NONE**. Do not repeatedly claim to retry
 a lost reply: inspect canonical tasks/claims first. Actual qualified execution,

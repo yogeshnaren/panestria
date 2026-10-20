@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="6" time="18.206" timestamp="2026-10-20T00:44:15.118605-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_plan_scheduler" name="test_eight_competing_claims_reserve_only_two_and_expiry_does_not_free_capacity[build0]" file="tests/integration/test_plan_scheduler.py" line="163" time="6.031" /><testcase classname="tests.integration.test_plan_scheduler" name="test_claim_rolls_back_with_lease_and_event_and_preserves_scope_and_resource_waits[build0]" file="tests/integration/test_plan_scheduler.py" line="195" time="2.501" /><testcase classname="tests.integration.test_plan_scheduler" name="test_overlapping_paths_queue_without_overwriting_other_work[build0]" file="tests/integration/test_plan_scheduler.py" line="223" time="2.257" /><testcase classname="tests.integration.test_plan_scheduler" name="test_actual_node_checks_and_handoffs_unlock_final_node_without_completing_goal[build0]" file="tests/integration/test_plan_scheduler.py" line="268" time="2.284"><failure message="AttributeError: 'int' object has no attribute 'directory'">build = BuildFixture(task={'owner': '6e50bb55-a606-4f05-bfe5-7b38a8b623b3', 'project': 'fc808b95-f734-473a-a041-192835c6b172',...olicy-change': 'approve-first', 'read': 'act-and-report', 'spend': 'approve-first', 'tool-install': 'approve-first'})))
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-225/test_actual_node_checks_and_ha0')
+
+    @pytest.mark.parametrize("build", [PATHS], indirect=True)
+    def test_actual_node_checks_and_handoffs_unlock_final_node_without_completing_goal(build, tmp_path):
+        plan = accepted(build)
+        first, second = claim(build, plan), claim(build, plan)
+        assert isinstance(first, Scheduled) and isinstance(second, Scheduled)
+&gt;       handoff = verified_handoff(build, plan, first, build.candidate, tmp_path / "node-one")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_plan_scheduler.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_plan_scheduler.py:238: in verified_handoff
+    observed = verify_build(
+src/panestria/verification/build.py:45: in verify_build
+    verify_snapshot(snapshot)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+snapshot = 1
+
+    def verify_snapshot(snapshot: GitSnapshot) -&gt; None:
+        import stat
+    
+&gt;       if snapshot.directory.is_symlink():
+           ^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'int' object has no attribute 'directory'
+
+src/panestria/verification/git_snapshot.py:186: AttributeError</failure></testcase><testcase classname="tests.integration.test_plan_scheduler" name="test_failed_node_keeps_dependents_blocked_and_does_not_forge_handoff[build0]" file="tests/integration/test_plan_scheduler.py" line="312" time="2.333"><failure message="AttributeError: 'int' object has no attribute 'directory'">build = BuildFixture(task={'owner': 'a5594323-b94f-402d-b02e-a810d902362c', 'project': '08387ea8-8bb5-4ad0-8cb4-69d398141a58',...olicy-change': 'approve-first', 'read': 'act-and-report', 'spend': 'approve-first', 'tool-install': 'approve-first'})))
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-225/test_failed_node_keeps_depende0')
+
+    @pytest.mark.parametrize("build", [PATHS], indirect=True)
+    def test_failed_node_keeps_dependents_blocked_and_does_not_forge_handoff(build, tmp_path):
+        plan = accepted(build)
+        first, second = claim(build, plan), claim(build, plan)
+        assert isinstance(first, Scheduled) and isinstance(second, Scheduled)
+        # The first node owns answer.txt. A candidate with that diff fails node two's part1.txt scope.
+&gt;       assert verified_handoff(build, plan, second, build.candidate, tmp_path / "failed-node") is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_plan_scheduler.py:319: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_plan_scheduler.py:238: in verified_handoff
+    observed = verify_build(
+src/panestria/verification/build.py:45: in verify_build
+    verify_snapshot(snapshot)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+snapshot = 1
+
+    def verify_snapshot(snapshot: GitSnapshot) -&gt; None:
+        import stat
+    
+&gt;       if snapshot.directory.is_symlink():
+           ^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'int' object has no attribute 'directory'
+
+src/panestria/verification/git_snapshot.py:186: AttributeError</failure></testcase><testcase classname="tests.integration.test_plan_scheduler" name="test_plan_consent_does_not_replace_owner_edit_consent[build0]" file="tests/integration/test_plan_scheduler.py" line="331" time="2.506" /></testsuite></testsuites>
