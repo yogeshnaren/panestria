@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "scope": "Plan-wide cancellation and immutable no-dispatch/confirmed-final capacity release; actual PG/Git/Docker component observations, not live worker qualification",
+  "source_commit": "b5f24ad73753bf979b5402ad5f8a107caa2d631b",
+  "worktree_state": "clean before evidence and progress writes",
+  "runs": [
+    {
+      "report": "initial.xml",
+      "source_state": "uncommitted implementation",
+      "passed": 6,
+      "failed": 0,
+      "seconds": 24.58
+    },
+    {
+      "report": "qualified.xml",
+      "source_commit": "e3e9f4ef1786d14bfd8e78c5e094d2dbdf1f0922",
+      "passed": 37,
+      "failed": 0,
+      "seconds": 51.57,
+      "scope": "Lifecycle, final integration, scheduler and Ask setup/startup/schema compatibility"
+    },
+    {
+      "report": "pre-restore-assertions.xml",
+      "source_commit": "47afe89656e28a0db61dde9feb3783b0a401bf0f",
+      "passed": 1,
+      "failed": 0,
+      "seconds": 6.16,
+      "scope": "Original cancellation assertions only; attempted patch insertion failed, so this is NOT restore evidence"
+    },
+    {
+      "report": "actual-restore.xml",
+      "source_commit": "b5f24ad73753bf979b5402ad5f8a107caa2d631b",
+      "passed": 1,
+      "failed": 0,
+      "seconds": 11.27,
+      "scope": "New actual pg_dump/pg_restore and populated downgrade-refusal assertions, plus atomic concurrent cancellation"
+    }
+  ],
+  "schema": "0035 observed from disposable actual Postgres; original 0034 claims/handoffs untouched",
+  "static_checks": [
+    "ruff",
+    "mypy 256 files",
+    "11 import boundaries",
+    "secret scan"
+  ],
+  "sha256": {
+    "initial.xml": "79508a60762c0d69c2e38947251ebc16eaed65a8117ed806bcceb4be908368fd",
+    "qualified.xml": "0868b3facf979ec584dd204c956113ea94c94712dab5616b6b2a3684e9b9db88",
+    "pre-restore-assertions.xml": "2d0a79785aeea1ebad12b0759a11047da2e5b0b69774d71f6fa1f14a8990d47a",
+    "actual-restore.xml": "b041af762447480018d48dd76691371cacef65d46f1ad1673c682da052c34dcf"
+  },
+  "release_gate": "NOT_ASSESSED",
+  "remaining": [
+    "Qualified native orchestration, physical uncertain-process termination/recovery",
+    "Original provider/OS/cumulative gates and owner trial"
+  ]
+}

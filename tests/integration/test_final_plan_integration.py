@@ -147,8 +147,51 @@ def test_two_verified_siblings_require_full_exact_combined_checks_before_owner_r
             approval["approval_id"], approval["effect_digest"], approval["expected_version"], str(uuid4())
         )
         assert merged["task_state"] == "COMPLETED"
+        with connected(build)() as c:
+            assert c.execute("SELECT count(*) FROM panestria.build_active_worker_claim").fetchone() == (0,)
+            assert c.execute(
+                "SELECT reason FROM panestria.build_claim_release WHERE attempt_id=%s", (final.lease.attempt_id,)
+            ).fetchone() == ("VERIFIED_FINAL",)
         assert _git(build.bare, "rev-parse", "refs/heads/main") == result.review.candidate_commit
         assert _git(build.source, "rev-parse", "HEAD") == candidate2  # Original worker checkout preserved.
+        # A historical confirmed release stays idempotent after owner revocation.
+        from panestria.kernel.plan_lifecycle import PlanLifecycle
+        from panestria.kernel.policy import PolicyService
+
+        changed = build.policy.model_copy(
+            update={
+                "version": 3,
+                "autonomy": build.policy.autonomy.model_copy(
+                    update={
+                        "version": 3,
+                        "actions": {**build.policy.autonomy.actions, "read": "observe", "edit": "observe"},
+                    }
+                ),
+            }
+        )
+        policy_service = PolicyService(build.certificates)
+        with connected(build)() as c:
+            review = policy_service.propose(UnitOfWork(c), build.actor, build.task["task"], changed)
+        with connected(build)() as c:
+            policy_service.decide(UnitOfWork(c), build.actor, review.review_id, review.effect_digest, "approve")
+        with connected(build)() as c:
+            policy_service.apply(UnitOfWork(c), build.actor, review.review_id, review.effect_digest)
+        with connected(build)() as c:
+            effect_id = c.execute(
+                "SELECT id::text FROM panestria.side_effect WHERE task_id=%s", (final.lease.task_id,)
+            ).fetchone()[0]
+            PlanLifecycle().release_final(
+                UnitOfWork(c),
+                build.actor,
+                plan.plan_id,
+                final.lease.task_id,
+                result.review.evidence_sha256,
+                effect_id,
+                build.service,
+            )
+            assert c.execute(
+                "SELECT count(*) FROM panestria.task_event WHERE kind='build.plan.final_capacity_released'"
+            ).fetchone() == (1,)
 
 
 @pytest.mark.parametrize("build", [PATHS], indirect=True)

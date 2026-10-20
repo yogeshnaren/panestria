@@ -65,7 +65,8 @@ class Scheduler:
         # It neither revalidates dispatch nor changes/releases a reservation.
         PlanStore()._read(uow, actor, plan_id)
         rows = uow.execute(
-            "SELECT c.attempt_id::text,c.task_id::text,c.lease_epoch,c.released_at IS NULL,"
+            "SELECT c.attempt_id::text,c.task_id::text,c.lease_epoch,c.released_at IS NULL AND NOT EXISTS "
+            "(SELECT 1 FROM panestria.build_claim_release r WHERE r.attempt_id=c.attempt_id),"
             "a.status,a.lease_expires_at,c.handoff_id::text,"
             "(SELECT count(*) FROM panestria.worker_invocation i WHERE i.attempt_id=c.attempt_id "
             "AND i.state!='RETURNED') FROM panestria.build_worker_claim c "
@@ -116,7 +117,7 @@ class Scheduler:
                 return "dependency_not_verified"
             PlanStore().read_handoff(uow, actor, completed[0], evidence)
         active = uow.execute(
-            "SELECT plan_id::text,task_id::text,worker_ref FROM panestria.build_worker_claim WHERE released_at IS NULL"
+            "SELECT plan_id::text,task_id::text,worker_ref FROM panestria.build_active_worker_claim"
         ).fetchall()
         if any(row[1] == node.task_id for row in active):
             return "claim_unreconciled"
@@ -180,7 +181,7 @@ class Scheduler:
             or not 0 <= (now[0] - observed).total_seconds() <= 30
         ):
             raise KernelDenied("fresh_actual_capacity_required")
-        count = uow.execute("SELECT count(*) FROM panestria.build_worker_claim WHERE released_at IS NULL").fetchone()
+        count = uow.execute("SELECT count(*) FROM panestria.build_active_worker_claim").fetchone()
         assert count is not None
         workers = count[0] + 1
         if (

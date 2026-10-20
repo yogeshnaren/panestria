@@ -38,13 +38,12 @@ Existing unrelated programs are reflected in current free capacity; this ledger
 alone does not enforce an OS process ceiling for legacy non-plan launch paths.
 
 Expiry, FAILED/CANCELLED state and ambiguous invocations retain their reservation.
-They do not prove a process stopped. This first release has no force-release,
+They do not prove a process stopped. There is no force-release,
 cleanup, automatic retry or reconciliation bypass. Completion accepts only a
 current successful intermediate handoff with returned invocations; it atomically
 marks that node COMPLETED, releases its claim and records the proof. Repeating
 that exact completion is harmless. It does not complete the goal, request a merge
-or bypass the final task's full checks/owner approval. Final-task resource release
-and failed/unknown-process reconciliation remain subsequent executor work.
+or bypass the final task's full checks/owner approval. [Plan lifecycle](PLAN_LIFECYCLE.md) adds proof-bound final/no-dispatch release and all-task cancellation; failed/unknown-process physical reconciliation remains executor work.
 
 Focused checks use real disposable Postgres databases, Git candidates and protected
 CAS/path verifier results. Capacity values and worker identities are explicitly

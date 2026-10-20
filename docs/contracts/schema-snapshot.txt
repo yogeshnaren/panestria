@@ -83,6 +83,21 @@ column budget_reservation id uuid NO
 column budget_reservation request_key text NO
 column budget_reservation state text NO
 column budget_reservation task_id uuid NO
+column build_active_worker_claim attempt_id uuid YES
+column build_active_worker_claim created_at timestamptz YES
+column build_active_worker_claim handoff_id uuid YES
+column build_active_worker_claim hardware jsonb YES
+column build_active_worker_claim hardware_sha256 bpchar YES
+column build_active_worker_claim lease_epoch int8 YES
+column build_active_worker_claim plan_id uuid YES
+column build_active_worker_claim released_at timestamptz YES
+column build_active_worker_claim task_id uuid YES
+column build_active_worker_claim worker_ref text YES
+column build_claim_release attempt_id uuid NO
+column build_claim_release created_at timestamptz NO
+column build_claim_release proof jsonb NO
+column build_claim_release proof_sha256 bpchar NO
+column build_claim_release reason text NO
 column build_evidence artifact_id uuid NO
 column build_evidence attempt_id uuid NO
 column build_evidence body jsonb NO
@@ -703,6 +718,11 @@ constraint panestria.budget_reservation f FOREIGN KEY (goal_id) REFERENCES panes
 constraint panestria.budget_reservation f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
 constraint panestria.budget_reservation p PRIMARY KEY (id)
 constraint panestria.budget_reservation u UNIQUE (goal_id, request_key)
+constraint panestria.build_claim_release c CHECK (((jsonb_typeof(proof) = 'object'::text) AND (octet_length((proof)::text) <= 32768)))
+constraint panestria.build_claim_release c CHECK ((proof_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.build_claim_release c CHECK ((reason = ANY (ARRAY['NO_DISPATCH'::text, 'VERIFIED_FINAL'::text])))
+constraint panestria.build_claim_release f FOREIGN KEY (attempt_id) REFERENCES panestria.build_worker_claim(attempt_id)
+constraint panestria.build_claim_release p PRIMARY KEY (attempt_id)
 constraint panestria.build_evidence c CHECK ((jsonb_typeof(body) = 'object'::text))
 constraint panestria.build_evidence c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.build_evidence f FOREIGN KEY (artifact_id, task_id) REFERENCES panestria.artifact(id, task_id)
@@ -1249,6 +1269,7 @@ index CREATE UNIQUE INDEX browser_session_pkey ON panestria.browser_session USIN
 index CREATE UNIQUE INDEX browser_session_token_hash_key ON panestria.browser_session USING btree (token_hash)
 index CREATE UNIQUE INDEX budget_reservation_goal_id_request_key_key ON panestria.budget_reservation USING btree (goal_id, request_key)
 index CREATE UNIQUE INDEX budget_reservation_pkey ON panestria.budget_reservation USING btree (id)
+index CREATE UNIQUE INDEX build_claim_release_pkey ON panestria.build_claim_release USING btree (attempt_id)
 index CREATE UNIQUE INDEX build_evidence_artifact_id_key ON panestria.build_evidence USING btree (artifact_id)
 index CREATE UNIQUE INDEX build_evidence_pkey ON panestria.build_evidence USING btree (id)
 index CREATE UNIQUE INDEX build_evidence_task_id_sha256_key ON panestria.build_evidence USING btree (task_id, sha256)
