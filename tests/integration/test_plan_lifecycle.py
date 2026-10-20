@@ -1,6 +1,10 @@
 """Actual same-Postgres goal fencing and release audit; no live process is invented."""
 
+import os
+import subprocess
+import sys
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from threading import Barrier
 from uuid import UUID, uuid4
 
@@ -9,6 +13,8 @@ import pytest
 from build_support import build as build  # noqa: F401
 from plan_support import PATHS, accepted, claim
 from plan_support import r1_task as r1_task  # noqa: F401
+from psycopg import sql
+from test_memory_restore import _fixture_container
 
 from panestria.contracts.goal import contract_sha256
 from panestria.contracts.invocation import InvocationBinding
@@ -72,6 +78,54 @@ def test_plan_cancellation_rollback_then_concurrent_replay_fences_all_tasks_and_
                 LeaseService().require_current(
                     UnitOfWork(c), build.actor, attempt.lease.attempt_id, attempt.lease.epoch
                 )
+
+    refused = subprocess.run(
+        [sys.executable, "-m", "alembic", "-c", "migrations/alembic.ini", "downgrade", "0034_build_admission"],
+        cwd=Path(__file__).resolve().parents[2],
+        env={**os.environ, "PANESTRIA_DATABASE_URL": build.task["dsn"]},
+        capture_output=True,
+        timeout=30,
+    )
+    assert refused.returncode != 0 and b"build release audit exists" in refused.stderr
+    container = _fixture_container()
+    dump = subprocess.run(
+        [
+            "docker",
+            "exec",
+            container,
+            "pg_dump",
+            "-U",
+            "panestria_synthetic",
+            "-d",
+            build.task["dsn"].rsplit("/", 1)[1],
+            "-Fc",
+        ],
+        capture_output=True,
+        check=True,
+        timeout=30,
+    )
+    name = "panestria_release_restore_" + uuid4().hex
+    restored = build.task["dsn"].rsplit("/", 1)[0] + "/" + name
+    with psycopg.connect(build.task["dsn"], autocommit=True) as admin:
+        admin.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
+        try:
+            subprocess.run(
+                ["docker", "exec", "-i", container, "pg_restore", "-U", "panestria_synthetic", "-d", name],
+                input=dump.stdout,
+                capture_output=True,
+                check=True,
+                timeout=30,
+            )
+            with psycopg.connect(restored) as c:
+                assert c.execute("SELECT count(*) FROM panestria.build_active_worker_claim").fetchone() == (0,)
+                assert (
+                    c.execute("SELECT reason FROM panestria.build_claim_release").fetchall() == [("NO_DISPATCH",)] * 2
+                )
+                assert c.execute("SELECT status FROM panestria.goal WHERE id=%s", (plan.goal_id,)).fetchone() == (
+                    "CANCELLED",
+                )
+        finally:
+            admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))
 
 
 @pytest.mark.parametrize("build", [PATHS], indirect=True)
