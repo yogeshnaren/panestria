@@ -1,8 +1,8 @@
-.PHONY: help bootstrap lint typecheck test db-up db-down db-migrate dev-api r0-demo r0-review reset-synthetic-data
+.PHONY: help bootstrap lint typecheck test test-critical db-up db-down db-migrate dev-api r0-demo r0-review reset-synthetic-data
 
 SYNTHETIC_URL := postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55432/panestria_synthetic
 COMPOSE := docker compose -f compose.yaml -p panestria-s3
-KNOWN := help bootstrap lint typecheck test db-up db-down db-migrate dev-api r0-demo r0-review reset-synthetic-data
+KNOWN := help bootstrap lint typecheck test test-critical db-up db-down db-migrate dev-api r0-demo r0-review reset-synthetic-data
 
 ifneq ($(filter-out $(KNOWN),$(MAKECMDGOALS)),)
 $(error unsupported_target)
@@ -23,6 +23,9 @@ typecheck:
 
 test:
 	uv run --frozen pytest -m "not live"
+
+test-critical:
+	uv run --frozen python tools/ci_tests.py fast --critical
 
 db-up:
 	$(COMPOSE) up -d --wait

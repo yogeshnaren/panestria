@@ -92,6 +92,28 @@ def test_overconfident_synthetic_predictions_expose_unsupported_labels(corpus):
     assert score.accuracy_on_answered == pytest.approx(1 / 3)
 
 
+def test_mixed_abstentions_preserve_denominators_and_labeled_confusion_cells(corpus):
+    synthetic = tuple(
+        EntailmentPrediction(case_id=c.case_id, verdict="UNKNOWN" if c.expected == "INSUFFICIENT" else "SUPPORTED")
+        for c in corpus.folds.qualification
+    )
+    score = score_predictions(corpus, "qualification", synthetic)
+    assert (score.total, score.answered, score.correct, score.false_supported_count) == (36, 24, 12, 12)
+    assert score.coverage == pytest.approx(2 / 3)
+    assert score.correct_fraction == pytest.approx(1 / 3)
+    assert score.accuracy_on_answered == score.supported_precision == 0.5
+    cells = {(cell.expected, cell.predicted): cell.count for cell in score.confusion}
+    assert len(cells) == len(score.confusion) == 12
+    expected = {("SUPPORTED", "SUPPORTED"): 12, ("INSUFFICIENT", "UNKNOWN"): 12, ("CONTRADICTED", "SUPPORTED"): 12}
+    assert cells == {
+        (gold, prediction): expected.get((gold, prediction), 0)
+        for gold in ("SUPPORTED", "INSUFFICIENT", "CONTRADICTED")
+        for prediction in ("SUPPORTED", "INSUFFICIENT", "CONTRADICTED", "UNKNOWN")
+    }
+    with pytest.raises(ValueError):
+        score_predictions(corpus, "qualification", list(synthetic))
+
+
 @pytest.mark.parametrize("change", ["missing", "extra", "duplicate", "other-fold", "bad-verdict"])
 def test_missing_duplicate_foreign_or_invalid_predictions_never_silently_score(corpus, change):
     synthetic = tuple(EntailmentPrediction(case_id=c.case_id, verdict="UNKNOWN") for c in corpus.folds.calibration)

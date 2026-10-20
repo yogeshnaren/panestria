@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "source_commit": "30423e67b93f109615d87f83145779dba9da49ce",
+  "scope": "Private derived performance history; no continuous collection or release authority",
+  "local_tests": {
+    "passed": 10,
+    "failed": 0,
+    "seconds": 0.61,
+    "report": "qualified-30423e6.xml"
+  },
+  "actual_cli_capture": {
+    "observations": 38,
+    "input": "Original retained entailment, failed GPU prerequisite, final mutation pilot and original CI audit",
+    "storage": "Owner-selected private outputs/performance-metrics-2026-10-19; immutable JSON file, modes 0700/0600"
+  },
+  "checks": [
+    "Ruff PASS",
+    "strict Mypy250 PASS",
+    "11 import boundaries PASS",
+    "secret scan PASS"
+  ],
+  "release_gates": "NOT_EVALUATED",
+  "continuous_runtime_metrics": "NOT_IMPLEMENTED",
+  "provider_calls": 0,
+  "broader_MVP_continuation": "PAUSED",
+  "report_sha256": "1759fd7fdb64f6abb394d3528d2a42f2f619ef141fe3974d04f3850ce0fc4cb4"
+}

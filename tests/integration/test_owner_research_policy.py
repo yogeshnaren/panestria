@@ -267,6 +267,13 @@ def test_concurrent_preparation_and_stale_or_broader_reviews_cannot_widen_scope(
     with ThreadPoolExecutor(max_workers=2) as pool:
         reviews = list(pool.map(lambda _: q.service.prepare(public_web_policy=True), range(2)))
     assert all(review["state"] == "PENDING" for review in reviews)
+    with psycopg.connect(q.f.dsn) as c:
+        assert c.execute(
+            "SELECT owner_id::text FROM panestria.project WHERE id=%s", (q.service.actor.project_id,)
+        ).fetchall() == [(q.service.actor.owner_id,)]
+        assert c.execute(
+            "SELECT count(*) FROM panestria.task WHERE goal_id=%s", (q.service.goal_id,)
+        ).fetchone() == (1,)
     other_scope = OwnerResearchPolicy(q.f.dsn, q.settings.model_copy(update={"project_id": uuid4()}))
     other_scope.prepare(public_web_policy=True)
     with pytest.raises(KernelDenied, match="not_found"):

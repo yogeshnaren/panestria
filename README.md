@@ -66,3 +66,8 @@ Provider credentials are not required for these commands. CI uses the same froze
 ## Scope
 
 The package, `SYNTHETIC_DEV` settings, and typed `/healthz` and `/readyz` routes are in place. Ruff, Mypy, Import Linter, and provider-free CI are the toolchain. Compose publishes disposable PostgreSQL on `127.0.0.1:55432`. Inspect the current Alembic head before migration; applied R0 revisions are preserved and later R1 revisions are additive. Goal submit, events, approvals, artifact reads, and cancellation are mounted on the loopback API. Their generated description is [docs/api/openapi.json](docs/api/openapi.json). The fresh-host live case passed in a separate Ubuntu VM; see [technical completion](docs/reviews/R0-TECHNICAL-COMPLETION.md). R1 components and the fixed public native preview are integrated on main; G1/live acceptance remains pending. Revision-3 profile/quota/phone extensions and R2/R3 implementation remain unaccepted future work. The [tracker](docs/phase-tracker.json) separates code and release state. The license file is the repository MIT license.
+
+Performance evidence can be saved and inspected without starting the backend:
+`uv run --frozen panestria metrics capture` and `uv run --frozen panestria metrics show`.
+See [saved performance measurements](docs/testing/PERFORMANCE_METRICS.md) for
+source-bound latency/quality history, missing measurements and private storage.

@@ -1,0 +1,38 @@
+name: mutation pilot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mutation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.12.3"
+          python-version: "3.12"
+      - name: Install isolated development tool
+        run: uv sync --frozen --group dev --group mutation
+      - name: Run bounded offline pilot
+        run: uv run --frozen --group mutation python tools/mutation_run.py --output .panestria-metrics/mutation-${{ github.run_id }}
+      - name: Retain observations including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: mutation-${{ github.sha }}
+          path: |
+            .panestria-metrics/mutation-*/report.json
+            .panestria-metrics/mutation-*/observations/*.json
+            .panestria-metrics/mutation-*/run.log
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7

@@ -5,6 +5,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 evidence/ci.xml
+evidence/ci-*.xml
 .env
 .env.*
 !.env.example
@@ -14,3 +15,7 @@ build/
 
 # Local model weights, protected runtime receipts and sockets
 .panestria-runtime/
+
+# Local mutation workspaces and private performance history (never auto-pruned)
+mutants/
+.panestria-metrics/
