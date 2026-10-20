@@ -42,8 +42,7 @@ at protected-ref dispatch, and changing reviewed code/checks invalidates authori
 
 The retained input report identifies controller integration and worker inference
 NOT_RUN. Native worker qualification and the real two-worker orchestration/demo
-remain required separately. Final/failed/unknown reservation reconciliation is
-still subsequent executor work; an ambiguous process is never assumed stopped.
+remain required separately. [Plan lifecycle](PLAN_LIFECYCLE.md) releases confirmed final reservations and cancels all goal tasks. Failed/unknown physical-process reconciliation is still executor work; an ambiguous process is never assumed stopped.
 The integration staging directory retains bounded snapshots/results under the
 private Build root (worst-case about576MiB plus protected Git objects within the
 scheduler's disk reserve). Nothing prunes these directories or owner storage.
