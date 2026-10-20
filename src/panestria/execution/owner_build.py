@@ -316,7 +316,27 @@ class OwnerBuild:
                 (goal,),
             ).fetchone()
             if row is None:
-                raise KernelDenied("not_found")
+                # Canonical plans use their accepted terminal task, rather than
+                # the legacy single-worker task name. The same review/approve
+                # surface can then display and finish an integrated candidate.
+                from panestria.kernel.plan_scope import task_plan_scope
+                from panestria.kernel.plan_store import PlanStore
+
+                hint = c.execute(
+                    "SELECT p.id::text FROM panestria.build_plan p "
+                    "JOIN panestria.build_plan_acceptance a ON a.plan_id=p.id "
+                    "WHERE p.goal_id=%s AND p.owner_id=%s AND p.project_id=%s ORDER BY p.version DESC LIMIT 1",
+                    (goal, self.actor.owner_id, self.actor.project_id),
+                ).fetchone()
+                if hint is None:
+                    raise KernelDenied("not_found")
+                plan = PlanStore().get(UnitOfWork(c), self.actor, hint[0])
+                scope = task_plan_scope(UnitOfWork(c), self.actor, plan.proposal.nodes[0].task_id)
+                assert scope is not None
+                row = c.execute(
+                    "SELECT id::text,state,row_version FROM panestria.task WHERE id=%s", (scope.integration_task_id,)
+                ).fetchone()
+                assert row is not None
             task, state, version = row
             approvals = c.execute(
                 "SELECT id::text FROM panestria.approval_request WHERE task_id=%s "
