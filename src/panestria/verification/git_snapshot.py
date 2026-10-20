@@ -12,6 +12,7 @@ import subprocess
 import tempfile
 import time
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path, PurePosixPath
 
 
@@ -29,10 +30,18 @@ class GitSnapshot:
 
 
 def protected_git(
-    repository: Path, args: tuple[str, ...], *, limit: int = 4 * 1024 * 1024, input_data: bytes | None = None
+    repository: Path,
+    args: tuple[str, ...],
+    *,
+    limit: int = 4 * 1024 * 1024,
+    input_data: bytes | None = None,
+    deadline: float | None = None,
 ) -> bytes:
     if input_data is not None and (type(input_data) is not bytes or len(input_data) > 8 * 1024 * 1024):
         raise SnapshotRejected("git_input_limit")
+    deadline = min(time.monotonic() + 10, deadline) if deadline is not None else time.monotonic() + 10
+    if deadline <= time.monotonic():
+        raise SnapshotRejected("git_timeout")
     env = {
         "PATH": "/usr/bin:/bin",
         "LANG": "C.UTF-8",
@@ -70,7 +79,6 @@ def protected_git(
     assert process.stdout is not None and process.stderr is not None
     output = bytearray()
     total = 0
-    deadline = time.monotonic() + 10
     with selectors.DefaultSelector() as selector:
         for stream in (process.stdout, process.stderr):
             os.set_blocking(stream.fileno(), False)
@@ -125,22 +133,24 @@ def _safe_path(raw: bytes) -> str:
     return name
 
 
-def materialize(repository: Path, base: str, candidate: str, directory: Path) -> GitSnapshot:
+def materialize(
+    repository: Path, base: str, candidate: str, directory: Path, *, deadline: float | None = None
+) -> GitSnapshot:
+    git = partial(protected_git, repository, deadline=deadline)
     if not all(re.fullmatch(r"[0-9a-f]{40}", value) for value in (base, candidate)):
         raise SnapshotRejected("invalid_git_identity")
     if repository.is_symlink() or not repository.is_dir() or directory.exists() or directory.is_symlink():
         raise SnapshotRejected("invalid_snapshot_scope")
-    if protected_git(repository, ("rev-parse", "--is-bare-repository")).strip() != b"true":
+    if git(("rev-parse", "--is-bare-repository")).strip() != b"true":
         raise SnapshotRejected("candidate_repository_not_bare")
-    protected_git(repository, ("merge-base", "--is-ancestor", base, candidate))
-    tree = protected_git(repository, ("rev-parse", "--verify", candidate + "^{tree}")).decode().strip()
+    git(("merge-base", "--is-ancestor", base, candidate))
+    tree = git(("rev-parse", "--verify", candidate + "^{tree}")).decode().strip()
     if not re.fullmatch(r"[0-9a-f]{40}", tree):
         raise SnapshotRejected("invalid_git_tree")
     changed = tuple(
         sorted(
             _safe_path(name)
-            for name in protected_git(
-                repository,
+            for name in git(
                 ("diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--name-only", "-z", base, candidate),
             ).split(b"\0")
             if name
@@ -148,7 +158,7 @@ def materialize(repository: Path, base: str, candidate: str, directory: Path) ->
     )
     records: list[tuple[str, str, int, str]] = []
     size = 0
-    listing = protected_git(repository, ("ls-tree", "-r", "-l", "-z", candidate))
+    listing = git(("ls-tree", "-r", "-l", "-z", candidate))
     for entry in listing.split(b"\0"):
         if not entry:
             continue
@@ -166,7 +176,7 @@ def materialize(repository: Path, base: str, candidate: str, directory: Path) ->
     manifest = []
     files: list[tuple[str, str, int, str]] = []
     for name, object_id, count, file_mode in sorted(records):
-        content = protected_git(repository, ("cat-file", "blob", object_id), limit=count + 1024)
+        content = git(("cat-file", "blob", object_id), limit=count + 1024)
         if len(content) != count:
             raise SnapshotRejected("blob_size_mismatch")
         path = directory / name

@@ -146,14 +146,14 @@ class BuildIntegrator:
         deadline = time.monotonic() + min(120, scope.node.wall_seconds_per_attempt)
         staging.mkdir(mode=0o700)
         base = plan.inventory.base_commit
-        base_snapshot = materialize(repository, base, base, staging / "base")
+        base_snapshot = materialize(repository, base, base, staging / "base", deadline=deadline)
         if base_snapshot.manifest_sha256 != plan.inventory.snapshot_sha256:
             raise KernelDenied("integration_inventory_changed")
         workers = []
         nodes = {n.task_id: n for n in plan.proposal.nodes}
         for handoff in inputs["handoffs"]:
             task = handoff.submission.task_id
-            snapshot = materialize(repository, base, handoff.candidate_commit, staging / task)
+            snapshot = materialize(repository, base, handoff.candidate_commit, staging / task, deadline=deadline)
             if (
                 snapshot.tree != handoff.candidate_tree
                 or snapshot.manifest_sha256 != handoff.snapshot_sha256
@@ -161,7 +161,7 @@ class BuildIntegrator:
             ):
                 raise KernelDenied("integration_handoff_tree_changed")
             workers.append((task, snapshot))
-        combined = integrate(repository, base, base_snapshot, tuple(workers), staging / "combined")
+        combined = integrate(repository, base, base_snapshot, tuple(workers), staging / "combined", deadline=deadline)
         report = {
             "kind": "plan-integrated-candidate",
             "execution_mode": "CONTROLLER_INTEGRATION",
@@ -184,7 +184,7 @@ class BuildIntegrator:
         assert combined.candidate is not None
         if time.monotonic() >= deadline:
             raise KernelDenied("integration_deadline")
-        final = materialize(repository, base, combined.candidate, staging / "final")
+        final = materialize(repository, base, combined.candidate, staging / "final", deadline=deadline)
         verified = verify_build(
             inputs["contract"],
             inputs["contract_id"],

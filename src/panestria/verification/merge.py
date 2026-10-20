@@ -28,6 +28,8 @@ def integrate(
     base: GitSnapshot,
     workers: tuple[tuple[str, GitSnapshot], ...],
     workspace: Path,
+    *,
+    deadline: float | None = None,
 ) -> IntegratedCandidate:
     """Combine distinct file edits/deletions; overlapping edits require owner review.
 
@@ -83,5 +85,5 @@ def integrate(
         target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         target.write_bytes(source.read_bytes())
         target.chmod(0o700 if entry[2] == "100755" else 0o600)
-    candidate = capture_candidate(repository, base_commit, workspace)
+    candidate = capture_candidate(repository, base_commit, workspace, deadline=deadline)
     return IntegratedCandidate(candidate, ())

@@ -5,6 +5,7 @@ Workers/capacity are controller fixtures, not native vendor/OS qualification.
 
 import hashlib
 import json
+import time
 from uuid import uuid4
 
 import psycopg
@@ -18,7 +19,7 @@ from panestria.execution.build_plan import BuildIntegrator
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.scheduler import Scheduled, Scheduler
 from panestria.kernel.uow import UnitOfWork
-from panestria.verification.git_snapshot import materialize
+from panestria.verification.git_snapshot import SnapshotRejected, materialize
 
 
 def owner_review(build, tmp_path):
@@ -98,6 +99,9 @@ def test_two_verified_siblings_require_full_exact_combined_checks_before_owner_r
 
     build.registry = CommandRegistry.load(build.registry.bundle_root, "/synthetic/reviewed-python")
     owner = owner_review(build, tmp_path)
+    with pytest.raises(SnapshotRejected, match="git_timeout"):
+        materialize(build.bare, build.base, build.base, tmp_path / "expired-input", deadline=time.monotonic() - 1)
+    assert not (tmp_path / "expired-input").exists()
     plan = accepted(
         build, base_snapshot_sha=materialize(build.bare, build.base, build.base, tmp_path / "inventory").manifest_sha256
     )
