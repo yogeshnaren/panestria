@@ -32,6 +32,7 @@ class LeaseService:
         expected_version: int,
         *,
         ttl_seconds: int = 60,
+        emit_event: bool = True,
     ) -> AttemptLease:
         if not 1 <= ttl_seconds <= 3600 or not adapter or len(adapter) > 128:
             raise KernelDenied("invalid_lease")
@@ -85,14 +86,15 @@ class LeaseService:
             " retry_at=NULL, updated_at=clock_timestamp() WHERE id=%s",
             (epoch + 1, task_id),
         )
-        append_event(
-            uow,
-            goal_id=goal_id,
-            task_id=task_id,
-            kind="lease.acquired",
-            actor=actor.owner_id,
-            payload={"attempt_id": attempt_id, "epoch": epoch + 1, "reclaimed": reclaim},
-        )
+        if emit_event:
+            append_event(
+                uow,
+                goal_id=goal_id,
+                task_id=task_id,
+                kind="lease.acquired",
+                actor=actor.owner_id,
+                payload={"attempt_id": attempt_id, "epoch": epoch + 1, "reclaimed": reclaim},
+            )
         return AttemptLease(attempt_id, task_id, epoch + 1, int(number), version + 1, expiry[0])
 
     def require_current(self, uow: UnitOfWork, actor: Actor, attempt_id: str, epoch: int) -> str:

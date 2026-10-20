@@ -213,3 +213,88 @@ def inspect_handoff(
         )
     except Exception:
         _unavailable()
+
+
+@plan_app.command("queue")
+def inspect_queue(
+    owner_id: str,
+    project_id: str,
+    plan_id: str,
+    evidence_store: Annotated[Path, typer.Option("--evidence-store")],
+) -> None:
+    """Inspect canonical readiness/wait reasons; does not dispatch or reserve work."""
+    from dataclasses import asdict
+
+    from panestria.kernel.scheduler import Scheduler
+    from panestria.kernel.uow import UnitOfWork
+
+    try:
+        evidence = _evidence_store(evidence_store)
+        with _connection() as c:
+            result = Scheduler().inspect(UnitOfWork(c), Actor(owner_id, project_id), plan_id, evidence)
+        typer.echo(json.dumps({"nodes": [asdict(node) for node in result], "dispatch_authority": "NONE"}))
+    except Exception:
+        _unavailable()
+
+
+@plan_app.command("claim")
+def claim_node(
+    owner_id: str,
+    project_id: str,
+    plan_id: str,
+    evidence_store: Annotated[Path, typer.Option("--evidence-store")],
+    skills_archive: Annotated[Path, typer.Option("--skills-archive")],
+) -> None:
+    """Probe local CPU capacity and reserve one ready node. No process/model is launched."""
+    from dataclasses import asdict
+
+    from panestria.kernel.scheduler import Scheduled, Scheduler
+    from panestria.kernel.uow import UnitOfWork
+    from panestria.resources.hardware import HardwareProbe
+
+    try:
+        evidence = _evidence_store(evidence_store)
+        capacity = HardwareProbe(skills_archive).collect_cpu()
+        with _connection() as c:
+            result = Scheduler().claim_ready(UnitOfWork(c), Actor(owner_id, project_id), plan_id, capacity, evidence)
+        if isinstance(result, Scheduled):
+            typer.echo(json.dumps({"status": "RESERVED", **asdict(result)}, default=str))
+        else:
+            typer.echo(json.dumps({"status": "WAIT", "nodes": [asdict(node) for node in result]}))
+    except Exception:
+        _unavailable()
+
+
+@plan_app.command("complete-node")
+def complete_plan_node(
+    owner_id: str,
+    project_id: str,
+    plan_id: str,
+    handoff_id: str,
+    evidence_store: Annotated[Path, typer.Option("--evidence-store")],
+) -> None:
+    """Complete a current verified intermediate node; never completes/merges the goal."""
+    from panestria.kernel.scheduler import Scheduler
+    from panestria.kernel.uow import UnitOfWork
+
+    try:
+        evidence = _evidence_store(evidence_store)
+        with _connection() as c:
+            Scheduler().complete_node(UnitOfWork(c), Actor(owner_id, project_id), plan_id, handoff_id, evidence)
+        typer.echo('{"status":"NODE_COMPLETED","goal_completion_authority":"NONE"}')
+    except Exception:
+        _unavailable()
+
+
+@plan_app.command("claims")
+def inspect_claims(owner_id: str, project_id: str, plan_id: str) -> None:
+    """Inspect historical reservations, including after lease expiry or policy changes."""
+    from panestria.kernel.scheduler import Scheduler
+    from panestria.kernel.uow import UnitOfWork
+
+    try:
+        with _connection() as c:
+            result = Scheduler().claims(UnitOfWork(c), Actor(owner_id, project_id), plan_id)
+        typer.echo(json.dumps({"claims": result, "dispatch_authority": "NONE"}, default=str))
+    except Exception:
+        _unavailable()
