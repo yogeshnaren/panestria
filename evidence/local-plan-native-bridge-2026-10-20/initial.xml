@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="6" time="42.231" timestamp="2026-10-20T10:05:42.426315-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_local_plan_native_bridge" name="test_single_edit_compiled_plan_requires_exact_acceptance_then_reaches_real_final_merge" file="tests/integration/test_local_plan_native_bridge.py" line="51" time="11.962"><properties><property name="candidate_commit" value="585dedbb2509b8ca6d760b487d1a845cae2cb40e" /><property name="fixture_digest" value="3ad1d3da79ddc2c34a09141047b032e0ec38107da0af2e0919b9fb19a6036e72" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError">native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x734056e01010&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ll_seconds_per_attempt=90, api_microusd_per_attempt=0))), {'launches': 0, 'active': 0, 'peak': 0, 'contexts': [], ...})
+
+    def test_single_edit_compiled_plan_requires_exact_acceptance_then_reaches_real_final_merge(native_plan):
+        owner, runner, original, state = native_plan
+        state["expected_workers"] = 1
+        proposal, staged = staged_draft(owner, original, [edit("edit-both", ["calculator.py", "notes/build.txt"])])
+        assert len(proposal.nodes) == 2
+        with pytest.raises(KernelDenied, match="plan_not_accepted"):
+&gt;           runner.run(proposal.plan_id, public_subscription_run=True)
+
+tests/integration/test_local_plan_native_bridge.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/panestria/execution/native_plan.py:245: in run
+    plan = self._preflight(plan_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;panestria.execution.native_plan.NativePlanRunner object at 0x7340570133b0&gt;
+plan_id = '97d9ef22-37dc-4164-8781-51eda45a339f'
+
+    def _preflight(self, plan_id: str) -&gt; StoredPlan:
+        owner = self.owner
+        with owner.connect() as c:
+            uow = UnitOfWork(c)
+            plan = PlanStore().get(uow, owner.actor, plan_id)
+            scope = task_plan_scope(uow, owner.actor, plan.proposal.nodes[0].task_id)
+&gt;           assert scope is not None
+                   ^^^^^^^^^^^^^^^^^
+E           AssertionError
+
+src/panestria/execution/native_plan.py:95: AssertionError</failure></testcase><testcase classname="tests.integration.test_local_plan_native_bridge" name="test_dependent_local_edit_graph_still_refuses_without_claim_or_provider_dispatch" file="tests/integration/test_local_plan_native_bridge.py" line="90" time="3.827"><properties><property name="candidate_commit" value="585dedbb2509b8ca6d760b487d1a845cae2cb40e" /><property name="fixture_digest" value="3ad1d3da79ddc2c34a09141047b032e0ec38107da0af2e0919b9fb19a6036e72" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="panestria.kernel.errors.KernelDenied: plan_depth_limit">native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x734056ee83b0&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ll_seconds_per_attempt=90, api_microusd_per_attempt=0))), {'launches': 0, 'active': 0, 'peak': 0, 'contexts': [], ...})
+
+    def test_dependent_local_edit_graph_still_refuses_without_claim_or_provider_dispatch(native_plan):
+        owner, runner, original, state = native_plan
+&gt;       proposal, staged = staged_draft(
+            owner, original, [edit("calculator", ["calculator.py"]), edit("note", ["notes/build.txt"], ("calculator",))]
+        )
+
+tests/integration/test_local_plan_native_bridge.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_local_plan_native_bridge.py:27: in staged_draft
+    proposal, _validated = validate_draft(json.dumps({"edits": edits}), owner.actor, contract, inventory)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/panestria/execution/local_plan.py:163: in validate_draft
+    validation = PlanValidator().validate(actor, proposal, contract, inventory)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;panestria.kernel.plans.PlanValidator object at 0x734056e331a0&gt;
+actor = &lt;panestria.kernel.goals.Actor object at 0x734056ee93a0&gt;
+proposal = PlanProposal(schema_version=1, plan_id='656afe3c-c583-4389-97f9-5a22557151f5', owner_id='d09272b8-11a6-420e-aaba-3a766...paths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0)))
+contract = GoalContract(schema_version=1, goal_id='ac0c2a26-80bc-402e-9bbb-906a1f0392a2', contract_version=1, owner_id='d09272b8-...e', expected='approval-required'), evidence=EvidenceSpec(required=True, kind='policy-decision-report'))], non_goals=[])
+inventory = ProjectInventory(schema_version=1, owner_id='d09272b8-11a6-420e-aaba-3a766126f5a2', project_id='e3807914-62bb-4e18-9a8...80', capabilities=('trusted-test-runner',), maximum_parallel=1)), maximum_nodes=3, maximum_depth=2, maximum_parallel=2)
+
+    def validate(
+        self, actor: Actor, proposal: PlanProposal, contract: GoalContract, inventory: ProjectInventory
+    ) -&gt; ValidatedDAG:
+        # Revalidate even frozen model_copy instances. This is a pure preflight,
+        # not proof that caller-supplied inventories are current/certified.
+        proposal = PlanProposal.model_validate(proposal)
+        inventory = ProjectInventory.model_validate(inventory)
+        contract = load_contract(contract.model_dump(mode="json"))
+        identity = (actor.owner_id, actor.project_id)
+        if (
+            identity != (proposal.owner_id, proposal.project_id)
+            or identity != (contract.owner_id, contract.project_id)
+            or identity != (inventory.owner_id, inventory.project_id)
+            or proposal.goal_id != contract.goal_id
+        ):
+            raise KernelDenied("plan_scope_mismatch")
+        if (
+            proposal.contract_sha256 != contract_sha256(contract)
+            or proposal.inventory_sha256 != inventory.sha256()
+            or proposal.privacy_class != contract.privacy_class
+        ):
+            raise KernelDenied("plan_input_binding_changed")
+        if len(proposal.nodes) &gt; inventory.maximum_nodes:
+            raise KernelDenied("plan_node_limit")
+        nodes = {n.task_id: n for n in proposal.nodes}
+        if len(nodes) != len(proposal.nodes):
+            raise KernelDenied("plan_duplicate_task")
+        workers = {w.worker_ref: w for w in inventory.workers}
+        check_keys = {c.id for c in contract.acceptance}
+        required = {c.id for c in contract.acceptance if c.required}
+        assigned: set[str] = set()
+        upper_cash = upper_wall = 0
+        for node in nodes.values():
+            if node.task_id in node.depends_on or set(node.depends_on) - nodes.keys():
+                raise KernelDenied("plan_dependency_invalid")
+            worker = workers.get(node.worker_ref)
+            if (
+                worker is None
+                or set(node.capabilities) - set(worker.capabilities)
+                or set(node.capabilities) - set(contract.constraints.permitted_capabilities)
+            ):
+                raise KernelDenied("plan_capability_unavailable")
+            if any(
+                not path_permitted(p, contract.constraints.allowed_paths, contract.constraints.forbidden_paths)
+                for p in node.paths
+            ):
+                raise KernelDenied("plan_path_out_of_scope")
+            if set(node.acceptance_keys) - check_keys:
+                raise KernelDenied("plan_check_unrecognized")
+            assigned.update(node.acceptance_keys)
+            if node.attempts &gt; contract.budget.max_attempts_per_task:
+                raise KernelDenied("plan_attempt_limit")
+            upper_cash += node.attempts * node.api_microusd_per_attempt
+            upper_wall += node.attempts * node.wall_seconds_per_attempt
+        if not required or required - assigned:
+            raise KernelDenied("plan_required_checks_missing")
+        # Sum retries and serial wall envelopes, rather than assuming concurrency
+        # or subscription capacity produces a free/shorter future effect.
+        if (
+            upper_cash &gt; int(Decimal(contract.budget.max_api_usd) * 1_000_000)
+            or upper_wall &gt; contract.budget.max_wall_seconds
+        ):
+            raise KernelDenied("plan_budget_exceeded")
+        remaining = set(nodes)
+        completed: set[str] = set()
+        layers = []
+        while remaining:
+            ready = tuple(sorted(key for key in remaining if set(nodes[key].depends_on) &lt;= completed))
+            if not ready:
+                raise KernelDenied("plan_cycle")
+            layers.append(ready)
+            if len(layers) &gt; inventory.maximum_depth:
+&gt;               raise KernelDenied("plan_depth_limit")
+E               panestria.kernel.errors.KernelDenied: plan_depth_limit
+
+src/panestria/kernel/plans.py:85: KernelDenied</failure></testcase><testcase classname="tests.integration.test_native_plan_execution" name="test_two_scoped_workers_and_create_only_node_reach_exact_owner_review" file="tests/integration/test_native_plan_execution.py" line="193" time="10.113"><properties><property name="candidate_commit" value="585dedbb2509b8ca6d760b487d1a845cae2cb40e" /><property name="fixture_digest" value="3fd63576ded9973977ea6c9ac2145b01a88a318e60e19c97a2fb0e90b0fe8d16" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_native_plan_execution" name="test_explicit_run_intent_and_changed_worker_declaration_refuse_before_claim" file="tests/integration/test_native_plan_execution.py" line="215" time="3.451"><properties><property name="candidate_commit" value="585dedbb2509b8ca6d760b487d1a845cae2cb40e" /><property name="fixture_digest" value="3fd63576ded9973977ea6c9ac2145b01a88a318e60e19c97a2fb0e90b0fe8d16" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_native_plan_execution" name="test_quota_unavailable_stops_new_admissions_without_merge_or_hidden_retry" file="tests/integration/test_native_plan_execution.py" line="231" time="4.361"><properties><property name="candidate_commit" value="585dedbb2509b8ca6d760b487d1a845cae2cb40e" /><property name="fixture_digest" value="3fd63576ded9973977ea6c9ac2145b01a88a318e60e19c97a2fb0e90b0fe8d16" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_native_plan_execution" name="test_plan_cancel_fences_both_running_calls_and_keeps_uncertain_capacity" file="tests/integration/test_native_plan_execution.py" line="251" time="5.340"><properties><property name="candidate_commit" value="585dedbb2509b8ca6d760b487d1a845cae2cb40e" /><property name="fixture_digest" value="3fd63576ded9973977ea6c9ac2145b01a88a318e60e19c97a2fb0e90b0fe8d16" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase></testsuite></testsuites>

@@ -85,3 +85,16 @@ trusted compiler produced the final graph in19.63seconds end to end (17.46second
 reported generation,560input/95output tokens). Original failed graph output is
 preserved separately. These are synthetic examples with declaration fixtures,
 not a general planning-quality benchmark, certified worker inventory or G3 pass.
+
+## Execute a compatible reviewed draft
+
+The native driver now accepts one **or** two independent `claude-public-bash` editing assignments followed by the controller-compiled `trusted-integrator`. With the actual native inventory (maximum3nodes/depth2), a one-edit local draft can use the same canonical stage/accept/run/final-review path without inventing a second task. Every assignment still needs the correct capabilities, literal paths, required checks and30–120second node bounds.
+
+After separately inspecting/staging/accepting the proposal above:
+
+```bash
+panestria plan run --config /absolute/private/build.json PLAN_UUID --public-subscription-run
+panestria build tui --config /absolute/private/build.json GOAL_UUID
+```
+
+Expect independent final checks and WAITING_APPROVAL, then a separate exact owner merge. A proposed plan cannot start or claim capacity. Declared general inventories/dependent editing graphs do not establish native support; unsupported shapes refuse without claims or provider dispatch. The two-worker limit, original permissions/qualifications/cash limits and protected final-tree approval are unchanged. [Bridge evidence](../../evidence/local-plan-native-bridge-2026-10-20/report.json) uses the actual compiler/PG/Git/MCP/Docker/final checks with explicit model-output/native/auth/capacity fixtures. It does not relabel an earlier live CPU draft or Claude journey for the new source.

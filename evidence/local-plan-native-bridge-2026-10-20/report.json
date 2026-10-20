@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "scope": "Local edit-draft compiler into canonical stage/review and bounded native execution/final merge. Real PG/Git/MCP/Docker/final checks, explicit model-output/native/auth/capacity fixtures.",
+  "runs": [
+    {
+      "report": "initial.xml",
+      "source_commit": "585dedbb2509b8ca6d760b487d1a845cae2cb40e",
+      "worktree_state": "clean",
+      "tests": 6,
+      "failures": 2,
+      "errors": 0,
+      "seconds": 42.231,
+      "sha256": "60390cc547ba3bf5cb67e21423be5ab5e500ab867020a42e254b1bb69f7f58a1"
+    },
+    {
+      "report": "qualified.xml",
+      "source_commit": "0753993701516ca335378591c97ce44e91a7d05d",
+      "worktree_state": "clean",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 38.5,
+      "sha256": "a3556911f706d8ec8ad0f978de634b17223e210927f06d8cdb9895029557a492"
+    }
+  ],
+  "initial_failures": [
+    "Unaccepted-plan preflight resolved missing task membership before its explicit acceptance guard; corrected to plan_not_accepted before any claim/launch.",
+    "A dependent general draft exceeded the narrow native inventory depth and was correctly refused by the validator. The negative fixture now declares general depth3 and independently observes driver shape refusal."
+  ],
+  "observed": [
+    "Single editing assignment with both required paths compiles with the trusted final node and requires separate exact acceptance",
+    "One scoped native fixture call, real MCP/Docker edits, protected handoff, full independent final checks and actual scripted owner Git merge complete the canonical goal",
+    "No dummy second task or enlarged concurrency/resource/privacy/cash permission",
+    "A declared general dependent graph cannot produce claims or provider dispatch",
+    "Existing two-worker disjoint edits, quota stop, context declaration checks and running cancellation still pass"
+  ],
+  "limits": [
+    "Initial6 and qualified6 cases overlap; this is not12 distinct scenarios",
+    "No new actual local-model or provider call; earlier live examples retain their original source identities",
+    "General dependent DAG, second adapter and cumulative B-1/G3/owner trial remain pending"
+  ],
+  "static_checks": [
+    "Ruff",
+    "Mypy263",
+    "11 import boundaries",
+    "secret scan"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "owner_acceptance": "NOT_GRANTED"
+}

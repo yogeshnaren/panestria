@@ -25,9 +25,9 @@ panestria plan inventory --config /absolute/private/build.json BASE_SHA --output
 
 `DECLARED_FOR_REVIEW` is inventory metadata, not runtime qualification or a grant.
 Prepare an owner-authored PUBLIC contract and proposal using
-[the typed plan format](BUILD_PLAN_PREFLIGHT.md). This driver accepts exactly two
+[the typed plan format](BUILD_PLAN_PREFLIGHT.md). This driver accepts one or two
 independent `claude-public-bash` nodes, then one `trusted-integrator` node depending
-on both. Use literal assignment paths, `scoped-bash` for workers,
+on every edit node. Use literal assignment paths, `scoped-bash` for workers,
 `trusted-test-runner` for the final node, node wall limits of30–120seconds and zero
 API microunits. Aggregate attempts/wall budget must fit the contract. The terminal
 node contains every original acceptance check and all predecessor paths. Scope,
@@ -42,8 +42,7 @@ panestria plan accept OWNER_UUID PROJECT_UUID PLAN_UUID EFFECT_SHA --accept-plan
 
 Review the exact retained plan/contract/inventory and pending consent first.
 Acceptance creates canonical tasks; it does not launch them or approve a merge.
-Consent expires after15minutes. The current driver does not generate a plan from
-free text; direct structured local planning and bounded revisions remain pending.
+Consent expires after15minutes. The driver executes an accepted plan. Use the separate [local draft command](LOCAL_BUILD_PLANNER.md) for an explicit one-call offline proposal and [bounded revisions](BOUNDED_PLAN_REVISIONS.md) after eligible stopped work.
 
 ## Execute and review the final tree
 
@@ -60,7 +59,7 @@ Fresh actual CPU/RAM/disk/power observations retain foreground reserves. At most
 plan claims across controllers occupy capacity; serialized scopes/capacity can wait.
 No GPU/model capacity or precise remaining subscription quota is inferred.
 
-Expect `WAITING_APPROVAL` only after two intermediate completions, protected
+Expect `WAITING_APPROVAL` only after every editing node completes, protected
 handoffs, conservative combined-tree assembly and the full final checks. The
 `tasks` array is canonical; the in-memory `worker_observations` array is a completion
 snapshot and can lag a just-committed handoff. Goal state stays ACTIVE and the
