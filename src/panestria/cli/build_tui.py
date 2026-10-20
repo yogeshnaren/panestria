@@ -52,10 +52,10 @@ class BuildReviewClient:
 
     def request(self, operation: str, arguments: tuple[str, ...]) -> dict[str, Any]:
         # No shell, model call, arbitrary CLI operation or implicit grant.
-        if operation not in {"status", "approve", "cancel"}:
+        if operation not in {"status", "progress", "approve", "cancel"}:
             raise BuildUnconfirmed
         command = [sys.executable, "-m", "panestria.cli.main", "build", operation, "--config", str(self.config)]
-        deadline = time.monotonic() + (30 if operation == "status" else 65)
+        deadline = time.monotonic() + (30 if operation in {"status", "progress"} else 65)
         with self.lock:
             if self.closed:
                 raise BuildUnconfirmed
@@ -88,6 +88,12 @@ class BuildReviewClient:
                 raise BuildUnconfirmed
             if operation == "status" and (value.get("goal_id") != self.goal or "task_state" not in value):
                 raise BuildUnconfirmed
+            if operation == "progress":
+                from panestria.contracts.progress import BuildProgress
+
+                observed = BuildProgress.model_validate_json(json.dumps(value))
+                if observed.goal_id != self.goal:
+                    raise BuildUnconfirmed
             return value
         except (OSError, ValueError, subprocess.SubprocessError):
             raise BuildUnconfirmed from None
@@ -108,6 +114,7 @@ class BuildReviewClient:
 @dataclass
 class ReviewView:
     snapshot: dict[str, Any] = field(default_factory=dict, repr=False)
+    progress: dict[str, Any] = field(default_factory=dict, repr=False)
     frozen: dict[str, Any] = field(default_factory=dict, repr=False)
     mode: str = ""
     typed: str = ""
@@ -143,7 +150,14 @@ class BuildReviewTerminal:
             if self.closed:
                 continue
             self.busy = ""
-            if value is None:
+            if operation == "progress":
+                self.view.progress = value or {}
+                self.view.notice = (
+                    "Read-only progress snapshot; F5 discards views. Owner merge stays a separate decision."
+                    if value
+                    else "Progress UNCONFIRMED; existing merge review is unchanged. No automatic retry."
+                )
+            elif value is None:
                 self.view = ReviewView(notice="UNCONFIRMED; view cleared. Refresh canonical state; no automatic retry.")
             elif operation == "status":
                 self.view = ReviewView(snapshot=value, notice="Canonical snapshot; F5 refreshes. Tab changes view.")
@@ -199,12 +213,42 @@ class BuildReviewTerminal:
     def content(self) -> str:
         v = self.view
         data = v.frozen if v.mode else v.snapshot
+        if v.page == 3:
+            p = v.progress
+            if not p:
+                return "VERIFIED BUILD PROGRESS\nUNCONFIRMED; press p to inspect this goal's canonical plan."
+            passed, total = p["required_checks_passed"], p["required_checks_total"]
+            filled = min(20, 20 * passed // total) if total else 0
+            repair = p["repair"]
+            return (
+                "VERIFIED BUILD PROGRESS\n"
+                f"Final required checks [{'#' * filled}{'.' * (20 - filled)}] {passed}/{total}\n"
+                f"Goal execution: {p['goal_status']}\nAttention: {p['attention_reason']}\n"
+                f"Next: {p['next_action']}\n"
+                f"Owner merge: {p['owner_merge']} | release acceptance: {p['release_acceptance']}\n"
+                f"Plan versions: {repair['versions_used']} | remaining wall envelope: "
+                f"{repair['wall_envelope_remaining_seconds']}s\n"
+                f"Held claims: {repair['held_claims']} | UNKNOWN invocations: {repair['unknown_invocations']}\n"
+                f"As-of event: {p['as_of_event_seq']} | original contract v{p['contract_version']}\n"
+                "Check and milestone references (untrusted descriptions):\n"
+                + json.dumps({k: p[k] for k in ("requirements", "non_goals", "plans")}, indent=2)
+            )
         if v.page == 1:
             return "DIFF (untrusted text)\n" + str(data.get("diff", "No diff available."))
         if v.page == 2:
             return "EXACT OWNER REVIEW\n" + json.dumps(
-                {k: data.get(k) for k in ("goal_id", "task_id", "row_version", "base_commit", "candidate_commit",
-                                         "evidence_sha256", "approval")},
+                {
+                    k: data.get(k)
+                    for k in (
+                        "goal_id",
+                        "task_id",
+                        "row_version",
+                        "base_commit",
+                        "candidate_commit",
+                        "evidence_sha256",
+                        "approval",
+                    )
+                },
                 indent=2,
             )
         return "INDEPENDENT CHECKS\n" + json.dumps(data.get("checks", []), indent=2)
@@ -243,7 +287,7 @@ class BuildReviewTerminal:
                         line(row, value)
                     line(rows - 4, ("Confirmation: " + v.typed) if v.mode else "No decision pending.")
                     line(rows - 3, v.notice)
-                    line(rows - 2, "Tab Views | PgUp/Dn | a Merge | c Cancel | F5 Refresh | F10 Quit")
+                    line(rows - 2, "Tab Views | p Progress | PgUp/Dn | a Merge | c Cancel | F5 Refresh | F10 Quit")
                     line(rows - 1, "Existing owner CLI owns grants/checks/protected CAS. No model call or auto-submit.")
                 screen.refresh()
                 try:
@@ -261,7 +305,9 @@ class BuildReviewTerminal:
                 elif key == curses.KEY_RESIZE:
                     continue
                 elif key == "\t":
-                    v.page, v.scroll = (v.page + 1) % 3, 0
+                    v.page, v.scroll = (v.page + 1) % 4, 0
+                    if v.page == 3 and not v.mode and not v.progress:
+                        self.start("progress", (self.client.goal,))
                 elif key == curses.KEY_NPAGE:
                     v.scroll += max(1, rows - 10)
                 elif key == curses.KEY_PPAGE:
@@ -276,6 +322,10 @@ class BuildReviewTerminal:
                         v.typed = v.typed[:-1]
                     elif isinstance(key, str) and key.isascii() and key.isalpha() and len(v.typed) < 6:
                         v.typed += key
+                elif key == "p":
+                    if not self.busy:
+                        v.page, v.scroll = 3, 0
+                        self.start("progress", (self.client.goal,))
                 elif key == "a":
                     self.review("approve")
                 elif key == "c":

@@ -5,6 +5,8 @@ import os
 import time
 
 from test_ask_tui import terminal
+from test_native_plan_execution import native_plan as native_plan  # noqa: F401
+from test_native_plan_execution import prepared_plan as prepared_plan  # noqa: F401
 from test_owner_build_cli import contract, invoke, owner_cli, prepare, submit  # noqa: F401 -- fixture
 from test_registered_check_authority import git
 from typer.testing import CliRunner
@@ -123,3 +125,23 @@ def test_lost_actual_merge_acknowledgement_never_replays_and_refresh_recovers(ow
 def test_build_terminal_headless_refusal_never_prints_private_config_path():
     result = CliRunner().invoke(app, ["build", "tui", "--config", "/PRIVATE_SENTINEL", "not-a-goal"])
     assert result.exit_code == 2 and "PRIVATE_SENTINEL" not in result.output
+
+
+def test_actual_canonical_plan_progress_is_visible_in_terminal_without_starting_or_merging(native_plan, prepared_plan):
+    owner, runner, plan, state = native_plan
+    f = prepared_plan[0]
+    assert runner.run(plan.plan_id, public_subscription_run=True)["status"] == "WAITING_APPROVAL"
+    progress = invoke(f, "progress", plan.goal_id)
+    assert progress["required_checks_passed"] == progress["required_checks_total"] > 0
+    assert progress["owner_merge"] == "PENDING" and progress["dispatch_authority"] == "NONE"
+    launches = state["launches"]
+    with terminal(f.config, entry=("build", "tui"), arguments=(plan.goal_id,)) as t:
+        t.until(b"WAITING_APPROVAL")
+        os.write(t.master, b"p")
+        t.until(b"OWNER_MERGE_REVIEW_REQUIRED")
+        t.until(b"release acceptance: NOT_ASSESSED")
+        assert f.dsn.encode() not in t.transcript
+        assert git(f.bare, "rev-parse", "HEAD") == f.base
+        os.write(t.master, b"q")
+    assert state["launches"] == launches == 2
+    assert owner.status(plan.goal_id)["task_state"] == "WAITING_APPROVAL"
