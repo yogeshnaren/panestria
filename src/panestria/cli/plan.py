@@ -556,3 +556,44 @@ def propose_plan_revision(
         )
         typer.echo(json.dumps({"status": "STOPPED", "reason": reason, "execution_authority": "NONE"}), err=True)
         raise typer.Exit(1) from None
+
+
+@plan_app.command("progress")
+def inspect_progress(
+    owner_id: str,
+    project_id: str,
+    goal_id: str,
+    evidence_store: Annotated[Path, typer.Option("--evidence-store")],
+    output: Annotated[Path, typer.Option("--output")],
+) -> None:
+    """Save immutable private source-bound progress; show verified checks separately from activity."""
+    import hashlib
+
+    from panestria.cli.research import _write_private
+    from panestria.kernel.build_progress import BuildProgressService
+    from panestria.kernel.uow import UnitOfWork
+
+    try:
+        evidence = _evidence_store(evidence_store)
+        with _connection() as c:
+            c.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+            result = BuildProgressService().inspect(UnitOfWork(c), Actor(owner_id, project_id), goal_id, evidence)
+        raw = result.model_dump_json().encode()
+        _write_private(output, raw)
+        total, passed = result.required_checks_total, result.required_checks_passed
+        filled = 20 * passed // total if total else 0
+        typer.echo(f"Final required checks [{'#' * filled}{'.' * (20 - filled)}] {passed}/{total}")
+        typer.echo(f"Goal: {result.goal_status}; attention: {result.attention_reason}")
+        typer.echo(f"Next: {result.next_action}")
+        typer.echo(f"Owner merge: {result.owner_merge}; release acceptance: {result.release_acceptance}")
+        typer.echo(
+            f"Plan versions: {result.repair.versions_used}; "
+            f"remaining wall envelope: {result.repair.wall_envelope_remaining_seconds}s; "
+            f"held claims: {result.repair.held_claims}"
+        )
+        for requirement in result.requirements:
+            typer.echo(f"  {json.dumps(requirement.key)}: {requirement.verdict}")
+        typer.echo(f"Saved snapshot SHA256: {hashlib.sha256(raw).hexdigest()}")
+    except Exception:
+        typer.echo('{"status":"UNAVAILABLE","reason":"progress_not_confirmed","authority":"NONE"}', err=True)
+        raise typer.Exit(1) from None

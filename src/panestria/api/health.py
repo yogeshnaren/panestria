@@ -424,13 +424,9 @@ def default_readiness_probe(deadline: datetime) -> ProbeObservation:
     remaining = (deadline - datetime.now(timezone.utc)).total_seconds()
     url = os.environ.get("PANESTRIA_DATABASE_URL", "").strip()
     if url == "":
-        return ProbeObservation(
-            checks=[ProbeCheck(name="database", status="unavailable", reason="not_probed")]
-        )
+        return ProbeObservation(checks=[ProbeCheck(name="database", status="unavailable", reason="not_probed")])
     if remaining <= 0:
-        return ProbeObservation(
-            checks=[ProbeCheck(name="database", status="unavailable", reason="deadline_exceeded")]
-        )
+        return ProbeObservation(checks=[ProbeCheck(name="database", status="unavailable", reason="deadline_exceeded")])
     try:
         import psycopg
 

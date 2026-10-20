@@ -28,7 +28,11 @@ class LocalProvider:
     capabilities = ("chat", "generate", "stream")
 
     def __init__(
-        self, socket_path: Path, *, gpu: bool = False, transport: httpx.AsyncBaseTransport | None = None,
+        self,
+        socket_path: Path,
+        *,
+        gpu: bool = False,
+        transport: httpx.AsyncBaseTransport | None = None,
         json_output: bool = False,
     ) -> None:
         self.socket_path, self.gpu, self.transport = socket_path, gpu, transport

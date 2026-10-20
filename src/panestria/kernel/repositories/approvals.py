@@ -37,8 +37,7 @@ def peek_request_task(
     request_id: str,
 ) -> str | None:
     row = uow.execute(
-        "SELECT task_id::text FROM panestria.approval_request"
-        " WHERE id = %s AND owner_id = %s AND project_id = %s",
+        "SELECT task_id::text FROM panestria.approval_request WHERE id = %s AND owner_id = %s AND project_id = %s",
         (request_id, owner_id, project_id),
     ).fetchone()
     if row is None or row[0] is None:
@@ -127,8 +126,7 @@ def mark_decision(uow: UnitOfWork, request_id: str, state: str, actor_id: str) -
 
 def mark_expired(uow: UnitOfWork, request_id: str) -> int:
     return uow.execute(
-        "UPDATE panestria.approval_request SET state = 'EXPIRED'"
-        " WHERE id = %s AND state = 'PENDING'",
+        "UPDATE panestria.approval_request SET state = 'EXPIRED' WHERE id = %s AND state = 'PENDING'",
         (request_id,),
     ).rowcount
 
@@ -244,8 +242,7 @@ def _authoritative(
 
 def consumption(uow: UnitOfWork, request_id: str) -> tuple[bool, str | None]:
     row = uow.execute(
-        "SELECT side_effect_id::text FROM panestria.approval_consumption"
-        " WHERE approval_request_id = %s",
+        "SELECT side_effect_id::text FROM panestria.approval_consumption WHERE approval_request_id = %s",
         (request_id,),
     ).fetchone()
     if row is None:

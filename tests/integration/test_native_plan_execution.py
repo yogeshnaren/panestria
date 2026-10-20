@@ -44,6 +44,7 @@ def prepared_plan(owner_cli, r1_migration_task, monkeypatch, request):
     document = contract(f, ref)
     document["constraints"]["permitted_capabilities"].append("trusted-test-runner")
     document["budget"]["max_wall_seconds"] = getattr(request, "param", {}).get("wall_seconds", 270)
+    document["non_goals"] = getattr(request, "param", {}).get("non_goals", [])
     goal = load_contract(document)
     ids = [str(uuid4()) for _ in range(3)]
     nodes = tuple(
