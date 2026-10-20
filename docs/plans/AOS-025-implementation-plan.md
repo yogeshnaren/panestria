@@ -126,3 +126,9 @@ S2 remains IN_PROGRESS: the direct proposal and existing handoff/storage compone
 [The bounded revision runbook](../testing/BOUNDED_PLAN_REVISIONS.md) and [design66](../design/66-BOUNDED-PLAN-REVISIONS.md) implement a linear owner-reviewed family with two or three total versions, immutable parents, protected physical-return prerequisites and cumulative original-budget charging. A superseded plan cannot dispatch, cancel the current version or complete its goal. Revised exact merge completes only the current accepted graph while preserving old failures.
 
 S3 is IN_PROGRESS, not complete: this PUBLIC/API0 same-contract path has source-bound real PG/Git/MCP/Docker observations with explicit native fixtures. Changed authority still requires new explicit authorization; automatic qualified model repair, full TC02/03/04, optional graph parity if introduced, and X10 progress/stall/restart coverage remain unfinished. No live check or release pass is inferred. S2's direct local draft is delivered separately; its broader planning-quality/qualified-inventory requirements remain.
+
+## Initial X10 progress inspection
+
+[Build progress](../testing/BUILD_PROGRESS.md) projects canonical contract/non-goal/plan versions and protected check/candidate/handoff references in a consistent repeatable-read snapshot, saved privately with SHA256. It separates activity, verified checks, exact owner merge and release acceptance. It exposes held/unknown work, finite wall/version accounting and repeated unchanged failed-tree fingerprints without granting retry or completion.
+
+S4 is IN_PROGRESS: actual source-bound controller observations cover the initial view/export and stale/tampered/false-heartbeat/repeated-failure cases. Full semantic requirement/non-goal assessment, controller enforcement of repeated-failure policy, rubric/restart qualification and unified Mission Control remain pending; S5/full TC05-TC08/G3 are not complete.
