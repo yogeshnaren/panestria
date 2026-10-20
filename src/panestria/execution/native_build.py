@@ -54,7 +54,7 @@ def runtime_versions() -> dict[str, str]:
 
 @dataclass(frozen=True)
 class NativeBuildOutcome:
-    status: Literal["WAITING_APPROVAL", "FAILED", "UNAVAILABLE", "CANCELLED"]
+    status: Literal["WAITING_APPROVAL", "NODE_VERIFIED", "FAILED", "UNAVAILABLE", "CANCELLED"]
     reason: str
     context_sha256: str
     native_report_sha256: str | None = None
@@ -323,7 +323,7 @@ class AdmittedNativeBuild:
                 deadline=deadline,
             )
             return NativeBuildOutcome(
-                "WAITING_APPROVAL" if review.passed else "FAILED",
+                ("WAITING_APPROVAL" if review.approval is not None else "NODE_VERIFIED") if review.passed else "FAILED",
                 "independent_checks_passed" if review.passed else "independent_checks_failed",
                 self.context_sha256,
                 digest,

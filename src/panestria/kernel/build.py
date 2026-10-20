@@ -28,6 +28,7 @@ from panestria.kernel.effects import DispatchClaim
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.leases import LeaseService
+from panestria.kernel.plan_scope import require_final_task, task_plan_scope
 from panestria.kernel.repositories.approvals import required_verdicts
 from panestria.kernel.repositories.policy import require_current_policy
 from panestria.kernel.repositories.tasks import append_event, lock_task
@@ -158,7 +159,9 @@ def _contract(uow: UnitOfWork, actor: Actor, task_id: str) -> tuple[str, GoalCon
     return str(row[0]), contract
 
 
-def _check_set(uow: UnitOfWork, bundle: BuildEvidenceBundle, contract: GoalContract) -> None:
+def _check_set(
+    uow: UnitOfWork, bundle: BuildEvidenceBundle, contract: GoalContract, store: BuildEvidenceStore
+) -> None:
     rows = uow.execute(
         "SELECT id::text,check_key,required,verifier_spec FROM panestria.acceptance_check"
         " WHERE contract_id=%s ORDER BY check_key",
@@ -171,6 +174,13 @@ def _check_set(uow: UnitOfWork, bundle: BuildEvidenceBundle, contract: GoalContr
         if check is None or check.required != required or check.verifier.model_dump(mode="json") != spec:
             raise KernelDenied("build_check_set_mismatch")
         expected.append((str(check_id), str(key), bool(required), canonical_sha256(spec)))
+    scope = task_plan_scope(uow, Actor(bundle.owner_id, bundle.project_id), bundle.task_id)
+    if scope is not None:
+        expected = [row for row in expected if row[1] in scope.node.acceptance_keys]
+    for bundle_check in bundle.checks:
+        report = json.loads(store.read_blob(bundle_check.report_sha256))
+        if report.get("plan_scope_sha256") != (scope.sha256() if scope else None):
+            raise KernelDenied("build_plan_scope_mismatch")
     observed = [(check.check_id, check.check_key, check.required, check.spec_sha256) for check in bundle.checks]
     if expected != observed or len(rows) != len(declared):
         raise KernelDenied("build_check_set_mismatch")
@@ -210,7 +220,7 @@ class BuildEvidenceService:
             bundle.policy_ref,
         ):
             raise KernelDenied("build_contract_mismatch")
-        _check_set(uow, bundle, contract)
+        _check_set(uow, bundle, contract, self.store)
         # The protected, hash-checked blob is finalized before its DB reference.
         # A rolled-back transaction can leave an orphan, never a published PASS.
         self.store.write(bundle)
@@ -304,8 +314,11 @@ class BuildEvidenceService:
             bundle.policy_ref,
         ):
             raise KernelDenied("build_contract_mismatch")
-        _check_set(uow, bundle, contract)
+        _check_set(uow, bundle, contract, self.store)
         verdicts = required_verdicts(uow, task_id, digest)
+        scope = task_plan_scope(uow, actor, task_id)
+        if scope is not None:
+            verdicts = [(key, verdict) for key, verdict in verdicts if key in scope.node.acceptance_keys]
         if (
             not bundle.passed()
             or [key for key, _ in verdicts] != [c.check_key for c in bundle.checks if c.required]
@@ -323,6 +336,7 @@ class BuildEvidenceService:
         if task is None:
             raise KernelDenied("not_found")
         bundle = self.current(uow, actor, task_id, digest)
+        require_final_task(uow, actor, task_id)
         if not re.fullmatch(r"refs/heads/[A-Za-z0-9_/-]+", destination) or ".." in destination or "//" in destination:
             raise KernelDenied("invalid_destination_ref")
         if type(ttl_seconds) is not int or not 1 <= ttl_seconds <= 3600:
@@ -347,6 +361,7 @@ class BuildEvidenceService:
         return ApprovalService().request(uow, actor, preview.model_dump(mode="json"))
 
     def authorize_dispatch(self, uow: UnitOfWork, actor: Actor, claim: DispatchClaim) -> BuildEvidenceBundle:
+        require_final_task(uow, actor, claim.task_id)
         row = uow.execute(
             "SELECT a.preview,a.effect_digest,a.state,a.expires_at>clock_timestamp(),e.effect_key,"
             "e.policy_version FROM (SELECT s.*,r.policy_version FROM panestria.side_effect s"

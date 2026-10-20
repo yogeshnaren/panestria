@@ -13,6 +13,7 @@ from panestria.contracts.approval import ActionPreview, PreviewRejected, effect_
 from panestria.contracts.task import ALLOWED_TRANSITIONS
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
+from panestria.kernel.plan_scope import require_final_task
 from panestria.kernel.repositories.approvals import (
     bump_version,
     consumption,
@@ -99,6 +100,8 @@ class ApprovalService:
         if locked is None:
             raise KernelDenied("not_found")
         goal_id, state, row_version, contract_id = locked
+        if preview.action_kind in {"merge", "finalize"}:
+            require_final_task(uow, actor, preview.task_id)
         self._bound_contract(uow, contract_id, preview)
         continuation, phase = _WAIT[preview.action_kind]
         if (state, "WAITING_APPROVAL") not in ALLOWED_TRANSITIONS:

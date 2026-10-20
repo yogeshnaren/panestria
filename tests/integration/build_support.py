@@ -13,6 +13,7 @@ import pytest
 
 from panestria.contracts.build import BuildCheck, BuildEvidenceBundle, canonical_sha256
 from panestria.contracts.goal import GoalContract, contract_sha256, load_contract
+from panestria.contracts.plan import PlanTaskScope
 from panestria.contracts.policy import PolicyContext
 from panestria.kernel.build import BuildEvidenceService, BuildEvidenceStore
 from panestria.kernel.goals import Actor
@@ -51,7 +52,7 @@ class BuildFixture:
 
 
 @pytest.fixture
-def build(r1_task: dict[str, str], tmp_path: Path) -> BuildFixture:
+def build(r1_task: dict[str, str], tmp_path: Path, request: pytest.FixtureRequest) -> BuildFixture:
     actor = Actor(r1_task["owner"], r1_task["project"])
     certificates = CertificateStore(tmp_path / "certificates", {})
     with psycopg.connect(r1_task["dsn"]) as c:
@@ -64,8 +65,9 @@ def build(r1_task: dict[str, str], tmp_path: Path) -> BuildFixture:
         contract_version=2,
         autonomy_profile_ref=f"project-policy:1:{policy.sha256()}",
     )
-    document["constraints"]["allowed_paths"] = ["answer.txt"]
-    document["acceptance"][1]["verifier"]["allowed_paths"] = ["answer.txt"]
+    allowed = list(getattr(request, "param", ("answer.txt",)))
+    document["constraints"]["allowed_paths"] = allowed
+    document["acceptance"][1]["verifier"]["allowed_paths"] = allowed
     contract = load_contract(document)
     contract_id = str(uuid4())
     ids = {check.id: str(uuid4()) for check in contract.acceptance}
@@ -140,12 +142,16 @@ def build(r1_task: dict[str, str], tmp_path: Path) -> BuildFixture:
     )
 
 
-def _bundle(build: BuildFixture, *, verdict: str = "PASS") -> BuildEvidenceBundle:
+def _bundle(
+    build: BuildFixture, *, verdict: str = "PASS", plan_scope: PlanTaskScope | None = None
+) -> BuildEvidenceBundle:
     # Protected-controller report fixtures exercise DB guards/CAS; they are not
     # claimed as native-worker or OS-verifier evidence. The OS case uses verify_build.
     checks = []
     bundle_digest = verifier_bundle_digest(build.contract, build.registry)
     for check in sorted(build.contract.acceptance, key=lambda c: c.id):
+        if plan_scope is not None and check.id not in plan_scope.node.acceptance_keys:
+            continue
         spec_digest = canonical_sha256(check.verifier.model_dump(mode="json"))
         report = json.dumps(
             {
@@ -161,6 +167,7 @@ def _bundle(build: BuildFixture, *, verdict: str = "PASS") -> BuildEvidenceBundl
                 "contract_sha256": contract_sha256(build.contract),
                 "spec_sha256": spec_digest,
                 "verifier_bundle_sha256": bundle_digest,
+                **({"plan_scope_sha256": plan_scope.sha256()} if plan_scope else {}),
             },
             sort_keys=True,
         ).encode()

@@ -19,6 +19,7 @@ from panestria.contracts.plan import HandoffSubmission, PlanNode, PlanProposal, 
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.leases import LeaseService
+from panestria.kernel.plan_scope import task_plan_scope
 from panestria.kernel.plan_store import PlanStore
 from panestria.kernel.tasks import TaskService
 from panestria.kernel.uow import UnitOfWork
@@ -218,7 +219,9 @@ def test_handoff_reconstructs_current_verified_source_without_completing_or_merg
             UnitOfWork(c), build.actor, task, "synthetic-controller-fixture", 2, ttl_seconds=120
         )
     current = replace(build, task={**build.task, "task": task}, attempt=lease.attempt_id)
-    bundle = _bundle(current)
+    with psycopg.connect(build.task["dsn"]) as c:
+        scope = task_plan_scope(UnitOfWork(c), build.actor, task)
+    bundle = _bundle(current, plan_scope=scope)
     with psycopg.connect(build.task["dsn"]) as c:
         digest = build.service.publish(UnitOfWork(c), build.actor, bundle)
     with psycopg.connect(build.task["dsn"]) as c:
@@ -268,3 +271,114 @@ def test_caller_transaction_and_populated_migration_preserve_audit(planned):
         assert service.get(UnitOfWork(c), build.actor, proposal.plan_id).state == "PROPOSED"
         with pytest.raises(psycopg.Error), c.transaction():
             c.execute("DELETE FROM panestria.build_plan WHERE id=%s", (proposal.plan_id,))
+
+
+def _lease_node(planned, task):
+    build = planned[0]
+    with psycopg.connect(build.task["dsn"]) as c:
+        for version, target in enumerate(("VALIDATING", "READY")):
+            TaskService().transition(
+                UnitOfWork(c),
+                build.actor,
+                task,
+                version,
+                0,
+                target,
+                "accepted-plan-controller-fixture",
+                policy_version=build.contract.autonomy_profile_ref,
+                correlation_id=str(uuid4()),
+            )
+        lease = LeaseService().acquire(
+            UnitOfWork(c), build.actor, task, "synthetic-controller-fixture", 2, ttl_seconds=120
+        )
+        scope = task_plan_scope(UnitOfWork(c), build.actor, task)
+    return replace(build, task={**build.task, "task": task}, attempt=lease.attempt_id), scope
+
+
+def test_intermediate_all_check_pass_cannot_request_any_protected_merge(planned):
+    from panestria.kernel.approvals import ApprovalService
+
+    build, proposal, _, _ = planned
+    accept(planned, prepare(planned))
+    current, scope = _lease_node(planned, proposal.nodes[0].task_id)
+    bundle = _bundle(current, plan_scope=scope)
+    with psycopg.connect(build.task["dsn"]) as c:
+        digest = build.service.publish(UnitOfWork(c), build.actor, bundle)
+    with psycopg.connect(build.task["dsn"]) as c:
+        assert build.service.current(UnitOfWork(c), build.actor, current.task["task"], digest) == bundle
+        with pytest.raises(KernelDenied, match="plan_node_cannot_merge_goal"), c.transaction():
+            build.service.request_merge(UnitOfWork(c), build.actor, current.task["task"], digest, "refs/heads/main")
+        # Even the generic approval API cannot turn this intermediate result
+        # into a merge. The same complete check set remains required there.
+        original = _bundle(build)
+        root_digest = build.service.publish(UnitOfWork(c), build.actor, original)
+        review = build.service.request_merge(
+            UnitOfWork(c), build.actor, build.task["task"], root_digest, "refs/heads/main"
+        )
+        preview = {**review.preview, "task_id": current.task["task"], "candidate_sha256": digest}
+        with pytest.raises(KernelDenied, match="plan_node_cannot_merge_goal"), c.transaction():
+            ApprovalService().request(UnitOfWork(c), build.actor, preview)
+        assert c.execute("SELECT state FROM panestria.task WHERE id=%s", (current.task["task"],)).fetchone() == (
+            "VERIFYING",
+        )
+
+
+@pytest.mark.parametrize("build", [("answer.txt", "notes.txt")], indirect=True)
+def test_node_subset_and_paths_come_from_accepted_membership_not_worker_choice(planned):
+    from build_support import _git
+
+    from panestria.verification.build import verify_build
+    from panestria.verification.git_snapshot import materialize
+
+    build, proposal, inventory, service = planned
+    first = proposal.nodes[0].model_copy(update={"acceptance_keys": ("AC-002",)})
+    proposal = proposal.model_copy(update={"nodes": (first, proposal.nodes[1])})
+    planned = build, proposal, inventory, service
+    accept(planned, prepare(planned))
+    current, scope = _lease_node(planned, first.task_id)
+    assert scope is not None and not scope.integration
+    bundle = _bundle(current, plan_scope=scope)
+    assert len(bundle.checks) == 1
+    with psycopg.connect(build.task["dsn"]) as c:
+        # Missing canonical scope, extra checks or a different node hash cannot
+        # substitute for the explicitly accepted subset.
+        with pytest.raises(KernelDenied, match="build_plan_scope_mismatch|build_check_set_mismatch"), c.transaction():
+            build.service.publish(UnitOfWork(c), build.actor, _bundle(current))
+    kwargs = dict(
+        contract=build.contract,
+        contract_id=build.task["contract"],
+        task_id=first.task_id,
+        attempt_id=current.attempt,
+        epoch=1,
+        base=build.base,
+        candidate=build.candidate,
+        snapshot=build.snapshot,
+        check_ids=build.ids,
+        registry=build.registry,
+        policy=build.policy,
+    )
+    verified = verify_build(**kwargs, plan_scope=scope)
+    assert verified.bundle.passed() and [x.check_key for x in verified.bundle.checks] == ["AC-002"]
+    (build.source / "notes.txt").write_text("outside this node, inside the goal")
+    _git(build.source, "add", "notes.txt")
+    _git(build.source, "commit", "-m", "synthetic other-node edit")
+    candidate = _git(build.source, "rev-parse", "HEAD")
+    _git(build.bare, "fetch", str(build.source), candidate)
+    snapshot = materialize(build.bare, build.base, candidate, build.snapshot.directory.parent / "other-node")
+    outside = verify_build(**{**kwargs, "snapshot": snapshot, "candidate": candidate}, plan_scope=scope)
+    assert not outside.bundle.passed()
+    # A wider counterfactual scope passes the goal's path rule, but is not the
+    # accepted node scope and its reports cannot be published for this node.
+    widened = scope.model_copy(update={"node": first.model_copy(update={"paths": ("answer.txt", "notes.txt")})})
+    wider = verify_build(**{**kwargs, "snapshot": snapshot, "candidate": candidate}, plan_scope=widened)
+    assert wider.bundle.passed()
+    with psycopg.connect(build.task["dsn"]) as c:
+        for raw in wider.reports:
+            build.service.store.write_report(raw)
+        with pytest.raises(KernelDenied, match="build_plan_scope_mismatch"), c.transaction():
+            build.service.publish(UnitOfWork(c), build.actor, wider.bundle)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.build_evidence WHERE task_id=%s", (first.task_id,)
+        ).fetchone() == (0,)
+        digest = build.service.publish(UnitOfWork(c), build.actor, bundle)
+        assert build.service.current(UnitOfWork(c), build.actor, first.task_id, digest).passed()

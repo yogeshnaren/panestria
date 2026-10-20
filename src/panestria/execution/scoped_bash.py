@@ -33,6 +33,7 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.invocations import InvocationService
 from panestria.kernel.leases import LeaseService
+from panestria.kernel.plan_scope import task_plan_scope
 from panestria.kernel.policy import PolicyService
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.engine import PolicyEngine
@@ -278,6 +279,7 @@ class ScopedBashController:
                     (cid[0],),
                 ).fetchall()
             )
+            plan_scope = task_plan_scope(UnitOfWork(connection), self.actor, str(self.scope.task_id))
         candidate = capture_candidate(repository, base, self.workspace)
         active()
         snapshot = materialize(repository, base, candidate, frozen_directory)
@@ -294,6 +296,7 @@ class ScopedBashController:
             registry,
             policy=policy,
             deadline=deadline,
+            plan_scope=plan_scope,
         )
         for raw in verified.reports:
             self.reports.write_report(raw)
@@ -303,7 +306,7 @@ class ScopedBashController:
             self.authorize(connection)
             digest = evidence.publish(UnitOfWork(connection), self.actor, verified.bundle)
         approval = None
-        if verified.bundle.passed():
+        if verified.bundle.passed() and (plan_scope is None or plan_scope.integration):
             with self.connect() as connection:
                 self.authorize(connection)
                 approval = evidence.request_merge(
