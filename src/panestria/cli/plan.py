@@ -383,3 +383,33 @@ def release_final_capacity(
         typer.echo(json.dumps({"status": "RELEASED", "proof_sha256": proof, "dispatch_authority": "NONE"}))
     except Exception:
         _unavailable()
+
+
+@plan_app.command("stage")
+def stage_public_plan(
+    owner_id: str,
+    project_id: str,
+    contract: Annotated[Path, typer.Option("--contract")],
+    proposal: Annotated[Path, typer.Option("--proposal")],
+    inventory: Annotated[Path, typer.Option("--inventory")],
+    idempotency_key: Annotated[str, typer.Option("--idempotency-key")],
+) -> None:
+    """Stage a PUBLIC zero-cash goal/checks and plan; requires separate exact owner acceptance."""
+    from dataclasses import asdict
+
+    from panestria.kernel.plan_submission import PlanSubmissionService
+    from panestria.kernel.uow import UnitOfWork
+
+    try:
+        with _connection() as c:
+            receipt = PlanSubmissionService().stage(
+                UnitOfWork(c),
+                Actor(owner_id, project_id),
+                json.loads(read_private(contract, 256 * 1024)),
+                PlanProposal.model_validate_json(read_private(proposal, 128 * 1024)),
+                ProjectInventory.model_validate_json(read_private(inventory, 16384)),
+                idempotency_key,
+            )
+        typer.echo(json.dumps(asdict(receipt)))
+    except Exception:
+        _unavailable()

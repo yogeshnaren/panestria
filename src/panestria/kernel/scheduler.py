@@ -225,6 +225,9 @@ class Scheduler:
             "VALUES(%s,%s,%s,%s,%s,%s::jsonb,%s)",
             (lease.attempt_id, plan_id, node.task_id, lease.epoch, node.worker_ref, json.dumps(hardware), digest),
         )
+        uow.execute(
+            "UPDATE panestria.goal SET status='ACTIVE' WHERE id=%s AND status='CREATED'", (plan.proposal.goal_id,)
+        )
         append_event(
             uow,
             goal_id=plan.proposal.goal_id,

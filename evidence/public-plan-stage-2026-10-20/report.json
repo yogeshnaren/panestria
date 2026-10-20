@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "source_commit": "b6d32656c32505a486bd849cb9af3b526990268c",
+  "worktree_state": "clean before evidence/progress writes",
+  "scope": "Atomic owner PUBLIC zero-API-cash goal/check/proposal staging and separate exact owner acceptance; no native calls or runtime qualification",
+  "runs": [
+    {
+      "report": "initial.xml",
+      "source_state": "uncommitted implementation",
+      "passed": 3,
+      "failed": 0,
+      "seconds": 11.97
+    },
+    {
+      "report": "qualified.xml",
+      "source_commit": "b6d32656c32505a486bd849cb9af3b526990268c",
+      "passed": 3,
+      "failed": 0,
+      "seconds": 12.52
+    }
+  ],
+  "validated": [
+    "Two concurrent stage calls create one goal/check set/proposal",
+    "No tasks/attempts before separate exact acceptance",
+    "Replay before/after acceptance does not duplicate or launch work",
+    "Rollback removes all new goal/check/proposal state",
+    "Private/paid/mismatched inputs and tampered canonical check replay refuse",
+    "Actual private-file owner CLI stages without inference",
+    "First reservation makes the goal ACTIVE with dispatch authority NONE"
+  ],
+  "static_checks": [
+    "ruff",
+    "mypy 257 files",
+    "11 import boundaries",
+    "secret scan"
+  ],
+  "release_gate": "NOT_ASSESSED",
+  "sha256": {
+    "initial.xml": "9711f97da52851eb4d5f98f0ab0d97411f562d9e5dfd2d09324b29fe2f1dc1f5",
+    "qualified.xml": "8a601a85dc7b2d40ce358fc7e29b65ad88de8c44038af3800051b054444c29a2"
+  },
+  "remaining": [
+    "Automatic qualified inventory/local planner proposals and bounded revisions",
+    "Actual native two-worker dispatcher/qualification",
+    "Original cumulative release gates and real owner trial"
+  ]
+}
