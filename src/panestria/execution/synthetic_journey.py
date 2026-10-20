@@ -291,7 +291,9 @@ class SyntheticJourney:
         if current != candidate and not self._effect_allowed(
             connection, actor, task_id, approval[0], preview, sandbox / "store"
         ):
-            self._reject_effect(connection, actor, goal_id, task_id, approval[0], approval[2], "authorization-stale")
+            self._reject_effect(
+                connection, actor, goal_id, task_id, approval[0], approval[2], "authorization-stale"
+            )
             return
         crash_gate("before-effect-dispatch")
         confirmed = current == candidate or _apply_ref(sandbox, preview.expected_base, ref, candidate)
@@ -445,7 +447,8 @@ class SyntheticJourney:
                 ),
             )
         connection.execute(
-            "UPDATE panestria.task_attempt SET status = %s, finished_at = now() WHERE id = %s AND status = 'RUNNING'",
+            "UPDATE panestria.task_attempt SET status = %s, finished_at = now()"
+            " WHERE id = %s AND status = 'RUNNING'",
             ("SUCCEEDED" if passed else "FAILED", attempt_id),
         )
         append_event(
@@ -696,7 +699,8 @@ class SyntheticJourney:
         effect = None
         if approval is not None:
             effect = connection.execute(
-                "SELECT state FROM panestria.side_effect WHERE task_id = %s AND effect_key = %s",
+                "SELECT state FROM panestria.side_effect"
+                " WHERE task_id = %s AND effect_key = %s",
                 (task_id, f"approval:{approval[0]}"),
             ).fetchone()
         goal = connection.execute("SELECT status FROM panestria.goal WHERE id = %s", (goal_id,)).fetchone()
@@ -867,7 +871,9 @@ def _database_url(connection: Conn) -> str:
     if configured:
         return configured
     info = connection.info.get_parameters()
-    return f"postgresql://{info['user']}:{info.get('password', '')}@{info['host']}:{info['port']}/{info['dbname']}"
+    return (
+        f"postgresql://{info['user']}:{info.get('password', '')}@{info['host']}:{info['port']}/{info['dbname']}"
+    )
 
 
 def _checks_passed(connection: Conn, task_id: str, candidate_sha256: str) -> bool:

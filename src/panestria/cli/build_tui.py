@@ -203,18 +203,8 @@ class BuildReviewTerminal:
             return "DIFF (untrusted text)\n" + str(data.get("diff", "No diff available."))
         if v.page == 2:
             return "EXACT OWNER REVIEW\n" + json.dumps(
-                {
-                    k: data.get(k)
-                    for k in (
-                        "goal_id",
-                        "task_id",
-                        "row_version",
-                        "base_commit",
-                        "candidate_commit",
-                        "evidence_sha256",
-                        "approval",
-                    )
-                },
+                {k: data.get(k) for k in ("goal_id", "task_id", "row_version", "base_commit", "candidate_commit",
+                                         "evidence_sha256", "approval")},
                 indent=2,
             )
         return "INDEPENDENT CHECKS\n" + json.dumps(data.get("checks", []), indent=2)

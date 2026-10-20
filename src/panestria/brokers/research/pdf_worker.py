@@ -30,19 +30,8 @@ def _check_graph(root: Any) -> None:
     from pypdf.generic import ArrayObject, DictionaryObject, IndirectObject, NameObject
 
     denied_keys = {
-        "/OpenAction",
-        "/AA",
-        "/A",
-        "/JS",
-        "/JavaScript",
-        "/EmbeddedFiles",
-        "/EF",
-        "/AcroForm",
-        "/XFA",
-        "/RichMediaContent",
-        "/Annots",
-        "/XObject",
-        "/F",
+        "/OpenAction", "/AA", "/A", "/JS", "/JavaScript", "/EmbeddedFiles", "/EF",
+        "/AcroForm", "/XFA", "/RichMediaContent", "/Annots", "/XObject", "/F",
     }
     denied_names = {"/JavaScript", "/Launch", "/Filespec", "/EmbeddedFile", "/RichMedia", "/GoToR"}
     pending = [(root, 0)]
@@ -163,20 +152,14 @@ def main() -> None:
             raise ValueError("pdf_input")
         canonical, spans = _extract(raw, maximum)
         result = {
-            "outcome": "COMPLETE",
-            "reason": "extracted_text_only",
-            "raw_sha256": digest,
-            "raw_size": len(raw),
-            "text_sha256": hashlib.sha256(canonical).hexdigest(),
-            "text_size": len(canonical),
+            "outcome": "COMPLETE", "reason": "extracted_text_only",
+            "raw_sha256": digest, "raw_size": len(raw),
+            "text_sha256": hashlib.sha256(canonical).hexdigest(), "text_size": len(canonical),
             "text_b64": base64.b64encode(canonical).decode("ascii"),
             "extractor_version": "pypdf-6.20.1-text-v1",
-            "normalization_version": "nfc-utf8-v1",
-            "unicode_version": unicodedata.unidata_version,
-            "tokenizer_sha256": BUNDLE_SHA256,
-            "pdf_bundle_sha256": BUNDLE_SHA256,
-            "page_spans": spans,
-            "limitations": LIMITATIONS,
+            "normalization_version": "nfc-utf8-v1", "unicode_version": unicodedata.unidata_version,
+            "tokenizer_sha256": BUNDLE_SHA256, "pdf_bundle_sha256": BUNDLE_SHA256,
+            "page_spans": spans, "limitations": LIMITATIONS,
         }
     except UnsupportedPdf as error:
         result = {"outcome": "UNSUPPORTED", "reason": str(error)}

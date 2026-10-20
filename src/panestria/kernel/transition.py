@@ -7,7 +7,9 @@ import re
 from panestria.kernel.errors import KernelDenied
 
 _POLICY_LIMIT = 128
-_CORRELATION = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+_CORRELATION = re.compile(
+    r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+)
 
 
 def require_correlation(correlation_id: str) -> str:

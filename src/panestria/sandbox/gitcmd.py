@@ -103,7 +103,12 @@ def _worktree(args: list[str]) -> bool:
 def _diff(args: list[str]) -> bool:
     if len(args) == 4 and args[:3] == ["--raw", "--find-renames", "--no-abbrev"] and _sha(args[3]):
         return True
-    if len(args) == 5 and args[:3] == ["--raw", "--find-renames", "--no-abbrev"] and _sha(args[3]) and _sha(args[4]):
+    if (
+        len(args) == 5
+        and args[:3] == ["--raw", "--find-renames", "--no-abbrev"]
+        and _sha(args[3])
+        and _sha(args[4])
+    ):
         return True
     if len(args) == 5 and args[:4] == ["--cached", "--raw", "--find-renames", "--no-abbrev"] and _sha(args[4]):
         return True

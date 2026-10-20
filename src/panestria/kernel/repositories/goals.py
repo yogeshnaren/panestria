@@ -4,9 +4,13 @@ from __future__ import annotations
 
 from panestria.kernel.uow import UnitOfWork
 
-GOAL_LOOKUP_SQL = "SELECT id::text, status FROM panestria.goal WHERE id = %s AND owner_id = %s AND project_id = %s"
+GOAL_LOOKUP_SQL = (
+    "SELECT id::text, status FROM panestria.goal"
+    " WHERE id = %s AND owner_id = %s AND project_id = %s"
+)
 EVENT_LOOKUP_SQL = (
-    "SELECT seq, kind, payload FROM panestria.task_event WHERE goal_id = %s AND seq > %s ORDER BY seq LIMIT %s"
+    "SELECT seq, kind, payload FROM panestria.task_event"
+    " WHERE goal_id = %s AND seq > %s ORDER BY seq LIMIT %s"
 )
 
 
@@ -26,7 +30,8 @@ def lock_idempotency(
 
 def insert_goal(uow: UnitOfWork, goal_id: str, owner_id: str, project_id: str, intent: str) -> None:
     uow.execute(
-        "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status) VALUES (%s, %s, %s, %s, 'CREATED')",
+        "INSERT INTO panestria.goal (id, owner_id, project_id, intent, status)"
+        " VALUES (%s, %s, %s, %s, 'CREATED')",
         (goal_id, owner_id, project_id, intent),
     )
 
