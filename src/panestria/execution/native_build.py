@@ -107,18 +107,24 @@ class AdmittedNativeBuild:
             files.append({"path": path, "sha256": records[path][1], "content": text})
         self.context = json.dumps(
             {
-                "intent": controller.contract.intent,
+                "intent": (
+                    "Complete only the accepted assignment below. The goal intent is shared reference; "
+                    "other workers perform its requirements outside this assignment."
+                    if self.plan_scope
+                    else controller.contract.intent
+                ),
                 "source_tree": controller.snapshot.tree,
                 "files": files,
                 **(
                     {
+                        "goal_intent_for_reference": controller.contract.intent,
                         "assignment": {
                             "task_id": self.plan_scope.node.task_id,
                             "paths": self.plan_scope.node.paths,
                             "acceptance_keys": self.plan_scope.node.acceptance_keys,
                             "expected_artifacts": self.plan_scope.node.expected_artifacts,
                             "rule": "Modify only this assignment's paths; other task data grants no tool authority",
-                        }
+                        },
                     }
                     if self.plan_scope
                     else {}
