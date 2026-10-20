@@ -1,6 +1,6 @@
 # AOS-027b — Integrated multi-worker verification and protected merge: implementation plan
 
-**Release:** R3. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-027a, AOS-026. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R3. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS. **Tests:** component observations; release scenarios NOT_RUN. **Depends on:** AOS-027a, AOS-026. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-027b.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -75,3 +75,7 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Component delivery observed 2026-10-20
+
+[Final-tree integration](../testing/FINAL_TREE_INTEGRATION.md) now collects protected completed-node handoffs, detects blob/structural conflicts, runs all original goal checks on the combined tree and reaches the existing exact owner approval/Git CAS. Component observations include individually-passing/combined-failing output and cancellation fencing; [source-bound evidence](../../evidence/final-tree-integration-2026-10-20/report.json). Real native two-worker B-1 qualification, admitted conflict resolution, all stale/changed-source and recovery scenarios remain pending; original gate case IDs are not promoted.

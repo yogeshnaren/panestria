@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "source_commit": "8352b0f03182bbb4a14de928bb18415fa40f5f19",
+  "worktree_state": "clean before evidence/progress writes",
+  "scope": "Controller integration of real protected sibling results and owner-approved final Git CAS; synthetic worker/capacity identities, not native qualification",
+  "runs": [
+    {
+      "report": "initial.xml",
+      "source_state": "uncommitted integration",
+      "passed": 3,
+      "failed": 0,
+      "seconds": 18.19
+    },
+    {
+      "report": "compatibility.xml",
+      "source_commit": "d14bdabc59713c7db981a3ba8b0c0abbb9b68b75",
+      "passed": 23,
+      "failed": 0,
+      "live_deselected": 1,
+      "seconds": 65.13,
+      "scope": "Final integration, moved shared scheduler fixtures, legacy owner CLI and review TUI"
+    },
+    {
+      "report": "owner-merge.xml",
+      "source_commit": "8352b0f03182bbb4a14de928bb18415fa40f5f19",
+      "passed": 4,
+      "failed": 0,
+      "seconds": 19.29,
+      "scope": "Exact owner-approved Git merge; individual-pass/combined-fail; conflict stop; cancellation after actual checks fences publication"
+    }
+  ],
+  "static_checks": [
+    "ruff",
+    "mypy 255 files",
+    "11 import boundaries",
+    "secret scan"
+  ],
+  "release_gate": "NOT_ASSESSED",
+  "sha256": {
+    "initial.xml": "ec14175005067e790e2f37d2e2e3324351096312d7615f41ec6f1a6c11e03956",
+    "compatibility.xml": "cc01aa30f6e136417a2ec36ce1da76130446a6a2184cfb19c4532417469649f0",
+    "owner-merge.xml": "f2a0de097c946b94b126fdc0192b4d9d61a052ec44d1197bf59143bc6c7d248a"
+  },
+  "remaining": [
+    "Actual bounded native two-worker dispatcher and qualifications",
+    "Final/failed/unknown reservations and multi-task cancellation",
+    "Owner resolution workflow/replanning",
+    "Original cumulative release gates and real owner trial"
+  ]
+}
