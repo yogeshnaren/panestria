@@ -1,4 +1,4 @@
-"""One explicit PUBLIC two-worker fork/join run; no provider fallback or merge.
+"""One explicit PUBLIC bounded fork/join run; no provider fallback or merge.
 
 Claims/attempts, tool scopes, independent evidence and completion remain canonical.
 This foreground driver never adopts an old claim or replays an uncertain call.
@@ -91,6 +91,8 @@ class NativePlanRunner:
         with owner.connect() as c:
             uow = UnitOfWork(c)
             plan = PlanStore().get(uow, owner.actor, plan_id)
+            if plan.state != "ACCEPTED":
+                raise KernelDenied("plan_not_accepted")
             scope = task_plan_scope(uow, owner.actor, plan.proposal.nodes[0].task_id)
             assert scope is not None
             policy = PolicyService(owner.certificates).get(uow, owner.actor)
@@ -135,13 +137,13 @@ class NativePlanRunner:
         final = next(n for n in plan.proposal.nodes if n.task_id == scope.integration_task_id)
         workers = [n for n in plan.proposal.nodes if n.task_id != final.task_id]
         if (
-            len(workers) != 2
+            not 1 <= len(workers) <= 2
             or any(n.depends_on or n.worker_ref != "claude-public-bash" for n in workers)
             or final.worker_ref != "trusted-integrator"
             or set(final.depends_on) != {n.task_id for n in workers}
             or any(not 30 <= n.wall_seconds_per_attempt <= 120 for n in plan.proposal.nodes)
         ):
-            raise KernelDenied("supported_two_worker_fork_join_required")
+            raise KernelDenied("supported_bounded_fork_join_required")
         s = owner.settings
         if protected_git(s.repository, ("rev-parse", "refs/heads/main")).decode().strip() != plan.inventory.base_commit:
             raise KernelDenied("build_base_changed")
