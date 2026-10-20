@@ -6,8 +6,9 @@ commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 w
 An implemented component or passing CI is not a release-gate pass.
 
 The owner explicitly resumed implementation through R3 on 2026-10-20. Current
-critical path: canonical plans/handoffs merged in PR127, then bounded two-worker scheduling,
-conflict handling and final-tree verification. CI/mutation/metrics PRs128–131 are
+critical path: canonical plans/handoffs (PR127), scoped verification (PR132) and
+bounded admission/handoff completion (PR133) are merged. Combined-tree verification
+and owner review are in PR134; actual native orchestration is next. CI/mutation/metrics PRs128–131 are
 merged; performance history is delivered, continuous task metrics remain pending.
 Deliver usable slices and required evidence; avoid unrelated test expansion.
 

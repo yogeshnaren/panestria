@@ -27,6 +27,14 @@
       "failed": 0,
       "seconds": 19.29,
       "scope": "Exact owner-approved Git merge; individual-pass/combined-fail; conflict stop; cancellation after actual checks fences publication"
+    },
+    {
+      "report": "deadline.xml",
+      "source_commit": "664e3377c191f7e5597c25faa24c63528e3e089e",
+      "passed": 4,
+      "failed": 0,
+      "seconds": 18.63,
+      "scope": "Git assembly observes the shared deadline; expired inputs stop before materialization; owner merge/failure/conflict/cancellation still pass"
     }
   ],
   "static_checks": [
@@ -39,7 +47,8 @@
   "sha256": {
     "initial.xml": "ec14175005067e790e2f37d2e2e3324351096312d7615f41ec6f1a6c11e03956",
     "compatibility.xml": "cc01aa30f6e136417a2ec36ce1da76130446a6a2184cfb19c4532417469649f0",
-    "owner-merge.xml": "f2a0de097c946b94b126fdc0192b4d9d61a052ec44d1197bf59143bc6c7d248a"
+    "owner-merge.xml": "f2a0de097c946b94b126fdc0192b4d9d61a052ec44d1197bf59143bc6c7d248a",
+    "deadline.xml": "17c8fa39c8d466234f21b17961c5f4093f28e07a7bd0f85492c92550dec4b098"
   },
   "remaining": [
     "Actual bounded native two-worker dispatcher and qualifications",
