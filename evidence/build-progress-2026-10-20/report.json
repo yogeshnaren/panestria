@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "scope": "Canonical Build progress projection, private export, same-contract repair stall visibility; real PG/Git/MCP/Docker/checks with explicit native/auth/capacity fixtures",
+  "runs": [
+    {
+      "report": "component.xml",
+      "source_commit": "ab6ebdb37577f8b37a26b3058a9b878c6e378d79",
+      "worktree_state": "clean",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 19.99,
+      "sha256": "23560e85a7edba0419f5e67996ebde69af0a465c8db341c68fd9d3bb17ee26b3"
+    },
+    {
+      "report": "qualified.xml",
+      "source_commit": "d879b5a6b69ca05a789142e13ced0f860f170078",
+      "worktree_state": "clean",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 35.612,
+      "sha256": "cc2be812e3d19497dc524bb3bc63cb2fbefb0c3ed4b494d2195532b03304baf3"
+    },
+    {
+      "report": "repeated.xml",
+      "source_commit": "2da4f1916596dda6c8ff0e55b5f12958a10d7f9f",
+      "worktree_state": "clean",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 34.712,
+      "sha256": "219f12e3956eb8feba4f8e1184d6fae340fb1ad755d12ccac7d43152672be76a"
+    }
+  ],
+  "provenance_notes": [
+    "The initial cleanab6ebdb includes incidental existing-file formatting; d879b5a restores that formatting without behavior changes. Final focused diff excludes those files.",
+    "The6-case qualified run includes existing revision journeys and overlaps the three progress cases; later repeated run extends a case through a second real reviewed failed plan. Counts are not12 distinct cases.",
+    "Every original XML preserves actual candidate/worktree/fixture properties; no relabeling for current source."
+  ],
+  "observed": [
+    "Heartbeat narrative and event cursor do not advance verified required-check bar",
+    "Protected final checks and intermediate milestones remain distinct; owner merge and release acceptance stay separate",
+    "Exact actual scripted owner Git merge agrees with completion, while later tampered final bytes demote current evidence to UNCONFIRMED",
+    "Private CLI export is create-once, mode600 and SHA-bound; no events/state/worker grants are written",
+    "Wrong project and inconsistent transaction refuse",
+    "Normal live CLAIMED calls remain activity, UNKNOWN after cancellation requires reconciliation and retains capacity",
+    "Actual failing final check is observable but existing current/merge authority still refuses",
+    "Same independently failing tree across separately accepted revisions produces repeated-failure attention and original cumulative repair accounting"
+  ],
+  "static_checks": [
+    "Ruff",
+    "Mypy265",
+    "11 import boundaries",
+    "secret scan"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "owner_acceptance": "NOT_GRANTED",
+  "remaining": [
+    "Semantic requirement/non-goal/rubric assessment and controller repeated-failure enforcement",
+    "Qualified restart/handoff, general worker/planner and unified owner surfaces",
+    "Cumulative release gates and actual owner trial"
+  ]
+}

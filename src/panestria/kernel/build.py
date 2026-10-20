@@ -159,9 +159,7 @@ def _contract(uow: UnitOfWork, actor: Actor, task_id: str) -> tuple[str, GoalCon
     return str(row[0]), contract
 
 
-def _check_set(
-    uow: UnitOfWork, bundle: BuildEvidenceBundle, contract: GoalContract, store: BuildEvidenceStore
-) -> None:
+def _check_set(uow: UnitOfWork, bundle: BuildEvidenceBundle, contract: GoalContract, store: BuildEvidenceStore) -> None:
     rows = uow.execute(
         "SELECT id::text,check_key,required,verifier_spec FROM panestria.acceptance_check"
         " WHERE contract_id=%s ORDER BY check_key",
@@ -284,6 +282,15 @@ class BuildEvidenceService:
         return digest
 
     def current(self, uow: UnitOfWork, actor: Actor, task_id: str, digest: str) -> BuildEvidenceBundle:
+        return self._observed(uow, actor, task_id, digest, allow_failed=False)
+
+    def observed(self, uow: UnitOfWork, actor: Actor, task_id: str, digest: str) -> BuildEvidenceBundle:
+        """Validate current PASS/FAIL evidence for inspection, never merge authority."""
+        return self._observed(uow, actor, task_id, digest, allow_failed=True)
+
+    def _observed(
+        self, uow: UnitOfWork, actor: Actor, task_id: str, digest: str, *, allow_failed: bool
+    ) -> BuildEvidenceBundle:
         row = uow.execute(
             "SELECT b.body,b.attempt_id::text,t.lease_epoch,a.lease_epoch,a.status"
             " FROM panestria.build_evidence b JOIN panestria.task t ON t.id=b.task_id"
@@ -304,9 +311,11 @@ class BuildEvidenceService:
             row[1] != bundle.attempt_id
             or row[2] != bundle.lease_epoch
             or row[3] != bundle.lease_epoch
-            or row[4] != "SUCCEEDED"
+            or row[4] not in ({"SUCCEEDED", "FAILED"} if allow_failed else {"SUCCEEDED"})
         ):
             raise KernelDenied("stale_build_evidence")
+        if allow_failed and (row[4] == "SUCCEEDED") != bundle.passed():
+            raise KernelDenied("build_attempt_verdict_mismatch")
         contract_id, contract = _contract(uow, actor, task_id)
         if (contract_id, contract_sha256(contract), contract.autonomy_profile_ref) != (
             bundle.contract_id,
@@ -320,9 +329,9 @@ class BuildEvidenceService:
         if scope is not None:
             verdicts = [(key, verdict) for key, verdict in verdicts if key in scope.node.acceptance_keys]
         if (
-            not bundle.passed()
-            or [key for key, _ in verdicts] != [c.check_key for c in bundle.checks if c.required]
-            or any(verdict != "PASS" for _, verdict in verdicts)
+            (not allow_failed and not bundle.passed())
+            or verdicts != [(c.check_key, c.verdict) for c in bundle.checks if c.required]
+            or (not allow_failed and any(verdict != "PASS" for _, verdict in verdicts))
         ):
             raise KernelDenied("build_checks_not_passed")
         return bundle
