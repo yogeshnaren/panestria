@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "source_commit": "5b459d4",
+  "scope": "Historical owner receipt-bound physical-return capacity release; real PG/Git/MCP/Docker/final checks, explicit nonlive native/auth/capacity fixtures",
+  "runs": [
+    {
+      "report": "initial.xml",
+      "source_commit": "a4eeb8287221cce73ffb66a293f29aa869aa1787",
+      "worktree_state": "dirty",
+      "tests": 4,
+      "failures": 0,
+      "seconds": 28.544
+    },
+    {
+      "report": "component.xml",
+      "source_commit": "5b459d48e8071c71002af6a64bb3330f88d60b6a",
+      "worktree_state": "clean",
+      "tests": 4,
+      "failures": 0,
+      "seconds": 21.903
+    },
+    {
+      "report": "restore-readiness.xml",
+      "source_commit": "e820320c62c00f8234cc24082c6d2597d6625156",
+      "worktree_state": "clean",
+      "tests": 28,
+      "failures": 0,
+      "seconds": 35.112
+    }
+  ],
+  "sha256": {
+    "initial.xml": "1637b3098f4fa0bf86f2c8c6f7457ff94696b9a8288674ab701861535295c5fa",
+    "component.xml": "eebd440a5f1626221ff8c6cdd7842bc0455475e073c1a93f55f7e5d7d052f583",
+    "restore-readiness.xml": "c0f390074d1b6a151671322ab9ecf7915a4c50f12ffb9528b999b0a71f8a1743"
+  },
+  "schema": {
+    "revision": "0036_returned_build_release",
+    "source": "Actual readonly fingerprint query on freshly migrated disposable PostgreSQL port55439; no owner database migration",
+    "sha256": "60e17e826d4e6b6b75bb77a53dbac6ccb37496c63067d13c7dcb283a729f6e7c"
+  },
+  "validated": [
+    "Confirmed rejected native work releases once under concurrent replay after current policy revocation, without another native launch",
+    "Original claim rows remain unchanged; immutable proof and no-dispatch/final release history coexist",
+    "Unknown cancellation remains held and is not relabeled",
+    "Actual independent combined-check failure releases capacity without turning failure into PASS",
+    "Owner-withdrawn final review can release its confirmed physical return without a merge; successful verification history is preserved",
+    "Populated new-audit downgrade refuses and actual pg_dump/pg_restore preserves release/proofs/replay",
+    "Existing Ask server readiness and canonical-plan tests pass on the new actual head/snapshot"
+  ],
+  "provenance_notes": [
+    "Initial4cases ran on uncommitted feature code and are diagnostic only.",
+    "Clean5b459d4 records4return-release cases including policy revocation.",
+    "Cleane820320 adds actual populated restore and actual observed schema snapshots; its28cases include the enhanced return-release case plus existing server/canonical-plan compatibility. Counts across these runs overlap and are not32distinct release scenarios.",
+    "Native/auth/capacity fixtures are never live qualification. No new model/provider calls or owner database/service changes occurred."
+  ],
+  "static_checks": [
+    "Ruff",
+    "Mypy262",
+    "11 import boundaries",
+    "secret scan"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "owner_acceptance": "NOT_GRANTED",
+  "remaining": [
+    "Qualified recovery for genuinely unknown native/OS processes and cancelled candidates without verifier return proof",
+    "Finite canonical plan revisions/repair/progress ledger",
+    "General worker DAG/second adapter and remaining revision-3 platform",
+    "Cumulative gates and real owner trial"
+  ]
+}
