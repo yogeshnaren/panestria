@@ -27,6 +27,7 @@ from panestria.kernel.leases import LeaseService
 from panestria.kernel.plan_scope import task_plan_scope
 from panestria.kernel.plan_store import PlanStore
 from panestria.kernel.policy import PolicyService
+from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.scheduler import Scheduler
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.profiles import CertificateStore
@@ -179,7 +180,29 @@ class BuildIntegrator:
         }
         digest = self.evidence.store.write_report(json.dumps(report, sort_keys=True, separators=(",", ":")).encode())
         if combined.conflicts:
-            # No candidate, verifier PASS, approval, ref update or goal completion.
+            # Retain the exact blocked outcome canonically, without a candidate,
+            # verifier PASS, merge approval or protected-ref update.
+            with self.connect() as c:
+                current = self._inputs(UnitOfWork(c), plan_id, attempt_id, epoch)
+                if self._fingerprint(current) != fingerprint:
+                    raise KernelDenied("integration_inputs_changed")
+                c.execute(
+                    "UPDATE panestria.task SET state='RECONCILING',row_version=row_version+1 WHERE id=%s",
+                    (scope.node.task_id,),
+                )
+                append_event(
+                    UnitOfWork(c),
+                    goal_id=plan.proposal.goal_id,
+                    task_id=scope.node.task_id,
+                    actor=self.actor.owner_id,
+                    kind="build.plan.integration_conflict",
+                    payload={
+                        "plan_id": plan_id,
+                        "inputs_sha256": fingerprint,
+                        "report_sha256": digest,
+                        "resolution": "OWNER_REVIEW_REQUIRED",
+                    },
+                )
             return IntegrationOutcome("CONFLICT", digest)
         assert combined.candidate is not None
         if time.monotonic() >= deadline:

@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "source_commit": "6a1f39cdf61754f3617920139d1a28291c2cb6c7",
+  "scope": "Accepted PUBLIC two-Claude fork/join, create-only assignment, durable claims/handoffs, full final-tree verification and exact scripted test-owner protected merge",
+  "worktree_state": "clean before evidence and documentation writes",
+  "runs": [
+    {
+      "report": "initial-component.xml",
+      "tests": 4,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 19.323,
+      "source_commit": null,
+      "recorded_worktree": null
+    },
+    {
+      "report": "compatibility.xml",
+      "tests": 36,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 75.327,
+      "source_commit": "ca357e3e3f59771ce7b29861f7d60ea849aeb5d4",
+      "recorded_worktree": "clean"
+    },
+    {
+      "report": "initial-live-failed.xml",
+      "tests": 1,
+      "failed": 1,
+      "skipped": 0,
+      "seconds": 23.948,
+      "source_commit": null,
+      "recorded_worktree": null
+    },
+    {
+      "report": "diagnostic-live-failed.xml",
+      "tests": 1,
+      "failed": 1,
+      "skipped": 0,
+      "seconds": 39.444,
+      "source_commit": "6d2dfb0c40654a52a628d019525a578a6fcd9f99",
+      "recorded_worktree": "clean"
+    },
+    {
+      "report": "live.xml",
+      "tests": 1,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 22.287,
+      "source_commit": "6a1f39cdf61754f3617920139d1a28291c2cb6c7",
+      "recorded_worktree": "clean"
+    },
+    {
+      "report": "runtime-before-prompt.xml",
+      "tests": 11,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 27.311,
+      "source_commit": "ca357e3e3f59771ce7b29861f7d60ea849aeb5d4",
+      "recorded_worktree": "clean"
+    },
+    {
+      "report": "runtime.xml",
+      "tests": 11,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 27.252,
+      "source_commit": "6a1f39cdf61754f3617920139d1a28291c2cb6c7",
+      "recorded_worktree": "clean"
+    },
+    {
+      "report": "component.xml",
+      "tests": 8,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 34.194,
+      "source_commit": "6a1f39cdf61754f3617920139d1a28291c2cb6c7",
+      "recorded_worktree": "clean"
+    }
+  ],
+  "sha256": {
+    "initial-component.xml": "d4f33675fa21dd97151309df94df2fdd3acc5775000ff4517210d24af396728b",
+    "compatibility.xml": "ef622483af63f35fd92d64245649c20750766755b657cd44c286fb7b35f4c3ed",
+    "initial-live-failed.xml": "ac42d591e48ba29392d5a9b27207c72d0890fa8db82a8a12f77df95c2b5f11e4",
+    "diagnostic-live-failed.xml": "57f134d211f1c31dbc88db3cb656334e709551aba1107452d635b5c92cc063ba",
+    "live.xml": "63a9bfd8b05c77e7e1225e3ee47601ba26018860c6e94d39822698236ae712bf",
+    "runtime-before-prompt.xml": "365edcb0a94d657a0dc26fe4ecaa5381a42e71435993a880114e7b74e004fd15",
+    "runtime.xml": "67e4a67debe1f8a6d3e688f001241f71187613d1a672bec51bcbd6d6b2cd0304",
+    "component.xml": "ee299406c50d939802e124600c6a7e56665a7d076ec6082596c2739f768c2e65"
+  },
+  "provenance_notes": [
+    "Initial component used uncommitted implementation and explicit native/auth/capacity fixtures. Compatibility ran on clean ca357e3e3f59771ce7b29861f7d60ea849aeb5d4; metadata whitelist then omitted this new test module. No source property was synthesized into its original XML.",
+    "First actual two-worker run at clean 755517b stopped after one native protocol metadata refusal; one sibling verified. This is retained as failure, not qualified evidence.",
+    "Diagnostic run at clean 6d2dfb0c40654a52a628d019525a578a6fcd9f99 teed rejected parser input privately while original parsing/authority remained enforced. No rejection occurred in this run; actual independent checks rejected a worker changing its sibling file. It did not merge.",
+    "6a1f39c prioritizes the accepted assignment over shared goal requirements and leaves strict native parsing and independent verification enforced. Its actual fixed runtime passed eleven OS/subscription checks and the actual two-worker journey passed. Tests used the runtime certificate matching the same full Python source manifest.",
+    "Native provider/auth/process/capacity fixtures occur only in default controller checks. The live case used actual supported metadata, pinned native processes, existing private subscription profile, actual hardware probe, Docker, isolated PostgreSQL, protected Git and real operator-issued certificate.",
+    "Live sequence observes both native disclosures before either native return, two native plus two scoped-tool RETURNED receipts, two canonical handoffs, all final checks, wrong digest refusal, exact protected Git CAS, unchanged original checkout and zero remaining plan claims after confirmed merge.",
+    "All approvals belong to the disposable synthetic test owner; no human acceptance, general DAG/second-adapter certification, G1/G2/G3 or 14-day trial pass is claimed."
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "owner_acceptance": "NOT_GRANTED",
+  "actual_cash": "UNKNOWN_SUBSCRIPTION_ESTIMATE_ONLY_NO_DIRECT_SDK_CALL",
+  "static_checks": [
+    "Ruff",
+    "Mypy 258 files",
+    "11 import boundaries",
+    "secret scan"
+  ],
+  "remaining": [
+    "General worker DAG and second adapter",
+    "Structured local plan proposals and bounded revisions",
+    "Unknown/failed native process reconciliation and safe claim release",
+    "Full revision-3 personal-platform and cumulative gates/real owner trial"
+  ]
+}

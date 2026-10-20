@@ -35,6 +35,7 @@ from panestria.kernel.invocations import InvocationService
 from panestria.kernel.leases import LeaseService
 from panestria.kernel.plan_scope import task_plan_scope
 from panestria.kernel.policy import PolicyService
+from panestria.kernel.repositories.policy import require_current_policy
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.engine import PolicyEngine
 from panestria.policy.profiles import CertificateStore
@@ -154,6 +155,8 @@ class ScopedBashController:
         return psycopg.connect(self.dsn, connect_timeout=1, options="-c statement_timeout=300 -c lock_timeout=300")
 
     def authorize(self, connection: psycopg.Connection[Any]) -> None:
+        # Match scheduler/cancellation order before taking an attempt/task lock.
+        require_current_policy(UnitOfWork(connection), self.actor, self.scope.policy_ref)
         policy = PolicyService(self.certificates).get(UnitOfWork(connection), self.actor)
         if (
             f"project-policy:{policy.version}:{policy.sha256()}" != self.scope.policy_ref

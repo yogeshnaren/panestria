@@ -413,3 +413,40 @@ def stage_public_plan(
         typer.echo(json.dumps(asdict(receipt)))
     except Exception:
         _unavailable()
+
+
+@plan_app.command("inventory")
+def inventory_for_native_plan(
+    config: Annotated[Path, typer.Option("--config")],
+    base: str,
+    output: Annotated[Path, typer.Option("--output")],
+) -> None:
+    """Export actual base snapshot and expected worker bindings; no model call or admission."""
+    from panestria.cli.build import _finish, _service
+    from panestria.cli.research import _write_private
+    from panestria.execution.native_plan import NativePlanRunner
+
+    def run() -> dict[str, Any]:
+        inventory = NativePlanRunner(_service(config)).inventory(base)
+        _write_private(output, inventory.model_dump_json().encode())
+        return {
+            "status": "DECLARED_FOR_REVIEW",
+            "inventory_sha256": inventory.sha256(),
+            "runtime_qualification": "NOT_ASSESSED",
+            "execution_authority": "NONE",
+        }
+
+    _finish(run)
+
+
+@plan_app.command("run")
+def run_native_plan(
+    config: Annotated[Path, typer.Option("--config")],
+    plan_id: str,
+    public_subscription_run: bool = False,
+) -> None:
+    """Run an accepted PUBLIC two-worker plan, then stop at exact final owner review."""
+    from panestria.cli.build import _finish, _service
+    from panestria.execution.native_plan import NativePlanRunner
+
+    _finish(lambda: NativePlanRunner(_service(config)).run(plan_id, public_subscription_run=public_subscription_run))

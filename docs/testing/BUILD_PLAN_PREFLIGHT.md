@@ -4,7 +4,8 @@ This is a developer preflight for AOS-025-S1. It checks a proposed task dependen
 graph against a goal contract and inventory. It does **not** generate code, call a
 model, inspect a real repository, certify workers, submit tasks or grant actions.
 Use the existing [owner Build CLI](OWNER_BUILD_CLI.md) for the delivered one-worker
-path. Two-worker execution is still under implementation.
+path. The separate [native fork/join driver](NATIVE_PLAN_EXECUTION.md) connects accepted
+PUBLIC two-worker plans to final review; preflight alone grants no execution.
 
 Prepare three new owner-only `0600` files in a private directory:
 
