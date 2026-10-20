@@ -113,6 +113,24 @@ def test_finite_linear_versions_require_fresh_exact_review_and_execute_only_late
     assert result["status"] == "WAITING_APPROVAL", result
     view = owner.status(first.proposal.goal_id)
     assert view["task_id"] == third.proposal.nodes[-1].task_id and view["task_state"] == "WAITING_APPROVAL"
+    approval = view["approval"]
+    merged = owner.approve(
+        approval["approval_id"], approval["effect_digest"], approval["expected_version"], "revised-test-owner"
+    )
+    assert merged["task_state"] == "COMPLETED"
+    with owner.connect() as c:
+        assert c.execute("SELECT status FROM panestria.goal WHERE id=%s", (first.proposal.goal_id,)).fetchone() == (
+            "COMPLETED",
+        )
+        assert (
+            c.execute(
+                "SELECT count(*) FROM panestria.task t JOIN panestria.build_plan_task pt ON pt.task_id=t.id "
+                "WHERE pt.plan_id=%s AND t.state='FAILED'",
+                (first.proposal.plan_id,),
+            ).fetchone()[0]
+            >= 1
+        )
+        assert PlanStore().get(UnitOfWork(c), owner.actor, first.proposal.plan_id).model_dump_json() == original
 
 
 def test_revision_cannot_create_a_fresh_wall_budget_or_enlarge_scope(native_plan):

@@ -453,11 +453,31 @@ class OwnerBuild:
                 )
                 goal = c.execute("SELECT goal_id::text FROM panestria.task WHERE id=%s", (task,)).fetchone()
                 assert goal is not None
-                c.execute(
-                    "UPDATE panestria.goal SET status='COMPLETED' WHERE id=%s AND NOT EXISTS"
-                    "(SELECT 1 FROM panestria.task WHERE goal_id=%s AND state!='COMPLETED')",
-                    (goal[0], goal[0]),
-                )
+                membership = c.execute(
+                    "SELECT plan_id::text FROM panestria.build_plan_task WHERE task_id=%s", (task,)
+                ).fetchone()
+                if membership is None:
+                    c.execute(
+                        "UPDATE panestria.goal SET status='COMPLETED' WHERE id=%s AND NOT EXISTS"
+                        "(SELECT 1 FROM panestria.task WHERE goal_id=%s AND state!='COMPLETED')",
+                        (goal[0], goal[0]),
+                    )
+                else:
+                    # Failed/cancelled prior versions remain honest history.
+                    # Only the current accepted graph may complete this goal,
+                    # with every current node complete and no older live work.
+                    c.execute(
+                        "UPDATE panestria.goal SET status='COMPLETED' WHERE id=%s "
+                        "AND %s=(SELECT p.id FROM panestria.build_plan p "
+                        "JOIN panestria.build_plan_acceptance a ON a.plan_id=p.id "
+                        "WHERE p.goal_id=%s ORDER BY p.version DESC LIMIT 1) "
+                        "AND NOT EXISTS(SELECT 1 FROM panestria.task t "
+                        "JOIN panestria.build_plan_task pt ON pt.task_id=t.id "
+                        "WHERE pt.plan_id=%s AND t.state!='COMPLETED') "
+                        "AND NOT EXISTS(SELECT 1 FROM panestria.task WHERE goal_id=%s "
+                        "AND state NOT IN ('COMPLETED','FAILED','CANCELLED','REJECTED'))",
+                        (goal[0], membership[0], goal[0], membership[0], goal[0]),
+                    )
                 append_event(
                     UnitOfWork(c),
                     goal_id=goal[0],
