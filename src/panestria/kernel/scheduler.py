@@ -52,6 +52,13 @@ class Scheduler:
         plan = PlanStore().get(uow, actor, plan_id)
         if plan.state != "ACCEPTED":
             raise KernelDenied("plan_not_accepted")
+        latest = uow.execute(
+            "SELECT p.id::text FROM panestria.build_plan p JOIN panestria.build_plan_acceptance a ON a.plan_id=p.id "
+            "WHERE p.goal_id=%s ORDER BY p.version DESC LIMIT 1",
+            (plan.proposal.goal_id,),
+        ).fetchone()
+        if latest != (plan_id,):
+            raise KernelDenied("plan_parent_superseded")
         goal = uow.execute("SELECT status FROM panestria.goal WHERE id=%s", (plan.proposal.goal_id,)).fetchone()
         if goal is None or goal[0] not in {"CREATED", "ACTIVE"}:
             raise KernelDenied("plan_goal_not_active")

@@ -121,11 +121,21 @@ class PlanConsent(PlanContract):
     expires_at: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}T.*[+]00:00$")
 
 
+class PlanRevisionConsent(PlanConsent):
+    schema_version: Literal[2] = 2
+    version: StrictInt = Field(ge=2, le=3)
+    maximum_versions: StrictInt = Field(ge=2, le=3)
+    parent_sha256: PlanSha
+    return_proof_sha256: PlanSha
+    cumulative_wall_seconds: StrictInt = Field(ge=1)
+    cumulative_api_microusd: StrictInt = Field(ge=0, le=0)
+
+
 class StoredPlan(PlanContract):
     proposal: PlanProposal
     inventory: ProjectInventory
     validation: ValidatedDAG
-    consent: PlanConsent
+    consent: PlanConsent | PlanRevisionConsent
     effect_digest: PlanSha
     version: StrictInt = Field(ge=1)
     parent_sha256: PlanSha | None = None

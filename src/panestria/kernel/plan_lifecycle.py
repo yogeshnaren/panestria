@@ -89,6 +89,13 @@ class PlanLifecycle:
         plan = self._locked(uow, actor, plan_id)
         if plan.proposal.sha256() != plan_sha256:
             raise KernelDenied("plan_review_changed")
+        latest = uow.execute(
+            "SELECT p.id::text FROM panestria.build_plan p JOIN panestria.build_plan_acceptance a ON a.plan_id=p.id "
+            "WHERE p.goal_id=%s ORDER BY p.version DESC LIMIT 1",
+            (plan.proposal.goal_id,),
+        ).fetchone()
+        if latest != (plan_id,):
+            raise KernelDenied("plan_parent_superseded")
         rows = uow.execute(
             "SELECT id::text,state,row_version FROM panestria.task WHERE goal_id=%s ORDER BY id",
             (plan.proposal.goal_id,),
