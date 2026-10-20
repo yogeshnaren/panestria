@@ -9,6 +9,7 @@ import importlib.metadata
 import json
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -58,11 +59,17 @@ def run(output: Path) -> int:
     clock = time.monotonic()
     with (output / "run.log").open("w") as log:
         try:
-            completed = subprocess.run(
-                command, cwd=workspace, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=600
+            process = subprocess.Popen(
+                command, cwd=workspace, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True
             )
-            exit_code = completed.returncode
+            exit_code = process.wait(timeout=600)
         except subprocess.TimeoutExpired:
+            os.killpg(process.pid, signal.SIGTERM)
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, signal.SIGKILL)
+                process.wait()
             exit_code = 124
     outcomes = {item["mutant"]: item for path in observations.glob("*.json") if (item := json.loads(path.read_text()))}
     mutants = []
@@ -95,6 +102,7 @@ def run(output: Path) -> int:
             )
     counts = Counter(item["status"] for item in mutants)
     denominator = counts["DETECTED"] + counts["SURVIVED"]
+    baseline_ok = all(outcomes.get(key, {}).get("exit_code") == 0 for key in ("", "stats"))
     report = {
         "schema_version": 1,
         "kind": "mutation_pilot",
@@ -111,7 +119,8 @@ def run(output: Path) -> int:
         "scope": PATTERNS,
         "counts": dict(counts),
         "selected_mutants": len(mutants),
-        "detection_fraction": counts["DETECTED"] / denominator if denominator else None,
+        "baseline_passed": baseline_ok,
+        "detection_fraction": counts["DETECTED"] / denominator if denominator and baseline_ok else None,
         "unresolved_excluded_from_fraction": True,
         "baseline_observations": [v for k, v in outcomes.items() if "__mutmut_" not in k],
         "mutants": sorted(mutants, key=lambda x: x["id"]),
@@ -126,7 +135,7 @@ def run(output: Path) -> int:
     path.write_text(json.dumps(report, indent=2) + "\n")
     path.chmod(0o600)
     print(json.dumps({"report": str(path), "counts": dict(counts), "seconds": report["duration_seconds"]}))
-    return 0 if exit_code == 0 and mutants and not counts["UNRESOLVED"] else 1
+    return 0 if baseline_ok and exit_code == 0 and mutants and not counts["UNRESOLVED"] else 1
 
 
 if __name__ == "__main__":

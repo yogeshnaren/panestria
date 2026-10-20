@@ -32,6 +32,10 @@ def test_decision_seals_effect_and_policy_and_prescribes_each_transport():
         assert decision.request_sha256 == hashlib.sha256(canonical).hexdigest()
         changed = request(policy, destination=destination, effect_digest="ef" * 32)
         assert PolicyEngine().authorize(changed, policy).request_sha256 != decision.request_sha256
+    body["trust"].update(profile="SYNTHETIC_DEV", runtime_certificate_sha256=None)
+    synthetic = PolicyContext.model_validate(body)
+    assert PolicyEngine().authorize(request(synthetic, destination="local"), synthetic).outcome == "PERMIT"
+    assert PolicyEngine().authorize(request(synthetic, destination="public-web"), synthetic).outcome == "DENY"
 
 
 def context():
