@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="23.948" timestamp="2026-10-20T02:19:48.983156-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_native_plan_execution" name="test_actual_public_two_claude_plan_and_exact_final_merge" file="tests/integration/test_native_plan_execution.py" line="276" time="23.369"><properties><property name="scope" value="Actual PUBLIC two-Claude fork/join and real runtime certificate; scripted test-owner approval, no human signoff" /><property name="runtime_certificate_sha256" value="04e0d7002fece09126363f98e7496848978035113668a08c16cdbcfc7901c413" /><property name="plan_result" value="{&quot;goal_id&quot;: &quot;34a1b108-c730-4b6f-ac85-fb0e09a47b82&quot;, &quot;plan_id&quot;: &quot;b421b211-835e-41e8-906e-87949920e22e&quot;, &quot;reason&quot;: &quot;inspect_canonical_queue_and_claims&quot;, &quot;status&quot;: &quot;STOPPED&quot;, &quot;tasks&quot;: [{&quot;lease_epoch&quot;: 1, &quot;task_id&quot;: &quot;0104c0dd-2cbf-4913-8282-375f2137d71f&quot;, &quot;task_state&quot;: &quot;COMPLETED&quot;}, {&quot;lease_epoch&quot;: 2, &quot;task_id&quot;: &quot;013f1d43-5b13-48f2-96b8-510910fad3af&quot;, &quot;task_state&quot;: &quot;FAILED&quot;}, {&quot;lease_epoch&quot;: 0, &quot;task_id&quot;: &quot;687b3007-6838-4f84-9145-fcb4ad48c0dc&quot;, &quot;task_state&quot;: &quot;CREATED&quot;}], &quot;worker_observations&quot;: [{&quot;reason&quot;: &quot;native_build_not_candidate&quot;, &quot;status&quot;: &quot;UNAVAILABLE&quot;, &quot;task_id&quot;: &quot;013f1d43-5b13-48f2-96b8-510910fad3af&quot;}, {&quot;reason&quot;: &quot;independent_checks_passed&quot;, &quot;status&quot;: &quot;NODE_VERIFIED&quot;, &quot;task_id&quot;: &quot;0104c0dd-2cbf-4913-8282-375f2137d71f&quot;}]}" /></properties><failure message="AssertionError: {'status': 'STOPPED', 'plan_id': 'b421b211-835e-41e8-906e-87949920e22e', 'worker_observations': [{'task_id': '013f1d43...lease_epoch': 2}, {'task_id': '687b3007-6838-4f84-9145-fcb4ad48c0dc', 'task_state': 'CREATED', 'lease_epoch': 0}], ...}&#10;assert 'STOPPED' == 'WAITING_APPROVAL'&#10;  &#10;  - WAITING_APPROVAL&#10;  + STOPPED">prepared_plan = (namespace(actual=True, config=PosixPath('/tmp/pytest-of-yogesh/pytest-243/test_actual_public_two_claude_0/build.json'...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x7b4f5f3a65c0&gt;
+
+    @pytest.mark.live
+    def test_actual_public_two_claude_plan_and_exact_final_merge(prepared_plan, record_property):
+        f, owner, runner, plan = prepared_plan
+        assert f.actual
+        record_property(
+            "scope",
+            "Actual PUBLIC two-Claude fork/join and real runtime certificate; "
+            "scripted test-owner approval, no human signoff",
+        )
+        record_property("runtime_certificate_sha256", f.cfg["certificate_sha256"])
+        result = runner.run(plan.plan_id, public_subscription_run=True)
+        record_property("plan_result", json.dumps(result, sort_keys=True))
+&gt;       assert result["status"] == "WAITING_APPROVAL", result
+E       AssertionError: {'status': 'STOPPED', 'plan_id': 'b421b211-835e-41e8-906e-87949920e22e', 'worker_observations': [{'task_id': '013f1d43...lease_epoch': 2}, {'task_id': '687b3007-6838-4f84-9145-fcb4ad48c0dc', 'task_state': 'CREATED', 'lease_epoch': 0}], ...}
+E       assert 'STOPPED' == 'WAITING_APPROVAL'
+E         
+E         - WAITING_APPROVAL
+E         + STOPPED
+
+tests/integration/test_native_plan_execution.py:289: AssertionError</failure></testcase></testsuite></testsuites>

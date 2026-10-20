@@ -36,5 +36,6 @@ A rollback leaves no partial new goal, checks or proposal. Read [scheduler comma
 for readiness/claims, [final-tree review](FINAL_TREE_INTEGRATION.md) for exact combined
 checks/approval, and [plan cancellation](PLAN_LIFECYCLE.md) to withdraw all tasks.
 A first reservation marks the staged goal ACTIVE but has dispatch authority NONE.
-Qualified native orchestration remains under implementation; this component is
-an owner setup path, not a live two-worker or release-gate pass.
+The [native fork/join driver](NATIVE_PLAN_EXECUTION.md) provides a separately qualified
+PUBLIC two-worker path after explicit acceptance/run. Staging itself is an owner
+setup operation and supplies no runtime qualification or release-gate pass.
