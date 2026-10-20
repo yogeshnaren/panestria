@@ -23,6 +23,7 @@ from panestria.kernel.plan_scope import task_plan_scope
 from panestria.kernel.plan_store import PlanStore
 from panestria.kernel.tasks import TaskService
 from panestria.kernel.uow import UnitOfWork
+from schema_support import current_schema_revision
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -267,7 +268,7 @@ def test_caller_transaction_and_populated_migration_preserve_audit(planned):
     refused = migrate(build.task["dsn"], "downgrade", "0032_structured_style")
     assert refused.returncode != 0 and b"canonical plan audit exists" in refused.stderr
     with psycopg.connect(build.task["dsn"]) as c:
-        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0033_canonical_plans",)
+        assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (current_schema_revision(),)
         assert service.get(UnitOfWork(c), build.actor, proposal.plan_id).state == "PROPOSED"
         with pytest.raises(psycopg.Error), c.transaction():
             c.execute("DELETE FROM panestria.build_plan WHERE id=%s", (proposal.plan_id,))

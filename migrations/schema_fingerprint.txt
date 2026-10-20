@@ -129,6 +129,16 @@ column build_plan_task goal_id uuid NO
 column build_plan_task node_sha256 bpchar NO
 column build_plan_task plan_id uuid NO
 column build_plan_task task_id uuid NO
+column build_worker_claim attempt_id uuid NO
+column build_worker_claim created_at timestamptz NO
+column build_worker_claim handoff_id uuid YES
+column build_worker_claim hardware jsonb NO
+column build_worker_claim hardware_sha256 bpchar NO
+column build_worker_claim lease_epoch int8 NO
+column build_worker_claim plan_id uuid NO
+column build_worker_claim released_at timestamptz YES
+column build_worker_claim task_id uuid NO
+column build_worker_claim worker_ref text NO
 column check_run acceptance_check_id uuid NO
 column check_run attempt_id uuid NO
 column check_run candidate_sha256 bpchar YES
@@ -708,6 +718,7 @@ constraint panestria.build_handoff c CHECK ((task_version >= 0))
 constraint panestria.build_handoff f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
 constraint panestria.build_handoff f FOREIGN KEY (plan_id, task_id) REFERENCES panestria.build_plan_task(plan_id, task_id)
 constraint panestria.build_handoff p PRIMARY KEY (id)
+constraint panestria.build_handoff u UNIQUE (id, task_id, attempt_id, lease_epoch)
 constraint panestria.build_handoff u UNIQUE (task_id, attempt_id, lease_epoch)
 constraint panestria.build_plan c CHECK ((((body ->> 'plan_id'::text) = (id)::text) AND ((body ->> 'goal_id'::text) = (goal_id)::text) AND ((body ->> 'owner_id'::text) = (owner_id)::text) AND ((body ->> 'project_id'::text) = (project_id)::text)))
 constraint panestria.build_plan c CHECK ((((version = 1) AND (parent_id IS NULL)) OR ((version > 1) AND (parent_id IS NOT NULL))))
@@ -738,6 +749,14 @@ constraint panestria.build_plan_task f FOREIGN KEY (task_id, contract_id) REFERE
 constraint panestria.build_plan_task f FOREIGN KEY (task_id, goal_id) REFERENCES panestria.task(id, goal_id)
 constraint panestria.build_plan_task p PRIMARY KEY (task_id)
 constraint panestria.build_plan_task u UNIQUE (plan_id, task_id)
+constraint panestria.build_worker_claim c CHECK ((((released_at IS NULL) AND (handoff_id IS NULL)) OR ((released_at IS NOT NULL) AND (handoff_id IS NOT NULL))))
+constraint panestria.build_worker_claim c CHECK ((hardware_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.build_worker_claim c CHECK ((jsonb_typeof(hardware) = 'object'::text))
+constraint panestria.build_worker_claim c CHECK ((lease_epoch > 0))
+constraint panestria.build_worker_claim f FOREIGN KEY (attempt_id, task_id) REFERENCES panestria.task_attempt(id, task_id)
+constraint panestria.build_worker_claim f FOREIGN KEY (handoff_id, task_id, attempt_id, lease_epoch) REFERENCES panestria.build_handoff(id, task_id, attempt_id, lease_epoch)
+constraint panestria.build_worker_claim f FOREIGN KEY (plan_id, task_id) REFERENCES panestria.build_plan_task(plan_id, task_id)
+constraint panestria.build_worker_claim p PRIMARY KEY (attempt_id)
 constraint panestria.check_run c CHECK (((candidate_sha256 IS NULL) OR (candidate_sha256 ~ '^[0-9a-f]{64}$'::text)))
 constraint panestria.check_run c CHECK (((verdict <> 'PASS'::text) OR (candidate_sha256 IS NOT NULL)))
 constraint panestria.check_run c CHECK (((verdict <> 'PASS'::text) OR (evidence_artifact_id IS NOT NULL)))
@@ -1233,6 +1252,7 @@ index CREATE UNIQUE INDEX budget_reservation_pkey ON panestria.budget_reservatio
 index CREATE UNIQUE INDEX build_evidence_artifact_id_key ON panestria.build_evidence USING btree (artifact_id)
 index CREATE UNIQUE INDEX build_evidence_pkey ON panestria.build_evidence USING btree (id)
 index CREATE UNIQUE INDEX build_evidence_task_id_sha256_key ON panestria.build_evidence USING btree (task_id, sha256)
+index CREATE UNIQUE INDEX build_handoff_claim_ref ON panestria.build_handoff USING btree (id, task_id, attempt_id, lease_epoch)
 index CREATE UNIQUE INDEX build_handoff_pkey ON panestria.build_handoff USING btree (id)
 index CREATE UNIQUE INDEX build_handoff_task_id_attempt_id_lease_epoch_key ON panestria.build_handoff USING btree (task_id, attempt_id, lease_epoch)
 index CREATE UNIQUE INDEX build_plan_acceptance_pkey ON panestria.build_plan_acceptance USING btree (plan_id)
@@ -1243,6 +1263,8 @@ index CREATE UNIQUE INDEX build_plan_id_goal_id_key ON panestria.build_plan USIN
 index CREATE UNIQUE INDEX build_plan_pkey ON panestria.build_plan USING btree (id)
 index CREATE UNIQUE INDEX build_plan_task_pkey ON panestria.build_plan_task USING btree (task_id)
 index CREATE UNIQUE INDEX build_plan_task_plan_id_task_id_key ON panestria.build_plan_task USING btree (plan_id, task_id)
+index CREATE UNIQUE INDEX build_worker_claim_active_task ON panestria.build_worker_claim USING btree (task_id) WHERE (released_at IS NULL)
+index CREATE UNIQUE INDEX build_worker_claim_pkey ON panestria.build_worker_claim USING btree (attempt_id)
 index CREATE UNIQUE INDEX check_run_pkey ON panestria.check_run USING btree (id)
 index CREATE UNIQUE INDEX connection_grant_decision_pkey ON panestria.connection_grant_decision USING btree (review_id)
 index CREATE UNIQUE INDEX connection_grant_decision_review_id_grant_id_granted_versio_key ON panestria.connection_grant_decision USING btree (review_id, grant_id, granted_version, decision)
