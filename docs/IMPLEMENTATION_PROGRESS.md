@@ -1,9 +1,15 @@
 # Implementation progress
 
-Updated 2026-10-18. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
+Updated 2026-10-20. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
 The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
+
+The owner explicitly resumed implementation through R3 on 2026-10-20. Current
+critical path: canonical plans/handoffs (PR127), then bounded two-worker scheduling,
+conflict handling and final-tree verification. CI/mutation/metrics PRs128–131 are
+merged; performance history is delivered, continuous task metrics remain pending.
+Deliver usable slices and required evidence; avoid unrelated test expansion.
 
 | Phase/outcome | Delivered behavior | Remaining acceptance work |
 | --- | --- | --- |
