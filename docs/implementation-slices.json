@@ -2137,7 +2137,7 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-025-S2.md",
-      "scope_note": "Initial version1 canonical storage/consent/handoff only. Direct local proposals, bounded revisions and actual runtime/scheduler qualification remain pending; no worker or merge permission."
+      "scope_note": "Canonical storage/handoffs and explicit one-call local draft delivered with source-bound evidence. General planning quality, qualified inventory/runtime and full TC02 remain pending; no implicit acceptance or worker grant."
     },
     {
       "id": "AOS-025-S3",
@@ -2161,8 +2161,9 @@
         "AOS-025-TC04"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-025-S3.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-025-S3.md",
+      "scope_note": "Finite PUBLIC/API0 same-contract owner-reviewed versions, immutable parents, confirmed-return prerequisite, original cumulative budget and stale-plan fences delivered as a component. Qualified automatic repair, changed-contract authorization integration, full TC02/03/04 and X10 progress remain pending."
     },
     {
       "id": "AOS-026-S1",
