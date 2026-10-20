@@ -48,12 +48,37 @@
     "initial-policy-fixture.xml": "abc9f95375fe9f96569173a8734e5a57b4d4791126e96310a30b32f8e56c4dfb",
     "reviewed-policy.xml": "f92ee70c415025dd04a2857c228ba052b5746b161775ccd40299aacdb299d713",
     "node-path-correction.xml": "9c9b0cc3148db154bc3dba9dfa9e62ba418abb7656a85c5ed98095f18a4812ab",
-    "qualified.xml": "2457994f421d3a095467ad388642c8508ef935794827ace1dde7307cdb69c387"
+    "qualified.xml": "2457994f421d3a095467ad388642c8508ef935794827ace1dde7307cdb69c387",
+    "schema-readiness.xml": "d75e0c32ad37018e838ba0cee149209eef9f4bdd71c7250925fe936c972cf062",
+    "schema-correction.xml": "c1de0c70d9ec847318bcdfd7b44af59cf51bf742f5f1e71033542c47e1bdee8d"
   },
   "remaining": [
     "Actual native two-worker dispatch and overall harness process accounting",
     "Uncertain/failed and final reservation reconciliation",
     "Conflict assembly and full final-tree checks/owner approval",
     "Original release gates and actual owner trial"
-  ]
+  ],
+  "ci_correction": {
+    "failed_run": 39389080904,
+    "failed_head": "b255159b9cac18e93b90c82708d08c239b678e30",
+    "reason": "Ask readiness still expected 0033 after adding 0034 and checked-in fingerprints were stale; one canonical migration assertion hardcoded 0033",
+    "production_fix_commit": "9f3868a",
+    "fingerprints": "Observed from actual disposable PostgreSQL 0034, not hand-edited expectations",
+    "local_runs": [
+      {
+        "report": "schema-readiness.xml",
+        "source_commit": "9f3868a",
+        "passed": 42,
+        "failed": 1,
+        "reason": "Remaining old head literal in canonical-plan test"
+      },
+      {
+        "report": "schema-correction.xml",
+        "source_state": "9f3868a plus uncommitted current-schema assertion correction",
+        "passed": 3,
+        "failed": 0,
+        "seconds": 19.4
+      }
+    ]
+  }
 }
