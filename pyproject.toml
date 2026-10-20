@@ -40,6 +40,9 @@ dev = [
   "pytest",
   "ruff>=0.17.0",
 ]
+mutation = [
+  "mutmut==3.8.0",
+]
 
 [tool.uv]
 required-version = "0.12.3"
@@ -68,3 +71,22 @@ strict = true
 packages = ["panestria"]
 plugins = ["pydantic.mypy"]
 warn_unused_ignores = true
+
+# Bounded, offline pilot. Ordinary PR CI does not install or run this group.
+[tool.mutmut]
+source_paths = ["src/"]
+only_mutate = [
+  "src/panestria/policy/engine.py",
+  "src/panestria/sandbox/egress.py",
+  "src/panestria/verification/entailment.py",
+]
+also_copy = ["tools/mutation_observer.py"]
+pytest_add_cli_args = ["-p", "mutation_observer", "--maxfail=0"]
+pytest_add_cli_args_test_selection = [
+  "tests/unit/test_public_web_policy.py",
+  "tests/unit/test_egress_addresses.py",
+  "tests/unit/test_entailment_corpus.py",
+  "tests/contract/test_classification_compatibility.py",
+]
+timeout_multiplier = 10.0
+timeout_constant = 5.0
