@@ -171,6 +171,7 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_plan_revisions.py",
         "test_local_plan_native_bridge.py",
         "test_local_build_repair.py",
+        "test_repair_draft_intents.py",
         "test_build_progress.py",
         "test_search_admission.py",
         "test_research_brief.py",
