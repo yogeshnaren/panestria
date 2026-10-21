@@ -163,6 +163,7 @@ class BackgroundWorkService:
         assert clock is not None
         now = clock[0]
         policy, reasons, observations, resets = binding.request.policy, [], [], []
+        exhausted = []
         if policy.expires_at <= now:
             reasons.append("policy_expired")
         billing = policy.billing
@@ -185,6 +186,29 @@ class BackgroundWorkService:
             reasons.append("foreground_or_held_capacity_reserved")
         for window in policy.quota_windows:
             views = QuotaService().latest(uow, actor, window)
+            # A later null/unknown report cannot erase an earlier observed zero.
+            # A newer numeric report in that same lane, or its known reset,
+            # can supersede the old exhaustion without inventing a new balance.
+            numeric = uow.execute(
+                "SELECT DISTINCT ON(source) id::text FROM panestria.quota_observation "
+                "WHERE owner_id=%s AND project_id=%s AND scope_sha256=%s "
+                "AND source IN ('OWNER_REPORTED','PROVIDER_REPORTED') "
+                "AND body->>'remaining' IS NOT NULL "
+                "ORDER BY source,observed_at DESC,created_at DESC,id DESC",
+                (actor.owner_id, actor.project_id, window.sha256()),
+            ).fetchall()
+            for (identifier,) in numeric:
+                prior = QuotaService().read(uow, actor, identifier)
+                if Decimal(prior.observation.remaining or "0") == 0 and prior.freshness != "RESET_PASSED":
+                    reasons.append("observed_exhaustion_wait_for_new_evidence_or_reset")
+                    exhausted.append(
+                        {
+                            "observation_id": identifier,
+                            "source": prior.observation.source,
+                            "window_ref": window.window_ref,
+                            "freshness": prior.freshness,
+                        }
+                    )
             # Preserve all lanes. A later owner unknown report cannot erase an
             # independent provider exhaustion reading in the same window.
             fresh_quantity = False
@@ -201,10 +225,16 @@ class BackgroundWorkService:
                     }
                 )
                 amount = Decimal(o.remaining) if o.remaining is not None else None
-                if amount == 0 and view.freshness != "RESET_PASSED":
+                if (
+                    amount == 0
+                    and o.source in {"OWNER_REPORTED", "PROVIDER_REPORTED"}
+                    and view.freshness != "RESET_PASSED"
+                ):
                     reasons.append("observed_exhaustion_wait_for_new_evidence_or_reset")
                 if view.freshness == "FRESH" and view.effective_remaining is not None:
-                    fresh_quantity = True
+                    fresh_quantity |= (
+                        o.source in {"OWNER_REPORTED", "PROVIDER_REPORTED"} or policy.allow_estimated_quota
+                    )
                     reserve = {
                         "percent": policy.regular_use_reserve_percent,
                         "tokens": policy.regular_use_reserve_tokens,
@@ -212,7 +242,7 @@ class BackgroundWorkService:
                     }[str(o.unit)]
                     if Decimal(view.effective_remaining) <= reserve:
                         reasons.append("regular_use_reserve")
-                    if o.resets_at is not None:
+                    if o.resets_at is not None and o.source in {"OWNER_REPORTED", "PROVIDER_REPORTED"}:
                         resets.append(max(0, int((o.resets_at - now).total_seconds())))
             if not fresh_quantity and not policy.allow_unknown_quota:
                 reasons.append("quota_unknown_requires_explicit_best_effort_policy")
@@ -225,6 +255,7 @@ class BackgroundWorkService:
             "scheduling_candidate": not reasons,
             "waiting_reasons": sorted(set(reasons)),
             "quota_observations": observations,
+            "retained_exhaustion_observations": exhausted,
             "billing_source": billing.source if billing else "UNKNOWN",
             "billing_confidence": "OWNER_REPORTED_NOT_PROVIDER_VERIFIED" if billing else "UNKNOWN",
             "no_extra_spend_runtime_qualification": "NOT_ASSESSED",

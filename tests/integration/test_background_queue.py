@@ -167,6 +167,16 @@ def test_actual_queue_atomic_race_and_scoped_candidate_reserve_foreground_guards
     with owner.connect() as c:
         assert "regular_use_reserve" in service.inspect(UnitOfWork(c), owner.actor, binding)["waiting_reasons"]
     record(owner, plan.nodes[-1].task_id, request.policy.quota_windows[1], remaining="40")
+    record(owner, plan.nodes[-1].task_id, request.policy.quota_windows[0], remaining="0")
+    record(owner, plan.nodes[-1].task_id, request.policy.quota_windows[0], remaining=None)
+    with owner.connect() as c:
+        prior_zero = service.inspect(UnitOfWork(c), owner.actor, proposed)
+        assert "observed_exhaustion_wait_for_new_evidence_or_reset" in prior_zero["waiting_reasons"]
+        assert prior_zero["retained_exhaustion_observations"]
+        assert not prior_zero["scheduling_candidate"]  # even explicit best effort cannot erase exhaustion
+    record(owner, plan.nodes[-1].task_id, request.policy.quota_windows[0], remaining="40")
+    with owner.connect() as c:
+        assert service.inspect(UnitOfWork(c), owner.actor, binding)["scheduling_candidate"]
     with owner.connect() as c:
         with pytest.raises(KernelDenied, match="not_found"):
             service.prepare(UnitOfWork(c), Actor(str(uuid4()), str(uuid4())), request)

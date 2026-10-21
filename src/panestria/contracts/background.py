@@ -30,6 +30,7 @@ class BackgroundWorkPolicy(PlanContract):
     quota_windows: tuple[QuotaScope, ...] = Field(min_length=1, max_length=4)
     billing: BillingBoundary | None = None
     allow_unknown_quota: bool = False
+    allow_estimated_quota: bool = False
     regular_use_reserve_percent: StrictInt = Field(default=20, ge=1, le=99)
     regular_use_reserve_tokens: StrictInt = Field(default=10000, ge=1, le=10000000)
     regular_use_reserve_requests: StrictInt = Field(default=2, ge=1, le=10000)
