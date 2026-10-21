@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="1" skipped="0" tests="2" time="0.834" timestamp="2026-10-21T10:24:27.452405-07:00" hostname="yogesh-verisim"><testcase classname="tests.e2e.test_aos_005" name="test_openapi_matches_the_mounted_routes" file="tests/e2e/test_aos_005.py" line="1135" time="0.054"><properties><property name="gate_case_id" value="AOS-005-TC01" /><property name="candidate_commit" value="33a9e7b0a1a2347349e835a7650e05627ba5eff5" /><property name="lane" value="contract" /><property name="execution_mode" value="HERMETIC" /></properties><failure message="assert '{\n  &quot;compon...  }\n  }\n}\n' == '{\n  &quot;compon...  }\n  }\n}\n'&#10;  &#10;  Skipping 35 identical leading characters in diff, use -v to show&#10;    {&#10;  +       &quot;ActivityEntry&quot;: {&#10;  +         &quot;additionalProperties&quot;: false,&#10;  +         &quot;properties&quot;: {&#10;  +           &quot;active_tasks&quot;: {...&#10;  &#10;  ...Full output truncated (1301 lines hidden), use '-vv' to show">record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x714e4c4fc9a0&gt;
+
+    def test_openapi_matches_the_mounted_routes(record_property: pytest.RecordProperty) -&gt; None:
+        commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False)
+        record_property("gate_case_id", "AOS-005-TC01")
+        record_property("candidate_commit", commit.stdout.strip())
+        record_property("lane", "contract")
+        record_property("execution_mode", "HERMETIC")
+        document = _openapi_document()
+        text = json.dumps(document, indent=2, sort_keys=True) + "\n"
+&gt;       assert text == (ROOT / "docs" / "api" / "openapi.json").read_text(encoding="utf-8")
+E       assert '{\n  "compon...  }\n  }\n}\n' == '{\n  "compon...  }\n  }\n}\n'
+E         
+E         Skipping 35 identical leading characters in diff, use -v to show
+E           {
+E         +       "ActivityEntry": {
+E         +         "additionalProperties": false,
+E         +         "properties": {
+E         +           "active_tasks": {...
+E         
+E         ...Full output truncated (1301 lines hidden), use '-vv' to show
+
+tests/e2e/test_aos_005.py:1144: AssertionError</failure></testcase><testcase classname="tests.e2e.test_aos_005" name="test_openapi_matches_the_mounted_routes" file="tests/e2e/test_aos_005.py" line="1135" time="0.131"><properties><property name="gate_case_id" value="AOS-005-TC01" /><property name="candidate_commit" value="33a9e7b0a1a2347349e835a7650e05627ba5eff5" /><property name="lane" value="contract" /><property name="execution_mode" value="HERMETIC" /></properties><error message="failed on teardown with &quot;subprocess.CalledProcessError: Command '['docker', 'compose', '-f', '/tmp/panestria-project-activity-work/tests/fixtures/compose.r0-tests.yaml', '-p', 'panestria-r0-tests-2', 'down', '-v']' returned non-zero exit status 1.&quot;">request = &lt;SubRequest '_cleanup_regression_stack' for &lt;Function test_openapi_matches_the_mounted_routes&gt;&gt;
+
+    @pytest.fixture(scope="session", autouse=True)
+    def _cleanup_regression_stack(request: pytest.FixtureRequest) -&gt; Iterator[None]:
+        uses_stack = any(getattr(item.module, "COMPOSE", None) == COMPOSE for item in request.session.items)
+        try:
+            yield
+        finally:
+            if uses_stack:
+&gt;               subprocess.run([*COMPOSE, "down", "-v"], check=True, capture_output=True, timeout=30)
+
+tests/conftest.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = True, timeout = 30, check = True
+popenargs = (['docker', 'compose', '-f', '/tmp/panestria-project-activity-work/tests/fixtures/compose.r0-tests.yaml', '-p', 'panestria-r0-tests-2', ...],)
+kwargs = {'stdout': -1, 'stderr': -1}
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output &amp; stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+&gt;               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['docker', 'compose', '-f', '/tmp/panestria-project-activity-work/tests/fixtures/compose.r0-tests.yaml', '-p', 'panestria-r0-tests-2', 'down', '-v']' returned non-zero exit status 1.
+
+/home/yogesh/anaconda3/lib/python3.12/subprocess.py:571: CalledProcessError</error></testcase></testsuite></testsuites>

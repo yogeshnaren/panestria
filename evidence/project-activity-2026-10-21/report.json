@@ -264,5 +264,29 @@
     }
   ],
   "release_gate": "NOT_ASSESSED",
-  "owner_acceptance": "NOT_ASSESSED"
+  "owner_acceptance": "NOT_ASSESSED",
+  "api_contract_followup": {
+    "initial_ci_run": 39642684640,
+    "initial_ci_source": "33a9e7b0a1a2347349e835a7650e05627ba5eff5",
+    "initial_failure": "Existing OpenAPI snapshot did not include the new GET/activity contract; regenerate the checked-in document. Platform/research/fast/quality passed, kernel failed this one case.",
+    "local_before_note": "A local attempt before regeneration also failed the snapshot and its autouse disposable cleanup lacked Docker access; retained with1failure/1teardownerror, not a pass.",
+    "corrected_source": "7cf2b31",
+    "correction": "Regenerated docs/api/openapi.json from the existing mounted app schema; unchanged existing assertion now passes in0.68s. No test weakened.",
+    "runs": [
+      {
+        "file": "openapi-before.xml",
+        "sha256": "b57457d6c1013f78379f5bb97159e82d764a42e4c347c850fb2a55776f97c7e2",
+        "cases": 2,
+        "failures": 1,
+        "errors": 1
+      },
+      {
+        "file": "openapi-corrected.xml",
+        "sha256": "0ab98fd022e0798106dd7b51672833deb74afbafd33da126277b573e5f83a72a",
+        "cases": 1,
+        "failures": 0,
+        "errors": 0
+      }
+    ]
+  }
 }
