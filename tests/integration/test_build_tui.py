@@ -1,8 +1,10 @@
 """Real PTY/owner CLI/Postgres/Git; only native generation/certificates are fixtures."""
 
 import curses
+import json
 import os
 import time
+from uuid import uuid4
 
 from test_ask_tui import terminal
 from test_native_plan_execution import native_plan as native_plan  # noqa: F401
@@ -147,3 +149,61 @@ def test_actual_canonical_plan_progress_is_visible_in_terminal_without_starting_
         os.write(t.master, b"q")
     assert state["launches"] == launches == 2
     assert owner.status(plan.goal_id)["task_state"] == "WAITING_APPROVAL"
+
+
+def test_actual_goal_browser_scopes_public_list_and_opens_unstarted_plan(native_plan, prepared_plan):
+    f, owner, _, plan = prepared_plan
+    state = native_plan[3]
+    # Real canonical metadata for two other scopes and a non-PUBLIC goal.
+    # No execution, acceptance or successful evidence is synthesized for these rows.
+    with owner.connect() as c:
+        other_owner, other_project = str(uuid4()), str(uuid4())
+        c.execute("INSERT INTO panestria.principal(id,display_name) VALUES (%s,'other owner')", (other_owner,))
+        c.execute("INSERT INTO panestria.project(id,owner_id) VALUES (%s,%s)", (other_project, other_owner))
+        same_owner_project = str(uuid4())
+        c.execute(
+            "INSERT INTO panestria.project(id,owner_id) VALUES (%s,%s)", (same_owner_project, owner.actor.owner_id)
+        )
+        for who, project, privacy in (
+            (other_owner, other_project, "PUBLIC"),
+            (owner.actor.owner_id, same_owner_project, "PUBLIC"),
+            (owner.actor.owner_id, owner.actor.project_id, "RESTRICTED"),
+        ):
+            gid, cid = str(uuid4()), str(uuid4())
+            c.execute(
+                "INSERT INTO panestria.goal(id,owner_id,project_id,intent,status) "
+                "VALUES (%s,%s,%s,'HIDDEN_GOAL_SENTINEL','CREATED')",
+                (gid, who, project),
+            )
+            c.execute(
+                "INSERT INTO panestria.goal_contract(id,goal_id,version,body,sha256) VALUES (%s,%s,1,%s::jsonb,%s)",
+                (cid, gid, json.dumps({"privacy_class": privacy}), "ab" * 32),
+            )
+            c.execute(
+                "INSERT INTO panestria.task(id,goal_id,contract_id,name,state) "
+                "VALUES (%s,%s,%s,'Owner PUBLIC native Build','CREATED')",
+                (str(uuid4()), gid, cid),
+            )
+        before = c.execute("SELECT count(*) FROM panestria.task_event").fetchone()
+    index = invoke(f, "goals")
+    assert index["authority"] == "READ_ONLY_METADATA"
+    assert [g["goal_id"] for g in index["goals"]] == [plan.goal_id]
+    assert index["goals"][0]["review_available"] is True
+    assert index["goals"][0]["running_tasks"] == index["goals"][0]["waiting_reviews"] == 0
+    assert "HIDDEN_GOAL_SENTINEL" not in json.dumps(index)
+    with terminal(f.config, entry=("build", "tui")) as t:
+        t.until(b"Latest 32 PUBLIC Builds")
+        os.write(t.master, b"\r")
+        t.until(b"Canonical snapshot; F5 refreshes.")
+        os.write(t.master, b"p")
+        t.until(b"release acceptance: NOT_ASSESSED")
+        assert b"VERIFIED BUILD PROGRESS" in t.transcript
+        os.write(t.master, b"q")
+        t.until(b"Returned from review")
+        os.write(t.master, b"q")
+        assert b"HIDDEN_GOAL_SENTINEL" not in t.transcript and f.dsn.encode() not in t.transcript
+    assert state["launches"] == 0
+    assert git(f.bare, "rev-parse", "HEAD") == f.base
+    with owner.connect() as c:
+        assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == before
+    assert owner.status(plan.goal_id)["task_state"] == "CREATED"

@@ -10,11 +10,14 @@ critical path: canonical plans/handoffs (PR127), scoped verification (PR132) and
 bounded admission/handoff completion (PR133) are merged. Combined-tree verification
 and owner review are merged in PR134; the native two-worker execution slice is merged in PR137 after actual live validation
 and all six exact-head CI checks. Direct local proposals are merged in PR138. Final integration intent and receipt-proven return recovery are merged in PR139/140.
-Finite owner-reviewed revisions are merged in PR141. Canonical check/evidence progress and honest stall visibility are merged in PR142.
-The owner Build terminal now exposes the same progress on demand; a compatible
-one-edit local proposal bridge is separately under review. Next close the
-remaining personal-platform and qualification gaps from revision3. CI/mutation/metrics PRs128–131 are
-merged; performance history is delivered, continuous task metrics remain pending.
+Finite owner-reviewed revisions are merged in PR141; canonical progress in PR142,
+the local/native bridge in PR143 and terminal progress in PR144. PR145 adds bounded
+exit-metadata observation after a real Docker CI failure; the original failure is
+retained. The owner terminal now lists recent PUBLIC Build goals for the configured
+project, so existing work can be selected without copying IDs. Its
+[component evidence](../evidence/build-goal-browser-2026-10-21/report.json) distinguishes
+actual canonical/terminal checks from native fixtures. CI/mutation/metrics PRs128–131
+are merged; performance history is delivered, continuous task metrics remain pending.
 Deliver usable slices and required evidence; avoid unrelated test expansion.
 
 | Phase/outcome | Delivered behavior | Remaining acceptance work |
@@ -81,8 +84,8 @@ The [first-run command](testing/LOCAL_ASK_SETUP.md) generates stable IDs and pri
 settings using the existing setup policy; it still needs a migrated database
 and an existing model cache. For an existing PUBLIC Build goal, use the separate
 [Build review terminal](testing/BUILD_REVIEW_TUI.md) with its own private Build
-config and database environment. It shows checks/diff and freezes the exact
-merge/cancel review; it does not grant or submit work from the offline Ask scope.
+config and database environment. It lists recent PUBLIC Build goals in the configured project, shows checks/diff
+and canonical final-check progress, and freezes the exact merge/cancel review; it does not grant or submit work from the offline Ask scope.
 Next deliver bounded research planning and qualified support, then
 the remaining two-worker and personal-platform R3 integration. These are still
 separate terminal surfaces, not completed R3 Mission Control. The owner prefers
