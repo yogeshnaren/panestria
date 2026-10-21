@@ -22,6 +22,7 @@ def test_connected_controller_emits_progress_and_stops_at_one_exact_owner_review
     prepared_plan, native_plan, monkeypatch
 ):
     f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+    another(f, owner, plan, request, priority=1)
     result = CliRunner().invoke(
         app,
         [
@@ -40,6 +41,7 @@ def test_connected_controller_emits_progress_and_stops_at_one_exact_owner_review
     lines = [json.loads(line) for line in result.output.splitlines()]
     assert [r.get("kind") for r in lines] == ["QUEUE_TICK", "QUEUE_JOB_RETURNED", None]
     assert lines[0]["item_id"] == request.item_id and lines[1]["status"] == "WAITING_APPROVAL"
+    assert lines[0]["candidate_count"] == 2
     assert lines[-1]["status"] == "FINISHED" and lines[-1]["reason"] == "job_limit_reached"
     assert len(lines[-1]["items"]) == 1 and state["launches"] == 2 and state["peak"] == 1
     assert git(owner.settings.repository, "rev-parse", "refs/heads/main") == f.base
@@ -48,9 +50,17 @@ def test_connected_controller_emits_progress_and_stops_at_one_exact_owner_review
     with owner.connect() as c:
         before = c.execute("SELECT count(*) FROM panestria.task_event").fetchone()
     metadata = state["metadata"]
-    idle = work_queue(owner, allow_background_subscription_run=True, maximum_ticks=2, maximum_jobs=2)
+    observations = []
+    idle = work_queue(
+        owner,
+        allow_background_subscription_run=True,
+        maximum_ticks=2,
+        maximum_jobs=2,
+        on_observation=observations.append,
+    )
     assert idle["reason"] == "tick_limit_reached" and idle["ticks"] == 2 and idle["items"] == []
     assert state["launches"] == 2 and state["metadata"] == metadata
+    assert len(observations) == 2 and all(v["candidate_count"] == 0 for v in observations)
     with owner.connect() as c:
         assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == before
 
