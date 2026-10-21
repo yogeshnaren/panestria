@@ -7,7 +7,9 @@ from panestria.contracts.repair_intent import FINISHED, STARTED, RepairIntent, R
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.plan_store import PlanStore
+from panestria.kernel.repositories.policy import lock_project
 from panestria.kernel.repositories.tasks import append_event
+from panestria.kernel.scheduler import FLEET_LOCK
 from panestria.kernel.uow import UnitOfWork
 
 
@@ -69,6 +71,11 @@ def repair_ledger(uow: UnitOfWork, actor: Actor, goal: str) -> RepairLedger:
 
 def begin_repair(uow: UnitOfWork, actor: Actor, goal: str, intent: RepairIntent) -> None:
     intent = RepairIntent.model_validate(intent)
+    if uow.execute("SHOW transaction_isolation").fetchone() != ("read committed",):
+        raise KernelDenied("repair_admission_read_committed_required")
+    uow.execute("SELECT pg_advisory_xact_lock(%s,%s)", FLEET_LOCK)
+    lock_project(uow, actor)
+    uow.execute("SELECT id FROM panestria.goal WHERE id=%s FOR NO KEY UPDATE", (goal,)).fetchone()
     store = PlanStore()
     parent = store.get(uow, actor, intent.parent_plan_id)
     state, _, contract = store._goal(uow, actor, goal, read_only=True)
@@ -88,6 +95,8 @@ def begin_repair(uow: UnitOfWork, actor: Actor, goal: str, intent: RepairIntent)
         or parent.proposal.contract_sha256 != intent.contract_sha256
     ):
         raise KernelDenied("repair_intent_scope_unconfirmed")
+    if contract.privacy_class != "PUBLIC" or contract.budget.max_api_usd != "0":
+        raise KernelDenied("local_repair_public_zero_cash_required")
     current = repair_ledger(uow, actor, goal)
     if current.unresolved:
         raise KernelDenied("repair_draft_prior_unconfirmed")

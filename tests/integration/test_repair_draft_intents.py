@@ -21,7 +21,9 @@ from panestria.kernel.uow import UnitOfWork
 
 
 @pytest.mark.parametrize("prepared_plan", [{"wall_seconds": 1800}], indirect=True)
-def test_concurrent_different_directories_replay_and_finite_turns_preserve_canonical_budget(native_plan, tmp_path):
+def test_concurrent_different_directories_replay_and_finite_turns_preserve_canonical_budget(
+    native_plan, tmp_path, monkeypatch
+):
     owner, _, parent, _, claims = failed(native_plan)
     proof = returned(owner, parent, claims)
     repair, model = local(owner, tmp_path)
@@ -72,6 +74,26 @@ def test_concurrent_different_directories_replay_and_finite_turns_preserve_canon
         idempotency_key="first",
     )
     assert replay["replayed"] and replay["proposal_sha256"] == first["proposal_sha256"] and len(model.calls) == 1
+    import panestria.execution.local_repair as implementation
+
+    original_finish = implementation.finish_repair
+
+    def lost_ack(uow, actor, goal, outcome):
+        original_finish(uow, actor, goal, outcome)
+        uow.connection.commit()  # Actual commit; only its acknowledgment is lost.
+        raise OSError("FIXTURE lost outcome commit acknowledgment")
+
+    monkeypatch.setattr(implementation, "finish_repair", lost_ack)
+    with pytest.raises(OSError, match="FIXTURE lost outcome"):
+        repair.propose(
+            parent.proposal.plan_id,
+            parent.proposal.sha256(),
+            proof,
+            tmp_path / "second",
+            local_model_run=True,
+            idempotency_key="second",
+        )
+    monkeypatch.setattr(implementation, "finish_repair", original_finish)
     second = repair.propose(
         parent.proposal.plan_id,
         parent.proposal.sha256(),
@@ -80,7 +102,7 @@ def test_concurrent_different_directories_replay_and_finite_turns_preserve_canon
         local_model_run=True,
         idempotency_key="second",
     )
-    assert second["status"] == "VALIDATED_DRAFT" and len(model.calls) == 2
+    assert second["status"] == "VALIDATED_DRAFT" and second["replayed"] and len(model.calls) == 2
     with pytest.raises(KernelDenied, match="repair_model_turn_limit_exhausted"):
         repair.propose(
             parent.proposal.plan_id,
@@ -175,3 +197,126 @@ def test_unknown_return_is_durable_and_blocks_new_key_revision_and_false_complet
     assert result.exit_code == 0, result.output
     assert json.loads(result.stdout)["turns"][0]["status"] == "UNCONFIRMED"
     assert "FIXTURE ambiguous" not in result.output and len(model.calls) == 1
+
+
+@pytest.mark.parametrize("prepared_plan", [{"wall_seconds": 1800}], indirect=True)
+def test_unknown_repair_backup_restore_preserves_charges_unique_slots_and_refuses_audit_downgrade(
+    native_plan, tmp_path, record_property
+):
+    import hashlib
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+    from uuid import uuid4
+
+    import psycopg
+    from psycopg import sql
+    from test_memory_restore import _fixture_container
+
+    from panestria.contracts.repair_intent import FINISHED, STARTED
+    from panestria.execution.owner_build import OwnerBuild
+    from panestria.kernel.repositories.tasks import append_event
+
+    owner, _, parent, _, claims = failed(native_plan)
+    proof = returned(owner, parent, claims)
+    repair, model = local(owner, tmp_path)
+
+    def interrupted():
+        raise RuntimeError("FIXTURE process return unknown")
+
+    model.after = interrupted
+    output = tmp_path / "unknown"
+    with pytest.raises(RuntimeError, match="FIXTURE process return"):
+        repair.propose(
+            parent.proposal.plan_id,
+            parent.proposal.sha256(),
+            proof,
+            output,
+            local_model_run=True,
+            idempotency_key="unknown",
+        )
+    container = _fixture_container()
+    dump = subprocess.run(
+        ["docker", "exec", container, "pg_dump", "-U", "panestria_synthetic", "-d", owner.dsn.rsplit("/", 1)[1], "-Fc"],
+        capture_output=True,
+        check=True,
+        timeout=30,
+    )
+    record_property("backup_sha256", hashlib.sha256(dump.stdout).hexdigest())
+    name = "panestria_repair_restore_" + uuid4().hex
+    restored = owner.dsn.rsplit("/", 1)[0] + "/" + name
+    with psycopg.connect(owner.dsn, autocommit=True) as admin:
+        admin.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
+        try:
+            subprocess.run(
+                ["docker", "exec", "-i", container, "pg_restore", "-U", "panestria_synthetic", "-d", name],
+                input=dump.stdout,
+                capture_output=True,
+                check=True,
+                timeout=30,
+            )
+            recovered = LocalBuildRepair(
+                OwnerBuild(owner.settings, restored), repair.planner.settings, repair.planner.model
+            )
+            replay = recovered.propose(
+                parent.proposal.plan_id,
+                parent.proposal.sha256(),
+                proof,
+                output,
+                local_model_run=True,
+                idempotency_key="unknown",
+            )
+            assert replay["status"] == "UNCONFIRMED" and len(model.calls) == 1
+            with psycopg.connect(restored) as c:
+                ledger = repair_ledger(UnitOfWork(c), owner.actor, parent.proposal.goal_id)
+                assert ledger.charged_wall_seconds == 360 and ledger.unresolved == 1
+                original = ledger.intents[0].model_dump(mode="json")
+                # The real restored indexes reject duplicates even when a caller
+                # bypasses the application projection. Every rejected insert rolls back.
+                for payload, constraint in [
+                    ({**original, "draft_id": str(uuid4()), "key_sha256": "ab" * 32}, "repair_draft_turn_once"),
+                    ({**original, "draft_id": str(uuid4()), "turn": 2}, "repair_draft_key_once"),
+                ]:
+                    with pytest.raises(psycopg.errors.UniqueViolation) as error, c.transaction():
+                        append_event(
+                            UnitOfWork(c),
+                            goal_id=parent.proposal.goal_id,
+                            task_id=None,
+                            actor=owner.actor.owner_id,
+                            kind=STARTED,
+                            payload=payload,
+                        )
+                    assert error.value.diag.constraint_name == constraint
+                with pytest.raises(psycopg.errors.UniqueViolation) as error, c.transaction():
+                    append_event(
+                        UnitOfWork(c),
+                        goal_id=parent.proposal.goal_id,
+                        task_id=None,
+                        actor=owner.actor.owner_id,
+                        kind=FINISHED,
+                        payload=ledger.outcomes[0].model_dump(mode="json"),
+                    )
+                assert error.value.diag.constraint_name == "repair_draft_outcome_once"
+                assert repair_ledger(UnitOfWork(c), owner.actor, parent.proposal.goal_id) == ledger
+            refused = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "alembic",
+                    "-c",
+                    "migrations/alembic.ini",
+                    "downgrade",
+                    "0036_returned_build_release",
+                ],
+                cwd=Path(__file__).resolve().parents[2],
+                env={**os.environ, "PANESTRIA_DATABASE_URL": restored},
+                capture_output=True,
+                timeout=30,
+            )
+            assert refused.returncode != 0 and b"repair I/O audit exists" in refused.stderr
+            with psycopg.connect(restored) as c:
+                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0037_repair_draft_intents",)
+                assert repair_ledger(UnitOfWork(c), owner.actor, parent.proposal.goal_id) == ledger
+        finally:
+            admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))
