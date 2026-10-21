@@ -15,6 +15,7 @@ from panestria.api.health import (
     default_readiness_probe,
     secret_rejection_body,
 )
+from panestria.cli.activity import activity_app
 from panestria.cli.approvals import approve_command, deny_command, list_command
 from panestria.cli.ask import ask_command
 from panestria.cli.background import background_app
@@ -43,6 +44,7 @@ app.add_typer(plan_app, name="plan")
 app.add_typer(quota_app, name="quota")
 app.add_typer(research_app, name="research")
 app.add_typer(local_app, name="local")
+app.add_typer(activity_app, name="activity")
 app.add_typer(storage_app, name="storage")
 app.add_typer(metrics_app, name="metrics")
 app.command("approve")(approve_command)
