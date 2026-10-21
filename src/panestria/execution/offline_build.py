@@ -164,10 +164,12 @@ def capture_reference(owner: "OwnerBuild", goal: str) -> dict[str, Any]:
     os.close(fd)
     with _lock(lock):
         existing = list(store.root.iterdir())
-        needed = sum(len(raw) for sha, raw in chunks.items() if not (store.root / sha).exists()) + len(raw_manifest)
-        if (
-            len(existing) + len(chunks) + 1 > 4096
-            or sum(p.lstat().st_size for p in existing) + needed > 8 * 1024 * 1024
+        new_chunks = {sha: raw for sha, raw in chunks.items() if not (store.root / sha).exists()}
+        new_manifest = not (store.root / hashlib.sha256(raw_manifest).hexdigest()).exists()
+        needed = sum(map(len, new_chunks.values())) + (len(raw_manifest) if new_manifest else 0)
+        added_count = len(new_chunks) + int(new_manifest)
+        if added_count and (
+            len(existing) + added_count > 4096 or sum(p.lstat().st_size for p in existing) + needed > 8 * 1024 * 1024
         ):
             raise KernelDenied("offline_reference_history_budget_reached")
         for raw in chunks.values():
@@ -228,6 +230,8 @@ def read_reference(root: Path, owner: str, project: str, digest: str) -> Offline
             bundle.base_commit,
             bundle.candidate_commit,
         )
+        or (contract.owner_id, contract.project_id, contract.privacy_class, contract.contract_version)
+        != (str(manifest.owner_id), str(manifest.project_id), "PUBLIC", bundle.contract_version)
         or not bundle.passed()
         or set(contents)
         != {"contract", "diff", "final_evidence"} | {f"check-report-{i}" for i in range(len(bundle.checks))}
