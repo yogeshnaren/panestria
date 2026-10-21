@@ -39,6 +39,25 @@ panestria background runs --config /absolute/private/build.json ITEM_UUID
 panestria build tui --config /absolute/private/build.json GOAL_UUID
 ```
 
+To inspect the next **unstarted** candidate without running anything, then
+explicitly execute at most that one eligible job:
+
+```bash
+panestria background next --config /absolute/private/build.json
+panestria background run-next --config /absolute/private/build.json \
+  --allow-background-subscription-run
+```
+
+Priority3 is highest; ties prefer earlier known reported resets, with unknown
+reset last, then older queue sequence. `next` returns a read-only candidate,
+not a dispatch guarantee. `run-next` rechecks all existing runtime/account/
+policy/billing/quota/storage/foreground gates; a race, denial or failure returns
+without trying another job. Previously started work needs the explicit item
+inspection/resume command. Pending final review keeps its canonical claim.
+This is one finite command; no timer or service is installed. See the
+[selection design](../design/73-BACKGROUND-SELECTION.md) and
+[connected evidence](../../evidence/background-selection-2026-10-21/report.json).
+
 Expected results:
 
 - `WAIT`: inspect `reason`/`background_wait_reason`. Unknown/stale/insufficient

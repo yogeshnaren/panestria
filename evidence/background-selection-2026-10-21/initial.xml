@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="8" time="56.718" timestamp="2026-10-21T00:58:04.861928-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_background_selection" name="test_connected_selector_orders_reviewed_jobs_and_runs_only_one_without_implicit_resume" file="tests/integration/test_background_selection.py" line="66" time="15.417"><properties><property name="candidate_commit" value="f563401f700081b22fdff2a8db57ee43e85fb99c" /><property name="fixture_digest" value="a60a2f2a42ce45829378cb8ffcb14d687dae57b48446fcedf6070ed6b72b8b77" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="TypeError: 'NoneType' object is not subscriptable">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-32/test_connected_selector_orders0/build.json'...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x7b9d827ade20&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b9d82733d40&gt;
+
+    def test_connected_selector_orders_reviewed_jobs_and_runs_only_one_without_implicit_resume(
+        prepared_plan, native_plan, monkeypatch
+    ):
+        f, owner, plan, state, original, _ = setup(prepared_plan, native_plan, monkeypatch)
+        later, _ = another(f, owner, plan, original, resets_in=2000)
+        sooner, selected_plan = another(f, owner, plan, original, resets_in=1800)
+        unknown, _ = another(f, owner, plan, original, unknown=True)
+        with owner.connect() as c:
+            before = c.execute("SELECT count(*) FROM panestria.task_event").fetchone()
+        preview = cli(f, "next")
+        assert preview["selected"]["item_id"] == sooner.item_id and preview["candidate_count"] == 4
+        assert preview["execution_authority"] == "NONE" and state["launches"] == 0
+        with owner.connect() as c:
+            assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == before
+        cli(f, "run-next", expected=1)
+        assert state["launches"] == 0
+        result = cli(f, "run-next", "--allow-background-subscription-run")
+        assert result["status"] == "WAITING_APPROVAL" and result["selected_item_id"] == sooner.item_id
+        assert state["launches"] == 2 and state["peak"] == 1
+        assert git(f.bare, "rev-parse", "HEAD") == f.base  # Never auto-approve.
+        assert owner.status(selected_plan.goal_id)["task_state"] == "WAITING_APPROVAL"
+&gt;       assert cli(f, "next")["selected"]["item_id"] == later.item_id
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/integration/test_background_selection.py:88: TypeError</failure></testcase><testcase classname="tests.integration.test_background_selection" name="test_connected_selection_rechecks_withdrawal_without_trying_another_job" file="tests/integration/test_background_selection.py" line="94" time="4.811"><properties><property name="candidate_commit" value="f563401f700081b22fdff2a8db57ee43e85fb99c" /><property name="fixture_digest" value="a60a2f2a42ce45829378cb8ffcb14d687dae57b48446fcedf6070ed6b72b8b77" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_background_run" name="test_actual_serial_background_job_preserves_foreground_slot_and_exact_final_owner_review" file="tests/integration/test_background_run.py" line="70" time="6.910"><properties><property name="candidate_commit" value="f563401f700081b22fdff2a8db57ee43e85fb99c" /><property name="fixture_digest" value="0c0be522d84b6f102c4e7d9b031f65697cfabf54cbdace8bd9be51ef0085c61b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: {'status': 'STOPPED', 'plan_id': '8971c25d-9b43-4237-bc9f-e4e8d9c6bb34', 'worker_observations': [{'task_id': '1dae7364...lease_epoch': 0}, {'task_id': 'b8b8d2ff-8668-47aa-9081-429d973b1de0', 'task_state': 'CREATED', 'lease_epoch': 0}], ...}&#10;assert 'STOPPED' == 'WAITING_APPROVAL'&#10;  &#10;  - WAITING_APPROVAL&#10;  + STOPPED">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-32/test_actual_serial_background_0/build.json'...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x7b9d827d27b0&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b9d827153d0&gt;
+
+    def test_actual_serial_background_job_preserves_foreground_slot_and_exact_final_owner_review(
+        prepared_plan, native_plan, monkeypatch
+    ):
+        f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+        cli(f, "run", request.item_id, expected=1)
+        entered, proceed = threading.Event(), threading.Event()
+        original = BackgroundPlanRunner._one
+    
+        def pause(self, plan, job):
+            if not entered.is_set():
+                entered.set()
+                assert proceed.wait(10)
+            return original(self, plan, job)
+    
+        monkeypatch.setattr(BackgroundPlanRunner, "_one", pause)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(
+                lambda: BackgroundPlanRunner(owner, request.item_id).run_item(allow_background_subscription_run=True)
+            )
+            assert entered.wait(10)
+            duplicate = cli(f, "run", request.item_id, "--allow-background-subscription-run")
+            assert duplicate["status"] == "WAIT" and duplicate["reason"] == "background_controller_already_active"
+            with owner.connect() as c:
+                assert c.execute("SELECT count(*) FROM panestria.build_active_worker_claim").fetchone() == (1,)
+            proceed.set()
+            result = future.result(timeout=30)
+&gt;       assert result["status"] == "WAITING_APPROVAL", result
+E       AssertionError: {'status': 'STOPPED', 'plan_id': '8971c25d-9b43-4237-bc9f-e4e8d9c6bb34', 'worker_observations': [{'task_id': '1dae7364...lease_epoch': 0}, {'task_id': 'b8b8d2ff-8668-47aa-9081-429d973b1de0', 'task_state': 'CREATED', 'lease_epoch': 0}], ...}
+E       assert 'STOPPED' == 'WAITING_APPROVAL'
+E         
+E         - WAITING_APPROVAL
+E         + STOPPED
+
+tests/integration/test_background_run.py:97: AssertionError</failure></testcase><testcase classname="tests.integration.test_background_run" name="test_actual_foreground_ask_yields_new_background_claims_and_explicit_resume_reuses_handoff" file="tests/integration/test_background_run.py" line="113" time="6.316"><properties><property name="candidate_commit" value="f563401f700081b22fdff2a8db57ee43e85fb99c" /><property name="fixture_digest" value="0c0be522d84b6f102c4e7d9b031f65697cfabf54cbdace8bd9be51ef0085c61b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: assert ('STOPPED' == 'WAIT'&#10;  &#10;  - WAIT&#10;  + STOPPED)">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-32/test_actual_foreground_ask_yie0/build.json'...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x7b9d8264ab40&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b9d82602060&gt;
+
+    def test_actual_foreground_ask_yields_new_background_claims_and_explicit_resume_reuses_handoff(
+        prepared_plan, native_plan, monkeypatch
+    ):
+        from uuid import uuid4
+    
+        f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+        ask_id = str(uuid4())
+        original = BackgroundPlanRunner._one
+        prepared = []
+    
+        def foreground(self, plan, job):
+            result = original(self, plan, job)
+            if not prepared:
+                with owner.connect() as c:
+                    AskService().prepare(
+                        UnitOfWork(c),
+                        owner.actor,
+                        AskSubmission(
+                            request_id=ask_id,
+                            project_id=owner.actor.project_id,
+                            question="Synthetic foreground question",
+                            privacy_label="PUBLIC",
+                        ),
+                    )
+                prepared.append(ask_id)
+            return result
+    
+        monkeypatch.setattr(BackgroundPlanRunner, "_one", foreground)
+        paused = cli(f, "run", request.item_id, "--allow-background-subscription-run")
+&gt;       assert paused["status"] == "WAIT" and "foreground_or_held_capacity_reserved" in paused["background_wait_reason"]
+E       AssertionError: assert ('STOPPED' == 'WAIT'
+E         
+E         - WAIT
+E         + STOPPED)
+
+tests/integration/test_background_run.py:143: AssertionError</failure></testcase><testcase classname="tests.integration.test_background_run" name="test_actual_coordinator_crash_reconciliation_and_native_limit_keep_unknown_claims" file="tests/integration/test_background_run.py" line="157" time="5.834"><properties><property name="candidate_commit" value="f563401f700081b22fdff2a8db57ee43e85fb99c" /><property name="fixture_digest" value="0c0be522d84b6f102c4e7d9b031f65697cfabf54cbdace8bd9be51ef0085c61b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_background_run" name="test_actual_unconfirmed_billing_never_starts_a_background_job" file="tests/integration/test_background_run.py" line="198" time="4.299"><properties><property name="candidate_commit" value="f563401f700081b22fdff2a8db57ee43e85fb99c" /><property name="fixture_digest" value="0c0be522d84b6f102c4e7d9b031f65697cfabf54cbdace8bd9be51ef0085c61b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_background_run" name="test_actual_billing_report_must_cover_the_full_next_node_envelope" file="tests/integration/test_background_run.py" line="210" time="4.153"><properties><property name="candidate_commit" value="f563401f700081b22fdff2a8db57ee43e85fb99c" /><property name="fixture_digest" value="0c0be522d84b6f102c4e7d9b031f65697cfabf54cbdace8bd9be51ef0085c61b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_background_run" name="test_actual_withdrawal_after_handoff_stops_new_claims_without_cancelling_or_replaying_work" file="tests/integration/test_background_run.py" line="222" time="7.000"><properties><property name="candidate_commit" value="f563401f700081b22fdff2a8db57ee43e85fb99c" /><property name="fixture_digest" value="0c0be522d84b6f102c4e7d9b031f65697cfabf54cbdace8bd9be51ef0085c61b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase></testsuite></testsuites>

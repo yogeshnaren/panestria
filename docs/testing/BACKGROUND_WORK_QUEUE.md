@@ -91,7 +91,7 @@ still prevents this renewal.
   Independent source/window conflicts remain visible and conservative.
 - `seconds_to_reported_reset` is simple arithmetic on fresh owner/provider-reported
   timestamps; unknown and estimated dates do not become a precise expiration claim.
-  Value priority is an owner declaration for the future dispatcher, not an
+  Value priority is an owner declaration (3highest) used by the finite `run-next` selector, not an
   inferred success probability or automatic architecture-plan promotion.
 - Any held Build capacity, PREPARED/RUNNING Ask, ended goal or already-started
   work waits for inspection. The policy reserves one of two worker slots for

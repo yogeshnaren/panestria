@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "scope": "Actual isolated PostgreSQL/Git/MCP/Docker/CLI; native/auth/capacity/billing/quota explicit synthetic fixtures, ZERO live inference",
+  "runs": [
+    {
+      "junit": "initial.xml",
+      "sha256": "6526ef454a4999c6e0dad915e0ff79df574764fec6510dc05e89d00603a03d58",
+      "source_commits": [
+        "f563401f700081b22fdff2a8db57ee43e85fb99c"
+      ],
+      "cases": 8,
+      "failures": 3,
+      "errors": 0,
+      "seconds": 56.718
+    },
+    {
+      "junit": "corrected.xml",
+      "sha256": "e31aff48396a96fea90f3acf9093bb0608da956aa65a1b2a99f64d4c2e7f224a",
+      "source_commits": [
+        "7a23413e3ee1e1d0dfd4c17e192fb5f80d15ca28"
+      ],
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 22.229
+    }
+  ],
+  "initial_failure_notes": [
+    "One new selector expectation wrongly ignored the final pending-review claim; corrected to keep canonical capacity held.",
+    "Two existing finite-run cases intermittently stopped, not a claimed product fix; qualification issue remains open."
+  ],
+  "asserted_outcomes": [
+    "Read-only next preview adds no events or model launches",
+    "Higher declared value priority first; known reset before unknown; earlier known reset first",
+    "Withdrawal removes candidates; no weakening of held final-review capacity",
+    "Explicit run-next intent required; at most one serial job runs to WAITING_APPROVAL",
+    "No automatic resume/merge/fallback after race; selected withdrawal rechecked before dispatch"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "actual_selector_runtime": "NOT_QUALIFIED"
+}
