@@ -131,7 +131,23 @@ repeated unchanged failed candidates stop before publication or another model
 turn as applicable. [Connected evidence](../evidence/local-build-repair-2026-10-21/report.json)
 uses actual CLI/PG/Git/MCP/Docker with explicit model/native fixtures. This is
 partial S3/X10 delivery, not qualified repair accuracy or a persistent autonomous
-repair loop. General planning quality/turn accounting and original gates remain.
+repair loop. General planning quality and original gates remain.
+
+## Durable repair turns and budget
+
+The [repair command](testing/LOCAL_BUILD_REPAIR.md) now records an acknowledged
+Postgres intent before each model turn and a protected byte-bound outcome after
+return. New directories, processes or plan versions cannot reset the goal's
+finite1–2 model-turn cap. Each intent permanently reserves360 seconds against
+the original cumulative wall budget; rejected and unknown attempts remain
+charged. This is conservative capacity accounting, not measured latency or an
+OS interruption guarantee. Unknown return blocks new model/revision work;
+`plan repair-turns` and Build progress show it without releasing capacity.
+[42 connected checks](../evidence/repair-draft-intents-2026-10-21/report.json)
+include concurrency, replay without another model call, lost acknowledgment and
+actual backup/restore of the event/index/downgrade guards. Model/native/capacity
+identities are explicit fixtures. This closes the persistent accounting gap;
+qualified repair accuracy, automatic repair and original G3 acceptance remain.
 
 ## Explicit encrypted style editor
 

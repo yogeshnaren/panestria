@@ -15,6 +15,7 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.plan_store import PlanStore
 from panestria.kernel.plans import PlanValidator
+from panestria.kernel.repair_intents import repair_ledger
 from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.scheduler import FLEET_LOCK
 from panestria.kernel.uow import UnitOfWork
@@ -85,7 +86,14 @@ class PlanRevisionService:
         prior_plans = [store.get(uow, actor, row[0]) for row in family]
         if any(p.proposal.contract_sha256 != proposal.contract_sha256 or p.inventory != inventory for p in prior_plans):
             raise KernelDenied("plan_scope_change_requires_new_authorization")
-        total_wall = sum(p.validation.upper_wall_seconds for p in prior_plans) + checked.upper_wall_seconds
+        planning = repair_ledger(uow, actor, proposal.goal_id)
+        if planning.unresolved:
+            raise KernelDenied("plan_previous_work_unconfirmed")
+        total_wall = (
+            sum(p.validation.upper_wall_seconds for p in prior_plans)
+            + checked.upper_wall_seconds
+            + planning.charged_wall_seconds
+        )
         total_cash = sum(p.validation.upper_api_microusd for p in prior_plans) + checked.upper_api_microusd
         if total_wall > contract.budget.max_wall_seconds or total_cash:
             raise KernelDenied("plan_repair_budget_exhausted")

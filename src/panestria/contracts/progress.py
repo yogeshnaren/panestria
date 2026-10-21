@@ -48,6 +48,9 @@ class PlanProgress(ProgressRecord):
 
 
 class RepairProgress(ProgressRecord):
+    planning_turns_used: int = 0
+    planning_wall_charged_seconds: int = 0
+    unconfirmed_planning_turns: int = 0
     versions_used: int
     maximum_versions: int | None
     wall_envelope_charged_seconds: int

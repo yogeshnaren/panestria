@@ -205,6 +205,7 @@ class LocalBuildPlanner:
         local_model_run: bool,
         repair: RepairDraftContext | None = None,
         publication_guard: Callable[[], None] | None = None,
+        before_dispatch: Callable[[InferenceRequest], None] | None = None,
     ) -> dict[str, object]:
         if local_model_run is not True:
             raise KernelDenied("explicit_local_plan_model_intent_required")
@@ -264,6 +265,8 @@ class LocalBuildPlanner:
             journal["repair_context_sha256"] = repair.sha256()
         _atomic(directory / "result.json", journal)
         try:
+            if before_dispatch is not None:
+                before_dispatch(request)
             result = self.model.generate(request)
             if (
                 result.model_ref != MODEL

@@ -2165,9 +2165,10 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-025-S3.md",
-      "scope_note": "Finite same-contract canonical revisions and one explicit local repair draft from stopped work/remaining budget delivered. Source recheck/repeated failed-tree stopping observed with model/native fixtures. Real repair quality, persistent planner-turn accounting/controller and full original cases remain pending.",
+      "scope_note": "Finite reviewed same-contract revisions and canonical local repair intents now bound model turns/reservations across directories/processes. Exact replay, source fencing and unknown-return stops observed with explicit model/native fixtures. Real repair quality, automatic controller and full original cases remain pending.",
       "evidence_refs": [
-        "evidence/local-build-repair-2026-10-21/report.json"
+        "evidence/local-build-repair-2026-10-21/report.json",
+        "evidence/repair-draft-intents-2026-10-21/report.json"
       ]
     },
     {
@@ -2847,9 +2848,11 @@
       ],
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "evidence/repair-draft-intents-2026-10-21/report.json"
+      ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Initial canonical source-bound progress projection and private export delivered: original checks/non-goals/plan versions, final candidate versus intermediate milestones, repair envelope, unknown/expired holds and unchanged failure fingerprints. Semantic/rubric/non-goal assessment, controller repeated-failure enforcement and unified surfaces remain pending."
+      "scope_note": "Canonical check/milestone progress and finite cumulative worker/model reservation accounting delivered, with unknown turns and repeated failure stops visible. Semantic/rubric/non-goal assessment and unified surfaces remain pending."
     },
     {
       "id": "AOS-025-S5",
@@ -2873,10 +2876,12 @@
         "AOS-025-TC08"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "evidence_refs": [],
+      "status": "IN_PROGRESS",
+      "evidence_refs": [
+        "evidence/repair-draft-intents-2026-10-21/report.json"
+      ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+      "scope_note": "Actual repair-intent backup/restore, lost-acknowledgment and historical replay observations delivered with model/native fixtures. Broader original restart/handoff/adversarial false-done and qualified repair scenarios remain pending; no release-case PASS inferred."
     },
     {
       "id": "AOS-012-S4",

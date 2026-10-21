@@ -23,6 +23,7 @@ from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.plan_store import PlanStore
+from panestria.kernel.repair_intents import repair_ledger
 from panestria.kernel.uow import UnitOfWork
 
 
@@ -156,9 +157,13 @@ class BuildProgressService:
             (goal_id,),
         ).fetchone()
         assert claims is not None and invocations is not None
-        charged = sum(p.validation.upper_wall_seconds for p in plans)
+        planning = repair_ledger(uow, actor, goal_id)
+        charged = sum(p.validation.upper_wall_seconds for p in plans) + planning.charged_wall_seconds
         repeated = max(fingerprints.values(), default=0)
         repair = RepairProgress(
+            planning_turns_used=len(planning.intents),
+            planning_wall_charged_seconds=planning.charged_wall_seconds,
+            unconfirmed_planning_turns=planning.unresolved,
             versions_used=plans[-1].version,
             maximum_versions=plans[-1].consent.maximum_versions
             if isinstance(plans[-1].consent, PlanRevisionConsent)
@@ -193,7 +198,12 @@ class BuildProgressService:
                 "review_goal_result_release_acceptance_separate",
                 "CONFIRMED",
             )
-        elif repair.unknown_invocations or repair.expired_held_claims or "RECONCILING" in states:
+        elif (
+            repair.unconfirmed_planning_turns
+            or repair.unknown_invocations
+            or repair.expired_held_claims
+            or "RECONCILING" in states
+        ):
             reason, action = "RECONCILIATION_REQUIRED", "inspect_receipts_keep_uncertain_capacity_held"
         elif status == "COMPLETED":
             reason, action = "COMPLETION_UNCONFIRMED", "inspect_final_evidence_and_exact_confirmed_effect"

@@ -233,6 +233,9 @@ class BuildReviewTerminal:
                 f"Plan versions: {repair['versions_used']} | remaining wall envelope: "
                 f"{repair['wall_envelope_remaining_seconds']}s\n"
                 f"Held claims: {repair['held_claims']} | UNKNOWN invocations: {repair['unknown_invocations']}\n"
+                f"Repair model turns: {repair.get('planning_turns_used', '?')} | reserved: "
+                f"{repair.get('planning_wall_charged_seconds', '?')}s | "
+                f"unconfirmed: {repair.get('unconfirmed_planning_turns', '?')}\n"
                 f"As-of event: {p['as_of_event_seq']} | original contract v{p['contract_version']}\n"
                 "Check and milestone references (untrusted descriptions):\n"
                 + json.dumps({k: p[k] for k in ("requirements", "non_goals", "plans")}, indent=2)
