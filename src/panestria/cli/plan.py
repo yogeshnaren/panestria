@@ -605,3 +605,36 @@ def inspect_progress(
 
 def _storage_notice(observation: dict[str, Any]) -> None:
     typer.echo(json.dumps({"notification": "build_storage_admission", **observation}), err=True)
+
+
+@plan_app.command("propose-repair")
+def propose_local_repair(
+    plan_id: str,
+    parent_sha256: str,
+    return_proof_sha256: str,
+    build_config: Annotated[Path, typer.Option("--build-config")],
+    model_config: Annotated[Path, typer.Option("--model-config")],
+    output_directory: Annotated[Path, typer.Option("--output-directory")],
+    maximum_versions: int = 3,
+    local_model_run: bool = False,
+) -> None:
+    """Draft one offline repair of confirmed stopped work; no revision, acceptance or worker launch."""
+    from panestria.cli.build import _service
+    from panestria.config_plan import load_plan_settings
+    from panestria.execution.local_repair import LocalBuildRepair
+    from panestria.kernel.errors import KernelDenied
+
+    try:
+        result = LocalBuildRepair(_service(build_config), load_plan_settings(model_config)).propose(
+            plan_id, parent_sha256, return_proof_sha256, output_directory,
+            maximum_versions=maximum_versions, local_model_run=local_model_run,
+        )
+        typer.echo(json.dumps(result))
+    except Exception as error:
+        safe = {"plan_previous_work_unconfirmed", "plan_repair_limit_exhausted", "plan_repair_budget_exhausted",
+                "local_repair_repeated_failure_owner_review_required", "plan_return_proof_unconfirmed",
+                "local_repair_parent_not_current_stopped_plan", "local_repair_source_changed",
+                "local_plan_remaining_budget_exceeded", "explicit_local_plan_model_intent_required"}
+        reason = error.code if isinstance(error, KernelDenied) and error.code in safe else "local_repair_not_published"
+        typer.echo(json.dumps({"status": "STOPPED", "reason": reason, "execution_authority": "NONE"}), err=True)
+        raise typer.Exit(1) from None

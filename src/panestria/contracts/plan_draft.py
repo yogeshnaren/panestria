@@ -16,3 +16,16 @@ class DraftNode(PlanNode):
 
 class ModelPlanDraft(PlanContract):
     edits: tuple[DraftNode, ...] = Field(min_length=1, max_length=15)
+
+
+class RepairDraftContext(PlanContract):
+    """Controller-observed stopped work; model advice grants no revision authority."""
+
+    parent_plan_id: str
+    parent_proposal_sha256: str
+    return_proof_sha256: str
+    parent_version: StrictInt = Field(ge=1, le=3)
+    maximum_versions: StrictInt = Field(ge=2, le=3)
+    remaining_wall_seconds: StrictInt = Field(ge=2)
+    as_of_event_seq: StrictInt = Field(ge=0)
+    failure_states: tuple[tuple[str, str, tuple[tuple[str, str], ...], str | None], ...] = Field(max_length=16)

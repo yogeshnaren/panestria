@@ -10,6 +10,7 @@ import hashlib
 import json
 import math
 import os
+from collections.abc import Callable
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -21,7 +22,7 @@ from panestria.contracts.goal import GoalContract, contract_sha256, load_contrac
 from panestria.contracts.inference import InferenceRequest, InferenceResult, InferenceUnavailable
 from panestria.contracts.native_tools import canonical_payload
 from panestria.contracts.plan import PlanNode, PlanProposal, ProjectInventory, ValidatedDAG
-from panestria.contracts.plan_draft import ModelPlanDraft
+from panestria.contracts.plan_draft import ModelPlanDraft, RepairDraftContext
 from panestria.execution.proposal_demo import _atomic, _private
 from panestria.inference.local import LocalProvider
 from panestria.inference.runtime import MODEL, MODEL_DIGEST, ModelRuntime
@@ -66,7 +67,7 @@ def _write(path: Path, raw: bytes) -> None:
         os.fsync(stream.fileno())
 
 
-def _integration_wall(contract: GoalContract, inventory: ProjectInventory) -> int:
+def _integration_wall(contract: GoalContract, inventory: ProjectInventory, wall_budget: int | None = None) -> int:
     worker = next((w for w in inventory.workers if w.worker_ref == "trusted-integrator"), None)
     if (
         worker is None
@@ -77,11 +78,15 @@ def _integration_wall(contract: GoalContract, inventory: ProjectInventory) -> in
         or contract.budget.max_wall_seconds < 2
     ):
         raise KernelDenied("local_plan_integrator_unavailable")
-    return min(90, contract.budget.max_wall_seconds // 2)
+    budget = contract.budget.max_wall_seconds if wall_budget is None else wall_budget
+    if type(budget) is not int or not 2 <= budget <= contract.budget.max_wall_seconds:
+        raise KernelDenied("local_plan_remaining_budget_invalid")
+    return min(90, budget // 2)
 
 
-def plan_prompt(contract: GoalContract, inventory: ProjectInventory) -> str:
-    reserved = _integration_wall(contract, inventory)
+def plan_prompt(contract: GoalContract, inventory: ProjectInventory, repair: RepairDraftContext | None = None) -> str:
+    budget = contract.budget.max_wall_seconds if repair is None else repair.remaining_wall_seconds
+    reserved = _integration_wall(contract, inventory, budget)
     instruction = (
         'Return ONLY JSON {"edits":[{"task_id":"edit-one","worker_ref":"worker-ref",'
         '"capabilities":["capability-ref"],"paths":["file.py"],"acceptance_keys":["check-id"],'
@@ -106,10 +111,15 @@ def plan_prompt(contract: GoalContract, inventory: ProjectInventory) -> str:
             "maximum_edits": inventory.maximum_nodes - 1,
             "maximum_edit_depth": inventory.maximum_depth - 1,
             "maximum_parallel": inventory.maximum_parallel,
-            "edits_wall_budget": contract.budget.max_wall_seconds - reserved,
+            "edits_wall_budget": budget - reserved,
             "reserved_final_wall_seconds": reserved,
         },
     }
+    if repair is not None:
+        data["stopped_parent_observation"] = {
+            "remaining_wall_seconds": repair.remaining_wall_seconds,
+            "failed_tasks": [{"state": state, "checks": checks} for _, state, checks, _ in repair.failure_states],
+        }
     result = instruction + json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     if len(result.encode()) + 1024 + 128 > 4096:
         raise KernelDenied("local_plan_context_limit")
@@ -117,12 +127,17 @@ def plan_prompt(contract: GoalContract, inventory: ProjectInventory) -> str:
 
 
 def validate_draft(
-    text: str, actor: Actor, contract: GoalContract, inventory: ProjectInventory
+    text: str,
+    actor: Actor,
+    contract: GoalContract,
+    inventory: ProjectInventory,
+    *,
+    remaining_wall_seconds: int | None = None,
 ) -> tuple[PlanProposal, ValidatedDAG]:
     if type(text) is not str or len(text.encode()) > 16 * 1024:
         raise KernelDenied("local_plan_response_limit")
     draft = ModelPlanDraft.model_validate_json(canonical_payload(text))
-    reserved = _integration_wall(contract, inventory)
+    reserved = _integration_wall(contract, inventory, remaining_wall_seconds)
     names = {n.task_id: str(uuid4()) for n in draft.edits}
     if len(names) != len(draft.edits) or any(set(n.depends_on) - names.keys() for n in draft.edits):
         raise KernelDenied("local_plan_task_references_invalid")
@@ -161,6 +176,8 @@ def validate_draft(
         + (final,),
     )
     validation = PlanValidator().validate(actor, proposal, contract, inventory)
+    if remaining_wall_seconds is not None and validation.upper_wall_seconds > remaining_wall_seconds:
+        raise KernelDenied("local_plan_remaining_budget_exceeded")
     sources = {key for n in proposal.nodes for key in n.depends_on}
     terminal = [n for n in proposal.nodes if n.task_id not in sources]
     if len(terminal) != 1 or set(terminal[0].acceptance_keys) != {c.id for c in contract.acceptance}:
@@ -180,7 +197,14 @@ class LocalBuildPlanner:
         self.model = model or LocalPlanModel(settings)
 
     def propose(
-        self, contract: GoalContract, inventory: ProjectInventory, directory: Path, *, local_model_run: bool
+        self,
+        contract: GoalContract,
+        inventory: ProjectInventory,
+        directory: Path,
+        *,
+        local_model_run: bool,
+        repair: RepairDraftContext | None = None,
+        publication_guard: Callable[[], None] | None = None,
     ) -> dict[str, object]:
         if local_model_run is not True:
             raise KernelDenied("explicit_local_plan_model_intent_required")
@@ -192,7 +216,9 @@ class LocalBuildPlanner:
             or contract.budget.max_api_usd != "0"
         ):
             raise KernelDenied("local_plan_scope_or_cash_invalid")
-        prompt = plan_prompt(contract, inventory)
+        if repair is not None and publication_guard is None:
+            raise KernelDenied("repair_publication_guard_required")
+        prompt = plan_prompt(contract, inventory, repair)
         if (
             not directory.is_absolute()
             or directory.resolve() != directory
@@ -220,6 +246,8 @@ class LocalBuildPlanner:
         _write(directory / "contract.json", contract.model_dump_json().encode())
         _write(directory / "inventory.json", inventory.model_dump_json().encode())
         _write(directory / "request.json", request.model_dump_json().encode())
+        if repair is not None:
+            _write(directory / "repair-context.json", repair.model_dump_json().encode())
         journal = {
             "status": "STARTED",
             "authority": "PROPOSAL_ONLY",
@@ -232,6 +260,8 @@ class LocalBuildPlanner:
             "started_at": datetime.now(UTC).isoformat(),
             "automatic_retry": False,
         }
+        if repair is not None:
+            journal["repair_context_sha256"] = repair.sha256()
         _atomic(directory / "result.json", journal)
         try:
             result = self.model.generate(request)
@@ -252,7 +282,15 @@ class LocalBuildPlanner:
             if len(raw) > 16 * 1024:
                 raise KernelDenied("local_plan_response_limit")
             _write(directory / "response.txt", raw)
-            proposal, validated = validate_draft(result.text, self.actor, contract, inventory)
+            proposal, validated = validate_draft(
+                result.text,
+                self.actor,
+                contract,
+                inventory,
+                remaining_wall_seconds=repair.remaining_wall_seconds if repair else None,
+            )
+            if publication_guard is not None:
+                publication_guard()
             _write(directory / "proposal.json", proposal.model_dump_json().encode())
             _write(directory / "validation.json", validated.model_dump_json().encode())
             receipt = {
