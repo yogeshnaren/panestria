@@ -27,7 +27,9 @@ def build_activity_app(config: ActivitySettings, settings: ValidatedSettings, to
     return app
 
 
-def serve_activity(path: Path, *, dashboard_assets: Path | None = None) -> None:
+def serve_activity(
+    path: Path, *, dashboard_assets: Path | None = None, build_evidence_store: Path | None = None
+) -> None:
     config, token = load_activity_settings(path)
     settings = Settings(
         database_url=os.environ.get("PANESTRIA_DATABASE_URL", ""), bind_host="127.0.0.1", bind_port=config.bind_port
@@ -47,7 +49,9 @@ def serve_activity(path: Path, *, dashboard_assets: Path | None = None) -> None:
         if dashboard_assets is not None:
             from panestria.api.mission_web import mount_mission_control
 
-            mount_mission_control(app, config, token.get_secret_value(), dashboard_assets)
+            mount_mission_control(
+                app, config, token.get_secret_value(), dashboard_assets, build_evidence_store=build_evidence_store
+            )
         server = uvicorn.Server(server_config(app))
         print(
             json.dumps({"status": "STARTING", "origin": config.origin, "authority": "READ_ONLY_METADATA"}), flush=True

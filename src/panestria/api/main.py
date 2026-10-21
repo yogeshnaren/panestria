@@ -96,7 +96,10 @@ def mount_activity_api(app: FastAPI) -> None:
     """Mount only content-free observations, without goal/merge/tool endpoints."""
     if not isinstance(app.state.goal_api, GoalApi):
         raise TypeError("activity API requires configured actor scope")
+    from panestria.api.routes.build_observation import router as build_observation_router
+
     app.include_router(activity_router)
+    app.include_router(build_observation_router)
 
 
 def mount_browser_api(app: FastAPI, access: object) -> None:

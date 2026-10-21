@@ -36,10 +36,14 @@ from panestria.kernel.uow import UnitOfWork
 
 
 class BuildEvidenceStore:
-    def __init__(self, root: Path) -> None:
+    def __init__(self, root: Path, *, read_only: bool = False) -> None:
+        self.read_only = read_only
+        if read_only and (not root.is_absolute() or not root.is_dir() or root.resolve() != root):
+            raise KernelDenied("existing_private_evidence_store_required")
         if root.is_symlink():
             raise KernelDenied("unsafe_evidence_store")
-        root.mkdir(parents=True, exist_ok=True, mode=0o700)
+        if not read_only:
+            root.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.root = root.resolve()
         if self.root.stat().st_uid != os.getuid() or self.root.stat().st_mode & 0o077:
             raise KernelDenied("unsafe_evidence_store")
@@ -54,6 +58,8 @@ class BuildEvidenceStore:
         return self._put(raw)
 
     def _put(self, raw: bytes) -> str:
+        if self.read_only:
+            raise KernelDenied("evidence_store_read_only")
         digest = hashlib.sha256(raw).hexdigest()
         target = self.root / digest
         if target.exists() or target.is_symlink():

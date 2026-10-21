@@ -55,6 +55,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/activity/goals/{goal_id}/build-progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Build Progress */
+        get: operations["build_progress_v1_activity_goals__goal_id__build_progress_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/activity/goals/{goal_id}/events": {
         parameters: {
             query?: never;
@@ -482,6 +499,105 @@ export interface components {
             /** Verdict */
             verdict: string;
         };
+        /** BuildCheckObservation */
+        BuildCheckObservation: {
+            /** Key */
+            key: string;
+            /** Report Sha256 */
+            report_sha256: string | null;
+            /** Required */
+            required: boolean;
+            /** Verdict */
+            verdict: string;
+        };
+        /** BuildMilestoneObservation */
+        BuildMilestoneObservation: {
+            /** Candidate Commit */
+            candidate_commit: string | null;
+            /** Evidence Sha256 */
+            evidence_sha256: string | null;
+            /**
+             * Evidence Status
+             * @enum {string}
+             */
+            evidence_status: "NOT_RUN" | "CONFIRMED" | "UNCONFIRMED";
+            /** Handoff Sha256 */
+            handoff_sha256: string | null;
+            /** State */
+            state: string;
+            /**
+             * Task Id
+             * Format: uuid
+             */
+            task_id: string;
+        };
+        /** BuildObservation */
+        BuildObservation: {
+            /** As Of Event Seq */
+            as_of_event_seq: string;
+            /** Attention Reason */
+            attention_reason: string;
+            /** Checks */
+            checks: components["schemas"]["BuildCheckObservation"][];
+            /** Contract Sha256 */
+            contract_sha256: string;
+            /**
+             * Dispatch Authority
+             * @default NONE
+             * @constant
+             */
+            dispatch_authority: "NONE";
+            /** Final Evidence Sha256 */
+            final_evidence_sha256: string | null;
+            /**
+             * Goal Id
+             * Format: uuid
+             */
+            goal_id: string;
+            /** Goal Status */
+            goal_status: string;
+            /** Held Claims */
+            held_claims: number;
+            /** Milestones */
+            milestones: components["schemas"]["BuildMilestoneObservation"][];
+            /** Next Action */
+            next_action: string;
+            /** Observed At */
+            observed_at: string;
+            /**
+             * Owner Id
+             * Format: uuid
+             */
+            owner_id: string;
+            /**
+             * Owner Merge
+             * @enum {string}
+             */
+            owner_merge: "NOT_REQUESTED" | "PENDING" | "CONFIRMED";
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * Release Acceptance
+             * @default NOT_ASSESSED
+             * @constant
+             */
+            release_acceptance: "NOT_ASSESSED";
+            /** Required Checks Passed */
+            required_checks_passed: number;
+            /** Required Checks Total */
+            required_checks_total: number;
+            /** Unknown Invocations */
+            unknown_invocations: number;
+            /**
+             * View Authority
+             * @default READ_ONLY_PUBLIC_BUILD_EVIDENCE_METADATA
+             * @constant
+             */
+            view_authority: "READ_ONLY_PUBLIC_BUILD_EVIDENCE_METADATA";
+        };
         /** CancelResult */
         CancelResult: {
             /** Goal Id */
@@ -768,6 +884,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProjectActivity"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    build_progress_v1_activity_goals__goal_id__build_progress_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                goal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuildObservation"];
                 };
             };
             /** @description Validation Error */

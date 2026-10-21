@@ -361,6 +361,246 @@
         "title": "ArtifactVerdict",
         "type": "object"
       },
+      "BuildCheckObservation": {
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "report_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Sha256"
+          },
+          "required": {
+            "title": "Required",
+            "type": "boolean"
+          },
+          "verdict": {
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "required",
+          "verdict",
+          "report_sha256"
+        ],
+        "title": "BuildCheckObservation",
+        "type": "object"
+      },
+      "BuildMilestoneObservation": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_commit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Commit"
+          },
+          "evidence_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Sha256"
+          },
+          "evidence_status": {
+            "enum": [
+              "NOT_RUN",
+              "CONFIRMED",
+              "UNCONFIRMED"
+            ],
+            "title": "Evidence Status",
+            "type": "string"
+          },
+          "handoff_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Handoff Sha256"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          },
+          "task_id": {
+            "format": "uuid",
+            "title": "Task Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "state",
+          "evidence_status",
+          "evidence_sha256",
+          "candidate_commit",
+          "handoff_sha256"
+        ],
+        "title": "BuildMilestoneObservation",
+        "type": "object"
+      },
+      "BuildObservation": {
+        "additionalProperties": false,
+        "properties": {
+          "as_of_event_seq": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "As Of Event Seq",
+            "type": "string"
+          },
+          "attention_reason": {
+            "title": "Attention Reason",
+            "type": "string"
+          },
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/BuildCheckObservation"
+            },
+            "title": "Checks",
+            "type": "array"
+          },
+          "contract_sha256": {
+            "title": "Contract Sha256",
+            "type": "string"
+          },
+          "dispatch_authority": {
+            "const": "NONE",
+            "default": "NONE",
+            "title": "Dispatch Authority",
+            "type": "string"
+          },
+          "final_evidence_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Evidence Sha256"
+          },
+          "goal_id": {
+            "format": "uuid",
+            "title": "Goal Id",
+            "type": "string"
+          },
+          "goal_status": {
+            "title": "Goal Status",
+            "type": "string"
+          },
+          "held_claims": {
+            "minimum": 0.0,
+            "title": "Held Claims",
+            "type": "integer"
+          },
+          "milestones": {
+            "items": {
+              "$ref": "#/components/schemas/BuildMilestoneObservation"
+            },
+            "title": "Milestones",
+            "type": "array"
+          },
+          "next_action": {
+            "title": "Next Action",
+            "type": "string"
+          },
+          "observed_at": {
+            "title": "Observed At",
+            "type": "string"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "owner_merge": {
+            "enum": [
+              "NOT_REQUESTED",
+              "PENDING",
+              "CONFIRMED"
+            ],
+            "title": "Owner Merge",
+            "type": "string"
+          },
+          "project_id": {
+            "format": "uuid",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "release_acceptance": {
+            "const": "NOT_ASSESSED",
+            "default": "NOT_ASSESSED",
+            "title": "Release Acceptance",
+            "type": "string"
+          },
+          "required_checks_passed": {
+            "minimum": 0.0,
+            "title": "Required Checks Passed",
+            "type": "integer"
+          },
+          "required_checks_total": {
+            "minimum": 0.0,
+            "title": "Required Checks Total",
+            "type": "integer"
+          },
+          "unknown_invocations": {
+            "minimum": 0.0,
+            "title": "Unknown Invocations",
+            "type": "integer"
+          },
+          "view_authority": {
+            "const": "READ_ONLY_PUBLIC_BUILD_EVIDENCE_METADATA",
+            "default": "READ_ONLY_PUBLIC_BUILD_EVIDENCE_METADATA",
+            "title": "View Authority",
+            "type": "string"
+          }
+        },
+        "required": [
+          "owner_id",
+          "project_id",
+          "goal_id",
+          "goal_status",
+          "observed_at",
+          "as_of_event_seq",
+          "contract_sha256",
+          "required_checks_passed",
+          "required_checks_total",
+          "checks",
+          "milestones",
+          "final_evidence_sha256",
+          "attention_reason",
+          "next_action",
+          "held_claims",
+          "unknown_invocations",
+          "owner_merge"
+        ],
+        "title": "BuildObservation",
+        "type": "object"
+      },
       "CancelResult": {
         "additionalProperties": false,
         "properties": {
@@ -951,6 +1191,45 @@
           }
         },
         "summary": "Activity"
+      }
+    },
+    "/v1/activity/goals/{goal_id}/build-progress": {
+      "get": {
+        "operationId": "build_progress_v1_activity_goals__goal_id__build_progress_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildObservation"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Build Progress"
       }
     },
     "/v1/activity/goals/{goal_id}/events": {

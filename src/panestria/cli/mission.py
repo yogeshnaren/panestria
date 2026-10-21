@@ -19,14 +19,16 @@ mission_app = typer.Typer(no_args_is_help=True)
 def serve(
     config: Annotated[Path, typer.Option("--config")],
     assets: Annotated[Path, typer.Option("--assets")],
+    build_evidence_store: Annotated[Path | None, typer.Option("--build-evidence-store")] = None,
 ) -> None:
     """Serve an explicit production dashboard build on the configured exclusive port."""
     from panestria.api.activity_server import serve_activity
+    from panestria.kernel.errors import KernelDenied
 
     try:
-        serve_activity(config, dashboard_assets=assets)
+        serve_activity(config, dashboard_assets=assets, build_evidence_store=build_evidence_store)
         return
-    except (LocalApplicationRejected, ProfileRejected) as exc:
+    except (LocalApplicationRejected, ProfileRejected, KernelDenied) as exc:
         code = exc.code
     except (OSError, ValueError):
         code = "mission_startup_failed"

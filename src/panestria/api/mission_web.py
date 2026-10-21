@@ -15,7 +15,9 @@ from panestria.config_local import LocalApplicationRejected
 from panestria.kernel.sessions import SessionService
 
 
-def mount_mission_control(app: FastAPI, config: ActivitySettings, token: str, directory: Path) -> None:
+def mount_mission_control(
+    app: FastAPI, config: ActivitySettings, token: str, directory: Path, *, build_evidence_store: Path | None = None
+) -> None:
     # A deliberate, local production build; never run a dev server or fetch assets.
     try:
         if not directory.is_absolute() or directory.resolve() != directory or not directory.is_dir():
@@ -33,6 +35,10 @@ def mount_mission_control(app: FastAPI, config: ActivitySettings, token: str, di
             assets[name] = data
     except OSError:
         raise LocalApplicationRejected("mission_build_required") from None
+    if build_evidence_store is not None:
+        from panestria.kernel.build import BuildEvidenceService, BuildEvidenceStore
+
+        app.state.build_evidence_reader = BuildEvidenceService(BuildEvidenceStore(build_evidence_store, read_only=True))
     secret = hmac.digest(token.encode(), b"panestria.mission-session.v1\0" + config.origin.encode(), "sha256")
     mount_browser_api(
         app,

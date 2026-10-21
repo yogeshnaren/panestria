@@ -21,6 +21,6 @@ mutants/
 .panestria-metrics/
 
 # Task-local frontend dependencies/builds and synthetic browser results
-node_modules/
+node_modules
 apps/mission-control/dist/
 apps/mission-control/test-results/
