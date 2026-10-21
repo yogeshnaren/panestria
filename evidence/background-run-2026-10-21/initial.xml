@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="7" time="34.532" timestamp="2026-10-20T21:18:22.817126-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_background_run" name="test_actual_serial_background_job_preserves_foreground_slot_and_exact_final_owner_review" file="tests/integration/test_background_run.py" line="69" time="11.579"><properties><property name="candidate_commit" value="fd1c7174864e960aed77116771bcd46310582e8d" /><property name="fixture_digest" value="f88697b909ec2106e28682ee53afbb205eef687d445b5141936821c5a4f2ba47" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: ('', TypeError('Object of type datetime is not JSON serializable'))&#10;assert 1 == 0&#10; +  where 1 = &lt;Result TypeError('Object of type datetime is not JSON serializable')&gt;.exit_code">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-18/test_actual_serial_background_0/build.json'...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x708fc0b2f470&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x708fc0c96120&gt;
+
+    def test_actual_serial_background_job_preserves_foreground_slot_and_exact_final_owner_review(
+        prepared_plan, native_plan, monkeypatch
+    ):
+        f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+        cli(f, "run", request.item_id, expected=1)
+        entered, proceed = threading.Event(), threading.Event()
+        original = BackgroundPlanRunner._one
+    
+        def pause(self, plan, job):
+            if not entered.is_set():
+                entered.set()
+                assert proceed.wait(10)
+            return original(self, plan, job)
+    
+        monkeypatch.setattr(BackgroundPlanRunner, "_one", pause)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(
+                lambda: BackgroundPlanRunner(owner, request.item_id).run_item(allow_background_subscription_run=True)
+            )
+            assert entered.wait(10)
+            duplicate = cli(f, "run", request.item_id, "--allow-background-subscription-run")
+            assert duplicate["status"] == "WAIT" and duplicate["reason"] == "background_controller_already_active"
+            with owner.connect() as c:
+                assert c.execute("SELECT count(*) FROM panestria.build_active_worker_claim").fetchone() == (1,)
+            proceed.set()
+            result = future.result(timeout=30)
+        assert result["status"] == "WAITING_APPROVAL", result
+        assert state["launches"] == 2 and state["peak"] == 1
+        assert result["billing_provider_verified"] is False
+        assert git(owner.settings.repository, "rev-parse", "refs/heads/main") == f.base
+        review = owner.status(plan.goal_id, diff=True)
+        assert review["task_state"] == "WAITING_APPROVAL" and all(v["verdict"] == "PASS" for v in review["checks"])
+&gt;       history = cli(f, "runs", request.item_id)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_background_run.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+f = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-18/test_actual_serial_background_0/build.json')...0.1:55439/panestria_lease_migration_357d5c84d83b4c188a0fc37366411de6', base='eee116c0e60bfdb852e88fc6b3727256fa0b8c23')
+expected = 0, args = ('runs', '81b1667a-95c4-4dad-b8b2-f4ead9ac913c')
+
+    def cli(f, *args, expected=0):
+        result = CliRunner().invoke(app, ["background", args[0], "--config", str(f.config), *args[1:]])
+&gt;       assert result.exit_code == expected, (result.stdout, result.exception)
+E       AssertionError: ('', TypeError('Object of type datetime is not JSON serializable'))
+E       assert 1 == 0
+E        +  where 1 = &lt;Result TypeError('Object of type datetime is not JSON serializable')&gt;.exit_code
+
+tests/integration/test_background_queue.py:49: AssertionError</failure></testcase><testcase classname="tests.integration.test_background_run" name="test_actual_foreground_ask_yields_new_background_claims_and_explicit_resume_reuses_handoff" file="tests/integration/test_background_run.py" line="112" time="4.961"><properties><property name="candidate_commit" value="fd1c7174864e960aed77116771bcd46310582e8d" /><property name="fixture_digest" value="f88697b909ec2106e28682ee53afbb205eef687d445b5141936821c5a4f2ba47" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: ('', TypeError('Object of type datetime is not JSON serializable'))&#10;assert 1 == 0&#10; +  where 1 = &lt;Result TypeError('Object of type datetime is not JSON serializable')&gt;.exit_code">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-18/test_actual_foreground_ask_yie0/build.json'...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x708fc0ea2db0&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x708fc0ce17f0&gt;
+
+    def test_actual_foreground_ask_yields_new_background_claims_and_explicit_resume_reuses_handoff(
+        prepared_plan, native_plan, monkeypatch
+    ):
+        from uuid import uuid4
+    
+        f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+        ask_id = str(uuid4())
+        original = BackgroundPlanRunner._one
+        prepared = []
+    
+        def foreground(self, plan, job):
+            result = original(self, plan, job)
+            if not prepared:
+                with owner.connect() as c:
+                    AskService().prepare(
+                        UnitOfWork(c),
+                        owner.actor,
+                        AskSubmission(
+                            request_id=ask_id,
+                            project_id=owner.actor.project_id,
+                            question="Synthetic foreground question",
+                            privacy_label="PUBLIC",
+                        ),
+                    )
+                prepared.append(ask_id)
+            return result
+    
+        monkeypatch.setattr(BackgroundPlanRunner, "_one", foreground)
+        paused = cli(f, "run", request.item_id, "--allow-background-subscription-run")
+        assert paused["status"] == "WAIT" and "foreground_or_held_capacity_reserved" in paused["background_wait_reason"]
+        assert state["launches"] == 1 and state["peak"] == 1
+&gt;       assert len(cli(f, "runs", request.item_id)["runs"]) == 1
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_background_run.py:144: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+f = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-18/test_actual_foreground_ask_yie0/build.json')...0.1:55439/panestria_lease_migration_4ac1ccc25bb642ae8960a3077d3594de', base='f05bbaa10a1f457c320388227b580601d3fe4cfb')
+expected = 0, args = ('runs', '7318b594-c6e0-4b21-a773-5052bb7bc476')
+
+    def cli(f, *args, expected=0):
+        result = CliRunner().invoke(app, ["background", args[0], "--config", str(f.config), *args[1:]])
+&gt;       assert result.exit_code == expected, (result.stdout, result.exception)
+E       AssertionError: ('', TypeError('Object of type datetime is not JSON serializable'))
+E       assert 1 == 0
+E        +  where 1 = &lt;Result TypeError('Object of type datetime is not JSON serializable')&gt;.exit_code
+
+tests/integration/test_background_queue.py:49: AssertionError</failure></testcase><testcase classname="tests.integration.test_background_run" name="test_actual_coordinator_crash_reconciliation_and_native_limit_keep_unknown_claims" file="tests/integration/test_background_run.py" line="156" time="3.879"><properties><property name="candidate_commit" value="fd1c7174864e960aed77116771bcd46310582e8d" /><property name="fixture_digest" value="f88697b909ec2106e28682ee53afbb205eef687d445b5141936821c5a4f2ba47" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: ('', TypeError('Object of type datetime is not JSON serializable'))&#10;assert 1 == 0&#10; +  where 1 = &lt;Result TypeError('Object of type datetime is not JSON serializable')&gt;.exit_code">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-18/test_actual_coordinator_crash_0/build.json'...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x708fc0b12d50&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x708fc0ce29f0&gt;
+
+    def test_actual_coordinator_crash_reconciliation_and_native_limit_keep_unknown_claims(
+        prepared_plan, native_plan, monkeypatch
+    ):
+        from uuid import uuid4
+    
+        f, owner, plan, state, request, view = setup(prepared_plan, native_plan, monkeypatch)
+        reports = account_controller.account_reports(owner)
+        service = BackgroundRunService(reports, BuildEvidenceService(owner.reports))
+        with owner.connect() as guard:
+            assert guard.execute("SELECT pg_try_advisory_lock(%s,%s)", BACKGROUND_SESSION_LOCK).fetchone() == (True,)
+            guard.commit()
+            with owner.connect() as c:
+                crashed = service.start(
+                    UnitOfWork(c), owner.actor, request.item_id, view["observation_sha256"], str(uuid4())
+                )
+            cli(f, "reconcile-run", request.item_id, crashed.sha256(), expected=1)
+        # Simulate only coordinator death before any claim: no process outcome is invented.
+        waiting = cli(f, "run", request.item_id, "--allow-background-subscription-run")
+        assert waiting["status"] == "WAIT" and "requires_reconciliation" in waiting["reason"]
+        assert state["launches"] == 0
+        cli(f, "reconcile-run", request.item_id, "ff" * 32, expected=1)
+        assert cli(f, "reconcile-run", request.item_id, crashed.sha256())["claim_release_authority"] == "NONE"
+        state["unavailable"] = True
+        stopped = cli(f, "run", request.item_id, "--allow-background-subscription-run")
+        assert stopped["status"] == "STOPPED" and state["launches"] == 1
+&gt;       history = cli(f, "runs", request.item_id)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_background_run.py:182: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+f = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-18/test_actual_coordinator_crash_0/build.json')...0.1:55439/panestria_lease_migration_fa251e1402fa414f948d5a509c44910a', base='38b7d4da409677d7cd166b4f72f3a3a6b9110ad8')
+expected = 0, args = ('runs', 'ea4b22c5-c373-447f-88b2-211cba079ce8')
+
+    def cli(f, *args, expected=0):
+        result = CliRunner().invoke(app, ["background", args[0], "--config", str(f.config), *args[1:]])
+&gt;       assert result.exit_code == expected, (result.stdout, result.exception)
+E       AssertionError: ('', TypeError('Object of type datetime is not JSON serializable'))
+E       assert 1 == 0
+E        +  where 1 = &lt;Result TypeError('Object of type datetime is not JSON serializable')&gt;.exit_code
+
+tests/integration/test_background_queue.py:49: AssertionError</failure></testcase><testcase classname="tests.integration.test_background_run" name="test_actual_unconfirmed_billing_never_starts_a_background_job" file="tests/integration/test_background_run.py" line="197" time="2.800"><properties><property name="candidate_commit" value="fd1c7174864e960aed77116771bcd46310582e8d" /><property name="fixture_digest" value="f88697b909ec2106e28682ee53afbb205eef687d445b5141936821c5a4f2ba47" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_native_plan_execution" name="test_two_scoped_workers_and_create_only_node_reach_exact_owner_review" file="tests/integration/test_native_plan_execution.py" line="197" time="5.321"><properties><property name="candidate_commit" value="fd1c7174864e960aed77116771bcd46310582e8d" /><property name="fixture_digest" value="5c87cce4965e093464c149a4548a59551822f6a433b6054e5cf71123992e0fcf" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_background_account" name="test_pinned_account_collector_redacts_and_scopes_identity_without_legacy_manifest_changes" file="tests/integration/test_background_account.py" line="48" time="0.632"><properties><property name="candidate_commit" value="fd1c7174864e960aed77116771bcd46310582e8d" /><property name="fixture_digest" value="1bcdb7f10f4cd4721e9e52bac26e2d201417d1464c722dcdae8f284867411a6f" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_background_account" name="test_actual_queue_account_review_race_scope_freshness_change_and_withdrawal" file="tests/integration/test_background_account.py" line="77" time="3.875"><properties><property name="candidate_commit" value="fd1c7174864e960aed77116771bcd46310582e8d" /><property name="fixture_digest" value="1bcdb7f10f4cd4721e9e52bac26e2d201417d1464c722dcdae8f284867411a6f" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase></testsuite></testsuites>

@@ -68,6 +68,8 @@ def worker_declarations() -> tuple[WorkerInventory, ...]:
 
 
 class NativePlanRunner:
+    maximum_parallel = 2
+
     def __init__(
         self, owner: OwnerBuild, *, on_storage_observation: Callable[[dict[str, Any]], None] | None = None
     ) -> None:
@@ -77,6 +79,15 @@ class NativePlanRunner:
         self.owner = owner
         self.evidence = BuildEvidenceService(owner.reports)
         self.cancel = threading.Event()
+
+    def _operation_lock(self) -> Any:
+        return _lock(self.owner.settings.root / "operation.lock")
+
+    def _claim(self, plan: StoredPlan, capacity: Any) -> Any:
+        with self.owner.connect() as c:
+            return Scheduler().claim_ready(
+                UnitOfWork(c), self.owner.actor, plan.proposal.plan_id, capacity, self.evidence
+            )
 
     def _storage_allows_new_work(self) -> bool:
         observation = build_storage_admission(self.owner.settings)
@@ -286,23 +297,22 @@ class NativePlanRunner:
             raise KernelDenied("explicit_public_build_intent_required")
         owner = self.owner
         results: list[dict[str, str]] = []
-        with _lock(owner.settings.root / "operation.lock"):
+        with self._operation_lock():
             plan = self._preflight(plan_id)
             probe = HardwareProbe(owner.settings.skills_archive)
             active: dict[Future[NativeBuildOutcome], Scheduled] = {}
             stop_new, storage_deferred = False, False
-            with ThreadPoolExecutor(max_workers=2, thread_name_prefix="panestria-native-plan") as pool:
+            with ThreadPoolExecutor(
+                max_workers=self.maximum_parallel, thread_name_prefix="panestria-native-plan"
+            ) as pool:
                 try:
                     while True:
-                        while len(active) < 2 and not stop_new and not self.cancel.is_set():
+                        while len(active) < self.maximum_parallel and not stop_new and not self.cancel.is_set():
                             if not self._storage_allows_new_work():
                                 stop_new, storage_deferred = True, True
                                 break
                             capacity = probe.collect_cpu()
-                            with owner.connect() as c:
-                                job = Scheduler().claim_ready(
-                                    UnitOfWork(c), owner.actor, plan_id, capacity, self.evidence
-                                )
+                            job = self._claim(plan, capacity)
                             if not isinstance(job, Scheduled):
                                 break
                             node = next(n for n in plan.proposal.nodes if n.task_id == job.lease.task_id)

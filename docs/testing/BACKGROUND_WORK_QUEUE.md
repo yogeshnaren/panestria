@@ -5,7 +5,8 @@ PUBLIC native Build plan**. It preserves the exact goal/plan/inventory/policy an
 declared context hashes in the existing immutable PostgreSQL event ledger.
 Task state, attempts, claims, approvals and outcomes remain in their existing
 canonical records. Queueing does not start a worker or grant inference/spend.
-The current component has **no background dispatcher or daemon**.
+The [finite execution command](BACKGROUND_RUN.md) separately runs one explicitly
+selected eligible item. There is no daemon or automatic provider fallback.
 
 Use the same private Build config/database as the native-plan guide. Choose the
 opaque local account reference used in your [quota observations](QUOTA_OBSERVATIONS.md).
@@ -116,9 +117,10 @@ Every view retains `execution_authority: NONE`, runtime/no-extra-spend runtime
 qualification NOT_ASSESSED and model identity UNKNOWN where not independently
 recorded. `scheduling_candidate: true` describes the declared constraints only.
 It cannot be submitted as a lease, OS certificate, billing proof or model permission.
-Actual authenticated account/profile binding, one-job dispatch/reservations,
-foreground preemption, route-limit reconciliation and live no-spill evidence
-remain the next S5/S7 work. No external request is launched by these commands.
+[Authenticated profile links](BACKGROUND_ACCOUNT_LINK.md) and [finite serial jobs](BACKGROUND_RUN.md)
+are separate commands. These queue review/inspection commands launch no external
+request. Actual no-spill/runtime qualification, full S5/S7 and cumulative release
+evidence remain pending.
 
 [Source-bound component checks](../../evidence/background-queue-2026-10-21/report.json)
 cover actual PG/CLI/private files, exact review/replay/race/rollback, owner scope,
