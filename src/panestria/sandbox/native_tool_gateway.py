@@ -114,6 +114,13 @@ class BoundRunnerAuthority(Protocol):
     def runner_factory(self, permit: ToolPermit) -> RunnerFactory: ...
 
 
+@runtime_checkable
+class ObservedToolAuthority(Protocol):
+    """Optional nonlocking observation; claim and before-start checks stay locked."""
+
+    def observe(self, permit: ToolPermit) -> None: ...
+
+
 def _runner(root: Path, mounts: tuple[ReadOnlyMount, ...]) -> DockerSandbox:
     return DockerSandbox(root, runtime_mounts=mounts)
 
@@ -254,7 +261,10 @@ class NativeToolGateway:
 
             def inspect_authority() -> None:
                 try:
-                    self.authority.check(permit)
+                    if isinstance(self.authority, ObservedToolAuthority):
+                        self.authority.observe(permit)
+                    else:
+                        self.authority.check(permit)
                 except Exception:
                     revoked.set()
                     stop.set()

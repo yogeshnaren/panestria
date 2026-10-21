@@ -75,6 +75,12 @@ class _EditAuthority(DurableToolAuthority):
             self.controller.authorize(connection)
             self.service.check(UnitOfWork(connection), self.actor, tool_binding(permit), self.identity)
 
+    def observe(self, permit: ToolPermit) -> None:
+        with self.connect() as connection:
+            connection.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+            self.controller.authorize(connection, observation=True)
+            self.service.observe(UnitOfWork(connection), self.actor, tool_binding(permit), self.identity)
+
     def _authorize_launch(self, connection: psycopg.Connection[Any], permit: ToolPermit) -> None:
         self.controller.authorize(connection)
         super()._authorize_launch(connection, permit)
@@ -154,9 +160,12 @@ class ScopedBashController:
     def connect(self) -> psycopg.Connection[Any]:
         return psycopg.connect(self.dsn, connect_timeout=1, options="-c statement_timeout=300 -c lock_timeout=300")
 
-    def authorize(self, connection: psycopg.Connection[Any]) -> None:
+    def authorize(self, connection: psycopg.Connection[Any], *, observation: bool = False) -> None:
         # Match scheduler/cancellation order before taking an attempt/task lock.
-        require_current_policy(UnitOfWork(connection), self.actor, self.scope.policy_ref)
+        if observation:
+            InvocationService().require_observation(UnitOfWork(connection))
+        else:
+            require_current_policy(UnitOfWork(connection), self.actor, self.scope.policy_ref)
         policy = PolicyService(self.certificates).get(UnitOfWork(connection), self.actor)
         if (
             f"project-policy:{policy.version}:{policy.sha256()}" != self.scope.policy_ref

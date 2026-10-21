@@ -168,11 +168,48 @@ def test_check_revokes_authority_but_preserves_historical_receipt(r1_task: dict[
     with psycopg.connect(r1_task["dsn"]) as c:
         with pytest.raises(KernelDenied), c.transaction():
             service.check(UnitOfWork(c), actor, request, identity)
+        with psycopg.connect(r1_task["dsn"]) as observer:
+            observer.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+            with pytest.raises(KernelDenied):
+                service.observe(UnitOfWork(observer), actor, request, identity)
         service.finish(UnitOfWork(c), actor, request, identity, "bb" * 32)
         c.commit()
         service.finish(UnitOfWork(c), actor, request, identity, "bb" * 32)
         with pytest.raises(KernelDenied, match="invocation_already_finished"), c.transaction():
             service.finish(UnitOfWork(c), actor, request, identity, "cc" * 32)
+
+
+def test_observation_avoids_monitor_lock_contention_and_cannot_replace_locked_dispatch(r1_task):
+    actor, request = binding(r1_task)
+    service = InvocationService()
+    dsn = r1_task["dsn"]
+    with psycopg.connect(dsn) as c:
+        identity = service.prepare(UnitOfWork(c), actor, request, "observation")
+        c.commit()
+        service.claim(UnitOfWork(c), actor, request, identity)
+    # A stalled locked check/commit must not block another periodic observer.
+    # The short timeout makes the old FOR UPDATE monitor fail deterministically.
+    with psycopg.connect(dsn) as locked, psycopg.connect(dsn) as observed:
+        service.check(UnitOfWork(locked), actor, request, identity)
+        observed.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+        observed.execute("SET LOCAL statement_timeout='150ms'")
+        service.observe(UnitOfWork(observed), actor, request, identity)
+        # Observation holds no tuple lock that can prevent a real cancellation.
+        locked.execute("UPDATE panestria.task SET state='CANCELLING' WHERE id=%s", (r1_task["task"],))
+        locked.commit()
+    with psycopg.connect(dsn) as c:
+        # A read observation is never a claim or a reusable authorization token.
+        with pytest.raises(KernelDenied, match="stale_lease"), c.transaction():
+            service.check(UnitOfWork(c), actor, request, identity)
+    with psycopg.connect(dsn) as c:
+        c.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+        with pytest.raises(KernelDenied, match="stale_lease"):
+            service.observe(UnitOfWork(c), actor, request, identity)
+    for mode in ("SET TRANSACTION READ ONLY", "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ"):
+        with psycopg.connect(dsn) as c:
+            c.execute(mode)
+            with pytest.raises(KernelDenied, match="read_only_observation_required"):
+                service.observe(UnitOfWork(c), actor, request, identity)
 
 
 def test_invocation_binding_and_history_are_database_immutable(r1_task: dict[str, str]) -> None:

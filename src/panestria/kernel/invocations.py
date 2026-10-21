@@ -19,6 +19,52 @@ from panestria.kernel.uow import UnitOfWork
 
 
 class InvocationService:
+    def require_observation(self, uow: UnitOfWork) -> None:
+        mode = uow.execute(
+            "SELECT current_setting('transaction_read_only'),current_setting('transaction_isolation')"
+        ).fetchone()
+        if mode != ("on", "repeatable read"):
+            raise KernelDenied("read_only_observation_required")
+
+    def observe(self, uow: UnitOfWork, actor: Actor, binding: InvocationBinding, identity: str) -> None:
+        """Point-in-time monitor only: no row locks, dispatch claim or receipt authority.
+
+        A fresh read-only snapshot avoids WAL-generating FOR UPDATE transactions
+        contending with other monitors during commit. Claim/launch/publication
+        still use the locked check below, including after this observation.
+        """
+        self.require_observation(uow)
+        scope = binding.scope
+        if (str(scope.owner_id), str(scope.project_id)) != (actor.owner_id, actor.project_id):
+            raise KernelDenied("not_found")
+        row = uow.execute(
+            "SELECT t.state,t.lease_epoch,a.lease_epoch,a.status,a.lease_expires_at>clock_timestamp(),"
+            "c.sha256,c.body->>'autonomy_profile_ref',p.policy_version,r.sha256,"
+            "i.state,i.binding_sha256,i.expires_at>clock_timestamp() "
+            "FROM panestria.worker_invocation i JOIN panestria.task t ON t.id=i.task_id "
+            "JOIN panestria.task_attempt a ON a.id=i.attempt_id AND a.task_id=t.id "
+            "JOIN panestria.goal g ON g.id=t.goal_id JOIN panestria.goal_contract c ON c.id=t.contract_id "
+            "JOIN panestria.project p ON p.id=g.project_id AND p.owner_id=g.owner_id "
+            "LEFT JOIN panestria.project_policy_revision r ON r.project_id=p.id AND r.version=p.policy_version "
+            "WHERE i.id=%s AND t.id=%s AND a.id=%s AND g.owner_id=%s AND g.project_id=%s",
+            (identity, str(scope.task_id), str(scope.attempt_id), actor.owner_id, actor.project_id),
+        ).fetchone()
+        if row is None or str(row[10]).strip() != binding.sha256():
+            raise KernelDenied("invocation_binding_mismatch")
+        if row[7] != 0 and scope.policy_ref != f"project-policy:{row[7]}:{str(row[8]).strip()}":
+            raise KernelDenied("policy_mismatch")
+        if (str(row[5]).strip(), row[6]) != (scope.contract_sha256, scope.policy_ref):
+            raise KernelDenied("invocation_contract_changed")
+        if row[0] not in {"LEASED", "RUNNING", "VERIFYING"} or row[1:5] != (
+            scope.lease_epoch,
+            scope.lease_epoch,
+            "RUNNING",
+            True,
+        ):
+            raise KernelDenied("stale_lease")
+        if row[9] != "CLAIMED" or row[11] is not True:
+            raise KernelDenied("invocation_inactive")
+
     def _current(self, uow: UnitOfWork, actor: Actor, binding: InvocationBinding) -> str:
         scope = binding.scope
         if (str(scope.owner_id), str(scope.project_id)) != (actor.owner_id, actor.project_id):

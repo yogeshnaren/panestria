@@ -20,6 +20,9 @@ Current work is the [reviewed quota-aware queue](testing/BACKGROUND_WORK_QUEUE.m
 it records exact intent and honest eligibility. The [finite runner](testing/BACKGROUND_RUN.md)
 now runs one selected eligible job serially, yields new claims to foreground Ask/held
 work, reuses verified handoffs on explicit resume, and retains uncertain claims.
+The finite `background next`/`run-next` commands now inspect/select one unstarted
+reviewed candidate by declared priority and reported reset, then re-admit it
+through that same runner. No timer, automatic resume, fallback or merge is enabled.
 One [actual queued subscription job](../evidence/background-owner-journey-2026-10-21/report.json)
 now completes two serial Claude workers, final checks, exact scripted test-owner
 merge, saved metrics and offline references. It uses the owner's reported disabled
@@ -29,6 +32,12 @@ platform integration, Mission Control/phone, resource/quality instrumentation an
 cumulative gates/real owner trial remain required. A queue candidate is not a
 provider permission, and a component/CI pass is not MVP acceptance.
 Deliver usable slices and required evidence; avoid unrelated test expansion.
+
+The reproduced intermittent native stop is now addressed by
+[read-only authority observations](design/74-READ-ONLY-AUTHORITY-OBSERVATIONS.md).
+Monitors no longer serialize through task-row write locks; claim/launch/publication
+checks remain locked. The 82 affected connected cases pass with unchanged timeouts.
+Current full CI and actual runtime qualification are separate from that component evidence.
 
 | Phase/outcome | Delivered behavior | Remaining acceptance work |
 | --- | --- | --- |

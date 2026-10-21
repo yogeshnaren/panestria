@@ -38,6 +38,43 @@ class BackgroundRunService:
         uow.execute("SELECT pg_advisory_xact_lock(%s,%s)", FLEET_LOCK)
         lock_project(uow, actor)
 
+    def next_candidate(self, uow: UnitOfWork, actor: Actor) -> dict[str, Any]:
+        """Read one unstarted reviewed candidate; the runner must re-admit it.
+
+        Scan the bounded full queue, not just the most recent display page.
+        This view reserves nothing and never resumes a previously started job.
+        """
+        queue = BackgroundWorkService()
+        rows = queue._rows(uow, actor)
+        choices: list[tuple[tuple[int, bool, int, int], dict[str, Any]]] = []
+        skipped: dict[str, int] = {}
+        for row in rows:
+            binding = queue._binding(row, actor)
+            try:
+                if self._history(uow, binding):
+                    raise KernelDenied("started_job_requires_explicit_inspection_or_resume")
+                view = self._eligibility(uow, actor, binding)
+                links = self.accounts._links(uow, binding)
+                if not links:
+                    raise KernelDenied("background_account_not_linked")
+                self.accounts._link(links[-1], binding)
+                reset = view["seconds_to_reported_reset"]
+                rank = (-binding.request.value_priority, reset is None, reset if reset is not None else 0, row[0])
+                choices.append((rank, view))
+            except KernelDenied as exc:
+                skipped[exc.code] = skipped.get(exc.code, 0) + 1
+        selected = min(choices, key=lambda choice: choice[0])[1] if choices else None
+        return {
+            "status": "CANDIDATE" if selected else "WAIT",
+            "reason": "reviewed_unstarted_candidate" if selected else "no_eligible_unstarted_candidate",
+            "selected": selected,
+            "examined": len(rows),
+            "candidate_count": len(choices),
+            "skipped_reasons": skipped,
+            "ordering": "VALUE_PRIORITY_DESC_REPORTED_RESET_ASC_QUEUE_SEQUENCE_ASC",
+            "execution_authority": "NONE",
+        }
+
     def listing(self, uow: UnitOfWork, actor: Actor, item_id: str) -> dict[str, Any]:
         binding = self.accounts.binding(uow, actor, item_id)
         items = []
