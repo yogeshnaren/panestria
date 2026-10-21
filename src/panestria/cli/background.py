@@ -65,6 +65,18 @@ def listing(config: Config) -> None:
     _finish(run)
 
 
+@background_app.command("show")
+def show(config: Config, item_id: str) -> None:
+    """Inspect one scoped queued item, including an older entry outside the list window."""
+
+    def run() -> dict[str, Any]:
+        owner = _service(config)
+        with owner.connect() as c:
+            return BackgroundWorkService().show(UnitOfWork(c), owner.actor, item_id)
+
+    _finish(run)
+
+
 @background_app.command("withdraw")
 def withdraw(config: Config, item_id: str, binding_sha256: str) -> None:
     """Withdraw exact queued intent without cancelling the underlying goal or freeing claims."""

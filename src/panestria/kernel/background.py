@@ -226,6 +226,8 @@ class BackgroundWorkService:
             "waiting_reasons": sorted(set(reasons)),
             "quota_observations": observations,
             "billing_source": billing.source if billing else "UNKNOWN",
+            "billing_confidence": "OWNER_REPORTED_NOT_PROVIDER_VERIFIED" if billing else "UNKNOWN",
+            "no_extra_spend_runtime_qualification": "NOT_ASSESSED",
             "seconds_to_reported_reset": min(resets) if resets else None,
             "value_priority": binding.request.value_priority,
             "model_identity": "UNKNOWN",
@@ -258,6 +260,20 @@ class BackgroundWorkService:
                     }
                 )
         return {"items": items, "history_count": len(rows), "visible_limit": 32, "execution_authority": "NONE"}
+
+    def show(self, uow: UnitOfWork, actor: Actor, item_id: str) -> dict[str, Any]:
+        for row in self._rows(uow, actor):
+            binding = self._binding(row, actor)
+            if binding.request.item_id == item_id:
+                withdrawn = uow.execute(
+                    "SELECT 1 FROM panestria.task_event WHERE goal_id=%s "
+                    "AND kind='background.withdrawn' AND payload->>'item_id'=%s LIMIT 1",
+                    (binding.goal_id, item_id),
+                ).fetchone()
+                if withdrawn:
+                    return {"item_id": item_id, "status": "WITHDRAWN", "execution_authority": "NONE"}
+                return self.inspect(uow, actor, binding)
+        raise KernelDenied("not_found")
 
     def withdraw(self, uow: UnitOfWork, actor: Actor, item_id: str, binding_sha256: str) -> dict[str, Any]:
         PlanStore()._transaction(uow)

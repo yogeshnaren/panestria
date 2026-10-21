@@ -80,6 +80,7 @@ def test_actual_owner_queue_review_quota_reserve_unknown_billing_and_withdraw_ar
     withdrawn = cli(f, "withdraw", request.item_id, queued["binding_sha256"])
     assert cli(f, "withdraw", request.item_id, queued["binding_sha256"])["event_seq"] == withdrawn["event_seq"]
     assert cli(f, "list")["items"][0]["status"] == "WITHDRAWN"
+    assert cli(f, "show", request.item_id)["status"] == "WITHDRAWN"
     with owner.connect() as c:
         assert c.execute(
             "SELECT count(*) FROM panestria.task_attempt a JOIN panestria.task t ON t.id=a.task_id WHERE t.goal_id=%s",
@@ -137,6 +138,24 @@ def test_actual_queue_atomic_race_and_scoped_candidate_reserve_foreground_guards
             "quota_unknown_requires_explicit_best_effort_policy"
             in service.inspect(UnitOfWork(c), owner.actor, binding)["waiting_reasons"]
         )
+    unknown_request = BackgroundEnqueue.model_validate_json(
+        json.dumps(
+            {
+                **request.model_dump(mode="json"),
+                "policy": {
+                    **request.policy.model_dump(mode="json"),
+                    "allow_unknown_quota": True,
+                },
+            }
+        )
+    )
+    with owner.connect() as c:
+        proposed = service.prepare(UnitOfWork(c), owner.actor, unknown_request)
+        best_effort = service.inspect(UnitOfWork(c), owner.actor, proposed)
+        assert best_effort["scheduling_candidate"] and best_effort["seconds_to_reported_reset"] is None
+        assert best_effort["no_extra_spend_runtime_qualification"] == "NOT_ASSESSED"
+        # A prepared scheduling candidate is not queued policy consent/dispatch.
+        assert best_effort["execution_authority"] == "NONE"
     for scope in request.policy.quota_windows:
         record(owner, plan.nodes[-1].task_id, scope, remaining="40")
     with owner.connect() as c:
