@@ -20,7 +20,11 @@ Current work is the [reviewed quota-aware queue](testing/BACKGROUND_WORK_QUEUE.m
 it records exact intent and honest eligibility. The [finite runner](testing/BACKGROUND_RUN.md)
 now runs one selected eligible job serially, yields new claims to foreground Ask/held
 work, reuses verified handoffs on explicit resume, and retains uncertain claims.
-Live no-spill/runtime qualification and complete S5/S7 evidence remain pending. The [account-link workflow](testing/BACKGROUND_ACCOUNT_LINK.md) now observes the pinned private Claude login without inference and separately links scoped pseudonymous identity after exact owner review. Actual metadata confirmed a personal Pro login; this is not quota, billing or runtime qualification. Full Delegate support, personal-
+One [actual queued subscription job](../evidence/background-owner-journey-2026-10-21/report.json)
+now completes two serial Claude workers, final checks, exact scripted test-owner
+merge, saved metrics and offline references. It uses the owner's reported disabled
+extra usage and explicit bounded UNKNOWN-quota policy; no provider-attested billing
+or full S5/S7 qualification is claimed. The [account-link workflow](testing/BACKGROUND_ACCOUNT_LINK.md) observes the pinned private Claude login without inference and separately links scoped pseudonymous identity after exact owner review. Actual metadata confirmed a personal Pro login; this is not quota, billing or runtime qualification. Full Delegate support, personal-
 platform integration, Mission Control/phone, resource/quality instrumentation and
 cumulative gates/real owner trial remain required. A queue candidate is not a
 provider permission, and a component/CI pass is not MVP acceptance.
@@ -33,7 +37,7 @@ Deliver usable slices and required evidence; avoid unrelated test expansion.
 | R1 access and one-worker Build | Owner CLI submits bounded PUBLIC work through Claude/Bash; keyboard review shows canonical checks/diff and separately confirms exact merge/cancellation; actual subscription journey retained at its recorded source | Qualify the selected stable runtime/cumulative candidate; owner review remains |
 | R1 paid SDK | Owner selected subscription/local-only operation | AOS-016-TC04 deferred, **not passed**; original gate intact |
 | R2 query planning, collection and draft | Dedicated owner policy prepare/confirm, new question staging, admitted search/fetch/read, exact retained excerpts, request-scoped diagnostics, private export and bounded local answer drafts with retained citations | Broader iterative planning, qualified synthesis/support, actual service/runtime and complete D-1/G2 |
-| R3 complete MVP | Bounded one/two-worker native Build with final review; local proposals, progress/goal TUI, opt-in runtime/storage observations and offline confirmed references; no accepted MVP release | Generality/current qualification; Delegate support, profile/context/connections, actual background dispatch/rights flow, Mission Control/phone/resources and cumulative gates/real owner trial |
+| R3 complete MVP | Bounded one/two-worker native Build with final review; local proposals, progress/goal TUI, opt-in runtime/storage observations, offline confirmed references and one actual finite queued subscription journey; no accepted MVP release | Broader DAG/adapter qualification; Delegate support, profile/context/connections, automatic background scheduling/rights flow, Mission Control/phone/resources and cumulative gates/real owner trial |
 
 ## Usable research path and its boundary
 
