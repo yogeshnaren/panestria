@@ -1,6 +1,7 @@
 """Canonical local query proposals over actual staged questions; model is a fixture."""
 
 import json
+import os
 from concurrent.futures import ThreadPoolExecutor
 from threading import Event
 from uuid import UUID, uuid4
@@ -24,15 +25,20 @@ QUERIES = ["synthetic café provenance", "synthetic 中文 source comparison"]
 
 
 @pytest.fixture
-def planner(staged, tmp_path, monkeypatch):
+def planner(staged, tmp_path, monkeypatch, request):
     dsn, actor, root, _ = staged
     root = root / "retained"
     root.mkdir(mode=0o700)
     receipt = submit((dsn, actor, root, staged[3]))
-    cache = tmp_path / "query-cache"
-    cache.mkdir(mode=0o700)
-    (cache / "blobs").mkdir()
-    (cache / "manifests").mkdir()
+    if request.node.get_closest_marker("live") is not None:
+        from pathlib import Path
+
+        cache = Path(os.environ["PANESTRIA_QUERY_PLAN_MODEL_CACHE"])
+    else:
+        cache = tmp_path / "query-cache"
+        cache.mkdir(mode=0o700)
+        (cache / "blobs").mkdir()
+        (cache / "manifests").mkdir()
     settings = SynthesisSettings(
         schema_version=1,
         owner_id=UUID(actor.owner_id),
@@ -183,3 +189,20 @@ def test_actual_cancellation_between_generation_and_publication_cannot_publish_q
         assert c.execute(
             "SELECT count(*) FROM panestria.task_attempt WHERE task_id=%s", (staged.task_id,)
         ).fetchone() == (0,)
+
+
+@pytest.mark.live
+def test_actual_cached_cpu_model_generates_a_bounded_query_proposal_without_web(planner, record_property):
+    service, staged, _ = planner
+    record_property("execution_mode", "ACTUAL_CACHED_LOCAL_CPU_MODEL_WITH_DISPOSABLE_PG_NO_WEB")
+    receipt = service.plan(staged.request_id, "actual-synthetic-cpu-query-plan", retain_local_plan=True)
+    assert receipt["status"] == "QUERY_PLAN_RETAINED"
+    plan = service.inspect(staged.request_id)
+    assert 1 <= len(plan.response.queries) <= 3 and plan.web_authority == plan.task_completion_authority == "NONE"
+    assert plan.query_quality == "NOT_ASSESSED" and plan.output_tokens > 0
+    record_property("output_sha256", receipt["output"]["sha256"])
+    record_property("model_ref", plan.model_ref)
+    record_property("model_digest", plan.model_digest)
+    record_property("input_tokens", plan.input_tokens)
+    record_property("output_tokens", plan.output_tokens)
+    record_property("model_request_elapsed_seconds", plan.model_request_elapsed_seconds)
