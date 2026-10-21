@@ -60,6 +60,8 @@ class AskTerminal:
     def __init__(self, client: LocalAskClient, *, metadata_only: bool = False):
         self.metadata_only = metadata_only
         self.client, self.view = client, TerminalView(activity_active=metadata_only)
+        if metadata_only:
+            self.view.notice = "Checking project metadata. Start 'panestria activity serve' separately if unavailable."
         self.generation = 0
         self.busy: set[str] = set()
         self.events: queue.Queue[tuple[int, str, dict[str, Any] | TerminalUnavailable]] = queue.Queue()
@@ -109,6 +111,7 @@ class AskTerminal:
                         v.connected = False
                     if kind == "activity":
                         v.activity_fresh = False
+                        v.notice = result.code + "; snapshot unconfirmed. Refresh explicitly; no work was started."
                     if kind == "ask" and not result.uncertain:
                         v.request_id, v.state = None, "Not submitted"
                         v.notice = result.code + "; question was not sent. Check the server, then submit explicitly."
