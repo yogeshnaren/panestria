@@ -11,7 +11,7 @@ from typing import Annotated, Any
 import typer
 
 from panestria.config import Settings
-from panestria.config_build import load_build_settings
+from panestria.config_build import BuildSettings, _directory, load_build_settings
 from panestria.config_local import read_private
 from panestria.execution.owner_build import OwnerBuild
 from panestria.kernel.errors import KernelDenied
@@ -100,6 +100,27 @@ def goals(config: Config) -> None:
 def status(config: Config, goal_id: str, diff: bool = False) -> None:
     """Inspect canonical state, exact approval, independent checks and optional diff."""
     _finish(lambda: _service(config).status(goal_id, diff=diff))
+
+
+@build_app.command("capture-reference")
+def capture_reference(config: Config, goal_id: str) -> None:
+    """Explicitly retain a confirmed PUBLIC Build result for local reference, not training."""
+    _finish(lambda: _service(config).capture_reference(goal_id))
+
+
+@build_app.command("reference")
+def show_reference(config: Config, reference_sha256: str) -> None:
+    """Inspect integrity-checked historical metadata offline without a database connection."""
+    from panestria.execution.offline_build import read_reference
+
+    def read() -> dict[str, Any]:
+        settings = BuildSettings.model_validate_json(read_private(config, 16 * 1024))
+        _directory(settings.root)
+        return read_reference(
+            settings.root, str(settings.owner_id), str(settings.project_id), reference_sha256
+        ).model_dump(mode="json")
+
+    _finish(read)
 
 
 @build_app.command("metrics")

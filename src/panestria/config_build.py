@@ -34,6 +34,7 @@ class BuildSettings(BaseModel):
     checks: list[BuildCheckSetting] = Field(min_length=1, max_length=16)
 
     record_runtime_metrics: bool = False
+    capture_verified_results: bool = False
 
     @property
     def protected(self) -> Path:
