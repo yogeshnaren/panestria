@@ -20,11 +20,11 @@ class BillingBoundary(PlanContract):
 
 
 class BackgroundWorkPolicy(PlanContract):
-    schema_version: Literal[1] = 1
+    schema_version: StrictInt = Field(default=1, ge=1, le=1)
     policy_id: PlanId
     owner_id: PlanId
     project_id: PlanId
-    version: Literal[1] = 1
+    version: StrictInt = Field(default=1, ge=1, le=1)
     provider: Literal["claude-subscription"] = "claude-subscription"
     model_ref: None = None  # Existing configured harness; no invented model pin.
     quota_windows: tuple[QuotaScope, ...] = Field(min_length=1, max_length=4)
@@ -35,9 +35,9 @@ class BackgroundWorkPolicy(PlanContract):
     regular_use_reserve_tokens: StrictInt = Field(default=10000, ge=1, le=10000000)
     regular_use_reserve_requests: StrictInt = Field(default=2, ge=1, le=10000)
     maximum_job_wall_seconds: StrictInt = Field(default=300, ge=30, le=900)
-    maximum_background_workers: Literal[1] = 1
-    foreground_reserve_slots: Literal[1] = 1
-    api_microusd: Literal[0] = 0
+    maximum_background_workers: StrictInt = Field(default=1, ge=1, le=1)
+    foreground_reserve_slots: StrictInt = Field(default=1, ge=1, le=1)
+    api_microusd: StrictInt = Field(default=0, ge=0, le=0)
     privacy_class: Literal["PUBLIC"] = "PUBLIC"
     categories: tuple[Literal["PUBLIC_BUILD", "ARCHITECTURE_REVIEW", "TEST_DESIGN"], ...] = ("PUBLIC_BUILD",)
     expires_at: AwareDatetime
@@ -61,7 +61,7 @@ class BackgroundWorkPolicy(PlanContract):
 
 
 class BackgroundEnqueue(PlanContract):
-    schema_version: Literal[1] = 1
+    schema_version: StrictInt = Field(default=1, ge=1, le=1)
     item_id: PlanId
     plan_id: PlanId
     expected_plan_sha256: PlanSha
@@ -71,7 +71,7 @@ class BackgroundEnqueue(PlanContract):
 
 
 class BackgroundBinding(PlanContract):
-    schema_version: Literal[1] = 1
+    schema_version: StrictInt = Field(default=1, ge=1, le=1)
     request: BackgroundEnqueue
     owner_id: PlanId
     project_id: PlanId

@@ -36,6 +36,7 @@ class BuildSettings(BaseModel):
     storage_policy: Path | None = None
     anticipated_build_write_bytes: int = Field(default=1024**3, ge=1, le=32 * 1024**3)
     record_runtime_metrics: bool = False
+    capture_verified_results: bool = False
 
     @property
     def protected(self) -> Path:

@@ -11,9 +11,10 @@ from typing import Annotated, Any
 import typer
 
 from panestria.config import Settings
-from panestria.config_build import load_build_settings
+from panestria.config_build import BuildSettings, _directory, load_build_settings
 from panestria.config_local import read_private
 from panestria.execution.owner_build import OwnerBuild
+from panestria.kernel.build import BuildEvidenceStore
 from panestria.kernel.errors import KernelDenied
 
 build_app = typer.Typer(no_args_is_help=True)
@@ -108,6 +109,30 @@ def storage_preview(config: Config) -> None:
 def status(config: Config, goal_id: str, diff: bool = False) -> None:
     """Inspect canonical state, exact approval, independent checks and optional diff."""
     _finish(lambda: _service(config).status(goal_id, diff=diff))
+
+
+@build_app.command("capture-reference")
+def capture_reference(config: Config, goal_id: str) -> None:
+    """Explicitly retain a confirmed PUBLIC Build result for local reference, not training."""
+    _finish(lambda: _service(config).capture_reference(goal_id))
+
+
+@build_app.command("reference")
+def show_reference(config: Config, reference_sha256: str, diff: bool = False) -> None:
+    """Inspect integrity-checked historical metadata offline without a database connection."""
+    from panestria.execution.offline_build import read_reference
+
+    def read() -> dict[str, Any]:
+        settings = BuildSettings.model_validate_json(read_private(config, 16 * 1024))
+        _directory(settings.root)
+        manifest = read_reference(settings.root, str(settings.owner_id), str(settings.project_id), reference_sha256)
+        result = manifest.model_dump(mode="json")
+        if diff:
+            store = BuildEvidenceStore(settings.root / "offline-results/blobs")
+            result["diff"] = b"".join(store.read_blob(sha) for sha in manifest.parts["diff"].chunks).decode()
+        return result
+
+    _finish(read)
 
 
 @build_app.command("metrics")

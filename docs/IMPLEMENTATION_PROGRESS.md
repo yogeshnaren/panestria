@@ -282,3 +282,20 @@ fixtures. Full history refuses growth without changing the canonical outcome or
 launching another worker. No raw prompt/code/response/credential logging or
 storage pruning. This is partial AOS-029-S2; cross-mode instrumentation, qualified
 quality, resource/token/cash/exposure views and G3 remain pending.
+
+## Confirmed Build results retained for offline reference
+
+[Offline Build capture](testing/OFFLINE_BUILD_REFERENCES.md) now saves exact
+contract/diff/final-check evidence only after a canonical PUBLIC Build reaches
+independent confirmation and exact owner merge. Automatic capture is explicitly
+opt-in; manual capture can retain an already confirmed goal. A copied private
+archive can be inspected, including its escaped diff, without DB/Git/native
+credentials. Capture failure leaves the confirmed merge intact.
+
+[Actual component observations](../evidence/offline-build-reference-2026-10-21/report.json)
+cover scope, byte integrity, deduplication, standalone restore and full-history
+refusal with labeled native/auth/capacity fixtures. The purpose is owner-local
+reference; training eligibility remains UNKNOWN and export DENIED. No automatic
+knowledge promotion, provider/model identity invention or training. This is part
+of AOS-012-S6; the useful-work queue, other capture modes, rights-reviewed eligible
+examples, retention/retrieval integration and G3 remain pending.
