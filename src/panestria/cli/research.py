@@ -353,3 +353,84 @@ def _research_draft(request: str, config: Path, output: Path, format: str, key: 
         # Intent may already be committed; this never promises a safe redispatch.
         typer.echo('{"status":"UNAVAILABLE","reason":"research_draft_unavailable_inspect_state"}', err=True)
         raise typer.Exit(1) from None
+
+
+@research_app.command("prepare-draft-review")
+def prepare_draft_review(
+    request_id: str,
+    config: Annotated[Path, typer.Option("--config")],
+    output: Annotated[Path, typer.Option("--output")],
+) -> None:
+    """Export an unreviewed template bound to exact claims and retained passages."""
+    _owner_review("prepare", request_id, config, output=output)
+
+
+@research_app.command("check-draft-review")
+def check_draft_review(
+    request_id: str,
+    config: Annotated[Path, typer.Option("--config")],
+    review: Annotated[Path, typer.Option("--review")],
+) -> None:
+    """Validate completed owner judgments and show their exact confirmation digest."""
+    _owner_review("check", request_id, config, review=review)
+
+
+@research_app.command("record-draft-review")
+def record_draft_review(
+    request_id: str,
+    config: Annotated[Path, typer.Option("--config")],
+    review: Annotated[Path, typer.Option("--review")],
+    sha256: Annotated[str, typer.Option("--sha256")],
+    accept_owner_review: Annotated[bool, typer.Option("--accept-owner-review")] = False,
+) -> None:
+    """Retain exact owner judgments; this grants no automatic support or task PASS."""
+    _owner_review("record", request_id, config, review=review, digest=sha256, intent=accept_owner_review)
+
+
+@research_app.command("inspect-draft-review")
+def inspect_draft_review(
+    request_id: str,
+    config: Annotated[Path, typer.Option("--config")],
+    output: Annotated[Path, typer.Option("--output")],
+) -> None:
+    """Revalidate and privately export the latest retained owner review, without inference."""
+    _owner_review("inspect", request_id, config, output=output)
+
+
+def _owner_review(
+    verb: Literal["prepare", "check", "record", "inspect"],
+    request: str,
+    config: Path,
+    *,
+    output: Path | None = None,
+    review: Path | None = None,
+    digest: str | None = None,
+    intent: bool = False,
+) -> None:
+    from panestria.config_synthesis import load_synthesis_settings
+    from panestria.contracts.research_review import review_json
+    from panestria.execution.research_review import OwnerResearchReview
+
+    try:
+        if output is not None:
+            _draft_output_preflight(output)
+        settings = load_synthesis_settings(config, need_model=False)
+        dsn = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
+        service = OwnerResearchReview(dsn.get_secret_value(), settings)
+        if verb in {"prepare", "inspect"}:
+            assert output is not None
+            result = service.prepare_review(request) if verb == "prepare" else service.inspect_review(request)
+            body = review_json(result)
+            _write_private(output, body)
+            typer.echo(json.dumps({"status": "REVIEW_EXPORTED", "sha256": hashlib.sha256(body).hexdigest()}))
+        else:
+            assert review is not None
+            raw = read_private(review, 16384)
+            if verb == "check":
+                typer.echo(json.dumps({"status": "REVIEW_READY", "sha256": service.check_review(request, raw)}))
+            else:
+                assert digest is not None
+                typer.echo(json.dumps(service.record_review(request, raw, digest, accept_owner_review=intent)))
+    except (Exception, KeyboardInterrupt):
+        typer.echo('{"status":"UNAVAILABLE","reason":"owner_review_unavailable_inspect_state"}', err=True)
+        raise typer.Exit(1) from None

@@ -1,0 +1,27 @@
+{
+  "source_commit": "5c3ce7ba1236c68dd862ca5c1551c71596ee65e3",
+  "result": "PASS",
+  "cases": 12,
+  "seconds": 46.2,
+  "scope": "SYNTHETIC_CONNECTED_OWNER_REVIEW_NOT_SEMANTIC_QUALIFICATION",
+  "native_or_live_model_calls": 0,
+  "model_fixture_calls_per_new_journey": 1,
+  "assessment_source": "OWNER_REPORTED",
+  "checks": [
+    "exact draft/claim/citation binding",
+    "separate read-only check and explicit digest confirmation",
+    "unreviewed and wrong-digest input refused",
+    "private RESTRICTED notes absent from stdout/events",
+    "same judgments replay once; corrections append immutable history",
+    "latest review exported with source revalidation",
+    "bad claim hashes/citations and cancellation refused",
+    "task remains VERIFYING and goal ACTIVE",
+    "existing synthesis compatibility preserved"
+  ],
+  "original_junit_sha256": "ae7b179f1a7d53a71677f83ac4493dcca5343ca92b47960eba2971c0c75bbcae",
+  "automatic_semantic_support": "NOT_QUALIFIED",
+  "task_completion_authority": "NONE",
+  "training_authority": "NONE",
+  "release_gate": "NOT_ASSESSED",
+  "later_change": "One misleading test name was corrected after this run; behavior unchanged, original node ID/source preserved."
+}

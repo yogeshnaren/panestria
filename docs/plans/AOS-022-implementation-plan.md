@@ -127,3 +127,13 @@ execution/{entailment_probe,native_entailment_probe}.py; the earlier owning-file
 list is design intent, to reconcile before semantic integration. Research-domain
 human review/conflict/opinion/injection, policy/grant/disclosure and deterministic
 source checks remain prerequisites; ClaimStore support remains NOT_ASSESSED.
+
+## Owner draft review component (2026-10-21)
+
+[Exact owner claim review](../testing/OWNER_CLAIM_REVIEW.md) connects retained
+drafts/passages to explicit per-claim judgments and immutable corrections.
+This is partial S3 delivery, with provenance OWNER_REPORTED and no automatic
+semantic qualification, task completion or training authority. The retained
+draft remains unchanged. [Connected evidence](../../evidence/owner-claim-review-2026-10-21/report.json)
+records real PG/CAS/reader/CLI checks with an explicit model fixture; actual
+research-domain calibration, independent-role conditions and full G2 remain open.
