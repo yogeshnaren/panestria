@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "outcome": "READ_ONLY_LOCAL_REACT_OBSERVER_COMPONENT_PASS",
+  "release_authority": "NONE",
+  "gate_status": "NOT_EVALUATED",
+  "base_commit": "47964250632a57f0beed9816291de53be440d06c",
+  "runs": [
+    {
+      "path": "initial.xml",
+      "sha256": "103c2be9f403bf70869b0d567c60106d8bd42847585528c455258676ebeba31b",
+      "candidate_commit": "27eb9f1d620c822eba9ee6a91fff63f4050c7f7d",
+      "worktree_state": "clean",
+      "tests": 5,
+      "failures": 1,
+      "errors": 0,
+      "case_time_seconds": 29.388
+    },
+    {
+      "path": "logout-corrected.xml",
+      "sha256": "7ff77070c3089616b87d2455117b85d2d7d32d8e7a7a4e1343308b13a082bd18",
+      "candidate_commit": "e5824c1502f54966da7bffa698c822b5961781e9",
+      "worktree_state": "clean",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "case_time_seconds": 22.82
+    },
+    {
+      "path": "keyboard-text-escaping.xml",
+      "sha256": "fcd74fae0af14cd4d52485e63b7c068291fee1d4ee686f03dc0523b92a42b1e5",
+      "candidate_commit": "a9f9a0a2c1b4fc1ea819579a8cf3a4825c82039c",
+      "worktree_state": "clean",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "case_time_seconds": 23.203
+    }
+  ],
+  "first_failure": "Actual browser logout succeeded, but authenticated-state effect reissued a failed project refresh and replaced Session revoked confirmation. Fixed polling lifecycle, not assertion timeout.",
+  "actual": [
+    "Chromium 156 headless",
+    "physical owned CLI/loopback HTTP",
+    "disposable PostgreSQL 55439",
+    "one-use/CSRF auth and independent default-session preservation",
+    "55-event page backfill and decimal cursor >2^53",
+    "offline two-event catch-up, deduplicated rendering and canonical ACTIVE despite goal.completed event",
+    "retention resync clears unverified history",
+    "revocation clears private view, explicit re-pair and actual logout",
+    "keyboard pairing and inert untrusted image-tag event metadata"
+  ],
+  "not_exercised": [
+    "actual provider/model inference",
+    "owner data or service",
+    "three-mode intake",
+    "artifact/diff/test/approval browser controls",
+    "Firefox",
+    "phone/private TLS/device grants",
+    "host latency/resource release budgets",
+    "cumulative G1/G2/G3 or real owner trial"
+  ],
+  "toolchain": {
+    "node": "24.19.0",
+    "npm_initial": "8.19.4 (engine warning for dev dependency; superseded by scratch npm12.2.0 for generation/lock checks)",
+    "npm_supported": "12.2.0 task-local",
+    "react": "19.3.1",
+    "vite": "8.3.5",
+    "typescript": "5.9.3",
+    "playwright": "1.64.1",
+    "registry": "https://registry.npmjs.org/",
+    "source_reuse": "Internal activity/EventReplay/SSE/auth implementations. Ordinary locked dependency distributions; no external product source borrowed or REA engine installed."
+  },
+  "assets": [
+    {
+      "name": "index.html",
+      "size": 346,
+      "sha256": "f24244ac33668d40aa441aba30c4fc6affbcffe869213dd7a4e02ca6357ebf91"
+    },
+    {
+      "name": "mission.css",
+      "size": 1222,
+      "sha256": "b71211afcc88d43e381690f08fe72d279a14b7e77f85e6098e7827767e104fe7"
+    },
+    {
+      "name": "mission.js",
+      "size": 229758,
+      "sha256": "7005c2f90d2f6272e4e0927f85e7950a198b9a553e6a088bbbaf373900b8227b"
+    }
+  ],
+  "storage_observation_mib": {
+    "node_modules": 135,
+    "scratch_browser_binaries": 681,
+    "scratch_npm_cache": 111,
+    "scratch_npm_tool": 19
+  },
+  "cleanup": "Only exact fixture child/DB container removed by existing owned fixture cleanup. No owner data, cache, backup or service touched; task tool caches retained."
+}

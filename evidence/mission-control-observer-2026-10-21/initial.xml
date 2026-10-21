@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="5" time="31.170" timestamp="2026-10-21T16:01:30.666811-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_mission_control_browser" name="test_dashboard_namespace_read_only_routes_and_envelope" file="tests/integration/test_mission_control_browser.py" line="55" time="4.143" /><testcase classname="tests.integration.test_mission_control_browser" name="test_actual_chromium_pair_reconnect_large_cursor_resync_and_revoke" file="tests/integration/test_mission_control_browser.py" line="109" time="23.663"><properties><property name="candidate_commit" value="27eb9f1d620c822eba9ee6a91fff63f4050c7f7d" /><property name="worktree_state" value="clean" /><property name="mode" value="ACTUAL_CHROMIUM_POSTGRES_LOOPBACK_HTTP_METADATA_ONLY" /></properties><failure message="AssertionError: browser expected PASS, got : node:internal/modules/run_main:107&#10;    triggerUncaughtException(&#10;    ^&#10;&#10;ExpectError: expect(locator).toBeVisible() failed&#10;&#10;Locator: getByText('Session revoked.', { exact: true })&#10;Expected: visible&#10;Timeout: 5000ms&#10;Error: element(s) not found&#10;&#10;Call log:&#10;  - Expect &quot;toBeVisible&quot; getByText('Session revoked.', { exact: true }) with timeout 5000ms&#10;  - waiting for getByText('Session revoked.', { exact: true })&#10;&#10;    at captureRawStack (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright-core/lib/coreBundle.js:9282:17)&#10;    at callMatcherAsStep (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13316:57)&#10;    at Object.toBeVisible (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13308:23)&#10;    at /tmp/panestria-mission-control-work/apps/mission-control/tests/journey.mjs:50:65 {&#10;  matcherResult: {&#10;    message: 'expect(locator).toBeVisible() failed\n' +&#10;      '\n' +&#10;      &quot;Locator: getByText('Session revoked.', { exact: true })\n&quot; +&#10;      'Expected: visible\n' +&#10;      'Timeout: 5000ms\n' +&#10;      'Error: element(s) not found\n' +&#10;      '\n' +&#10;      'Call log:\n' +&#10;      `  - Expect &quot;toBeVisible&quot; getByText('Session revoked.', { exact: true }) with timeout 5000ms\n` +&#10;      &quot;  - waiting for getByText('Session revoked.', { exact: true })\n&quot;,&#10;    pass: false,&#10;    actual: undefined,&#10;    name: 'toBeVisible',&#10;    expected: 'visible',&#10;    log: [&#10;      `  - Expect &quot;toBeVisible&quot; getByText('Session revoked.', { exact: true }) with timeout 5000ms`,&#10;      &quot;  - waiting for getByText('Session revoked.', { exact: true })&quot;&#10;    ],&#10;    timeout: 5000,&#10;    ariaSnapshot: '- main:\n' +&#10;      '  - paragraph: PANESTRIA · LOCAL OBSERVER\n' +&#10;      '  - heading &quot;Mission Control&quot; [level=1]\n' +&#10;      '  - paragraph: &quot;Canonical project activity and goal timelines. Read-only metadata · acceptance authority: NONE.&quot;\n' +&#10;      '  - region &quot;Connection&quot;:\n' +&#10;      '    - status: Project unconfirmed. Pair or retry when the server is available.\n' +&#10;      '    - text: One-use pairing code from your terminal\n' +&#10;      '    - textbox &quot;One-use pairing code from your terminal&quot;\n' +&#10;      '    - button &quot;Pair&quot;\n' +&#10;      '    - paragraph: No bearer token, private question, diff or source text belongs in this view.\n' +&#10;      '  - text: Local desktop only. Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'&#10;  }&#10;}&#10;&#10;Node.js v24.19.0">r1_migration_task = {'owner': 'b8aab415-3c99-4c51-8e40-1a10178dafc8', 'project': '22573101-0e24-476d-8674-bc8a713ab91a', 'goal': '88c6ce34-299a-4508-b239-2c018a83caa9', 'contract': '0de4bc9e-bf87-4345-86e1-3ea6d5309823', ...}
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-68/test_actual_chromium_pair_reco0')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x74d8a5fd1260&gt;
+
+    def test_actual_chromium_pair_reconnect_large_cursor_resync_and_revoke(r1_migration_task, tmp_path, record_property):
+        f = r1_migration_task
+        candidate = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        record_property("candidate_commit", candidate)
+        record_property(
+            "worktree_state",
+            "dirty" if subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT).strip() else "clean",
+        )
+        record_property("mode", "ACTUAL_CHROMIUM_POSTGRES_LOOPBACK_HTTP_METADATA_ONLY")
+        path, config, token = configure(f, tmp_path)
+        with psycopg.connect(f["dsn"]) as c:
+            c.execute("ALTER TABLE panestria.task_event ALTER COLUMN seq RESTART WITH 9007199254740993")
+            for _ in range(55):
+                append_event(
+                    UnitOfWork(c),
+                    goal_id=f["goal"],
+                    task_id=f["task"],
+                    actor=f["owner"],
+                    kind="mission.observed",
+                    payload={"private": "PRIVATE_MISSION_SENTINEL"},
+                )
+        env = {**os.environ, "PANESTRIA_DATABASE_URL": f["dsn"]}
+        server = subprocess.Popen(
+            [
+                str(ROOT / ".venv/bin/python"),
+                "-m",
+                "panestria.cli.main",
+                "mission-control",
+                "serve",
+                "--config",
+                str(path),
+                "--assets",
+                str(ASSETS),
+            ],
+            cwd=ROOT,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        browser = None
+        try:
+            with httpx.Client(trust_env=False, timeout=1) as client:
+                deadline = time.monotonic() + 10
+                while True:
+                    assert server.poll() is None and time.monotonic() &lt; deadline
+                    try:
+                        if client.get(config.origin + "/").status_code == 200:
+                            break
+                    except httpx.HTTPError:
+                        pass
+                    time.sleep(0.05)
+    
+            def code():
+                result = subprocess.run(
+                    [
+                        str(ROOT / ".venv/bin/python"),
+                        "-m",
+                        "panestria.cli.main",
+                        "mission-control",
+                        "pair-code",
+                        "--config",
+                        str(path),
+                    ],
+                    cwd=ROOT,
+                    env=env,
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                assert result.returncode == 0 and token not in result.stdout, result.stderr
+                return json.loads(result.stdout)["code"]
+    
+            fixture = tmp_path / "browser.json"
+            fixture.write_text(json.dumps({"origin": config.origin, "goal": f["goal"], "code": code()}))
+            fixture.chmod(0o600)
+            screenshot = tmp_path / "mission-control.png"
+            browser = subprocess.Popen(
+                [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/journey.mjs"],
+                cwd=ROOT / "apps/mission-control",
+                env={
+                    **os.environ,
+                    "PANESTRIA_BROWSER_FIXTURE": str(fixture),
+                    "PANESTRIA_BROWSER_SCREENSHOT": str(screenshot),
+                },
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            assert browser.stdout and browser.stdin
+    
+            def wait(expected):
+                ready, _, _ = select.select([browser.stdout], [], [], 65)
+                assert ready, f"browser did not reach {expected}"
+                observed = browser.stdout.readline().strip()
+                if observed != expected:
+                    browser.wait(timeout=5)
+                    raise AssertionError(f"browser expected {expected}, got {observed}: " + browser.stderr.read())
+    
+            def advance(body=None):
+                browser.stdin.write(json.dumps(body or {"proceed": True}) + "\n")
+                browser.stdin.flush()
+    
+            wait("OFFLINE")
+            with psycopg.connect(f["dsn"]) as c:
+                for kind in ("mission.after_disconnect", "goal.completed"):
+                    append_event(
+                        UnitOfWork(c), goal_id=f["goal"], task_id=f["task"], actor=f["owner"], kind=kind, payload={}
+                    )
+                c.execute("UPDATE panestria.task SET state='RECONCILING' WHERE id=%s", (f["task"],))
+            advance()
+            wait("RETIRE")
+            with psycopg.connect(f["dsn"]) as c:
+                seq = append_event(
+                    UnitOfWork(c),
+                    goal_id=f["goal"],
+                    task_id=f["task"],
+                    actor=f["owner"],
+                    kind="mission.retired",
+                    payload={},
+                )
+                EventReplay().retire_before(UnitOfWork(c), Actor(f["owner"], f["project"]), f["goal"], seq, 0)
+            advance()
+            wait("REVOKE")
+            with psycopg.connect(f["dsn"]) as c:
+                c.execute("UPDATE panestria.browser_session SET revoked_at=now() WHERE project_id=%s", (f["project"],))
+            advance()
+            wait("REPAIR")
+            advance({"code": code()})
+&gt;           wait("PASS")
+
+tests/integration/test_mission_control_browser.py:239: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PASS'
+
+    def wait(expected):
+        ready, _, _ = select.select([browser.stdout], [], [], 65)
+        assert ready, f"browser did not reach {expected}"
+        observed = browser.stdout.readline().strip()
+        if observed != expected:
+            browser.wait(timeout=5)
+&gt;           raise AssertionError(f"browser expected {expected}, got {observed}: " + browser.stderr.read())
+E           AssertionError: browser expected PASS, got : node:internal/modules/run_main:107
+E               triggerUncaughtException(
+E               ^
+E           
+E           ExpectError: expect(locator).toBeVisible() failed
+E           
+E           Locator: getByText('Session revoked.', { exact: true })
+E           Expected: visible
+E           Timeout: 5000ms
+E           Error: element(s) not found
+E           
+E           Call log:
+E             - Expect "toBeVisible" getByText('Session revoked.', { exact: true }) with timeout 5000ms
+E             - waiting for getByText('Session revoked.', { exact: true })
+E           
+E               at captureRawStack (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright-core/lib/coreBundle.js:9282:17)
+E               at callMatcherAsStep (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13316:57)
+E               at Object.toBeVisible (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13308:23)
+E               at /tmp/panestria-mission-control-work/apps/mission-control/tests/journey.mjs:50:65 {
+E             matcherResult: {
+E               message: 'expect(locator).toBeVisible() failed\n' +
+E                 '\n' +
+E                 "Locator: getByText('Session revoked.', { exact: true })\n" +
+E                 'Expected: visible\n' +
+E                 'Timeout: 5000ms\n' +
+E                 'Error: element(s) not found\n' +
+E                 '\n' +
+E                 'Call log:\n' +
+E                 `  - Expect "toBeVisible" getByText('Session revoked.', { exact: true }) with timeout 5000ms\n` +
+E                 "  - waiting for getByText('Session revoked.', { exact: true })\n",
+E               pass: false,
+E               actual: undefined,
+E               name: 'toBeVisible',
+E               expected: 'visible',
+E               log: [
+E                 `  - Expect "toBeVisible" getByText('Session revoked.', { exact: true }) with timeout 5000ms`,
+E                 "  - waiting for getByText('Session revoked.', { exact: true })"
+E               ],
+E               timeout: 5000,
+E               ariaSnapshot: '- main:\n' +
+E                 '  - paragraph: PANESTRIA · LOCAL OBSERVER\n' +
+E                 '  - heading "Mission Control" [level=1]\n' +
+E                 '  - paragraph: "Canonical project activity and goal timelines. Read-only metadata · acceptance authority: NONE."\n' +
+E                 '  - region "Connection":\n' +
+E                 '    - status: Project unconfirmed. Pair or retry when the server is available.\n' +
+E                 '    - text: One-use pairing code from your terminal\n' +
+E                 '    - textbox "One-use pairing code from your terminal"\n' +
+E                 '    - button "Pair"\n' +
+E                 '    - paragraph: No bearer token, private question, diff or source text belongs in this view.\n' +
+E                 '  - text: Local desktop only. Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'
+E             }
+E           }
+E           
+E           Node.js v24.19.0
+
+tests/integration/test_mission_control_browser.py:207: AssertionError</failure></testcase><testcase classname="tests.integration.test_browser_v2_session" name="test_cookie_scope_and_logout_span_api_versions" file="tests/integration/test_browser_v2_session.py" line="21" time="0.331" /><testcase classname="tests.integration.test_activity_event_timeline" name="test_metadata_json_scope_cursor_resync_and_no_write_locks_or_mutations" file="tests/integration/test_activity_event_timeline.py" line="44" time="0.536"><properties><property name="candidate_commit" value="27eb9f1d620c822eba9ee6a91fff63f4050c7f7d" /><property name="fixture_digest" value="5bbf16b6bdca4676fea1c17a610093657459f24cc5ebb6be586b756bd42e031e" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_activity_event_timeline" name="test_metadata_sse_reconnect_and_revocation_deny_cached_delivery" file="tests/integration/test_activity_event_timeline.py" line="97" time="0.715"><properties><property name="candidate_commit" value="27eb9f1d620c822eba9ee6a91fff63f4050c7f7d" /><property name="fixture_digest" value="5bbf16b6bdca4676fea1c17a610093657459f24cc5ebb6be586b756bd42e031e" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase></testsuite></testsuites>
