@@ -28,7 +28,7 @@ ASSETS = ROOT / "apps/mission-control/dist"
 
 
 def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_acceptance(
-    native_plan, tmp_path, record_property, monkeypatch
+    native_plan, tmp_path, record_property, monkeypatch, request
 ):
     owner, runner, plan, state = native_plan
     record_property(
@@ -40,6 +40,20 @@ def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_a
     )
     record_property("mode", "ACTUAL_CHROMIUM_PG_GIT_VERIFIER__TEST_FIXTURE_NOT_LIVE_NATIVE_AUTH_CAPACITY")
     failures = []
+    import threading
+
+    previous_trace = threading.gettrace()
+
+    def trace_boundary(frame, event, arg):
+        if frame.f_code.co_name == "execute" and frame.f_code.co_filename.endswith("/execution/scoped_bash.py"):
+            if event == "exception":
+                kind, value, _tb = arg
+                failures.append(f"Scoped Bash boundary: {kind.__name__}: {value}")
+            return trace_boundary
+        return None
+
+    threading.settrace(trace_boundary)
+    request.addfinalizer(lambda: threading.settrace(previous_trace))
     execute = runner._one
 
     def observed_execute(*args, **kwargs):
