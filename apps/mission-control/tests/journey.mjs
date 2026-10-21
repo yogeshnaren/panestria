@@ -15,7 +15,7 @@ try {
   await page.goto(config.origin);
   await expect(page.getByRole('heading',{name:'Mission Control',exact:true})).toBeVisible();
   await page.getByLabel('One-use pairing code from your terminal').fill(config.code);
-  await page.getByRole('button',{name:'Pair',exact:true}).click();
+  await page.getByLabel('One-use pairing code from your terminal').press('Enter');
   await page.getByRole('button',{name:`Open goal ${config.goal.slice(0,8)}`,exact:true}).click();
   await expect(page.getByTestId('goal-state')).toHaveText('ACTIVE');
   await expect(page.locator('[data-event-id]')).toHaveCount(55);
@@ -35,6 +35,10 @@ try {
   await expect(page.getByRole('region',{name:'Goal timeline'})).toContainText('RECONCILING');
   const ids = await page.locator('[data-event-id]').evaluateAll(nodes=>nodes.map(n=>n.dataset.eventId));
   assert.equal(new Set(ids).size,57);
+  assert(!await page.content().then(s=>s.includes('PRIVATE_MISSION_SENTINEL')));
+  assert.equal(await page.locator('img').count(),0);
+  assert.equal(await page.evaluate(()=>window.missionXss),undefined);
+  await expect(page.getByText("<img src=x onerror='window.missionXss=1'>",{exact:false})).toBeVisible();
   await page.screenshot({path:process.env.PANESTRIA_BROWSER_SCREENSHOT,fullPage:true});
   await step('RETIRE');
   await expect(page.locator('[data-event-id]')).toHaveCount(0,{timeout:25000});

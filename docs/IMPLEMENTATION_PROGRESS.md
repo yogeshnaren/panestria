@@ -204,19 +204,25 @@ evidence, private phone scopes and original gates remain pending.
 
 ## Next concrete delivery
 
-Use `panestria tui --config ...` against the separately configured local Ask server.
-The [first-run command](testing/LOCAL_ASK_SETUP.md) generates stable IDs and private
-settings using the existing setup policy; it still needs a migrated database
-and an existing model cache. For an existing PUBLIC Build goal, use the separate
-[Build review terminal](testing/BUILD_REVIEW_TUI.md) with its own private Build
-config and database environment. It lists recent PUBLIC Build goals in the configured project, shows checks/diff
-and canonical final-check progress, and freezes the exact merge/cancel review; it does not grant or submit work from the offline Ask scope.
-Bounded local query proposals are now available; next deliver qualified support and broader iterative planning, then
-the remaining two-worker and personal-platform R3 integration. Actions/content still use their mode-specific surfaces; the shared read-only
-project overview does not complete R3 Mission Control. The owner prefers
-TUI before GUI work; original dashboard/phone/gate requirements remain pending.
-Continue bounded planning/support and R3 work while actual search setup
-remains deferred; do not fabricate a live certificate or silently configure engines.
+The [Mission Control observer](testing/MISSION_CONTROL_OBSERVER.md) now adds an
+explicit local React/TypeScript/Vite production dashboard with generated OpenAPI
+types, separate same-origin pairing, project activity and goal timelines. It uses
+existing metadata/SSE APIs and canonical JSON reconciliation; disconnect/resync,
+large decimal cursors, expiry and auth revocation remain explicit. It never starts
+work or grants completion/approval. The physical Chromium/PG/CLI journey and its
+initial logout-lifecycle failure are retained with their original sources. This
+is partial AOS-028-S1/S3; three-mode intake, artifact/diff/test evidence, exact
+approval review/actions, Firefox/phone/TLS/device qualification and cumulative
+release evidence remain pending. Original scope/gate requirements are unchanged.
+
+Continue the dashboard with canonical evidence/review and separate mode inputs,
+then remaining personal-platform/context/connections and finite release
+qualification. Existing keyboard Ask, research and Build terminals remain usable;
+[setup](testing/LOCAL_ASK_SETUP.md), [Build review](testing/BUILD_REVIEW_TUI.md) and
+[Mission Control instructions](testing/MISSION_CONTROL_OBSERVER.md) describe their
+separate settings/scopes. Actual search setup is still owner-deferred. Qualified
+research planning/support, remaining resource budgets and real owner trial are
+open; do not fabricate live certificates or renew stale billing consent.
 
 The full Delegate gate still requires adversarial briefs, qualified semantic
 support/contradiction handling, an actual authorized public brief and Ask/Build

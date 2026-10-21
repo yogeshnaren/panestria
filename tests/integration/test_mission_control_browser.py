@@ -127,13 +127,13 @@ def test_actual_chromium_pair_reconnect_large_cursor_resync_and_revoke(r1_migrat
     path, config, token = configure(f, tmp_path)
     with psycopg.connect(f["dsn"]) as c:
         c.execute("ALTER TABLE panestria.task_event ALTER COLUMN seq RESTART WITH 9007199254740993")
-        for _ in range(55):
+        for index in range(55):
             append_event(
                 UnitOfWork(c),
                 goal_id=f["goal"],
                 task_id=f["task"],
                 actor=f["owner"],
-                kind="mission.observed",
+                kind="<img src=x onerror='window.missionXss=1'>" if index == 0 else "mission.observed",
                 payload={"private": "PRIVATE_MISSION_SENTINEL"},
             )
     env = {**os.environ, "PANESTRIA_DATABASE_URL": f["dsn"]}
