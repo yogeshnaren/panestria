@@ -30,9 +30,23 @@ class ProfileAskClient(ProfileClient):
     def request_seconds(self, route: str) -> float:
         return 65.0 if route == "/v2/ask" else 5.0
 
+    @staticmethod
+    def keep_request(error: TerminalUnavailable) -> None:
+        error.clear = error.code in {
+            "authentication_lost",
+            "server_scope_mismatch",
+            "profile_scope_unconfirmed",
+            "profile_disabled",
+            "profile_not_configured",
+        }
+
     def status(self) -> dict[str, Any]:
-        self.scope()
-        result = self._request("GET", "/v2/ask/status")
+        try:
+            self.scope()
+            result = self._request("GET", "/v2/ask/status")
+        except TerminalUnavailable as error:
+            self.keep_request(error)
+            raise
         if (
             result.get("schema_version") != 2
             or result.get("owner_id") != str(self.config.owner_id)
@@ -68,12 +82,17 @@ class ProfileAskClient(ProfileClient):
             error.uncertain = True
             # Keep a known request ID on an ordinary error reply. A POST may
             # already be durable; only auth/scope loss clears sensitive views.
-            error.clear = error.code in {"authentication_lost", "server_scope_mismatch", "profile_scope_unconfirmed"}
+            self.keep_request(error)
             raise
 
     def receipt(self, request_id: str) -> dict[str, Any]:
         identity = str(UUID(request_id))
-        return self.profile_receipt(self._request("GET", "/v1/ask/" + identity), identity)
+        try:
+            return self.profile_receipt(self._request("GET", "/v1/ask/" + identity), identity)
+        except TerminalUnavailable as error:
+            self.keep_request(error)
+            error.uncertain = True
+            raise
 
     def profile_receipt(self, result: dict[str, Any], request_id: str) -> dict[str, Any]:
         result = LocalAskClient._receipt(result, request_id)

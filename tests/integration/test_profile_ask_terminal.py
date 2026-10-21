@@ -167,3 +167,50 @@ def test_profile_mode_status_is_metadata_only_and_disabled_stale_selection_never
         assert c.execute(
             "SELECT count(*) FROM panestria.ask_request WHERE project_id=%s", (f.actor.project_id,)
         ).fetchone() == (0,)
+
+
+def test_lost_profile_ask_reply_and_transient_receipt_error_keep_original_request(profile_terminal):
+    from panestria.cli.tui import AskTerminal
+
+    f, selection, state = profile_terminal
+    client = ProfileAskClient(f.path, selection)
+    original = client._request
+    fault = {"receipt": False}
+
+    def lost(method, route, body=None):
+        if method == "GET" and route.startswith("/v1/ask/") and fault["receipt"]:
+            fault["receipt"] = False
+            raise TerminalUnavailable("database_unavailable", clear=True)
+        result = original(method, route, body)
+        if method == "POST" and route == "/v2/ask":
+            raise TerminalUnavailable("connection_unconfirmed_check_receipt", clear=True)
+        return result
+
+    client._request = lost
+    terminal_view = AskTerminal(client)
+
+    def drained():
+        deadline = time.monotonic() + 4
+        while terminal_view.busy:
+            terminal_view.drain()
+            assert time.monotonic() < deadline
+            time.sleep(0.01)
+
+    try:
+        terminal_view.refresh()
+        drained()
+        terminal_view.view.question = "Synthetic lost answer reply"
+        terminal_view.submit()
+        identity = terminal_view.view.request_id
+        drained()
+        assert identity and terminal_view.view.request_id == identity and not terminal_view.view.answer
+        fault["receipt"] = True
+        terminal_view.refresh()
+        drained()
+        assert terminal_view.view.request_id == identity
+        terminal_view.refresh()
+        drained()
+        assert terminal_view.view.state == "COMPLETED" and not terminal_view.view.answer
+        assert len(state.calls) == 1
+    finally:
+        terminal_view.close()
