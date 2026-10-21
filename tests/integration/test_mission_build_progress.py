@@ -28,7 +28,7 @@ ASSETS = ROOT / "apps/mission-control/dist"
 
 
 def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_acceptance(
-    native_plan, tmp_path, record_property
+    native_plan, tmp_path, record_property, monkeypatch
 ):
     owner, runner, plan, state = native_plan
     record_property(
@@ -39,6 +39,19 @@ def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_a
         "dirty" if subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT).strip() else "clean",
     )
     record_property("mode", "ACTUAL_CHROMIUM_PG_GIT_VERIFIER__TEST_FIXTURE_NOT_LIVE_NATIVE_AUTH_CAPACITY")
+    failures = []
+    execute = runner._one
+
+    def observed_execute(*args, **kwargs):
+        try:
+            return execute(*args, **kwargs)
+        except Exception:
+            import traceback
+
+            failures.append(traceback.format_exc())
+            raise
+
+    monkeypatch.setattr(runner, "_one", observed_execute)
     path, config, token = configure({"owner": owner.actor.owner_id, "project": owner.actor.project_id}, tmp_path)
     with owner.connect() as c:
         document = c.execute(
@@ -171,7 +184,9 @@ def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_a
                     "SELECT count(*) FROM panestria.task_event WHERE goal_id=%s", (plan.goal_id,)
                 ).fetchone()
             result = runner.run(plan.plan_id, public_subscription_run=True)
-            assert result["status"] == "WAITING_APPROVAL", result
+            record_property("run_result", json.dumps(result))
+            record_property("worker_failures", json.dumps(failures))
+            assert result["status"] == "WAITING_APPROVAL", json.dumps({"result": result, "worker_failures": failures})
             assert state["launches"] == 2  # explicit fixture, never a real provider call
             advance()
             wait("CORRUPT")
