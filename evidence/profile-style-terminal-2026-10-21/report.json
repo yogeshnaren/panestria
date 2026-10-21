@@ -1,0 +1,109 @@
+{
+  "result": "PASS",
+  "scope": "OWNER_STYLE_TERMINAL_ACTUAL_PG_CRYPTO_HTTP_PTY_SYNTHETIC_KEYS",
+  "live_provider_calls": 0,
+  "actual_keyring_calls": 0,
+  "original_runs": [
+    {
+      "file": "initial.xml",
+      "cases": 28,
+      "failures": 2,
+      "errors": 0,
+      "seconds": 37.965,
+      "sha256": "de76631cb01c28824b06cdfe24658bd060244823b00b6df3a2378e9925b1b545",
+      "source_properties": [
+        {
+          "candidate_commit": "9f559ea7e3e28783ee34d30e2ff67fe5d54b35c0",
+          "fixture_digest": "c9d30c8b7972ad38e91edefa37f5a0733d53d54439638e7b8a647ba501d55bb1",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PG/crypto/HTTP/PTY; synthetic in-memory keys. No inference or actual keyring qualification."
+        },
+        {
+          "candidate_commit": "9f559ea7e3e28783ee34d30e2ff67fe5d54b35c0",
+          "fixture_digest": "d40072b74eb1e2d753c3824f1efaf2d271a382eccf0334b75c1f0594f75da6d7",
+          "worktree_state": "clean",
+          "lane": "integration"
+        }
+      ]
+    },
+    {
+      "file": "corrected.xml",
+      "cases": 4,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 8.562,
+      "sha256": "3cbdb8773dced5ac4a740abc41b610fe3b20f803d3cf03f6966fcca219e49933",
+      "source_properties": [
+        {
+          "candidate_commit": "58e78de7a998fad4d0cb44d195b341996d22c7b5",
+          "fixture_digest": "b9e1fe6b4b3f27f5761a11617a64d8dbd885de3afba29fe45e1de8ae1feac189",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PG/crypto/HTTP/PTY; synthetic in-memory keys. No inference or actual keyring qualification."
+        }
+      ]
+    },
+    {
+      "file": "connected.xml",
+      "cases": 5,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 8.527,
+      "sha256": "933c44b3e4a2ce2f026531aaa355ebbf75cf90b99c2ce247856dc5c595af0f24",
+      "source_properties": [
+        {
+          "candidate_commit": "b1ad269832f983a780f7c6c0f999da8f4e4b5af3",
+          "fixture_digest": "fc5e7469ce27b4050f8b0d3f925aab41e58787b616a50a6947d270d4ca0c305e",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PG/crypto/HTTP/PTY; synthetic in-memory keys. No inference or actual keyring qualification."
+        },
+        {
+          "candidate_commit": "b1ad269832f983a780f7c6c0f999da8f4e4b5af3",
+          "fixture_digest": "fc5e7469ce27b4050f8b0d3f925aab41e58787b616a50a6947d270d4ca0c305e",
+          "worktree_state": "clean",
+          "lane": "integration"
+        }
+      ]
+    },
+    {
+      "file": "current-main.xml",
+      "cases": 5,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 8.555,
+      "sha256": "45a8ad2ceb715f141a0f257fa598ba9497a18788293a4a84db63286c82b55ca3",
+      "source_properties": [
+        {
+          "candidate_commit": "18a44ec3be02b3f3d02af7a87a5b89a03337bf17",
+          "fixture_digest": "fc5e7469ce27b4050f8b0d3f925aab41e58787b616a50a6947d270d4ca0c305e",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PG/crypto/HTTP/PTY; synthetic in-memory keys. No inference or actual keyring qualification."
+        },
+        {
+          "candidate_commit": "18a44ec3be02b3f3d02af7a87a5b89a03337bf17",
+          "fixture_digest": "fc5e7469ce27b4050f8b0d3f925aab41e58787b616a50a6947d270d4ca0c305e",
+          "worktree_state": "clean",
+          "lane": "integration"
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Initial clean9f559ea run:26PASS2FAIL/1live excluded37.97s. Two PTY assertions expected entire labels in a redraw; actual curses emitted only changed cells. Original transcripts show balanced/YES. Assertion now waits for changed cells; canonical encryption/write/preservation assertions remain unchanged.",
+    "Clean58e78de:4PASS8.58s actual owner terminal/create/correction/stale/disabled/wrongscope/freeform/lostreply. Clearer owner-facing text changed; no model or API behavior altered by correction.",
+    "Cleanb1ad269:5PASS8.55s including private-file/loopback/no-enablement config checks. New terminal cases use actual PG, encryption, HTTP and PTY; keys are explicit in-memory fixtures.",
+    "An existing wider encrypted profile retains its undisplayed fields/approvals/expiry while only communication changes. Local-context approval is independently selected; new profiles default to unapproved.",
+    "One save attempt per terminal form. Actual server commits then synthetic transport loses reply; UI reports UNCONFIRMED and performs no repeated write, and an explicit fresh exact-version view recovers the saved profile.",
+    "No local profile file/transcript/private hash or question/model call is created by the client. Default local Ask/activity launchers remain unmodified and profiles remain disabled/unmounted.",
+    "Clean18a44ec after merging verified mainb344076/PR162:5PASS8.56s with current0037 schema. All source/test claims remain bound to these originals; no real provider/key/runtime qualification was repeated."
+  ],
+  "limits": [
+    "Requires a separately configured qualified and explicitly enabled owner API, existing scoped OS key handles and matching owner token; the client neither provides nor certifies personal-mode onboarding.",
+    "No real model style faithfulness/readability/owner preference, key-backend/runtime qualification, private example provenance, full personal-platform integration, release gate or owner acceptance is claimed."
+  ],
+  "release_gate": "NOT_ASSESSED",
+  "owner_acceptance": "NOT_ASSESSED"
+}

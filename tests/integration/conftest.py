@@ -196,6 +196,7 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_build_snapshot.py",
         "test_memory_context.py",
         "test_profile_style.py",
+        "test_profile_style_terminal.py",
         "test_local_provider.py",
         "test_local_benchmark.py",
         "test_model_runtime.py",

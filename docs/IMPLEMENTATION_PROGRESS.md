@@ -149,6 +149,19 @@ actual backup/restore of the event/index/downgrade guards. Model/native/capacity
 identities are explicit fixtures. This closes the persistent accounting gap;
 qualified repair accuracy, automatic repair and original G3 acceptance remain.
 
+## Explicit encrypted style editor
+
+The [profile style terminal](testing/PROFILE_STYLE_TERMINAL.md) now lets an owner
+edit bounded communication preferences, separately approve local-context use,
+review and save through the existing encrypted API at an exact version. Other
+fields/expiry remain preserved and undisplayed; a lost write acknowledgment
+never repeats the write. This client enables no profile service, key or model.
+Default Ask/activity launchers still leave sensitive mode disabled; supported
+qualified personal-mode onboarding and an Ask profile selector remain next
+integration work. [Connected checks](../evidence/profile-style-terminal-2026-10-21/report.json)
+use synthetic keys and real PG/crypto/HTTP/PTY, with no inference. This is partial
+AOS-017-S4, not completed personal-platform or style-quality qualification.
+
 ## Next concrete delivery
 
 Use `panestria tui --config ...` against the separately configured local Ask server.
