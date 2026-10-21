@@ -116,7 +116,7 @@ physical reservation, upper bound or guarantee against concurrent disk writers**
 Use an estimate appropriate for the selected repository and workload.
 
 `plan inventory --config ...` checks before materializing a new snapshot;
-`plan run-native --config ...` checks before each new canonical worker or final
+`plan run --config ...` checks before each new canonical worker or final
 verifier claim. An enabled run prints initial/changed storage notifications as
 JSON on **stderr before new work**, leaving stdout for its normal result. The
 probe uses fast filesystem capacity only; it does not repeat expensive directory,

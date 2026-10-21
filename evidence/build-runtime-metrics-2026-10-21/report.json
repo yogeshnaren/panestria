@@ -1,0 +1,44 @@
+{
+  "kind": "build_runtime_metrics_component",
+  "reports": [
+    {
+      "file": "initial.xml",
+      "sha256": "14e2990a7eb7c5f7c422e626327a2f5ef28a9afede0ae200c97b5668d3fe30fb",
+      "cases": 12,
+      "failures": 0,
+      "errors": 2,
+      "source_commits": [
+        "fc88b74715ca4ef4eb79ce3e1395978e707218bc"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "final.xml",
+      "sha256": "0411756b60de102b6b58feeb0d3233adf39f0b854048532aa5212daa89d035a2",
+      "cases": 12,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "e614575ad3c42b473fdc270c6a80556aba9d7b88"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    }
+  ],
+  "scope": "Actual PG/CLI/private storage/MCP/Docker checks; native/auth/capacity are TEST_FIXTURE_NOT_LIVE",
+  "observations": [
+    "Opt-in normal-return capture retains 5 exact database intent-to-return intervals and real receipt references",
+    "Final-check fraction is separate from unknown accuracy/cash; UNKNOWN invocations have no returned-latency samples",
+    "Manual capture deduplicates source but appends a private snapshot without changing DB events",
+    "A full sparse-fixture history refuses metric writes while preserving WAIT/WAITING_APPROVAL, no extra worker launch or source growth",
+    "Initial missing fixture setup errors retained; 12 final affected/history compatibility checks pass"
+  ],
+  "limits": [
+    "Not model-only latency or general accuracy; no provider/model/Git source guessed",
+    "Not full AOS-029, current OS/provider qualification or release acceptance",
+    "No live inference, owner database/service change, cleanup or deletion"
+  ]
+}

@@ -266,3 +266,19 @@ real verified handoffs retained when pressure stops final work, and explicit
 resume without rerunning completed workers. Native/auth/capacity are fixtures.
 No deletion/pruning/backup-setting change. Other write paths, growth attribution,
 unified inbox and actual host qualification remain pending AOS-018-S4/S5/X13.
+
+## Opt-in measurements from actual Build runs
+
+[Runtime Build capture](testing/RUNTIME_BUILD_METRICS.md) now saves private
+canonical invocation lifecycle p50/p95, protected receipt availability and
+independently confirmed final required-check fractions using the existing
+performance-history format. Normal-return native-plan capture is explicitly
+opt-in; manual capture is available for an existing goal. UNKNOWN invocations
+supply no returned-latency sample, and accuracy/actual cash stay UNMEASURED.
+
+[Source-bound component checks](../evidence/build-runtime-metrics-2026-10-21/report.json)
+verify actual PG/CLI/MCP/Docker/storage behavior with labeled native/auth/capacity
+fixtures. Full history refuses growth without changing the canonical outcome or
+launching another worker. No raw prompt/code/response/credential logging or
+storage pruning. This is partial AOS-029-S2; cross-mode instrumentation, qualified
+quality, resource/token/cash/exposure views and G3 remain pending.

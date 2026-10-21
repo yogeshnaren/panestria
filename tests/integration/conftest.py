@@ -203,6 +203,7 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_ask_tui_live.py",
         "test_build_tui.py",
         "test_build_storage_admission.py",
+        "test_build_runtime_metrics.py",
         "test_local_init.py",
         "test_resource_admission.py",
         "test_telemetry.py",

@@ -9,7 +9,9 @@ from test_native_plan_execution import prepared_plan as prepared_plan  # noqa: F
 from test_owner_build_cli import invoke
 from test_owner_build_cli import owner_cli as owner_cli  # noqa: F401
 from test_registered_check_authority import git
+from typer.testing import CliRunner
 
+from panestria.cli.main import app
 from panestria.execution.build_storage import build_storage_admission
 from panestria.kernel.errors import KernelDenied
 
@@ -59,6 +61,10 @@ def test_actual_reserve_pressure_defers_inventory_and_claims_without_mutation(na
     stopped = runner.run(plan.plan_id, public_subscription_run=True)
     assert stopped["status"] == "WAIT" and stopped["reason"] == "storage_admission_deferred"
     assert state["launches"] == 0 and len(notices) == 1  # unchanged warnings do not spam
+    cli = CliRunner().invoke(app, ["plan", "run", "--config", str(f.config), plan.plan_id, "--public-subscription-run"])
+    assert cli.exit_code == 0 and json.loads(cli.stdout)["reason"] == "storage_admission_deferred"
+    assert json.loads(cli.stderr)["notification"] == "build_storage_admission"
+    assert f.dsn not in cli.stderr
     assert notices[0]["cleanup_authority"] == "NONE"
     assert all("CREATED" == t["task_state"] for t in stopped["tasks"])
     assert event_count(owner) == before and list((f.root / "plan-inventory").iterdir()) == existing
@@ -85,6 +91,9 @@ def test_actual_pressure_after_workers_defers_only_new_final_work_then_explicit_
     f, owner, _, plan = prepared_plan
     _, runner, _, state = native_plan
     path, policy = configure(f, owner)
+    # Both separately enabled observers coexist; metric capture is derived
+    # metadata, not another worker or a reason to ignore storage deferral.
+    owner.settings = owner.settings.model_copy(update={"record_runtime_metrics": True})
     notices, lock = [], threading.Lock()
     runner.on_storage_observation = notices.append
     original = runner._one
@@ -98,6 +107,7 @@ def test_actual_pressure_after_workers_defers_only_new_final_work_then_explicit_
     monkeypatch.setattr(runner, "_one", pressure_before_return)
     stopped = runner.run(plan.plan_id, public_subscription_run=True)
     assert stopped["status"] == "WAIT" and stopped["storage_admission"]["decision"] == "DEFER"
+    assert stopped["metrics"]["status"] == "SAVED"
     assert state["launches"] == state["peak"] == 2
     assert [n["decision"] for n in notices] == ["ALLOW", "DEFER"]
     assert all(r["status"] == "NODE_VERIFIED" for r in stopped["worker_observations"])
@@ -112,5 +122,6 @@ def test_actual_pressure_after_workers_defers_only_new_final_work_then_explicit_
     path.write_text(json.dumps(policy))
     resumed = runner.run(plan.plan_id, public_subscription_run=True)
     assert resumed["status"] == "WAITING_APPROVAL" and resumed["storage_admission"]["decision"] == "ALLOW"
+    assert resumed["metrics"]["status"] == "SAVED"
     assert state["launches"] == 2 and git(f.bare, "rev-parse", "HEAD") == f.base
     assert [n["decision"] for n in notices] == ["ALLOW", "DEFER", "ALLOW"]
