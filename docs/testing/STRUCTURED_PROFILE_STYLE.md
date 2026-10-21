@@ -52,3 +52,7 @@ Plain `RESPONSE_STYLE` remains the legacy freeform mode; it does not auto-parse 
 JSON-looking field. No default setting changes and no cloud/native worker
 inherits these preferences. The new renderer cannot be downgraded away after its
 audit exists; preserve the database and use reviewed restore/forward repair.
+
+The [profile Ask terminal](PROFILE_ASK_TERMINAL.md) now submits that exact private
+selection through the existing local API without raw HTTP calls. It does not
+enable personal-mode service or replace its qualification prerequisites.

@@ -127,4 +127,9 @@ structured preferences and separate local-context approval through an existing
 qualified/enabled owner API. It preserves other fields/expiry, requires exact
 version and a separate save review, and never retries an ambiguous write.
 Default launchers remain unchanged; actual owner onboarding/key qualification,
-Ask terminal profile selection and full S4/S5/S6 evidence remain pending.
+full S4/S5/S6 evidence remain pending.
+
+The [pinned profile Ask terminal](../testing/PROFILE_ASK_TERMINAL.md) now connects
+explicit row/field/purpose selection to the existing restricted local inference
+boundary, with cancellation and content-free receipt recovery. Real key/model
+qualification, supported service/onboarding and full original cases remain open.

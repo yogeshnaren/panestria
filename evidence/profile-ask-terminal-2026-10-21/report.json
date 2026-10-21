@@ -1,0 +1,100 @@
+{
+  "result": "PASS",
+  "scope": "PINNED_PROFILE_ASK_TERMINAL_ACTUAL_PG_CRYPTO_HTTP_PTY_EXPLICIT_FIXTURES",
+  "live_provider_calls": 0,
+  "actual_keyring_calls": 0,
+  "original_runs": [
+    {
+      "file": "initial.xml",
+      "cases": 21,
+      "failures": 1,
+      "errors": 0,
+      "seconds": 27.867,
+      "sha256": "483d2de2f5dcd1afa28e2aa87fc328893c27a47b773f1deb0b47f61638e7dfce",
+      "source_properties": [
+        {
+          "candidate_commit": "90e553dfdd375952385ce9e1569226dd7965bdfb",
+          "fixture_digest": "01b50aebe7447d71848c6dbd81d02b8290ec4d09e8ca8d65a3a3ab3677b436e1",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PG/crypto/HTTP/PTY; synthetic in-memory keys. No inference or actual keyring qualification."
+        },
+        {
+          "candidate_commit": "90e553dfdd375952385ce9e1569226dd7965bdfb",
+          "fixture_digest": "fc5e7469ce27b4050f8b0d3f925aab41e58787b616a50a6947d270d4ca0c305e",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PG/crypto/HTTP/PTY; synthetic in-memory keys. No inference or actual keyring qualification."
+        },
+        {
+          "candidate_commit": "90e553dfdd375952385ce9e1569226dd7965bdfb",
+          "fixture_digest": "fc5e7469ce27b4050f8b0d3f925aab41e58787b616a50a6947d270d4ca0c305e",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "90e553dfdd375952385ce9e1569226dd7965bdfb",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "90e553dfdd375952385ce9e1569226dd7965bdfb",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "gate_case_id": "AOS-005-TC01",
+          "candidate_commit": "90e553dfdd375952385ce9e1569226dd7965bdfb",
+          "lane": "contract",
+          "execution_mode": "HERMETIC"
+        }
+      ]
+    },
+    {
+      "file": "corrected.xml",
+      "cases": 3,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 8.545,
+      "sha256": "dd01f066d1f097033919aaf578f6788731ddfecfabac64ba35aca350344f0c27",
+      "source_properties": [
+        {
+          "candidate_commit": "4020b98f09c05beb1cca5a4796dc3f1b6a113240",
+          "fixture_digest": "da730ccf8c3f2951a511ccc41847a384e21cd8b3a75cb43725da10540aecc732",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PG/crypto/HTTP/PTY; synthetic in-memory keys. No inference or actual keyring qualification."
+        }
+      ]
+    },
+    {
+      "file": "connected.xml",
+      "cases": 4,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 10.804,
+      "sha256": "0fa75fc6208d96583500e61c9e804cb9ec9a8f420541578b1b279bb2f124584d",
+      "source_properties": [
+        {
+          "candidate_commit": "b889a4c312d93e7d102b543b49ba2150288cd1b9",
+          "fixture_digest": "16ccb714336ece80b1ad85be4e0c14768f15d46317acd14064083b0d174356e6",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PG/crypto/HTTP/PTY; synthetic in-memory keys. No inference or actual keyring qualification."
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Clean90e553d initial:20PASS1FAIL27.87s. New resource-denial assertion expected an internal fixture code, while the existing API correctly returns database_or_resource_unavailable; corrected expectation preserves receipt/state/no-extra-model assertions.",
+    "Clean4020b98:3PASS8.54s. Cleanb889a4c:4PASS10.80s adds actual completed model-fixture reply lost at client boundary and transient receipt failure; original request survives, receipt confirms completion and inference count remains1.",
+    "Fresh mainc413e78/PR163 merged as6e8c840 after component validation. Its complete tree3ea002323c7d4e1edb3850bbd4886b60718b055f exactly equals testedb889a4c tree; no production/test bytes changed by ancestry update. Original source properties are preserved, not relabeled.",
+    "Initial connected run includes unchanged ordinary Ask TUI, profile editor/API and goal-only OpenAPI snapshot assertions. Only the public-code expectation and lost-receipt handling/extra recovery scenario changed afterward; exact-head full CI is separate.",
+    "Profile status is configured metadata, not key/model readiness or runtime qualification. Default owner profile mounting remains disabled; keys/models/capacity in connected cases are explicit fixtures."
+  ],
+  "release_gate": "NOT_ASSESSED",
+  "owner_acceptance": "NOT_ASSESSED"
+}

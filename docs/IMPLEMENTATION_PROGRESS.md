@@ -162,6 +162,18 @@ integration work. [Connected checks](../evidence/profile-style-terminal-2026-10-
 use synthetic keys and real PG/crypto/HTTP/PTY, with no inference. This is partial
 AOS-017-S4, not completed personal-platform or style-quality qualification.
 
+## Explicit profile Ask terminal
+
+The [profile Ask terminal](testing/PROFILE_ASK_TERMINAL.md) now pins an approved
+profile row/fields/purpose for the existing restricted offline Ask path. It
+checks configured scope before disclosure, displays the selection, validates
+omitted private response hashes and supports cancellation/receipt recovery
+without repeat inference. Transient receipt errors preserve the original
+request; canonical resource UNAVAILABLE is visible. [Connected observations](../evidence/profile-ask-terminal-2026-10-21/report.json)
+use synthetic keys/model/capacity with actual PG/crypto/HTTP/PTY. Default profile
+services remain disabled; supported qualified service/onboarding, real quality
+and original gates remain pending.
+
 ## Next concrete delivery
 
 Use `panestria tui --config ...` against the separately configured local Ask server.

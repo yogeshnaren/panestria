@@ -2696,10 +2696,11 @@
       "status": "IN_PROGRESS",
       "evidence_refs": [
         "evidence/structured-profile-style-2026-10-18/report.json",
-        "evidence/profile-style-terminal-2026-10-21/report.json"
+        "evidence/profile-style-terminal-2026-10-21/report.json",
+        "evidence/profile-ask-terminal-2026-10-21/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Encrypted structured style/charter renderer and an explicit exact-version owner terminal editor delivered. Separate local-context approval, preservation of other fields and lost-acknowledgment no-retry observed with synthetic keys. Default personal mode remains disabled; supported qualified service/onboarding, private example provenance and full original cases remain pending.",
+      "scope_note": "Encrypted structured style/charter renderer and an explicit exact-version owner terminal editor delivered. Separate local-context approval, preservation of other fields and lost-acknowledgment no-retry observed with synthetic keys. Default personal mode remains disabled; supported qualified service/onboarding, private example provenance and full original cases remain pending. Pinned profile Ask terminal selection/cancellation/receipt recovery also delivered with explicit model/key fixtures; no default sensitive-mode enablement or real quality qualification.",
       "implementation_note": "Typed encrypted communication style and fixed charter connect to an explicitly selected restricted local Ask renderer2, preserving ciphertext provenance/legacy v1. Private example refs, full charter/style editing flow and qualification remain pending; model acceptance is not fidelity/preference evidence."
     },
     {
