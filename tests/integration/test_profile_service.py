@@ -95,6 +95,15 @@ def test_service_private_config_scope_and_explicit_cli_intent(tmp_path, monkeypa
     monkeypatch.setattr(profile_server, "serve_local", lambda *a, **k: started.append(k))
     denied = CliRunner().invoke(cli, ["profile", "serve", "--config", str(config), "--restricted-offline"])
     assert denied.exit_code == 2 and not started
+    inputs = {"explicit": "TEST_FIXTURE_NOT_LIVE"}
+    monkeypatch.setattr(profile_runtime, "runtime_inputs", lambda: inputs.copy())
+    digest, _ = proof(tmp_path / "proofs", inputs)
+    config.write_text(json.dumps({**data, "qualification_sha256": digest}))
+    underlying = FixtureKeys()
+    monkeypatch.setattr(profile_server, "SecretServiceProfileKeys", lambda: underlying)
+    accepted = CliRunner().invoke(cli, ["profile", "serve", "--config", str(config), "--restricted-offline"])
+    assert accepted.exit_code == 0 and len(started) == 1 and underlying.calls == 1
+    assert started[0]["profiles"].vault.enabled
     record_property("qualification_identity", "TEST_FIXTURE_NOT_LIVE")
 
 
@@ -165,7 +174,9 @@ def test_qualified_existing_handles_serve_profile_ask_and_preserve_default(perso
         assert underlying.calls == used
         inputs["changed"] = "runtime"
         denied = client.post(
-            f"/v2/profiles/{handle.profile_id}/view", json={"schema_version": 1, "expected_version": 0}, headers=headers
+            f"/v2/profiles/{handle.profile_id}/view",
+            json={"schema_version": 1, "expected_version": 0, "purpose": "OWNER_REVIEW"},
+            headers=headers,
         )
         assert denied.json()["code"] == "profile_qualification_invalid_or_expired"
         assert underlying.calls == used
