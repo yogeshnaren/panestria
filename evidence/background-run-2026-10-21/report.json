@@ -1,0 +1,62 @@
+{
+  "kind": "bounded_background_run_component",
+  "reports": [
+    {
+      "file": "initial.xml",
+      "sha256": "473b73e4c5ade0bc4f6185197a3325c63ebaa508e14fc8012a37eaee6570940f",
+      "cases": 7,
+      "failures": 3,
+      "errors": 0,
+      "source_commits": [
+        "fd1c7174864e960aed77116771bcd46310582e8d"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "corrected.xml",
+      "sha256": "630d97247956a4e0f88bf31905829e8d16373ac9bbe01b98d41e3d4ff454f4e9",
+      "cases": 3,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "d7f9d9aaf7f4105adf40e93912483be50d0585e6"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "boundaries.xml",
+      "sha256": "d1d7a0473c9b9b23438dc3a1c91d06e8372a4b1822fc957e8193dea42943049f",
+      "cases": 3,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "fc805fbec3b86a4926db180865444fc82d2cb1d5"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    }
+  ],
+  "scope": "Six new connected job scenarios plus unchanged foreground two-worker/cancel and account scenarios; source followups overlap, do not add case counts as distinct coverage. Actual disposable PG/Git/MCP/Docker; native/auth/host/certificate/quota/billing fixtures, no live inference.",
+  "observations": [
+    "Two real scoped fixture edits and independent final-tree checks reach exact owner review serially (peak1), with5 canonical invocation receipts and no merge",
+    "A second controller waits under the actual PostgreSQL session lock while one canonical claim leaves the second slot free",
+    "A real PREPARED Ask causes WAIT before the next claim; explicit resume uses the verified first handoff without another call for that worker",
+    "Coordinator death before dispatch retains its start fact; explicit exact reconciliation after session-lock release proves no uncertain claim/invocation and releases no claim",
+    "A native quota failure records a non-numeric route signal, stops new admissions and preserves uncertain capacity; no retry, fallback, paid API or invented reset/balance",
+    "Unconfirmed billing makes zero attempts/launches; a fresh30s report cannot cover a90s node and defers before a lease",
+    "Withdrawal after first handoff yields without cancelling the underlying goal or replaying completed work",
+    "Initial3fail4pass was real history CLI serialization of canonical lease expiry datetimes, fixed atd7f9d9a; original failure retained. Corrected3cases pass25.84s; added withdrawal/billing and unchanged cancellation3cases pass15.11s."
+  ],
+  "limits": [
+    "No daemon, paid SDK/live billing/provider/host qualification or complete S5/S7/G3 pass",
+    "No real background call while owner extra-usage setting is unconfirmed; fixtures do not assert that actual account setting",
+    "Yield finishes the bounded in-flight call and pauses new claims; it does not kill a process or guarantee cross-client/provider resource partition",
+    "Source/time-bound owner-reported disabled setting is not provider-attested billing proof; no dollar estimate is used as that evidence",
+    "No model/provider fallback, new credentials, model download, owner service/config/database change or storage deletion"
+  ]
+}
