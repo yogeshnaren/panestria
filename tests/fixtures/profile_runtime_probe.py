@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import resource
 import secrets
 import subprocess
 import sys
@@ -38,6 +39,7 @@ class ObservedLocalProvider(LocalProvider):
 
 
 def main() -> None:
+    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
     root = Path(sys.argv[1]).resolve(strict=True)
     assert os.environ.get("PANESTRIA_ISOLATED_KEYRING") == str(root)
     for name, directory in (("XDG_DATA_HOME", "data"), ("XDG_CONFIG_HOME", "config"), ("XDG_RUNTIME_DIR", "runtime")):
