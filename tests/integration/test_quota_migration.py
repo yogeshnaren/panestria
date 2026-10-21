@@ -10,6 +10,7 @@ from uuid import uuid4
 import psycopg
 import pytest
 from psycopg import sql
+from psycopg.conninfo import conninfo_to_dict
 from test_aos_002_migration import _FINGERPRINT_SQL
 from test_memory_restore import _fixture_container
 
@@ -54,8 +55,10 @@ def test_actual_empty_downgrade_and_reapply_match_head29_schema(r1_database):
             admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))
 
 
-def test_actual_dump_restore_refuses_audit_loss_and_continues_global_events(r1_task, record_property):
-    task = r1_task
+def test_actual_dump_restore_refuses_audit_loss_and_continues_global_events(r1_migration_task, record_property):
+    # This old-schema roundtrip must reach its own quota guard, rather than
+    # downgrading another test's retained profile/build audit.
+    task = r1_migration_task
     actor, service = Actor(task["owner"], task["project"]), QuotaService()
     value = observation()
     with psycopg.connect(task["dsn"]) as c:
@@ -66,7 +69,17 @@ def test_actual_dump_restore_refuses_audit_loss_and_continues_global_events(r1_t
         assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (HEAD,)
     container = _fixture_container()
     dump = subprocess.run(
-        ["docker", "exec", container, "pg_dump", "-U", "panestria_synthetic", "-d", "panestria_synthetic", "-Fc"],
+        [
+            "docker",
+            "exec",
+            container,
+            "pg_dump",
+            "-U",
+            "panestria_synthetic",
+            "-d",
+            conninfo_to_dict(task["dsn"])["dbname"],
+            "-Fc",
+        ],
         capture_output=True,
         check=True,
         timeout=30,
