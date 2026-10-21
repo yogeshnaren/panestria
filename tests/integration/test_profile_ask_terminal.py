@@ -134,7 +134,7 @@ def test_profile_terminal_cancellation_then_resource_denial_is_visible_without_n
     with terminal(f.path, entry=("profile", "ask-tui"), arguments=args(selection)) as t:
         t.until(b"CONNECTED")
         os.write(t.master, b"nSynthetic pressure question\r")
-        t.until(b"synthetic_capacity_unavailable")
+        t.until(b"database_or_resource_unavailable")
         os.write(t.master, b"r")
         t.until(b"UNAVAILABLE")
         os.write(t.master, b"q")
