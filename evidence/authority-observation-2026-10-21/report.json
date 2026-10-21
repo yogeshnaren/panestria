@@ -1,0 +1,36 @@
+{
+  "source_commit": "0db292f718f1f1fb6cb7b46516283be3d27f6a88",
+  "scope": "SYNTHETIC_CONNECTED_AUTHORITY_OBSERVATION_NOT_LIVE_QUALIFICATION",
+  "result": "PASS",
+  "cases": 82,
+  "live_deselected": 9,
+  "seconds": 130.7,
+  "diagnosis": {
+    "unchanged_source": "d909a4830d7c978e7e81119da2d6d61dbce6e8b6",
+    "ordered_diagnostic": "Interrupted deliberately after reproduction: 363 passed, 3 failed; not a full lane result.",
+    "lock_capture": "2 passed,1 failed; task-row FOR UPDATE wait behind another monitor COMMIT observed at 0.754189 seconds.",
+    "postgres_sqlstate": "57014",
+    "limit_ms": 300,
+    "limits_increased": false,
+    "original_ci_root_limit": "Original CI lacked lock metadata; local reproduction establishes this stop mechanism, not every historical stop."
+  },
+  "fix": "Periodic native/edit observations use fresh repeatable-read read-only snapshots. Locked claim, pre-start checks and publication remain unchanged.",
+  "assertions": [
+    "observation completes while a locked check holds the task row",
+    "observation does not block cancellation",
+    "fresh observation and locked dispatch both reject cancellation",
+    "observation rejects non-read-only or non-repeatable-read transactions",
+    "existing expiry/epoch/contract rejection matrix also exercises observations",
+    "affected real PostgreSQL/Git/MCP/Docker native fixture flows pass"
+  ],
+  "diagnostic_original_sha256": {
+    "platform-stop-capture.xml": "010ecaa04372309024e0f27116cbbaf1951517e94911c5e90ba6fd66fb101528",
+    "platform-stop-capture.jsonl": "1ca6350f66ba3d29b6e3d29abbf7dd91c47f88c5d4c29f49f9f8fd96b55b888a",
+    "platform-postgres.log": "a0a51555bf15d039394efd0292b36f63be866de738c008505c7d534d97310fa4",
+    "lock-capture.xml": "c1f0a1c77c8165030d997946584af444728db849abf3065d780292e3512d3f78",
+    "lock-capture.jsonl": "c95a0bc3f3f03226c6308a9ba038beb6c3232b88e8f261423fa22ace3d385b21",
+    "observation-fix.xml": "b5691e6b5976415fa4eb093af157ab682840061456a78876160bf2288d8d6581"
+  },
+  "live_provider_calls": 0,
+  "release_gate": "NOT_ASSESSED"
+}
