@@ -18,7 +18,7 @@ Recent usable outcomes are [goal discovery/review/progress](testing/BUILD_REVIEW
 [offline confirmed-result references](testing/OFFLINE_BUILD_REFERENCES.md) (PR149).
 Current work is the [reviewed quota-aware queue](testing/BACKGROUND_WORK_QUEUE.md):
 it records exact intent and honest eligibility; dispatch/account/no-spill proof,
-reservations and foreground yield remain next. Full Delegate support, personal-
+reservations and foreground yield remain next. The [account-link workflow](testing/BACKGROUND_ACCOUNT_LINK.md) now observes the pinned private Claude login without inference and separately links scoped pseudonymous identity after exact owner review. Actual metadata confirmed a personal Pro login; this is not quota, billing or runtime qualification. Full Delegate support, personal-
 platform integration, Mission Control/phone, resource/quality instrumentation and
 cumulative gates/real owner trial remain required. A queue candidate is not a
 provider permission, and a component/CI pass is not MVP acceptance.

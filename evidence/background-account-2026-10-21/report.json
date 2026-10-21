@@ -1,0 +1,36 @@
+{
+  "kind": "background_account_metadata_component",
+  "component": {
+    "file": "component.xml",
+    "sha256": "b58ea5513a6a1021d0917fc5efef71c98c21d66b95ec630986a3f29bd6a70769",
+    "cases": 2,
+    "failures": 0,
+    "errors": 0,
+    "source_commits": [],
+    "worktree_states": []
+  },
+  "actual_metadata_only": {
+    "source_commit": "068db54ef00e5ac4a62cbb12c99807cc899222d9",
+    "worktree_state": "clean",
+    "scope": "PINNED_CLI_ACCOUNT_METADATA_ONLY_NO_INFERENCE_OR_BILLING_PROOF",
+    "inference_calls": 0,
+    "status": "OBSERVED",
+    "subscription_type": "pro",
+    "identity_basis": "EMAIL",
+    "binary_sha256": "6c752e2cc7c110c9df15f26d8d134d438c5ae95dbd610efc1a308bf7f9c5f6c1",
+    "billing_verified": false,
+    "execution_authority": "NONE"
+  },
+  "observations": [
+    "Actual PG/CLI exact account review, rollback, concurrent replay, wrong owner, stale/future observation and account replacement denial",
+    "Private protected pseudonymous observations; no email, token or private profile path retained",
+    "Withdrawn item cannot acquire a new link; original exact replay remains historical and never renews freshness",
+    "No task attempt, worker, model prompt or account-setting change from collection/linking",
+    "Installed pinned CLI auth status observed personal Pro login; billing and inference remain unverified"
+  ],
+  "limits": [
+    "Test transport and certificate/capacity fixtures are synthetic; actual metadata observation is separate and is not live inference or OS/billing qualification",
+    "No dispatcher, live quota telemetry, no-extra-spend proof, foreground reservation or paid SDK pass",
+    "Salted identity/profile hashes are scoped pseudonyms, not anonymized data; retention is private and bounded without deletion"
+  ]
+}
