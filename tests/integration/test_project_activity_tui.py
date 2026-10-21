@@ -32,7 +32,7 @@ def test_actual_project_task_pane_observes_running_ask_without_cancelling_or_sta
         # These controls must have no mutation meaning inside the read-only pane.
         curses.setupterm(term="xterm-256color")
         os.write(t.master, b"c" + curses.tigetstr("kf6") + b"tr")
-        t.until(b"Receipt refreshed")
+        t.until(b"Unretained answer text")
         with psycopg.connect(f.dsn) as c:
             assert c.execute("SELECT state FROM panestria.ask_request WHERE id=%s", (identity,)).fetchone() == (
                 "RUNNING",
@@ -136,5 +136,5 @@ def test_standalone_metadata_terminal_needs_no_model_and_mounts_no_mutations(pre
         if server.poll() is None:
             server.send_signal(signal.SIGINT)  # Only this fixture's exact foreground child.
         out, err = server.communicate(timeout=8)
-        assert server.returncode == 0, err
+        assert server.returncode in {0, 130}, err  # SIGINT is a normal foreground stop.
         assert token.get_secret_value().encode() not in out + err
