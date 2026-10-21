@@ -27,13 +27,31 @@ def probe_account(owner: "OwnerBuild", item_id: str) -> dict[str, Any]:
     with owner.connect() as c:
         service, uow = BackgroundAccountService(reports), UnitOfWork(c)
         binding = service.binding(uow, owner.actor, item_id)
+    digest = collect_account(owner, binding.request.policy.quota_windows[0].account_ref)
+    observed = BackgroundAccountService(reports).observation(digest)
+    with owner.connect() as c:
+        link = BackgroundAccountService(reports).prepare(UnitOfWork(c), owner.actor, item_id, digest)
+    return {
+        "status": "REVIEW_ONLY",
+        "observation": observed.model_dump(mode="json"),
+        "observation_sha256": digest,
+        "link": link.model_dump(mode="json"),
+        "link_sha256": link.sha256(),
+        "billing_verified": False,
+        "inference_verified": False,
+        "execution_authority": "NONE",
+    }
+
+
+def collect_account(owner: "OwnerBuild", account_ref: str) -> str:
+    reports = account_reports(owner)
     try:
         observed = NativeAccountProbe(owner.settings.skills_archive).inspect(
             BinaryPin(owner.settings.native_binary, PINNED_BINARY_SHA256),
             owner.settings.native_config,
             owner_id=owner.actor.owner_id,
             project_id=owner.actor.project_id,
-            account_ref=binding.request.policy.quota_windows[0].account_ref,
+            account_ref=account_ref,
         )
     except NativeProbeUnavailable as exc:
         raise KernelDenied(exc.code) from None
@@ -49,15 +67,4 @@ def probe_account(owner: "OwnerBuild", item_id: str) -> dict[str, Any]:
         if sum(p.stat().st_size for p in entries) + len(raw) > 1024 * 1024:
             raise KernelDenied("background_account_archive_limit")
         digest = reports.write_report(raw)
-    with owner.connect() as c:
-        link = BackgroundAccountService(reports).prepare(UnitOfWork(c), owner.actor, item_id, digest)
-    return {
-        "status": "REVIEW_ONLY",
-        "observation": observed.model_dump(mode="json"),
-        "observation_sha256": digest,
-        "link": link.model_dump(mode="json"),
-        "link_sha256": link.sha256(),
-        "billing_verified": False,
-        "inference_verified": False,
-        "execution_authority": "NONE",
-    }
+    return digest

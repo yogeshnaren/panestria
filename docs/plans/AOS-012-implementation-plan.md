@@ -141,3 +141,14 @@ request or task-state replacement. Owner billing reports are unverified runtime
 metadata; actual profile/account/no-spill qualification and dispatcher/reservation/
 yield/reconciliation remain required. Source-bound actual PG/CLI checks are linked
 from the guide. This is partial S5, not full TC06/07/10 or a live release pass.
+
+### Bounded execution component, still IN_PROGRESS
+
+[Finite background jobs](../testing/BACKGROUND_RUN.md) now connect the reviewed queue,
+[scoped account link](../testing/BACKGROUND_ACCOUNT_LINK.md), fresh explicit disabled-billing
+report and quota/foreground admission to the existing native plan driver. Workers
+run serially; actual tasks/claims/invocations/checks/approval remain canonical.
+[Source-bound component evidence](../../evidence/background-run-2026-10-21/report.json)
+labels synthetic native/auth/capacity/billing fixtures and preserves initial failures.
+This does not qualify live billing/runtime, all TC06/07/10 parameters, S5/S7 or G3.
+No actual background inference while the owner setting is unconfirmed.

@@ -59,8 +59,10 @@ this metadata into worker prompts or training examples.
 Every result retains `execution_authority: NONE`, `billing_verified: false` and
 runtime qualification NOT_ASSESSED. Queue eligibility still separately checks
 reported quota and billing; a scheduling candidate or linked account grants no
-lease or spend authority. Background dispatch, same-account billing/reservations,
-foreground yield and runtime/no-spill validation remain required S5/S7 work.
+lease or spend authority. The [finite job runner](BACKGROUND_RUN.md) separately combines a fresh same-account
+probe, explicit disabled-billing report, quota and foreground checks with the
+existing qualified native path. Actual runtime/no-spill validation and complete
+S5/S7 evidence remain pending.
 
 [Source-bound checks](../../evidence/background-account-2026-10-21/report.json)
 cover real PostgreSQL/CLI/private CAS and metadata fixtures. A separate actual
