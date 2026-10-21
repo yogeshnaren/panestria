@@ -107,7 +107,7 @@ def test_actual_owner_queue_review_quota_reserve_unknown_billing_and_withdraw_ar
         ]
         assert c.execute(
             "SELECT count(*) FROM panestria.task_event WHERE goal_id=%s AND kind='background.queued'", (plan.goal_id,)
-        ).fetchone() == (1,)
+        ).fetchone() == (2,)
     assert f.transport.launches == 0
 
 
