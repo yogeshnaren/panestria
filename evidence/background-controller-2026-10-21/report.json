@@ -1,0 +1,83 @@
+{
+  "source_commit": "837bbba8d0b7cd9b9b9d360ebd779302be467102",
+  "result": "PASS",
+  "cases": 2,
+  "seconds": 28.54,
+  "scope": "SYNTHETIC_CONNECTED_QUEUE_CONTROLLER_NOT_LIVE_QUALIFICATION",
+  "native_provider_calls": 0,
+  "initial_failure": "A test requested priority0 although the canonical range is1..3; fixture corrected to1 without changing the production contract.",
+  "final_worktree_note": "The original final JUnit records dirty because its new runbook was untracked. Tracked production/test code matched837bbba; this is component evidence, not a qualified release result.",
+  "checks": [
+    "finite explicit CLI opt-in and metadata JSON lines",
+    "one serial two-worker job reaches exact owner review without merge",
+    "a second unstarted job waits across two idle ticks while final review holds capacity",
+    "idle ticks perform no extra native metadata/proposal call or DB event",
+    "withdrawal after selection stops instead of trying an eligible alternate",
+    "pre-start cancellation leaves canonical events unchanged"
+  ],
+  "original_runs": [
+    {
+      "file": "initial.xml",
+      "cases": 2,
+      "failures": 1,
+      "sha256": "e4b0d18931f99abd982105470a8acb36960a067bc1177fee534c4ca3c1d49b37",
+      "recorded_properties": [
+        {
+          "candidate_commit": "60f0a96611571fc0aca96b1c7da20ca55fff0dc0",
+          "fixture_digest": "606120851e6dc49643f8f35da83aa2c5d6cc97f67d0611341c38ee81e776880b",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "60f0a96611571fc0aca96b1c7da20ca55fff0dc0",
+          "fixture_digest": "606120851e6dc49643f8f35da83aa2c5d6cc97f67d0611341c38ee81e776880b",
+          "worktree_state": "clean",
+          "lane": "integration"
+        }
+      ]
+    },
+    {
+      "file": "corrected.xml",
+      "cases": 2,
+      "failures": 0,
+      "sha256": "258b038873566ac334e81ebb41842f867631f8f6a84ee8499715daedb756a915",
+      "recorded_properties": [
+        {
+          "candidate_commit": "950da680f25e2d5827d79208b86d708b014c7ef3",
+          "fixture_digest": "f2ce26fd2090d9d1d9f4f4f0f231398b77b164db8056816fc011400a02f740bc",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "950da680f25e2d5827d79208b86d708b014c7ef3",
+          "fixture_digest": "f2ce26fd2090d9d1d9f4f4f0f231398b77b164db8056816fc011400a02f740bc",
+          "worktree_state": "clean",
+          "lane": "integration"
+        }
+      ]
+    },
+    {
+      "file": "final.xml",
+      "cases": 2,
+      "failures": 0,
+      "sha256": "f33db2fbce7506dc7b1c9f7854da96c3eb1f088501dc5d897b081fc6bec7b67e",
+      "recorded_properties": [
+        {
+          "candidate_commit": "837bbba8d0b7cd9b9b9d360ebd779302be467102",
+          "fixture_digest": "fd0948dde0e5de2e69e4859355db9dfc1325db482058193ef5764db2ed744c86",
+          "worktree_state": "dirty",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "837bbba8d0b7cd9b9b9d360ebd779302be467102",
+          "fixture_digest": "fd0948dde0e5de2e69e4859355db9dfc1325db482058193ef5764db2ed744c86",
+          "worktree_state": "dirty",
+          "lane": "integration"
+        }
+      ]
+    }
+  ],
+  "release_gate": "NOT_ASSESSED",
+  "actual_scheduler_enabled": false,
+  "training_authority": "NONE"
+}

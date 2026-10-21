@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="19.099" timestamp="2026-10-21T02:32:24.626176-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_background_controller" name="test_connected_controller_emits_progress_and_stops_at_one_exact_owner_review" file="tests/integration/test_background_controller.py" line="20" time="13.646"><properties><property name="candidate_commit" value="60f0a96611571fc0aca96b1c7da20ca55fff0dc0" /><property name="fixture_digest" value="606120851e6dc49643f8f35da83aa2c5d6cc97f67d0611341c38ee81e776880b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_background_controller" name="test_connected_controller_stops_on_selection_race_without_alternate_job_or_implicit_resume" file="tests/integration/test_background_controller.py" line="49" time="3.460"><properties><property name="candidate_commit" value="60f0a96611571fc0aca96b1c7da20ca55fff0dc0" /><property name="fixture_digest" value="606120851e6dc49643f8f35da83aa2c5d6cc97f67d0611341c38ee81e776880b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for BackgroundEnqueue&#10;value_priority&#10;  Input should be greater than or equal to 1 [type=greater_than_equal]&#10;    For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-43/test_connected_controller_stop0/build.json'...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x7288c8201220&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ll_seconds_per_attempt=90, api_microusd_per_attempt=0))), {'launches': 0, 'active': 0, 'peak': 0, 'contexts': [], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7288c8376540&gt;
+
+    def test_connected_controller_stops_on_selection_race_without_alternate_job_or_implicit_resume(
+        prepared_plan, native_plan, monkeypatch
+    ):
+        f, owner, plan, state, original, _ = setup(prepared_plan, native_plan, monkeypatch)
+&gt;       another(f, owner, plan, original, priority=0)
+
+tests/integration/test_background_controller.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+f = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-43/test_connected_controller_stop0/build.json')...0.1:55439/panestria_lease_migration_1ee184e7500648df8900ecda26c8be98', base='0b444035d40995825000752cd28c8e14765f80a9')
+owner = &lt;panestria.execution.owner_build.OwnerBuild object at 0x7288c8201220&gt;
+plan = PlanProposal(schema_version=1, plan_id='475230b0-12e6-406c-8d1a-00fb5ec1c373', owner_id='c14a3c75-6e06-403e-b136-afe89...paths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0)))
+original = BackgroundEnqueue(schema_version=1, item_id='0c943bfa-c3f4-4890-b770-7e4a022718a9', plan_id='475230b0-12e6-406c-8d1a-0...BLIC', categories=('PUBLIC_BUILD',), expires_at=datetime.datetime(2026, 10, 21, 10, 32, 41, 710453, tzinfo=TzInfo(0))))
+priority = 0, resets_in = None, unknown = False
+
+    def another(f, owner, plan, original, *, priority=3, resets_in=None, unknown=False):
+        """A separately accepted fresh goal/policy; no edits to old immutable facts."""
+        with owner.connect() as c:
+            doc = c.execute("SELECT body FROM panestria.goal_contract WHERE goal_id=%s", (plan.goal_id,)).fetchone()[0]
+            inventory = PlanStore().get(UnitOfWork(c), owner.actor, plan.plan_id).inventory
+        doc["goal_id"] = str(uuid4())
+        goal = load_contract(doc)
+        ids = {n.task_id: str(uuid4()) for n in plan.nodes}
+        proposal = plan.model_copy(
+            update={
+                "plan_id": str(uuid4()),
+                "goal_id": goal.goal_id,
+                "contract_sha256": contract_sha256(goal),
+                "nodes": tuple(
+                    n.model_copy(update={"task_id": ids[n.task_id], "depends_on": tuple(ids[d] for d in n.depends_on)})
+                    for n in plan.nodes
+                ),
+            }
+        )
+        with owner.connect() as c:
+            staged = PlanSubmissionService().stage(UnitOfWork(c), owner.actor, doc, proposal, inventory, str(uuid4()))
+        with owner.connect() as c:
+            PlanStore().accept(UnitOfWork(c), owner.actor, proposal.plan_id, staged.effect_digest, accept_plan=True)
+        base = request_for(owner, proposal, allow_unknown_quota=unknown).model_dump(mode="json")
+        base["value_priority"] = priority
+        base["policy"]["billing"] = {
+            **original.policy.billing.model_dump(mode="json"),
+            "account_ref": base["policy"]["quota_windows"][0]["account_ref"],
+        }
+&gt;       request = BackgroundEnqueue.model_validate_json(json.dumps(base))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for BackgroundEnqueue
+E       value_priority
+E         Input should be greater than or equal to 1 [type=greater_than_equal]
+E           For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal
+
+tests/integration/test_background_selection.py:51: ValidationError</failure></testcase></testsuite></testsuites>
