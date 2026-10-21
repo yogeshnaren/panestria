@@ -29,3 +29,40 @@ class ProjectActivity(BaseModel):
     next_cursor: str | None = Field(default=None, max_length=41, pattern=r"^(ASK|GOAL):[0-9a-f-]{36}$")
     view_authority: Literal["READ_ONLY_METADATA"] = "READ_ONLY_METADATA"
     acceptance_authority: Literal["NONE"] = "NONE"
+
+
+class ActivityEvent(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid", frozen=True, hide_input_in_errors=True)
+    seq: str = Field(pattern=r"^(0|[1-9][0-9]{0,18})$")
+    id: UUID
+    kind: str = Field(min_length=1, max_length=128)
+    schema_version: StrictInt = Field(ge=1)
+    privacy_label: str = Field(pattern=r"^[A-Z_]{1,32}$")
+
+
+class ActivityTask(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
+    id: UUID
+    state: str = Field(pattern=r"^[A-Z_]{1,32}$")
+    row_version: str = Field(pattern=r"^(0|[1-9][0-9]{0,18})$")
+    lease_epoch: str = Field(pattern=r"^(0|[1-9][0-9]{0,18})$")
+
+
+class ActivityGoalSnapshot(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
+    goal_id: UUID
+    status: str = Field(pattern=r"^[A-Z_]{1,32}$")
+    cursor: str = Field(pattern=r"^(0|[1-9][0-9]{0,18})$")
+    tasks: tuple[ActivityTask, ...]
+
+
+class ActivityTimeline(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid", frozen=True)
+    owner_id: UUID
+    project_id: UUID
+    events: tuple[ActivityEvent, ...] = Field(max_length=50)
+    snapshot: ActivityGoalSnapshot
+    next_cursor: str = Field(pattern=r"^(0|[1-9][0-9]{0,18})$")
+    resync: bool
+    view_authority: Literal["READ_ONLY_METADATA"] = "READ_ONLY_METADATA"
+    acceptance_authority: Literal["NONE"] = "NONE"

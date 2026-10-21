@@ -21,22 +21,31 @@ from panestria.kernel.uow import UnitOfWork
 _REPLAY = EventReplay()
 
 
-def _page(request: Request, api: GoalApi, actor: Actor, goal_id: str, after: int) -> ReplayPage:
+def _page(
+    request: Request, api: GoalApi, actor: Actor, goal_id: str, after: int, *, metadata_only: bool = False
+) -> ReplayPage:
     try:
+        if metadata_only:
+            authorize(request, api)
         with open_database(api.database_url) as connection:
-            reauthorize_mutation(request, api, connection)  # GET: expiry/revocation, no mutation CSRF.
-            return _REPLAY.read(UnitOfWork(connection), actor, goal_id, after)
+            if metadata_only:
+                connection.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+            else:
+                reauthorize_mutation(request, api, connection)  # GET: expiry/revocation, no mutation CSRF.
+            return _REPLAY.read(UnitOfWork(connection), actor, goal_id, after, metadata_only=metadata_only)
     except psycopg.Error:
         raise DatabaseUnavailable from None
 
 
-async def stream_events(request: Request, api: GoalApi, goal_id: str, after: str) -> StreamingResponse:
+async def stream_events(
+    request: Request, api: GoalApi, goal_id: str, after: str, *, metadata_only: bool = False
+) -> StreamingResponse:
     actor = await asyncio.to_thread(authorize, request, api)
     header = request.headers.get("last-event-id")
     if header is not None and after != "0" and header != after:
         raise KernelDenied("cursor_conflict")
     cursor = parse_cursor(header if header is not None else after)
-    first = await asyncio.to_thread(_page, request, api, actor, goal_id, cursor)
+    first = await asyncio.to_thread(_page, request, api, actor, goal_id, cursor, metadata_only=metadata_only)
 
     async def frames() -> AsyncIterator[bytes]:
         nonlocal cursor
@@ -63,7 +72,7 @@ async def stream_events(request: Request, api: GoalApi, goal_id: str, after: str
                         yield b": keepalive\n\n"
                         heartbeat = time.monotonic()
                     await asyncio.sleep(0.1)
-                page = await asyncio.to_thread(_page, request, api, actor, goal_id, cursor)
+                page = await asyncio.to_thread(_page, request, api, actor, goal_id, cursor, metadata_only=metadata_only)
         except (KernelDenied, LoopbackDenied) as exc:
             yield f"event: error\ndata: {json.dumps(error_body(exc.code))}\n\n".encode()
         except DatabaseUnavailable:

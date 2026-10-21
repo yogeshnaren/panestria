@@ -29,9 +29,15 @@ class ReplayPage:
 
 
 class EventReplay:
-    def read(self, uow: UnitOfWork, actor: Actor, goal_id: str, after: int, limit: int = 50) -> ReplayPage:
+    def read(
+        self, uow: UnitOfWork, actor: Actor, goal_id: str, after: int, limit: int = 50, *, metadata_only: bool = False
+    ) -> ReplayPage:
         if not 0 <= after <= MAX_CURSOR or not 1 <= limit <= 100:
             raise KernelDenied("invalid_cursor_or_limit")
+        if metadata_only and uow.execute(
+            "SELECT current_setting('transaction_read_only'),current_setting('transaction_isolation')"
+        ).fetchone() != ("on", "repeatable read"):
+            raise KernelDenied("read_only_observation_required")
         # One statement gives an authoritative state + high-water cursor from the
         # same PostgreSQL snapshot. A later event cannot advance the cursor past
         # state the browser did not receive.
@@ -41,14 +47,30 @@ class EventReplay:
             " 'row_version',t.row_version::text,'lease_epoch',t.lease_epoch::text) ORDER BY t.id)"
             " FROM panestria.task t WHERE t.goal_id=g.id),'[]'::jsonb)"
             " FROM panestria.goal g LEFT JOIN panestria.event_retention r ON r.goal_id=g.id"
-            " WHERE g.id=%s AND g.owner_id=%s AND g.project_id=%s FOR SHARE OF g",
+            " WHERE g.id=%s AND g.owner_id=%s AND g.project_id=%s" + ("" if metadata_only else " FOR SHARE OF g"),
             (goal_id, actor.owner_id, actor.project_id),
         ).fetchone()
         if row is None:
             raise KernelDenied("not_found")
         snapshot = {"goal_id": goal_id, "status": row[0], "cursor": str(row[2]), "tasks": row[3]}
-        if after < row[1]:
+        if after < row[1] or (metadata_only and after > row[2]):
             return ReplayPage((), snapshot, True)
+        if metadata_only:
+            # Do not even retrieve opaque payload fingerprints or trace bodies
+            # into the read-only observation process.
+            rows = uow.execute(
+                "SELECT seq,id::text,kind,schema_version,privacy_label FROM panestria.task_event"
+                " WHERE goal_id=%s AND seq>%s AND seq<=%s ORDER BY seq LIMIT %s",
+                (goal_id, after, row[2], limit),
+            ).fetchall()
+            return ReplayPage(
+                tuple(
+                    {"seq": str(r[0]), "id": r[1], "kind": r[2], "schema_version": r[3], "privacy_label": r[4]}
+                    for r in rows
+                ),
+                snapshot,
+                False,
+            )
         # Bound this page to the snapshot's high-water mark as well as its scope.
         rows = uow.execute(
             "SELECT seq,id::text,kind,payload,trace_id,schema_version,privacy_label,sha256"

@@ -217,6 +217,7 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_background_selection.py",
         "test_background_controller.py",
         "test_project_activity.py",
+        "test_activity_event_timeline.py",
         "test_project_activity_tui.py",
         "test_background_owner_journey.py",
         "test_offline_build_reference.py",

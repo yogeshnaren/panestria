@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="9" time="18.431" timestamp="2026-10-21T15:37:19.123316-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_activity_event_timeline" name="test_metadata_json_scope_cursor_resync_and_no_write_locks_or_mutations" file="tests/integration/test_activity_event_timeline.py" line="44" time="3.623"><properties><property name="candidate_commit" value="ec10f7d7135b6e513d7f2aeecb4de674a4a3cd40" /><property name="fixture_digest" value="dbd31ffce44646f5ed5f2a8a7d1d930dddc64268b1e80dc819640797ae37644e" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_activity_event_timeline" name="test_metadata_sse_reconnect_and_revocation_deny_cached_delivery" file="tests/integration/test_activity_event_timeline.py" line="95" time="0.324"><properties><property name="candidate_commit" value="ec10f7d7135b6e513d7f2aeecb4de674a4a3cd40" /><property name="fixture_digest" value="dbd31ffce44646f5ed5f2a8a7d1d930dddc64268b1e80dc819640797ae37644e" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_aos_014" name="test_cursor_commit_and_restart" file="tests/integration/test_aos_014.py" line="21" time="0.068"><properties><property name="candidate_commit" value="ec10f7d7135b6e513d7f2aeecb4de674a4a3cd40" /><property name="fixture_digest" value="6ae141c2f47db22aa7c19f950014069ea6e61b81a531a644933002a9e08083c9" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="gate_case_id" value="AOS-014-TC01" /><property name="source_clauses" value="AOS-014-F02,AOS-014-F03,AOS-014-AC01" /></properties></testcase><testcase classname="tests.integration.test_aos_014" name="test_sse_reconnect_decimal_cursor" file="tests/integration/test_aos_014.py" line="58" time="0.149"><properties><property name="candidate_commit" value="ec10f7d7135b6e513d7f2aeecb4de674a4a3cd40" /><property name="fixture_digest" value="6ae141c2f47db22aa7c19f950014069ea6e61b81a531a644933002a9e08083c9" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="gate_case_id" value="AOS-014-TC02" /><property name="source_clauses" value="AOS-014-F02,AOS-014-AC01" /></properties></testcase><testcase classname="tests.integration.test_aos_014" name="test_sse_session_revocation_between_frames[events]" file="tests/integration/test_aos_014.py" line="128" time="0.275"><properties><property name="candidate_commit" value="ec10f7d7135b6e513d7f2aeecb4de674a4a3cd40" /><property name="fixture_digest" value="6ae141c2f47db22aa7c19f950014069ea6e61b81a531a644933002a9e08083c9" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="gate_case_id" value="AOS-009-TC04" /><property name="scope" value="actual PostgreSQL session revocation before cached event/snapshot delivery" /></properties></testcase><testcase classname="tests.integration.test_aos_014" name="test_sse_session_revocation_between_frames[resync-snapshot]" file="tests/integration/test_aos_014.py" line="128" time="0.233"><properties><property name="candidate_commit" value="ec10f7d7135b6e513d7f2aeecb4de674a4a3cd40" /><property name="fixture_digest" value="6ae141c2f47db22aa7c19f950014069ea6e61b81a531a644933002a9e08083c9" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="gate_case_id" value="AOS-009-TC04" /><property name="scope" value="actual PostgreSQL session revocation before cached event/snapshot delivery" /></properties></testcase><testcase classname="tests.integration.test_project_activity_tui" name="test_actual_project_task_pane_observes_running_ask_without_cancelling_or_starting_another" file="tests/integration/test_project_activity_tui.py" line="13" time="1.754"><properties><property name="candidate_commit" value="ec10f7d7135b6e513d7f2aeecb4de674a4a3cd40" /><property name="fixture_digest" value="1a60fd3e00a7ce7fab1d333d034e8ea0baf025c183fe762e7783750ab6594531" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof" /></properties></testcase><testcase classname="tests.integration.test_project_activity_tui" name="test_standalone_metadata_terminal_needs_no_model_and_mounts_no_mutations" file="tests/integration/test_project_activity_tui.py" line="46" time="10.579"><properties><property name="candidate_commit" value="ec10f7d7135b6e513d7f2aeecb4de674a4a3cd40" /><property name="fixture_digest" value="1a60fd3e00a7ce7fab1d333d034e8ea0baf025c183fe762e7783750ab6594531" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: b&quot;\x1b[?1049h\x1b[22;0;0t\x1b[1;26r\x1b(B\x1b[m\x1b[4l\x1b[?7h\x1b[?1h\x1b=\x1b[39;49m\x1b[?1h\x1b=\x1b[?25l\x1b[39;49...NOWN; schema1]\r\x1b[24d Canonical snapshot plus event metadata; payloads and approvals are omitted.\x1b[K\x1b[26d\x08&quot;&#10;assert (None is None and 82776.093473516 &lt; 82776.066787786)&#10; +  where None = poll()&#10; +    where poll = &lt;Popen: returncode: None args: ['/tmp/panestria-activity-event-timeline-work...&gt;.poll&#10; +  and   82776.093473516 = &lt;built-in function monotonic&gt;()&#10; +    where &lt;built-in function monotonic&gt; = time.monotonic">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-65/test_standalone_metadata_termi0/build.json'...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-65/test_standalone_metadata_termi0')
+
+    def test_standalone_metadata_terminal_needs_no_model_and_mounts_no_mutations(prepared_plan, tmp_path):
+        import json
+        import signal
+        import socket
+        import subprocess
+        import time
+        from pathlib import Path
+        from uuid import uuid4
+    
+        import httpx2 as httpx
+        from typer.testing import CliRunner
+    
+        from panestria.cli.main import app
+        from panestria.config_activity import load_activity_settings
+    
+        _, owner, _, plan = prepared_plan
+        root = Path(__file__).resolve().parents[2]
+        directory = tmp_path / "metadata-only"
+        with socket.socket() as reservation:
+            reservation.bind(("127.0.0.1", 0))
+            port = reservation.getsockname()[1]
+        args = [
+            "activity",
+            "init",
+            "--directory",
+            str(directory),
+            "--owner-id",
+            owner.actor.owner_id,
+            "--project-id",
+            owner.actor.project_id,
+            "--port",
+            str(port),
+        ]
+        runner = CliRunner()
+        initialized = runner.invoke(app, args)
+        assert initialized.exit_code == 0, initialized.output
+        assert json.loads(initialized.stdout)["project_created"] is False
+        path = directory / "activity.json"
+        config, token = load_activity_settings(path)
+        originals = {p.name: p.read_bytes() for p in directory.iterdir()}
+        assert runner.invoke(app, args).exit_code == 0
+        conflict = [*args]
+        conflict[conflict.index("--project-id") + 1] = str(uuid4())
+        assert runner.invoke(app, conflict).exit_code == 2
+        assert {p.name: p.read_bytes() for p in directory.iterdir()} == originals
+        assert token.get_secret_value() not in initialized.stdout
+        assert "model_cache" not in path.read_text()
+        with owner.connect() as c:
+            before = c.execute("SELECT count(*) FROM panestria.task_event").fetchone()
+        server = subprocess.Popen(
+            [str(root / ".venv/bin/python"), "-m", "panestria.cli.main", "activity", "serve", "--config", str(path)],
+            cwd=root,
+            env={**os.environ, "PANESTRIA_DATABASE_URL": owner.dsn},
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        try:
+            with httpx.Client(trust_env=False, timeout=2) as client:
+                deadline = time.monotonic() + 10
+                while True:
+                    assert server.poll() is None and time.monotonic() &lt; deadline
+                    try:
+                        response = client.get(config.origin + "/healthz")
+                        if response.status_code == 200:
+                            break
+                    except httpx.HTTPError:
+                        pass
+                    time.sleep(0.02)
+                headers = {"Authorization": "Bearer " + token.get_secret_value()}
+                page = client.get(config.origin + "/v1/activity", headers=headers)
+                assert page.status_code == 200 and plan.goal_id in page.text
+                assert client.get(config.origin + "/v1/activity").status_code == 401
+                for route in ("/v1/ask", "/v1/goals", "/v1/approvals", "/v1/session/code"):
+                    assert client.post(config.origin + route, headers=headers, json={}).status_code == 404
+                # The actual CLI server refuses an occupied port without disturbing the running one.
+                occupied = runner.invoke(app, ["activity", "serve", "--config", str(path)])
+                assert occupied.exit_code == 2 and "local_bind_unavailable" in occupied.output
+                assert client.get(config.origin + "/v1/activity", headers=headers).status_code == 200
+                with terminal(path, entry=("activity", "tui")) as t:
+                    t.until(b"PROJECT TASKS")
+                    t.until(plan.goal_id[:8].encode())
+                    assert b"FRESH" in t.transcript
+                    os.write(t.master, b"1")
+                    t.until(b"GOAL TIMELINE")
+&gt;                   t.until(b"Canonical goal:")
+
+tests/integration/test_project_activity_tui.py:131: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = b'Canonical goal:', timeout = 6, after = None
+
+    def until(value, timeout=6, *, after=None):
+        deadline = time.monotonic() + timeout
+        start = len(transcript) if after is None else after
+        while value not in transcript[start:]:
+&gt;           assert process.poll() is None and time.monotonic() &lt; deadline, bytes(transcript[-3000:])
+E           AssertionError: b"\x1b[?1049h\x1b[22;0;0t\x1b[1;26r\x1b(B\x1b[m\x1b[4l\x1b[?7h\x1b[?1h\x1b=\x1b[39;49m\x1b[?1h\x1b=\x1b[?25l\x1b[39;49...NOWN; schema1]\r\x1b[24d Canonical snapshot plus event metadata; payloads and approvals are omitted.\x1b[K\x1b[26d\x08"
+E           assert (None is None and 82776.093473516 &lt; 82776.066787786)
+E            +  where None = poll()
+E            +    where poll = &lt;Popen: returncode: None args: ['/tmp/panestria-activity-event-timeline-work...&gt;.poll
+E            +  and   82776.093473516 = &lt;built-in function monotonic&gt;()
+E            +    where &lt;built-in function monotonic&gt; = time.monotonic
+
+tests/integration/test_ask_tui.py:145: AssertionError</failure></testcase><testcase classname="tests.e2e.test_aos_005" name="test_openapi_matches_the_mounted_routes" file="tests/e2e/test_aos_005.py" line="1135" time="0.480"><properties><property name="gate_case_id" value="AOS-005-TC01" /><property name="candidate_commit" value="ec10f7d7135b6e513d7f2aeecb4de674a4a3cd40" /><property name="lane" value="contract" /><property name="execution_mode" value="HERMETIC" /></properties></testcase></testsuite></testsuites>

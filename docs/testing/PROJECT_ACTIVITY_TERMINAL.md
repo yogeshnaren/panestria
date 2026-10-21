@@ -82,3 +82,5 @@ covers scope/pagination, no content/event mutation, read during a real task lock
 Ask progress/control isolation and the standalone no-model launch/port refusal.
 These checks do not complete React/SSE, phone/private ingress, qualified research
 support, live providers, G3 or the real owner trial.
+
+Select GOAL rows with1–8 for the [read-only event timeline](ACTIVITY_EVENT_TIMELINE.md).

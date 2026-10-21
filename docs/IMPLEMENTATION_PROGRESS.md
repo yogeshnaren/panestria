@@ -190,6 +190,18 @@ four passing connected fixture checks. No owner key/service was configured.
 This is supported opt-in component delivery; private examples, context/model
 compatibility, connections, quality/resources and original gates remain pending.
 
+## Read-only event timeline
+
+The [activity timeline](testing/ACTIVITY_EVENT_TIMELINE.md) now connects keyboard
+goal selection to canonical state and bounded content-free event pages. The same
+fixed metadata endpoint reuses existing SSE cursors/reconnect/resync and checks
+authority before delivery, including cached frames. It retrieves no event payload,
+trace or plaintext fingerprint and offers no mutation routes. Actual scoped
+PG/HTTP/SSE/PTY checks and the existing large-cursor/OpenAPI regressions are
+retained in [source-bound observations](../evidence/activity-event-timeline-2026-10-21/report.json).
+This is partial AOS-028 integration; React/client reconciliation, cross-mode intake/
+evidence, private phone scopes and original gates remain pending.
+
 ## Next concrete delivery
 
 Use `panestria tui --config ...` against the separately configured local Ask server.
