@@ -11,6 +11,7 @@ from pathlib import Path
 
 import httpx2 as httpx
 import psycopg
+import pytest
 from fastapi.testclient import TestClient
 from typer.testing import CliRunner
 
@@ -19,6 +20,7 @@ from panestria.api.mission_web import mount_mission_control
 from panestria.cli.main import app as cli
 from panestria.config import Settings
 from panestria.config_activity import load_activity_settings
+from panestria.config_local import LocalApplicationRejected
 from panestria.kernel.event_replay import EventReplay
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.tasks import append_event
@@ -57,6 +59,8 @@ def test_dashboard_namespace_read_only_routes_and_envelope(r1_task, tmp_path):
     _, config, token = configure(r1_task, tmp_path)
     settings = Settings(database_url=r1_task["dsn"]).validate_profile()
     app = build_activity_app(config, settings, token)
+    with pytest.raises(LocalApplicationRejected, match="mission_build_required"):
+        mount_mission_control(app, config, token, tmp_path / "missing-build")
     mount_mission_control(app, config, token, ASSETS)
     other = build_activity_app(config, settings, token)
     from panestria.api.main import mount_browser_api
@@ -73,6 +77,10 @@ def test_dashboard_namespace_read_only_routes_and_envelope(r1_task, tmp_path):
             assert client.get("/ui/mission.js").headers["cache-control"] == "no-store"
             assert client.get("/v1/activity").status_code == 401
             bearer = {"Authorization": "Bearer " + token}
+            origin = {"Origin": config.origin}
+            legacy_code = old.post("/v1/session/code", headers=bearer, json={}).json()["code"]
+            assert old.post("/v1/session/pair", headers=origin, json={"code": legacy_code}).status_code == 200
+            assert old.get("/v1/activity").status_code == 200
             code = client.post("/v1/session/code", headers=bearer, json={}).json()["code"]
             origin = {"Origin": config.origin}
             assert (
@@ -87,8 +95,8 @@ def test_dashboard_namespace_read_only_routes_and_envelope(r1_task, tmp_path):
             assert pair.status_code == 200
             name = app.state.browser_access.cookie_name
             mission_token = client.cookies.get(name)
-            old.cookies.set("panestria_session", mission_token)
-            assert old.get("/v1/activity").status_code == 401
+            assert old.get("/v1/activity", headers={"Cookie": "panestria_session=" + mission_token}).status_code == 401
+            assert old.get("/v1/activity").status_code == 200
             assert client.get("/v1/activity").status_code == 200
             assert client.post("/v1/session/logout", headers=origin, json={}).status_code == 403
             assert client.get("/v1/activity", headers={"Host": "rebind.invalid"}).status_code == 403

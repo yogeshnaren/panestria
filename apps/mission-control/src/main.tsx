@@ -16,6 +16,7 @@ function useGoal(goal: string | null, scope: Activity | null, denied: () => void
       while (!controller.signal.aborted) {
         try {
           const page = validateTimeline(await json<Timeline>(`${path}?after=${after}`, controller.signal), goal, scope);
+          if (controller.signal.aborted) return;
           setView(prior => ({page,events:mergeEvents(prior.events,page),fresh:true,observedAt:Date.now(),
             notice:page.resync ? 'History resynchronized. Older retained events are unavailable.' : 'Canonical snapshot confirmed.'}));
           const previous = after; after = page.next_cursor; backoff = 1000;
@@ -46,20 +47,23 @@ function Dashboard() {
   const [notice,setNotice] = useState('Pair to inspect this project.');
   const [code,setCode] = useState('');
   const [csrf,setCsrf] = useState<string|null>(null);
+  const [mayRead,setMayRead] = useState(true);
   const [authenticated,setAuthenticated] = useState(false);
   const [busy,setBusy] = useState(false);
   const [before,setBefore] = useState<string|null>(null);
   const [listFresh,setListFresh] = useState(false);
-  const denied = () => {setAuthenticated(false); setActivity(null); setGoal(null); setCsrf(null); setListFresh(false);};
+  const denied = () => {setMayRead(false); setAuthenticated(false); setActivity(null); setGoal(null); setCsrf(null); setListFresh(false);};
   const timeline = useGoal(goal, activity, denied);
   async function load(cursor: string|null, signal: AbortSignal) {
     const data = await json<Activity>(`/v1/activity?limit=16${cursor ? `&before=${cursor}` : ''}`,AbortSignal.any([signal,AbortSignal.timeout(5000)]));
     if (data.view_authority !== 'READ_ONLY_METADATA' || data.acceptance_authority !== 'NONE' ||
         !Array.isArray(data.entries) || data.entries.length > 16) throw new Error('Unconfirmed project response.');
-    setActivity(data); setListAt(Date.now()); setListFresh(true); setAuthenticated(true); setNotice('Project snapshot confirmed.');
+    if (signal.aborted) return;
+    setMayRead(true); setActivity(data); setListAt(Date.now()); setListFresh(true); setAuthenticated(true); setNotice('Project snapshot confirmed.');
   }
   useEffect(() => {
     const controller = new AbortController();
+    if (!mayRead) return () => controller.abort();
     // Cookie can survive a reload; CSRF stays memory-only, so logout requires
     // re-pairing after reload. Read-only metadata still authenticates normally.
     const read = async () => {try {await load(before,controller.signal);} catch (error) {
@@ -69,7 +73,7 @@ function Dashboard() {
     }};
     void read(); const timer = setInterval(() => void read(),10000);
     return () => {controller.abort();clearInterval(timer);};
-  },[before,authenticated]);
+  },[before,mayRead]);
   async function pair(event: FormEvent) {
     event.preventDefault(); if (busy) return; setBusy(true);
     try {

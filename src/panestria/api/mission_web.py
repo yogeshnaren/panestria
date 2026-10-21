@@ -2,6 +2,7 @@
 
 import hashlib
 import hmac
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -24,7 +25,9 @@ def mount_mission_control(app: FastAPI, config: ActivitySettings, token: str, di
             path = directory / name
             if path.is_symlink() or not path.is_file() or path.stat().st_size > maximum:
                 raise LocalApplicationRejected("mission_build_required")
-            data = path.read_bytes()
+            descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            with os.fdopen(descriptor, "rb") as stream:
+                data = stream.read(maximum + 1)
             if not data or len(data) > maximum:
                 raise LocalApplicationRejected("mission_build_required")
             assets[name] = data
