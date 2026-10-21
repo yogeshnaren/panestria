@@ -69,3 +69,6 @@ cancellation, resource denial, disabled/stale selection refusal and no repeat
 inference after lost reply/receipt outage. No actual model/keyring/owner profile
 was used. Real style faithfulness, supported sensitive-mode onboarding and the
 remaining personal-platform/release gates remain unqualified.
+
+For the supported explicit service setup, use the [qualified profile service](QUALIFIED_PROFILE_SERVICE.md).
+Normal Ask/activity launchers remain profile-disabled.

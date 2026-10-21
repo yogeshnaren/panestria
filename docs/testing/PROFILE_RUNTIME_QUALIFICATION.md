@@ -3,8 +3,9 @@
 This synthetic component test uses the actual OS Secret Service, PostgreSQL,
 profile API, paired-session/CSRF handlers, restricted Ask selector and pinned
 Qwen2.5 1.5B local model. It uses no mock key store or inference transport.
-HTTP handlers run through ASGI TestClient; this is not a real-browser/phone or
-14-day owner trial. No personal profile or provider credential is used.
+The current probe uses the supported server factory/lifecycle and physical
+loopback HTTP; this is not a real-browser/phone or14-day owner trial. The original
+2026-10-15 ASGI observation below remains historical and is not relabeled. No personal profile or provider credential is used.
 
 Prerequisites: Linux, Docker with the pinned existing runtime image, installed
 Ollama, `dbus-run-session`, `gnome-keyring-daemon` and an explicitly selected
@@ -37,4 +38,6 @@ records the actual passing case and fixture identities. Default CI excludes this
 live test. Missing prerequisites or preserved busy resources cannot establish a
 pass. This does not complete TC06–TC08, native harness isolation, key-backup/purge,
 setup usability, hardware budgets, owner keyring conformance or release acceptance.
-Keep default profile use off until its remaining setup/boundary obligations pass.
+Default profile use remains off. The separate [qualified opt-in launcher](QUALIFIED_PROFILE_SERVICE.md)
+requires current source-bound OS/runtime observations; its narrow scope does not
+complete the remaining original cases or change their acceptance obligations.

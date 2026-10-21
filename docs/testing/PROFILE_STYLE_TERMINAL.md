@@ -82,3 +82,6 @@ wrong-scope/stale/disabled/freeform refusal and a committed save whose reply is
 lost without repeating the write. Original failed PTY redraw expectations are
 preserved separately from the corrected observations. This is not a release gate
 or completed personal-platform integration.
+
+For the supported explicit service setup, use the [qualified profile service](QUALIFIED_PROFILE_SERVICE.md).
+Normal Ask/activity launchers remain profile-disabled.
