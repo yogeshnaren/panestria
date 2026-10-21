@@ -129,7 +129,10 @@ class LocalAskClient:
     def cancel(self, request_id: str) -> dict[str, Any]:
         identity = str(UUID(request_id))
         result = self._request("POST", "/v1/ask/" + identity + "/cancel", {})
-        if result.get("request_id") != identity or result.get("state") not in {"CANCELLED", "COMPLETED", "FAILED"}:
+        if (
+            result.get("request_id") != identity
+            or result.get("state") not in {"CANCELLED", "COMPLETED", "FAILED", "UNAVAILABLE"}
+        ):
             raise TerminalUnavailable("cancellation_unconfirmed_check_receipt")
         return result
 
@@ -137,7 +140,7 @@ class LocalAskClient:
     def _receipt(result: dict[str, Any], request_id: str) -> dict[str, Any]:
         if (
             result.get("request_id") != request_id
-            or result.get("state") not in {"PREPARED", "RUNNING", "COMPLETED", "CANCELLED", "FAILED"}
+            or result.get("state") not in {"PREPARED", "RUNNING", "COMPLETED", "CANCELLED", "FAILED", "UNAVAILABLE"}
             or result.get("offline") is not True
             or result.get("response_retained") is not False
             or ("text" in result and not isinstance(result["text"], str))

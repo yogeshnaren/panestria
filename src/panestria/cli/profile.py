@@ -13,6 +13,7 @@ from panestria.memory.keys import KeyStoreUnavailable, ProfileKeyHandle, SecretS
 
 profile_app = typer.Typer(no_args_is_help=True)
 _CONFIG_OPTION = typer.Option(..., "--config")
+_SELECTION_OPTION = typer.Option(..., "--selection")
 
 
 def _operation(owner_id: str, project_id: str, profile_id: str, key_id: str, *, create: bool) -> None:
@@ -76,4 +77,21 @@ def style_terminal(
         raise typer.Exit(2) from None
     except (ValueError, OSError):
         typer.echo(json.dumps({"code": "profile_style_unavailable"}), err=True)
+        raise typer.Exit(2) from None
+
+
+@profile_app.command("ask-tui")
+def profile_ask(
+    config: Path = _CONFIG_OPTION,
+    selection: Path = _SELECTION_OPTION,
+    restricted_offline: bool = typer.Option(False, "--restricted-offline"),
+) -> None:
+    """Use one explicitly pinned approved profile selection for offline Ask."""
+    from panestria.cli.profile_ask import profile_ask_terminal
+    from panestria.cli.tui_client import TerminalUnavailable
+
+    try:
+        profile_ask_terminal(config, selection, restricted_offline)
+    except TerminalUnavailable as error:
+        typer.echo(json.dumps({"code": error.code}), err=True)
         raise typer.Exit(2) from None

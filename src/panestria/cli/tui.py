@@ -128,7 +128,7 @@ class AskTerminal:
                 v.notice = "Read-only canonical states; they do not certify checks, answers or release acceptance."
                 continue
             observed = str(result["state"])
-            if v.state in {"COMPLETED", "CANCELLED", "FAILED"} and observed != v.state:
+            if v.state in {"COMPLETED", "CANCELLED", "FAILED", "UNAVAILABLE"} and observed != v.state:
                 continue  # An older receipt cannot regress an already confirmed terminal state.
             v.state = observed
             if v.state == "COMPLETED" and kind == "ask" and "text" in result:
@@ -139,7 +139,7 @@ class AskTerminal:
                     if isinstance(source, dict)
                 ]
                 v.notice = "Answer shown only in this terminal; it is not automatically saved."
-            elif v.state in {"CANCELLED", "FAILED"}:
+            elif v.state in {"CANCELLED", "FAILED", "UNAVAILABLE"}:
                 v.answer = ""
                 v.notice = "Server confirmed " + v.state + "."
             elif kind == "cancel":
@@ -154,7 +154,7 @@ class AskTerminal:
         if not v.connected or "ask" in self.busy or not v.question.strip():
             v.notice = "Connect first; enter a question; allow only one submission at a time."
             return
-        if v.request_id and v.state not in {"COMPLETED", "CANCELLED", "FAILED"}:
+        if v.request_id and v.state not in {"COMPLETED", "CANCELLED", "FAILED", "UNAVAILABLE"}:
             v.notice = "Prior submission is unconfirmed. Refresh its receipt or cancel before starting another."
             return
         identity, question = str(uuid4()), v.question
@@ -235,7 +235,7 @@ class AskTerminal:
                 screen.erase()
                 rows, cols = screen.getmaxyx()
                 line(0, "Panestria | PROJECT TASKS | read only" if v.activity_active
-                     else "Panestria | OFFLINE ASK | terminal view")
+                     else getattr(self.client, "view_title", "Panestria | OFFLINE ASK | terminal view"))
                 if rows < 18 or cols < 64:
                     line(2, "Resize to at least 64 columns x 18 rows. F10 quits.")
                 elif v.activity_active:
@@ -270,6 +270,7 @@ class AskTerminal:
                         + self.client.config.origin,
                     )
                     line(2, f"Project: {self.client.config.project_id} | Restricted/offline | Response not retained")
+                    line(3, getattr(self.client, "selection_notice", ""))
                     line(
                         4,
                         "Question [editing; Enter sends, Escape discards]"

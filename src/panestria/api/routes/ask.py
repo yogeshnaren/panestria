@@ -70,6 +70,37 @@ async def ask_question(request: Request) -> JSONResponse:
     return await _execute_ask(request, _SERVICE, AskSubmission)
 
 
+@router.get("/v2/ask/status")
+async def profile_ask_status(request: Request) -> JSONResponse:
+    """Configured scope only: never read a key/profile or qualify inference readiness."""
+    from panestria.api.routes.profiles import ProfileApi
+
+    headers = {"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"}
+    try:
+        _, _, actor = _configured(request)
+        profiles = getattr(request.app.state, "profile_api", None)
+        if not isinstance(profiles, ProfileApi):
+            raise LoopbackDenied("profile_not_configured", 503)
+        profiles.vault._enabled()
+        return JSONResponse(
+            {
+                "schema_version": 2,
+                "owner_id": actor.owner_id,
+                "project_id": actor.project_id,
+                "profiles": "EXPLICITLY_ENABLED",
+                "privacy_label": "RESTRICTED",
+                "offline": True,
+                "cloud_fallback": "NONE",
+                "readiness": "KEY_MODEL_CHECKED_PER_REQUEST",
+            },
+            headers=headers,
+        )
+    except LoopbackDenied as exc:
+        return JSONResponse(error_body(exc.code), status_code=exc.status_code, headers=headers)
+    except KernelDenied as exc:
+        return JSONResponse(error_body(exc.code), status_code=503, headers=headers)
+
+
 @router.post("/v2/ask")
 async def profile_ask_question(request: Request) -> JSONResponse:
     from panestria.api.routes.profiles import ProfileApi
