@@ -21,8 +21,8 @@ Config = Annotated[Path, typer.Option("--config")]
 
 
 @build_app.command("tui")
-def terminal_review(config: Config, goal_id: str) -> None:
-    """Inspect one existing PUBLIC Build and explicitly review exact merge/cancel decisions."""
+def terminal_review(config: Config, goal_id: str | None = None) -> None:
+    """Browse existing PUBLIC Builds, or review one goal with exact merge/cancel decisions."""
     from panestria.cli.build_tui import build_tui
 
     build_tui(config, goal_id)
@@ -88,6 +88,12 @@ def submit(
         )
 
     _finish(run)
+
+
+@build_app.command("goals")
+def goals(config: Config) -> None:
+    """List up to 32 recent PUBLIC Builds in the configured owner/project."""
+    _finish(lambda: _service(config).goals())
 
 
 @build_app.command("status")

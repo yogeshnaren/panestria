@@ -25,8 +25,8 @@ class BuildUnconfirmed(Exception):
 
 
 class BuildReviewClient:
-    def __init__(self, config: Path, goal: str):
-        self.config, self.goal = config, str(UUID(goal))
+    def __init__(self, config: Path, goal: str | None = None):
+        self.config, self.goal = config, str(UUID(goal)) if goal is not None else ""
         self.lock, self.closed = threading.Lock(), False
         self.active: subprocess.Popen[bytes] | None = None
 
@@ -52,10 +52,10 @@ class BuildReviewClient:
 
     def request(self, operation: str, arguments: tuple[str, ...]) -> dict[str, Any]:
         # No shell, model call, arbitrary CLI operation or implicit grant.
-        if operation not in {"status", "progress", "approve", "cancel"}:
+        if operation not in {"goals", "status", "progress", "approve", "cancel"}:
             raise BuildUnconfirmed
         command = [sys.executable, "-m", "panestria.cli.main", "build", operation, "--config", str(self.config)]
-        deadline = time.monotonic() + (30 if operation in {"status", "progress"} else 65)
+        deadline = time.monotonic() + (30 if operation in {"goals", "status", "progress"} else 65)
         with self.lock:
             if self.closed:
                 raise BuildUnconfirmed
@@ -88,6 +88,10 @@ class BuildReviewClient:
                 raise BuildUnconfirmed
             if operation == "status" and (value.get("goal_id") != self.goal or "task_state" not in value):
                 raise BuildUnconfirmed
+            if operation == "goals":
+                from panestria.contracts.build_index import BuildGoalIndex
+
+                BuildGoalIndex.model_validate_json(json.dumps(value))
             if operation == "progress":
                 from panestria.contracts.progress import BuildProgress
 
@@ -336,13 +340,19 @@ class BuildReviewTerminal:
             screen.refresh()
 
 
-def build_tui(config: Path, goal_id: str) -> None:
+def build_tui(config: Path, goal_id: str | None = None) -> None:
     try:
         if not sys.stdin.isatty() or not sys.stdout.isatty():
             raise BuildUnconfirmed
         import curses
 
-        terminal = BuildReviewTerminal(BuildReviewClient(config, goal_id))
+        terminal: Any
+        if goal_id is None:
+            from panestria.cli.build_browser import BuildGoalBrowser
+
+            terminal = BuildGoalBrowser(config)
+        else:
+            terminal = BuildReviewTerminal(BuildReviewClient(config, goal_id))
         try:
             curses.wrapper(terminal.run)
         finally:
