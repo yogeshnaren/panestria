@@ -98,3 +98,13 @@ New experiments must retain their original source, cohort, units, denominator,
 artifact hashes and failure/unknown outcomes. Current end-to-end and task-domain
 accuracy remain unmeasured where no qualifying evidence exists. No original
 acceptance requirement or release gate is weakened by adding this component.
+
+## Delivered runtime measurement component
+
+The [opt-in Build capture](../testing/RUNTIME_BUILD_METRICS.md) implements part of
+S2 using the existing private performance-history schema. Canonical DB intervals
+and protected receipt hashes are preserved; final-check fractions do not become
+accuracy, and unmeasured cash stays unknown. Automatic capture failure does not
+change task state or redispatch. Original source-bound component observations
+are linked from that guide. Full tracing/exposure/usage/UI and S1/S3/gate
+requirements above remain intact.

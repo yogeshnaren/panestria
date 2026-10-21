@@ -2443,8 +2443,9 @@
         "AOS-029-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-029-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-029-S2.md",
+      "scope_note": "Opt-in canonical Build lifecycle/receipt/final-check metrics and honest unknown accuracy/cash delivered; full cross-mode usage, exposure, UI and qualification remain pending."
     },
     {
       "id": "AOS-029-S3",

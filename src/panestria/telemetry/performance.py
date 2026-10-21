@@ -17,6 +17,10 @@ from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, FiniteFloat, S
 from panestria.config_local import read_private
 
 CATALOG = {
+    "latency.invocation_lifecycle_p50": "seconds",
+    "latency.invocation_lifecycle_p95": "seconds",
+    "runtime.receipt_present_fraction": "fraction",
+    "verification.required_pass_fraction": "fraction",
     "quality.correct_fraction": "fraction",
     "quality.answered_accuracy": "fraction",
     "quality.supported_precision": "fraction",

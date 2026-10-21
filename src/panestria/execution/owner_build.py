@@ -309,6 +309,11 @@ class OwnerBuild:
             raise
         return {"status": outcome.status, "reason": outcome.reason, **self.status(contract.goal_id)}
 
+    def capture_metrics(self, goal: str) -> dict[str, Any]:
+        from panestria.execution.build_metrics import capture_build_metrics
+
+        return capture_build_metrics(self.connect, self.actor, self.reports, self.settings.root / "metrics", goal)
+
     def progress(self, goal: str) -> dict[str, Any]:
         from panestria.kernel.build_progress import BuildProgressService
 
