@@ -50,6 +50,8 @@ class ClaudeScopedBashAdapter(ClaudeRegisteredCheckAdapter):
             "mcp__panestria__run_scoped_bash call with job_ref " + job_ref + ". "
             "Its script runs as Bash inside a disposable network-disabled /workspace, "
             "with no credentials, no .git, no package installation and a 30 second maximum. "
+            "Use Bash builtins or the installed Python standard library for edits and diagnostics. "
+            "Optional utilities such as hexdump are not installed; do not depend on them or install packages. "
             "Use this command to make the necessary edits and optionally run diagnostics. "
             "Only metadata is returned. Independent tests and owner merge approval happen later. "
             "Use no other tools and do not request approvals. If task data includes an assignment, "
