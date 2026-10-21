@@ -86,6 +86,26 @@
           "scope": "Actual PG/crypto/HTTP/PTY; synthetic in-memory keys. No inference or actual keyring qualification."
         }
       ]
+    },
+    {
+      "file": "quota-isolation.xml",
+      "cases": 14,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 18.977,
+      "sha256": "7936f56cdc7f3913917e7b968493c0d41a422abdd43edcbccdb9c9a4f3d44d3a",
+      "source_properties": [
+        {
+          "candidate_commit": "cc3332240315e45137fcaf745dcde3c42ac41bb4",
+          "fixture_digest": "16ccb714336ece80b1ad85be4e0c14768f15d46317acd14064083b0d174356e6",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PG/crypto/HTTP/PTY; synthetic in-memory keys. No inference or actual keyring qualification."
+        },
+        {
+          "backup_sha256": "d09439eb3c80d9261a71f2f3da86e63213004ac07a479bec8cc0b6b6b6ec5992"
+        }
+      ]
     }
   ],
   "notes": [
@@ -93,8 +113,19 @@
     "Clean4020b98:3PASS8.54s. Cleanb889a4c:4PASS10.80s adds actual completed model-fixture reply lost at client boundary and transient receipt failure; original request survives, receipt confirms completion and inference count remains1.",
     "Fresh mainc413e78/PR163 merged as6e8c840 after component validation. Its complete tree3ea002323c7d4e1edb3850bbd4886b60718b055f exactly equals testedb889a4c tree; no production/test bytes changed by ancestry update. Original source properties are preserved, not relabeled.",
     "Initial connected run includes unchanged ordinary Ask TUI, profile editor/API and goal-only OpenAPI snapshot assertions. Only the public-code expectation and lost-receipt handling/extra recovery scenario changed afterward; exact-head full CI is separate.",
-    "Profile status is configured metadata, not key/model readiness or runtime qualification. Default owner profile mounting remains disabled; keys/models/capacity in connected cases are explicit fixtures."
+    "Profile status is configured metadata, not key/model readiness or runtime qualification. Default owner profile mounting remains disabled; keys/models/capacity in connected cases are explicit fixtures.",
+    "Cleancc33322:14PASS18.98s across the new profile Ask journeys then complete quota migration/constraints suite. The isolated quota dump contains its exact synthetic database, not shared profile/build audit. Original failed full CI and unchanged strong assertions preserved; production code unchanged by correction."
   ],
   "release_gate": "NOT_ASSESSED",
-  "owner_acceptance": "NOT_ASSESSED"
+  "owner_acceptance": "NOT_ASSESSED",
+  "initial_ci": {
+    "run_id": 39658458833,
+    "head": "047557feb1d5631c29e92341dfa09d1f0aae4772",
+    "cases": 2219,
+    "failures": 1,
+    "errors": 0,
+    "failed_node": "tests/integration/test_quota_migration.py::test_actual_dump_restore_refuses_audit_loss_and_continues_global_events",
+    "cause": "The old quota audit downgrade used the shared fixture DB. New real renderer2 profile audit correctly blocked downgrade before reaching the quota-specific guard. Move only this old-schema test to existing isolated r1_migration_task and pg_dump its actual dbname; all original quota guard/restore/immutability/event assertions remain unchanged.",
+    "raw_archive": "workspace outputs/r3-build-ci-2026-10-20/pr164-initial; original hashes in summary.json"
+  }
 }
