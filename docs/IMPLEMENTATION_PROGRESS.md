@@ -248,3 +248,19 @@ The [owner return-release command](testing/RETURNED_BUILD_RELEASE.md) now distin
 ## Local proposal execution bridge
 
 A controller-compiled one-edit plan can now use the existing native run and final-review path alongside two independent edits. This closes the small-goal gap between the local draft format and execution; no synthetic second editing task is needed. [Observed bridge behavior](../evidence/local-plan-native-bridge-2026-10-20/report.json) covers compiler→canonical stage/separate acceptance→real scoped tools→complete final checks→scripted exact owner merge, plus unsupported dependent-graph refusal. Provider/model/auth/capacity observations are fixtures in this component, not new live qualification. General DAGs/second adapters and full R3/G3 remain pending.
+
+## Opt-in measurements from actual Build runs
+
+[Runtime Build capture](testing/RUNTIME_BUILD_METRICS.md) now saves private
+canonical invocation lifecycle p50/p95, protected receipt availability and
+independently confirmed final required-check fractions using the existing
+performance-history format. Normal-return native-plan capture is explicitly
+opt-in; manual capture is available for an existing goal. UNKNOWN invocations
+supply no returned-latency sample, and accuracy/actual cash stay UNMEASURED.
+
+[Source-bound component checks](../evidence/build-runtime-metrics-2026-10-21/report.json)
+verify actual PG/CLI/MCP/Docker/storage behavior with labeled native/auth/capacity
+fixtures. Full history refuses growth without changing the canonical outcome or
+launching another worker. No raw prompt/code/response/credential logging or
+storage pruning. This is partial AOS-029-S2; cross-mode instrumentation, qualified
+quality, resource/token/cash/exposure views and G3 remain pending.

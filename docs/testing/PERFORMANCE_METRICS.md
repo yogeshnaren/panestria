@@ -76,6 +76,15 @@ owner decision; this command never deletes backups, Docker data, model caches
 or prior metrics. Reads are bounded; corrupt/private-permission failures remain
 visible as UNAVAILABLE rather than an empty successful report.
 
+## Measurements from new Build runs
+
+[Runtime Build capture](RUNTIME_BUILD_METRICS.md) connects this same history
+format to actual canonical invocation timestamps, protected receipt availability
+and independently confirmed final checks. Use `build metrics --config ... GOAL`
+for an explicit snapshot, or opt in to normal-return native-plan capture in the
+private Build config. Accuracy and actual cash remain UNMEASURED. These are
+lifecycle intervals with sample counts, not model-only latency or a release pass.
+
 ## Remaining R3 instrumentation
 
 This is an evidence-history foundation, **not continuous runtime observability
