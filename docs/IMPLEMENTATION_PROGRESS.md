@@ -10,9 +10,10 @@ critical path: canonical plans/handoffs (PR127), scoped verification (PR132) and
 bounded admission/handoff completion (PR133) are merged. Combined-tree verification
 and owner review are merged in PR134; the native two-worker execution slice is merged in PR137 after actual live validation
 and all six exact-head CI checks. Direct local proposals are merged in PR138. Final integration intent and receipt-proven return recovery are merged in PR139/140.
-Finite owner-reviewed revisions are merged in PR141. Current delivery is canonical
-check/evidence progress and honest stall visibility; next connect supported local
-proposals to the native final-review path and the owner terminal. CI/mutation/metrics PRs128–131 are
+Finite owner-reviewed revisions are merged in PR141. Canonical check/evidence progress and honest stall visibility are merged in PR142.
+The owner Build terminal now exposes the same progress on demand; a compatible
+one-edit local proposal bridge is separately under review. Next close the
+remaining personal-platform and qualification gaps from revision3. CI/mutation/metrics PRs128–131 are
 merged; performance history is delivered, continuous task metrics remain pending.
 Deliver usable slices and required evidence; avoid unrelated test expansion.
 
@@ -71,8 +72,7 @@ snapshot and shows a terminal bar of final required checks. It separates current
 execution, source-bound verdicts, owner merge and release acceptance. Missing or
 altered evidence cannot retain a PASS score, and worker heartbeats cannot advance
 it. Repair budgets, held/unknown capacity and repeated unchanged failures remain
-visible. This is partial X10/S4 delivery, with semantic/non-goal assessment,
-controller repair policy and unified owner surfaces still pending.
+visible. The existing Build terminal now loads it with p or a fourth Tab view, without starting workers or changing the exact approval flow. This is partial X10/S4 delivery, with semantic/non-goal assessment, controller repair policy and a unified cross-mode Mission Control still pending.
 
 ## Next concrete delivery
 

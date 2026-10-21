@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "scope": "Actual owner curses PTY/CLI/PG/Git/MCP/Docker/checks; explicit native/auth/capacity fixtures",
+  "runs": [
+    {
+      "report": "initial.xml",
+      "source_commit": "fa8c52448d2a14f83483690ed5b4f54ca430ba2a",
+      "worktree_state": "clean",
+      "tests": 6,
+      "failures": 1,
+      "errors": 0,
+      "seconds": 67.646,
+      "sha256": "3b4d506adc1913c02a79c944597c25649d6eb086755219da43da42ba955b5032"
+    },
+    {
+      "report": "qualified.xml",
+      "source_commit": "e0d0add7ba86076d1960f882759b0a65bb15248b",
+      "worktree_state": "clean",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 60.415,
+      "sha256": "f5654aea1094d0b8abd818569e649cd6ccfe2deff910f1c260cb2257d06009ca"
+    }
+  ],
+  "initial_failure": "One new assertion waited for a second line after the PTY cursor had already consumed the complete valid redraw. Corrected the reader to wait for the later line and inspect the earlier line in its retained transcript; no product behavior changed.",
+  "observed": [
+    "Canonical plan final-check progress and owner-review attention appear in the real keyboard terminal using the existing Build configuration",
+    "Reading progress causes no new worker/provider dispatch or protected ref advance",
+    "Exact review/explicit merge, explicit cancellation, stale frozen review denial, lost-acknowledgment recovery and headless private-path refusal still pass",
+    "Progress and task/approval snapshots remain separate; release acceptance is NOT_ASSESSED"
+  ],
+  "limits": [
+    "Initial6 and qualified6 overlap; not12 distinct scenarios",
+    "No live provider/model or full cross-mode Mission Control/G3/human trial evidence"
+  ],
+  "static_checks": [
+    "Ruff",
+    "Mypy265",
+    "11 import boundaries",
+    "secret scan"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "owner_acceptance": "NOT_GRANTED"
+}

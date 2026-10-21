@@ -55,3 +55,17 @@ uv run --frozen pytest tests/integration/test_build_tui.py \
   tests/integration/test_ask_tui.py tests/integration/test_owner_build_cli.py \
   -m 'not live' -q
 ```
+
+## Canonical plan progress
+
+For a canonical plan goal, press **p** or Tab to the fourth view to load verified Build progress on demand. The bar counts original **final required checks**, followed by execution/attention/next action, separate owner merge and release acceptance, conservative repair envelope and held/UNKNOWN capacity. PgUp/PgDn shows original check/non-goal and milestone/candidate evidence references. It uses the same existing private Build configuration and scoped goal; no extra setup or provider call is needed.
+
+The read-only view reports its own as-of event cursor and can become stale. It never updates approval optimistically, submits work, retries a failed model or grants recovery. F5 discards the views and pending confirmation, then refreshes canonical task status. Press p again for fresh progress. Approval still freezes the exact status digest/version and requires typing MERGE; cancellation still requires typing CANCEL. A failed progress read clears only the progress observation and cannot turn into approval. An old single-worker goal without canonical plan membership can still use its original check/diff/review pages; its plan-progress view is UNCONFIRMED.
+
+The same read is available as JSON:
+
+```bash
+panestria build progress --config /absolute/private/build.json GOAL_UUID
+```
+
+For a create-once private snapshot and SHA256, use [the progress export command](BUILD_PROGRESS.md). Non-goals and release acceptance remain NOT_ASSESSED. [Actual terminal evidence](../../evidence/progress-terminal-2026-10-20/report.json) covers real PTY/Postgres/Docker/Git and independent checks, with explicit native/auth/capacity fixtures. No new model/provider call or full Mission Control/G3 claim.

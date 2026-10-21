@@ -96,6 +96,12 @@ def status(config: Config, goal_id: str, diff: bool = False) -> None:
     _finish(lambda: _service(config).status(goal_id, diff=diff))
 
 
+@build_app.command("progress")
+def progress(config: Config, goal_id: str) -> None:
+    """Inspect canonical plan progress using the existing owner Build configuration."""
+    _finish(lambda: _service(config).progress(goal_id))
+
+
 @build_app.command("approve")
 def approve(config: Config, approval_id: str, effect_digest: str, expected_version: int, idempotency_key: str) -> None:
     """Approve an exact candidate and dispatch its protected, revalidated Git CAS."""

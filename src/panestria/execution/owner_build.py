@@ -309,6 +309,16 @@ class OwnerBuild:
             raise
         return {"status": outcome.status, "reason": outcome.reason, **self.status(contract.goal_id)}
 
+    def progress(self, goal: str) -> dict[str, Any]:
+        from panestria.kernel.build_progress import BuildProgressService
+
+        with self.connect() as c:
+            c.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+            observed = BuildProgressService().inspect(
+                UnitOfWork(c), self.actor, goal, BuildEvidenceService(self.reports)
+            )
+        return observed.model_dump(mode="json")
+
     def status(self, goal: str, *, diff: bool = False) -> dict[str, Any]:
         with self.connect() as c:
             GoalService().get(UnitOfWork(c), self.actor, goal)

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="6" time="67.646" timestamp="2026-10-20T10:11:12.545366-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_build_tui" name="test_actual_build_terminal_reviews_diff_and_explicitly_merges_exact_candidate" file="tests/integration/test_build_tui.py" line="32" time="14.705"><properties><property name="candidate_commit" value="fa8c52448d2a14f83483690ed5b4f54ca430ba2a" /><property name="fixture_digest" value="65639132b4ec3e9efca9ef9c0d358e6f767f382073f145d35fb52e06cdfb0940" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual PTY/PG/Docker/Git/owner CLI; TEST_FIXTURE_NOT_LIVE native/certificates" /></properties></testcase><testcase classname="tests.integration.test_build_tui" name="test_actual_build_terminal_stale_frozen_review_cannot_merge_after_cancellation" file="tests/integration/test_build_tui.py" line="52" time="9.795"><properties><property name="candidate_commit" value="fa8c52448d2a14f83483690ed5b4f54ca430ba2a" /><property name="fixture_digest" value="65639132b4ec3e9efca9ef9c0d358e6f767f382073f145d35fb52e06cdfb0940" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_build_tui" name="test_actual_build_terminal_cancellation_needs_separate_explicit_confirmation" file="tests/integration/test_build_tui.py" line="70" time="9.974"><properties><property name="candidate_commit" value="fa8c52448d2a14f83483690ed5b4f54ca430ba2a" /><property name="fixture_digest" value="65639132b4ec3e9efca9ef9c0d358e6f767f382073f145d35fb52e06cdfb0940" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_build_tui" name="test_lost_actual_merge_acknowledgement_never_replays_and_refresh_recovers" file="tests/integration/test_build_tui.py" line="84" time="9.895"><properties><property name="candidate_commit" value="fa8c52448d2a14f83483690ed5b4f54ca430ba2a" /><property name="fixture_digest" value="65639132b4ec3e9efca9ef9c0d358e6f767f382073f145d35fb52e06cdfb0940" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_build_tui" name="test_build_terminal_headless_refusal_never_prints_private_config_path" file="tests/integration/test_build_tui.py" line="124" time="0.055"><properties><property name="candidate_commit" value="fa8c52448d2a14f83483690ed5b4f54ca430ba2a" /><property name="fixture_digest" value="65639132b4ec3e9efca9ef9c0d358e6f767f382073f145d35fb52e06cdfb0940" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_build_tui" name="test_actual_canonical_plan_progress_is_visible_in_terminal_without_starting_or_merging" file="tests/integration/test_build_tui.py" line="129" time="20.022"><properties><property name="candidate_commit" value="fa8c52448d2a14f83483690ed5b4f54ca430ba2a" /><property name="fixture_digest" value="65639132b4ec3e9efca9ef9c0d358e6f767f382073f145d35fb52e06cdfb0940" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: b'\x1b[?1049h\x1b[22;0;0t\x1b[1;26r\x1b(B\x1b[m\x1b[4l\x1b[?7h\x1b[?1h\x1b=\x1b[39;49m\x1b[?1h\x1b=\x1b[39;49m\x1b[37m...aa210b46&quot;,\r\x1b[24d Read-only progress snapshot; F5 discards views. Owner merge stays a separate decision.\x1b[26;84H'&#10;assert (None is None and 80047.626520313 &lt; 80047.604345216)&#10; +  where None = poll()&#10; +    where poll = &lt;Popen: returncode: None args: ['/tmp/panestria-progress-terminal-work/.venv...&gt;.poll&#10; +  and   80047.626520313 = &lt;built-in function monotonic&gt;()&#10; +    where &lt;built-in function monotonic&gt; = time.monotonic">native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x7a6e9da4bcb0&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-267/test_actual_canonical_plan_pro0/build.json...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+
+    def test_actual_canonical_plan_progress_is_visible_in_terminal_without_starting_or_merging(native_plan, prepared_plan):
+        owner, runner, plan, state = native_plan
+        f = prepared_plan[0]
+        assert runner.run(plan.plan_id, public_subscription_run=True)["status"] == "WAITING_APPROVAL"
+        progress = invoke(f, "progress", plan.goal_id)
+        assert progress["required_checks_passed"] == progress["required_checks_total"] &gt; 0
+        assert progress["owner_merge"] == "PENDING" and progress["dispatch_authority"] == "NONE"
+        launches = state["launches"]
+        with terminal(f.config, entry=("build", "tui"), arguments=(plan.goal_id,)) as t:
+            t.until(b"WAITING_APPROVAL")
+            os.write(t.master, b"p")
+            t.until(b"OWNER_MERGE_REVIEW_REQUIRED")
+&gt;           t.until(b"release acceptance: NOT_ASSESSED")
+
+tests/integration/test_build_tui.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = b'release acceptance: NOT_ASSESSED', timeout = 6, after = None
+
+    def until(value, timeout=6, *, after=None):
+        deadline = time.monotonic() + timeout
+        start = len(transcript) if after is None else after
+        while value not in transcript[start:]:
+&gt;           assert process.poll() is None and time.monotonic() &lt; deadline, bytes(transcript[-3000:])
+E           AssertionError: b'\x1b[?1049h\x1b[22;0;0t\x1b[1;26r\x1b(B\x1b[m\x1b[4l\x1b[?7h\x1b[?1h\x1b=\x1b[39;49m\x1b[?1h\x1b=\x1b[39;49m\x1b[37m...aa210b46",\r\x1b[24d Read-only progress snapshot; F5 discards views. Owner merge stays a separate decision.\x1b[26;84H'
+E           assert (None is None and 80047.626520313 &lt; 80047.604345216)
+E            +  where None = poll()
+E            +    where poll = &lt;Popen: returncode: None args: ['/tmp/panestria-progress-terminal-work/.venv...&gt;.poll
+E            +  and   80047.626520313 = &lt;built-in function monotonic&gt;()
+E            +    where &lt;built-in function monotonic&gt; = time.monotonic
+
+tests/integration/test_ask_tui.py:145: AssertionError</failure></testcase></testsuite></testsuites>
