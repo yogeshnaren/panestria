@@ -194,7 +194,7 @@ def test_actual_goal_browser_scopes_public_list_and_opens_unstarted_plan(native_
     with terminal(f.config, entry=("build", "tui")) as t:
         t.until(b"Latest 32 PUBLIC Builds")
         os.write(t.master, b"\r")
-        t.until(b"Canonical task: CREATED")
+        t.until(b"Canonical snapshot; F5 refreshes.")
         os.write(t.master, b"p")
         t.until(b"release acceptance: NOT_ASSESSED")
         assert b"VERIFIED BUILD PROGRESS" in t.transcript

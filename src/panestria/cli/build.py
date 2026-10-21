@@ -21,7 +21,7 @@ Config = Annotated[Path, typer.Option("--config")]
 
 
 @build_app.command("tui")
-def terminal_review(config: Config, goal_id: str | None = None) -> None:
+def terminal_review(config: Config, goal_id: Annotated[str | None, typer.Argument()] = None) -> None:
     """Browse existing PUBLIC Builds, or review one goal with exact merge/cancel decisions."""
     from panestria.cli.build_tui import build_tui
 
