@@ -67,9 +67,13 @@ class ProfileClient(LocalAskClient):
     def __init__(self, config: Path):
         self.config, self._token = load_profile_client(config)
 
+    def request_seconds(self, route: str) -> float:
+        return 5.0
+
     async def _bounded(self, method: str, route: str, body: dict[str, Any] | None) -> dict[str, Any]:
-        async with asyncio.timeout(5):
-            async with httpx.AsyncClient(trust_env=False, follow_redirects=False, timeout=5) as client:
+        seconds = self.request_seconds(route)
+        async with asyncio.timeout(seconds):
+            async with httpx.AsyncClient(trust_env=False, follow_redirects=False, timeout=seconds) as client:
                 async with client.stream(
                     method,
                     self.config.origin + route,
