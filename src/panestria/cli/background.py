@@ -137,3 +137,50 @@ def withdraw(config: Config, item_id: str, binding_sha256: str) -> None:
             return BackgroundWorkService().withdraw(UnitOfWork(c), owner.actor, item_id, binding_sha256)
 
     _finish(run)
+
+
+@background_app.command("probe-account")
+def probe_account(config: Config, item_id: str) -> None:
+    """Inspect pinned private Claude login metadata; retain only scoped identity hashes."""
+    from panestria.execution.background_account import probe_account as probe
+
+    _finish(lambda: probe(_service(config), item_id))
+
+
+@background_app.command("link-account")
+def link_account(
+    config: Config, item_id: str, observation_sha256: str, link_sha256: str, accept_account_link: bool = False
+) -> None:
+    """Confirm the exact displayed pseudonymous profile/account link; no inference grant."""
+    from panestria.execution.background_account import account_reports
+    from panestria.kernel.background_account import BackgroundAccountService
+
+    def run() -> dict[str, Any]:
+        owner = _service(config)
+        service = BackgroundAccountService(account_reports(owner))
+        with owner.connect() as c:
+            return service.confirm(
+                UnitOfWork(c),
+                owner.actor,
+                item_id,
+                observation_sha256,
+                link_sha256,
+                accept_account_link=accept_account_link,
+            )
+
+    _finish(run)
+
+
+@background_app.command("account")
+def show_account(config: Config, item_id: str) -> None:
+    """Read a retained account link/freshness without contacting Claude or refreshing it."""
+    from panestria.execution.background_account import account_reports
+    from panestria.kernel.background_account import BackgroundAccountService
+
+    def run() -> dict[str, Any]:
+        owner = _service(config)
+        service = BackgroundAccountService(account_reports(owner))
+        with owner.connect() as c:
+            return service.inspect(UnitOfWork(c), owner.actor, item_id)
+
+    _finish(run)
