@@ -45,13 +45,21 @@ def test_connected_controller_emits_progress_and_stops_at_one_exact_owner_review
     assert git(owner.settings.repository, "rev-parse", "refs/heads/main") == f.base
     assert owner.status(plan.goal_id)["task_state"] == "WAITING_APPROVAL"
     assert lines[-1]["automatic_merge"] is lines[-1]["implicit_resume"] is False
+    with owner.connect() as c:
+        before = c.execute("SELECT count(*) FROM panestria.task_event").fetchone()
+    metadata = state["metadata"]
+    idle = work_queue(owner, allow_background_subscription_run=True, maximum_ticks=2, maximum_jobs=2)
+    assert idle["reason"] == "tick_limit_reached" and idle["ticks"] == 2 and idle["items"] == []
+    assert state["launches"] == 2 and state["metadata"] == metadata
+    with owner.connect() as c:
+        assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == before
 
 
 def test_connected_controller_stops_on_selection_race_without_alternate_job_or_implicit_resume(
     prepared_plan, native_plan, monkeypatch
 ):
     f, owner, plan, state, original, _ = setup(prepared_plan, native_plan, monkeypatch)
-    another(f, owner, plan, original, priority=0)
+    another(f, owner, plan, original, priority=1)
     with pytest.raises(KernelDenied, match="explicit_background"):
         work_queue(owner, allow_background_subscription_run=False)
 
