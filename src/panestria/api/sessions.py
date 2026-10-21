@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any
+import hashlib
+from typing import Any, Literal
 from urllib.parse import urlsplit
 
 import psycopg
@@ -18,7 +19,14 @@ COOKIE_NAME = "panestria_session"
 
 
 class BrowserAccess:
-    def __init__(self, origin: str, service: SessionService, database_url: str) -> None:
+    def __init__(
+        self,
+        origin: str,
+        service: SessionService,
+        database_url: str,
+        *,
+        namespace: Literal["default", "mission"] = "default",
+    ) -> None:
         parts = urlsplit(origin)
         if (
             parts.scheme not in {"http", "https"}
@@ -30,6 +38,13 @@ class BrowserAccess:
             or parts.username is not None
         ):
             raise ValueError("invalid_browser_origin")
+        if namespace not in {"default", "mission"}:
+            raise ValueError("invalid_browser_namespace")
+        self.cookie_name = (
+            COOKIE_NAME
+            if namespace == "default"
+            else "panestria_mission_" + hashlib.sha256(origin.encode()).hexdigest()[:12]
+        )
         self.origin = origin
         self.host = parts.netloc.lower()
         self.secure = parts.scheme == "https"
@@ -53,7 +68,7 @@ class BrowserAccess:
     def authenticate(self, request: Request, actor: Actor, connection: psycopg.Connection[Any] | None = None) -> str:
         mutation = request.method not in {"GET", "HEAD", "OPTIONS"}
         self.validate_origin(request, mutation=mutation)
-        token, csrf = request.cookies.get(COOKIE_NAME, ""), request.headers.get("x-panestria-csrf")
+        token, csrf = request.cookies.get(self.cookie_name, ""), request.headers.get("x-panestria-csrf")
         if connection is not None:
             return self.service.authenticate(UnitOfWork(connection), actor, token, csrf=csrf, mutation=mutation)
         with open_database(self.database_url) as owned:
