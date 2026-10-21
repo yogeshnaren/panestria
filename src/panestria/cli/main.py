@@ -17,6 +17,7 @@ from panestria.api.health import (
 )
 from panestria.cli.approvals import approve_command, deny_command, list_command
 from panestria.cli.ask import ask_command
+from panestria.cli.background import background_app
 from panestria.cli.build import build_app
 from panestria.cli.goals import goal_app, show_artifact
 from panestria.cli.local import local_app
@@ -36,6 +37,7 @@ app.add_typer(goal_app, name="goal")
 app.add_typer(artifact_app, name="artifact")
 app.add_typer(native_app, name="native")
 app.add_typer(build_app, name="build")
+app.add_typer(background_app, name="background")
 app.add_typer(profile_app, name="profile")
 app.add_typer(plan_app, name="plan")
 app.add_typer(quota_app, name="quota")
