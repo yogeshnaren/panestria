@@ -28,8 +28,9 @@ erasure guarantee.
 
 No profile API mounting, OS key provisioning, model launch or owner environment
 change is performed. Default Ask/activity servers remain unchanged. A supported
-qualified personal-mode launcher and local Ask selector are subsequent integration
-work. The new command works against the existing explicitly enabled qualified
+qualified personal-mode launcher remains subsequent integration work. The
+[separate pinned Ask selector](79-PINNED-PROFILE-ASK-TERMINAL.md) connects the next
+question surface without enabling that launcher. The new command works against the existing explicitly enabled qualified
 owner API; it is not a permission to bypass that setup boundary. Actual connected
 [observations](../../evidence/profile-style-terminal-2026-10-21/report.json) use
 synthetic keys, with no inference or actual desktop keyring. Private examples,
