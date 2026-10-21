@@ -1,6 +1,6 @@
 # Use structured preferences in local profile Ask
 
-This is an opt-in developer/API path, not yet a profile editor in the terminal.
+This is an opt-in local profile Ask path. The separate [style terminal](PROFILE_STYLE_TERMINAL.md) now edits the bounded preferences through the existing owner API; it does not enable that API or select a profile for Ask.
 First read [restricted Ask setup](PROFILE_ASK.md), [profile owner API](PROFILE_OWNER_API.md)
 and [runtime qualification](PROFILE_RUNTIME_QUALIFICATION.md). Keep personal mode
 disabled until its existing explicit local key/runtime prerequisites pass. This
