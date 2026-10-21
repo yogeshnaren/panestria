@@ -420,6 +420,13 @@ class OwnerBuild:
                     ).decode()
             return result
 
+    def goals(self) -> dict[str, Any]:
+        from panestria.kernel.build_index import build_goal_index
+
+        with self.connect() as c:
+            observed = build_goal_index(UnitOfWork(c), self.actor)
+        return observed.model_dump(mode="json")
+
     def cancel(self, goal: str, version: int) -> dict[str, Any]:
         # Do not take operation.lock: revocation must interrupt a running submit.
         with self.connect() as c:

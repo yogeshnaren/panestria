@@ -3,10 +3,36 @@
 Prepare and submit one bounded exercise using the existing
 [owner Build CLI](OWNER_BUILD_CLI.md). Its private `build.json`, migrated
 database, explicit PUBLIC policy and runtime qualification remain prerequisites.
-This is a review screen for an existing goal; it does not start Claude, select
-new work, grant permissions or submit a contract.
+The terminal browses and reviews existing goals. It does not start Claude, grant
+permissions or submit a contract.
 
-In another terminal with the same private database environment:
+In another terminal with the same private database environment, open the goal list:
+
+```bash
+uv run --frozen panestria build tui --config /absolute/private/build.json
+```
+
+Expect **PUBLIC BUILD GOALS**. Use **Up/Down** or **j/k**, then **Enter** to
+open a goal. Press **q** in the review screen to return to the list, then **q**
+to exit. **F5** refreshes the list explicitly. The latest 32 PUBLIC Build goals
+belonging to the configured owner **and project** are shown, with execution
+status, running task count, review count and creation time. It does not show
+Ask/Delegate goals, private goals or other projects. An unaccepted proposed plan
+requires the existing separate exact plan acceptance command; selecting it starts
+no worker. An empty list means no visible Build goal has been staged/submitted.
+
+For the same bounded list as JSON:
+
+```bash
+panestria build goals --config /absolute/private/build.json
+```
+
+This metadata list is not a success score. Open a goal and press **p** for its
+verified final-check bar and separate acceptance state. On access/configuration
+failure the list clears to UNCONFIRMED. Refresh/reopening never resumes a worker
+or approves a merge. Titles are displayed as escaped untrusted text.
+
+You can still open a known goal directly:
 
 ```bash
 uv run --frozen panestria build tui \
@@ -69,3 +95,5 @@ panestria build progress --config /absolute/private/build.json GOAL_UUID
 ```
 
 For a create-once private snapshot and SHA256, use [the progress export command](BUILD_PROGRESS.md). Non-goals and release acceptance remain NOT_ASSESSED. [Actual terminal evidence](../../evidence/progress-terminal-2026-10-20/report.json) covers real PTY/Postgres/Docker/Git and independent checks, with explicit native/auth/capacity fixtures. No new model/provider call or full Mission Control/G3 claim.
+
+[Goal-browser component evidence](../../evidence/build-goal-browser-2026-10-21/report.json) retains the initial failures, corrections and passing seven-case terminal journey. These are fixture-native component observations, not live provider or release qualification.

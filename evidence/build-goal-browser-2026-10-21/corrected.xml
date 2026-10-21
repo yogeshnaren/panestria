@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="7" time="40.444" timestamp="2026-10-20T19:23:32.206877-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_build_tui" name="test_actual_build_terminal_reviews_diff_and_explicitly_merges_exact_candidate" file="tests/integration/test_build_tui.py" line="34" time="7.017"><properties><property name="candidate_commit" value="3450bc02ad7dcdb41eb1cd642a41e2bbe3a0b4d4" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual PTY/PG/Docker/Git/owner CLI; TEST_FIXTURE_NOT_LIVE native/certificates" /></properties><failure message="AssertionError: b&quot;\x1b[1mUsage: \x1b[0m\x1b[1mpython \x1b[0m\x1b[1m-m\x1b[0m\x1b[1m panestria.cli.main build tui [OPTIONS]\x1b[0m\r&#10;  \...94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x95\xaf\r&#10;  &quot;&#10;assert (2 is None)&#10; +  where 2 = poll()&#10; +    where poll = &lt;Popen: returncode: 2 args: ['/tmp/panestria-pr-integration/.venv/bin/python...&gt;.poll">owner_cli = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-1/test_actual_build_terminal_rev0/build.json'),...nthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', base='54fc0997417290d734cea799763693233fe2d922')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x72096fea7420&gt;
+
+    def test_actual_build_terminal_reviews_diff_and_explicitly_merges_exact_candidate(owner_cli, record_property):  # noqa: F811
+        f = owner_cli
+        record_property("scope", "Actual PTY/PG/Docker/Git/owner CLI; TEST_FIXTURE_NOT_LIVE native/certificates")
+        doc, result = pending(f)
+        with terminal(f.config, entry=("build", "tui"), arguments=(doc["goal_id"],)) as t:
+&gt;           t.until(b"WAITING_APPROVAL")
+
+tests/integration/test_build_tui.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = b'WAITING_APPROVAL', timeout = 6, after = None
+
+    def until(value, timeout=6, *, after=None):
+        deadline = time.monotonic() + timeout
+        start = len(transcript) if after is None else after
+        while value not in transcript[start:]:
+&gt;           assert process.poll() is None and time.monotonic() &lt; deadline, bytes(transcript[-3000:])
+E           AssertionError: b"\x1b[1mUsage: \x1b[0m\x1b[1mpython \x1b[0m\x1b[1m-m\x1b[0m\x1b[1m panestria.cli.main build tui [OPTIONS]\x1b[0m\r
+E             \...94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x95\xaf\r
+E             "
+E           assert (2 is None)
+E            +  where 2 = poll()
+E            +    where poll = &lt;Popen: returncode: 2 args: ['/tmp/panestria-pr-integration/.venv/bin/python...&gt;.poll
+
+tests/integration/test_ask_tui.py:145: AssertionError</failure></testcase><testcase classname="tests.integration.test_build_tui" name="test_actual_build_terminal_stale_frozen_review_cannot_merge_after_cancellation" file="tests/integration/test_build_tui.py" line="54" time="3.797"><properties><property name="candidate_commit" value="3450bc02ad7dcdb41eb1cd642a41e2bbe3a0b4d4" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: b&quot;\x1b[1mUsage: \x1b[0m\x1b[1mpython \x1b[0m\x1b[1m-m\x1b[0m\x1b[1m panestria.cli.main build tui [OPTIONS]\x1b[0m\r&#10;  \...94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x95\xaf\r&#10;  &quot;&#10;assert (2 is None)&#10; +  where 2 = poll()&#10; +    where poll = &lt;Popen: returncode: 2 args: ['/tmp/panestria-pr-integration/.venv/bin/python...&gt;.poll">owner_cli = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-1/test_actual_build_terminal_sta0/build.json'),...nthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', base='67f1b404bbfb7c875c9db17c4d7ff507713fa7bb')
+
+    def test_actual_build_terminal_stale_frozen_review_cannot_merge_after_cancellation(owner_cli):  # noqa: F811
+        f = owner_cli
+        doc, result = pending(f)
+        with terminal(f.config, entry=("build", "tui"), arguments=(doc["goal_id"],)) as t:
+&gt;           t.until(b"WAITING_APPROVAL")
+
+tests/integration/test_build_tui.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = b'WAITING_APPROVAL', timeout = 6, after = None
+
+    def until(value, timeout=6, *, after=None):
+        deadline = time.monotonic() + timeout
+        start = len(transcript) if after is None else after
+        while value not in transcript[start:]:
+&gt;           assert process.poll() is None and time.monotonic() &lt; deadline, bytes(transcript[-3000:])
+E           AssertionError: b"\x1b[1mUsage: \x1b[0m\x1b[1mpython \x1b[0m\x1b[1m-m\x1b[0m\x1b[1m panestria.cli.main build tui [OPTIONS]\x1b[0m\r
+E             \...94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x95\xaf\r
+E             "
+E           assert (2 is None)
+E            +  where 2 = poll()
+E            +    where poll = &lt;Popen: returncode: 2 args: ['/tmp/panestria-pr-integration/.venv/bin/python...&gt;.poll
+
+tests/integration/test_ask_tui.py:145: AssertionError</failure></testcase><testcase classname="tests.integration.test_build_tui" name="test_actual_build_terminal_cancellation_needs_separate_explicit_confirmation" file="tests/integration/test_build_tui.py" line="72" time="3.618"><properties><property name="candidate_commit" value="3450bc02ad7dcdb41eb1cd642a41e2bbe3a0b4d4" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: b&quot;\x1b[1mUsage: \x1b[0m\x1b[1mpython \x1b[0m\x1b[1m-m\x1b[0m\x1b[1m panestria.cli.main build tui [OPTIONS]\x1b[0m\r&#10;  \...94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x95\xaf\r&#10;  &quot;&#10;assert (2 is None)&#10; +  where 2 = poll()&#10; +    where poll = &lt;Popen: returncode: 2 args: ['/tmp/panestria-pr-integration/.venv/bin/python...&gt;.poll">owner_cli = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-1/test_actual_build_terminal_can0/build.json'),...nthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', base='fe9078ef12563c05abfc9a3e12b369678aeee4f4')
+
+    def test_actual_build_terminal_cancellation_needs_separate_explicit_confirmation(owner_cli):  # noqa: F811
+        f = owner_cli
+        doc, result = pending(f)
+        with terminal(f.config, entry=("build", "tui"), arguments=(doc["goal_id"],)) as t:
+&gt;           t.until(b"WAITING_APPROVAL")
+
+tests/integration/test_build_tui.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = b'WAITING_APPROVAL', timeout = 6, after = None
+
+    def until(value, timeout=6, *, after=None):
+        deadline = time.monotonic() + timeout
+        start = len(transcript) if after is None else after
+        while value not in transcript[start:]:
+&gt;           assert process.poll() is None and time.monotonic() &lt; deadline, bytes(transcript[-3000:])
+E           AssertionError: b"\x1b[1mUsage: \x1b[0m\x1b[1mpython \x1b[0m\x1b[1m-m\x1b[0m\x1b[1m panestria.cli.main build tui [OPTIONS]\x1b[0m\r
+E             \...94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x95\xaf\r
+E             "
+E           assert (2 is None)
+E            +  where 2 = poll()
+E            +    where poll = &lt;Popen: returncode: 2 args: ['/tmp/panestria-pr-integration/.venv/bin/python...&gt;.poll
+
+tests/integration/test_ask_tui.py:145: AssertionError</failure></testcase><testcase classname="tests.integration.test_build_tui" name="test_lost_actual_merge_acknowledgement_never_replays_and_refresh_recovers" file="tests/integration/test_build_tui.py" line="86" time="5.764"><properties><property name="candidate_commit" value="3450bc02ad7dcdb41eb1cd642a41e2bbe3a0b4d4" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_build_tui" name="test_build_terminal_headless_refusal_never_prints_private_config_path" file="tests/integration/test_build_tui.py" line="126" time="0.075"><properties><property name="candidate_commit" value="3450bc02ad7dcdb41eb1cd642a41e2bbe3a0b4d4" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_build_tui" name="test_actual_canonical_plan_progress_is_visible_in_terminal_without_starting_or_merging" file="tests/integration/test_build_tui.py" line="131" time="8.494"><properties><property name="candidate_commit" value="3450bc02ad7dcdb41eb1cd642a41e2bbe3a0b4d4" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: b&quot;\x1b[1mUsage: \x1b[0m\x1b[1mpython \x1b[0m\x1b[1m-m\x1b[0m\x1b[1m panestria.cli.main build tui [OPTIONS]\x1b[0m\r&#10;  \...94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x95\xaf\r&#10;  &quot;&#10;assert (2 is None)&#10; +  where 2 = poll()&#10; +    where poll = &lt;Popen: returncode: 2 args: ['/tmp/panestria-pr-integration/.venv/bin/python...&gt;.poll">native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x72096e249820&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-1/test_actual_canonical_plan_pro0/build.json')...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+
+    def test_actual_canonical_plan_progress_is_visible_in_terminal_without_starting_or_merging(native_plan, prepared_plan):
+        owner, runner, plan, state = native_plan
+        f = prepared_plan[0]
+        assert runner.run(plan.plan_id, public_subscription_run=True)["status"] == "WAITING_APPROVAL"
+        progress = invoke(f, "progress", plan.goal_id)
+        assert progress["required_checks_passed"] == progress["required_checks_total"] &gt; 0
+        assert progress["owner_merge"] == "PENDING" and progress["dispatch_authority"] == "NONE"
+        launches = state["launches"]
+        with terminal(f.config, entry=("build", "tui"), arguments=(plan.goal_id,)) as t:
+&gt;           t.until(b"WAITING_APPROVAL")
+
+tests/integration/test_build_tui.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = b'WAITING_APPROVAL', timeout = 6, after = None
+
+    def until(value, timeout=6, *, after=None):
+        deadline = time.monotonic() + timeout
+        start = len(transcript) if after is None else after
+        while value not in transcript[start:]:
+&gt;           assert process.poll() is None and time.monotonic() &lt; deadline, bytes(transcript[-3000:])
+E           AssertionError: b"\x1b[1mUsage: \x1b[0m\x1b[1mpython \x1b[0m\x1b[1m-m\x1b[0m\x1b[1m panestria.cli.main build tui [OPTIONS]\x1b[0m\r
+E             \...94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x95\xaf\r
+E             "
+E           assert (2 is None)
+E            +  where 2 = poll()
+E            +    where poll = &lt;Popen: returncode: 2 args: ['/tmp/panestria-pr-integration/.venv/bin/python...&gt;.poll
+
+tests/integration/test_ask_tui.py:145: AssertionError</failure></testcase><testcase classname="tests.integration.test_build_tui" name="test_actual_goal_browser_scopes_public_list_and_opens_unstarted_plan" file="tests/integration/test_build_tui.py" line="153" time="11.057"><properties><property name="candidate_commit" value="3450bc02ad7dcdb41eb1cd642a41e2bbe3a0b4d4" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="dirty" /><property name="lane" value="integration" /></properties><failure message="AssertionError: b'\x1b[?1049h\x1b[22;0;0t\x1b[1;26r\x1b(B\x1b[m\x1b[4l\x1b[?7h\x1b[?1h\x1b=\x1b[39;49m\x1b[?1h\x1b=\x1b[39;49m\x1b[37m...3;18HCREATED\x1b[K\x1b[4;13Hnone\x1b[2P\r\x1b[24d Canonical snapshot; F5 refreshes. Tab changes view.\x1b[K\x1b[26;84H'&#10;assert (None is None and 9971.481948971 &lt; 9971.456328897)&#10; +  where None = poll()&#10; +    where poll = &lt;Popen: returncode: None args: ['/tmp/panestria-pr-integration/.venv/bin/pyt...&gt;.poll&#10; +  and   9971.481948971 = &lt;built-in function monotonic&gt;()&#10; +    where &lt;built-in function monotonic&gt; = time.monotonic">native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x72096fd42e70&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ll_seconds_per_attempt=90, api_microusd_per_attempt=0))), {'launches': 0, 'active': 0, 'peak': 0, 'contexts': [], ...})
+prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-1/test_actual_goal_browser_scope0/build.json')...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+
+    def test_actual_goal_browser_scopes_public_list_and_opens_unstarted_plan(native_plan, prepared_plan):
+        f, owner, _, plan = prepared_plan
+        state = native_plan[3]
+        # Real canonical metadata for two other scopes and a non-PUBLIC goal.
+        # No execution, acceptance or successful evidence is synthesized for these rows.
+        with owner.connect() as c:
+            other_owner, other_project = str(uuid4()), str(uuid4())
+            c.execute("INSERT INTO panestria.principal(id,display_name) VALUES (%s,'other owner')", (other_owner,))
+            c.execute("INSERT INTO panestria.project(id,owner_id) VALUES (%s,%s)", (other_project, other_owner))
+            same_owner_project = str(uuid4())
+            c.execute(
+                "INSERT INTO panestria.project(id,owner_id) VALUES (%s,%s)", (same_owner_project, owner.actor.owner_id)
+            )
+            for who, project, privacy in (
+                (other_owner, other_project, "PUBLIC"),
+                (owner.actor.owner_id, same_owner_project, "PUBLIC"),
+                (owner.actor.owner_id, owner.actor.project_id, "RESTRICTED"),
+            ):
+                gid, cid = str(uuid4()), str(uuid4())
+                c.execute(
+                    "INSERT INTO panestria.goal(id,owner_id,project_id,intent,status) "
+                    "VALUES (%s,%s,%s,'HIDDEN_GOAL_SENTINEL','CREATED')",
+                    (gid, who, project),
+                )
+                c.execute(
+                    "INSERT INTO panestria.goal_contract(id,goal_id,version,body,sha256) VALUES (%s,%s,1,%s::jsonb,%s)",
+                    (cid, gid, json.dumps({"privacy_class": privacy}), "ab" * 32),
+                )
+                c.execute(
+                    "INSERT INTO panestria.task(id,goal_id,contract_id,name,state) "
+                    "VALUES (%s,%s,%s,'Owner PUBLIC native Build','CREATED')",
+                    (str(uuid4()), gid, cid),
+                )
+            before = c.execute("SELECT count(*) FROM panestria.task_event").fetchone()
+        index = invoke(f, "goals")
+        assert index["authority"] == "READ_ONLY_METADATA"
+        assert [g["goal_id"] for g in index["goals"]] == [plan.goal_id]
+        assert index["goals"][0]["review_available"] is True
+        assert index["goals"][0]["running_tasks"] == index["goals"][0]["waiting_reviews"] == 0
+        assert "HIDDEN_GOAL_SENTINEL" not in json.dumps(index)
+        with terminal(f.config, entry=("build", "tui")) as t:
+            t.until(b"Latest 32 PUBLIC Builds")
+            os.write(t.master, b"\r")
+&gt;           t.until(b"Canonical task: CREATED")
+
+tests/integration/test_build_tui.py:197: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = b'Canonical task: CREATED', timeout = 6, after = None
+
+    def until(value, timeout=6, *, after=None):
+        deadline = time.monotonic() + timeout
+        start = len(transcript) if after is None else after
+        while value not in transcript[start:]:
+&gt;           assert process.poll() is None and time.monotonic() &lt; deadline, bytes(transcript[-3000:])
+E           AssertionError: b'\x1b[?1049h\x1b[22;0;0t\x1b[1;26r\x1b(B\x1b[m\x1b[4l\x1b[?7h\x1b[?1h\x1b=\x1b[39;49m\x1b[?1h\x1b=\x1b[39;49m\x1b[37m...3;18HCREATED\x1b[K\x1b[4;13Hnone\x1b[2P\r\x1b[24d Canonical snapshot; F5 refreshes. Tab changes view.\x1b[K\x1b[26;84H'
+E           assert (None is None and 9971.481948971 &lt; 9971.456328897)
+E            +  where None = poll()
+E            +    where poll = &lt;Popen: returncode: None args: ['/tmp/panestria-pr-integration/.venv/bin/pyt...&gt;.poll
+E            +  and   9971.481948971 = &lt;built-in function monotonic&gt;()
+E            +    where &lt;built-in function monotonic&gt; = time.monotonic
+
+tests/integration/test_ask_tui.py:145: AssertionError</failure></testcase></testsuite></testsuites>

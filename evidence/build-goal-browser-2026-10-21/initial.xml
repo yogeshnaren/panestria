@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="7" time="13.488" timestamp="2026-10-20T19:22:47.474098-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_build_tui" name="test_actual_build_terminal_reviews_diff_and_explicitly_merges_exact_candidate" file="tests/integration/test_build_tui.py" line="34" time="4.348"><properties><property name="candidate_commit" value="7cc2fd333fca176fc226a800bbd4c203a9542935" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual PTY/PG/Docker/Git/owner CLI; TEST_FIXTURE_NOT_LIVE native/certificates" /></properties><failure message="AssertionError: ('{&quot;goal_id&quot;: &quot;b296a00e-488e-4db7-a169-035368b18247&quot;, &quot;reason&quot;: &quot;native_build_not_confirmed&quot;, &quot;row_version&quot;: 2, &quot;status&quot;: &quot;UNAVAILABLE&quot;, &quot;task_id&quot;: &quot;7f5ff4bc-70b4-4fe0-adfd-83e099ef27d1&quot;, &quot;task_state&quot;: &quot;FAILED&quot;}&#10;  ', SystemExit(1))&#10;assert 1 == 0&#10; +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code">owner_cli = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-0/test_actual_build_terminal_rev0/build.json'),...nthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', base='f5cf189eaa23bfa073c8f7bbbe3b2e9d3c361cc0')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x77361edcd940&gt;
+
+    def test_actual_build_terminal_reviews_diff_and_explicitly_merges_exact_candidate(owner_cli, record_property):  # noqa: F811
+        f = owner_cli
+        record_property("scope", "Actual PTY/PG/Docker/Git/owner CLI; TEST_FIXTURE_NOT_LIVE native/certificates")
+&gt;       doc, result = pending(f)
+                      ^^^^^^^^^^
+
+tests/integration/test_build_tui.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_build_tui.py:22: in pending
+    result = submit(f, doc)
+             ^^^^^^^^^^^^^^
+tests/integration/test_owner_build_cli.py:206: in submit
+    return invoke(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixture = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-0/test_actual_build_terminal_rev0/build.json'),...nthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', base='f5cf189eaa23bfa073c8f7bbbe3b2e9d3c361cc0')
+expected = 0
+args = ('submit', '--contract', '/tmp/pytest-of-yogesh/pytest-0/test_actual_build_terminal_rev0/contract.json', '--select', 'calculator.py', '--expected-base', ...)
+
+    def invoke(fixture, *args, expected=0):
+        result = CliRunner().invoke(app, ["build", args[0], "--config", str(fixture.config), *args[1:]])
+&gt;       assert result.exit_code == expected, (result.stdout, result.exception)
+E       AssertionError: ('{"goal_id": "b296a00e-488e-4db7-a169-035368b18247", "reason": "native_build_not_confirmed", "row_version": 2, "status": "UNAVAILABLE", "task_id": "7f5ff4bc-70b4-4fe0-adfd-83e099ef27d1", "task_state": "FAILED"}
+E         ', SystemExit(1))
+E       assert 1 == 0
+E        +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code
+
+tests/integration/test_owner_build_cli.py:136: AssertionError</failure></testcase><testcase classname="tests.integration.test_build_tui" name="test_actual_build_terminal_stale_frozen_review_cannot_merge_after_cancellation" file="tests/integration/test_build_tui.py" line="54" time="0.515"><properties><property name="candidate_commit" value="7cc2fd333fca176fc226a800bbd4c203a9542935" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: ('{&quot;goal_id&quot;: &quot;f08494a6-557e-46ec-a85c-4c4645993607&quot;, &quot;reason&quot;: &quot;native_build_not_confirmed&quot;, &quot;row_version&quot;: 2, &quot;status&quot;: &quot;UNAVAILABLE&quot;, &quot;task_id&quot;: &quot;3c8ab637-1059-433c-ad7a-3037679a7ed7&quot;, &quot;task_state&quot;: &quot;FAILED&quot;}&#10;  ', SystemExit(1))&#10;assert 1 == 0&#10; +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code">owner_cli = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-0/test_actual_build_terminal_sta0/build.json'),...nthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', base='2e7be5681f7cfa35d7e26386e3f7bcd70340d64c')
+
+    def test_actual_build_terminal_stale_frozen_review_cannot_merge_after_cancellation(owner_cli):  # noqa: F811
+        f = owner_cli
+&gt;       doc, result = pending(f)
+                      ^^^^^^^^^^
+
+tests/integration/test_build_tui.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_build_tui.py:22: in pending
+    result = submit(f, doc)
+             ^^^^^^^^^^^^^^
+tests/integration/test_owner_build_cli.py:206: in submit
+    return invoke(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixture = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-0/test_actual_build_terminal_sta0/build.json'),...nthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', base='2e7be5681f7cfa35d7e26386e3f7bcd70340d64c')
+expected = 0
+args = ('submit', '--contract', '/tmp/pytest-of-yogesh/pytest-0/test_actual_build_terminal_sta0/contract.json', '--select', 'calculator.py', '--expected-base', ...)
+
+    def invoke(fixture, *args, expected=0):
+        result = CliRunner().invoke(app, ["build", args[0], "--config", str(fixture.config), *args[1:]])
+&gt;       assert result.exit_code == expected, (result.stdout, result.exception)
+E       AssertionError: ('{"goal_id": "f08494a6-557e-46ec-a85c-4c4645993607", "reason": "native_build_not_confirmed", "row_version": 2, "status": "UNAVAILABLE", "task_id": "3c8ab637-1059-433c-ad7a-3037679a7ed7", "task_state": "FAILED"}
+E         ', SystemExit(1))
+E       assert 1 == 0
+E        +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code
+
+tests/integration/test_owner_build_cli.py:136: AssertionError</failure></testcase><testcase classname="tests.integration.test_build_tui" name="test_actual_build_terminal_cancellation_needs_separate_explicit_confirmation" file="tests/integration/test_build_tui.py" line="72" time="0.666"><properties><property name="candidate_commit" value="7cc2fd333fca176fc226a800bbd4c203a9542935" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: ('{&quot;goal_id&quot;: &quot;0677489c-71ae-480f-9277-af2b352b44a8&quot;, &quot;reason&quot;: &quot;native_build_not_confirmed&quot;, &quot;row_version&quot;: 2, &quot;status&quot;: &quot;UNAVAILABLE&quot;, &quot;task_id&quot;: &quot;74e8afaa-cbe8-4535-9338-640835d9b6ee&quot;, &quot;task_state&quot;: &quot;FAILED&quot;}&#10;  ', SystemExit(1))&#10;assert 1 == 0&#10; +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code">owner_cli = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-0/test_actual_build_terminal_can0/build.json'),...nthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', base='2e7be5681f7cfa35d7e26386e3f7bcd70340d64c')
+
+    def test_actual_build_terminal_cancellation_needs_separate_explicit_confirmation(owner_cli):  # noqa: F811
+        f = owner_cli
+&gt;       doc, result = pending(f)
+                      ^^^^^^^^^^
+
+tests/integration/test_build_tui.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_build_tui.py:22: in pending
+    result = submit(f, doc)
+             ^^^^^^^^^^^^^^
+tests/integration/test_owner_build_cli.py:206: in submit
+    return invoke(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixture = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-0/test_actual_build_terminal_can0/build.json'),...nthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', base='2e7be5681f7cfa35d7e26386e3f7bcd70340d64c')
+expected = 0
+args = ('submit', '--contract', '/tmp/pytest-of-yogesh/pytest-0/test_actual_build_terminal_can0/contract.json', '--select', 'calculator.py', '--expected-base', ...)
+
+    def invoke(fixture, *args, expected=0):
+        result = CliRunner().invoke(app, ["build", args[0], "--config", str(fixture.config), *args[1:]])
+&gt;       assert result.exit_code == expected, (result.stdout, result.exception)
+E       AssertionError: ('{"goal_id": "0677489c-71ae-480f-9277-af2b352b44a8", "reason": "native_build_not_confirmed", "row_version": 2, "status": "UNAVAILABLE", "task_id": "74e8afaa-cbe8-4535-9338-640835d9b6ee", "task_state": "FAILED"}
+E         ', SystemExit(1))
+E       assert 1 == 0
+E        +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code
+
+tests/integration/test_owner_build_cli.py:136: AssertionError</failure></testcase><testcase classname="tests.integration.test_build_tui" name="test_lost_actual_merge_acknowledgement_never_replays_and_refresh_recovers" file="tests/integration/test_build_tui.py" line="86" time="0.540"><properties><property name="candidate_commit" value="7cc2fd333fca176fc226a800bbd4c203a9542935" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: ('{&quot;goal_id&quot;: &quot;0fe44640-33bc-4704-9562-08bf985eddef&quot;, &quot;reason&quot;: &quot;native_build_not_confirmed&quot;, &quot;row_version&quot;: 2, &quot;status&quot;: &quot;UNAVAILABLE&quot;, &quot;task_id&quot;: &quot;835574b9-94f1-4aa7-b930-da53917fdb80&quot;, &quot;task_state&quot;: &quot;FAILED&quot;}&#10;  ', SystemExit(1))&#10;assert 1 == 0&#10; +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code">owner_cli = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-0/test_lost_actual_merge_acknowl0/build.json'),...nthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', base='7f149a04d53c9b2d3e39295e65e8016ca3948296')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x77361edb65d0&gt;
+
+    def test_lost_actual_merge_acknowledgement_never_replays_and_refresh_recovers(owner_cli, monkeypatch):  # noqa: F811
+        f = owner_cli
+&gt;       doc, result = pending(f)
+                      ^^^^^^^^^^
+
+tests/integration/test_build_tui.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_build_tui.py:22: in pending
+    result = submit(f, doc)
+             ^^^^^^^^^^^^^^
+tests/integration/test_owner_build_cli.py:206: in submit
+    return invoke(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixture = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-0/test_lost_actual_merge_acknowl0/build.json'),...nthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', base='7f149a04d53c9b2d3e39295e65e8016ca3948296')
+expected = 0
+args = ('submit', '--contract', '/tmp/pytest-of-yogesh/pytest-0/test_lost_actual_merge_acknowl0/contract.json', '--select', 'calculator.py', '--expected-base', ...)
+
+    def invoke(fixture, *args, expected=0):
+        result = CliRunner().invoke(app, ["build", args[0], "--config", str(fixture.config), *args[1:]])
+&gt;       assert result.exit_code == expected, (result.stdout, result.exception)
+E       AssertionError: ('{"goal_id": "0fe44640-33bc-4704-9562-08bf985eddef", "reason": "native_build_not_confirmed", "row_version": 2, "status": "UNAVAILABLE", "task_id": "835574b9-94f1-4aa7-b930-da53917fdb80", "task_state": "FAILED"}
+E         ', SystemExit(1))
+E       assert 1 == 0
+E        +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code
+
+tests/integration/test_owner_build_cli.py:136: AssertionError</failure></testcase><testcase classname="tests.integration.test_build_tui" name="test_build_terminal_headless_refusal_never_prints_private_config_path" file="tests/integration/test_build_tui.py" line="126" time="0.129"><properties><property name="candidate_commit" value="7cc2fd333fca176fc226a800bbd4c203a9542935" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_build_tui" name="test_actual_canonical_plan_progress_is_visible_in_terminal_without_starting_or_merging" file="tests/integration/test_build_tui.py" line="131" time="2.950"><properties><property name="candidate_commit" value="7cc2fd333fca176fc226a800bbd4c203a9542935" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: assert 'STOPPED' == 'WAITING_APPROVAL'&#10;  &#10;  - WAITING_APPROVAL&#10;  + STOPPED">native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x77361e1cd3a0&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-0/test_actual_canonical_plan_pro0/build.json')...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+
+    def test_actual_canonical_plan_progress_is_visible_in_terminal_without_starting_or_merging(native_plan, prepared_plan):
+        owner, runner, plan, state = native_plan
+        f = prepared_plan[0]
+&gt;       assert runner.run(plan.plan_id, public_subscription_run=True)["status"] == "WAITING_APPROVAL"
+E       AssertionError: assert 'STOPPED' == 'WAITING_APPROVAL'
+E         
+E         - WAITING_APPROVAL
+E         + STOPPED
+
+tests/integration/test_build_tui.py:135: AssertionError</failure></testcase><testcase classname="tests.integration.test_build_tui" name="test_actual_goal_browser_scopes_public_list_and_opens_unstarted_plan" file="tests/integration/test_build_tui.py" line="153" time="2.718"><properties><property name="candidate_commit" value="7cc2fd333fca176fc226a800bbd4c203a9542935" /><property name="fixture_digest" value="c502b7feda38b4d8189130cfff9d4e13fa369430b9b2f171da6994b5fbb992f4" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: ('{&quot;status&quot;: &quot;UNAVAILABLE&quot;, &quot;reason&quot;: &quot;owner_build_not_confirmed_check_status&quot;}&#10;  ', SystemExit(1))&#10;assert 1 == 0&#10; +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code">native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x77361ec92c90&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ll_seconds_per_attempt=90, api_microusd_per_attempt=0))), {'launches': 0, 'active': 0, 'peak': 0, 'contexts': [], ...})
+prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-0/test_actual_goal_browser_scope0/build.json')...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+
+    def test_actual_goal_browser_scopes_public_list_and_opens_unstarted_plan(native_plan, prepared_plan):
+        f, owner, _, plan = prepared_plan
+        state = native_plan[3]
+        # Real canonical metadata for two other scopes and a non-PUBLIC goal.
+        # No execution, acceptance or successful evidence is synthesized for these rows.
+        with owner.connect() as c:
+            other_owner, other_project = str(uuid4()), str(uuid4())
+            c.execute("INSERT INTO panestria.principal(id,display_name) VALUES (%s,'other owner')", (other_owner,))
+            c.execute("INSERT INTO panestria.project(id,owner_id) VALUES (%s,%s)", (other_project, other_owner))
+            same_owner_project = str(uuid4())
+            c.execute(
+                "INSERT INTO panestria.project(id,owner_id) VALUES (%s,%s)", (same_owner_project, owner.actor.owner_id)
+            )
+            for who, project, privacy in (
+                (other_owner, other_project, "PUBLIC"),
+                (owner.actor.owner_id, same_owner_project, "PUBLIC"),
+                (owner.actor.owner_id, owner.actor.project_id, "RESTRICTED"),
+            ):
+                gid, cid = str(uuid4()), str(uuid4())
+                c.execute(
+                    "INSERT INTO panestria.goal(id,owner_id,project_id,intent,status) "
+                    "VALUES (%s,%s,%s,'HIDDEN_GOAL_SENTINEL','CREATED')",
+                    (gid, who, project),
+                )
+                c.execute(
+                    "INSERT INTO panestria.goal_contract(id,goal_id,version,body,sha256) VALUES (%s,%s,1,%s::jsonb,%s)",
+                    (cid, gid, json.dumps({"privacy_class": privacy}), "ab" * 32),
+                )
+                c.execute(
+                    "INSERT INTO panestria.task(id,goal_id,contract_id,name,state) "
+                    "VALUES (%s,%s,%s,'Owner PUBLIC native Build','CREATED')",
+                    (str(uuid4()), gid, cid),
+                )
+            before = c.execute("SELECT count(*) FROM panestria.task_event").fetchone()
+&gt;       index = invoke(f, "goals")
+                ^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_build_tui.py:188: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixture = namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-0/test_actual_goal_browser_scope0/build.json'),...0.1:55439/panestria_lease_migration_28f63a8a42a44033beced528ebe3905a', base='0af23ea1c19ecc007bc8944a50d6ec6396970d15')
+expected = 0, args = ('goals',)
+
+    def invoke(fixture, *args, expected=0):
+        result = CliRunner().invoke(app, ["build", args[0], "--config", str(fixture.config), *args[1:]])
+&gt;       assert result.exit_code == expected, (result.stdout, result.exception)
+E       AssertionError: ('{"status": "UNAVAILABLE", "reason": "owner_build_not_confirmed_check_status"}
+E         ', SystemExit(1))
+E       assert 1 == 0
+E        +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code
+
+tests/integration/test_owner_build_cli.py:136: AssertionError</failure></testcase></testsuite></testsuites>

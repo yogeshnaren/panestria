@@ -1,0 +1,57 @@
+{
+  "kind": "build_goal_browser_component",
+  "reports": [
+    {
+      "file": "initial.xml",
+      "sha256": "ccf8745926da38ec7600e292f11f7304af265e68dd005f2d8f5019a6547b0813",
+      "cases": 7,
+      "failures": 6,
+      "errors": 0,
+      "source_commits": [
+        "7cc2fd333fca176fc226a800bbd4c203a9542935"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "corrected.xml",
+      "sha256": "30407f061d3f68e569cccce6f71808f0bd22b92e4a0065f01df92af602463811",
+      "cases": 7,
+      "failures": 5,
+      "errors": 0,
+      "source_commits": [
+        "3450bc02ad7dcdb41eb1cd642a41e2bbe3a0b4d4"
+      ],
+      "worktree_states": [
+        "clean",
+        "dirty"
+      ]
+    },
+    {
+      "file": "final.xml",
+      "sha256": "9128e17a6d2356b9a0ad8d53c8a68a7f82f2bd03c3126b8cae516fc142c3b5aa",
+      "cases": 7,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "aae2e99513cc7b853d4249d9a3fd54e96956cb88"
+      ],
+      "worktree_states": [
+        "dirty"
+      ]
+    }
+  ],
+  "scope": "Actual PTY/keyboard/CLI/Postgres/Git/Docker; native/auth/capacity are TEST_FIXTURE_NOT_LIVE",
+  "observations": [
+    "Latest32 PUBLIC Build metadata scoped to both configured owner and project",
+    "Accepted unstarted plan opens existing review/progress; zero native launches, no DB events or protected Git changes",
+    "Existing exact merge, stale cancellation and lost acknowledgement behavior passes",
+    "Initial source permission refusal and actual acceptance-query error retained; corrected optional positional CLI regression and new PTY redraw assertion retained"
+  ],
+  "limits": [
+    "Local final run had documentation-only uncommitted changes; original source/worktree properties retained",
+    "Not general Mission Control, semantic support, runtime qualification, release gate or owner acceptance",
+    "No provider/model call, owner database/service change or storage deletion"
+  ]
+}
