@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "scope": "ACTUAL_CLAUDE_BACKGROUND_PUBLIC_SYNTHETIC_JOB_SCRIPTED_TEST_OWNER_NOT_G3",
+  "corrected": {
+    "source_commit": "2c5aede3a9beb4f9468e005536cb337a334e698d",
+    "worktree_state": "clean",
+    "cases": 1,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 46.047,
+    "raw_junit_sha256": "d602deeef17a7a89fa9d9a16ca50ad0b81e0ca7c2d2383851d008d22d4db1b1e"
+  },
+  "initial_failure": {
+    "source_commit": "2427c68f2adaca7f8793921af82729630b5ac97f",
+    "worktree_state": "clean",
+    "cases": 1,
+    "failures": 1,
+    "errors": 0,
+    "seconds": 20.188,
+    "raw_junit_sha256": "80c51bc79c4e773adf1e8c68753ffdcb6510e7d2fd8d6ce21018369e92aef65a",
+    "status": "STOPPED_NATIVE_BUILD_NOT_CANDIDATE",
+    "observed_command_exit": 127,
+    "observed_unavailable_utility": "hexdump",
+    "native_stream_rejection": "invalid_registered_check_metadata",
+    "merge": "NOT_ATTEMPTED",
+    "retry": "NO: new synthetic project after changed worker instructions"
+  },
+  "billing": {
+    "source": "OWNER_REPORTED",
+    "disabled": true,
+    "provider_verified": false,
+    "refreshed_on_retry": false
+  },
+  "quota": {
+    "precision": "UNKNOWN",
+    "best_effort_policy": "EXPLICIT_BOUNDED",
+    "balance_invented": false
+  },
+  "outcomes": {
+    "actual_native_workers": 2,
+    "native_workers_concurrent_max": 1,
+    "returned_invocations": 5,
+    "held_claims_after_completion": 0,
+    "final_required_checks": 3,
+    "final_required_passes": 3,
+    "wrong_digest": "REJECTED_DESTINATION_UNCHANGED",
+    "exact_scripted_test_owner_merge": "COMPLETED",
+    "owner_source_checkout": "UNCHANGED",
+    "offline_reference": {
+      "permitted_purpose": "OWNER_LOCAL_REFERENCE",
+      "reference_sha256": "4938af2d9c9f793abd54807377b404621a705c274f982bbd885895c05194540b",
+      "status": "SAVED",
+      "training_eligibility": "UNKNOWN",
+      "training_export": "DENIED"
+    },
+    "metrics": "SAVED",
+    "release_gate": "NOT_EVALUATED",
+    "human_owner_acceptance": "NOT_GRANTED"
+  },
+  "metrics": {
+    "scope": "invocation lifecycle includes controller overhead, NOT model-only latency",
+    "snapshot_sha256": "ea8a926d575da8a8e0be50d099917ff9b94892cfe9297a1713f9118c197961f7",
+    "observations": [
+      {
+        "metric": "latency.invocation_lifecycle_p50",
+        "scope": "runtime_build-integration",
+        "value": 0.995141,
+        "unit": "seconds",
+        "samples": 1
+      },
+      {
+        "metric": "latency.invocation_lifecycle_p95",
+        "scope": "runtime_build-integration",
+        "value": 0.995141,
+        "unit": "seconds",
+        "samples": 1
+      },
+      {
+        "metric": "latency.invocation_lifecycle_p50",
+        "scope": "runtime_native-proposal",
+        "value": 12.806884,
+        "unit": "seconds",
+        "samples": 2
+      },
+      {
+        "metric": "latency.invocation_lifecycle_p95",
+        "scope": "runtime_native-proposal",
+        "value": 13.459556,
+        "unit": "seconds",
+        "samples": 2
+      },
+      {
+        "metric": "latency.invocation_lifecycle_p50",
+        "scope": "runtime_native-tool",
+        "value": 1.342976,
+        "unit": "seconds",
+        "samples": 2
+      },
+      {
+        "metric": "latency.invocation_lifecycle_p95",
+        "scope": "runtime_native-tool",
+        "value": 1.460754,
+        "unit": "seconds",
+        "samples": 2
+      },
+      {
+        "metric": "runtime.receipt_present_fraction",
+        "scope": "runtime_build",
+        "value": 1.0,
+        "unit": "fraction",
+        "samples": 5
+      },
+      {
+        "metric": "verification.required_pass_fraction",
+        "scope": "runtime_build",
+        "value": 1.0,
+        "unit": "fraction",
+        "samples": 3
+      },
+      {
+        "metric": "quality.correct_fraction",
+        "scope": "runtime_build",
+        "value": null,
+        "unit": "fraction",
+        "samples": 0
+      },
+      {
+        "metric": "cost.actual",
+        "scope": "runtime_build",
+        "value": null,
+        "unit": "USD",
+        "samples": 0
+      }
+    ]
+  },
+  "private_artifacts": {
+    "directory": "workspace outputs/background-owner-journey-2026-10-21",
+    "raw_responses": "PUBLIC synthetic files only; no credentials/caches copied",
+    "file_hashes": {
+      "actual/account-observations/165efb4add9e0b7991726d64de8bda9cd5b7c88244cff519f2d8f17379b4fb25": "165efb4add9e0b7991726d64de8bda9cd5b7c88244cff519f2d8f17379b4fb25",
+      "actual/account-observations/16a23468d8ad95367a7639fb99beb9a1a98cb9aa31ac0ac3e4ca8fbf787e6e53": "16a23468d8ad95367a7639fb99beb9a1a98cb9aa31ac0ac3e4ca8fbf787e6e53",
+      "actual/account-observations/2ccd55087e5bf7a8e2c1c7a8cbb58e8eb32bccc65fc69232cef5fa8939eff7b5": "2ccd55087e5bf7a8e2c1c7a8cbb58e8eb32bccc65fc69232cef5fa8939eff7b5",
+      "actual/account-observations/afbaf2cb14609c517070056fbb033b395e18eef52d7ddf7ed96bafc2e9fed65c": "afbaf2cb14609c517070056fbb033b395e18eef52d7ddf7ed96bafc2e9fed65c",
+      "actual/account-observations/c51d0711906c8f3c02dcb77019a4e9579dbebea2654ad45089695bc5ad647474": "c51d0711906c8f3c02dcb77019a4e9579dbebea2654ad45089695bc5ad647474",
+      "actual/metrics/20261021T075108-8c9355948c9743d78177ac410c482831.json": "ea8a926d575da8a8e0be50d099917ff9b94892cfe9297a1713f9118c197961f7",
+      "actual/metrics/capture.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual/metrics/sources/665e3a5de5c87a98fb6a82cb7f3ab231e3842b5d54ac9375c13e14bc4cb51255": "665e3a5de5c87a98fb6a82cb7f3ab231e3842b5d54ac9375c13e14bc4cb51255",
+      "actual/offline-results/blobs/12c27d2834fdd45d804e81ec8141506ded503ced11cbcb08a68c86ee69c05879": "12c27d2834fdd45d804e81ec8141506ded503ced11cbcb08a68c86ee69c05879",
+      "actual/offline-results/blobs/25aa96d67dfad2fd02b239712acc6abbe961e65578a56136ea7a66e6274140fa": "25aa96d67dfad2fd02b239712acc6abbe961e65578a56136ea7a66e6274140fa",
+      "actual/offline-results/blobs/2a46f3afc3e13f6c0fd5dad510dad31ca76cde88379e8e88c71cf11eaccc6582": "2a46f3afc3e13f6c0fd5dad510dad31ca76cde88379e8e88c71cf11eaccc6582",
+      "actual/offline-results/blobs/4938af2d9c9f793abd54807377b404621a705c274f982bbd885895c05194540b": "4938af2d9c9f793abd54807377b404621a705c274f982bbd885895c05194540b",
+      "actual/offline-results/blobs/be752b8b35f33e7a3111a266c6ccec5cd5dd462de81a66a60bfd072cdfed1fa2": "be752b8b35f33e7a3111a266c6ccec5cd5dd462de81a66a60bfd072cdfed1fa2",
+      "actual/offline-results/blobs/eae2776685df4a0e510ade81b07a9a3ba29d24ae45bce0ca599afe9889757782": "eae2776685df4a0e510ade81b07a9a3ba29d24ae45bce0ca599afe9889757782",
+      "actual/offline-results/blobs/f3134dbd46372d4a7f0716cd15d0f4573ce5264d1fdd1936ae66776fb61f0200": "f3134dbd46372d4a7f0716cd15d0f4573ce5264d1fdd1936ae66776fb61f0200",
+      "actual/offline-results/capture.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual/raw.xml": "d602deeef17a7a89fa9d9a16ca50ad0b81e0ca7c2d2383851d008d22d4db1b1e",
+      "actual/reports/03becec1841f5dabc1f13224fad133cf23a1b9c760b33459322a2a5d137742ca": "03becec1841f5dabc1f13224fad133cf23a1b9c760b33459322a2a5d137742ca",
+      "actual/reports/25aa96d67dfad2fd02b239712acc6abbe961e65578a56136ea7a66e6274140fa": "25aa96d67dfad2fd02b239712acc6abbe961e65578a56136ea7a66e6274140fa",
+      "actual/reports/2a46f3afc3e13f6c0fd5dad510dad31ca76cde88379e8e88c71cf11eaccc6582": "2a46f3afc3e13f6c0fd5dad510dad31ca76cde88379e8e88c71cf11eaccc6582",
+      "actual/reports/46187ed2e8e865a0dfb089b8fb3a83319a8ca178483e5bf462b338093e05c34d": "46187ed2e8e865a0dfb089b8fb3a83319a8ca178483e5bf462b338093e05c34d",
+      "actual/reports/733bf3fcf58ffba84eae5716cfd6af02a1291d152079bf606deea2d7a3501f6b": "733bf3fcf58ffba84eae5716cfd6af02a1291d152079bf606deea2d7a3501f6b",
+      "actual/reports/b2d3ec021d7f59a5949afe162870dcf3f22b19e2b52be2c4a59f0eefddf7424a": "b2d3ec021d7f59a5949afe162870dcf3f22b19e2b52be2c4a59f0eefddf7424a",
+      "actual/reports/c8ce9ae4bc71203752f0f24c1786d7c8afb223a8533716cbb58802e4a823e318": "c8ce9ae4bc71203752f0f24c1786d7c8afb223a8533716cbb58802e4a823e318",
+      "actual/reports/d9abfc0d339915fbed1d4434b0a995c9542621a359ade0d125148ee8986c7638": "d9abfc0d339915fbed1d4434b0a995c9542621a359ade0d125148ee8986c7638",
+      "actual/reports/dabd6d8ea518d87ba6eda8ec7ed5dbf4308ab3f7a07babfc3b4527bd4b848b74": "dabd6d8ea518d87ba6eda8ec7ed5dbf4308ab3f7a07babfc3b4527bd4b848b74",
+      "actual/reports/e965ba0c30959ac33298165af5bc65af959c401a44c9eb691eb87d1ced916dd9": "e965ba0c30959ac33298165af5bc65af959c401a44c9eb691eb87d1ced916dd9",
+      "actual/reports/ea08be2c90a22bdfc42ff4224f33a4d577032ab720e80553adeb87d6c2ef8180": "ea08be2c90a22bdfc42ff4224f33a4d577032ab720e80553adeb87d6c2ef8180",
+      "actual/reports/eae2776685df4a0e510ade81b07a9a3ba29d24ae45bce0ca599afe9889757782": "eae2776685df4a0e510ade81b07a9a3ba29d24ae45bce0ca599afe9889757782",
+      "actual/reports/f3134dbd46372d4a7f0716cd15d0f4573ce5264d1fdd1936ae66776fb61f0200": "f3134dbd46372d4a7f0716cd15d0f4573ce5264d1fdd1936ae66776fb61f0200",
+      "actual/reports/f83399509410dc0a088fd4248a9fa69f022f10538187ec8514e22c6c6ea4fe45": "f83399509410dc0a088fd4248a9fa69f022f10538187ec8514e22c6c6ea4fe45",
+      "actual/summary.json": "2030164c70b878ad888ef8e7cc7a9b375fc7185deb18b79a6e674820a3e5c458",
+      "initial-failure/account-observations/36bdb0782e2327577b62776f4b7767fe0479f29a0b61b9ccfa2a55fc77322fd8": "36bdb0782e2327577b62776f4b7767fe0479f29a0b61b9ccfa2a55fc77322fd8",
+      "initial-failure/account-observations/978aa2c24097f8d945e4ee959069af0d4029195985d82796bfc0e2b2ca030a55": "978aa2c24097f8d945e4ee959069af0d4029195985d82796bfc0e2b2ca030a55",
+      "initial-failure/account-observations/cc25e25b038abff65b3b95fa5071278b12a86fbad781cd70083cd78319f2193b": "cc25e25b038abff65b3b95fa5071278b12a86fbad781cd70083cd78319f2193b",
+      "initial-failure/metrics/20261021T073050-7315d5075ad642318c809f953ca526f0.json": "3b60c3405746bc5ead1206753add5bf7bf52af3b9a87abab789cf26a7cb71133",
+      "initial-failure/metrics/capture.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "initial-failure/metrics/sources/bcc178923043784b7d68996aa1f45459f1a51f979f74cd3d7502ff4c81381f49": "bcc178923043784b7d68996aa1f45459f1a51f979f74cd3d7502ff4c81381f49",
+      "initial-failure/raw.xml": "80c51bc79c4e773adf1e8c68753ffdcb6510e7d2fd8d6ce21018369e92aef65a",
+      "initial-failure/reports/513cea227e0104f22cb483af228e33dca5f5bf002b1c55e28cd821e867499425": "513cea227e0104f22cb483af228e33dca5f5bf002b1c55e28cd821e867499425",
+      "initial-failure/reports/8242540fc2310e63986e320730a0ce9ce9b035798fe9bf0b51c0c487f2087bdc": "8242540fc2310e63986e320730a0ce9ce9b035798fe9bf0b51c0c487f2087bdc"
+    }
+  },
+  "limits": [
+    "No provider-attested billing/balance/remaining-quota proof",
+    "One finite actual job; no daemon, paid overflow or provider fallback",
+    "No full S5/S7/TC06/07/10/G3 or foreground-pressure qualification",
+    "No training-purpose rights granted",
+    "Old source receipts not relabeled to later docs/merge source"
+  ],
+  "corrected_runtime_qualification": {
+    "source_commit": "2c5aede3a9beb4f9468e005536cb337a334e698d",
+    "cases": 11,
+    "failures": 0,
+    "seconds": 28.55,
+    "raw_junit_sha256": "f4d4ae7dfaa32f588dd08d7a774882d24834a4887252000ee8c72c02312b481e",
+    "scope": "PUBLIC_BASH_RUNTIME_ONLY"
+  }
+}

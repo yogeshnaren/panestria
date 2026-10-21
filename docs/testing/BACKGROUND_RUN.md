@@ -17,8 +17,20 @@ An unstarted item's policy can be renewed only by withdrawal and fresh review.
 
 Existing Build configuration, current runtime/source qualification, independent
 checks, privacy/permission and exact plan acceptance remain mandatory. The owner
-account's extra-usage setting is currently unconfirmed; **no actual background
-inference has been run or qualified**. Component tests use explicit fixtures.
+reported the dedicated account's extra usage disabled on2026-10-21. This is
+owner-reported evidence with its original freshness limit, not provider
+attestation or an automatically renewed setting check.
+
+The [actual subscription journey](../../evidence/background-owner-journey-2026-10-21/report.json)
+at clean `2c5aede` completed one PUBLIC synthetic queued job with two serial
+Claude workers, five returned invocations, independent final checks, wrong-digest
+rejection and exact scripted test-owner merge. Opt-in runtime measurements and
+an offline confirmed-result reference were saved; training export stayed denied.
+Quota balance stayed UNKNOWN under an explicit bounded best-effort policy.
+The original failed job (an unavailable `hexdump` diagnostic) is preserved;
+worker instructions now describe Bash builtins/installed Python instead of
+assuming optional utilities. No failed task was silently retried. This one
+journey does not establish all foreground-pressure/restart/limit cases or G3.
 
 ```bash
 panestria background run --config /absolute/private/build.json \

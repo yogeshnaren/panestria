@@ -2927,9 +2927,11 @@
       ],
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "evidence/background-owner-journey-2026-10-21/report.json"
+      ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Exact owner-reviewed canonical queue/event bindings and read-only multi-window/source/reserve/foreground eligibility delivered as a component. No dispatcher or billing/runtime/account qualification; one-job reservations/yield/reconciliation and full TC06/07/10 remain pending."
+      "scope_note": "Canonical reviewed queue/account links and finite one-worker-at-a-time background execution delivered. One actual PUBLIC subscription job completed two worker handoffs, independent final-tree checks and exact scripted test-owner merge, with owner-reported disabled extra usage and explicit UNKNOWN-quota best effort. Automatic selection/service, full foreground/resource/limit qualification and complete TC06/07/10 remain pending."
     },
     {
       "id": "AOS-012-S6",
@@ -2988,10 +2990,12 @@
         "AOS-012-TC10"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "evidence_refs": [],
+      "status": "IN_PROGRESS",
+      "evidence_refs": [
+        "evidence/background-owner-journey-2026-10-21/report.json"
+      ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+      "scope_note": "Finite run/runs/reconcile-run controls and connected restart/cancel/foreground/withdraw/budget components delivered; one source-bound actual queued subscription job retained. No provider-attested billing/quotas, automatic service, full resource/restart/limit/no-spill qualification or whole-case promotion."
     },
     {
       "id": "AOS-028-S4",
