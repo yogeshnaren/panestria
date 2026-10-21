@@ -144,3 +144,5 @@ verified handoffs. Native generation/auth/capacity are explicitly synthetic
 fixtures. Required host-budget/foreground qualification, all download/artifact
 admissions, growth attribution, local inbox and full Mission Control integration
 remain pending R3 work; this does not complete TC05–TC08 or G3.
+
+A separately enabled runtime-metrics capture can still save small bounded derived metadata for a WAIT/outcome; this is not a worker/workspace admission or a physical disk reservation. If saving fails, the canonical storage deferral is unchanged. The combined component follow-up checks both opt-in features together and the actual CLI notification channel.

@@ -24,5 +24,19 @@
     "Not actual full-disk stress, global write admission, source attribution, foreground-budget qualification or release acceptance",
     "No provider/model call, cleanup, storage deletion, backup change or owner service/database mutation",
     "Subsequent explicit bool return is a Mypy correction; original component source remains unchanged in XML"
-  ]
+  ],
+  "combined_followup": {
+    "file": "combined.xml",
+    "sha256": "ba859edf22d714c0bef01b5289b6d29b0fc1d80af53eeed36b9a77d962599fce",
+    "cases": 2,
+    "failures": 0,
+    "errors": 0,
+    "source_commits": [
+      "8bd18cdd15ece9e8fbea824724fc9fce36bd5b47"
+    ],
+    "worktree_states": [
+      "clean"
+    ],
+    "scope": "Two overlapping connected cases after main metrics merge, actual CLI stderr notification and independently opt-in metric capture during storage wait/resume; not 26 independent cases"
+  }
 }
