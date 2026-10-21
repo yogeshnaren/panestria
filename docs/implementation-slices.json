@@ -2343,8 +2343,12 @@
         "AOS-028-TC01"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-028-S1.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-028-S1.md",
+      "evidence_refs": [
+        "evidence/project-activity-2026-10-21/report.json"
+      ],
+      "scope_note": "Canonical scoped metadata API and model-free project terminal delivered first per owner TUI preference. Original React/generated-client/intake and release scenarios remain pending; no substitution or gate pass."
     },
     {
       "id": "AOS-028-S2",

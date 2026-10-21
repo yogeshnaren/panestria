@@ -21,6 +21,7 @@ from panestria.api.health import (
     SecretBearingOutputRejected,
     secret_rejection_body,
 )
+from panestria.api.routes.activity import router as activity_router
 from panestria.api.routes.approvals import router as approvals_router
 from panestria.api.routes.artifacts import router as artifacts_router
 from panestria.api.routes.connections import router as connections_router
@@ -88,6 +89,14 @@ def mount_goal_api(app: FastAPI, goal_api: GoalApi) -> None:
     app.include_router(artifacts_router)
     app.include_router(quota_router)
     app.include_router(connections_router)
+    mount_activity_api(app)
+
+
+def mount_activity_api(app: FastAPI) -> None:
+    """Mount only content-free observations, without goal/merge/tool endpoints."""
+    if not isinstance(app.state.goal_api, GoalApi):
+        raise TypeError("activity API requires configured actor scope")
+    app.include_router(activity_router)
 
 
 def mount_browser_api(app: FastAPI, access: object) -> None:

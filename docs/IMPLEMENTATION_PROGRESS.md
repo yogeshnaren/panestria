@@ -108,6 +108,18 @@ altered evidence cannot retain a PASS score, and worker heartbeats cannot advanc
 it. Repair budgets, held/unknown capacity and repeated unchanged failures remain
 visible. The existing Build terminal now loads it with p or a fourth Tab view, without starting workers or changing the exact approval flow. This is partial X10/S4 delivery, with semantic/non-goal assessment, controller repair policy and a unified cross-mode Mission Control still pending.
 
+## Project activity terminal
+
+The [project activity terminal](testing/PROJECT_ACTIVITY_TERMINAL.md) now shows
+canonical Ask, Delegate, Build and kernel activity for one configured owner/project.
+Standalone `activity init/serve/tui` requires no model/cache; its loopback server
+mounts no job or approval mutations. The existing Ask terminal opens the same
+metadata view with F4/t while preserving its request. Counts, attention and held
+Build claims remain observations, with stale/auth failure handling and no content.
+[35 connected checks](../evidence/project-activity-2026-10-21/report.json) passed
+using real PostgreSQL/HTTP/CLI/PTY and explicit inference fixtures. This is partial
+AOS-028 backend/terminal delivery, not React/SSE, phone or release acceptance.
+
 ## Local repair draft from stopped Build work
 
 The [local repair command](testing/LOCAL_BUILD_REPAIR.md) now drafts one offline
@@ -131,8 +143,8 @@ and an existing model cache. For an existing PUBLIC Build goal, use the separate
 config and database environment. It lists recent PUBLIC Build goals in the configured project, shows checks/diff
 and canonical final-check progress, and freezes the exact merge/cancel review; it does not grant or submit work from the offline Ask scope.
 Bounded local query proposals are now available; next deliver qualified support and broader iterative planning, then
-the remaining two-worker and personal-platform R3 integration. These are still
-separate terminal surfaces, not completed R3 Mission Control. The owner prefers
+the remaining two-worker and personal-platform R3 integration. Actions/content still use their mode-specific surfaces; the shared read-only
+project overview does not complete R3 Mission Control. The owner prefers
 TUI before GUI work; original dashboard/phone/gate requirements remain pending.
 Continue bounded planning/support and R3 work while actual search setup
 remains deferred; do not fabricate a live certificate or silently configure engines.

@@ -4,12 +4,15 @@ import asyncio
 import json
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 from uuid import UUID
 
 import httpx2 as httpx
+from pydantic import SecretStr
 
+from panestria.config_activity import load_activity_settings
 from panestria.config_local import load_local_settings
+from panestria.contracts.activity import ProjectActivity
 from panestria.contracts.ask import AskSubmission
 
 CONTROL_SECONDS = 5.0
@@ -22,9 +25,37 @@ class TerminalUnavailable(Exception):
         super().__init__(code)
 
 
+class ClientScope(Protocol):
+    @property
+    def owner_id(self) -> UUID: ...
+
+    @property
+    def project_id(self) -> UUID: ...
+
+    @property
+    def origin(self) -> str: ...
+
+
 class LocalAskClient:
+    config: ClientScope
+    _token: SecretStr
+
     def __init__(self, config: Path):
         self.config, self._token = load_local_settings(config)
+
+    def activity(self, before: str | None = None) -> dict[str, Any]:
+        route = "/v1/activity?limit=8"
+        if before is not None:
+            from urllib.parse import urlencode
+
+            route += "&" + urlencode({"before": before})
+        try:
+            page = ProjectActivity.model_validate_json(json.dumps(self._request("GET", route)))
+        except (ValueError, TypeError):
+            raise TerminalUnavailable("activity_unconfirmed") from None
+        if str(page.owner_id) != str(self.config.owner_id) or str(page.project_id) != str(self.config.project_id):
+            raise TerminalUnavailable("server_scope_mismatch", clear=True)
+        return page.model_dump(mode="json")
 
     def _request(self, method: str, route: str, body: dict[str, Any] | None = None) -> dict[str, Any]:
         try:
@@ -113,3 +144,10 @@ class LocalAskClient:
         ):
             raise TerminalUnavailable("receipt_unconfirmed")
         return result
+
+
+class ActivityClient(LocalAskClient):
+    """Same bounded observation transport; standalone server mounts no Ask/actions."""
+
+    def __init__(self, config: Path):
+        self.config, self._token = load_activity_settings(config)

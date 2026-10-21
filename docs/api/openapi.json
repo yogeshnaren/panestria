@@ -1,6 +1,82 @@
 {
   "components": {
     "schemas": {
+      "ActivityEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "active_tasks": {
+            "minimum": 0.0,
+            "title": "Active Tasks",
+            "type": "integer"
+          },
+          "canonical_state": {
+            "pattern": "^[A-Z_]{1,32}$",
+            "title": "Canonical State",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "held_build_claims": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Held Build Claims"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "needs_attention": {
+            "title": "Needs Attention",
+            "type": "boolean"
+          },
+          "source": {
+            "enum": [
+              "ASK",
+              "GOAL"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "waiting_reviews": {
+            "minimum": 0.0,
+            "title": "Waiting Reviews",
+            "type": "integer"
+          },
+          "workflow": {
+            "enum": [
+              "ASK",
+              "DELEGATE",
+              "BUILD",
+              "KERNEL"
+            ],
+            "title": "Workflow",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "workflow",
+          "canonical_state",
+          "created_at",
+          "active_tasks",
+          "waiting_reviews",
+          "needs_attention"
+        ],
+        "title": "ActivityEntry",
+        "type": "object"
+      },
       "ApprovalList": {
         "additionalProperties": false,
         "properties": {
@@ -455,6 +531,67 @@
         "title": "PendingApproval",
         "type": "object"
       },
+      "ProjectActivity": {
+        "additionalProperties": false,
+        "properties": {
+          "acceptance_authority": {
+            "const": "NONE",
+            "default": "NONE",
+            "title": "Acceptance Authority",
+            "type": "string"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityEntry"
+            },
+            "maxItems": 32,
+            "title": "Entries",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 41,
+                "pattern": "^(ASK|GOAL):[0-9a-f-]{36}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "observed_at": {
+            "format": "date-time",
+            "title": "Observed At",
+            "type": "string"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "project_id": {
+            "format": "uuid",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "view_authority": {
+            "const": "READ_ONLY_METADATA",
+            "default": "READ_ONLY_METADATA",
+            "title": "View Authority",
+            "type": "string"
+          }
+        },
+        "required": [
+          "owner_id",
+          "project_id",
+          "observed_at",
+          "entries"
+        ],
+        "title": "ProjectActivity",
+        "type": "object"
+      },
       "Readiness": {
         "additionalProperties": false,
         "properties": {
@@ -590,6 +727,65 @@
           }
         },
         "summary": "Readyz"
+      }
+    },
+    "/v1/activity": {
+      "get": {
+        "operationId": "activity_v1_activity_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 41,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Before"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 16,
+              "maximum": 32,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectActivity"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Activity"
       }
     },
     "/v1/approvals": {
