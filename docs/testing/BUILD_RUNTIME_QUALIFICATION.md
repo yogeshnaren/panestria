@@ -56,3 +56,11 @@ records 11 real passes in 25.82 seconds at clean `3f07e4b`. It is runtime-only
 evidence. The supported owner task CLI, cumulative G1 evaluation and human
 review remain separate. Paid SDK AOS-016-TC04 is deferred, not passed; no release
 gate or owner acceptance status is changed.
+
+The [2026-10-21 compatibility evidence](../../evidence/native-threshold-2026-10-21/report.json)
+retains a later 10-pass/1-failure qualification and the corrected 11-pass run at
+`686d1af`. The pinned CLI emitted optional `surpassedThreshold` rate metadata;
+the parser now requires a finite numeric ratio in `[0,1]`, just as for
+`utilization`. Neither value supplies usable quota or renews an observation.
+Unknown fields, malformed ratios, rejected quota and paid overage still stop
+execution. This is current runtime evidence, not a cumulative release pass.
