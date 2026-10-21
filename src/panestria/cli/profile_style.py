@@ -49,7 +49,7 @@ class StyleTerminal:
                 try:
                     receipt = self.client.save(self.source, StyleProfile.model_validate(self.values), self.approved)
                     self.notice = (
-                        f"SAVED row version {receipt.row_version}. No inference or Ask selection started. q exits."
+                        f"SAVED row version {receipt.row_version}. Profile not selected for Ask. q exits."
                     )
                 except (TerminalUnavailable, ValueError):
                     self.notice = "SAVE UNCONFIRMED. No retry. Reopen exact profile/version to inspect. q exits."
@@ -85,7 +85,7 @@ class StyleTerminal:
                 "Panestria encrypted style | RESTRICTED | local owner review",
                 f"Profile {self.source.profile_id}",
                 f"Row version {self.source.row_version if self.source.row_version is not None else 'NEW'}",
-                "No model, key provisioning, service enablement or cloud export.",
+                "Preferences apply only when you select this profile for offline Ask.",
                 "",
                 *[
                     f"{'>' if self.selected == n else ' '} {name}: {self.values[name]}"
@@ -101,7 +101,7 @@ class StyleTerminal:
                     "",
                     "REVIEW: save this complete encrypted revision? Other fields/expiry remain unchanged.",
                     "The local-context choice changes only communication approval.",
-                    "Press y to save once, Esc/q to return. No authority or quality is granted.",
+                    "Press y to save once; Esc/q returns. Saving does not submit a question.",
                 ]
             if height < 22 or width < 80:
                 rows = ["Resize to at least 80 columns and 22 rows. q exits."]
