@@ -126,7 +126,7 @@ def test_progress_tracks_real_candidate_and_merge_without_promoting_heartbeat_or
 
 
 @pytest.mark.parametrize("prepared_plan", [{"wall_seconds": 900}], indirect=True)
-def test_failed_final_check_is_visible_but_has_no_merge_authority_and_scope_is_checked(native_plan):
+def test_failed_final_check_is_visible_but_has_no_merge_authority_and_scope_is_checked(native_plan, tmp_path):
     owner, runner, plan, _state = native_plan
     script = owner.settings.root / "reviewed" / "required.py"
     script.write_text("raise AssertionError('synthetic final check fails')\n")
@@ -164,6 +164,25 @@ def test_failed_final_check_is_visible_but_has_no_merge_authority_and_scope_is_c
     assert stalled.repair.versions_used == 2 and stalled.repair.maximum_versions == 3
     assert stalled.repair.wall_envelope_charged_seconds == 540
     assert stalled.repair.wall_envelope_remaining_seconds == 360
+    # The connected local repair controller must stop this actual unchanged
+    # failed tree before consuming another model turn, even after physical return.
+    from test_local_build_repair import local
+
+    with owner.connect() as c:
+        attempt = c.execute(
+            "SELECT attempt_id::text FROM panestria.build_active_worker_claim WHERE plan_id=%s",
+            (revised.proposal.plan_id,),
+        ).fetchone()[0]
+        current_proof = ReturnedBuildRelease(owner.reports).release(
+            UnitOfWork(c), owner.actor, revised.proposal.plan_id, attempt
+        )
+    repair, model = local(owner, tmp_path)
+    with pytest.raises(KernelDenied, match="local_repair_repeated_failure_owner_review_required"):
+        repair.propose(
+            revised.proposal.plan_id, revised.proposal.sha256(), current_proof,
+            tmp_path / "stalled-repair", local_model_run=True,
+        )
+    assert not model.calls and not (tmp_path / "stalled-repair").exists()
     with owner.connect() as c:
         with pytest.raises(KernelDenied, match="stale_build_evidence"), c.transaction():
             BuildEvidenceService(owner.reports).current(

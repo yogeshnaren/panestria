@@ -1,0 +1,136 @@
+{
+  "result": "PASS",
+  "scope": "CONNECTED_LOCAL_REPAIR_EXPLICIT_MODEL_NATIVE_FIXTURES",
+  "live_provider_calls": 0,
+  "original_runs": [
+    {
+      "file": "connected.xml",
+      "cases": 15,
+      "failures": 0,
+      "errors": 0,
+      "sha256": "f918815e4d8bce9cce2ee816d28bbcc13d7faead378244182ea840be7205faf6",
+      "properties": [
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "fixture_digest": "e20010c4929c67daf13e6a8397d50b199c13219b482545d80018004cebed4c1a",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "fixture_digest": "e20010c4929c67daf13e6a8397d50b199c13219b482545d80018004cebed4c1a",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "fixture_digest": "128b8d21b17b72fa0575c5256290816a140e2cae1f0a882654e5ef0700c64c04",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "fixture_digest": "128b8d21b17b72fa0575c5256290816a140e2cae1f0a882654e5ef0700c64c04",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "fixture_digest": "128b8d21b17b72fa0575c5256290816a140e2cae1f0a882654e5ef0700c64c04",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "fixture_digest": "da26bbaa467dfc7bad83d43254523e693248161257537f17524e81d6b9ec959a",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "fixture_digest": "da26bbaa467dfc7bad83d43254523e693248161257537f17524e81d6b9ec959a",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "fixture_digest": "da26bbaa467dfc7bad83d43254523e693248161257537f17524e81d6b9ec959a",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "worktree_state": "clean",
+          "fixture_digest": "ffcd2f13364215f4cdd53be33c42fcefbb9655313d6f9730bff85f5b70adb070",
+          "scope": "TEST_FIXTURE_NOT_LIVE generation; actual private CLI/typed graph/filesystem validation"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "worktree_state": "clean",
+          "fixture_digest": "ffcd2f13364215f4cdd53be33c42fcefbb9655313d6f9730bff85f5b70adb070",
+          "scope": "TEST_FIXTURE_NOT_LIVE generation; actual private CLI/typed graph/filesystem validation"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "worktree_state": "clean",
+          "fixture_digest": "ffcd2f13364215f4cdd53be33c42fcefbb9655313d6f9730bff85f5b70adb070",
+          "scope": "TEST_FIXTURE_NOT_LIVE generation; actual private CLI/typed graph/filesystem validation"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "worktree_state": "clean",
+          "fixture_digest": "ffcd2f13364215f4cdd53be33c42fcefbb9655313d6f9730bff85f5b70adb070",
+          "scope": "TEST_FIXTURE_NOT_LIVE generation; actual private CLI/typed graph/filesystem validation"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "worktree_state": "clean",
+          "fixture_digest": "ffcd2f13364215f4cdd53be33c42fcefbb9655313d6f9730bff85f5b70adb070",
+          "scope": "TEST_FIXTURE_NOT_LIVE generation; actual private CLI/typed graph/filesystem validation"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "worktree_state": "clean",
+          "fixture_digest": "ffcd2f13364215f4cdd53be33c42fcefbb9655313d6f9730bff85f5b70adb070",
+          "scope": "TEST_FIXTURE_NOT_LIVE generation; actual private CLI/typed graph/filesystem validation"
+        },
+        {
+          "candidate_commit": "fed9754aa054697254c013c3faca8070a8b933b7",
+          "worktree_state": "clean",
+          "fixture_digest": "ffcd2f13364215f4cdd53be33c42fcefbb9655313d6f9730bff85f5b70adb070",
+          "scope": "TEST_FIXTURE_NOT_LIVE generation; actual private CLI/typed graph/filesystem validation"
+        }
+      ]
+    },
+    {
+      "file": "cli.xml",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "sha256": "967ba06e673c78f7c408566d86b383273db4652354347e8fe4dadcb939aa4b9d",
+      "properties": [
+        {
+          "candidate_commit": "8cbb9449fb94bf67ae6fcc6f773a636a81b02869",
+          "fixture_digest": "93087ef641d7cbb126f928bfee68580d97b9a0a042a655934e32e8e293ff6594",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "8cbb9449fb94bf67ae6fcc6f773a636a81b02869",
+          "fixture_digest": "93087ef641d7cbb126f928bfee68580d97b9a0a042a655934e32e8e293ff6594",
+          "worktree_state": "clean",
+          "lane": "integration"
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Clean fed9754:15PASS/1live excluded in48.74s, connected repair/finite canonical revisions/progress and prior local compiler checks.",
+    "Clean8cbb944:2PASS16.91s, actual propose-repair CLI with private fixture settings then canonical revision review/native fixture execution/final protected merge.",
+    "No automatic retry, canonical proposal, claim release or worker launch from drafting. Revision/acceptance/actual run/final merge are separate scripted test-owner actions.",
+    "Existing real failed final-check/revision test extended to observe two identical protected candidate failures refusing another local model call.",
+    "Native/model/certificate/capacity are explicit test fixtures. Real repair quality, persistent planner-turn accounting, live runtime/G3/owner acceptance remain unassessed."
+  ],
+  "release_gate": "NOT_ASSESSED",
+  "owner_acceptance": "NOT_ASSESSED"
+}

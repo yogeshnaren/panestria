@@ -2165,7 +2165,10 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-025-S3.md",
-      "scope_note": "Finite PUBLIC/API0 same-contract owner-reviewed versions, immutable parents, confirmed-return prerequisite, original cumulative budget and stale-plan fences delivered as a component. Qualified automatic repair, changed-contract authorization integration, full TC02/03/04 and X10 progress remain pending."
+      "scope_note": "Finite same-contract canonical revisions and one explicit local repair draft from stopped work/remaining budget delivered. Source recheck/repeated failed-tree stopping observed with model/native fixtures. Real repair quality, persistent planner-turn accounting/controller and full original cases remain pending.",
+      "evidence_refs": [
+        "evidence/local-build-repair-2026-10-21/report.json"
+      ]
     },
     {
       "id": "AOS-026-S1",

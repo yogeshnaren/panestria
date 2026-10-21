@@ -120,6 +120,19 @@ Build claims remain observations, with stale/auth failure handling and no conten
 using real PostgreSQL/HTTP/CLI/PTY and explicit inference fixtures. This is partial
 AOS-028 backend/terminal delivery, not React/SSE, phone or release acceptance.
 
+## Local repair draft from stopped Build work
+
+The [local repair command](testing/LOCAL_BUILD_REPAIR.md) now drafts one offline
+replacement from canonical stopped tasks/checks, physical-return proof and the
+remaining cumulative envelope. It preserves the original contract/inventory,
+rechecks the source before publication and requires separate canonical revision
+review/acceptance/run/final merge. Held/unknown work, overbudget output and
+repeated unchanged failed candidates stop before publication or another model
+turn as applicable. [Connected evidence](../evidence/local-build-repair-2026-10-21/report.json)
+uses actual CLI/PG/Git/MCP/Docker with explicit model/native fixtures. This is
+partial S3/X10 delivery, not qualified repair accuracy or a persistent autonomous
+repair loop. General planning quality/turn accounting and original gates remain.
+
 ## Next concrete delivery
 
 Use `panestria tui --config ...` against the separately configured local Ask server.
