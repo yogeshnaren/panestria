@@ -60,7 +60,9 @@ def another(f, owner, plan, original, *, priority=3, resets_in=None, unknown=Fal
                 changes["resets_at"] = (datetime.now(UTC) + timedelta(seconds=resets_in)).isoformat()
             record(owner, proposal.nodes[-1].task_id, window, **changes)
     review = cli(f, "probe-account", request.item_id)
-    cli(f, "link-account", request.item_id, review["observation_sha256"], review["link_sha256"], "--accept-account-link")
+    cli(
+        f, "link-account", request.item_id, review["observation_sha256"], review["link_sha256"], "--accept-account-link"
+    )
     return request, proposal
 
 
@@ -69,7 +71,7 @@ def test_connected_selector_orders_reviewed_jobs_and_runs_only_one_without_impli
 ):
     f, owner, plan, state, original, _ = setup(prepared_plan, native_plan, monkeypatch)
     later, _ = another(f, owner, plan, original, resets_in=2000)
-    sooner, selected_plan = another(f, owner, plan, original, resets_in=1800)
+    sooner, _ = another(f, owner, plan, original, resets_in=1800)
     unknown, _ = another(f, owner, plan, original, unknown=True)
     with owner.connect() as c:
         before = c.execute("SELECT count(*) FROM panestria.task_event").fetchone()
@@ -78,18 +80,22 @@ def test_connected_selector_orders_reviewed_jobs_and_runs_only_one_without_impli
     assert preview["execution_authority"] == "NONE" and state["launches"] == 0
     with owner.connect() as c:
         assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == before
-    cli(f, "run-next", expected=1)
-    assert state["launches"] == 0
-    result = cli(f, "run-next", "--allow-background-subscription-run")
-    assert result["status"] == "WAITING_APPROVAL" and result["selected_item_id"] == sooner.item_id
-    assert state["launches"] == 2 and state["peak"] == 1
-    assert git(f.bare, "rev-parse", "HEAD") == f.base  # Never auto-approve.
-    assert owner.status(selected_plan.goal_id)["task_state"] == "WAITING_APPROVAL"
+    cli(f, "withdraw", sooner.item_id, preview["selected"]["binding_sha256"])
     assert cli(f, "next")["selected"]["item_id"] == later.item_id
     cli(f, "withdraw", later.item_id, cli(f, "show", later.item_id)["binding_sha256"])
     assert cli(f, "next")["selected"]["item_id"] == unknown.item_id
     cli(f, "withdraw", unknown.item_id, cli(f, "show", unknown.item_id)["binding_sha256"])
     assert cli(f, "next")["selected"]["item_id"] == original.item_id
+    cli(f, "run-next", expected=1)
+    assert state["launches"] == 0
+    result = cli(f, "run-next", "--allow-background-subscription-run")
+    assert result["status"] == "WAITING_APPROVAL" and result["selected_item_id"] == original.item_id
+    assert state["launches"] == 2 and state["peak"] == 1
+    assert git(f.bare, "rev-parse", "HEAD") == f.base  # Never auto-approve.
+    assert owner.status(plan.goal_id)["task_state"] == "WAITING_APPROVAL"
+    waiting = cli(f, "next")
+    assert waiting["selected"] is None  # Pending final review still holds canonical capacity.
+    assert waiting["skipped_reasons"]["started_job_requires_explicit_inspection_or_resume"] == 1
 
 
 def test_connected_selection_rechecks_withdrawal_without_trying_another_job(prepared_plan, native_plan, monkeypatch):
@@ -103,7 +109,9 @@ def test_connected_selection_rechecks_withdrawal_without_trying_another_job(prep
         view = read(owner)
         selected = view["selected"]
         with owner.connect() as c:
-            BackgroundWorkService().withdraw(UnitOfWork(c), owner.actor, selected["item_id"], selected["binding_sha256"])
+            BackgroundWorkService().withdraw(
+                UnitOfWork(c), owner.actor, selected["item_id"], selected["binding_sha256"]
+            )
         return view
 
     monkeypatch.setattr(background_run, "select_next", withdraw_after_preview)
