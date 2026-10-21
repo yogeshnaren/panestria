@@ -6,7 +6,7 @@ the unfinished coordinator fact. No lease is released by this service.
 """
 
 import json
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any
 
 from panestria.contracts.background import BackgroundBinding
@@ -58,10 +58,15 @@ class BackgroundRunService:
                     "claim_release_authority": "NONE",
                 }
             )
+        claims = Scheduler().claims(uow, actor, binding.request.plan_id)
+        for claim in claims:
+            expiry = claim.get("lease_expires_at")
+            if isinstance(expiry, datetime):
+                claim["lease_expires_at"] = expiry.isoformat()
         return {
             "item_id": item_id,
             "runs": items,
-            "claims": Scheduler().claims(uow, actor, binding.request.plan_id),
+            "claims": claims,
             "execution_authority": "NONE",
         }
 
