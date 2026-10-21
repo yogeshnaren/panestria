@@ -11,7 +11,7 @@ from panestria.kernel.uow import UnitOfWork
 def build_goal_index(uow: UnitOfWork, actor: Actor) -> BuildGoalIndex:
     rows = uow.execute(
         """SELECT g.id,left(g.intent,120),g.status,g.created_at,
-          (EXISTS(SELECT 1 FROM panestria.build_plan p WHERE p.goal_id=g.id AND p.state='ACCEPTED')
+          (EXISTS(SELECT 1 FROM panestria.build_plan_acceptance p WHERE p.goal_id=g.id)
            OR EXISTS(SELECT 1 FROM panestria.task t WHERE t.goal_id=g.id AND t.name='Owner PUBLIC native Build')),
           (SELECT count(*) FROM panestria.task t WHERE t.goal_id=g.id AND t.state IN ('RUNNING','VERIFYING')),
           (SELECT count(*) FROM panestria.task t WHERE t.goal_id=g.id AND t.state='WAITING_APPROVAL')
