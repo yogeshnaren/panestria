@@ -108,6 +108,19 @@ altered evidence cannot retain a PASS score, and worker heartbeats cannot advanc
 it. Repair budgets, held/unknown capacity and repeated unchanged failures remain
 visible. The existing Build terminal now loads it with p or a fourth Tab view, without starting workers or changing the exact approval flow. This is partial X10/S4 delivery, with semantic/non-goal assessment, controller repair policy and a unified cross-mode Mission Control still pending.
 
+## Local repair draft from stopped Build work
+
+The [local repair command](testing/LOCAL_BUILD_REPAIR.md) now drafts one offline
+replacement from canonical stopped tasks/checks, physical-return proof and the
+remaining cumulative envelope. It preserves the original contract/inventory,
+rechecks the source before publication and requires separate canonical revision
+review/acceptance/run/final merge. Held/unknown work, overbudget output and
+repeated unchanged failed candidates stop before publication or another model
+turn as applicable. [Connected evidence](../evidence/local-build-repair-2026-10-21/report.json)
+uses actual CLI/PG/Git/MCP/Docker with explicit model/native fixtures. This is
+partial S3/X10 delivery, not qualified repair accuracy or a persistent autonomous
+repair loop. General planning quality/turn accounting and original gates remain.
+
 ## Next concrete delivery
 
 Use `panestria tui --config ...` against the separately configured local Ask server.
