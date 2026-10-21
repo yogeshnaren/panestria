@@ -44,7 +44,7 @@ def seed(task, count=3):
 
 def test_metadata_json_scope_cursor_resync_and_no_write_locks_or_mutations(r1_task):
     f = r1_task
-    seq = seed(f)
+    seq = seed(f, count=55)
     config = ActivitySettings(
         schema_version=1,
         owner_id=UUID(f["owner"]),
@@ -73,10 +73,12 @@ def test_metadata_json_scope_cursor_resync_and_no_write_locks_or_mutations(r1_ta
         response = client.get(route, headers=headers)
         assert response.status_code == 200 and response.headers["cache-control"] == "no-store"
         page = ActivityTimeline.model_validate_json(response.content)
-        assert [int(e.seq) for e in page.events] == seq and page.next_cursor == str(seq[-1])
+        assert [int(e.seq) for e in page.events] == seq[:50] and page.next_cursor == str(seq[49])
         assert page.snapshot.goal_id == UUID(f["goal"]) and page.snapshot.status == "ACTIVE"
         assert not any(value in response.text for value in ("PRIVATE_TIMELINE", "payload", "sha256", "trace_id"))
-        assert client.get(route, params={"after": page.next_cursor}, headers=headers).json()["events"] == []
+        second = client.get(route, params={"after": page.next_cursor}, headers=headers).json()
+        assert [int(e["seq"]) for e in second["events"]] == seq[50:]
+        assert client.get(route, params={"after": second["next_cursor"]}, headers=headers).json()["events"] == []
         future = client.get(route, params={"after": str(2**63 - 1)}, headers=headers).json()
         assert future["resync"] and future["events"] == [] and future["snapshot"]["status"] == "ACTIVE"
         assert client.get(f"/v1/activity/goals/{uuid4()}/events", headers=headers).status_code == 404

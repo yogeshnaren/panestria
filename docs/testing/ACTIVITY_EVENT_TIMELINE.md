@@ -6,11 +6,13 @@ No new configuration, model or provider is needed. In the project pane, press
 not acquire invented goal events. The shared Ask/profile terminal project pane
 uses the same controls.
 
-The timeline shows the selected goal's canonical state and bounded event rows:
-decimal sequence, opaque event ID, kind, schema version and privacy label. It
+The terminal shows the selected goal's canonical state and bounded event rows:
+decimal sequence, kind, schema version and privacy label. The API also retains
+opaque event IDs for reconnect/deduplication. It
 never retrieves event payloads, trace IDs or plaintext payload fingerprints.
 Event names cannot supply a check PASS, worker success or approval authority.
 
+- PgUp/PgDn scrolls within the current page.
 - F5 or n loads the next page/new events from the last delivered cursor.
 - r explicitly replays from the start.
 - b or Escape returns to project tasks; F4/t returns to Ask where applicable.

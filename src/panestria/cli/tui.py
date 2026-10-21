@@ -58,6 +58,7 @@ class TerminalView:
     timeline: ActivityTimeline | None = field(default=None, repr=False)
     timeline_fresh: bool = False
     timeline_received_at: float = 0.0
+    timeline_scroll: int = 0
 
 
 class AskTerminal:
@@ -132,6 +133,8 @@ class AskTerminal:
                     continue
                 if not page.events and not page.resync and v.timeline is not None:
                     page = page.model_copy(update={"events": v.timeline.events})
+                if v.timeline is None or v.timeline.events != page.events:
+                    v.timeline_scroll = 0
                 v.timeline = page
                 v.timeline_fresh, v.timeline_received_at = True, time.monotonic()
                 v.notice = ("History gap/future cursor: canonical snapshot restored; missing events are not invented."
@@ -281,14 +284,20 @@ class AskTerminal:
                     line(4, "Cursor: " + (timeline_page.next_cursor if timeline_page else "0") +
                          " | no acceptance authority")
                     if timeline_page:
-                        for row, event in enumerate(timeline_page.events[-max(1, rows - 12):], 6):
+                        visible = max(1, rows - 12)
+                        v.timeline_scroll = min(v.timeline_scroll, max(0, len(timeline_page.events)-visible))
+                        line(5, f"Events {v.timeline_scroll+1 if timeline_page.events else 0}-"
+                             f"{min(v.timeline_scroll+visible, len(timeline_page.events))}/{len(timeline_page.events)}")
+                        for row, event in enumerate(
+                            timeline_page.events[v.timeline_scroll:v.timeline_scroll+visible], 6
+                        ):
                             line(row, f"{event.seq}  {event.kind}  "
                                  f"[{event.privacy_label}; schema{event.schema_version}]")
                     else:
                         line(6, "No confirmed event page. F5 refreshes explicitly.")
                     line(rows - 4, "Event metadata never supplies a task/check PASS or merge permission.")
                     line(rows - 3, v.notice)
-                    line(rows - 2, "F5/n Next/update | r Replay from start | b/Esc Back | q Quit")
+                    line(rows - 2, "PgUp/PgDn Scroll | F5/n Next | r Replay | b/Esc Back | q Quit")
                     line(rows - 1, "Goal state comes from its canonical snapshot, not from event-name guesses.")
                 elif v.activity_active:
                     page = v.activity
@@ -381,6 +390,10 @@ class AskTerminal:
                         self.start("timeline", partial(self.client.timeline, v.timeline_goal, "0"))
                     elif key == "n":
                         self.refresh()
+                    elif key == curses.KEY_NPAGE:
+                        v.timeline_scroll += max(1, rows-12)
+                    elif key == curses.KEY_PPAGE:
+                        v.timeline_scroll = max(0, v.timeline_scroll-max(1, rows-12))
                     continue
                 if v.activity_active and key != "q":
                     if isinstance(key, str) and key in "12345678":
