@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import shutil
 import subprocess
 import sys
@@ -34,11 +35,16 @@ def qualify_profiles(directory: Path, cache: Path, *, synthetic_local_smoke: boo
     selected = {name: shutil.which(name) for name in ("uv", "docker", "dbus-run-session", "gnome-keyring-daemon")}
     if any(path is None for path in selected.values()):
         raise QualificationUnavailable("profile_qualification_tools_unavailable")
+    selected_directories = {str(Path(p).parent) for p in selected.values() if p}
     search_path = ":".join(
         dict.fromkeys(
             [
                 str(Path(sys.executable).parent),
-                *[str(Path(p).parent) for p in selected.values() if p],
+                *[
+                    str(Path(p))
+                    for p in os.environ.get("PATH", "").split(":")
+                    if p and str(Path(p)) in selected_directories
+                ],
                 "/usr/local/bin",
                 "/usr/bin",
                 "/bin",

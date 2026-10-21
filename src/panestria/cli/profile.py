@@ -116,8 +116,11 @@ def qualify_runtime(
         typer.echo(json.dumps(result))
         if result["status"] != "PASS":
             raise typer.Exit(2)
-    except (QualificationUnavailable, DemoUnavailable):
-        typer.echo(json.dumps({"code": "profile_qualification_unavailable"}), err=True)
+    except QualificationUnavailable as error:
+        typer.echo(json.dumps({"code": str(error)}), err=True)
+        raise typer.Exit(2) from None
+    except DemoUnavailable:
+        typer.echo(json.dumps({"code": "private_profile_qualification_directory_unavailable"}), err=True)
         raise typer.Exit(2) from None
     except (KeyStoreUnavailable, KernelDenied) as error:
         typer.echo(json.dumps({"code": error.code}), err=True)
