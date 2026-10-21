@@ -25,6 +25,58 @@ from panestria.kernel.goals import Actor
 research_app = typer.Typer(no_args_is_help=True)
 
 
+@research_app.command("plan-queries")
+def plan_queries(
+    request_id: str,
+    config: Annotated[Path, typer.Option("--config")],
+    output: Annotated[Path, typer.Option("--output")],
+    key: Annotated[str, typer.Option("--key")],
+    retain_local_plan: bool = False,
+) -> None:
+    """Retain a bounded local proposal and export plain queries for separate PUBLIC collection."""
+    from panestria.config_synthesis import load_synthesis_settings
+    from panestria.execution.research_query_plan import OwnerQueryPlan
+
+    try:
+        if not retain_local_plan:
+            raise KernelDenied("explicit_retained_local_query_plan_required")
+        if (
+            not output.is_absolute()
+            or output.parent.resolve(strict=True) != output.parent
+            or stat.S_IMODE(output.parent.stat().st_mode) != 0o700
+            or output.parent.stat().st_uid != os.getuid()
+            or output.exists()
+            or output.is_symlink()
+        ):
+            raise KernelDenied("new_private_query_export_required")
+        settings = load_synthesis_settings(config)
+        dsn = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
+        service = OwnerQueryPlan(dsn.get_secret_value(), settings)
+        receipt = service.plan(request_id, key, retain_local_plan=True)
+        if receipt["status"] != "QUERY_PLAN_RETAINED":
+            raise KernelDenied("query_plan_unconfirmed_inspect_canonical_state")
+        retained = service.inspect(request_id)
+        _write_private(
+            output, json.dumps([q.get_secret_value() for q in retained.response.queries], ensure_ascii=False).encode()
+        )
+    except KernelDenied as exc:
+        typer.echo(json.dumps({"status": "UNAVAILABLE", "reason": exc.code}), err=True)
+        raise typer.Exit(1) from None
+    except Exception:
+        typer.echo('{"status":"UNAVAILABLE","reason":"query_plan_not_confirmed_inspect_state"}', err=True)
+        raise typer.Exit(1) from None
+    typer.echo(
+        json.dumps(
+            {
+                **receipt,
+                "query_count": len(retained.response.queries),
+                "question_shortened": retained.packet.question_shortened,
+            },
+            sort_keys=True,
+        )
+    )
+
+
 @research_app.command("prepare-policy")
 def prepare_research_policy(
     config: Annotated[Path, typer.Option("--config")],
@@ -204,9 +256,12 @@ def inspect_research(
 
 def _draft_output_preflight(output: Path) -> None:
     if (
-        not output.is_absolute() or output.parent.resolve(strict=True) != output.parent
+        not output.is_absolute()
+        or output.parent.resolve(strict=True) != output.parent
         or stat.S_IMODE(output.parent.stat().st_mode) != 0o700
-        or output.parent.stat().st_uid != os.getuid() or output.exists() or output.is_symlink()
+        or output.parent.stat().st_uid != os.getuid()
+        or output.exists()
+        or output.is_symlink()
     ):
         raise ValueError("new_private_output_required")
 
@@ -252,12 +307,19 @@ def _research_draft(request: str, config: Path, output: Path, format: str, key: 
         draft = service.inspect(request)
         raw = synthesis_html(draft) if format == "html" else synthesis_json(draft)
         _write_private(output, raw)
-        typer.echo(json.dumps({
-            "status": "DRAFT_EXPORTED", "synthesis_id": draft.synthesis_id,
-            "claim_count": len(draft.response.claims), "sha256": hashlib.sha256(raw).hexdigest(),
-            "semantic_support": "NOT_ASSESSED", "task_completion_authority": "NONE",
-            "replayed": receipt.replayed if receipt is not None else True,
-        }))
+        typer.echo(
+            json.dumps(
+                {
+                    "status": "DRAFT_EXPORTED",
+                    "synthesis_id": draft.synthesis_id,
+                    "claim_count": len(draft.response.claims),
+                    "sha256": hashlib.sha256(raw).hexdigest(),
+                    "semantic_support": "NOT_ASSESSED",
+                    "task_completion_authority": "NONE",
+                    "replayed": receipt.replayed if receipt is not None else True,
+                }
+            )
+        )
     except typer.Exit:
         raise
     except (Exception, KeyboardInterrupt):
