@@ -222,6 +222,29 @@ def reconcile_run(config: Config, item_id: str, run_sha256: str) -> None:
     _finish(lambda: reconcile(_service(config), item_id, run_sha256))
 
 
+@background_app.command("work")
+def work(
+    config: Config,
+    ticks: Annotated[int, typer.Option("--ticks", min=1, max=64)] = 12,
+    poll_seconds: Annotated[int, typer.Option("--poll-seconds", min=5, max=60)] = 5,
+    jobs: Annotated[int, typer.Option("--jobs", min=1, max=8)] = 1,
+    allow_background_subscription_run: bool = False,
+) -> None:
+    """Poll reviewed eligible work for a finite window; emit metadata-only JSON lines."""
+    from panestria.execution.background_controller import work_queue
+
+    _finish(
+        lambda: work_queue(
+            _service(config),
+            allow_background_subscription_run=allow_background_subscription_run,
+            maximum_ticks=ticks,
+            poll_seconds=poll_seconds,
+            maximum_jobs=jobs,
+            on_observation=lambda observation: typer.echo(json.dumps(observation)),
+        )
+    )
+
+
 @background_app.command("runs")
 def list_runs(config: Config, item_id: str) -> None:
     """Inspect immutable coordinator history and separately held canonical claims."""
