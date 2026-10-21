@@ -246,6 +246,8 @@ class OwnerQueryPlan:
         output = ResearchArtifactRef.model_validate_json(json.dumps(receipt["output"]))
         source = ResearchArtifactRef.model_validate_json(json.dumps(prior["input"]))
         for ref in (source, output):
+            if ref.task_id != current.scope.task_id or ref.privacy_label != "PUBLIC":
+                raise KernelDenied("query_plan_artifact_scope_changed")
             row = c.execute(
                 "SELECT store_key,sha256,size_bytes,privacy_class FROM panestria.artifact WHERE id=%s AND task_id=%s",
                 (ref.artifact_id, current.scope.task_id),

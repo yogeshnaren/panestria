@@ -96,6 +96,15 @@ def test_actual_cli_local_plan_private_query_export_replay_and_no_web_or_task_ex
     assert len(calls) == 1 and calls[0].offline and calls[0].label == "PUBLIC"
     replay = service.plan(staged.request_id, "synthetic-plan", retain_local_plan=True)
     assert replay["replayed"] and replay["plan_id"] == body["plan_id"] and len(calls) == 1
+    # Historical inspection/export needs no model cache or runtime startup.
+    service.settings.model_cache.rename(service.settings.model_cache.with_name("temporarily-unavailable-cache"))
+    later = service.settings.root / "queries-later.json"
+    exported = CliRunner().invoke(
+        app, ["research", "query-plan", staged.request_id, "--config", str(config), "--output", str(later)]
+    )
+    assert exported.exit_code == 0, (exported.stderr, exported.exception)
+    assert json.loads(later.read_bytes()) == QUERIES and len(calls) == 1
+    assert json.loads(exported.stdout)["model_request_elapsed_seconds"] == 0.2
     with pytest.raises(KernelDenied, match="already_started"):
         service.plan(staged.request_id, "different-key", retain_local_plan=True)
     with service.connect() as c:

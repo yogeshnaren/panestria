@@ -34,11 +34,25 @@ def plan_queries(
     retain_local_plan: bool = False,
 ) -> None:
     """Retain a bounded local proposal and export plain queries for separate PUBLIC collection."""
+    _query_plan_export(request_id, config, output, key, retain_local_plan)
+
+
+@research_app.command("query-plan")
+def query_plan(
+    request_id: str,
+    config: Annotated[Path, typer.Option("--config")],
+    output: Annotated[Path, typer.Option("--output")],
+) -> None:
+    """Export retained query data and show measurements without loading a model."""
+    _query_plan_export(request_id, config, output, None, False)
+
+
+def _query_plan_export(request_id: str, config: Path, output: Path, key: str | None, intent: bool) -> None:
     from panestria.config_synthesis import load_synthesis_settings
     from panestria.execution.research_query_plan import OwnerQueryPlan
 
     try:
-        if not retain_local_plan:
+        if key is not None and not intent:
             raise KernelDenied("explicit_retained_local_query_plan_required")
         if (
             not output.is_absolute()
@@ -49,13 +63,20 @@ def plan_queries(
             or output.is_symlink()
         ):
             raise KernelDenied("new_private_query_export_required")
-        settings = load_synthesis_settings(config)
+        settings = load_synthesis_settings(config, need_model=key is not None)
         dsn = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
         service = OwnerQueryPlan(dsn.get_secret_value(), settings)
-        receipt = service.plan(request_id, key, retain_local_plan=True)
-        if receipt["status"] != "QUERY_PLAN_RETAINED":
+        receipt = service.plan(request_id, key, retain_local_plan=True) if key is not None else {}
+        if key is not None and receipt["status"] != "QUERY_PLAN_RETAINED":
             raise KernelDenied("query_plan_unconfirmed_inspect_canonical_state")
         retained = service.inspect(request_id)
+        if key is None:
+            receipt = {
+                "status": "QUERY_PLAN_EXPORTED",
+                "plan_id": retained.plan_id,
+                "web_authority": "NONE",
+                "task_completion_authority": "NONE",
+            }
         _write_private(
             output, json.dumps([q.get_secret_value() for q in retained.response.queries], ensure_ascii=False).encode()
         )
@@ -71,6 +92,12 @@ def plan_queries(
                 **receipt,
                 "query_count": len(retained.response.queries),
                 "question_shortened": retained.packet.question_shortened,
+                "model_ref": retained.model_ref,
+                "model_digest": retained.model_digest,
+                "input_tokens": retained.input_tokens,
+                "output_tokens": retained.output_tokens,
+                "model_request_elapsed_seconds": retained.model_request_elapsed_seconds,
+                "query_quality": retained.query_quality,
             },
             sort_keys=True,
         )
