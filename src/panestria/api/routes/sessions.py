@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from panestria.api.auth import LoopbackDenied, authorize, error_body, read_capped_body
 from panestria.api.db import DatabaseUnavailable, open_database, run_database
 from panestria.api.routes.goals import _api
-from panestria.api.sessions import COOKIE_NAME, BrowserAccess
+from panestria.api.sessions import BrowserAccess
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.uow import UnitOfWork
@@ -36,7 +36,7 @@ def _access(request: Request) -> BrowserAccess:
 def issue_code(request: Request) -> JSONResponse:
     try:
         api, access = _api(request), _access(request)
-        if "origin" in request.headers or request.cookies.get(COOKIE_NAME):
+        if "origin" in request.headers or request.cookies.get(access.cookie_name):
             raise LoopbackDenied("cli_auth_required", 403)
         actor = authorize(request, api)
         with open_database(api.database_url) as connection:
@@ -84,9 +84,15 @@ def _pair(access: BrowserAccess, actor: Actor, code: str) -> JSONResponse:
         }
     )
     # Remove the legacy path to avoid two same-name cookies on /v1 requests.
-    response.delete_cookie(COOKIE_NAME, path="/v1", httponly=True, secure=access.secure, samesite="strict")
+    response.delete_cookie(access.cookie_name, path="/v1", httponly=True, secure=access.secure, samesite="strict")
     response.set_cookie(
-        COOKIE_NAME, tokens.token, max_age=8 * 3600, httponly=True, secure=access.secure, samesite="strict", path="/"
+        access.cookie_name,
+        tokens.token,
+        max_age=8 * 3600,
+        httponly=True,
+        secure=access.secure,
+        samesite="strict",
+        path="/",
     )
     return response
 
@@ -100,7 +106,7 @@ def logout(request: Request) -> JSONResponse:
             access.service.revoke(
                 UnitOfWork(connection),
                 Actor(api.owner_id, api.project_id),
-                request.cookies.get(COOKIE_NAME, ""),
+                request.cookies.get(access.cookie_name, ""),
                 request.headers.get("x-panestria-csrf", ""),
             )
     except LoopbackDenied as exc:
@@ -110,6 +116,6 @@ def logout(request: Request) -> JSONResponse:
     except (DatabaseUnavailable, psycopg.Error):
         return JSONResponse(status_code=503, content=error_body("database_unavailable"))
     response = JSONResponse(content={"state": "REVOKED"})
-    response.delete_cookie(COOKIE_NAME, path="/", httponly=True, secure=access.secure, samesite="strict")
-    response.delete_cookie(COOKIE_NAME, path="/v1", httponly=True, secure=access.secure, samesite="strict")
+    response.delete_cookie(access.cookie_name, path="/", httponly=True, secure=access.secure, samesite="strict")
+    response.delete_cookie(access.cookie_name, path="/v1", httponly=True, secure=access.secure, samesite="strict")
     return response

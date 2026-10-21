@@ -1,0 +1,134 @@
+import { Component, useEffect, useState, type ReactNode, type FormEvent } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Denied, json, mergeEvents, validateTimeline, waitForChange, type Activity, type Timeline, type Event } from './client';
+import './style.css';
+
+function useGoal(goal: string | null, scope: Activity | null, denied: () => void) {
+  const [view, setView] = useState<{page: Timeline | null, events: Event[], notice: string, fresh: boolean, observedAt: number}>(
+    {page:null,events:[],notice:'Select a goal.',fresh:false,observedAt:0});
+  useEffect(() => {
+    const controller = new AbortController();
+    setView({page:null,events:[],notice:'Reading canonical state…',fresh:false,observedAt:0});
+    if (!goal || !scope) return () => controller.abort();
+    const path = `/v1/activity/goals/${goal}/events`;
+    let after = '0', backoff = 1000;
+    void (async () => {
+      while (!controller.signal.aborted) {
+        try {
+          const page = validateTimeline(await json<Timeline>(`${path}?after=${after}`, controller.signal), goal, scope);
+          if (controller.signal.aborted) return;
+          setView(prior => ({page,events:mergeEvents(prior.events,page),fresh:true,observedAt:Date.now(),
+            notice:page.resync ? 'History resynchronized. Older retained events are unavailable.' : 'Canonical snapshot confirmed.'}));
+          const previous = after; after = page.next_cursor; backoff = 1000;
+          if (!page.resync && page.events.length === 50 && after !== previous) continue;
+          await waitForChange(path, after, controller.signal);
+        } catch (error) {
+          if (controller.signal.aborted) return;
+          if (error instanceof Denied) { setView({page:null,events:[],notice:'Access ended. Pair again.',fresh:false,observedAt:0}); denied(); return; }
+          setView(prior => ({...prior, fresh:false, notice:'Disconnected / unconfirmed. Reconnecting with canonical backfill…'}));
+          await new Promise<void>(resolve => {
+            const timer = setTimeout(resolve, backoff);
+            controller.signal.addEventListener('abort', () => {clearTimeout(timer); resolve();}, {once:true});
+          });
+          backoff = Math.min(backoff * 2, 10000);
+        }
+      }
+    })();
+    return () => controller.abort();
+  }, [goal, scope?.owner_id, scope?.project_id]);
+  return view;
+}
+function Dashboard() {
+  const [now,setNow] = useState(Date.now());
+  const [listAt,setListAt] = useState(0);
+  useEffect(() => {const timer = setInterval(()=>setNow(Date.now()),1000);return ()=>clearInterval(timer);},[]);
+  const [activity,setActivity] = useState<Activity|null>(null);
+  const [goal,setGoal] = useState<string|null>(null);
+  const [notice,setNotice] = useState('Pair to inspect this project.');
+  const [code,setCode] = useState('');
+  const [csrf,setCsrf] = useState<string|null>(null);
+  const [mayRead,setMayRead] = useState(true);
+  const [authenticated,setAuthenticated] = useState(false);
+  const [busy,setBusy] = useState(false);
+  const [before,setBefore] = useState<string|null>(null);
+  const [listFresh,setListFresh] = useState(false);
+  const denied = () => {setMayRead(false); setAuthenticated(false); setActivity(null); setGoal(null); setCsrf(null); setListFresh(false);};
+  const timeline = useGoal(goal, activity, denied);
+  async function load(cursor: string|null, signal: AbortSignal) {
+    const data = await json<Activity>(`/v1/activity?limit=16${cursor ? `&before=${cursor}` : ''}`,AbortSignal.any([signal,AbortSignal.timeout(5000)]));
+    if (data.view_authority !== 'READ_ONLY_METADATA' || data.acceptance_authority !== 'NONE' ||
+        !Array.isArray(data.entries) || data.entries.length > 16) throw new Error('Unconfirmed project response.');
+    if (signal.aborted) return;
+    setMayRead(true); setActivity(data); setListAt(Date.now()); setListFresh(true); setAuthenticated(true); setNotice('Project snapshot confirmed.');
+  }
+  useEffect(() => {
+    const controller = new AbortController();
+    if (!mayRead) return () => controller.abort();
+    // Cookie can survive a reload; CSRF stays memory-only, so logout requires
+    // re-pairing after reload. Read-only metadata still authenticates normally.
+    const read = async () => {try {await load(before,controller.signal);} catch (error) {
+      if (controller.signal.aborted) return;
+      if (error instanceof Denied) denied();
+      setListFresh(false); setNotice('Project unconfirmed. Pair or retry when the server is available.');
+    }};
+    void read(); const timer = setInterval(() => void read(),10000);
+    return () => {controller.abort();clearInterval(timer);};
+  },[before,mayRead]);
+  async function pair(event: FormEvent) {
+    event.preventDefault(); if (busy) return; setBusy(true);
+    try {
+      const data = await json<{csrf_token:string}>('/v1/session/pair',AbortSignal.timeout(5000),{code});
+      setCode(''); setCsrf(data.csrf_token); setBefore(null);
+      await load(null,AbortSignal.timeout(5000));
+    } catch {setCode('');denied();setNotice('Pairing failed. Request a new one-use code in your terminal.');}
+    finally {setBusy(false);}
+  }
+  async function logout() {
+    if (!csrf || busy) return; setBusy(true);
+    try { await json('/v1/session/logout',AbortSignal.timeout(5000),{},csrf); denied(); setNotice('Session revoked.'); }
+    catch {setNotice('Logout unconfirmed. Server session may still be active; retry.');}
+    finally {setBusy(false);}
+  }
+  return <main>
+    <header><p className="eyebrow">PANESTRIA · LOCAL OBSERVER</p><h1>Mission Control</h1>
+      <p>Canonical project activity and goal timelines. Read-only metadata · acceptance authority: NONE.</p></header>
+    <section aria-label="Connection"><p role="status">{notice}</p>
+      {(!authenticated || !csrf) && <form onSubmit={pair}><label htmlFor="pair">One-use pairing code from your terminal</label>
+        <div className="actions"><input id="pair" value={code} onChange={e=>setCode(e.target.value.toUpperCase())}
+          pattern="[0-9A-F]{8}" maxLength={8} minLength={8} required autoComplete="off" spellCheck={false}/>
+          <button disabled={busy}>Pair</button></div></form>}
+      {csrf && <button onClick={()=>void logout()} disabled={busy}>Log out</button>}
+      <p className="muted">No bearer token, private question, diff or source text belongs in this view.</p>
+    </section>
+    {authenticated && activity && <>
+      <section aria-label="Project activity"><h2>Project activity</h2>
+        <p>Project <code>{activity.project_id}</code> · {listFresh && now-listAt < 15000 ? 'Confirmed' : 'STALE / UNCONFIRMED'}</p>
+        <p className="muted">Observed {activity.observed_at}. Statuses are canonical observations, not release acceptance.</p>
+        {!activity.entries.length && <p>No activity in this project yet.</p>}
+        <div className="scroll"><table><thead><tr><th>Work</th><th>State</th><th>Tasks / reviews</th><th>Inspect</th></tr></thead><tbody>
+          {activity.entries.map(entry=><tr key={`${entry.source}:${entry.id}`}><td>{entry.workflow}<br/><code>{entry.id}</code></td>
+            <td>{entry.canonical_state}{entry.needs_attention ? ' · attention needed' : ''}</td>
+            <td>{entry.active_tasks} / {entry.waiting_reviews}<br/>Held claims: {entry.held_build_claims ?? 'unknown'}</td>
+            <td>{entry.source === 'GOAL' ? <button onClick={()=>setGoal(entry.id)}>Open goal {entry.id.slice(0,8)}</button> : 'Ask receipt; no goal timeline'}</td></tr>)}
+        </tbody></table></div>
+        <div className="actions"><button onClick={()=>{setBefore(null);setGoal(null);}} disabled={!before}>Latest</button>
+          <button disabled={!activity.next_cursor} onClick={()=>{setBefore(activity.next_cursor ?? null);setGoal(null);}}>Older activity</button></div>
+      </section>
+      {goal && <section aria-label="Goal timeline"><h2>Goal timeline</h2><code>{goal}</code>
+        <p role="status">{timeline.fresh && now-timeline.observedAt < 15000 ? 'Confirmed' : 'STALE / UNCONFIRMED'} · {timeline.notice}</p>
+        {timeline.page && <><p>Canonical goal: <strong data-testid="goal-state">{timeline.page.snapshot.status}</strong></p>
+          <h3>Tasks</h3><ul>{timeline.page.snapshot.tasks.map(task=><li key={task.id}><code>{task.id}</code> · {task.state} · version {task.row_version} · epoch {task.lease_epoch}</li>)}</ul>
+          <h3>Events</h3><p className="muted">Latest 200 observed metadata entries, oldest first. A resync drops unverifiable history. Event names never change the displayed canonical status.</p>
+          <ol aria-label="Events">{timeline.events.map(event=><li key={event.id} data-event-id={event.id}><code>{event.seq}</code> · {event.kind} · {event.privacy_label}</li>)}</ol>
+          <p>Replay cursor <code data-testid="cursor">{timeline.page.next_cursor}</code></p></>}
+      </section>}
+    </>}
+    <footer>Local desktop only. Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.</footer>
+  </main>;
+}
+class Boundary extends Component<{children: ReactNode},{failed:boolean}> {
+  state = {failed:false};
+  static getDerivedStateFromError() {return {failed:true};}
+  render() {return this.state.failed ? <main><h1>View unconfirmed</h1><p>Reload and pair again. No action was submitted.</p></main> : this.props.children;}
+}
+createRoot(document.getElementById('root')!).render(<Boundary><Dashboard/></Boundary>);

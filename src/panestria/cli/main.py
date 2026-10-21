@@ -23,6 +23,7 @@ from panestria.cli.build import build_app
 from panestria.cli.goals import goal_app, show_artifact
 from panestria.cli.local import local_app
 from panestria.cli.metrics import metrics_app
+from panestria.cli.mission import mission_app
 from panestria.cli.native import native_app
 from panestria.cli.plan import plan_app
 from panestria.cli.profile import profile_app
@@ -45,6 +46,7 @@ app.add_typer(quota_app, name="quota")
 app.add_typer(research_app, name="research")
 app.add_typer(local_app, name="local")
 app.add_typer(activity_app, name="activity")
+app.add_typer(mission_app, name="mission-control")
 app.add_typer(storage_app, name="storage")
 app.add_typer(metrics_app, name="metrics")
 app.command("approve")(approve_command)

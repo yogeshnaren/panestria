@@ -2347,9 +2347,10 @@
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-028-S1.md",
       "evidence_refs": [
-        "evidence/project-activity-2026-10-21/report.json"
+        "evidence/project-activity-2026-10-21/report.json",
+        "evidence/mission-control-observer-2026-10-21/report.json"
       ],
-      "scope_note": "Canonical scoped metadata API and model-free project terminal delivered first per owner TUI preference. Original React/generated-client/intake and release scenarios remain pending; no substitution or gate pass."
+      "scope_note": "React/TypeScript/Vite same-origin metadata observer, generated OpenAPI types, separate session namespace, canonical SSE/JSON reconciliation and actual Chromium/PG/CLI journey delivered. Original three-mode intakes, evidence/approval UI and full release scenarios remain pending; IN_PROGRESS, no gate pass."
     },
     {
       "id": "AOS-028-S2",

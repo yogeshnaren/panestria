@@ -26,7 +26,9 @@ async def activity(
     try:
         api = _api(request)
         actor = authorize(request, api)
-        return await run_database(_page, api.database_url, actor, before, limit)
+        response = await run_database(_page, api.database_url, actor, before, limit)
+        await asyncio.to_thread(authorize, request, api)
+        return response
     except LoopbackDenied as exc:
         return JSONResponse(status_code=exc.status_code, content=error_body(exc.code))
 

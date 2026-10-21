@@ -28,6 +28,17 @@ jobs:
         with:
           version: "0.12.3"
           python-version: "3.12"
+      - name: Node for Mission Control
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24.19.0"
+      - name: Typed production dashboard
+        working-directory: apps/mission-control
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run generate
+          git diff --exit-code -- src/schema.d.ts
+          npm run build
       - name: Check lock
         run: uv lock --check
       - name: Install frozen dependencies
@@ -61,6 +72,18 @@ jobs:
           python-version: "3.12"
       - name: Install frozen dependencies
         run: uv sync --frozen --group dev
+      - name: Node for physical dashboard checks
+        if: matrix.suite == 'platform'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24.19.0"
+      - name: Build dashboard and prepare Chromium
+        if: matrix.suite == 'platform'
+        working-directory: apps/mission-control
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+          npx --no-install playwright install --with-deps chromium
       - name: Prepare pinned worker image
         # Trusted setup runs before any actual sandbox test. Workers keep pull=never.
         if: matrix.suite != 'fast'
