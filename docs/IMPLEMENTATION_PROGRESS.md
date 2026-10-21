@@ -215,7 +215,16 @@ is partial AOS-028-S1/S3; three-mode intake, artifact/diff/test evidence, exact
 approval review/actions, Firefox/phone/TLS/device qualification and cumulative
 release evidence remain pending. Original scope/gate requirements are unchanged.
 
-Continue the dashboard with canonical evidence/review and separate mode inputs,
+The [protected Build progress panel](testing/MISSION_BUILD_PROGRESS.md) now reuses
+the canonical progress service with an explicitly selected existing read-only
+store. It shows final required checks, source/report references, held/unknown
+capacity and owner merge separately from release acceptance. Actual Chromium,
+PG/Git/Docker checks demonstrate zero → verified → UNCONFIRMED after synthetic
+protected bytes are corrupted. Native/auth/capacity remain explicit fixtures;
+this is no new live qualification or whole AOS-028/G3 pass. The default observer
+still reads no protected store and cannot submit work or approve a merge.
+
+Continue the dashboard with exact evidence/review controls and separate mode inputs,
 then remaining personal-platform/context/connections and finite release
 qualification. Existing keyboard Ask, research and Build terminals remain usable;
 [setup](testing/LOCAL_ASK_SETUP.md), [Build review](testing/BUILD_REVIEW_TUI.md) and

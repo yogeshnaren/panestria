@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "outcome": "OPTIONAL_PUBLIC_BUILD_PROTECTED_PROGRESS_COMPONENT_PASS",
+  "release_authority": "NONE",
+  "gate_status": "NOT_EVALUATED",
+  "base_commit": "5926ba5a7639bd190f94c9929bdd56f20e57b684",
+  "runs": [
+    {
+      "path": "initial.xml",
+      "sha256": "40eef56f29c18c2e5b8d4553047f4c248a213091e4aed0fdb3bd0ab7eedd32ff",
+      "candidate_commit": "96a71d5ca521f63d38734d24dd4f25a3b699fd12",
+      "worktree_state": "clean",
+      "tests": 2,
+      "failures": 1,
+      "errors": 0,
+      "time_seconds": 12.593
+    },
+    {
+      "path": "diagnostic.xml",
+      "sha256": "362b93f18bbb2f02119c16f8a404c3c3cc8b0100d08d47ecf4d4f819b7604df9",
+      "candidate_commit": "d33ab69188de0df37951707204edcb9b83fe40de",
+      "worktree_state": "clean",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "time_seconds": 11.195
+    },
+    {
+      "path": "worker-diagnostic.xml",
+      "sha256": "ac1dae4013effa85d9c8583457fad595815afbc444c8b511f18e48a2ef1ef534",
+      "candidate_commit": "3741b1b46b7e9217ae547cbab88c79daf657430f",
+      "worktree_state": "clean",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "time_seconds": 11.345
+    },
+    {
+      "path": "boundary-diagnostic.xml",
+      "sha256": "b4ae00be7f0e242498fa48b18f3342b47052bfecde48c73798a4d04d0897bb6e",
+      "candidate_commit": "a9f22bdb488f7c6f89c254b16804b7490f93b39c",
+      "worktree_state": "clean",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "time_seconds": 10.904
+    },
+    {
+      "path": "scope-diagnostic.xml",
+      "sha256": "7faf50d654e0efeb9feaf3be99cc35b11a188b06e04af5a95e9a22f4e25e3f96",
+      "candidate_commit": "901b5253ef97b7c01af398beaed4451e732b9577",
+      "worktree_state": "clean",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "time_seconds": 11.627
+    },
+    {
+      "path": "qualified.xml",
+      "sha256": "c9de9ab732cbfb674ac1c0f4585c159b137098b17a61271d1d548a1efca2cd9e",
+      "candidate_commit": "96c7dc248c3cbd05af59bdd393d7c13c99fd7ed8",
+      "worktree_state": "clean",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "time_seconds": 39.861
+    },
+    {
+      "path": "final.xml",
+      "sha256": "82b733dcea44bd93ebf0b89cf926820f7d07e2d955e054486d6be96cdf72d731",
+      "candidate_commit": "5fa2b2ab7dca40ac2ad36829058d6cbb9d22b1dc",
+      "worktree_state": "clean",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "time_seconds": 33.236
+    }
+  ],
+  "failure_cause": "All five initial native fixture runs correctly refused a group-writable (0664) trusted source script in a newly created agent worktree; final trace GatewayRejected unsafe_command_script. No pinned image was missing. Only scratch Git-tracked regular-file modes were corrected to remove group/other write bits. Production guards were unchanged; temporary diagnostic tracing removed. Future task worktrees must use umask022.",
+  "actual": [
+    "Chromium physical CLI HTTP",
+    "disposable PG55439",
+    "Git protected evidence and Docker Bash/independent verifier",
+    "existing kernel progress/owner merge/corruption regression",
+    "unconfigured reader denial, missing store not created, read-only writes denied",
+    "PUBLIC scope with actual INTERNAL contract denied and foreign goal404",
+    "zero -> verified final checks while ACTIVE/owner merge PENDING -> zero/UNCONFIRMED after synthetic protected bytes corrupted",
+    "no observation events or job/merge/approval actions from browser",
+    "closed projection omits actual contract description and storage path"
+  ],
+  "fixtures": [
+    "TEST_FIXTURE_NOT_LIVE native transport/auth/certificates/capacity; no actual Claude or provider call"
+  ],
+  "not_completed": [
+    "raw artifact/diff/test/approval browser review",
+    "distinct mode inputs",
+    "phone/TLS/device/Firefox qualification",
+    "cumulative G1/G2/G3",
+    "14-day real owner trial"
+  ],
+  "local_checks": [
+    "Ruff",
+    "mypy308 source files",
+    "11 import contracts",
+    "OpenAPI equality using original factory",
+    "generated TypeScript/types and Vite production build"
+  ],
+  "dependency_storage": "Reused identical PR167 task-owned node_modules via ignored symlink; no new package/browser/model download. Task caches retained."
+}

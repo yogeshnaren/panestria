@@ -2373,8 +2373,12 @@
         "AOS-028-TC02"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "prompt_ref": "cursor/prompts/AOS-028-S2.md"
+      "status": "IN_PROGRESS",
+      "prompt_ref": "cursor/prompts/AOS-028-S2.md",
+      "evidence_refs": [
+        "evidence/mission-build-progress-2026-10-21/report.json"
+      ],
+      "scope_note": "Optional existing read-only protected Build report store plus PUBLIC-only closed progress API and React evidence/check bar. Actual browser/PG/Git/verifier with explicitly nonlive native/auth/capacity fixtures. Full artifact/diff/test previews, exact approvals, intakes and full release scenarios remain pending."
     },
     {
       "id": "AOS-028-S3",

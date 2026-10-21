@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="11.195" timestamp="2026-10-21T16:18:42.229008-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_mission_build_progress" name="test_actual_browser_checks_require_current_protected_bytes_and_never_grant_acceptance" file="tests/integration/test_mission_build_progress.py" line="29" time="10.463"><properties><property name="candidate_commit" value="d33ab69188de0df37951707204edcb9b83fe40de" /><property name="worktree_state" value="clean" /><property name="mode" value="ACTUAL_CHROMIUM_PG_GIT_VERIFIER__TEST_FIXTURE_NOT_LIVE_NATIVE_AUTH_CAPACITY" /></properties><failure message="AssertionError: {'status': 'STOPPED', 'plan_id': 'a88977f4-d2f6-4d18-8d3f-5434b23902b9', 'worker_observations': [{'task_id': '4b577382...lease_epoch': 2}, {'task_id': 'f09ea185-4846-4bd4-8a1b-8b43d7e7eb53', 'task_state': 'CREATED', 'lease_epoch': 0}], ...}&#10;assert 'STOPPED' == 'WAITING_APPROVAL'&#10;  &#10;  - WAITING_APPROVAL&#10;  + STOPPED">native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x7bbc36e14740&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-72/test_actual_browser_checks_req0')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x7bbc36d59b20&gt;
+
+    def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_acceptance(
+        native_plan, tmp_path, record_property
+    ):
+        owner, runner, plan, state = native_plan
+        record_property(
+            "candidate_commit", subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        )
+        record_property(
+            "worktree_state",
+            "dirty" if subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT).strip() else "clean",
+        )
+        record_property("mode", "ACTUAL_CHROMIUM_PG_GIT_VERIFIER__TEST_FIXTURE_NOT_LIVE_NATIVE_AUTH_CAPACITY")
+        path, config, token = configure({"owner": owner.actor.owner_id, "project": owner.actor.project_id}, tmp_path)
+        with owner.connect() as c:
+            document = c.execute(
+                "SELECT body FROM panestria.goal_contract WHERE goal_id=%s ORDER BY version DESC LIMIT 1", (plan.goal_id,)
+            ).fetchone()[0]
+        omitted_description = document["acceptance"][0]["description"]
+        store = owner.reports.root
+        # Explicit read-only opening creates no store and cannot publish a report.
+        with pytest.raises(KernelDenied, match="existing_private_evidence_store_required"):
+            BuildEvidenceStore(tmp_path / "missing", read_only=True)
+        assert not (tmp_path / "missing").exists()
+        reader = BuildEvidenceStore(store, read_only=True)
+        originals = {p.name: p.read_bytes() for p in store.iterdir()}
+        with pytest.raises(KernelDenied, match="evidence_store_read_only"):
+            reader.write_report(b"never published")
+        assert {p.name: p.read_bytes() for p in store.iterdir()} == originals
+        app = build_activity_app(config, Settings(database_url=owner.dsn).validate_profile(), token)
+        route = f"/v1/activity/goals/{plan.goal_id}/build-progress"
+        bearer = {"Authorization": "Bearer " + token}
+        with TestClient(app, base_url=config.origin) as client:
+            assert client.get(route).status_code == 401
+            assert client.get(route, headers=bearer).status_code == 409
+        # Different factory: TestClient closed its health service; no session or work grant changed.
+        app = build_activity_app(config, Settings(database_url=owner.dsn).validate_profile(), token)
+        mount_mission_control(app, config, token, ASSETS, build_evidence_store=store)
+        with TestClient(app, base_url=config.origin) as client:
+            initial = client.get(route, headers=bearer)
+            assert initial.status_code == 200, initial.text
+            initial = initial.json()
+            assert initial["required_checks_passed"] == 0 and initial["required_checks_total"] &gt; 0
+            assert initial["dispatch_authority"] == "NONE" and initial["release_acceptance"] == "NOT_ASSESSED"
+            assert client.get(f"/v1/activity/goals/{uuid4()}/build-progress", headers=bearer).status_code == 404
+            assert all(
+                x not in json.dumps(initial) for x in ("description", "preview", "intent", str(store), "native_config")
+            )
+        env = {**os.environ, "PANESTRIA_DATABASE_URL": owner.dsn}
+        server = subprocess.Popen(
+            [
+                str(ROOT / ".venv/bin/python"),
+                "-m",
+                "panestria.cli.main",
+                "mission-control",
+                "serve",
+                "--config",
+                str(path),
+                "--assets",
+                str(ASSETS),
+                "--build-evidence-store",
+                str(store),
+            ],
+            cwd=ROOT,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        browser = None
+        try:
+            with httpx.Client(trust_env=False, timeout=1) as client:
+                deadline = time.monotonic() + 10
+                while True:
+                    assert server.poll() is None and time.monotonic() &lt; deadline
+                    try:
+                        if client.get(config.origin + "/").status_code == 200:
+                            break
+                    except httpx.HTTPError:
+                        pass
+                    time.sleep(0.05)
+                paired = subprocess.run(
+                    [
+                        str(ROOT / ".venv/bin/python"),
+                        "-m",
+                        "panestria.cli.main",
+                        "mission-control",
+                        "pair-code",
+                        "--config",
+                        str(path),
+                    ],
+                    cwd=ROOT,
+                    env=env,
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                assert paired.returncode == 0, paired.stderr
+                fixture = tmp_path / "browser.json"
+                fixture.write_text(
+                    json.dumps(
+                        {
+                            "origin": config.origin,
+                            "goal": plan.goal_id,
+                            "code": json.loads(paired.stdout)["code"],
+                            "total": initial["required_checks_total"],
+                            "store": str(store),
+                            "privateDescription": omitted_description,
+                        }
+                    )
+                )
+                fixture.chmod(0o600)
+                screenshot = tmp_path / "build-progress.png"
+                browser = subprocess.Popen(
+                    [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/build-progress.mjs"],
+                    cwd=ROOT / "apps/mission-control",
+                    env={
+                        **os.environ,
+                        "PANESTRIA_BROWSER_FIXTURE": str(fixture),
+                        "PANESTRIA_BROWSER_SCREENSHOT": str(screenshot),
+                    },
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                )
+                assert browser.stdout and browser.stdin
+    
+                def wait(expected):
+                    ready, _, _ = select.select([browser.stdout], [], [], 65)
+                    assert ready, f"no browser {expected}"
+                    actual = browser.stdout.readline().strip()
+                    if actual != expected:
+                        browser.wait(timeout=5)
+                        raise AssertionError(actual + ": " + browser.stderr.read())
+    
+                def advance():
+                    browser.stdin.write("{}\n")
+                    browser.stdin.flush()
+    
+                wait("RUN")
+                with owner.connect() as c:
+                    before = c.execute(
+                        "SELECT count(*) FROM panestria.task_event WHERE goal_id=%s", (plan.goal_id,)
+                    ).fetchone()
+                result = runner.run(plan.plan_id, public_subscription_run=True)
+&gt;               assert result["status"] == "WAITING_APPROVAL", result
+E               AssertionError: {'status': 'STOPPED', 'plan_id': 'a88977f4-d2f6-4d18-8d3f-5434b23902b9', 'worker_observations': [{'task_id': '4b577382...lease_epoch': 2}, {'task_id': 'f09ea185-4846-4bd4-8a1b-8b43d7e7eb53', 'task_state': 'CREATED', 'lease_epoch': 0}], ...}
+E               assert 'STOPPED' == 'WAITING_APPROVAL'
+E                 
+E                 - WAITING_APPROVAL
+E                 + STOPPED
+
+tests/integration/test_mission_build_progress.py:174: AssertionError</failure></testcase></testsuite></testsuites>
