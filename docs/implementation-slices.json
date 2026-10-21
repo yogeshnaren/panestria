@@ -2928,7 +2928,7 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "evidence_refs": [
-        "../evidence/background-owner-journey-2026-10-21/report.json"
+        "evidence/background-owner-journey-2026-10-21/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
       "scope_note": "Canonical reviewed queue/account links and finite one-worker-at-a-time background execution delivered. One actual PUBLIC subscription job completed two worker handoffs, independent final-tree checks and exact scripted test-owner merge, with owner-reported disabled extra usage and explicit UNKNOWN-quota best effort. Automatic selection/service, full foreground/resource/limit qualification and complete TC06/07/10 remain pending."
@@ -2992,7 +2992,7 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "evidence_refs": [
-        "../evidence/background-owner-journey-2026-10-21/report.json"
+        "evidence/background-owner-journey-2026-10-21/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
       "scope_note": "Finite run/runs/reconcile-run controls and connected restart/cancel/foreground/withdraw/budget components delivered; one source-bound actual queued subscription job retained. No provider-attested billing/quotas, automatic service, full resource/restart/limit/no-spill qualification or whole-case promotion."
