@@ -22,6 +22,8 @@ from panestria.api.mission_web import mount_mission_control
 from panestria.config import Settings
 from panestria.kernel.build import BuildEvidenceStore
 from panestria.kernel.errors import KernelDenied
+from panestria.kernel.goals import GoalService
+from panestria.kernel.uow import UnitOfWork
 
 ROOT = Path(__file__).resolve().parents[2]
 ASSETS = ROOT / "apps/mission-control/dist"
@@ -45,6 +47,10 @@ def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_a
             "SELECT body FROM panestria.goal_contract WHERE goal_id=%s ORDER BY version DESC LIMIT 1", (plan.goal_id,)
         ).fetchone()[0]
     omitted_description = document["acceptance"][0]["description"]
+    private_document = json.loads(json.dumps(document))
+    private_document.update(goal_id=str(uuid4()), privacy_class="INTERNAL", intent="PRIVATE_BUILD_OBSERVATION_SENTINEL")
+    with owner.connect() as c:
+        GoalService().submit(UnitOfWork(c), owner.actor, private_document, "private-build-observer-case")
     store = owner.reports.root
     # Explicit read-only opening creates no store and cannot publish a report.
     with pytest.raises(KernelDenied, match="existing_private_evidence_store_required"):
@@ -69,6 +75,8 @@ def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_a
         assert initial.status_code == 200, initial.text
         initial = initial.json()
         assert initial["required_checks_passed"] == 0 and initial["required_checks_total"] > 0
+        private = client.get(f"/v1/activity/goals/{private_document['goal_id']}/build-progress", headers=bearer)
+        assert private.status_code == 404 and "PRIVATE_BUILD_OBSERVATION_SENTINEL" not in private.text
         assert initial["dispatch_authority"] == "NONE" and initial["release_acceptance"] == "NOT_ASSESSED"
         assert client.get(f"/v1/activity/goals/{uuid4()}/build-progress", headers=bearer).status_code == 404
         assert all(

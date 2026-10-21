@@ -87,7 +87,7 @@ def _observe(
     except LoopbackDenied as exc:
         return JSONResponse(status_code=exc.status_code, content=error_body(exc.code))
     except KernelDenied as exc:
-        status = 404 if exc.code in {"not_found", "public_build_progress_required"} else 409
+        status = 404 if exc.code in {"not_found", "public_build_progress_required", "plan_local_read_denied"} else 409
         return JSONResponse(status_code=status, content=error_body("build_progress_unconfirmed"))
     except Exception:
         return JSONResponse(status_code=503, content=error_body("build_progress_unavailable"))
