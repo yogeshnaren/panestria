@@ -124,15 +124,18 @@ def test_assistant_correlation_metadata_is_bounded_text(field, value):
 
 
 @pytest.mark.parametrize("value", [0, 0.4, 1.0])
-def test_utilization_is_only_bounded_metadata_not_usable_quota(value):
+@pytest.mark.parametrize("field", ["utilization", "surpassedThreshold"])
+def test_rate_limit_ratios_are_only_metadata_not_usable_quota(field, value):
     parser = ClaudeEventParser()
     init(parser)
     event = {
         "type": "rate_limit_event",
         "session_id": "synthetic-native-session",
-        "rate_limit_info": {"status": "allowed", "utilization": value, "isUsingOverage": False},
+        "rate_limit_info": {"status": "allowed_warning", field: value, "isUsingOverage": False},
     }
     assert parser.feed(line(event))[0].kind == "rate_limit" and parser.result is None
+    with pytest.raises(ProtocolRejected, match="unknown_field"):
+        parser.feed(line({**event, "rate_limit_info": {**event["rate_limit_info"], "approved": True}}))
     with pytest.raises(ProtocolRejected, match="unapproved_overage"):
         parser.feed(line({**event, "rate_limit_info": {**event["rate_limit_info"], "isUsingOverage": True}}))
     with pytest.raises(ProtocolRejected, match="quota_unavailable"):
@@ -140,7 +143,8 @@ def test_utilization_is_only_bounded_metadata_not_usable_quota(value):
 
 
 @pytest.mark.parametrize("value", [None, True, -0.1, 1.1, "0.4", float("inf"), 10**400])
-def test_malformed_utilization_never_grants_capacity(value):
+@pytest.mark.parametrize("field", ["utilization", "surpassedThreshold"])
+def test_malformed_rate_limit_ratio_never_grants_capacity(field, value):
     parser = ClaudeEventParser()
     init(parser)
     with pytest.raises(ProtocolRejected, match="invalid_rate_limit|invalid_number"):
@@ -149,7 +153,7 @@ def test_malformed_utilization_never_grants_capacity(value):
                 {
                     "type": "rate_limit_event",
                     "session_id": "synthetic-native-session",
-                    "rate_limit_info": {"status": "allowed", "utilization": value},
+                    "rate_limit_info": {"status": "allowed", field: value},
                 }
             )
         )
