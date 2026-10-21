@@ -1,0 +1,116 @@
+{
+  "result": "PASS",
+  "scope": "DURABLE_LOCAL_REPAIR_INTENTS_EXPLICIT_MODEL_NATIVE_FIXTURES",
+  "live_provider_calls": 0,
+  "original_runs": [
+    {
+      "file": "initial.xml",
+      "cases": 17,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 60.871,
+      "sha256": "c5917f3f2fc818fe2071d67c8e9d4f16e7a030e25be05b25a5f5903c8cdbe416",
+      "source_properties": [
+        {
+          "candidate_commit": "399454f4e5c66e3584838b0339ab673562b78e8f",
+          "fixture_digest": "41c668a1905c005d299009ab659506fb0eab644c18ce9441846d5cdbc2e546b7",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "399454f4e5c66e3584838b0339ab673562b78e8f",
+          "fixture_digest": "ce75ad8d2d1a5bf230296b0caf0a18efa1e7e6ac63c34b01d51d3ad3fd7c6bce",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "399454f4e5c66e3584838b0339ab673562b78e8f",
+          "fixture_digest": "128b8d21b17b72fa0575c5256290816a140e2cae1f0a882654e5ef0700c64c04",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "399454f4e5c66e3584838b0339ab673562b78e8f",
+          "fixture_digest": "da26bbaa467dfc7bad83d43254523e693248161257537f17524e81d6b9ec959a",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "399454f4e5c66e3584838b0339ab673562b78e8f",
+          "worktree_state": "clean",
+          "fixture_digest": "ffcd2f13364215f4cdd53be33c42fcefbb9655313d6f9730bff85f5b70adb070",
+          "scope": "TEST_FIXTURE_NOT_LIVE generation; actual private CLI/typed graph/filesystem validation"
+        }
+      ]
+    },
+    {
+      "file": "connected.xml",
+      "cases": 42,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 70.519,
+      "sha256": "ef151a51c0c5f16f0d0ddce5fd8af931d70caa291997860849ea154bb13464a3",
+      "source_properties": [
+        {
+          "candidate_commit": "4ec1d57c2c57699d5182a0ed5eaf66417e5f1ca0",
+          "fixture_digest": "3b2c53ef9701e9ad7489194a9e2c5aed889ef3537d4edd46c2b845d20e17caa2",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "4ec1d57c2c57699d5182a0ed5eaf66417e5f1ca0",
+          "fixture_digest": "3b2c53ef9701e9ad7489194a9e2c5aed889ef3537d4edd46c2b845d20e17caa2",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "backup_sha256": "b753942a833661a0e906851609f72ee9d62e44566c2873c2326d6ff890f1775e"
+        },
+        {
+          "candidate_commit": "4ec1d57c2c57699d5182a0ed5eaf66417e5f1ca0",
+          "fixture_digest": "ce75ad8d2d1a5bf230296b0caf0a18efa1e7e6ac63c34b01d51d3ad3fd7c6bce",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "4ec1d57c2c57699d5182a0ed5eaf66417e5f1ca0",
+          "fixture_digest": "128b8d21b17b72fa0575c5256290816a140e2cae1f0a882654e5ef0700c64c04",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "4ec1d57c2c57699d5182a0ed5eaf66417e5f1ca0",
+          "fixture_digest": "da26bbaa467dfc7bad83d43254523e693248161257537f17524e81d6b9ec959a",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "4ec1d57c2c57699d5182a0ed5eaf66417e5f1ca0",
+          "worktree_state": "clean",
+          "fixture_digest": "ffcd2f13364215f4cdd53be33c42fcefbb9655313d6f9730bff85f5b70adb070",
+          "scope": "TEST_FIXTURE_NOT_LIVE generation; actual private CLI/typed graph/filesystem validation"
+        },
+        {
+          "candidate_commit": "4ec1d57c2c57699d5182a0ed5eaf66417e5f1ca0",
+          "fixture_digest": "d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5",
+          "worktree_state": "clean",
+          "lane": "integration"
+        }
+      ]
+    }
+  ],
+  "observations": [
+    "Acknowledged immutable goal-level model intent precedes model I/O; distinct concurrent directories/keys cannot dispatch a second turn while the first is unresolved.",
+    "Same key and byte-bound private export replays historical confirmed output without a model call. Changed files are rejected.",
+    "Lost completed-outcome commit acknowledgment preserves the original immutable outcome/files and recovers by explicit replay.",
+    "Every acknowledged turn reserves 360 seconds against the original cumulative goal envelope; reservations are not refunded. This conservative reservation is not measured elapsed time or an OS interruption guarantee.",
+    "At most maximum_versions-1 model turns (1 or 2), fixed by the first intent, across versions, directories and process instances. Third distinct-key attempt stops before model I/O.",
+    "A missing or unconfirmed return blocks new repair I/O and canonical revisions. Metadata-only CLI/progress expose held planning work.",
+    "Actual custom-format pg_dump/pg_restore retains unknown-return replay, reserved capacity, unique turn/key/outcome indices and downgrade refusal. Uses only an exact purpose-labelled disposable PostgreSQL fixture and a newly created restore database.",
+    "Clean source399454f:17PASS/1live excluded in60.88s; clean4ec1d57:42PASS/1live excluded in70.53s. Models/native/auth/capacity are explicit nonlive fixtures; migration applied only to disposable databases."
+  ],
+  "limits": [
+    "No live model quality, automatic repair controller, unknown-return clearance, semantic/non-goal qualification, whole-package runtime certificate, release gate or owner acceptance is claimed.",
+    "Owner database, services, credentials, caches, backups, drivers and billing settings were not changed. Existing actual provider evidence remains bound to its original source."
+  ],
+  "release_gate": "NOT_ASSESSED",
+  "owner_acceptance": "NOT_ASSESSED"
+}
