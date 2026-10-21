@@ -1,0 +1,56 @@
+{
+  "kind": "offline_build_reference_component",
+  "reports": [
+    {
+      "file": "component.xml",
+      "sha256": "7bf6da075ec0bc017c9f2c865b7193c161fb47b8b172d53cb9a2e096a5db7dd5",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "8be3d6e74b215d5f5dc1a93dee51e3d2192300a3"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "offline-diff-view.xml",
+      "sha256": "5a28e1a9032af80bd09afe2275c5e3d76cf32964d563a6f7071ccbc5cb335a0e",
+      "cases": 1,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "4c8a0c9f3ab98aed33a3e36a21ccf719192bd28a"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "final.xml",
+      "sha256": "52a63840f6be17b44d35fd1cf1ea9574d1116fb685ab166e0b43548e7abb7cfc",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "8c88fbbc1082eb0c32272864fe81dd437c2e0559"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    }
+  ],
+  "scope": "Two distinct connected scenarios with overlapping follow-ups; actual PG/Git/MCP/Docker/approval/private CAS/standalone copied archive CLI; native/auth/capacity TEST_FIXTURE_NOT_LIVE",
+  "observations": [
+    "No capture before exact confirmed final merge; opt-in post-merge capture deduplicates without changing DB events",
+    "Restored copied archive is readable including escaped diff with invalid DB environment and absent Git/native/auth/certificate runtime",
+    "Wrong-owner scope and modified chunk are refused; training eligibility UNKNOWN/export DENIED independent of reference purpose",
+    "Full sparse-fixture8MiB history refuses new bytes while preserving confirmed merge and exactly2nativefixture launches"
+  ],
+  "limits": [
+    "Not raw candidate/reference ingestion, retrieval, trained weights, known model identity where absent, or ALLOWED training-purpose review",
+    "Derived historical reference does not establish current runtime qualification, full Git reconstruction, TC08/TC09 or G3",
+    "No new model/provider call, owner service/database change or storage deletion"
+  ]
+}
