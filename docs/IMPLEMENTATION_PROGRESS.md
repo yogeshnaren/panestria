@@ -1,23 +1,27 @@
 # Implementation progress
 
-Updated 2026-10-20. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
+Updated 2026-10-21 UTC. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
 The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
-The owner explicitly resumed implementation through R3 on 2026-10-20. Current
-critical path: canonical plans/handoffs (PR127), scoped verification (PR132) and
-bounded admission/handoff completion (PR133) are merged. Combined-tree verification
-and owner review are merged in PR134; the native two-worker execution slice is merged in PR137 after actual live validation
-and all six exact-head CI checks. Direct local proposals are merged in PR138. Final integration intent and receipt-proven return recovery are merged in PR139/140.
-Finite owner-reviewed revisions are merged in PR141; canonical progress in PR142,
-the local/native bridge in PR143 and terminal progress in PR144. PR145 adds bounded
-exit-metadata observation after a real Docker CI failure; the original failure is
-retained. The owner terminal now lists recent PUBLIC Build goals for the configured
-project, so existing work can be selected without copying IDs. Its
-[component evidence](../evidence/build-goal-browser-2026-10-21/report.json) distinguishes
-actual canonical/terminal checks from native fixtures. CI/mutation/metrics PRs128–131
-are merged; performance history is delivered, continuous task metrics remain pending.
+The owner explicitly resumed implementation through R3 on2026-10-20. The current
+Build path has canonical plans/handoffs, admission, conflict handling, independent
+final-tree checks, exact owner merge, supported one/two-Claude execution, local
+drafts and finite reviewed revisions (PRs127/132–143). Historical actual native
+and CPU observations remain bound to their original sources; current runtime
+qualification is separate.
+
+Recent usable outcomes are [goal discovery/review/progress](testing/BUILD_REVIEW_TUI.md)
+(PR144/146), [opt-in runtime measurements](testing/RUNTIME_BUILD_METRICS.md) (PR147),
+[before-claim storage warnings/deferral](testing/STORAGE_AWARENESS.md) (PR148), and
+[offline confirmed-result references](testing/OFFLINE_BUILD_REFERENCES.md) (PR149).
+Current work is the [reviewed quota-aware queue](testing/BACKGROUND_WORK_QUEUE.md):
+it records exact intent and honest eligibility; dispatch/account/no-spill proof,
+reservations and foreground yield remain next. Full Delegate support, personal-
+platform integration, Mission Control/phone, resource/quality instrumentation and
+cumulative gates/real owner trial remain required. A queue candidate is not a
+provider permission, and a component/CI pass is not MVP acceptance.
 Deliver usable slices and required evidence; avoid unrelated test expansion.
 
 | Phase/outcome | Delivered behavior | Remaining acceptance work |
@@ -27,7 +31,7 @@ Deliver usable slices and required evidence; avoid unrelated test expansion.
 | R1 access and one-worker Build | Owner CLI submits bounded PUBLIC work through Claude/Bash; keyboard review shows canonical checks/diff and separately confirms exact merge/cancellation; actual subscription journey retained at its recorded source | Qualify the selected stable runtime/cumulative candidate; owner review remains |
 | R1 paid SDK | Owner selected subscription/local-only operation | AOS-016-TC04 deferred, **not passed**; original gate intact |
 | R2 research collection and draft | Dedicated owner policy prepare/confirm, new question staging, admitted search/fetch/read, exact retained excerpts, request-scoped diagnostics, private export and bounded local answer drafts with retained citations | Automatic planning and qualified synthesis/support, qualified support, actual service/runtime and complete D-1/G2 |
-| R3 complete MVP | Existing partial components; no accepted MVP release | Remaining two-worker integration, Mission Control, revision-3 profile/context/connections, quota/capture/phone/resource outcomes, cumulative qualification and genuine owner trial |
+| R3 complete MVP | Bounded one/two-worker native Build with final review; local proposals, progress/goal TUI, opt-in runtime/storage observations and offline confirmed references; no accepted MVP release | Generality/current qualification; Delegate support, profile/context/connections, actual background dispatch/rights flow, Mission Control/phone/resources and cumulative gates/real owner trial |
 
 ## Usable research path and its boundary
 
@@ -299,3 +303,20 @@ reference; training eligibility remains UNKNOWN and export DENIED. No automatic
 knowledge promotion, provider/model identity invention or training. This is part
 of AOS-012-S6; the useful-work queue, other capture modes, rights-reviewed eligible
 examples, retention/retrieval integration and G3 remain pending.
+
+## Quota-aware queue intent without implicit dispatch
+
+[Background queue review](testing/BACKGROUND_WORK_QUEUE.md) now drafts private
+requests from accepted PUBLIC plans, records exact owner-reviewed intent in the
+existing immutable event ledger, and supports replay-safe enqueue/withdrawal and
+bounded scoped inspection. Quota windows/lanes and matching-unit regular-use
+floors remain separate; explicit unknown best effort cannot erase earlier
+observed exhaustion. Current task/held-capacity/Ask state protects foreground
+eligibility. There is no parallel authoritative task-state store.
+
+[Component observations](../evidence/background-queue-2026-10-21/report.json) use
+actual PG/CLI/races/rollback and a real held lease, with explicit synthetic quota/
+billing/capacity values and zero native/provider launches. A scheduling candidate
+has execution authority NONE and runtime/account/no-spill qualification NOT_ASSESSED.
+Actual authenticated binding, one-job dispatch/reservation/yield/reconciliation
+remain next; AOS-012-S5/full TC06/07/10/G3 are not complete.

@@ -129,3 +129,15 @@ consent; eligibility remains UNKNOWN/export DENIED. No queue, raw-model truth,
 knowledge promotion or weight update is implied. Source-bound component checks
 are linked from the guide. Other modes, S5 queue/reserves, separate purpose/rights
 flows, known model identity, suppression/retention and full TC08/09 remain pending.
+
+## Canonical background intent component
+
+[Design69](../design/69-CANONICAL-BACKGROUND-QUEUE.md) and the
+[queue guide](../testing/BACKGROUND_WORK_QUEUE.md) connect reviewed existing PUBLIC
+plans to immutable same-Postgres queue/withdrawal facts and scoped eligibility
+observations. Sources/windows, unknown/estimated policy, foreground reserves and
+retained numeric exhaustion are distinct. Queueing creates no attempt, provider
+request or task-state replacement. Owner billing reports are unverified runtime
+metadata; actual profile/account/no-spill qualification and dispatcher/reservation/
+yield/reconciliation remain required. Source-bound actual PG/CLI checks are linked
+from the guide. This is partial S5, not full TC06/07/10 or a live release pass.
