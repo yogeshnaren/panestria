@@ -23,11 +23,15 @@ from panestria.kernel.uow import UnitOfWork
 
 
 def local(owner, tmp_path):
+    cache = tmp_path / "fixture-cache"
+    cache.mkdir(mode=0o700)
+    for name in ("blobs", "manifests"):
+        (cache / name).mkdir()
     settings = PlanModelSettings(
         schema_version=1,
         owner_id=UUID(owner.actor.owner_id),
         project_id=UUID(owner.actor.project_id),
-        model_cache=tmp_path / "fixture-cache",
+        model_cache=cache,
         runtime_directory=tmp_path / "fixture-runtime",
     )
     state = SimpleNamespace(calls=[], after=None, wall=90)
@@ -64,7 +68,9 @@ def local(owner, tmp_path):
 
 
 @pytest.mark.parametrize("prepared_plan", [{"wall_seconds": 900}], indirect=True)
-def test_released_failure_drafts_one_bounded_repair_then_requires_exact_revision_review(native_plan, tmp_path):
+def test_released_failure_drafts_one_bounded_repair_then_requires_exact_revision_review(
+    native_plan, tmp_path, monkeypatch
+):
     owner, runner, parent, native, claims = failed(native_plan)
     proof = returned(owner, parent, claims)
     repair, model = local(owner, tmp_path)
@@ -74,7 +80,36 @@ def test_released_failure_drafts_one_bounded_repair_then_requires_exact_revision
     with pytest.raises(KernelDenied, match="explicit_local_plan_model_intent_required"):
         repair.propose(parent.proposal.plan_id, parent.proposal.sha256(), proof, output)
     assert not output.exists() and not model.calls
-    receipt = repair.propose(parent.proposal.plan_id, parent.proposal.sha256(), proof, output, local_model_run=True)
+    from typer.testing import CliRunner
+
+    from panestria.cli.main import app
+    from panestria.execution.local_plan import LocalPlanModel
+
+    model_path, build_path = tmp_path / "model.json", tmp_path / "build.json"
+    for path, value in [(model_path, repair.planner.settings), (build_path, owner.settings)]:
+        path.write_text(value.model_dump_json())
+        path.chmod(0o600)
+    monkeypatch.setenv("PANESTRIA_DATABASE_URL", owner.dsn)
+    monkeypatch.setattr(LocalPlanModel, "generate", lambda _self, request: repair.planner.model.generate(request))
+    cli = CliRunner().invoke(
+        app,
+        [
+            "plan",
+            "propose-repair",
+            parent.proposal.plan_id,
+            parent.proposal.sha256(),
+            proof,
+            "--build-config",
+            str(build_path),
+            "--model-config",
+            str(model_path),
+            "--output-directory",
+            str(output),
+            "--local-model-run",
+        ],
+    )
+    assert cli.exit_code == 0, cli.output
+    receipt = json.loads(cli.stdout)
     assert receipt["status"] == "VALIDATED_DRAFT" and receipt["execution_authority"] == "NONE"
     assert len(model.calls) == 1 and model.calls[0].offline
     context = json.loads((output / "repair-context.json").read_text())
