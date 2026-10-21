@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="5" time="17.389" timestamp="2026-10-20T21:30:24.888442-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_research_query_plan" name="test_actual_cli_local_plan_private_query_export_replay_and_no_web_or_task_execution" file="tests/integration/test_research_query_plan.py" line="52" time="5.600"><properties><property name="candidate_commit" value="9430ccf77b6e434644d79174ee18311b1fd36550" /><property name="fixture_digest" value="b748c5aa7afe16fcdeb02be2c6404f0ee293bd1f07bfc938c214c56f9776b836" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: ('', '{&quot;status&quot;:&quot;UNAVAILABLE&quot;,&quot;reason&quot;:&quot;query_plan_not_confirmed_inspect_state&quot;}&#10;  ', SystemExit(1))&#10;assert 1 == 0&#10; +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code">planner = (&lt;panestria.execution.research_query_plan.OwnerQueryPlan object at 0x7791560d7bf0&gt;, ResearchSubmissionReceipt(goal_id=...s='STAGED_NO_EXECUTION'), PosixPath('/tmp/pytest-of-yogesh/pytest-21/test_actual_cli_local_plan_pri0/query-plan.json'))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x77915611b470&gt;
+
+    def test_actual_cli_local_plan_private_query_export_replay_and_no_web_or_task_execution(planner, monkeypatch):
+        service, staged, config = planner
+        calls = []
+    
+        def generate(self, request):
+            self.before_dispatch()
+            calls.append(request)
+            return response()
+    
+        monkeypatch.setattr(LocalDraftModel, "generate", generate)
+        output = service.settings.root / "queries.json"
+        args = [
+            "research",
+            "plan-queries",
+            staged.request_id,
+            "--config",
+            str(config),
+            "--output",
+            str(output),
+            "--key",
+            "synthetic-plan",
+            "--retain-local-plan",
+        ]
+        result = CliRunner().invoke(app, args)
+&gt;       assert result.exit_code == 0, (result.stdout, result.stderr, result.exception)
+E       AssertionError: ('', '{"status":"UNAVAILABLE","reason":"query_plan_not_confirmed_inspect_state"}
+E         ', SystemExit(1))
+E       assert 1 == 0
+E        +  where 1 = &lt;Result SystemExit(1)&gt;.exit_code
+
+tests/integration/test_research_query_plan.py:77: AssertionError</failure></testcase><testcase classname="tests.integration.test_research_query_plan" name="test_actual_failed_or_uncertain_plan_intent_is_never_automatically_replayed[duplicate_queries]" file="tests/integration/test_research_query_plan.py" line="109" time="2.155"><properties><property name="candidate_commit" value="9430ccf77b6e434644d79174ee18311b1fd36550" /><property name="fixture_digest" value="b748c5aa7afe16fcdeb02be2c6404f0ee293bd1f07bfc938c214c56f9776b836" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_query_plan" name="test_actual_failed_or_uncertain_plan_intent_is_never_automatically_replayed[unavailable]" file="tests/integration/test_research_query_plan.py" line="109" time="2.135"><properties><property name="candidate_commit" value="9430ccf77b6e434644d79174ee18311b1fd36550" /><property name="fixture_digest" value="b748c5aa7afe16fcdeb02be2c6404f0ee293bd1f07bfc938c214c56f9776b836" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_query_plan" name="test_actual_concurrent_planning_observes_one_acknowledged_intent_without_duplicate_inference" file="tests/integration/test_research_query_plan.py" line="135" time="2.909"><properties><property name="candidate_commit" value="9430ccf77b6e434644d79174ee18311b1fd36550" /><property name="fixture_digest" value="b748c5aa7afe16fcdeb02be2c6404f0ee293bd1f07bfc938c214c56f9776b836" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_query_plan" name="test_actual_cancellation_between_generation_and_publication_cannot_publish_queries" file="tests/integration/test_research_query_plan.py" line="157" time="3.278"><properties><property name="candidate_commit" value="9430ccf77b6e434644d79174ee18311b1fd36550" /><property name="fixture_digest" value="b748c5aa7afe16fcdeb02be2c6404f0ee293bd1f07bfc938c214c56f9776b836" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: Regex pattern did not match.&#10;  Expected regex: 'unstarted_request'&#10;  Actual message: 'invalid_correlation'">planner = (&lt;panestria.execution.research_query_plan.OwnerQueryPlan object at 0x779155fb3f50&gt;, ResearchSubmissionReceipt(goal_id=...s='STAGED_NO_EXECUTION'), PosixPath('/tmp/pytest-of-yogesh/pytest-21/test_actual_cancellation_betwe0/query-plan.json'))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x779155fb3830&gt;
+
+    def test_actual_cancellation_between_generation_and_publication_cannot_publish_queries(planner, monkeypatch):
+        service, staged, _ = planner
+    
+        def generate(self, request):
+            self.before_dispatch()
+            with service.connect() as c:
+                CancellationService().cancel(
+                    UnitOfWork(c),
+                    service.actor,
+                    staged.goal_id,
+                    0,
+                    "synthetic cancel",
+                    correlation_id="synthetic-query-cancel",
+                )
+            return response()
+    
+        monkeypatch.setattr(LocalDraftModel, "generate", generate)
+&gt;       with pytest.raises(KernelDenied, match="unstarted_request"):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'unstarted_request'
+E         Actual message: 'invalid_correlation'
+
+tests/integration/test_research_query_plan.py:175: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1960,7 +1960,8 @@
       "implementation_note": "Dedicated owner PUBLIC-web policy prepare/confirm now connects to staged-question collection, admitted search/fetch/read/excerpts/private inspection and VERIFYING/RECONCILING. Existing Ask scopes are preserved. Synthetic HTTPS/certificates only; guided TUI, planner/synthesis, qualified support/live runtime/G2 pending.",
       "evidence_refs": [
         "evidence/owner-research-submission-2026-10-18/report.json",
-        "evidence/owner-research-collection-2026-10-18/report.json"
+        "evidence/owner-research-collection-2026-10-18/report.json",
+        "evidence/research-query-plan-2026-10-21/report.json"
       ]
     },
     {

@@ -1,0 +1,87 @@
+{
+  "kind": "local_research_query_plan_component",
+  "reports": [
+    {
+      "file": "initial.xml",
+      "sha256": "84fb3e53ca294ba2d8b3fa3194db08275a1157f85a2f44c892aea9d53162ef6d",
+      "cases": 5,
+      "failures": 2,
+      "errors": 0,
+      "source_commits": [
+        "9430ccf77b6e434644d79174ee18311b1fd36550"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "corrected.xml",
+      "sha256": "d545c187a24a47ad5e61f15f0e621c7527e92091049e8617b65e90ddaffa5957",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "f1f4b3c81dc12ee903fcdf74e391fa7371a7e0dd"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "actual-cpu.xml",
+      "sha256": "f547d0043e6f493ae781ddfc741267dbcadda04a5657f4221ffc6081dc9343d2",
+      "cases": 1,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "0517235bdc83444f3a214af73ad98e7d11eb9918"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "final.xml",
+      "sha256": "39e247dfa5814ef64abc08dcb670f2b8e30717dc2bf659692d86066f44955e56",
+      "cases": 5,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "09d297d732449a4ae27ba94c36d6e7532431c83c"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    }
+  ],
+  "scope": "Five distinct default scenarios and one separately marked actual cached CPU model smoke; source followups overlap. Actual PG/private CAS/CLI; web/fetch/reader forbidden. Default model is synthetic; actual-cpu.xml uses existing read-only cache and real local inference.",
+  "actual_cpu": {
+    "source_commit": "0517235bdc83444f3a214af73ad98e7d11eb9918",
+    "worktree_state": "clean",
+    "input_sha256": "a2b0ee9455fcd39810d63a4cd3fc2edfc5cd3ec3e0dc9d0f534de7323df5a396",
+    "output_sha256": "b224b3afff2e52bd233ee3705631a43d27c9a580c4d8c284d6f8a13c87ba6297",
+    "model_ref": "qwen2.5:1.5b-instruct",
+    "model_digest": "65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+    "query_count": 2,
+    "input_tokens": 143,
+    "output_tokens": 23,
+    "model_request_elapsed_seconds": 4.942290977000084,
+    "query_quality": "NOT_ASSESSED",
+    "scope": "ACTUAL_LOCAL_CPU_SYNTHETIC_QUERY_PROPOSAL_NO_WEB"
+  },
+  "observations": [
+    "Private compatible queries JSON export, known model/digest/input/output hashes, elapsed request time and token counts retained; quality NOT_ASSESSED",
+    "Exact-key replay and concurrent acknowledged intent never launch duplicate inference; failed/incomplete intents are retained and never silently retried",
+    "Actual canonical cancellation after generation fences output publication; task stays unexecuted by planning and receives no acceptance verdict",
+    "Protected artifact/scope checks; historical private queries/measurements can be read without a model cache or model startup",
+    "Initial2fail3pass were synthetic setup errors: cache nested inside retained root and non-UUID correlation identity. Both guards retained and fixture corrected, affected2pass8.68s",
+    "Final default5pass15.37s after offline export and main merge; actual cached model at clean0517235 returned2 queries,143 input/23 output tokens,4.942290977s model request time (13.87s whole test incl DB/setup/startup). No web/provider API/downloads"
+  ],
+  "limits": [
+    "Local query proposal is not qualified semantic support, a web grant, a goal PASS or training eligibility",
+    "One bounded intent per staged request; ambiguous/failed intent cannot be replayed automatically; question prefix is512 bytes and shortening is visible",
+    "No actual search backend/public TLS/OS web qualification or G2/G3 pass; real search remains owner-deferred",
+    "Actual CPU observation remains bound to0517235 and original metadata; later CLI/read changes and merge do not relabel it as a new candidate pass",
+    "Latency excludes model startup and database setup; single sample is not p95 or a quality measurement"
+  ]
+}
