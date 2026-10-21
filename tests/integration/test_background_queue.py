@@ -59,10 +59,11 @@ def record(owner, task, scope, **changes):
 
 def test_actual_owner_queue_review_quota_reserve_unknown_billing_and_withdraw_are_not_dispatch(prepared_plan):
     f, owner, _, plan = prepared_plan
-    request = request_for(owner, plan)
     path = f.config.parent / "background.json"
-    path.write_text(request.model_dump_json())
-    path.chmod(0o600)
+    drafted = cli(f, "draft", plan.plan_id, str(uuid4()), "--output", str(path))
+    assert drafted["status"] == "DRAFTED" and drafted["billing"] == "UNKNOWN"
+    request = BackgroundEnqueue.model_validate_json(path.read_bytes())
+    assert request.policy.billing is None and request.policy.allow_unknown_quota is False
     review = cli(f, "prepare", "--request", str(path))
     assert review["status"] == "REVIEW_ONLY" and review["eligibility"]["scheduling_candidate"] is False
     assert "no_extra_spend_boundary_unconfirmed" in review["eligibility"]["waiting_reasons"]
