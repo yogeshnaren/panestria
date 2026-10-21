@@ -96,7 +96,7 @@ class NativePlanRunner:
                 self.storage_observation = {"decision": "DEFER", "reason": "storage_notification_unconfirmed"}
                 return False
             self.storage_notice_key = key
-        return observation["decision"] == "ALLOW"
+        return bool(observation["decision"] == "ALLOW")
 
     def inventory(self, base: str) -> ProjectInventory:
         s = self.owner.settings
