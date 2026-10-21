@@ -25,6 +25,7 @@ from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.api.local_web import mount_local_web
 from panestria.api.main import create_app, mount_activity_api, mount_ask_api, mount_browser_api
 from panestria.api.routes.ask import AskApi
+from panestria.api.routes.profiles import ProfileApi
 from panestria.api.sessions import BrowserAccess
 from panestria.config import Settings, ValidatedSettings
 from panestria.config_local import LocalApplicationRejected, LocalApplicationSettings, load_local_settings
@@ -74,7 +75,13 @@ def owned_listener(config: LocalApplicationSettings) -> socket.socket:
         raise LocalApplicationRejected("local_bind_unavailable") from None
 
 
-def build_local_app(config: LocalApplicationSettings, settings: ValidatedSettings, token: str) -> FastAPI:
+def build_local_app(
+    config: LocalApplicationSettings,
+    settings: ValidatedSettings,
+    token: str,
+    *,
+    profiles: ProfileApi | None = None,
+) -> FastAPI:
     actor = Actor(str(config.owner_id), str(config.project_id))
     model = ModelRuntime(config.model_cache, config.runtime_directory / "model", preserve_existing=True)
     provider = LocalProvider(model.socket_path)
@@ -89,6 +96,10 @@ def build_local_app(config: LocalApplicationSettings, settings: ValidatedSetting
     session_secret = hmac.digest(token.encode(), b"panestria.local-browser-session.v1", hashlib.sha256)
     mount_browser_api(app, BrowserAccess(config.origin, SessionService(session_secret), api.database_url))
     mount_ask_api(app, ask)
+    if profiles is not None:
+        from panestria.api.main import mount_profile_api
+
+        mount_profile_api(app, profiles)
     mount_local_web(app)
     app.state.local_model = model
     app.state.local_failure = None
@@ -147,7 +158,7 @@ def build_local_app(config: LocalApplicationSettings, settings: ValidatedSetting
                     "model_socket_present": model.socket_path.is_socket(),
                     "model_catalog": "checked_per_inference",
                     "admission": ask.governor.status(),
-                    "profiles": "DISABLED",
+                    "profiles": "DISABLED" if profiles is None else "EXPLICITLY_ENABLED",
                     "cloud_routes": "UNMOUNTED",
                     "resource_headroom": "rechecked_per_inference",
                     "release_gate": "NOT_EVALUATED",
@@ -197,7 +208,7 @@ def server_config(app: FastAPI) -> uvicorn.Config:
     )
 
 
-def serve_local(path: Path) -> None:
+def serve_local(path: Path, *, profiles: ProfileApi | None = None) -> None:
     config, token = load_local_settings(path)
     settings = Settings(
         database_url=os.environ.get("PANESTRIA_DATABASE_URL", ""),
@@ -209,7 +220,7 @@ def serve_local(path: Path) -> None:
     listener = owned_listener(config)
     app = None
     try:
-        app = build_local_app(config, settings, token.get_secret_value())
+        app = build_local_app(config, settings, token.get_secret_value(), profiles=profiles)
         server = uvicorn.Server(server_config(app))
         print(json.dumps({"schema_version": 1, "status": "STARTING", "origin": config.origin}), flush=True)
         try:

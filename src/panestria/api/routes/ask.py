@@ -153,9 +153,17 @@ async def _execute_ask(request: Request, service: AskService, submission_type: t
                 model_task.cancel()
                 raise asyncio.CancelledError()
         result = await model_task
-        await asyncio.to_thread(
-            _transaction, request, api, lambda u: service.finish(u, actor, submission.request_id, result)
-        )
+
+        def finish(uow: UnitOfWork) -> None:
+            # Expired qualification, locked keys, withdrawal or changed selected
+            # content also fences publication after the actual model has returned.
+            if prepared is not None and prepared.profile is not None:
+                if service.profile_context is None:
+                    raise KernelDenied("profile_disabled")
+                service.profile_context.revalidate(uow, actor, prepared.profile)
+            service.finish(uow, actor, submission.request_id, result)
+
+        await asyncio.to_thread(_transaction, request, api, finish)
         receipt = await asyncio.to_thread(
             _transaction, request, api, lambda u: service.receipt(u, actor, submission.request_id)
         )
