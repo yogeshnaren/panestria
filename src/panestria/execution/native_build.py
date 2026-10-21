@@ -138,11 +138,11 @@ class AdmittedNativeBuild:
             raise KernelDenied("native_build_context_limit")
         self.context_sha256 = hashlib.sha256(self.context.encode()).hexdigest()
 
-    def authorize(self, connection: psycopg.Connection[Any]) -> None:
+    def authorize(self, connection: psycopg.Connection[Any], *, observation: bool = False) -> None:
         controller = self.controller
         if runtime_versions() != self.versions or controller.certificates.runtime_versions != self.versions:
             raise KernelDenied("native_build_runtime_changed")
-        controller.authorize(connection)  # Current local edit, contract and policy.
+        controller.authorize(connection, observation=observation)  # Current local edit, contract and policy.
         if self.plan_scope is not None:
             claim = connection.execute(
                 "SELECT 1 FROM panestria.build_active_worker_claim WHERE plan_id=%s AND task_id=%s "
@@ -174,12 +174,13 @@ class AdmittedNativeBuild:
             )
             if decision.outcome != "PERMIT":
                 raise KernelDenied("native_build_export_denied")
-        LeaseService().require_current(
-            UnitOfWork(connection),
-            controller.actor,
-            str(controller.scope.attempt_id),
-            controller.scope.lease_epoch,
-        )
+        if not observation:
+            LeaseService().require_current(
+                UnitOfWork(connection),
+                controller.actor,
+                str(controller.scope.attempt_id),
+                controller.scope.lease_epoch,
+            )
 
     def _stop_attempt(self) -> None:
         try:
@@ -282,9 +283,10 @@ class AdmittedNativeBuild:
                         if time.monotonic() >= deadline or (cancel is not None and cancel.is_set()):
                             raise KernelDenied("native_build_cancelled_or_deadline")
                         with controller.connect() as connection:
-                            self.authorize(connection)
+                            connection.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+                            self.authorize(connection, observation=True)
                             assert binding is not None and identity is not None
-                            InvocationService().check(UnitOfWork(connection), controller.actor, binding, identity)
+                            InvocationService().observe(UnitOfWork(connection), controller.actor, binding, identity)
                     except Exception:
                         stop.set()
                         return
