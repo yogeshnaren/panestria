@@ -1,0 +1,268 @@
+{
+  "result": "PASS",
+  "scope": "CONNECTED_SYNTHETIC_ACTIVITY_NOT_RELEASE_QUALIFICATION",
+  "source_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+  "cases": 35,
+  "seconds": 21.46,
+  "live_provider_calls": 0,
+  "notes": [
+    "Real PostgreSQL, loopback HTTP, foreground CLI server and PTY keyboard; existing Ask model output and Build qualification are explicit fixtures.",
+    "Initial 33PASS/2FAIL29.86s: test expected a complete curses redraw string and exit0 instead of normal SIGINT130. Assertions corrected; no production safety or required release test weakened.",
+    "Corrected source18db676 clean:35PASS21.46s. Original JUnit files and properties preserved.",
+    "No real model/provider call, policy grant, background job, owner service change or release pass."
+  ],
+  "original_runs": [
+    {
+      "file": "initial.xml",
+      "cases": 35,
+      "failures": 2,
+      "sha256": "be23bd31569f06cef1abf82a86bb35e5cd35484246695c5ca3303a4769c3ba2f",
+      "recorded_properties": [
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "08b42f71b06cf70fb198ae4d38d75f5476c7ccd5285d50d0f5863b2595b4a8ea",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "5f15bf3ed0a3beee895efe99c2290700eabd6057b253df713c18d746b629773c",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "5f15bf3ed0a3beee895efe99c2290700eabd6057b253df713c18d746b629773c",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "9250122651c7e1ae866e85c7175f8d804987c7cb",
+          "fixture_digest": "d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5",
+          "worktree_state": "clean",
+          "lane": "integration"
+        }
+      ]
+    },
+    {
+      "file": "corrected.xml",
+      "cases": 35,
+      "failures": 0,
+      "sha256": "4e3dd88b7a96c82c043a2bb0f17ed0e1c1aaae5b5b6514eee8e6756486ccfafe",
+      "recorded_properties": [
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "08b42f71b06cf70fb198ae4d38d75f5476c7ccd5285d50d0f5863b2595b4a8ea",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "accbbb074bcb5026b9e6fe76aa672b8c99a375936e8e4324b22f6109ed071bb6",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "accbbb074bcb5026b9e6fe76aa672b8c99a375936e8e4324b22f6109ed071bb6",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5",
+          "worktree_state": "clean",
+          "lane": "integration"
+        },
+        {
+          "candidate_commit": "18db6760449a7fc0661b42d5a161adc04b3de447",
+          "fixture_digest": "d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5",
+          "worktree_state": "clean",
+          "lane": "integration"
+        }
+      ]
+    }
+  ],
+  "release_gate": "NOT_ASSESSED",
+  "owner_acceptance": "NOT_ASSESSED"
+}

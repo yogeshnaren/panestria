@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="35" time="29.853" timestamp="2026-10-21T10:14:09.366571-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_project_activity" name="test_scoped_activity_pages_are_read_only_content_free_and_independent_of_model" file="tests/integration/test_project_activity.py" line="25" time="5.957"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="08b42f71b06cf70fb198ae4d38d75f5476c7ccd5285d50d0f5863b2595b4a8ea" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_project_activity_tui" name="test_actual_project_task_pane_observes_running_ask_without_cancelling_or_starting_another" file="tests/integration/test_project_activity_tui.py" line="13" time="9.081"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="5f15bf3ed0a3beee895efe99c2290700eabd6057b253df713c18d746b629773c" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof" /></properties><failure message="AssertionError: b&quot;\x1b[?1049h\x1b[22;0;0t\x1b[1;26r\x1b(B\x1b[m\x1b[4l\x1b[?7h\x1b[?1h\x1b=\x1b[39;49m\x1b[?1h\x1b=\x1b[?25l\x1b[39;49...18HRUNNING\x1b[K\x1b[24;4Hceipt refreshed. Unretained answer text cannot be recovered from a receipt.\x1b[K\x1b[26;82H&quot;&#10;assert (None is None and 63383.493720429 &lt; 63383.463132034)&#10; +  where None = poll()&#10; +    where poll = &lt;Popen: returncode: None args: ['/tmp/panestria-project-activity-work/.venv/...&gt;.poll&#10; +  and   63383.493720429 = &lt;built-in function monotonic&gt;()&#10; +    where &lt;built-in function monotonic&gt; = time.monotonic">terminal_server = namespace(config=PosixPath('/tmp/pytest-of-yogesh/pytest-46/test_actual_project_task_pane_0/tui.json'), settings=Local...tic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic', token='ZYb54Vt6NxGKBHosdmKAvsa1nQ2frzIL9U9-pEnrkUE')
+
+    def test_actual_project_task_pane_observes_running_ask_without_cancelling_or_starting_another(terminal_server):
+        f = terminal_server
+        f.state.delay = True
+        with terminal(f.config) as t:
+            t.until(b"CONNECTED")
+            os.write(t.master, b"nPUBLIC activity question\n")
+            assert f.state.started.wait(3)
+            with psycopg.connect(f.dsn) as c:
+                identity, state = c.execute(
+                    "SELECT id,state FROM panestria.ask_request WHERE owner_id=%s AND project_id=%s "
+                    "ORDER BY created_at DESC LIMIT 1",
+                    (str(f.settings.owner_id), str(f.settings.project_id)),
+                ).fetchone()
+            assert state == "RUNNING"
+            os.write(t.master, b"t")
+            t.until(b"PROJECT TASKS")
+            t.until(str(identity)[:8].encode())
+            assert f.state.calls == 1
+            # These controls must have no mutation meaning inside the read-only pane.
+            curses.setupterm(term="xterm-256color")
+            os.write(t.master, b"c" + curses.tigetstr("kf6") + b"tr")
+&gt;           t.until(b"Receipt refreshed")
+
+tests/integration/test_project_activity_tui.py:35: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = b'Receipt refreshed', timeout = 6, after = None
+
+    def until(value, timeout=6, *, after=None):
+        deadline = time.monotonic() + timeout
+        start = len(transcript) if after is None else after
+        while value not in transcript[start:]:
+&gt;           assert process.poll() is None and time.monotonic() &lt; deadline, bytes(transcript[-3000:])
+E           AssertionError: b"\x1b[?1049h\x1b[22;0;0t\x1b[1;26r\x1b(B\x1b[m\x1b[4l\x1b[?7h\x1b[?1h\x1b=\x1b[39;49m\x1b[?1h\x1b=\x1b[?25l\x1b[39;49...18HRUNNING\x1b[K\x1b[24;4Hceipt refreshed. Unretained answer text cannot be recovered from a receipt.\x1b[K\x1b[26;82H"
+E           assert (None is None and 63383.493720429 &lt; 63383.463132034)
+E            +  where None = poll()
+E            +    where poll = &lt;Popen: returncode: None args: ['/tmp/panestria-project-activity-work/.venv/...&gt;.poll
+E            +  and   63383.493720429 = &lt;built-in function monotonic&gt;()
+E            +    where &lt;built-in function monotonic&gt; = time.monotonic
+
+tests/integration/test_ask_tui.py:145: AssertionError</failure></testcase><testcase classname="tests.integration.test_project_activity_tui" name="test_standalone_metadata_terminal_needs_no_model_and_mounts_no_mutations" file="tests/integration/test_project_activity_tui.py" line="46" time="4.391"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="5f15bf3ed0a3beee895efe99c2290700eabd6057b253df713c18d746b629773c" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: b''&#10;assert 130 == 0&#10; +  where 130 = &lt;Popen: returncode: 130 args: ['/tmp/panestria-project-activity-work/.venv/b...&gt;.returncode">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-46/test_standalone_metadata_termi0/build.json'...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-46/test_standalone_metadata_termi0')
+
+    def test_standalone_metadata_terminal_needs_no_model_and_mounts_no_mutations(prepared_plan, tmp_path):
+        import json
+        import signal
+        import socket
+        import subprocess
+        import time
+        from pathlib import Path
+        from uuid import uuid4
+    
+        import httpx2 as httpx
+        from typer.testing import CliRunner
+    
+        from panestria.cli.main import app
+        from panestria.config_activity import load_activity_settings
+    
+        _, owner, _, plan = prepared_plan
+        root = Path(__file__).resolve().parents[2]
+        directory = tmp_path / "metadata-only"
+        with socket.socket() as reservation:
+            reservation.bind(("127.0.0.1", 0))
+            port = reservation.getsockname()[1]
+        args = [
+            "activity",
+            "init",
+            "--directory",
+            str(directory),
+            "--owner-id",
+            owner.actor.owner_id,
+            "--project-id",
+            owner.actor.project_id,
+            "--port",
+            str(port),
+        ]
+        runner = CliRunner()
+        initialized = runner.invoke(app, args)
+        assert initialized.exit_code == 0, initialized.output
+        assert json.loads(initialized.stdout)["project_created"] is False
+        path = directory / "activity.json"
+        config, token = load_activity_settings(path)
+        originals = {p.name: p.read_bytes() for p in directory.iterdir()}
+        assert runner.invoke(app, args).exit_code == 0
+        conflict = [*args]
+        conflict[conflict.index("--project-id") + 1] = str(uuid4())
+        assert runner.invoke(app, conflict).exit_code == 2
+        assert {p.name: p.read_bytes() for p in directory.iterdir()} == originals
+        assert token.get_secret_value() not in initialized.stdout
+        assert "model_cache" not in path.read_text()
+        with owner.connect() as c:
+            before = c.execute("SELECT count(*) FROM panestria.task_event").fetchone()
+        server = subprocess.Popen(
+            [str(root / ".venv/bin/python"), "-m", "panestria.cli.main", "activity", "serve", "--config", str(path)],
+            cwd=root,
+            env={**os.environ, "PANESTRIA_DATABASE_URL": owner.dsn},
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        try:
+            with httpx.Client(trust_env=False, timeout=2) as client:
+                deadline = time.monotonic() + 10
+                while True:
+                    assert server.poll() is None and time.monotonic() &lt; deadline
+                    try:
+                        response = client.get(config.origin + "/healthz")
+                        if response.status_code == 200:
+                            break
+                    except httpx.HTTPError:
+                        pass
+                    time.sleep(0.02)
+                headers = {"Authorization": "Bearer " + token.get_secret_value()}
+                page = client.get(config.origin + "/v1/activity", headers=headers)
+                assert page.status_code == 200 and plan.goal_id in page.text
+                assert client.get(config.origin + "/v1/activity").status_code == 401
+                for route in ("/v1/ask", "/v1/goals", "/v1/approvals", "/v1/session/code"):
+                    assert client.post(config.origin + route, headers=headers, json={}).status_code == 404
+                # The actual CLI server refuses an occupied port without disturbing the running one.
+                occupied = runner.invoke(app, ["activity", "serve", "--config", str(path)])
+                assert occupied.exit_code == 2 and "local_bind_unavailable" in occupied.output
+                assert client.get(config.origin + "/v1/activity", headers=headers).status_code == 200
+                with terminal(path, entry=("activity", "tui")) as t:
+                    t.until(b"PROJECT TASKS")
+                    t.until(plan.goal_id[:8].encode())
+                    assert b"FRESH" in t.transcript
+                    os.write(t.master, b"nct")  # No Ask/edit/cancel pane exists in this profile.
+                    os.write(t.master, b"r")
+                    t.until(b"FRESH", after=0)
+                    os.write(t.master, b"q")
+            with owner.connect() as c:
+                assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == before
+        finally:
+            if server.poll() is None:
+                server.send_signal(signal.SIGINT)  # Only this fixture's exact foreground child.
+            out, err = server.communicate(timeout=8)
+&gt;           assert server.returncode == 0, err
+E           AssertionError: b''
+E           assert 130 == 0
+E            +  where 130 = &lt;Popen: returncode: 130 args: ['/tmp/panestria-project-activity-work/.venv/b...&gt;.returncode
+
+tests/integration/test_project_activity_tui.py:139: AssertionError</failure></testcase><testcase classname="tests.integration.test_ask_tui" name="test_actual_terminal_question_answer_resize_quit_and_terminal_restoration" file="tests/integration/test_ask_tui.py" line="163" time="1.370"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof" /></properties></testcase><testcase classname="tests.integration.test_ask_tui" name="test_actual_terminal_cancellation_is_canonical_and_reuse_is_explicit" file="tests/integration/test_ask_tui.py" line="200" time="1.580"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof" /></properties></testcase><testcase classname="tests.integration.test_ask_tui" name="test_actual_terminal_authentication_loss_clears_view" file="tests/integration/test_ask_tui.py" line="220" time="1.429"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof" /></properties></testcase><testcase classname="tests.integration.test_ask_tui" name="test_unconfirmed_post_is_not_replayed_and_receipt_recovers_actual_commit" file="tests/integration/test_ask_tui.py" line="235" time="0.578"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof" /></properties></testcase><testcase classname="tests.integration.test_ask_tui" name="test_wrong_server_scope_refuses_question_before_disclosure" file="tests/integration/test_ask_tui.py" line="267" time="0.384"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof" /></properties></testcase><testcase classname="tests.integration.test_ask_tui" name="test_total_control_deadline_includes_actual_http_body_read" file="tests/integration/test_ask_tui.py" line="276" time="0.472"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="scope" value="Actual PTY/PG/HTTP with labeled MODEL_FIXTURE; not live inference or release proof" /></properties></testcase><testcase classname="tests.integration.test_ask_tui" name="test_late_generation_and_auth_callbacks_cannot_restore_or_regress_terminal_view" file="tests/integration/test_ask_tui.py" line="286" time="0.024"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_ask_tui" name="test_terminal_text_is_inert_and_headless_cli_does_not_start_or_disclose" file="tests/integration/test_ask_tui.py" line="314" time="0.039"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="dac55618e413dcf56a934f4f5c2e9e19e14dc51adfdc60edbf5a43447c644a79" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation0]" file="tests/integration/test_local_server.py" line="56" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation1]" file="tests/integration/test_local_server.py" line="56" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation2]" file="tests/integration/test_local_server.py" line="56" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation3]" file="tests/integration/test_local_server.py" line="56" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation4]" file="tests/integration/test_local_server.py" line="56" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation5]" file="tests/integration/test_local_server.py" line="56" time="0.007" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation6]" file="tests/integration/test_local_server.py" line="56" time="0.007" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation7]" file="tests/integration/test_local_server.py" line="56" time="0.007" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation8]" file="tests/integration/test_local_server.py" line="56" time="0.007" /><testcase classname="tests.integration.test_local_server" name="test_configuration_and_token_are_private_and_never_overwritten" file="tests/integration/test_local_server.py" line="78" time="0.008" /><testcase classname="tests.integration.test_local_server" name="test_port_conflict_preserves_original_listener" file="tests/integration/test_local_server.py" line="103" time="0.008" /><testcase classname="tests.integration.test_local_server" name="test_owned_listener_reserves_port_before_model_start" file="tests/integration/test_local_server.py" line="115" time="0.008" /><testcase classname="tests.integration.test_local_server" name="test_preserve_existing_runtime_never_inspects_or_reaps_a_container" file="tests/integration/test_local_server.py" line="126" time="0.002" /><testcase classname="tests.integration.test_local_server" name="test_local_lifespan_scope_no_build_routes_and_shutdown" file="tests/integration/test_local_server.py" line="174" time="0.398" /><testcase classname="tests.integration.test_local_server" name="test_unconfigured_policy_stops_before_model_start" file="tests/integration/test_local_server.py" line="200" time="0.216" /><testcase classname="tests.integration.test_local_server" name="test_startup_denial_cleans_owned_state_and_preserves_fixed_reason[schema-local_schema_migration_required]" file="tests/integration/test_local_server.py" line="211" time="0.130" /><testcase classname="tests.integration.test_local_server" name="test_startup_denial_cleans_owned_state_and_preserves_fixed_reason[runtime_permissions-local_runtime_directory_not_private]" file="tests/integration/test_local_server.py" line="211" time="0.143" /><testcase classname="tests.integration.test_local_server" name="test_startup_denial_cleans_owned_state_and_preserves_fixed_reason[resources-capacity_unknown]" file="tests/integration/test_local_server.py" line="211" time="0.199" /><testcase classname="tests.integration.test_local_server" name="test_startup_denial_cleans_owned_state_and_preserves_fixed_reason[model-model_missing_or_digest_mismatch]" file="tests/integration/test_local_server.py" line="211" time="0.191" /><testcase classname="tests.integration.test_local_server" name="test_real_http_enforces_headers_and_slow_header_deadline" file="tests/integration/test_local_server.py" line="245" time="0.775" /><testcase classname="tests.integration.test_local_init" name="test_first_run_creates_private_stable_scope_and_prints_start_instructions" file="tests/integration/test_local_init.py" line="30" time="0.146"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_local_init" name="test_database_failure_preserves_exact_scope_and_retry_uses_it" file="tests/integration/test_local_init.py" line="60" time="0.122"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_local_init" name="test_first_run_explicit_intent_private_directory_and_cache_required" file="tests/integration/test_local_init.py" line="79" time="0.091"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_local_init" name="test_first_run_lock_and_missing_or_symlink_token_never_replace_identity" file="tests/integration/test_local_init.py" line="98" time="0.419"><properties><property name="candidate_commit" value="9250122651c7e1ae866e85c7175f8d804987c7cb" /><property name="fixture_digest" value="d1cb65c43abd256e0519541fca94a2b977032dddeccd37ee60f19689eaef83d5" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase></testsuite></testsuites>
