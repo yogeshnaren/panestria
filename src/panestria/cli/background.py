@@ -184,3 +184,40 @@ def show_account(config: Config, item_id: str) -> None:
             return service.inspect(UnitOfWork(c), owner.actor, item_id)
 
     _finish(run)
+
+
+@background_app.command("run")
+def run_item(config: Config, item_id: str, allow_background_subscription_run: bool = False) -> None:
+    """Run one reviewed bounded job, serially; yield new claims to foreground work."""
+    from panestria.execution.background_run import BackgroundPlanRunner
+
+    def run() -> dict[str, Any]:
+        runner = BackgroundPlanRunner(_service(config), item_id)
+        return runner.run_item(allow_background_subscription_run=allow_background_subscription_run)
+
+    _finish(run)
+
+
+@background_app.command("reconcile-run")
+def reconcile_run(config: Config, item_id: str, run_sha256: str) -> None:
+    """Confirm an abandoned coordinator stopped only when no claim/invocation is uncertain."""
+    from panestria.execution.background_run import reconcile_run as reconcile
+
+    _finish(lambda: reconcile(_service(config), item_id, run_sha256))
+
+
+@background_app.command("runs")
+def list_runs(config: Config, item_id: str) -> None:
+    """Inspect immutable coordinator history and separately held canonical claims."""
+    from panestria.execution.background_account import account_reports
+    from panestria.kernel.background_run import BackgroundRunService
+    from panestria.kernel.build import BuildEvidenceService
+
+    def run() -> dict[str, Any]:
+        owner = _service(config)
+        with owner.connect() as c:
+            return BackgroundRunService(account_reports(owner), BuildEvidenceService(owner.reports)).listing(
+                UnitOfWork(c), owner.actor, item_id
+            )
+
+    _finish(run)

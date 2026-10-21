@@ -203,6 +203,8 @@ def r1_evidence_metadata(request: pytest.FixtureRequest, record_property: pytest
         "test_ask_tui_live.py",
         "test_build_tui.py",
         "test_background_queue.py",
+        "test_background_account.py",
+        "test_background_run.py",
         "test_offline_build_reference.py",
         "test_build_storage_admission.py",
         "test_build_runtime_metrics.py",
