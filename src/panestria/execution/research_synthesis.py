@@ -379,14 +379,17 @@ class OwnerSynthesis:
 
     def inspect(self, request_id: str) -> RetainedSynthesis:
         with self.connect() as c:
-            packet = self._current(c, request_id)
-            prior = self._prior(c, packet.scope.task_id, request_id)
-            if prior is None:
-                raise KernelDenied("synthesis_not_started")
-            receipt = self._receipt(c, packet.scope.task_id, request_id, prior["synthesis_id"])
-            if receipt.status != "DRAFT_RETAINED":
-                raise KernelDenied("synthesis_output_unconfirmed")
-            return self._read_output(c, packet, prior, receipt)
+            return self._inspect(c, request_id)
+
+    def _inspect(self, c: psycopg.Connection[Any], request_id: str) -> RetainedSynthesis:
+        packet = self._current(c, request_id)
+        prior = self._prior(c, packet.scope.task_id, request_id)
+        if prior is None:
+            raise KernelDenied("synthesis_not_started")
+        receipt = self._receipt(c, packet.scope.task_id, request_id, prior["synthesis_id"])
+        if receipt.status != "DRAFT_RETAINED":
+            raise KernelDenied("synthesis_output_unconfirmed")
+        return self._read_output(c, packet, prior, receipt)
 
     def _read_output(
         self, c: psycopg.Connection[Any], packet: SynthesisPacket, prior: dict[str, Any], receipt: SynthesisReceipt

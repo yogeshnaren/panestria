@@ -72,6 +72,11 @@ Current full CI and actual runtime qualification are separate from that componen
    source, task version/epoch checks fence publication and replay. Private review
    exports preserve omissions and unassessed support.
 
+7. [Review draft claims as owner](testing/OWNER_CLAIM_REVIEW.md): exact bound
+   templates, per-claim judgments/citations, separate digest confirmation,
+   immutable private corrections and model-free inspection. Judgments remain
+   OWNER_REPORTED; they grant no model qualification, task PASS or training rights.
+
 A normal collection stops at **VERIFYING**, goal ACTIVE, with **NOT_ASSESSED**
 factual support. Collection generates excerpts. The separate synthesis command generates an
 unverified answer draft; neither grants a goal/check PASS. Ambiguous receipts stop in RECONCILING and cannot automatically redispatch.

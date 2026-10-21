@@ -1930,7 +1930,8 @@
       "evidence_refs": [
         "evidence/entailment-corpus-2026-10-16/report.json",
         "evidence/local-entailment-2026-10-16/report.json",
-        "evidence/native-entailment-2026-10-16/report.json"
+        "evidence/native-entailment-2026-10-16/report.json",
+        "evidence/owner-claim-review-2026-10-21/report.json"
       ]
     },
     {

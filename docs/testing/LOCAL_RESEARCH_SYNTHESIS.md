@@ -45,6 +45,8 @@ uv run --frozen panestria research synthesize <request-UUID> \
 Expect `DRAFT_EXPORTED` with a hash and claim count, and a private HTML file with
 generated claims, citation IDs, exact retained excerpts, shortening/omission flags
 and limitations. `--format json` produces machine-readable provenance instead.
+Use the separate [owner claim review](OWNER_CLAIM_REVIEW.md) to retain source-bound
+judgments and corrections after inspecting the draft; this does not qualify its model.
 Only four bounded passage prefixes and the bounded question excerpt reach the
 model; this is not comprehensive multi-source research. Support remains
 NOT_ASSESSED and the task remains VERIFYING. Review the actual text and citations.
