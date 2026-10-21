@@ -52,6 +52,23 @@ def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_a
             raise
 
     monkeypatch.setattr(runner, "_one", observed_execute)
+    from panestria.brokers.harness.claude_build import ClaudeScopedBashAdapter
+    from panestria.execution.scoped_bash import ScopedBashController
+
+    def trace_call(original):
+        def traced(*args, **kwargs):
+            try:
+                return original(*args, **kwargs)
+            except Exception:
+                import traceback
+
+                failures.append(traceback.format_exc())
+                raise
+
+        return traced
+
+    monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", trace_call(ClaudeScopedBashAdapter.build_public))
+    monkeypatch.setattr(ScopedBashController, "verify_for_review", trace_call(ScopedBashController.verify_for_review))
     path, config, token = configure({"owner": owner.actor.owner_id, "project": owner.actor.project_id}, tmp_path)
     with owner.connect() as c:
         document = c.execute(
