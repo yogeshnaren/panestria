@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "corrected_source_commit": "686d1af758d6113747d6342c6481e220581bef98",
+  "observed_field_shape": {
+    "surpassedThreshold": "float"
+  },
+  "diagnostic": {
+    "scope": "DIAGNOSTIC_NOT_QUALIFICATION",
+    "source_commit": "4d1b9021dc05a5e9ff294db00c5cc560aa3e2dae",
+    "result": "REJECTED_UNKNOWN_FIELD",
+    "raw_junit_sha256": "f27327d6c152f13d28961280b8d375742937cb67ef43ee0f2964d68b3148a043",
+    "shapes_sha256": "ad7dd52c985fe4bb6024761e067b8fb54f6dffe1e4fb5f3ddd3238786ddd3920"
+  },
+  "default_checks": {
+    "cases": 88,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 0.414,
+    "worktree_state": "DIRTY_BEFORE_CODE_COMMIT",
+    "source_files_match_corrected_commit": true,
+    "junit_sha256": "330a9d0ff463ae9343963ddc614cb8e93db24fc0604aac44892dd080ffb06d45"
+  },
+  "qualification_attempts": [
+    {
+      "source_commit": "686d1af758d6113747d6342c6481e220581bef98",
+      "worktree_state": "CLEAN",
+      "status": "PASS",
+      "cases": 11,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 27.28,
+      "raw_junit_sha256": "cbea8ebd704e034636685d3f30d8788ada413e57799a10b6f77c0de8d1cbe5d5",
+      "raw_artifact": "private operator qualification directory/run-b277474f33ed4f119fa2dcd1d287a3ca/raw.xml",
+      "scope": "PUBLIC_BASH_RUNTIME_ONLY_NOT_RELEASE_OR_HUMAN_ACCEPTANCE"
+    },
+    {
+      "source_commit": "4d1b9021dc05a5e9ff294db00c5cc560aa3e2dae",
+      "worktree_state": "CLEAN",
+      "status": "UNAVAILABLE",
+      "cases": 11,
+      "failures": 1,
+      "errors": 0,
+      "seconds": 21.616,
+      "raw_junit_sha256": "dbe5442cff5f072f10bf2d8dde615735a7f8de18952508765c01e9bb5b8ecd7a",
+      "raw_artifact": "private operator qualification directory/run-fadf9bee2bbb469a933afb6312d7e338/raw.xml",
+      "scope": "PUBLIC_BASH_RUNTIME_ONLY_NOT_RELEASE_OR_HUMAN_ACCEPTANCE"
+    }
+  ],
+  "authority": "NONE: ratio metadata never grants quota, paid overage or task acceptance",
+  "release_gate": "NOT_EVALUATED",
+  "owner_acceptance": "NOT_GRANTED"
+}
