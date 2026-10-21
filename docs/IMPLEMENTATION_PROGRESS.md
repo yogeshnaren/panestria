@@ -30,6 +30,12 @@ cumulative gates/real owner trial remain required. A queue candidate is not a
 provider permission, and a component/CI pass is not MVP acceptance.
 Deliver usable slices and required evidence; avoid unrelated test expansion.
 
+The reproduced intermittent native stop is now addressed by
+[read-only authority observations](design/74-READ-ONLY-AUTHORITY-OBSERVATIONS.md).
+Monitors no longer serialize through task-row write locks; claim/launch/publication
+checks remain locked. The 82 affected connected cases pass with unchanged timeouts.
+Current full CI and actual runtime qualification are separate from that component evidence.
+
 | Phase/outcome | Delivered behavior | Remaining acceptance work |
 | --- | --- | --- |
 | R0 durable synthetic kernel | Historical accepted candidate/G0 evidence preserved | Do not reopen accepted R0 |
