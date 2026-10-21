@@ -427,7 +427,7 @@ def inventory_for_native_plan(
     from panestria.execution.native_plan import NativePlanRunner
 
     def run() -> dict[str, Any]:
-        inventory = NativePlanRunner(_service(config)).inventory(base)
+        inventory = NativePlanRunner(_service(config), on_storage_observation=_storage_notice).inventory(base)
         _write_private(output, inventory.model_dump_json().encode())
         return {
             "status": "DECLARED_FOR_REVIEW",
@@ -449,7 +449,11 @@ def run_native_plan(
     from panestria.cli.build import _finish, _service
     from panestria.execution.native_plan import NativePlanRunner
 
-    _finish(lambda: NativePlanRunner(_service(config)).run(plan_id, public_subscription_run=public_subscription_run))
+    _finish(
+        lambda: NativePlanRunner(_service(config), on_storage_observation=_storage_notice).run(
+            plan_id, public_subscription_run=public_subscription_run
+        )
+    )
 
 
 @plan_app.command("propose")
@@ -597,3 +601,7 @@ def inspect_progress(
     except Exception:
         typer.echo('{"status":"UNAVAILABLE","reason":"progress_not_confirmed","authority":"NONE"}', err=True)
         raise typer.Exit(1) from None
+
+
+def _storage_notice(observation: dict[str, Any]) -> None:
+    typer.echo(json.dumps({"notification": "build_storage_admission", **observation}), err=True)

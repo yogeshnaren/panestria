@@ -109,3 +109,14 @@ Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the
 | AOS-018-TC08 | live | Actual target-host workload and foreground contention meet recorded memory/responsiveness budgets; synthetic presets or unmeasured resource claims cannot qualify. |
 
 These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.
+
+### Connected native Build admission
+
+The [storage guide](../testing/STORAGE_AWARENESS.md#connect-storage-policy-to-canonical-native-build)
+now connects explicit private notification settings to inventory and every new
+canonical native-plan claim. Fast device/reserve observations defer new writes;
+initial/changed CLI notifications carry owner review recommendations. Existing
+in-flight outcomes/UNKNOWN holds remain intact. The owner-configured write value
+is an estimate, not a physical reservation. Source-bound connected checks are
+linked in that guide. Other write paths, persistent growth attribution, inbox and
+actual host/foreground qualification remain pending; no whole TC/gate promotion.
