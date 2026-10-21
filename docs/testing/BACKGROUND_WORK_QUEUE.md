@@ -66,6 +66,12 @@ Withdrawal is idempotent and remains available after policy revocation. It does
 not cancel the underlying goal, kill a process or release an uncertain claim.
 Use existing exact goal/plan cancellation for that separate action.
 
+For an expired policy on a plan that has never started, withdraw the old item,
+draft a fresh request, review its new policy hash, and explicitly enqueue it.
+The original queued and withdrawn facts remain immutable. A new item never
+renews the old report freshness or resets the plan budget; any existing attempt
+still prevents this renewal.
+
 ## Interpreting the eligibility view
 
 - All requested quota windows are checked independently. Latest provider, owner,

@@ -65,6 +65,32 @@
       "worktree_states": [
         "clean"
       ]
+    },
+    {
+      "file": "renewal-initial.xml",
+      "sha256": "43698160b79372e566d50f454559ffd3fc22c58811f09bede31256e5b2c33d74",
+      "cases": 2,
+      "failures": 1,
+      "errors": 0,
+      "source_commits": [
+        "28cb64c17964e777982440b0623bf47292d6944c"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "renewal-final.xml",
+      "sha256": "e7259fa5329258df9d36c31e0e3dcd516cc5b5b69196a8920c964b9b10c01ca6",
+      "cases": 1,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "4f3521f7e9b99826b583ccf091873e35f6d87e71"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
     }
   ],
   "scope": "Two distinct connected scenarios with overlapping source-bound followups; actual PG/CLI/private files/race/rollback/held lease. Quota/billing/host values synthetic; no native/provider launches.",
@@ -74,7 +100,8 @@
     "Fresh scoped40percent metadata with separate billing unknown waits; overlapping weekly20percent floor blocks despite session40",
     "Explicit unknown best effort gives declared scheduling candidate without a balance, authority or runtime proof",
     "Later null report cannot erase observed zero; newer numeric40 report can supersede old zero in same lane",
-    "Withdrawal is exact/idempotent, cross-owner scope denied, real held claim blocks candidate; no model/worker launch"
+    "Withdrawal is exact/idempotent, cross-owner scope denied, real held claim blocks candidate; no model/worker launch",
+    "After explicit withdrawal, an unstarted plan accepts a new independently reviewed binding without changing either original event or task state; first renewal assertion incorrectly expected one lifetime event, corrected to the actual two. Initial failure is retained."
   ],
   "limits": [
     "No dispatcher/daemon, actual profile/account binding, authenticated billing proof, spend reservation, model identity or live provider/host qualification",
