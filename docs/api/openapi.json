@@ -77,6 +77,171 @@
         "title": "ActivityEntry",
         "type": "object"
       },
+      "ActivityEvent": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Kind",
+            "type": "string"
+          },
+          "privacy_label": {
+            "pattern": "^[A-Z_]{1,32}$",
+            "title": "Privacy Label",
+            "type": "string"
+          },
+          "schema_version": {
+            "minimum": 1.0,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "seq": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Seq",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seq",
+          "id",
+          "kind",
+          "schema_version",
+          "privacy_label"
+        ],
+        "title": "ActivityEvent",
+        "type": "object"
+      },
+      "ActivityGoalSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Cursor",
+            "type": "string"
+          },
+          "goal_id": {
+            "format": "uuid",
+            "title": "Goal Id",
+            "type": "string"
+          },
+          "status": {
+            "pattern": "^[A-Z_]{1,32}$",
+            "title": "Status",
+            "type": "string"
+          },
+          "tasks": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityTask"
+            },
+            "title": "Tasks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "goal_id",
+          "status",
+          "cursor",
+          "tasks"
+        ],
+        "title": "ActivityGoalSnapshot",
+        "type": "object"
+      },
+      "ActivityTask": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "lease_epoch": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Lease Epoch",
+            "type": "string"
+          },
+          "row_version": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Row Version",
+            "type": "string"
+          },
+          "state": {
+            "pattern": "^[A-Z_]{1,32}$",
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "state",
+          "row_version",
+          "lease_epoch"
+        ],
+        "title": "ActivityTask",
+        "type": "object"
+      },
+      "ActivityTimeline": {
+        "additionalProperties": false,
+        "properties": {
+          "acceptance_authority": {
+            "const": "NONE",
+            "default": "NONE",
+            "title": "Acceptance Authority",
+            "type": "string"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityEvent"
+            },
+            "maxItems": 50,
+            "title": "Events",
+            "type": "array"
+          },
+          "next_cursor": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Next Cursor",
+            "type": "string"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "project_id": {
+            "format": "uuid",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "resync": {
+            "title": "Resync",
+            "type": "boolean"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/ActivityGoalSnapshot"
+          },
+          "view_authority": {
+            "const": "READ_ONLY_METADATA",
+            "default": "READ_ONLY_METADATA",
+            "title": "View Authority",
+            "type": "string"
+          }
+        },
+        "required": [
+          "owner_id",
+          "project_id",
+          "events",
+          "snapshot",
+          "next_cursor",
+          "resync"
+        ],
+        "title": "ActivityTimeline",
+        "type": "object"
+      },
       "ApprovalList": {
         "additionalProperties": false,
         "properties": {
@@ -786,6 +951,56 @@
           }
         },
         "summary": "Activity"
+      }
+    },
+    "/v1/activity/goals/{goal_id}/events": {
+      "get": {
+        "operationId": "timeline_v1_activity_goals__goal_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "default": "0",
+              "maxLength": 19,
+              "title": "After",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityTimeline"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Timeline"
       }
     },
     "/v1/approvals": {

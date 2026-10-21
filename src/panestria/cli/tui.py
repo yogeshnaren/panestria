@@ -17,7 +17,7 @@ import typer
 
 from panestria.cli.tui_client import LocalAskClient, TerminalUnavailable
 from panestria.config_local import LocalApplicationRejected
-from panestria.contracts.activity import ProjectActivity
+from panestria.contracts.activity import ActivityTimeline, ProjectActivity
 
 
 def literal(value: str) -> str:
@@ -54,6 +54,10 @@ class TerminalView:
     activity_fresh: bool = False
     activity_received_at: float = 0.0
     activity: ProjectActivity | None = field(default=None, repr=False)
+    timeline_goal: str | None = None
+    timeline: ActivityTimeline | None = field(default=None, repr=False)
+    timeline_fresh: bool = False
+    timeline_received_at: float = 0.0
 
 
 class AskTerminal:
@@ -109,8 +113,9 @@ class AskTerminal:
                     v.notice = result.code + "; no automatic retry. Refresh the receipt before new work."
                     if kind == "status":
                         v.connected = False
-                    if kind == "activity":
+                    if kind in {"activity", "timeline"}:
                         v.activity_fresh = False
+                        v.timeline_fresh = False
                         v.notice = result.code + "; snapshot unconfirmed. Refresh explicitly; no work was started."
                     if kind == "ask" and not result.uncertain:
                         v.request_id, v.state = None, "Not submitted"
@@ -120,6 +125,18 @@ class AskTerminal:
                 if not v.connected:
                     v.notice = "Connected to your offline Ask scope. F2/new: question; Enter: submit."
                 v.connected = True
+                continue
+            if kind == "timeline":
+                page = ActivityTimeline.model_validate_json(json.dumps(result))
+                if str(page.snapshot.goal_id) != v.timeline_goal:
+                    continue
+                if not page.events and not page.resync and v.timeline is not None:
+                    page = page.model_copy(update={"events": v.timeline.events})
+                v.timeline = page
+                v.timeline_fresh, v.timeline_received_at = True, time.monotonic()
+                v.notice = ("History gap/future cursor: canonical snapshot restored; missing events are not invented."
+                            if page.resync else
+                            "Canonical snapshot plus event metadata; payloads and approvals are omitted.")
                 continue
             if kind == "activity":
                 v.activity = ProjectActivity.model_validate_json(json.dumps(result))
@@ -184,6 +201,10 @@ class AskTerminal:
 
     def refresh(self) -> None:
         if self.view.activity_active:
+            if self.view.timeline_goal:
+                after = self.view.timeline.next_cursor if self.view.timeline else "0"
+                self.start("timeline", partial(self.client.timeline, self.view.timeline_goal, after))
+                return
             self.start("activity", self.client.activity)
             return
         self.start("status", self.client.status)
@@ -197,10 +218,22 @@ class AskTerminal:
             self.start("cancel", partial(self.client.cancel, self.view.request_id))
             self.view.notice = "Cancellation requested, awaiting the server's decision."
 
+    def select_timeline(self, index: int) -> None:
+        v = self.view
+        if not v.activity_active or not v.activity or not 0 <= index < len(v.activity.entries):
+            return
+        entry = v.activity.entries[index]
+        if entry.source != "GOAL":
+            v.notice = "Ask has separate request receipts; this row has no goal event timeline."
+            return
+        v.timeline_goal, v.timeline, v.timeline_fresh = str(entry.id), None, False
+        self.start("timeline", partial(self.client.timeline, str(entry.id), "0"))
+
     def toggle_activity(self) -> None:
         if self.metadata_only:
             return
         self.view.activity_active = not self.view.activity_active
+        self.view.timeline_goal = None
         if self.view.activity_active:
             self.refresh()
 
@@ -234,10 +267,29 @@ class AskTerminal:
                     checked = time.monotonic()
                 screen.erase()
                 rows, cols = screen.getmaxyx()
-                line(0, "Panestria | PROJECT TASKS | read only" if v.activity_active
+                line(0, "Panestria | GOAL TIMELINE | read only" if v.timeline_goal and v.activity_active
+                     else "Panestria | PROJECT TASKS | read only" if v.activity_active
                      else getattr(self.client, "view_title", "Panestria | OFFLINE ASK | terminal view"))
                 if rows < 18 or cols < 64:
                     line(2, "Resize to at least 64 columns x 18 rows. F10 quits.")
+                elif v.activity_active and v.timeline_goal:
+                    timeline_page = v.timeline
+                    fresh = v.timeline_fresh and time.monotonic() - v.timeline_received_at <= 15
+                    line(1, "Goal: " + v.timeline_goal)
+                    line(2, "Snapshot: " + ("FRESH" if fresh else "UNCONFIRMED/STALE"))
+                    line(3, "Canonical goal: " + (timeline_page.snapshot.status if timeline_page else "unconfirmed"))
+                    line(4, "Cursor: " + (timeline_page.next_cursor if timeline_page else "0") +
+                         " | no acceptance authority")
+                    if timeline_page:
+                        for row, event in enumerate(timeline_page.events[-max(1, rows - 12):], 6):
+                            line(row, f"{event.seq}  {event.kind}  "
+                                 f"[{event.privacy_label}; schema{event.schema_version}]")
+                    else:
+                        line(6, "No confirmed event page. F5 refreshes explicitly.")
+                    line(rows - 4, "Event metadata never supplies a task/check PASS or merge permission.")
+                    line(rows - 3, v.notice)
+                    line(rows - 2, "F5/n Next/update | r Replay from start | b/Esc Back | q Quit")
+                    line(rows - 1, "Goal state comes from its canonical snapshot, not from event-name guesses.")
                 elif v.activity_active:
                     page = v.activity
                     line(1, f"Project: {self.client.config.project_id}")
@@ -252,14 +304,14 @@ class AskTerminal:
                     else:
                         for offset, entry in enumerate(page.entries, 5):
                             held = "?" if entry.held_build_claims is None else str(entry.held_build_claims)
-                            line(offset, f"{'!' if entry.needs_attention else ' '} {entry.workflow:8} "
+                            line(offset, f"{offset-4} {'!' if entry.needs_attention else ' '} {entry.workflow:8} "
                                  f"{str(entry.id)[:8]} {entry.canonical_state:18} "
                                  f"A:{entry.active_tasks} R:{entry.waiting_reviews} H:{held}")
                     line(rows - 5, "n: next page available" if page and page.next_cursor else "No further page")
                     line(rows - 4, "! needs attention; held claims never imply free capacity")
                     line(rows - 3, v.notice)
                     line(rows - 2, ("" if self.metadata_only else "F4/t Ask | ") +
-                         "F5/r Refresh first page | n Next | F10/q Quit")
+                         "1-8 Goal timeline | F5/r Refresh | n Next | F10/q Quit")
                     line(rows - 1, "States only; content and exact approvals stay in their separate review views.")
                 else:
                     line(
@@ -322,8 +374,18 @@ class AskTerminal:
                 if key == "t":
                     self.toggle_activity()
                     continue
+                if v.activity_active and v.timeline_goal and key != "q":
+                    if key in {"b", "\x1b"}:
+                        v.timeline_goal, v.timeline = None, None
+                    elif key == "r":
+                        self.start("timeline", partial(self.client.timeline, v.timeline_goal, "0"))
+                    elif key == "n":
+                        self.refresh()
+                    continue
                 if v.activity_active and key != "q":
-                    if key == "n" and v.activity and v.activity.next_cursor:
+                    if isinstance(key, str) and key in "12345678":
+                        self.select_timeline(int(key)-1)
+                    elif key == "n" and v.activity and v.activity.next_cursor:
                         self.start("activity", partial(self.client.activity, v.activity.next_cursor))
                     elif key == "r":
                         self.refresh()

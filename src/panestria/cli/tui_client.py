@@ -12,7 +12,7 @@ from pydantic import SecretStr
 
 from panestria.config_activity import load_activity_settings
 from panestria.config_local import load_local_settings
-from panestria.contracts.activity import ProjectActivity
+from panestria.contracts.activity import ActivityTimeline, ProjectActivity
 from panestria.contracts.ask import AskSubmission
 
 CONTROL_SECONDS = 5.0
@@ -54,6 +54,21 @@ class LocalAskClient:
         except (ValueError, TypeError):
             raise TerminalUnavailable("activity_unconfirmed") from None
         if str(page.owner_id) != str(self.config.owner_id) or str(page.project_id) != str(self.config.project_id):
+            raise TerminalUnavailable("server_scope_mismatch", clear=True)
+        return page.model_dump(mode="json")
+
+    def timeline(self, goal_id: str, after: str = "0") -> dict[str, Any]:
+        identity = str(UUID(goal_id))
+        if re.fullmatch(r"0|[1-9][0-9]{0,18}", after) is None or int(after) > 2**63 - 1:
+            raise TerminalUnavailable("invalid_timeline_cursor")
+        page = ActivityTimeline.model_validate_json(
+            json.dumps(self._request("GET", f"/v1/activity/goals/{identity}/events?after={after}"))
+        )
+        if (str(page.owner_id), str(page.project_id), str(page.snapshot.goal_id)) != (
+            str(self.config.owner_id),
+            str(self.config.project_id),
+            identity,
+        ):
             raise TerminalUnavailable("server_scope_mismatch", clear=True)
         return page.model_dump(mode="json")
 
@@ -129,10 +144,12 @@ class LocalAskClient:
     def cancel(self, request_id: str) -> dict[str, Any]:
         identity = str(UUID(request_id))
         result = self._request("POST", "/v1/ask/" + identity + "/cancel", {})
-        if (
-            result.get("request_id") != identity
-            or result.get("state") not in {"CANCELLED", "COMPLETED", "FAILED", "UNAVAILABLE"}
-        ):
+        if result.get("request_id") != identity or result.get("state") not in {
+            "CANCELLED",
+            "COMPLETED",
+            "FAILED",
+            "UNAVAILABLE",
+        }:
             raise TerminalUnavailable("cancellation_unconfirmed_check_receipt")
         return result
 

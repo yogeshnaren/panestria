@@ -126,6 +126,13 @@ def test_standalone_metadata_terminal_needs_no_model_and_mounts_no_mutations(pre
                 t.until(b"PROJECT TASKS")
                 t.until(plan.goal_id[:8].encode())
                 assert b"FRESH" in t.transcript
+                os.write(t.master, b"1")
+                t.until(b"GOAL TIMELINE")
+                t.until(b"Canonical goal:")
+                assert b"PRIVATE_ACTIVITY" not in t.transcript
+                os.write(t.master, b"c")  # No cancellation in this read-only view.
+                os.write(t.master, b"b")
+                t.until(b"PROJECT TASKS")
                 os.write(t.master, b"nct")  # No Ask/edit/cancel pane exists in this profile.
                 os.write(t.master, b"r")
                 t.until(b"FRESH", after=0)
