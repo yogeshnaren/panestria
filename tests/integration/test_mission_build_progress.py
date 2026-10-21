@@ -28,7 +28,7 @@ ASSETS = ROOT / "apps/mission-control/dist"
 
 
 def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_acceptance(
-    native_plan, tmp_path, record_property, monkeypatch, request
+    native_plan, tmp_path, record_property
 ):
     owner, runner, plan, state = native_plan
     record_property(
@@ -39,50 +39,6 @@ def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_a
         "dirty" if subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT).strip() else "clean",
     )
     record_property("mode", "ACTUAL_CHROMIUM_PG_GIT_VERIFIER__TEST_FIXTURE_NOT_LIVE_NATIVE_AUTH_CAPACITY")
-    failures = []
-    import threading
-
-    previous_trace = threading.gettrace()
-
-    def trace_boundary(frame, event, arg):
-        if frame.f_code.co_name == "execute" and frame.f_code.co_filename.endswith("/execution/scoped_bash.py"):
-            if event == "exception":
-                kind, value, _tb = arg
-                failures.append(f"Scoped Bash boundary: {kind.__name__}: {value}")
-            return trace_boundary
-        return None
-
-    threading.settrace(trace_boundary)
-    request.addfinalizer(lambda: threading.settrace(previous_trace))
-    execute = runner._one
-
-    def observed_execute(*args, **kwargs):
-        try:
-            return execute(*args, **kwargs)
-        except Exception:
-            import traceback
-
-            failures.append(traceback.format_exc())
-            raise
-
-    monkeypatch.setattr(runner, "_one", observed_execute)
-    from panestria.brokers.harness.claude_build import ClaudeScopedBashAdapter
-    from panestria.execution.scoped_bash import ScopedBashController
-
-    def trace_call(original):
-        def traced(*args, **kwargs):
-            try:
-                return original(*args, **kwargs)
-            except Exception:
-                import traceback
-
-                failures.append(traceback.format_exc())
-                raise
-
-        return traced
-
-    monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", trace_call(ClaudeScopedBashAdapter.build_public))
-    monkeypatch.setattr(ScopedBashController, "verify_for_review", trace_call(ScopedBashController.verify_for_review))
     path, config, token = configure({"owner": owner.actor.owner_id, "project": owner.actor.project_id}, tmp_path)
     with owner.connect() as c:
         document = c.execute(
@@ -216,8 +172,7 @@ def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_a
                 ).fetchone()
             result = runner.run(plan.plan_id, public_subscription_run=True)
             record_property("run_result", json.dumps(result))
-            record_property("worker_failures", json.dumps(failures))
-            assert result["status"] == "WAITING_APPROVAL", json.dumps({"result": result, "worker_failures": failures})
+            assert result["status"] == "WAITING_APPROVAL", json.dumps(result)
             assert state["launches"] == 2  # explicit fixture, never a real provider call
             advance()
             wait("CORRUPT")
