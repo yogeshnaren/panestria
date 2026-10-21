@@ -66,6 +66,29 @@
           "lane": "integration"
         }
       ]
+    },
+    {
+      "file": "current-main.xml",
+      "cases": 5,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 8.555,
+      "sha256": "45a8ad2ceb715f141a0f257fa598ba9497a18788293a4a84db63286c82b55ca3",
+      "source_properties": [
+        {
+          "candidate_commit": "18a44ec3be02b3f3d02af7a87a5b89a03337bf17",
+          "fixture_digest": "fc5e7469ce27b4050f8b0d3f925aab41e58787b616a50a6947d270d4ca0c305e",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual PG/crypto/HTTP/PTY; synthetic in-memory keys. No inference or actual keyring qualification."
+        },
+        {
+          "candidate_commit": "18a44ec3be02b3f3d02af7a87a5b89a03337bf17",
+          "fixture_digest": "fc5e7469ce27b4050f8b0d3f925aab41e58787b616a50a6947d270d4ca0c305e",
+          "worktree_state": "clean",
+          "lane": "integration"
+        }
+      ]
     }
   ],
   "notes": [
@@ -74,7 +97,8 @@
     "Cleanb1ad269:5PASS8.55s including private-file/loopback/no-enablement config checks. New terminal cases use actual PG, encryption, HTTP and PTY; keys are explicit in-memory fixtures.",
     "An existing wider encrypted profile retains its undisplayed fields/approvals/expiry while only communication changes. Local-context approval is independently selected; new profiles default to unapproved.",
     "One save attempt per terminal form. Actual server commits then synthetic transport loses reply; UI reports UNCONFIRMED and performs no repeated write, and an explicit fresh exact-version view recovers the saved profile.",
-    "No local profile file/transcript/private hash or question/model call is created by the client. Default local Ask/activity launchers remain unmodified and profiles remain disabled/unmounted."
+    "No local profile file/transcript/private hash or question/model call is created by the client. Default local Ask/activity launchers remain unmodified and profiles remain disabled/unmounted.",
+    "Clean18a44ec after merging verified mainb344076/PR162:5PASS8.56s with current0037 schema. All source/test claims remain bound to these originals; no real provider/key/runtime qualification was repeated."
   ],
   "limits": [
     "Requires a separately configured qualified and explicitly enabled owner API, existing scoped OS key handles and matching owner token; the client neither provides nor certifies personal-mode onboarding.",
