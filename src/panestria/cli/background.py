@@ -198,6 +198,22 @@ def run_item(config: Config, item_id: str, allow_background_subscription_run: bo
     _finish(run)
 
 
+@background_app.command("next")
+def next_candidate(config: Config) -> None:
+    """Preview the highest priority eligible unstarted item without probing or dispatch."""
+    from panestria.execution.background_run import select_next
+
+    _finish(lambda: select_next(_service(config)))
+
+
+@background_app.command("run-next")
+def run_next(config: Config, allow_background_subscription_run: bool = False) -> None:
+    """Select and re-admit at most one reviewed job; no retry, fallback, resume or daemon."""
+    from panestria.execution.background_run import run_next as execute_next
+
+    _finish(lambda: execute_next(_service(config), allow_background_subscription_run=allow_background_subscription_run))
+
+
 @background_app.command("reconcile-run")
 def reconcile_run(config: Config, item_id: str, run_sha256: str) -> None:
     """Confirm an abandoned coordinator stopped only when no claim/invocation is uncertain."""

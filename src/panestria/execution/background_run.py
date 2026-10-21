@@ -106,3 +106,25 @@ def reconcile_run(owner: OwnerBuild, item_id: str, run_sha256: str) -> dict[str,
             return BackgroundRunService(account_reports(owner), BuildEvidenceService(owner.reports)).reconcile(
                 UnitOfWork(c), owner.actor, item_id, run_sha256
             )
+
+
+def select_next(owner: OwnerBuild) -> dict[str, Any]:
+    with owner.connect() as c:
+        return BackgroundRunService(account_reports(owner), BuildEvidenceService(owner.reports)).next_candidate(
+            UnitOfWork(c), owner.actor
+        )
+
+
+def run_next(owner: OwnerBuild, *, allow_background_subscription_run: bool) -> dict[str, Any]:
+    if allow_background_subscription_run is not True:
+        raise KernelDenied("explicit_background_subscription_run_required")
+    selection = select_next(owner)
+    selected = selection["selected"]
+    if selected is None:
+        return selection
+    # Selection is only a read. The existing controller takes the fleet-wide
+    # session lock and revalidates immutable binding/current policy, actual
+    # principal, billing, quota, foreground and storage before every claim.
+    # A race/denial/failed job returns immediately: never try another item.
+    result = BackgroundPlanRunner(owner, selected["item_id"]).run_item(allow_background_subscription_run=True)
+    return {**result, "selection": selection, "selected_item_id": selected["item_id"]}
