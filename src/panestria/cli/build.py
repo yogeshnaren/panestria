@@ -96,6 +96,14 @@ def goals(config: Config) -> None:
     _finish(lambda: _service(config).goals())
 
 
+@build_app.command("storage-preview")
+def storage_preview(config: Config) -> None:
+    """Read the selected opt-in Build storage policy without starting work."""
+    from panestria.execution.build_storage import build_storage_admission
+
+    _finish(lambda: build_storage_admission(_service(config).settings) or {"status": "NOT_ENABLED"})
+
+
 @build_app.command("status")
 def status(config: Config, goal_id: str, diff: bool = False) -> None:
     """Inspect canonical state, exact approval, independent checks and optional diff."""

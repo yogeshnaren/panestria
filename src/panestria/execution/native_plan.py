@@ -8,9 +8,11 @@ from __future__ import annotations
 
 import hashlib
 import threading
+from collections.abc import Callable
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 from uuid import UUID, uuid4, uuid5
 
 from panestria.brokers.harness.claude_build import ClaudeScopedBashAdapter
@@ -22,6 +24,7 @@ from panestria.contracts.native_tools import ToolScope
 from panestria.contracts.plan import HandoffSubmission, ProjectInventory, StoredPlan, WorkerInventory
 from panestria.contracts.policy import PolicyRequest
 from panestria.execution.build_plan import BuildIntegrator
+from panestria.execution.build_storage import build_storage_admission
 from panestria.execution.native_build import AdmittedNativeBuild, NativeBuildOutcome, runtime_versions
 from panestria.execution.owner_build import OwnerBuild
 from panestria.execution.proposal_demo import _lock, _private
@@ -65,15 +68,43 @@ def worker_declarations() -> tuple[WorkerInventory, ...]:
 
 
 class NativePlanRunner:
-    def __init__(self, owner: OwnerBuild) -> None:
+    def __init__(
+        self, owner: OwnerBuild, *, on_storage_observation: Callable[[dict[str, Any]], None] | None = None
+    ) -> None:
+        self.on_storage_observation = on_storage_observation
+        self.storage_observation: dict[str, Any] | None = None
+        self.storage_notice_key: object = None
         self.owner = owner
         self.evidence = BuildEvidenceService(owner.reports)
         self.cancel = threading.Event()
+
+    def _storage_allows_new_work(self) -> bool:
+        observation = build_storage_admission(self.owner.settings)
+        self.storage_observation = observation
+        if observation is None:
+            self.storage_notice_key = None
+            return True
+        key = (
+            observation["decision"],
+            observation["reason"],
+            tuple(w["code"] for w in observation.get("report", {}).get("warnings", ())),
+        )
+        if self.on_storage_observation is not None and key != self.storage_notice_key:
+            try:
+                self.on_storage_observation(observation)
+            except Exception:
+                self.storage_observation = {"decision": "DEFER", "reason": "storage_notification_unconfirmed"}
+                return False
+            self.storage_notice_key = key
+        return observation["decision"] == "ALLOW"
 
     def inventory(self, base: str) -> ProjectInventory:
         s = self.owner.settings
         if protected_git(s.repository, ("rev-parse", "refs/heads/main")).decode().strip() != base:
             raise KernelDenied("build_base_changed")
+        if not self._storage_allows_new_work():
+            assert self.storage_observation is not None
+            raise KernelDenied(str(self.storage_observation["reason"]))
         parent = _private(s.root / "plan-inventory")
         snapshot = materialize(s.repository, base, base, parent / str(uuid4()))
         return ProjectInventory(
@@ -247,11 +278,14 @@ class NativePlanRunner:
             plan = self._preflight(plan_id)
             probe = HardwareProbe(owner.settings.skills_archive)
             active: dict[Future[NativeBuildOutcome], Scheduled] = {}
-            stop_new = False
+            stop_new, storage_deferred = False, False
             with ThreadPoolExecutor(max_workers=2, thread_name_prefix="panestria-native-plan") as pool:
                 try:
                     while True:
                         while len(active) < 2 and not stop_new and not self.cancel.is_set():
+                            if not self._storage_allows_new_work():
+                                stop_new, storage_deferred = True, True
+                                break
                             capacity = probe.collect_cpu()
                             with owner.connect() as c:
                                 job = Scheduler().claim_ready(
@@ -280,16 +314,23 @@ class NativePlanRunner:
                                     "worker_observations": results,
                                     "tasks": self._summary(plan),
                                     "goal_id": plan.proposal.goal_id,
+                                    "storage_admission": self.storage_observation,
                                 }
                             active[pool.submit(self._one, plan, job)] = job
                         if not active:
                             return {
-                                "status": "STOPPED" if stop_new else "WAIT",
+                                "status": "STOPPED"
+                                if stop_new
+                                and (not storage_deferred or any(r["status"] != "NODE_VERIFIED" for r in results))
+                                else "WAIT",
                                 "plan_id": plan_id,
                                 "worker_observations": results,
                                 "tasks": self._summary(plan),
                                 "goal_id": plan.proposal.goal_id,
-                                "reason": "inspect_canonical_queue_and_claims",
+                                "reason": "storage_admission_deferred"
+                                if storage_deferred
+                                else "inspect_canonical_queue_and_claims",
+                                "storage_admission": self.storage_observation,
                             }
                         finished, _ = wait(active, timeout=0.2, return_when=FIRST_COMPLETED)
                         for future in finished:

@@ -33,6 +33,9 @@ class BuildSettings(BaseModel):
     skills_archive: Path
     checks: list[BuildCheckSetting] = Field(min_length=1, max_length=16)
 
+    storage_policy: Path | None = None
+    anticipated_build_write_bytes: int = Field(default=1024**3, ge=1, le=32 * 1024**3)
+
     @property
     def protected(self) -> Path:
         return self.root / "protected"
