@@ -296,13 +296,18 @@ class ClaudeEventParser:
                     "overageDisabledReason",
                     "unifiedWindows",
                     "utilization",
+                    "surpassedThreshold",
                 },
             )
             if info.get("status") not in ("allowed", "allowed_warning", "rejected"):
                 raise ProtocolRejected("invalid_rate_limit")
-            if "utilization" in info:
-                utilization = info["utilization"]
-                if type(utilization) not in {int, float} or not 0 <= utilization <= 1 or not math.isfinite(utilization):
+            for field in ("utilization", "surpassedThreshold"):
+                if field not in info:
+                    continue
+                # Optional transport ratios do not establish remaining quota,
+                # renew a quota observation, or authorize paid overage.
+                ratio = info[field]
+                if type(ratio) not in {int, float} or not 0 <= ratio <= 1 or not math.isfinite(ratio):
                     raise ProtocolRejected("invalid_rate_limit")
             if "isUsingOverage" in info and info["isUsingOverage"] is not False:
                 raise ProtocolRejected("unapproved_overage")
