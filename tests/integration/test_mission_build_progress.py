@@ -170,7 +170,8 @@ def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_a
                 before = c.execute(
                     "SELECT count(*) FROM panestria.task_event WHERE goal_id=%s", (plan.goal_id,)
                 ).fetchone()
-            assert runner.run(plan.plan_id, public_subscription_run=True)["status"] == "WAITING_APPROVAL"
+            result = runner.run(plan.plan_id, public_subscription_run=True)
+            assert result["status"] == "WAITING_APPROVAL", result
             assert state["launches"] == 2  # explicit fixture, never a real provider call
             advance()
             wait("CORRUPT")

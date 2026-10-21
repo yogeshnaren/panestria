@@ -6,6 +6,9 @@ export function BuildEvidence({goal,owner,project,deny}:{goal:string,owner:strin
   const [open,setOpen] = useState(false);
   const [view,setView] = useState<Evidence|null>(null);
   const [fresh,setFresh] = useState(false);
+  const [now,setNow] = useState(Date.now());
+  const [validatedAt,setValidatedAt] = useState(0);
+  useEffect(()=>{if(!open)return; const timer=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(timer);},[open]);
   const [notice,setNotice] = useState('');
   useEffect(()=> {
     setOpen(false);setView(null);setFresh(false);setNotice('');
@@ -24,7 +27,7 @@ export function BuildEvidence({goal,owner,project,deny}:{goal:string,owner:strin
           !Number.isSafeInteger(page.required_checks_total) || !Number.isSafeInteger(page.required_checks_passed) ||
           page.required_checks_passed<0 || page.required_checks_total<page.required_checks_passed)
           throw new Error('Unconfirmed progress.');
-        setView(page);setFresh(true);setNotice('Protected evidence rechecked.');
+        setView(page);setFresh(true);setValidatedAt(Date.now());setNotice('Protected evidence rechecked.');
       } catch(error) {
         if(stop.signal.aborted) return;
         setFresh(false);setView(null);
@@ -36,11 +39,12 @@ export function BuildEvidence({goal,owner,project,deny}:{goal:string,owner:strin
     void read();
     return ()=>{stop.abort();clearTimeout(timer);};
   },[goal,owner,project,open]);
+  const current = fresh && now-validatedAt<15000;
   return <section aria-label="Verified Build progress"><h2>Verified Build progress</h2>
     <p>Separate from activity, owner merge and release acceptance. PUBLIC plans only.</p>
     <button onClick={()=>setOpen(!open)}>{open?'Hide Build evidence':'Inspect Build evidence'}</button>
-    {open && <><p role="status">{fresh?'Confirmed':'UNCONFIRMED'} · {notice}</p>
-      {view && <><label htmlFor="build-checks">Final required checks: {view.required_checks_passed}/{view.required_checks_total}</label>
+    {open && <><p role="status">{current?'Confirmed':'UNCONFIRMED'} · {notice}</p>
+      {view && current && <><label htmlFor="build-checks">Final required checks: {view.required_checks_passed}/{view.required_checks_total}</label>
         <progress id="build-checks" value={view.required_checks_passed} max={Math.max(1,view.required_checks_total)}/>
         <p>Goal {view.goal_status} · owner merge {view.owner_merge} · release acceptance {view.release_acceptance}</p>
         <p>{view.attention_reason} · next: {view.next_action}</p>
