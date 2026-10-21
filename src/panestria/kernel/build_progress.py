@@ -28,11 +28,15 @@ from panestria.kernel.uow import UnitOfWork
 
 
 class BuildProgressService:
-    def inspect(self, uow: UnitOfWork, actor: Actor, goal_id: str, evidence: BuildEvidenceService) -> BuildProgress:
+    def inspect(
+        self, uow: UnitOfWork, actor: Actor, goal_id: str, evidence: BuildEvidenceService, *, public_only: bool = False
+    ) -> BuildProgress:
         if uow.execute("SHOW transaction_isolation").fetchone() != ("repeatable read",):
             raise KernelDenied("progress_consistent_transaction_required")
         store = PlanStore()
         status, _, contract = store._goal(uow, actor, goal_id, read_only=True)
+        if public_only and contract.privacy_class != "PUBLIC":
+            raise KernelDenied("public_build_progress_required")
         observed = uow.execute("SELECT transaction_timestamp()").fetchone()
         event = uow.execute(
             "SELECT COALESCE(max(seq),0) FROM panestria.task_event WHERE goal_id=%s", (goal_id,)

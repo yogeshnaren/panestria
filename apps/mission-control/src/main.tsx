@@ -2,6 +2,7 @@ import { Component, useEffect, useState, type ReactNode, type FormEvent } from '
 import { createRoot } from 'react-dom/client';
 import { Denied, json, mergeEvents, validateTimeline, waitForChange, type Activity, type Timeline, type Event } from './client';
 import './style.css';
+import {BuildEvidence} from './BuildEvidence';
 
 function useGoal(goal: string | null, scope: Activity | null, denied: () => void) {
   const [view, setView] = useState<{page: Timeline | null, events: Event[], notice: string, fresh: boolean, observedAt: number}>(
@@ -122,6 +123,7 @@ function Dashboard() {
           <ol aria-label="Events">{timeline.events.map(event=><li key={event.id} data-event-id={event.id}><code>{event.seq}</code> · {event.kind} · {event.privacy_label}</li>)}</ol>
           <p>Replay cursor <code data-testid="cursor">{timeline.page.next_cursor}</code></p></>}
       </section>}
+      {goal && <BuildEvidence key={goal} goal={goal} owner={activity.owner_id} project={activity.project_id} deny={denied}/>}
     </>}
     <footer>Local desktop only. Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.</footer>
   </main>;
