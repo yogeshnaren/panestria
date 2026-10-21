@@ -128,7 +128,8 @@ def test_standalone_metadata_terminal_needs_no_model_and_mounts_no_mutations(pre
                 assert b"FRESH" in t.transcript
                 os.write(t.master, b"1")
                 t.until(b"GOAL TIMELINE")
-                t.until(b"Canonical goal:")
+                t.until(b"Canonical goal:", after=0)
+                t.until(b"Canonical snapshot plus event metadata", after=0)
                 assert b"PRIVATE_ACTIVITY" not in t.transcript
                 os.write(t.master, b"c")  # No cancellation in this read-only view.
                 os.write(t.master, b"b")
