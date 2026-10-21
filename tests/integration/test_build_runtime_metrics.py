@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from test_native_plan_execution import native_plan as native_plan  # noqa: F401
 from test_native_plan_execution import prepared_plan as prepared_plan  # noqa: F401
 from test_owner_build_cli import invoke
+from test_owner_build_cli import owner_cli as owner_cli  # noqa: F401
 
 from panestria.telemetry.performance import latest_snapshot
 
