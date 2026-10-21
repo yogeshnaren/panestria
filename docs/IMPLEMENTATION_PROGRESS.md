@@ -32,7 +32,7 @@ Deliver usable slices and required evidence; avoid unrelated test expansion.
 | R1 offline Ask | Keyboard Ask TUI with readiness, question/answer, receipts and cancellation; explicit first-run command generates private stable settings; actual CPU terminal/model journey plus historical GPU Ask/restart/pressure observations | Other TUI task screens and cumulative G1 qualification |
 | R1 access and one-worker Build | Owner CLI submits bounded PUBLIC work through Claude/Bash; keyboard review shows canonical checks/diff and separately confirms exact merge/cancellation; actual subscription journey retained at its recorded source | Qualify the selected stable runtime/cumulative candidate; owner review remains |
 | R1 paid SDK | Owner selected subscription/local-only operation | AOS-016-TC04 deferred, **not passed**; original gate intact |
-| R2 research collection and draft | Dedicated owner policy prepare/confirm, new question staging, admitted search/fetch/read, exact retained excerpts, request-scoped diagnostics, private export and bounded local answer drafts with retained citations | Automatic planning and qualified synthesis/support, qualified support, actual service/runtime and complete D-1/G2 |
+| R2 query planning, collection and draft | Dedicated owner policy prepare/confirm, new question staging, admitted search/fetch/read, exact retained excerpts, request-scoped diagnostics, private export and bounded local answer drafts with retained citations | Broader iterative planning, qualified synthesis/support, actual service/runtime and complete D-1/G2 |
 | R3 complete MVP | Bounded one/two-worker native Build with final review; local proposals, progress/goal TUI, opt-in runtime/storage observations and offline confirmed references; no accepted MVP release | Generality/current qualification; Delegate support, profile/context/connections, actual background dispatch/rights flow, Mission Control/phone/resources and cumulative gates/real owner trial |
 
 ## Usable research path and its boundary
@@ -43,15 +43,17 @@ Deliver usable slices and required evidence; avoid unrelated test expansion.
 2. [Stage a PUBLIC question](testing/OWNER_RESEARCH_SUBMISSION.md): retain the
    question, contract/checks and limits atomically in canonical records, with
    acknowledged private CAS bytes first. It stays CREATED with no I/O or grant.
-3. [Explicitly collect selected queries](testing/OWNER_RESEARCH_COLLECTION.md):
+3. [Propose queries locally](testing/LOCAL_RESEARCH_QUERY_PLAN.md) from the staged PUBLIC question: one bounded retained intent, up to three reviewable queries, private collection-compatible export and separate model-free inspection. One actual cached CPU journey produced valid proposals with measured tokens/request latency; quality and web authority remain unassessed.
+
+4. [Explicitly collect selected queries](testing/OWNER_RESEARCH_COLLECTION.md):
    validate the current joint runtime, reviewed web policy, scope, capabilities,
    zero API cash, lease and deadline. Connect existing search→fetch→isolated
    reader→retained source excerpts. Stop further queries when capacity is spent.
-4. [Inspect/export privately](testing/RETAINED_EVIDENCE_BRIEF.md): resolve actual
+5. [Inspect/export privately](testing/RETAINED_EVIDENCE_BRIEF.md): resolve actual
    snapshots and exact quotes; show fetch/search errors, UNKNOWN receipts,
    reservations and stop/attempt state. HTML is inert and source text untrusted.
 
-5. [Draft locally](testing/LOCAL_RESEARCH_SYNTHESIS.md): one explicitly retained
+6. [Draft locally](testing/LOCAL_RESEARCH_SYNTHESIS.md): one explicitly retained
    CPU model answer draft from up to four bounded PUBLIC passage prefixes. Typed
    claims cite controller IDs; immutable input/output receipts and current policy,
    source, task version/epoch checks fence publication and replay. Private review
@@ -92,7 +94,7 @@ and an existing model cache. For an existing PUBLIC Build goal, use the separate
 [Build review terminal](testing/BUILD_REVIEW_TUI.md) with its own private Build
 config and database environment. It lists recent PUBLIC Build goals in the configured project, shows checks/diff
 and canonical final-check progress, and freezes the exact merge/cancel review; it does not grant or submit work from the offline Ask scope.
-Next deliver bounded research planning and qualified support, then
+Bounded local query proposals are now available; next deliver qualified support and broader iterative planning, then
 the remaining two-worker and personal-platform R3 integration. These are still
 separate terminal surfaces, not completed R3 Mission Control. The owner prefers
 TUI before GUI work; original dashboard/phone/gate requirements remain pending.

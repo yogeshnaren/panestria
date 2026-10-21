@@ -94,3 +94,14 @@ Capture relevant task/attempt/epoch/policy/trace and immutable evidence IDs. Rol
 - [ ] User-visible results are verifiable; worker narrative grants no authority.
 
 Only then complete this item. A release cannot promote while its other required items remain unfinished. AOS-030 trial/owner acceptance decides complete MVP; SOTA authorization remains separate.
+
+## Local query-proposal component, still IN_PROGRESS
+
+[Retained local query planning](../testing/LOCAL_RESEARCH_QUERY_PLAN.md) now breaks an
+already staged PUBLIC question into up to three bounded reviewable queries using
+the existing cached CPU model path. The export feeds the separately admitted
+collector; planning itself creates no web grant, task attempt or acceptance verdict.
+[Source-bound observations](../../evidence/research-query-plan-2026-10-21/report.json)
+include actual PG/CAS/CLI fixtures and a separate real cached CPU synthetic-question
+journey. Failed/uncertain intents are not silently repeated. Broader iterative
+planning, qualified support, actual service/runtime and full D-1/G2 remain pending.
