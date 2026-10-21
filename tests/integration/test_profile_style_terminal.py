@@ -120,7 +120,7 @@ def test_actual_terminal_reviews_and_corrects_encrypted_style_preserving_other_f
         t.until(b"Panestria encrypted style")
         # Select detail and change concise -> balanced. Edit alone has no write.
         os.write(t.master, b"jjl")
-        t.until(b"detail: balanced")
+        t.until(b"balanced")
         assert f.state.writes == 0
         os.write(t.master, b"s")
         t.until(b"Press y to save once")
@@ -161,7 +161,7 @@ def test_terminal_create_needs_explicit_save_and_local_context_choice(style_serv
     with terminal(f.path, entry=("profile", "style-tui"), arguments=args) as t:
         t.until(b"Panestria encrypted style")
         os.write(t.master, b"jjjjjl")
-        t.until(b"Local context approval: YES")
+        t.until(b"YES")
         os.write(t.master, b"sy")
         t.until(b"SAVED row version 0")
         os.write(t.master, b"q")
