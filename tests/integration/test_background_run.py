@@ -28,7 +28,7 @@ from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.uow import UnitOfWork
 
 
-def setup(prepared_plan, native_plan, monkeypatch, *, billing=True):
+def setup(prepared_plan, native_plan, monkeypatch, *, billing=True, billing_fresh=900):
     f, owner, _, plan = prepared_plan
     state = native_plan[3]
     state["expected_workers"] = 1
@@ -45,6 +45,7 @@ def setup(prepared_plan, native_plan, monkeypatch, *, billing=True):
                             "account_ref": request.policy.quota_windows[0].account_ref,
                             "observed_at": (datetime.now(UTC) - timedelta(seconds=1)).isoformat(),
                             "usage_credits_enabled": False,
+                            "fresh_for_seconds": billing_fresh,
                         },
                     },
                 }
@@ -205,3 +206,39 @@ def test_actual_unconfirmed_billing_never_starts_a_background_job(prepared_plan,
             "SELECT count(*) FROM panestria.task_attempt a JOIN panestria.task t ON t.id=a.task_id WHERE t.goal_id=%s",
             (plan.goal_id,),
         ).fetchone() == (0,)
+
+
+def test_actual_billing_report_must_cover_the_full_next_node_envelope(prepared_plan, native_plan, monkeypatch):
+    f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch, billing_fresh=30)
+    result = cli(f, "run", request.item_id, "--allow-background-subscription-run")
+    assert result["status"] == "WAIT" and result["background_wait_reason"] == "background_wall_or_report_boundary"
+    assert state["launches"] == 0
+    with owner.connect() as c:
+        assert c.execute(
+            "SELECT count(*) FROM panestria.task_attempt a JOIN panestria.task t ON t.id=a.task_id WHERE t.goal_id=%s",
+            (plan.goal_id,),
+        ).fetchone() == (0,)
+
+
+def test_actual_withdrawal_after_handoff_stops_new_claims_without_cancelling_or_replaying_work(
+    prepared_plan, native_plan, monkeypatch
+):
+    f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+    original = BackgroundPlanRunner._one
+
+    def withdraw(self, plan, job):
+        result = original(self, plan, job)
+        with owner.connect() as c:
+            binding = BackgroundWorkService().prepare(UnitOfWork(c), owner.actor, request)
+            BackgroundWorkService().withdraw(UnitOfWork(c), owner.actor, request.item_id, binding.sha256())
+        return result
+
+    monkeypatch.setattr(BackgroundPlanRunner, "_one", withdraw)
+    result = cli(f, "run", request.item_id, "--allow-background-subscription-run")
+    assert result["status"] == "WAIT" and result["background_wait_reason"] == "background_item_withdrawn"
+    assert state["launches"] == 1
+    again = cli(f, "run", request.item_id, "--allow-background-subscription-run")
+    assert again["status"] == "WAIT" and state["launches"] == 1
+    with owner.connect() as c:
+        assert c.execute("SELECT count(*) FROM panestria.build_active_worker_claim").fetchone() == (0,)
+        assert c.execute("SELECT status FROM panestria.goal WHERE id=%s", (plan.goal_id,)).fetchone() == ("ACTIVE",)
