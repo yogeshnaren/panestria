@@ -69,8 +69,9 @@ def test_actual_confirmed_build_reference_is_portable_offline_and_not_training_c
     config.write_text(json.dumps(cfg))
     config.chmod(0o600)
     monkeypatch.setenv("PANESTRIA_DATABASE_URL", "NO_DATABASE_OR_CREDENTIAL_AVAILABLE")
-    viewed = CliRunner().invoke(app, ["build", "reference", "--config", str(config), digest])
+    viewed = CliRunner().invoke(app, ["build", "reference", "--config", str(config), digest, "--diff"])
     assert viewed.exit_code == 0 and json.loads(viewed.stdout)["candidate_commit"] == manifest.candidate_commit
+    assert "+value = 43" in json.loads(viewed.stdout)["diff"]
     assert "NO_DATABASE_OR_CREDENTIAL_AVAILABLE" not in viewed.stdout
     store = BuildEvidenceStore(restored / "offline-results/blobs")
     diff = manifest.parts["diff"]
