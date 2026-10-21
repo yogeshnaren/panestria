@@ -1,0 +1,42 @@
+{
+  "kind": "build_storage_admission_component",
+  "file": "component.xml",
+  "sha256": "07e6f5d46ef0d904dd88f72ef065258bcb7b16eb7078646db792a303da519ed0",
+  "cases": 24,
+  "failures": 0,
+  "errors": 0,
+  "source_commits": [
+    "961c68c5e7c9bafb4c8177d87d6be3f436436b1e"
+  ],
+  "worktree_states": [
+    "clean"
+  ],
+  "scope": "Actual filesystem/PG/CLI/Git/MCP/Docker checks; native/auth/CPU capacity are TEST_FIXTURE_NOT_LIVE",
+  "observations": [
+    "Owner-selected impossible free reserve defers inventory and claims without creating worker attempts/events or Git changes",
+    "Unreadable policy and actual nonexistent filesystem defer; notification revocation stops extra probes",
+    "Fast admission omits expensive configured directory/Docker/Timeshift probes",
+    "Pressure introduced after native fixture workers retains actual verified handoffs and defers new final work",
+    "Explicit re-invocation under eligible policy reuses those handoffs, reaches exact owner review and launches no additional native worker"
+  ],
+  "limits": [
+    "Write amount is owner planning estimate, not enforced OS limit or disk reservation",
+    "Not actual full-disk stress, global write admission, source attribution, foreground-budget qualification or release acceptance",
+    "No provider/model call, cleanup, storage deletion, backup change or owner service/database mutation",
+    "Subsequent explicit bool return is a Mypy correction; original component source remains unchanged in XML"
+  ],
+  "combined_followup": {
+    "file": "combined.xml",
+    "sha256": "ba859edf22d714c0bef01b5289b6d29b0fc1d80af53eeed36b9a77d962599fce",
+    "cases": 2,
+    "failures": 0,
+    "errors": 0,
+    "source_commits": [
+      "8bd18cdd15ece9e8fbea824724fc9fce36bd5b47"
+    ],
+    "worktree_states": [
+      "clean"
+    ],
+    "scope": "Two overlapping connected cases after main metrics merge, actual CLI stderr notification and independently opt-in metric capture during storage wait/resume; not 26 independent cases"
+  }
+}

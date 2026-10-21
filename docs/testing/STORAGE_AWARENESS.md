@@ -84,3 +84,65 @@ task. Automatic admission wiring, source-bound growth attribution across restart
 preflight of all downloads/builds/backups, unified Mission Control/TUI settings/
 inbox and actual host-budget qualification remain R3 work. This terminal component
 is partial AOS-018-S4/MVP-X13 delivery, not TC05–TC08 or G1/G3 qualification.
+
+## Connect storage policy to canonical native Build
+
+In your **private Build config**, set the absolute path to the existing private
+storage settings file and your anticipated write estimate:
+
+```json
+"storage_policy": "/absolute/private/storage.json",
+"anticipated_build_write_bytes": 1073741824
+```
+
+This is opt-in: no `storage_policy` means no added probe or notification. The
+selected storage file must have `notifications_enabled: true`; turning it off
+removes these extra checks. A configured file that cannot be read privately
+**defers** new work. It does not silently disable protection. Keep it mode0600.
+The storage policy's `filesystem` must be on the same actual device as the Build
+root. A capacity failure or device mismatch is a visible DEFER.
+
+Preview without starting a worker or changing canonical state:
+
+```bash
+panestria build storage-preview --config /absolute/private/build.json
+```
+
+Expect a decision, reason, timestamped actual capacity/reserve observation,
+anticipated write bytes and recommendations. `storage_policy` defaults absent;
+`anticipated_build_write_bytes` defaults to1GiB when enabled, configurable from
+1byte to32GiB. This is an owner planning estimate, **not an enforced write cap,
+physical reservation, upper bound or guarantee against concurrent disk writers**.
+Use an estimate appropriate for the selected repository and workload.
+
+`plan inventory --config ...` checks before materializing a new snapshot;
+`plan run --config ...` checks before each new canonical worker or final
+verifier claim. An enabled run prints initial/changed storage notifications as
+JSON on **stderr before new work**, leaving stdout for its normal result. The
+probe uses fast filesystem capacity only; it does not repeat expensive directory,
+Docker or Timeshift probes during admission. Use the explicit `storage inspect`
+command for those details. It does not attribute all device usage to Panestria.
+
+Critical pressure, unknown capacity, a mismatched device, or anticipated writes
+that cross the configured free reserve defer new claims. High-use warnings below
+the critical/reserve thresholds are visible but allow the existing authorized
+run. A deferred run returns `status: WAIT`, `reason: storage_admission_deferred`
+and the observation/recommendations. Merely viewing/retrying cannot delete data
+or change the storage policy. Review keep/defer, inspect, backup-scope/target,
+cache/rebuild/offline dependencies and capacity options as the owner.
+
+Already admitted work is not killed or falsely cancelled because of this signal.
+The foreground controller waits for its real outcomes; verified handoffs remain
+canonical and UNKNOWN capacity stays held. If pressure later clears, explicitly
+invoke the same accepted plan again. Completed nodes are reused and only new
+ready work can be admitted. There is no background retry/resume daemon.
+Storage notifications never approve a merge or establish release acceptance.
+
+[Source-bound component checks](../../evidence/build-storage-admission-2026-10-21/report.json)
+use actual disk observations, disposable PostgreSQL/Git, CLI, Docker/MCP and
+verified handoffs. Native generation/auth/capacity are explicitly synthetic
+fixtures. Required host-budget/foreground qualification, all download/artifact
+admissions, growth attribution, local inbox and full Mission Control integration
+remain pending R3 work; this does not complete TC05–TC08 or G3.
+
+A separately enabled runtime-metrics capture can still save small bounded derived metadata for a WAIT/outcome; this is not a worker/workspace admission or a physical disk reservation. If saving fails, the canonical storage deferral is unchanged. The combined component follow-up checks both opt-in features together and the actual CLI notification channel.
