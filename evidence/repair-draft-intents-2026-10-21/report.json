@@ -95,6 +95,40 @@
           "lane": "integration"
         }
       ]
+    },
+    {
+      "file": "schema.xml",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 16.325,
+      "sha256": "8036d4c4919725aeda6c429a406647011947f49c487a9e43302d60630533649c",
+      "source_properties": [
+        {
+          "gate_case_id": "AOS-002-TC02",
+          "candidate_commit": "2b18b710e60e9d2d8b5eca8e14f9655f67946952",
+          "fixture_digest": "271a413bd339c5709fdceaec41f14f11e9fbfb5042d72d331c65f32b284cd09a",
+          "lane": "migration",
+          "execution_mode": "OS_BOUNDARY",
+          "worktree_state": "clean"
+        },
+        {
+          "candidate_commit": "2b18b710e60e9d2d8b5eca8e14f9655f67946952",
+          "fixture_digest": "06adc4c8ef3698dabefab644359559b4d9d5b1d6d36850aa9767b399f1b999ad",
+          "worktree_state": "clean",
+          "lane": "integration",
+          "scope": "Actual disposable PG/loopback HTTP; TEST_FIXTURE_NOT_LIVE certificate; no release proof"
+        }
+      ]
+    },
+    {
+      "file": "schema-platform.xml",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 11.389,
+      "sha256": "9ca616071683a47f270765290182d35c312d061c47610714845c1d4c2da6c7c6",
+      "source_properties": []
     }
   ],
   "observations": [
@@ -105,12 +139,23 @@
     "At most maximum_versions-1 model turns (1 or 2), fixed by the first intent, across versions, directories and process instances. Third distinct-key attempt stops before model I/O.",
     "A missing or unconfirmed return blocks new repair I/O and canonical revisions. Metadata-only CLI/progress expose held planning work.",
     "Actual custom-format pg_dump/pg_restore retains unknown-return replay, reserved capacity, unique turn/key/outcome indices and downgrade refusal. Uses only an exact purpose-labelled disposable PostgreSQL fixture and a newly created restore database.",
-    "Clean source399454f:17PASS/1live excluded in60.88s; clean4ec1d57:42PASS/1live excluded in70.53s. Models/native/auth/capacity are explicit nonlive fixtures; migration applied only to disposable databases."
+    "Clean source399454f:17PASS/1live excluded in60.88s; clean4ec1d57:42PASS/1live excluded in70.53s. Models/native/auth/capacity are explicit nonlive fixtures; migration applied only to disposable databases.",
+    "Clean2b18b71: four unchanged migration-roundtrip cases passed in two sequential runs after regenerating both current schema snapshots from actual disposable PostgreSQL. Original failed full CI and source properties preserved; no runtime/migration logic or assertions changed."
   ],
   "limits": [
     "No live model quality, automatic repair controller, unknown-return clearance, semantic/non-goal qualification, whole-package runtime certificate, release gate or owner acceptance is claimed.",
     "Owner database, services, credentials, caches, backups, drivers and billing settings were not changed. Existing actual provider evidence remains bound to its original source."
   ],
   "release_gate": "NOT_ASSESSED",
-  "owner_acceptance": "NOT_ASSESSED"
+  "owner_acceptance": "NOT_ASSESSED",
+  "initial_ci": {
+    "run_id": 39653919972,
+    "head": "4ecebdc039f11440020c5166c16cb0b49cfe37dc",
+    "result": "FAIL",
+    "cases": 2210,
+    "failures": 4,
+    "errors": 0,
+    "cause": "Four unchanged migration roundtrip assertions detected two schema snapshots missing the two CHECK constraints and three unique indices from0037. Snapshots regenerated from actual newly migrated disposable PG; assertions unchanged.",
+    "raw_archive": "workspace outputs/r3-build-ci-2026-10-20/pr162-initial; hashes in that archive summary.json"
+  }
 }
