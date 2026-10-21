@@ -251,3 +251,18 @@ The [owner return-release command](testing/RETURNED_BUILD_RELEASE.md) now distin
 ## Local proposal execution bridge
 
 A controller-compiled one-edit plan can now use the existing native run and final-review path alongside two independent edits. This closes the small-goal gap between the local draft format and execution; no synthetic second editing task is needed. [Observed bridge behavior](../evidence/local-plan-native-bridge-2026-10-20/report.json) covers compiler→canonical stage/separate acceptance→real scoped tools→complete final checks→scripted exact owner merge, plus unsupported dependent-graph refusal. Provider/model/auth/capacity observations are fixtures in this component, not new live qualification. General DAGs/second adapters and full R3/G3 remain pending.
+
+## Storage warnings now guard new native-plan work
+
+[Opt-in Build storage admission](testing/STORAGE_AWARENESS.md#connect-storage-policy-to-canonical-native-build)
+now checks actual device capacity before inventory materialization and each new
+worker/final-verifier claim. Initial/changed CLI warnings precede new work;
+critical/unknown/mismatched/reserve-risk observations defer without new claims.
+The planning write estimate is not an OS cap or disk reservation.
+
+[Actual component observations](../evidence/build-storage-admission-2026-10-21/report.json)
+show unchanged canonical state under initial deferral, private-policy revocation,
+real verified handoffs retained when pressure stops final work, and explicit
+resume without rerunning completed workers. Native/auth/capacity are fixtures.
+No deletion/pruning/backup-setting change. Other write paths, growth attribution,
+unified inbox and actual host qualification remain pending AOS-018-S4/S5/X13.
