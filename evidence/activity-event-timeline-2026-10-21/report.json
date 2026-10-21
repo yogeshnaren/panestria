@@ -27,6 +27,19 @@
       "worktree_states": [
         "clean"
       ]
+    },
+    {
+      "file": "paging-verified.xml",
+      "sha256": "7d6afbd8e02ac04fca461cad4efcdd28333d7ffd82cc98e5ff3977e9a6dd1943",
+      "cases": 3,
+      "failures": 0,
+      "errors": 0,
+      "candidate_commits": [
+        "7158f6466b6537a8b04f8fda5c1d34de78569061"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
     }
   ],
   "correction": "PTY expected a newly received static line already present in the preceding redraw; check existing buffer and actual confirmed snapshot notice. No timeout or application behavior changed.",
@@ -35,5 +48,6 @@
     "TUI pages JSON explicitly; complete React/SSE reducer and all original AOS-028 cases remain pending.",
     "No phone/device/TLS scope, model/native/runtime qualification or G3/owner acceptance."
   ],
-  "release_gate": "NOT_EVALUATED"
+  "release_gate": "NOT_EVALUATED",
+  "paging": "Actual55-event JSON history returns50 then5 with exact continuation; retained-page terminal scrolling makes all rows reachable.3focused cases pass at original7158f64 source."
 }
