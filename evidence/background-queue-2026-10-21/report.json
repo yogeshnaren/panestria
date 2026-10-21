@@ -1,0 +1,111 @@
+{
+  "kind": "background_queue_component",
+  "reports": [
+    {
+      "file": "initial.xml",
+      "sha256": "a4cbe733f4c1154aa2df4541569003d61319832db549ba3caf25ede417c673c4",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "f12f4b46545e0900cd1deab4fb05e6b32eeef06d"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "inspection.xml",
+      "sha256": "f4768d7256294804801729e1bbd955f847e78739e77f6cbe8e7f5acb50918274",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "2b0ab4393dfa8172a1ea144ab1e01796d7ba5d22"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "exhaustion.xml",
+      "sha256": "cdb8d8924988c943d50a05e350df6936ff15f56dc7bb3c1d0f841edf28063e05",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "56ec00bf8015b23213c92746ccfc812ddbd7c09a"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "draft.xml",
+      "sha256": "718373dfabcb99c36bb021b9a3e305632a3b595636a0571ddd1222b85008f022",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "e29b48eadf020f0127196bb8eea1ca8f832dbd13"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "merged.xml",
+      "sha256": "9cdd00b3e12d22c2fa45ead48544f03af86095b85e51818257d9fc69002bd6c1",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "c0e7ec79a079f13776380271295144e6a8624d7f"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "renewal-initial.xml",
+      "sha256": "43698160b79372e566d50f454559ffd3fc22c58811f09bede31256e5b2c33d74",
+      "cases": 2,
+      "failures": 1,
+      "errors": 0,
+      "source_commits": [
+        "28cb64c17964e777982440b0623bf47292d6944c"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "renewal-final.xml",
+      "sha256": "e7259fa5329258df9d36c31e0e3dcd516cc5b5b69196a8920c964b9b10c01ca6",
+      "cases": 1,
+      "failures": 0,
+      "errors": 0,
+      "source_commits": [
+        "4f3521f7e9b99826b583ccf091873e35f6d87e71"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    }
+  ],
+  "scope": "Two distinct connected scenarios with overlapping source-bound followups; actual PG/CLI/private files/race/rollback/held lease. Quota/billing/host values synthetic; no native/provider launches.",
+  "observations": [
+    "Draft from accepted plan leaves billing/quota unknown and changes no task state",
+    "Exact owner policy acceptance/replay and duplicate races yield one canonical event, rollback yields no queued fact",
+    "Fresh scoped40percent metadata with separate billing unknown waits; overlapping weekly20percent floor blocks despite session40",
+    "Explicit unknown best effort gives declared scheduling candidate without a balance, authority or runtime proof",
+    "Later null report cannot erase observed zero; newer numeric40 report can supersede old zero in same lane",
+    "Withdrawal is exact/idempotent, cross-owner scope denied, real held claim blocks candidate; no model/worker launch",
+    "After explicit withdrawal, an unstarted plan accepts a new independently reviewed binding without changing either original event or task state; first renewal assertion incorrectly expected one lifetime event, corrected to the actual two. Initial failure is retained."
+  ],
+  "limits": [
+    "No dispatcher/daemon, actual profile/account binding, authenticated billing proof, spend reservation, model identity or live provider/host qualification",
+    "Scheduling candidate is metadata only, not an execution permit; full S5/S7 and TC06/07/10/G3 remain pending",
+    "No account setting change, credentials, model/provider calls, owner resource change or storage deletion"
+  ]
+}
