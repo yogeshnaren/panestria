@@ -14,6 +14,8 @@ from panestria.memory.keys import KeyStoreUnavailable, ProfileKeyHandle, SecretS
 profile_app = typer.Typer(no_args_is_help=True)
 _CONFIG_OPTION = typer.Option(..., "--config")
 _SELECTION_OPTION = typer.Option(..., "--selection")
+_DIRECTORY_OPTION = typer.Option(..., "--directory")
+_CACHE_OPTION = typer.Option(..., "--model-cache")
 
 
 def _operation(owner_id: str, project_id: str, profile_id: str, key_id: str, *, create: bool) -> None:
@@ -94,4 +96,63 @@ def profile_ask(
         profile_ask_terminal(config, selection, restricted_offline)
     except TerminalUnavailable as error:
         typer.echo(json.dumps({"code": error.code}), err=True)
+        raise typer.Exit(2) from None
+
+
+@profile_app.command("qualify")
+def qualify_runtime(
+    directory: Path = _DIRECTORY_OPTION,
+    model_cache: Path = _CACHE_OPTION,
+    synthetic_local_smoke: bool = typer.Option(False, "--synthetic-local-smoke"),
+) -> None:
+    """Explicit actual isolated OS-key and existing CPU model checks; no owner data."""
+    from panestria.execution.native_qualification import QualificationUnavailable
+    from panestria.execution.profile_qualification import qualify_profiles
+    from panestria.execution.proposal_demo import DemoUnavailable
+    from panestria.kernel.errors import KernelDenied
+
+    try:
+        result = qualify_profiles(directory, model_cache, synthetic_local_smoke=synthetic_local_smoke)
+        typer.echo(json.dumps(result))
+        if result["status"] != "PASS":
+            raise typer.Exit(2)
+    except QualificationUnavailable as error:
+        typer.echo(json.dumps({"code": str(error)}), err=True)
+        raise typer.Exit(2) from None
+    except DemoUnavailable:
+        typer.echo(json.dumps({"code": "private_profile_qualification_directory_unavailable"}), err=True)
+        raise typer.Exit(2) from None
+    except (KeyStoreUnavailable, KernelDenied) as error:
+        typer.echo(json.dumps({"code": error.code}), err=True)
+        raise typer.Exit(2) from None
+    except (OSError, ValueError):
+        typer.echo(json.dumps({"code": "profile_qualification_unavailable"}), err=True)
+        raise typer.Exit(2) from None
+
+
+@profile_app.command("serve")
+def serve_profiles(
+    config: Path = _CONFIG_OPTION,
+    restricted_offline: bool = typer.Option(False, "--restricted-offline"),
+) -> None:
+    """Start explicit qualified profile/Ask service; preserve busy services and keys."""
+    from panestria.api.profile_server import serve_profiles as serve
+    from panestria.config import ProfileRejected
+    from panestria.config_local import LocalApplicationRejected
+    from panestria.contracts.inference import InferenceUnavailable
+    from panestria.kernel.errors import KernelDenied
+
+    try:
+        serve(config, restricted_offline=restricted_offline)
+    except (
+        KeyStoreUnavailable,
+        LocalApplicationRejected,
+        ProfileRejected,
+        InferenceUnavailable,
+        KernelDenied,
+    ) as error:
+        typer.echo(json.dumps({"code": error.code}), err=True)
+        raise typer.Exit(2) from None
+    except (ValueError, OSError):
+        typer.echo(json.dumps({"code": "profile_service_unavailable"}), err=True)
         raise typer.Exit(2) from None

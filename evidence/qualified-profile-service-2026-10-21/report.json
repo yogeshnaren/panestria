@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "scope": "AOS-011-S5/S6 and AOS-017-S4 partial supported service integration",
+  "reports": [
+    {
+      "file": "components-corrected.xml",
+      "sha256": "d22f33e785a6c1fe18b233228f525861f7ca776153ddb5052d1bbcf4baf0faa3",
+      "cases": 4,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "candidate_commits": [
+        "409f38652f9087bf5172cb7479c39aeb53814a22"
+      ],
+      "worktree_states": [
+        "clean"
+      ],
+      "execution_modes": []
+    },
+    {
+      "file": "components-final.xml",
+      "sha256": "bc675bc2fff663b09453b7a9fa3e082f3b2f6922bea58f924dfc69659d252bf8",
+      "cases": 4,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "candidate_commits": [
+        "61893896a13327adc196888d03fb272a7fa83cbd"
+      ],
+      "worktree_states": [
+        "clean"
+      ],
+      "execution_modes": []
+    },
+    {
+      "file": "components-initial.xml",
+      "sha256": "ed6101b3af9586de7e16b620bf445aca1d0e3034918d35aee5effa6bba1982a9",
+      "cases": 37,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "candidate_commits": [
+        "d4f882d930dcca39a5989439526b9ded4d65b169"
+      ],
+      "worktree_states": [
+        "clean"
+      ],
+      "execution_modes": []
+    },
+    {
+      "file": "components-reviewed.xml",
+      "sha256": "0fbaf0ad87993ff55930b039aaab19b5937f7271793f9c6f75fa72fbaa2d8f95",
+      "cases": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "candidate_commits": [
+        "4b896f35d3fe4ca6357a3b7b5a1008cf4ca7133f"
+      ],
+      "worktree_states": [
+        "clean"
+      ],
+      "execution_modes": []
+    },
+    {
+      "file": "actual-runtime.xml",
+      "sha256": "74c570910246793c0dd8d2c36372816376345bbf99645333143c0fed0a321425",
+      "cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "candidate_commits": [
+        "90d2ec71a9d901ecd9a57ea25b03c9555fd09e20"
+      ],
+      "worktree_states": [
+        "clean"
+      ],
+      "execution_modes": [
+        "ACTUAL_ISOLATED_OS_SECRET_SERVICE",
+        "ACTUAL_ISOLATED_OS_STORE_LOCAL_MODEL_LOOPBACK_HTTP"
+      ]
+    }
+  ],
+  "actual_operator_observation": {
+    "status": "PASS",
+    "scope": "ISOLATED_OS_KEYS_CPU_PROFILE_ASK_ONLY",
+    "candidate_commit": "90d2ec71a9d901ecd9a57ea25b03c9555fd09e20",
+    "qualification_sha256": "e6b4d6960790094e104a02c276d5381feb2392eb87c0b88547e634de20d97732",
+    "raw_junit_sha256": "74c570910246793c0dd8d2c36372816376345bbf99645333143c0fed0a321425",
+    "expires_at": "2026-10-22T22:18:28.555681+00:00",
+    "release_gate": "NOT_EVALUATED"
+  },
+  "initial_denial": {
+    "candidate_commit": "fc0fe9b3dc66d765164d1b9bbf8cbd50c3c83250",
+    "reason": "profile_qualification_tools_ambiguous",
+    "model_started": false
+  },
+  "corrections": [
+    "Initial component expectations counted the model catalog GET as inference and returned wrong fixture bytes to it; corrected to count only generation and preserve the actual fixture transport.",
+    "The view request missed required purpose OWNER_REVIEW; corrected the request, preserving denial, no-key-load, suppression and publication assertions.",
+    "The sanitized qualification PATH reordered observed D-Bus binaries; preserve selected original precedence and deny any remaining ambiguity. No alternative executable or model was accepted."
+  ],
+  "actual_cleanup": "No preexisting model container at preflight; no local-model or disposable r1-test container after successful run.",
+  "limits": [
+    "Actual isolated synthetic OS keys/CPU/physical HTTP, not owner desktop keyring or personal content.",
+    "Component qualification/key/model identities are explicit TEST_FIXTURE_NOT_LIVE; they cannot establish actual runtime qualification.",
+    "Not TC06-TC08, full privacy/restore/purge, style quality/resource budgets, G1/G2/G3 or owner trial acceptance.",
+    "Runtime proof expires and preserves original source; documentation commits do not refresh observations."
+  ],
+  "release_gate": "NOT_EVALUATED"
+}

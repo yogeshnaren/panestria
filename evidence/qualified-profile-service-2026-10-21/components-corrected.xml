@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="164.590" timestamp="2026-10-21T15:11:00.274818-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_profile_service" name="test_service_private_config_scope_and_explicit_cli_intent" file="tests/integration/test_profile_service.py" line="62" time="0.065"><properties><property name="candidate_commit" value="409f38652f9087bf5172cb7479c39aeb53814a22" /><property name="fixture_digest" value="22eb45ce3c2594152f2919700f2c72079c3f835e3f74f9242e1f76e8a19730b0" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="qualification_identity" value="TEST_FIXTURE_NOT_LIVE" /></properties></testcase><testcase classname="tests.integration.test_profile_service" name="test_qualified_existing_handles_serve_profile_ask_and_preserve_default" file="tests/integration/test_profile_service.py" line="150" time="31.108"><properties><property name="candidate_commit" value="409f38652f9087bf5172cb7479c39aeb53814a22" /><property name="fixture_digest" value="22eb45ce3c2594152f2919700f2c72079c3f835e3f74f9242e1f76e8a19730b0" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: assert 'invalid_profile_request' == 'profile_qual...id_or_expired'&#10;  &#10;  - profile_qualification_invalid_or_expired&#10;  + invalid_profile_request">personal = (LocalApplicationSettings(schema_version=1, owner_id=UUID('572a118c-3534-4334-9ec1-ec48af1dd55e'), project_id=UUID('e0...-cd4b7643f9ca', profile_id='1d396f54-cd74-45ee-b0fe-b29b41587c41', key_id='01c9e7ec-0379-4af9-bdb0-9db5d13ce808'), ...)
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x7b70a79afd80&gt;
+
+    def test_qualified_existing_handles_serve_profile_ask_and_preserve_default(personal, record_property):
+        config, token, settings, app, keys, handle, inputs, underlying, calls = personal
+        with TestClient(app, base_url=config.origin) as client:
+            headers = create(client, token, handle)
+            assert client.get("/v1/local/status", headers=headers).json()["profiles"] == "EXPLICITLY_ENABLED"
+            assert client.post("/v1/goals", json={}, headers=headers).status_code == 404
+            response = client.post("/v2/ask", json=request(handle), headers=headers)
+            assert response.status_code == 200 and response.json()["state"] == "COMPLETED"
+            assert response.json()["text"] == "READY" and response.json()["response_sha256"] is None
+            assert sum(r.url.path == "/api/generate" for r in calls) == 1
+            used = underlying.calls
+            wrong = handle.model_copy(update={"key_id": str(uuid4())})
+            with pytest.raises(KeyStoreUnavailable, match="profile_key_not_selected"):
+                keys.load(wrong)
+            assert underlying.calls == used
+            inputs["changed"] = "runtime"
+            denied = client.post(
+                f"/v2/profiles/{handle.profile_id}/view", json={"schema_version": 1, "expected_version": 0}, headers=headers
+            )
+&gt;           assert denied.json()["code"] == "profile_qualification_invalid_or_expired"
+E           AssertionError: assert 'invalid_profile_request' == 'profile_qual...id_or_expired'
+E             
+E             - profile_qualification_invalid_or_expired
+E             + invalid_profile_request
+
+tests/integration/test_profile_service.py:170: AssertionError</failure></testcase><testcase classname="tests.integration.test_profile_service" name="test_changed_runtime_after_model_return_fences_clear_answer_publication" file="tests/integration/test_profile_service.py" line="181" time="1.030"><properties><property name="candidate_commit" value="409f38652f9087bf5172cb7479c39aeb53814a22" /><property name="fixture_digest" value="22eb45ce3c2594152f2919700f2c72079c3f835e3f74f9242e1f76e8a19730b0" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /><property name="qualification_identity" value="TEST_FIXTURE_NOT_LIVE" /></properties></testcase><testcase classname="tests.integration.test_profile_service" name="test_expiry_corruption_and_skipped_live_evidence_are_not_qualification" file="tests/integration/test_profile_service.py" line="208" time="131.592"><properties><property name="candidate_commit" value="409f38652f9087bf5172cb7479c39aeb53814a22" /><property name="fixture_digest" value="22eb45ce3c2594152f2919700f2c72079c3f835e3f74f9242e1f76e8a19730b0" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase></testsuite></testsuites>

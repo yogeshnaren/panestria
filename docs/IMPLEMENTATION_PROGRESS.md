@@ -156,8 +156,8 @@ edit bounded communication preferences, separately approve local-context use,
 review and save through the existing encrypted API at an exact version. Other
 fields/expiry remain preserved and undisplayed; a lost write acknowledgment
 never repeats the write. This client enables no profile service, key or model.
-Default Ask/activity launchers still leave sensitive mode disabled; supported
-qualified personal-mode onboarding remains next integration work. The separate
+Default Ask/activity launchers still leave sensitive mode disabled. The separate
+[qualified profile service](testing/QUALIFIED_PROFILE_SERVICE.md) now provides explicit opt-in setup using existing keys. The separate
 pinned Ask selector is described below. [Connected checks](../evidence/profile-style-terminal-2026-10-21/report.json)
 use synthetic keys and real PG/crypto/HTTP/PTY, with no inference. This is partial
 AOS-017-S4, not completed personal-platform or style-quality qualification.
@@ -171,8 +171,24 @@ omitted private response hashes and supports cancellation/receipt recovery
 without repeat inference. Transient receipt errors preserve the original
 request; canonical resource UNAVAILABLE is visible. [Connected observations](../evidence/profile-ask-terminal-2026-10-21/report.json)
 use synthetic keys/model/capacity with actual PG/crypto/HTTP/PTY. Default profile
-services remain disabled; supported qualified service/onboarding, real quality
+services remain disabled; the separate qualified launcher is described below. Real quality
 and original gates remain pending.
+
+## Qualified personal-mode launcher
+
+`profile qualify` now runs fixed actual isolated OS-key/CPU/physical-HTTP checks
+from a clean source and retains an expiring proof bound to source, installed
+versions, OS boot and trusted binaries/libraries. `profile serve` requires that
+exact proof, explicit restricted-offline intent, existing offline Ask settings
+and exact existing key handles. It reuses the exclusive loopback/model lifecycle;
+normal launchers stay profile-disabled. Key use and answer publication recheck
+qualification; suppression remains available after expiry without loading a key.
+The [operator guide](testing/QUALIFIED_PROFILE_SERVICE.md) connects the style and
+profile Ask terminals. [Original observations](../evidence/qualified-profile-service-2026-10-21/report.json)
+include one actual cached CPU response with an isolated synthetic OS keyring and
+four passing connected fixture checks. No owner key/service was configured.
+This is supported opt-in component delivery; private examples, context/model
+compatibility, connections, quality/resources and original gates remain pending.
 
 ## Next concrete delivery
 
