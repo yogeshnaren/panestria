@@ -1,5 +1,6 @@
 """Actual PG/crypto/loopback/PTY style editing; synthetic keys, no model or OS-key access."""
 
+import json
 import os
 import socket
 import threading
@@ -220,3 +221,29 @@ def test_lost_save_reply_keeps_one_canonical_revision_and_no_terminal_retry(styl
         ).fetchone() == (1,)
     source = ProfileClient(f.path).source(f.handle.profile_id, 0)
     assert source.row_version == 0 and source.style == StyleProfile()
+
+
+def test_profile_client_requires_private_loopback_scope_and_existing_token(tmp_path):
+    from panestria.config_local import LocalApplicationRejected
+    from panestria.config_profile import load_profile_client
+
+    token = tmp_path / "existing.token"
+    create_local_token(token)
+    config = tmp_path / "client.json"
+    original = ProfileClientSettings(schema_version=1, owner_id=uuid4(), project_id=uuid4(), token_file=token)
+    config.write_text(original.model_dump_json())
+    config.chmod(0o600)
+    assert load_profile_client(config)[0] == original
+    for update in ({"bind_host": "192.0.2.1"}, {"schema_version": True}, {"enable_profiles": True}):
+        config.write_text(json.dumps({**original.model_dump(mode="json"), **update}))
+        with pytest.raises(LocalApplicationRejected, match="invalid_profile_client_configuration"):
+            load_profile_client(config)
+    config.write_text(original.model_dump_json())
+    token.chmod(0o644)
+    with pytest.raises(LocalApplicationRejected, match="local_file_must_be_private"):
+        load_profile_client(config)
+    token.chmod(0o600)
+    linked = tmp_path / "linked.json"
+    linked.symlink_to(config)
+    with pytest.raises(LocalApplicationRejected, match="profile_client_path_invalid"):
+        load_profile_client(linked)
