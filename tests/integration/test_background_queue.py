@@ -82,6 +82,21 @@ def test_actual_owner_queue_review_quota_reserve_unknown_billing_and_withdraw_ar
     assert cli(f, "withdraw", request.item_id, queued["binding_sha256"])["event_seq"] == withdrawn["event_seq"]
     assert cli(f, "list")["items"][0]["status"] == "WITHDRAWN"
     assert cli(f, "show", request.item_id)["status"] == "WITHDRAWN"
+    # Renewal is a new exact owner review after explicit withdrawal, not mutation
+    # of the original policy/observation freshness or an automatic worker retry.
+    newer = BackgroundEnqueue.model_validate_json(
+        json.dumps(
+            {
+                **request.model_dump(mode="json"),
+                "item_id": str(uuid4()),
+                "policy": {**request.policy.model_dump(mode="json"), "policy_id": str(uuid4())},
+            }
+        )
+    )
+    path.write_text(newer.model_dump_json())
+    renewed = cli(f, "enqueue", "--request", str(path), newer.policy.sha256(), "--accept-background-policy")
+    assert renewed["event_seq"] != queued["event_seq"] and not renewed["replayed"]
+    assert cli(f, "show", request.item_id)["status"] == "WITHDRAWN"
     with owner.connect() as c:
         assert c.execute(
             "SELECT count(*) FROM panestria.task_attempt a JOIN panestria.task t ON t.id=a.task_id WHERE t.goal_id=%s",

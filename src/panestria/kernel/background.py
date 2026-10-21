@@ -117,7 +117,13 @@ class BackgroundWorkService:
                     "execution_authority": "NONE",
                 }
             if old.request.plan_id == request.plan_id:
-                raise KernelDenied("background_plan_already_queued")
+                withdrawn = uow.execute(
+                    "SELECT 1 FROM panestria.task_event WHERE goal_id=%s AND kind='background.withdrawn' "
+                    "AND payload->>'item_id'=%s AND payload->>'binding_sha256'=%s LIMIT 1",
+                    (old.goal_id, old.request.item_id, old.sha256()),
+                ).fetchone()
+                if not withdrawn:
+                    raise KernelDenied("background_plan_already_queued")
         if len(rows) >= 256:
             raise KernelDenied("background_queue_history_limit")
         clock = uow.execute("SELECT clock_timestamp()").fetchone()
