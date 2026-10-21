@@ -30,6 +30,22 @@ def qualify_profiles(directory: Path, cache: Path, *, synthetic_local_smoke: boo
         raise QualificationUnavailable("private_absolute_qualification_directory_required")
     if directory.is_relative_to(cache) or cache.is_relative_to(directory):
         raise QualificationUnavailable("profile_qualification_cache_overlap")
+    selected = {name: shutil.which(name) for name in ("uv", "docker", "dbus-run-session", "gnome-keyring-daemon")}
+    if any(path is None for path in selected.values()):
+        raise QualificationUnavailable("profile_qualification_tools_unavailable")
+    search_path = ":".join(
+        dict.fromkeys(
+            [
+                str(Path(sys.executable).parent),
+                *[str(Path(p).parent) for p in selected.values() if p],
+                "/usr/local/bin",
+                "/usr/bin",
+                "/bin",
+            ]
+        )
+    )
+    if any(shutil.which(name, path=search_path) != path for name, path in selected.items()):
+        raise QualificationUnavailable("profile_qualification_tools_ambiguous")
     inputs = runtime_inputs()
     destination = _private(directory)
     with _lock(destination / "qualification.lock"):
@@ -37,7 +53,7 @@ def qualify_profiles(directory: Path, cache: Path, *, synthetic_local_smoke: boo
         journal, xml, log = run / "result.json", run / "raw.xml", run / "pytest.log"
         _atomic(journal, {"status": "STARTED", "candidate_commit": candidate, "runtime_inputs": inputs})
         env = {
-            "PATH": "/usr/local/bin:/usr/bin:/bin:" + str(Path(sys.executable).parent),
+            "PATH": search_path,
             "HOME": str(Path.home()),
             "LANG": "C.UTF-8",
             "UV_OFFLINE": "1",
