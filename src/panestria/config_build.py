@@ -33,6 +33,8 @@ class BuildSettings(BaseModel):
     skills_archive: Path
     checks: list[BuildCheckSetting] = Field(min_length=1, max_length=16)
 
+    record_runtime_metrics: bool = False
+
     @property
     def protected(self) -> Path:
         return self.root / "protected"

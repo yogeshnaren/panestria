@@ -239,6 +239,17 @@ class NativePlanRunner:
         return [{"task_id": identity, "task_state": state, "lease_epoch": epoch} for identity, state, epoch in rows]
 
     def run(self, plan_id: str, *, public_subscription_run: bool) -> dict[str, object]:
+        result = self._run(plan_id, public_subscription_run=public_subscription_run)
+        if self.owner.settings.record_runtime_metrics:
+            try:
+                result["metrics"] = self.owner.capture_metrics(str(result["goal_id"]))
+            except Exception:
+                # A metrics error never changes the canonical outcome, grants a
+                # retry or starts another model. Manual capture remains explicit.
+                result["metrics"] = {"status": "UNAVAILABLE", "reason": "runtime_metrics_not_saved"}
+        return result
+
+    def _run(self, plan_id: str, *, public_subscription_run: bool) -> dict[str, object]:
         if public_subscription_run is not True:
             raise KernelDenied("explicit_public_build_intent_required")
         owner = self.owner

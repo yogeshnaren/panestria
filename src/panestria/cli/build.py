@@ -96,6 +96,12 @@ def status(config: Config, goal_id: str, diff: bool = False) -> None:
     _finish(lambda: _service(config).status(goal_id, diff=diff))
 
 
+@build_app.command("metrics")
+def metrics(config: Config, goal_id: str) -> None:
+    """Explicitly save a private derived runtime snapshot for a canonical Build goal."""
+    _finish(lambda: _service(config).capture_metrics(goal_id))
+
+
 @build_app.command("progress")
 def progress(config: Config, goal_id: str) -> None:
     """Inspect canonical plan progress using the existing owner Build configuration."""
