@@ -309,6 +309,11 @@ class OwnerBuild:
             raise
         return {"status": outcome.status, "reason": outcome.reason, **self.status(contract.goal_id)}
 
+    def capture_reference(self, goal: str) -> dict[str, Any]:
+        from panestria.execution.offline_build import capture_reference
+
+        return capture_reference(self, goal)
+
     def capture_metrics(self, goal: str) -> dict[str, Any]:
         from panestria.execution.build_metrics import capture_build_metrics
 
@@ -522,4 +527,10 @@ class OwnerBuild:
                         effect.effect_id,
                         evidence,
                     )
-            return self.status(goal[0])
+            result = self.status(goal[0])
+            if self.settings.capture_verified_results:
+                try:
+                    result["offline_reference"] = self.capture_reference(goal[0])
+                except Exception:
+                    result["offline_reference"] = {"status": "UNAVAILABLE", "reason": "offline_reference_not_saved"}
+            return result

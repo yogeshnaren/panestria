@@ -2894,10 +2894,10 @@
         "AOS-012-TC10"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "evidence_refs": [],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+      "scope_note": "Existing scoped quota observations/owner input/freshness component retained at its original 2026-10-16 evidence; supported live provider telemetry and Mission Control integration remain unqualified."
     },
     {
       "id": "AOS-012-S5",
@@ -2956,10 +2956,10 @@
         "AOS-012-TC10"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "evidence_refs": [],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+      "scope_note": "Canonical confirmed PUBLIC Build offline reference capture/restore delivered as a component, disabled by default; candidate/Ask/Delegate/retrieval/model identity and separately ALLOWED training-purpose exports remain pending. Queue S5 remains unfinished; no whole TC08/TC09 promotion."
     },
     {
       "id": "AOS-012-S7",

@@ -116,3 +116,16 @@ implemented, but provider/estimate ingestion fixtures do not qualify a supported
 live telemetry source or a Mission Control display. The bounded queue, foreground
 reserve, exhaustion/no-paid-spillover policy, actual offline capture and remaining
 S5–S7/TC06–TC10 remain required. No gate status is promoted by this report.
+
+## Confirmed Build offline-reference component
+
+[Design68](../design/68-OFFLINE-BUILD-REFERENCES.md) and the
+[operator guide](../testing/OFFLINE_BUILD_REFERENCES.md) implement one S6 outcome:
+manual or explicitly opt-in capture after canonical PUBLIC Build final verification
+and an exact confirmed owner merge. A bounded private archive carries exact
+contract/diff/check evidence and historical provenance, with standalone integrity-
+checked restore/viewing. It grants only local-reference retention, never training
+consent; eligibility remains UNKNOWN/export DENIED. No queue, raw-model truth,
+knowledge promotion or weight update is implied. Source-bound component checks
+are linked from the guide. Other modes, S5 queue/reserves, separate purpose/rights
+flows, known model identity, suppression/retention and full TC08/09 remain pending.
