@@ -17,6 +17,7 @@ import typer
 
 from panestria.cli.tui_client import LocalAskClient, TerminalUnavailable
 from panestria.config_local import LocalApplicationRejected
+from panestria.contracts.activity import ProjectActivity
 
 
 def literal(value: str) -> str:
@@ -49,11 +50,18 @@ class TerminalView:
     notice: str = "Checking the local server. Start 'panestria local serve' separately if unavailable."
     editing: bool = False
     scroll: int = 0
+    activity_active: bool = False
+    activity_fresh: bool = False
+    activity_received_at: float = 0.0
+    activity: ProjectActivity | None = field(default=None, repr=False)
 
 
 class AskTerminal:
-    def __init__(self, client: LocalAskClient):
-        self.client, self.view = client, TerminalView()
+    def __init__(self, client: LocalAskClient, *, metadata_only: bool = False):
+        self.metadata_only = metadata_only
+        self.client, self.view = client, TerminalView(activity_active=metadata_only)
+        if metadata_only:
+            self.view.notice = "Checking project metadata. Start 'panestria activity serve' separately if unavailable."
         self.generation = 0
         self.busy: set[str] = set()
         self.events: queue.Queue[tuple[int, str, dict[str, Any] | TerminalUnavailable]] = queue.Queue()
@@ -93,11 +101,17 @@ class AskTerminal:
                 if result.clear:
                     self.generation += 1
                     self.busy.clear()
-                    self.view = TerminalView(notice=result.code + "; view cleared. Correct setup and refresh.")
+                    self.view = TerminalView(
+                        activity_active=self.metadata_only,
+                        notice=result.code + "; view cleared. Correct setup and refresh.",
+                    )
                 else:
                     v.notice = result.code + "; no automatic retry. Refresh the receipt before new work."
                     if kind == "status":
                         v.connected = False
+                    if kind == "activity":
+                        v.activity_fresh = False
+                        v.notice = result.code + "; snapshot unconfirmed. Refresh explicitly; no work was started."
                     if kind == "ask" and not result.uncertain:
                         v.request_id, v.state = None, "Not submitted"
                         v.notice = result.code + "; question was not sent. Check the server, then submit explicitly."
@@ -106,6 +120,12 @@ class AskTerminal:
                 if not v.connected:
                     v.notice = "Connected to your offline Ask scope. F2/new: question; Enter: submit."
                 v.connected = True
+                continue
+            if kind == "activity":
+                v.activity = ProjectActivity.model_validate_json(json.dumps(result))
+                v.activity_fresh = True
+                v.activity_received_at = time.monotonic()
+                v.notice = "Read-only canonical states; they do not certify checks, answers or release acceptance."
                 continue
             observed = str(result["state"])
             if v.state in {"COMPLETED", "CANCELLED", "FAILED"} and observed != v.state:
@@ -129,6 +149,8 @@ class AskTerminal:
 
     def submit(self) -> None:
         v = self.view
+        if v.activity_active:
+            return
         if not v.connected or "ask" in self.busy or not v.question.strip():
             v.notice = "Connect first; enter a question; allow only one submission at a time."
             return
@@ -161,14 +183,26 @@ class AskTerminal:
                 break
 
     def refresh(self) -> None:
+        if self.view.activity_active:
+            self.start("activity", self.client.activity)
+            return
         self.start("status", self.client.status)
         if self.view.request_id:
             self.start("receipt", partial(self.client.receipt, self.view.request_id))
 
     def cancel(self) -> None:
+        if self.view.activity_active:
+            return  # The metadata pane offers no mutation, even for a current Ask.
         if self.view.request_id:
             self.start("cancel", partial(self.client.cancel, self.view.request_id))
             self.view.notice = "Cancellation requested, awaiting the server's decision."
+
+    def toggle_activity(self) -> None:
+        if self.metadata_only:
+            return
+        self.view.activity_active = not self.view.activity_active
+        if self.view.activity_active:
+            self.refresh()
 
     def run(self, screen: Any) -> None:
         import curses
@@ -179,7 +213,7 @@ class AskTerminal:
             curses.curs_set(0)
         except curses.error:
             pass
-        self.start("status", self.client.status)
+        self.refresh()
         checked, leaving = time.monotonic(), False
 
         def line(row: int, value: str) -> None:
@@ -195,14 +229,38 @@ class AskTerminal:
             while True:
                 self.drain()
                 v = self.view
-                if v.connected and time.monotonic() - checked >= 5:
+                if not self.metadata_only and v.connected and time.monotonic() - checked >= 5:
                     self.start("status", self.client.status)
                     checked = time.monotonic()
                 screen.erase()
                 rows, cols = screen.getmaxyx()
-                line(0, "Panestria | OFFLINE ASK | terminal view")
+                line(0, "Panestria | PROJECT TASKS | read only" if v.activity_active
+                     else "Panestria | OFFLINE ASK | terminal view")
                 if rows < 18 or cols < 64:
                     line(2, "Resize to at least 64 columns x 18 rows. F10 quits.")
+                elif v.activity_active:
+                    page = v.activity
+                    line(1, f"Project: {self.client.config.project_id}")
+                    fresh = v.activity_fresh and time.monotonic() - v.activity_received_at <= 15
+                    line(2, "Snapshot: " + ("FRESH" if fresh else "UNCONFIRMED/STALE"))
+                    line(3, "Observed: " + (page.observed_at.isoformat() if page else "not available"))
+                    line(4, "! MODE     ID       CANONICAL STATE    A:active R:review H:held Build")
+                    if page is None:
+                        line(5, "No confirmed snapshot. F5 refreshes without asking a model.")
+                    elif not page.entries:
+                        line(5, "No activity in this configured project.")
+                    else:
+                        for offset, entry in enumerate(page.entries, 5):
+                            held = "?" if entry.held_build_claims is None else str(entry.held_build_claims)
+                            line(offset, f"{'!' if entry.needs_attention else ' '} {entry.workflow:8} "
+                                 f"{str(entry.id)[:8]} {entry.canonical_state:18} "
+                                 f"A:{entry.active_tasks} R:{entry.waiting_reviews} H:{held}")
+                    line(rows - 5, "n: next page available" if page and page.next_cursor else "No further page")
+                    line(rows - 4, "! needs attention; held claims never imply free capacity")
+                    line(rows - 3, v.notice)
+                    line(rows - 2, ("" if self.metadata_only else "F4/t Ask | ") +
+                         "F5/r Refresh first page | n Next | F10/q Quit")
+                    line(rows - 1, "States only; content and exact approvals stay in their separate review views.")
                 else:
                     line(
                         1,
@@ -229,7 +287,7 @@ class AskTerminal:
                         line(row, value)
                     line(rows - 3, v.notice)
                     line(rows - 2, "F2/n Question | F5/r Refresh | F6/c Cancel | F10/q Quit")
-                    line(rows - 1, "Ask only. Build/research screens and automatic setup are not available here yet.")
+                    line(rows - 1, "F4/t Project tasks (read only). Build/research actions use their separate views.")
                 screen.refresh()
                 try:
                     key = screen.get_wch()
@@ -242,6 +300,9 @@ class AskTerminal:
                     v.editing = False
                 if key == curses.KEY_F5:
                     self.refresh()
+                    continue
+                if key == curses.KEY_F4 and not v.editing:
+                    self.toggle_activity()
                     continue
                 if key == curses.KEY_F6:
                     self.cancel()
@@ -256,6 +317,15 @@ class AskTerminal:
                     elif isinstance(key, str) and literal(key) == key and key.isprintable():
                         if len((v.question + key).encode()) <= 4096:
                             v.question += key
+                    continue
+                if key == "t":
+                    self.toggle_activity()
+                    continue
+                if v.activity_active and key != "q":
+                    if key == "n" and v.activity and v.activity.next_cursor:
+                        self.start("activity", partial(self.client.activity, v.activity.next_cursor))
+                    elif key == "r":
+                        self.refresh()
                     continue
                 if key in {curses.KEY_F10, "q"}:
                     if "ask" in self.busy and not leaving:
@@ -283,12 +353,16 @@ class AskTerminal:
 
 def tui_command(config: Annotated[Path, typer.Option("--config")]) -> None:
     """Open the keyboard offline Ask application; run the local server separately."""
+    run_terminal(lambda: LocalAskClient(config))
+
+
+def run_terminal(client: Callable[[], LocalAskClient], *, metadata_only: bool = False) -> None:
     try:
         if not sys.stdin.isatty() or not sys.stdout.isatty():
             raise TerminalUnavailable("interactive_terminal_required")
         import curses
 
-        terminal = AskTerminal(LocalAskClient(config))
+        terminal = AskTerminal(client(), metadata_only=metadata_only)
         try:
             curses.wrapper(terminal.run)
         finally:

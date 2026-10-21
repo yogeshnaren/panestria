@@ -1,6 +1,6 @@
 # AOS-028 — React Mission Control task views, approvals and event replay: implementation plan
 
-**Release:** R3. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-005, AOS-014, AOS-017, AOS-023, AOS-027b. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R3. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS (backend/terminal component). **Tests:** component checks PASS; original release scenarios NOT_RUN. **Depends on:** AOS-005, AOS-014, AOS-017, AOS-023, AOS-027b. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-028.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -98,3 +98,7 @@ Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the
 | AOS-028-TC08 | live | Actual owner-selected phone/browser/private-network deployment demonstrates reconnect, revocation, offline workstation behavior and truthful status without requiring public ingress or claiming background push. |
 
 These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.
+
+## Observed backend/terminal component, 2026-10-21
+
+The owner prioritizes TUI workflows before GUI work. The [project overview](../design/75-PROJECT-ACTIVITY-TERMINAL.md) supplies canonical, content-free actor/project snapshots and a standalone model-free loopback terminal. It uses actual Ask and goal tables; no shadow task state or approval authority. [35 connected checks](../../evidence/project-activity-2026-10-21/report.json) exercise real PG/HTTP/CLI/PTY and explicit inference fixtures. S1 is partial; React/generated clients/intake, SSE replay, timeline/artifact/approval integration, original browser cases and phone/device qualification remain pending. No release case is marked passed by these new tests.
