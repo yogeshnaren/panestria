@@ -26,7 +26,9 @@ QUERIES = ["synthetic café provenance", "synthetic 中文 source comparison"]
 @pytest.fixture
 def planner(staged, tmp_path, monkeypatch):
     dsn, actor, root, _ = staged
-    receipt = submit(staged)
+    root = root / "retained"
+    root.mkdir(mode=0o700)
+    receipt = submit((dsn, actor, root, staged[3]))
     cache = tmp_path / "query-cache"
     cache.mkdir(mode=0o700)
     (cache / "blobs").mkdir()
@@ -167,7 +169,7 @@ def test_actual_cancellation_between_generation_and_publication_cannot_publish_q
                 staged.goal_id,
                 0,
                 "synthetic cancel",
-                correlation_id="synthetic-query-cancel",
+                correlation_id=str(uuid4()),
             )
         return response()
 
