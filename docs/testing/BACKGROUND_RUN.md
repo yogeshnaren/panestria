@@ -115,3 +115,6 @@ remain distinct from observed inference/runtime qualification. Full TC06/07/10,
 foreground resource qualification, S5/S7, automatic scheduling and G3 remain open.
 The [component report](../../evidence/background-run-2026-10-21/report.json) retains
 the original CLI serialization failure and corrected connected observations.
+
+For finite opt-in polling instead of manual item selection, see the
+[queue controller](BACKGROUND_QUEUE_CONTROLLER.md). It installs no scheduled service.

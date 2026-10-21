@@ -23,6 +23,11 @@ work, reuses verified handoffs on explicit resume, and retains uncertain claims.
 The finite `background next`/`run-next` commands now inspect/select one unstarted
 reviewed candidate by declared priority and reported reset, then re-admit it
 through that same runner. No timer, automatic resume, fallback or merge is enabled.
+The [finite polling controller](testing/BACKGROUND_QUEUE_CONTROLLER.md) now lets
+the owner explicitly enable bounded ticks/jobs without manually choosing each
+item. Idle ticks perform no provider probe or event write; held review/foreground
+capacity waits, while a selected-item denial or failure ends the controller.
+No installed scheduler or actual live controller has been enabled.
 One [actual queued subscription job](../evidence/background-owner-journey-2026-10-21/report.json)
 now completes two serial Claude workers, final checks, exact scripted test-owner
 merge, saved metrics and offline references. It uses the owner's reported disabled
