@@ -113,19 +113,23 @@ def test_released_failure_drafts_one_bounded_repair_then_requires_exact_revision
     assert receipt["status"] == "VALIDATED_DRAFT" and receipt["execution_authority"] == "NONE"
     assert len(model.calls) == 1 and model.calls[0].offline
     context = json.loads((output / "repair-context.json").read_text())
-    assert context["remaining_wall_seconds"] == 630 and len(context["failure_states"]) == 2
-    assert '"edits_wall_budget":540' in model.calls[0].prompt
+    assert context["remaining_wall_seconds"] == 270 and len(context["failure_states"]) == 2
+    assert '"edits_wall_budget":180' in model.calls[0].prompt
     assert receipt["repair_context_sha256"] and receipt["canonical_plan_state"] == "NOT_STAGED"
     proposal = PlanProposal.model_validate_json((output / "proposal.json").read_bytes())
     assert proposal.contract_sha256 == parent.proposal.contract_sha256 and len(proposal.nodes) == 3
     with owner.connect() as c:
-        assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == before
+        assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == (before[0] + 2,)
         assert c.execute(
             "SELECT count(*) FROM panestria.build_plan WHERE goal_id=%s", (proposal.goal_id,)
         ).fetchone() == (1,)
-    with pytest.raises(KernelDenied, match="fresh_private_plan_output_required"):
-        repair.propose(parent.proposal.plan_id, parent.proposal.sha256(), proof, output, local_model_run=True)
+    replay = repair.propose(parent.proposal.plan_id, parent.proposal.sha256(), proof, output, local_model_run=True)
+    assert replay["replayed"] is True and replay["proposal_sha256"] == receipt["proposal_sha256"]
     assert len(model.calls) == 1
+    progress = owner.progress(parent.proposal.goal_id)
+    assert progress["repair"]["planning_turns_used"] == 1
+    assert progress["repair"]["planning_wall_charged_seconds"] == 360
+    assert progress["repair"]["wall_envelope_charged_seconds"] == 630
     with owner.connect() as c:
         revision = PlanRevisionService().propose(
             UnitOfWork(c),
@@ -136,7 +140,7 @@ def test_released_failure_drafts_one_bounded_repair_then_requires_exact_revision
             parent.inventory,
             proof,
         )
-    assert revision.state == "PROPOSED" and revision.consent.cumulative_wall_seconds == 540
+    assert revision.state == "PROPOSED" and revision.consent.cumulative_wall_seconds == 900
     with pytest.raises(KernelDenied, match="plan_not_accepted"):
         runner.run(proposal.plan_id, public_subscription_run=True)
     with owner.connect() as c:
@@ -153,7 +157,7 @@ def test_released_failure_drafts_one_bounded_repair_then_requires_exact_revision
     )
 
 
-@pytest.mark.parametrize("prepared_plan", [{"wall_seconds": 900}], indirect=True)
+@pytest.mark.parametrize("prepared_plan", [{"wall_seconds": 1800}], indirect=True)
 def test_unknown_work_overbudget_output_and_changed_source_stop_without_automatic_retry(native_plan, tmp_path):
     owner, _, parent, _, claims = failed(native_plan)
     proof = returned(owner, parent, claims[:1])
@@ -164,7 +168,7 @@ def test_unknown_work_overbudget_output_and_changed_source_stop_without_automati
         )
     assert not model.calls and not (tmp_path / "held").exists()
     proof = returned(owner, parent, claims[1:])
-    model.wall = 300  # Valid under900 original, but690 including final exceeds630 remaining.
+    model.wall = 600  #1290 is valid under1800, but exceeds1170 after the360-second reservation.
     over = tmp_path / "over"
     with pytest.raises(KernelDenied, match="local_plan_remaining_budget_exceeded"):
         repair.propose(parent.proposal.plan_id, parent.proposal.sha256(), proof, over, local_model_run=True)

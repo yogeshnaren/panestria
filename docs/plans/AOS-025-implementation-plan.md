@@ -135,4 +135,14 @@ S4 is IN_PROGRESS: actual source-bound controller observations cover the initial
 
 ## Canonical local repair draft component
 
-[Local repair](../testing/LOCAL_BUILD_REPAIR.md) connects a current physically stopped PUBLIC plan, protected task/check failures, frozen contract/inventory and remaining cumulative envelope to one explicitly requested offline draft. Source changes, unknown work, exhausted budgets and repeated unchanged failed candidates stop this path. Separate existing canonical revision consent, execution and final exact merge remain required. [Evidence](../../evidence/local-build-repair-2026-10-21/report.json) includes real CLI/PG/Git/MCP/Docker and explicit model/native fixtures. S3/S4 remain IN_PROGRESS: real repair-quality qualification, persistent planner-turn accounting/automatic controller, general planning inventory and original scenario/restart requirements remain unfinished.
+[Local repair](../testing/LOCAL_BUILD_REPAIR.md) connects a current physically stopped PUBLIC plan, protected task/check failures, frozen contract/inventory and remaining cumulative envelope to one explicitly requested offline draft. Source changes, unknown work, exhausted budgets and repeated unchanged failed candidates stop this path. Separate existing canonical revision consent, execution and final exact merge remain required. [Evidence](../../evidence/local-build-repair-2026-10-21/report.json) includes real CLI/PG/Git/MCP/Docker and explicit model/native fixtures. S3/S4 remain IN_PROGRESS: real repair-quality qualification, automatic controller, general planning inventory and original scenarios remain unfinished.
+
+## Durable repair turn accounting (partial S3/S4/S5)
+
+[Canonical repair intents](../design/77-DURABLE-REPAIR-INTENTS.md) now reserve and
+acknowledge model I/O before dispatch, bind private outputs for historical replay,
+enforce a cumulative1–2 turn cap and charge360 seconds per intent against the
+original goal budget. Unknown returns block another turn and canonical revision.
+[Actual connected and backup/restore evidence](../../evidence/repair-draft-intents-2026-10-21/report.json)
+uses explicit model/native fixtures. S3/S4/S5 stay IN_PROGRESS; broader planning,
+repair quality, automatic controller and original full scenarios remain pending.
