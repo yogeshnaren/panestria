@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import os
 import subprocess
 import sys
 import time
@@ -27,16 +26,18 @@ def qualify_profiles(directory: Path, cache: Path, *, synthetic_local_smoke: boo
         raise QualificationUnavailable("existing_absolute_model_cache_required")
     if {p.name for p in cache.iterdir()} != {"blobs", "manifests"}:
         raise QualificationUnavailable("dedicated_model_cache_required")
+    if not directory.is_absolute() or directory.resolve() != directory:
+        raise QualificationUnavailable("private_absolute_qualification_directory_required")
+    if directory.is_relative_to(cache) or cache.is_relative_to(directory):
+        raise QualificationUnavailable("profile_qualification_cache_overlap")
     inputs = runtime_inputs()
     destination = _private(directory)
-    if destination.is_relative_to(cache) or cache.is_relative_to(destination):
-        raise QualificationUnavailable("profile_qualification_cache_overlap")
     with _lock(destination / "qualification.lock"):
         run = _private(destination / ("run-" + uuid4().hex))
         journal, xml, log = run / "result.json", run / "raw.xml", run / "pytest.log"
         _atomic(journal, {"status": "STARTED", "candidate_commit": candidate, "runtime_inputs": inputs})
         env = {
-            "PATH": os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin"),
+            "PATH": "/usr/local/bin:/usr/bin:/bin:" + str(Path(sys.executable).parent),
             "HOME": str(Path.home()),
             "LANG": "C.UTF-8",
             "UV_OFFLINE": "1",

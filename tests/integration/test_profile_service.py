@@ -6,12 +6,10 @@ import xml.etree.ElementTree as ET
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
-import httpx2 as httpx
 import psycopg
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import SecretBytes
-from test_local_provider import valid_frames
 from test_local_server import configuration
 from test_local_server import configured as configured
 from typer.testing import CliRunner
@@ -159,7 +157,7 @@ def test_qualified_existing_handles_serve_profile_ask_and_preserve_default(perso
         response = client.post("/v2/ask", json=request(handle), headers=headers)
         assert response.status_code == 200 and response.json()["state"] == "COMPLETED"
         assert response.json()["text"] == "READY" and response.json()["response_sha256"] is None
-        assert len(calls) == 1
+        assert sum(r.url.path == "/api/generate" for r in calls) == 1
         used = underlying.calls
         wrong = handle.model_copy(update={"key_id": str(uuid4())})
         with pytest.raises(KeyStoreUnavailable, match="profile_key_not_selected"):
@@ -184,10 +182,15 @@ def test_qualified_existing_handles_serve_profile_ask_and_preserve_default(perso
 def test_changed_runtime_after_model_return_fences_clear_answer_publication(personal, record_property):
     config, token, settings, app, keys, handle, inputs, underlying, calls = personal
 
-    def changed(req):
-        calls.append(req)
-        inputs["changed"] = "during model call"
-        return httpx.Response(200, content=b"".join(valid_frames()))
+    import httpx2 as httpx
+
+    original = app.state.ask_api.provider.transport
+
+    async def changed(req):
+        response = await original.handle_async_request(req)
+        if req.url.path == "/api/generate":
+            inputs["changed"] = "during model call"
+        return response
 
     app.state.ask_api.provider.transport = httpx.MockTransport(changed)
     with TestClient(app, base_url=config.origin) as client:
@@ -195,7 +198,7 @@ def test_changed_runtime_after_model_return_fences_clear_answer_publication(pers
         submission = request(handle)
         response = client.post("/v2/ask", headers=headers, json=submission)
         assert response.json()["code"] == "profile_qualification_invalid_or_expired" and "text" not in response.json()
-        assert len(calls) == 1
+        assert sum(r.url.path == "/api/generate" for r in calls) == 1
         with psycopg.connect(settings.database_url.get_secret_value()) as c:
             assert c.execute(
                 "SELECT state,response_sha256 FROM panestria.ask_request WHERE id=%s", (submission["request_id"],)
