@@ -104,6 +104,27 @@ uniqueness. That test remains in the research lane. Its separate prerequisite
 fix handles either unique conflict and still checks the current owner/project
 scope; it is not skipped, retried or relabeled stale.
 
+## 2026-10-22 measured lane rebalance
+
+PR182 run [39812335253](https://github.com/yogeshnaren/panestria/actions/runs/39812335253)
+was cancelled at the unchanged 15-minute platform job limit. Its browser consent
+recovery cases both passed; setup consumed over six minutes, and pytest reached
+90% before cancellation. The missing platform XML is **not a pass**. The original
+three available reports and full job log remain in the private CI archive.
+
+The preceding successful run
+[39805028940](https://github.com/yogeshnaren/panestria/actions/runs/39805028940)
+recorded 582.296 seconds of platform test durations, against 225.298 for kernel.
+Move the durable Build/plan/queue file families into kernel, which already runs
+recovery and approval E2E. Physical browser, native and profile tests stay in
+platform. The same original timings then project 395.249 seconds for kernel and
+412.345 for platform; these exclude setup and are **not a measured speedup**.
+Research and fast are unchanged. The complete [inventory](../../evidence/ci-lane-balance-2026-10-22/inventory.json)
+accounts for all 211 discovered files exactly once, including live-only files
+whose live cases remain excluded from default CI. No test, assertion, mark,
+timeout or required check is removed or weakened. Full exact-head CI remains
+required; this adjustment does not qualify a release gate.
+
 ## Reproduce
 
 ```bash
