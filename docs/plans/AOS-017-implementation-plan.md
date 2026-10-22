@@ -156,6 +156,14 @@ one actual cached CPU/PG/Unix-socket/ASGI journey cover this supported path. Thi
 is partial S6, not general model replacement, other-mode qualification, full
 TC07/TC08 or G3. No default, owner service/configuration or model cache was changed.
 
+The [Build JSON pin extension](../testing/LOCAL_BUILD_MODEL_PINS.md) now snapshots
+an explicitly selected public manifest before plan/repair request and durable
+intent preparation. Actual startup/format/result must match; canonical repair
+replay keeps the original identity after new-work settings change. The owner
+export command reads existing authenticated Ask status without inference or
+qualification refresh. This extends partial S6 to the supported Build drafts;
+query/synthesis/GPU/general replacement and full original evidence remain open.
+
 The [pinned profile Ask terminal](../testing/PROFILE_ASK_TERMINAL.md) now connects
 explicit row/field/purpose selection to the existing restricted local inference
 boundary, with cancellation and content-free receipt recovery. Real key/model
