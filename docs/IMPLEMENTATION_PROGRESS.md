@@ -5,6 +5,16 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+The latest Mission Control delivery now provides distinct explicit offline Ask,
+PUBLIC Delegate question staging, PUBLIC Build plan staging and separate exact
+plan review/acceptance. Canonical pending plan/action review discovery connects
+the browser to retained records without a shadow queue or automatic dispatch.
+See [the inbox guide](testing/MISSION_REVIEW_INBOX.md) and
+[plan review guide](testing/MISSION_PLAN_ACCEPTANCE.md). All remain component
+outcomes: qualified Delegate execution/support, full dispatch/other review
+families, remaining personal-platform/phone/resource work, original cumulative
+gates and the real owner trial still prevent R3 acceptance.
+
 The owner explicitly resumed implementation through R3 on2026-10-20. The current
 Build path has canonical plans/handoffs, admission, conflict handling, independent
 final-tree checks, exact owner merge, supported one/two-Claude execution, local
