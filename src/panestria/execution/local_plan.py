@@ -201,8 +201,9 @@ class LocalBuildPlanner:
     def __init__(self, settings: PlanModelSettings, model: PlanGenerator | None = None):
         self.settings = settings
         self.actor = Actor(str(settings.owner_id), str(settings.project_id))
-        self.manifest = expected_plan_manifest(settings)
-        self.model = model or LocalPlanModel(settings, manifest=self.manifest)
+        # Canonical repair replay/inspection must not open today's model file.
+        # Select only when preparing an actual new draft below.
+        self.model = model
 
     def propose(
         self,
@@ -217,8 +218,9 @@ class LocalBuildPlanner:
     ) -> dict[str, object]:
         if local_model_run is not True:
             raise KernelDenied("explicit_local_plan_model_intent_required")
-        if self.manifest is not None and (
-            self.manifest.model_ref != MODEL or self.manifest.model_bundle_sha256 != MODEL_DIGEST
+        manifest = expected_plan_manifest(self.settings)
+        if manifest is not None and (
+            manifest.model_ref != MODEL or manifest.model_bundle_sha256 != MODEL_DIGEST
         ):
             raise KernelDenied("model_manifest_not_supported")
         contract = load_contract(contract.model_dump(mode="json"))
@@ -255,7 +257,7 @@ class LocalBuildPlanner:
             context_tokens=4096,
             deadline_seconds=60.0,
             trace_id=uuid4().hex,
-            model_manifest_sha256=self.manifest.sha256() if self.manifest is not None else None,
+            model_manifest_sha256=manifest.sha256() if manifest is not None else None,
         )
         _write(directory / "contract.json", contract.model_dump_json().encode())
         _write(directory / "inventory.json", inventory.model_dump_json().encode())
@@ -276,13 +278,14 @@ class LocalBuildPlanner:
         }
         if repair is not None:
             journal["repair_context_sha256"] = repair.sha256()
-        if self.manifest is not None:
-            journal["model_manifest"] = self.manifest.model_dump(mode="json")
+        if manifest is not None:
+            journal["model_manifest"] = manifest.model_dump(mode="json")
         _atomic(directory / "result.json", journal)
         try:
             if before_dispatch is not None:
                 before_dispatch(request)
-            result = self.model.generate(request)
+            model = self.model if self.model is not None else LocalPlanModel(self.settings, manifest=manifest)
+            result = model.generate(request)
             if result.model_manifest_sha256 != request.model_manifest_sha256:
                 raise KernelDenied("model_manifest_mismatch")
             if (

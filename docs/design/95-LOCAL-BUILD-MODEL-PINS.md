@@ -3,7 +3,7 @@
 The opt-in [Ask manifest](94-PINNED-LOCAL-MODEL-MANIFEST.md) now extends to bounded
 JSON Build plan and repair proposals. Existing defaults remain unbound. Private
 PlanModelSettings can name a separate owner-selected `model_manifest_file`.
-Loading that private file snapshots a strict CPU JSON/no-tool/context-compatible
+Preparing new work reads that private file and snapshots a strict CPU JSON/no-tool/context-compatible
 expectation before preparing any request, disk journal or durable repair intent.
 
 The owner CLI can save public identity from an already running pinned ordinary
@@ -27,7 +27,8 @@ intent-before-dispatch, cumulative turn/wall charges, uncertain-return blocking
 and protected outcome hashing remain unchanged. A denied admitted turn stays
 charged. A different new-work manifest cannot rewrite old files or reset budgets.
 Canonical repair replay uses the original retained outcome and performs no model
-turn, even after the selected new-work file changes.
+turn, even after the selected new-work file changes or becomes unavailable. Pure
+configuration loading, repair construction and replay never open that file.
 
 JSON/raw-text profiles are explicitly distinct; implicit format conversion at
 dispatch is refused. Other research query/synthesis and GPU paths retain their

@@ -66,6 +66,8 @@ def test_plan_intent_pins_before_dispatch_and_wrong_identity_cannot_publish(plan
         assert request.model_manifest_sha256 == selected.sha256()
         assert receipt["model_manifest"] == selected.model_dump(mode="json")
         acknowledged.append(request.sha256())
+        # A new-work file change after request preparation cannot repin this turn.
+        path.write_text(model_manifest(template_sha256="9" * 64).for_json_output().model_dump_json())
 
     class Model:
         def generate(self, request):
@@ -74,8 +76,6 @@ def test_plan_intent_pins_before_dispatch_and_wrong_identity_cannot_publish(plan
             return replace(result, model_manifest_sha256=None if wrong_return else selected.sha256())
 
     planner = LocalBuildPlanner(settings, Model())
-    # Changing an owner-selected new-work file after prepare cannot repin this instance.
-    path.write_text(model_manifest(template_sha256="9" * 64).for_json_output().model_dump_json())
     if wrong_return:
         with pytest.raises(KernelDenied, match="model_manifest_mismatch"):
             planner.propose(f.goal, f.inventory, f.output, local_model_run=True, before_dispatch=before_dispatch)

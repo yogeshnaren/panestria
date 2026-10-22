@@ -50,6 +50,11 @@ def test_manifest_pin_is_in_acknowledged_repair_intent_and_replay_keeps_original
         *args, local_model_run=True, idempotency_key="manifest",
     )
     assert replay["replayed"] and replay["proposal_sha256"] == result["proposal_sha256"] and len(seen) == 1
+    expected.unlink()  # Only this fixture's owned small file; no owner storage.
+    replay_missing = LocalBuildRepair(owner, settings, BoundModel()).propose(
+        *args, local_model_run=True, idempotency_key="manifest",
+    )
+    assert replay_missing["replayed"] and len(seen) == 1
     assert json.loads((output / "result.json").read_bytes())["model_manifest"] == selected.model_dump(mode="json")
     with owner.connect() as c:
         ledger = repair_ledger(UnitOfWork(c), owner.actor, parent.proposal.goal_id)

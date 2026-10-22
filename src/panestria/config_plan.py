@@ -51,5 +51,4 @@ def load_plan_settings(path: Path) -> PlanModelSettings:
         not runtime.is_dir() or runtime.stat().st_uid != os.getuid() or runtime.stat().st_mode & 0o077
     ):
         raise ValueError("private_plan_model_runtime_required")
-    expected_plan_manifest(settings)
     return settings
