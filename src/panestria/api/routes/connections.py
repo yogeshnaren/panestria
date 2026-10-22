@@ -3,57 +3,23 @@
 from __future__ import annotations
 
 import asyncio
-import json
 from dataclasses import asdict
-from typing import Any, Literal, TypeVar
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, StrictInt, ValidationError
+from pydantic import ValidationError
 
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body
 from panestria.api.db import DatabaseUnavailable
 from panestria.api.routes.ask import _transaction
-from panestria.contracts.connections import ConnectionContract, ConnectionId, ConnectionReviewRequest, Digest
+from panestria.contracts.connections import ConnectionScopeView, DecideReview, SubmitReview
+from panestria.contracts.connections import parse_connection_contract as _parse
 from panestria.kernel.connections import ConnectionReview, ConnectionReviewService
 from panestria.kernel.errors import KernelDenied
 
 router = APIRouter(prefix="/v2/connections")
 _SERVICE = ConnectionReviewService()
 _HEADERS = {"Cache-Control": "no-store", "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff"}
-M = TypeVar("M", bound=BaseModel)
-
-
-class SubmitReview(ConnectionContract):
-    schema_version: StrictInt = Field(ge=1, le=1)
-    task_id: ConnectionId
-    change: ConnectionReviewRequest
-
-
-class DecideReview(ConnectionContract):
-    schema_version: StrictInt = Field(ge=1, le=1)
-    effect_digest: Digest
-    decision: Literal["approve", "deny"]
-
-
-def _unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    result: dict[str, Any] = {}
-    for name, value in pairs:
-        if name in result:
-            raise ValueError("duplicate_connection_key")
-        result[name] = value
-    return result
-
-
-def _constant(value: str) -> None:
-    raise ValueError("nonfinite_connection_value")
-
-
-def _parse(model: type[M], raw: bytes) -> M:
-    # Retain JSON-mode strict tuple/datetime validation, while refusing duplicate
-    # keys and nonfinite values instead of silently choosing one spelling.
-    json.loads(raw, object_pairs_hook=_unique, parse_constant=_constant)
-    return model.model_validate_json(raw)
 
 
 def _api(request: Request) -> GoalApi:
@@ -107,6 +73,17 @@ def _review(view: ConnectionReview) -> dict[str, object]:
         "conformance_status": "UNVERIFIED",
         "runtime_available": False,
     }
+
+
+@router.get("/scope", responses={200: {"model": ConnectionScopeView}})
+async def connection_scope(request: Request) -> JSONResponse:
+    try:
+        api = _api(request)
+        actor = authorize(request, api)
+        view = await asyncio.to_thread(_transaction, request, api, lambda u: _SERVICE.scope(u, actor))
+        return _response(view.model_dump(mode="json"))
+    except (LoopbackDenied, KernelDenied, DatabaseUnavailable) as error:
+        return _denied(error)
 
 
 @router.post("/reviews")
