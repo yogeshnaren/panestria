@@ -8,6 +8,7 @@ import time
 import unicodedata
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from functools import partial
 from pathlib import Path
 from typing import Annotated, Any
@@ -18,6 +19,7 @@ import typer
 from panestria.cli.tui_client import LocalAskClient, TerminalUnavailable
 from panestria.config_local import LocalApplicationRejected
 from panestria.contracts.activity import ActivityTimeline, ProjectActivity
+from panestria.contracts.storage_status import StorageStatus
 
 
 def literal(value: str) -> str:
@@ -59,6 +61,12 @@ class TerminalView:
     timeline_fresh: bool = False
     timeline_received_at: float = 0.0
     timeline_scroll: int = 0
+    storage_available: bool = False
+    storage_active: bool = False
+    storage: StorageStatus | None = field(default=None, repr=False)
+    storage_next_check: float = 0.0
+    storage_scroll: int = 0
+    storage_notice: str = "No confirmed storage observation."
 
 
 class AskTerminal:
@@ -102,6 +110,11 @@ class AskTerminal:
                 continue
             self.busy.discard(kind)
             v = self.view
+            if kind == "storage" and isinstance(result, TerminalUnavailable) and not result.clear:
+                v.storage = None
+                v.storage_notice = result.code + "; storage unconfirmed. No action performed."
+                v.storage_next_check = time.monotonic() + 60
+                continue
             if isinstance(result, TerminalUnavailable):
                 if result.clear:
                     self.generation += 1
@@ -121,6 +134,11 @@ class AskTerminal:
                     if kind == "ask" and not result.uncertain:
                         v.request_id, v.state = None, "Not submitted"
                         v.notice = result.code + "; question was not sent. Check the server, then submit explicitly."
+                continue
+            if kind == "storage":
+                v.storage = StorageStatus.model_validate_json(json.dumps(result))
+                v.storage_next_check = time.monotonic() + v.storage.next_check_seconds
+                v.storage_notice = "Read-only observations; no storage changes are performed."
                 continue
             if kind == "status":
                 if not v.connected:
@@ -143,6 +161,9 @@ class AskTerminal:
                 continue
             if kind == "activity":
                 v.activity = ProjectActivity.model_validate_json(json.dumps(result))
+                v.storage_available = v.activity.storage_available
+                if v.storage_available:
+                    self.start("storage", self.client.storage)
                 v.activity_fresh = True
                 v.activity_received_at = time.monotonic()
                 v.notice = "Read-only canonical states; they do not certify checks, answers or release acceptance."
@@ -203,6 +224,9 @@ class AskTerminal:
                 break
 
     def refresh(self) -> None:
+        if self.view.storage_active:
+            self.start("storage", self.client.storage)
+            return
         if self.view.activity_active:
             if self.view.timeline_goal:
                 after = self.view.timeline.next_cursor if self.view.timeline else "0"
@@ -237,8 +261,47 @@ class AskTerminal:
             return
         self.view.activity_active = not self.view.activity_active
         self.view.timeline_goal = None
+        self.view.storage_active = False
         if self.view.activity_active:
             self.refresh()
+
+    def storage_lines(self, width: int) -> list[str]:
+        value = self.view.storage
+        if value is None:
+            return ["Storage observation UNCONFIRMED. Refresh explicitly; no cleanup is available."]
+        enabled = "UNKNOWN" if value.notifications_enabled is None else "ON" if value.notifications_enabled else "OFF"
+        lines = [f"State: {value.state} | notifications: {enabled} | {value.reason}",
+                 "Owner-wide host metadata; project ownership is unassessed.",
+                 "Observed: " + (value.observed_at.isoformat() if value.observed_at else "UNKNOWN")]
+        if value.observed_at is not None:
+            age = (datetime.now(UTC) - value.observed_at).total_seconds()
+            if age < -5 or age > value.sample_interval_seconds + 35 or value.state != "OBSERVED":
+                lines.append("UNCONFIRMED/STALE: values below are last observed, not current health.")
+        def size(n: int | None) -> str:
+            return "UNKNOWN" if n is None else f"{n / 1024**3:.2f} GiB"
+        if value.capacity:
+            disk = value.capacity
+            percent = "UNKNOWN" if disk.used_percent is None else f"{disk.used_percent:.2f}%"
+            lines += [f"Capacity {disk.status}: last free {size(disk.available_bytes)} | used {percent}",
+                      f"Total {size(disk.total_bytes)} | reserved {size(disk.reserved_bytes)}"]
+        for item in value.components:
+            share = "UNKNOWN" if item.filesystem_share_percent is None else f"{item.filesystem_share_percent:.2f}%"
+            lines += [f"{item.label}: {item.status} {size(item.bytes)} | share estimate {share}",
+                      f"Basis: {item.basis}"]
+        lines += [f"Timeshift: {value.timeshift_status}; physical snapshot bytes UNKNOWN"]
+        if value.timeshift_schedules:
+            schedules = [k + "=" + ("UNKNOWN" if choice is None else "ON" if choice else "OFF")
+                         for k, choice in value.timeshift_schedules.items()]
+            lines.append("Configured schedules: " + ", ".join(schedules))
+        lines += ["Docker estimates can overlap and are daemon-wide; never sum them as physical totals."]
+        for warning in value.warnings:
+            lines += [f"{warning.severity} {warning.code}: {warning.recommendation}"]
+        if not value.warnings:
+            lines.append("No storage warning in this sample." if value.state == "OBSERVED"
+                         else "Warning list unavailable; inspect the selected settings/source.")
+        lines += ["Owner options: keep/defer work, inspect usage, review backup/cache impact, or add/move capacity.",
+                  "No deletion, pruning, backup change, worker or model action is offered here."]
+        return [part for text in lines for part in wrapped(text, max(1, width - 3))]
 
     def run(self, screen: Any) -> None:
         import curses
@@ -268,13 +331,27 @@ class AskTerminal:
                 if not self.metadata_only and v.connected and time.monotonic() - checked >= 5:
                     self.start("status", self.client.status)
                     checked = time.monotonic()
+                if v.storage_available and time.monotonic() >= v.storage_next_check:
+                    self.start("storage", self.client.storage)
                 screen.erase()
                 rows, cols = screen.getmaxyx()
-                line(0, "Panestria | GOAL TIMELINE | read only" if v.timeline_goal and v.activity_active
+                line(0, "Panestria | HOST STORAGE | read only" if v.storage_active
+                     else "Panestria | GOAL TIMELINE | read only" if v.timeline_goal and v.activity_active
                      else "Panestria | PROJECT TASKS | read only" if v.activity_active
                      else getattr(self.client, "view_title", "Panestria | OFFLINE ASK | terminal view"))
                 if rows < 18 or cols < 64:
                     line(2, "Resize to at least 64 columns x 18 rows. F10 quits.")
+                elif v.storage_active:
+                    body = self.storage_lines(cols)
+                    visible = max(1, rows - 7)
+                    v.storage_scroll = min(v.storage_scroll, max(0, len(body) - visible))
+                    for row, text in enumerate(body[v.storage_scroll:v.storage_scroll + visible], 2):
+                        line(row, text)
+                    line(rows - 4, f"Rows {v.storage_scroll + 1}-"
+                         f"{min(len(body), v.storage_scroll + visible)}/{len(body)}")
+                    line(rows - 3, v.storage_notice)
+                    line(rows - 2, "PgUp/PgDn Scroll | F5/r Read cache | o/b/Esc Back | q Quit")
+                    line(rows - 1, "Samples are at least 60s apart. Owner review only; no storage changes are made.")
                 elif v.activity_active and v.timeline_goal:
                     timeline_page = v.timeline
                     fresh = v.timeline_fresh and time.monotonic() - v.timeline_received_at <= 15
@@ -320,7 +397,7 @@ class AskTerminal:
                     line(rows - 4, "! needs attention; held claims never imply free capacity")
                     line(rows - 3, v.notice)
                     line(rows - 2, ("" if self.metadata_only else "F4/t Ask | ") +
-                         "1-8 Goal timeline | F5/r Refresh | n Next | F10/q Quit")
+                         "1-8 Goal timeline | o Storage | F5/r Refresh | n Next | F10/q Quit")
                     line(rows - 1, "States only; content and exact approvals stay in their separate review views.")
                 else:
                     line(
@@ -350,6 +427,19 @@ class AskTerminal:
                     line(rows - 3, v.notice)
                     line(rows - 2, "F2/n Question | F5/r Refresh | F6/c Cancel | F10/q Quit")
                     line(rows - 1, "F4/t Project tasks (read only). Build/research actions use their separate views.")
+                if v.storage_available and not v.storage_active:
+                    attention: str = "UNCONFIRMED" if v.storage is None else v.storage.state
+                    if v.storage is not None and v.storage.state == "OBSERVED" and v.storage.observed_at:
+                        age = (datetime.now(UTC) - v.storage.observed_at).total_seconds()
+                        if age < -5 or age > v.storage.sample_interval_seconds + 35:
+                            attention = "STALE/UNCONFIRMED"
+                        elif v.storage.warnings:
+                            warning = max(v.storage.warnings,
+                                          key=lambda w: {"INFO": 0, "WARNING": 1, "CRITICAL": 2}[w.severity])
+                            attention = warning.severity + " " + warning.code
+                        else:
+                            attention = "0 notices in last sample"
+                    line(rows - 4, "Storage " + attention + "; o opens read-only recommendations.")
                 screen.refresh()
                 try:
                     key = screen.get_wch()
@@ -379,6 +469,22 @@ class AskTerminal:
                     elif isinstance(key, str) and literal(key) == key and key.isprintable():
                         if len((v.question + key).encode()) <= 4096:
                             v.question += key
+                    continue
+                if v.storage_active:
+                    if key in {"o", "b", "\x1b"}:
+                        v.storage_active = False
+                    elif key == "r":
+                        self.refresh()
+                    elif key == curses.KEY_NPAGE:
+                        v.storage_scroll += max(1, rows - 7)
+                    elif key == curses.KEY_PPAGE:
+                        v.storage_scroll = max(0, v.storage_scroll - max(1, rows - 7))
+                    elif key == "q":
+                        return
+                    continue
+                if key == "o" and v.activity_active and v.storage_available:
+                    v.storage_active, v.storage_scroll = True, 0
+                    self.start("storage", self.client.storage)
                     continue
                 if key == "t":
                     self.toggle_activity()

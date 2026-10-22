@@ -92,6 +92,14 @@ Offer keep/defer, inspect, backup-scope/target review, unused-cache review with
 rebuild/offline impact, or owner-managed capacity expansion/migration. Never delete
 storage, prune caches/volumes or change backup settings. Preserve historical gates.
 
+The [owner activity storage view](../testing/OWNER_STORAGE_TERMINAL.md) now adds
+opt-in warning/recommendation delivery with timestamps, uncertainty and coalesced
+sampling. Settings changes/off and shutdown fence publication; stalled reads do
+not spawn replacements. Its [component report](../../evidence/storage-status-terminal-2026-10-22/report.json)
+preserves failures/corrections and actual PG/HTTP/PTY/capacity checks. This narrows
+the terminal-notification gap only: desktop/mobile inbox, persisted history,
+other write paths and real target-host budgets/pressure qualification remain.
+
 The [active personal-platform contract](../specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x13) adds **Measured lightweight resource and foreground contract**. Original parent scope and historical results remain intact. These new slices deliver in **R3**, even when the parent AOS item originally ships in R1; they do not reopen historical G0 acceptance or fabricate G1 evidence. Inspect the current repository before choosing exact new files/migration revisions.
 
 | Slice | Concrete outcome, narrowed to about one developer-day | Prerequisites |

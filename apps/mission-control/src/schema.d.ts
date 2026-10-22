@@ -106,6 +106,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/activity/storage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Storage Status */
+        get: operations["storage_status_v1_activity_storage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/approvals": {
         parameters: {
             query?: never;
@@ -1679,6 +1696,11 @@ export interface components {
              */
             project_id: string;
             /**
+             * Storage Available
+             * @default false
+             */
+            storage_available: boolean;
+            /**
              * View Authority
              * @default READ_ONLY_METADATA
              * @constant
@@ -1899,6 +1921,148 @@ export interface components {
             kind: "PLAN" | "APPROVAL";
             /** Task Id */
             task_id: string | null;
+        };
+        /** StorageCapacity */
+        StorageCapacity: {
+            /** Available Bytes */
+            available_bytes?: number | null;
+            /** Reserved Bytes */
+            reserved_bytes?: number | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "OBSERVED" | "UNKNOWN";
+            /** Total Bytes */
+            total_bytes?: number | null;
+            /** Used Bytes */
+            used_bytes?: number | null;
+            /** Used Percent */
+            used_percent?: number | null;
+        };
+        /** StorageComponentStatus */
+        StorageComponentStatus: {
+            /** Basis */
+            basis: string;
+            /** Bytes */
+            bytes?: number | null;
+            /** Filesystem Share Percent */
+            filesystem_share_percent?: number | null;
+            /** Label */
+            label: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "OBSERVED" | "ESTIMATED" | "UNKNOWN";
+        };
+        /** StorageNotice */
+        StorageNotice: {
+            /** Code */
+            code: string;
+            /** Recommendation */
+            recommendation: string;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "INFO" | "WARNING" | "CRITICAL";
+        };
+        /** StorageStatus */
+        StorageStatus: {
+            /**
+             * Acceptance Authority
+             * @default NONE
+             * @constant
+             */
+            acceptance_authority: "NONE";
+            capacity?: components["schemas"]["StorageCapacity"] | null;
+            /**
+             * Cleanup Authority
+             * @default NONE
+             * @constant
+             */
+            cleanup_authority: "NONE";
+            /**
+             * Components
+             * @default []
+             */
+            components: components["schemas"]["StorageComponentStatus"][];
+            /**
+             * Next Check Seconds
+             * @default 60
+             */
+            next_check_seconds: number;
+            /** Notifications Enabled */
+            notifications_enabled?: boolean | null;
+            /** Observed At */
+            observed_at?: string | null;
+            /**
+             * Owner Id
+             * Format: uuid
+             */
+            owner_id: string;
+            /** Physical Snapshot Bytes */
+            physical_snapshot_bytes?: null;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * Qualification
+             * @default NOT_ASSESSED
+             * @constant
+             */
+            qualification: "NOT_ASSESSED";
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "not_configured" | "disabled" | "collecting" | "ready" | "configuration_changed" | "probe_unavailable" | "probe_deadline_exceeded" | "closed";
+            /**
+             * Sample Interval Seconds
+             * @default 300
+             */
+            sample_interval_seconds: number;
+            /**
+             * Schema Version
+             * @default 1
+             * @constant
+             */
+            schema_version: 1;
+            /**
+             * Scope
+             * @default OWNER_HOST_METADATA_NOT_PROJECT_ATTRIBUTION
+             * @constant
+             */
+            scope: "OWNER_HOST_METADATA_NOT_PROJECT_ATTRIBUTION";
+            /**
+             * Source
+             * @default UNPRIVILEGED_LOCAL_READ_ONLY
+             * @constant
+             */
+            source: "UNPRIVILEGED_LOCAL_READ_ONLY";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "NOT_CONFIGURED" | "DISABLED" | "COLLECTING" | "OBSERVED" | "UNAVAILABLE" | "STALLED";
+            /** Timeshift Schedules */
+            timeshift_schedules?: {
+                [key: string]: boolean | null;
+            } | null;
+            /**
+             * Timeshift Status
+             * @default NOT_REQUESTED
+             * @enum {string}
+             */
+            timeshift_status: "OBSERVED" | "UNKNOWN" | "NOT_REQUESTED";
+            /**
+             * Warnings
+             * @default []
+             */
+            warnings: components["schemas"]["StorageNotice"][];
         };
         /** StoredPlan */
         StoredPlan: {
@@ -2165,6 +2329,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    storage_status_v1_activity_storage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StorageStatus"];
                 };
             };
         };

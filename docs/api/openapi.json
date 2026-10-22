@@ -2516,6 +2516,11 @@
             "title": "Project Id",
             "type": "string"
           },
+          "storage_available": {
+            "default": false,
+            "title": "Storage Available",
+            "type": "boolean"
+          },
           "view_authority": {
             "const": "READ_ONLY_METADATA",
             "default": "READ_ONLY_METADATA",
@@ -2949,6 +2954,366 @@
           "expired"
         ],
         "title": "ReviewInboxEntry",
+        "type": "object"
+      },
+      "StorageCapacity": {
+        "additionalProperties": false,
+        "properties": {
+          "available_bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Available Bytes"
+          },
+          "reserved_bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reserved Bytes"
+          },
+          "status": {
+            "enum": [
+              "OBSERVED",
+              "UNKNOWN"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "total_bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Bytes"
+          },
+          "used_bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Used Bytes"
+          },
+          "used_percent": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Used Percent"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "StorageCapacity",
+        "type": "object"
+      },
+      "StorageComponentStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "pattern": "^[A-Z_]{1,64}$",
+            "title": "Basis",
+            "type": "string"
+          },
+          "bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bytes"
+          },
+          "filesystem_share_percent": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filesystem Share Percent"
+          },
+          "label": {
+            "pattern": "^[a-zA-Z0-9_-]{1,48}$",
+            "title": "Label",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "OBSERVED",
+              "ESTIMATED",
+              "UNKNOWN"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "status",
+          "basis"
+        ],
+        "title": "StorageComponentStatus",
+        "type": "object"
+      },
+      "StorageNotice": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^[a-zA-Z0-9_-]{1,80}$",
+            "title": "Code",
+            "type": "string"
+          },
+          "recommendation": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Recommendation",
+            "type": "string"
+          },
+          "severity": {
+            "enum": [
+              "INFO",
+              "WARNING",
+              "CRITICAL"
+            ],
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "severity",
+          "recommendation"
+        ],
+        "title": "StorageNotice",
+        "type": "object"
+      },
+      "StorageStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "acceptance_authority": {
+            "const": "NONE",
+            "default": "NONE",
+            "title": "Acceptance Authority",
+            "type": "string"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StorageCapacity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cleanup_authority": {
+            "const": "NONE",
+            "default": "NONE",
+            "title": "Cleanup Authority",
+            "type": "string"
+          },
+          "components": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/StorageComponentStatus"
+            },
+            "maxItems": 12,
+            "title": "Components",
+            "type": "array"
+          },
+          "next_check_seconds": {
+            "default": 60,
+            "maximum": 86400.0,
+            "minimum": 1.0,
+            "title": "Next Check Seconds",
+            "type": "integer"
+          },
+          "notifications_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notifications Enabled"
+          },
+          "observed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed At"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "physical_snapshot_bytes": {
+            "title": "Physical Snapshot Bytes",
+            "type": "null"
+          },
+          "project_id": {
+            "format": "uuid",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "qualification": {
+            "const": "NOT_ASSESSED",
+            "default": "NOT_ASSESSED",
+            "title": "Qualification",
+            "type": "string"
+          },
+          "reason": {
+            "enum": [
+              "not_configured",
+              "disabled",
+              "collecting",
+              "ready",
+              "configuration_changed",
+              "probe_unavailable",
+              "probe_deadline_exceeded",
+              "closed"
+            ],
+            "title": "Reason",
+            "type": "string"
+          },
+          "sample_interval_seconds": {
+            "default": 300,
+            "maximum": 86400.0,
+            "minimum": 60.0,
+            "title": "Sample Interval Seconds",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "scope": {
+            "const": "OWNER_HOST_METADATA_NOT_PROJECT_ATTRIBUTION",
+            "default": "OWNER_HOST_METADATA_NOT_PROJECT_ATTRIBUTION",
+            "title": "Scope",
+            "type": "string"
+          },
+          "source": {
+            "const": "UNPRIVILEGED_LOCAL_READ_ONLY",
+            "default": "UNPRIVILEGED_LOCAL_READ_ONLY",
+            "title": "Source",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "NOT_CONFIGURED",
+              "DISABLED",
+              "COLLECTING",
+              "OBSERVED",
+              "UNAVAILABLE",
+              "STALLED"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "timeshift_schedules": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "propertyNames": {
+                  "enum": [
+                    "hourly",
+                    "daily",
+                    "weekly",
+                    "monthly",
+                    "boot"
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timeshift Schedules"
+          },
+          "timeshift_status": {
+            "default": "NOT_REQUESTED",
+            "enum": [
+              "OBSERVED",
+              "UNKNOWN",
+              "NOT_REQUESTED"
+            ],
+            "title": "Timeshift Status",
+            "type": "string"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/StorageNotice"
+            },
+            "maxItems": 32,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "owner_id",
+          "project_id",
+          "state",
+          "reason"
+        ],
+        "title": "StorageStatus",
         "type": "object"
       },
       "StoredPlan": {
@@ -3441,6 +3806,24 @@
           }
         },
         "summary": "Reviews"
+      }
+    },
+    "/v1/activity/storage": {
+      "get": {
+        "operationId": "storage_status_v1_activity_storage_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Storage Status"
       }
     },
     "/v1/approvals": {

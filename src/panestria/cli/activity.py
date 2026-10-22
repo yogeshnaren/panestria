@@ -91,12 +91,18 @@ def initialize(
 
 
 @activity_app.command("serve")
-def serve(config: Annotated[Path, typer.Option("--config")]) -> None:
+def serve(
+    config: Annotated[Path, typer.Option("--config")],
+    storage_config: Annotated[Path | None, typer.Option("--storage-config")] = None,
+) -> None:
     """Run a loopback metadata server in this terminal; Ctrl+C stops it."""
     from panestria.api.activity_server import serve_activity
 
     try:
-        serve_activity(config)
+        if storage_config is None:
+            serve_activity(config)
+        else:
+            serve_activity(config, storage_config=storage_config)
         return
     except (LocalApplicationRejected, ProfileRejected) as exc:
         code = exc.code
