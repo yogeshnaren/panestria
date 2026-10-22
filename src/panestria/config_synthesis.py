@@ -17,6 +17,7 @@ class SynthesisSettings(BaseModel):
     root: Path
     model_cache: Path
     runtime_directory: Path
+    model_manifest_file: Path | None = None
 
 
 def load_synthesis_settings(path: Path, *, need_model: bool = True) -> SynthesisSettings:
