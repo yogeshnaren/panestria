@@ -125,6 +125,28 @@ whose live cases remain excluded from default CI. No test, assertion, mark,
 timeout or required check is removed or weakened. Full exact-head CI remains
 required; this adjustment does not qualify a release gate.
 
+## Hosted Ubuntu mirror stall
+
+The next exact-head run
+[39825157362](https://github.com/yogeshnaren/panestria/actions/runs/39825157362)
+on PR182 head ca30b02 reached the unchanged job deadline after browser dependency
+setup. Its original platform log reports **22.3 MB in 12min 3s (30.8 kB/s)** from
+`http://azure.archive.ubuntu.com/ubuntu`; browser downloads then finished in
+seconds. The four other lanes passed. Original available reports/logs are
+preserved separately as TIMED_OUT_NOT_PROMOTED. A single failed-job retry was
+started, without repeating passing lanes or changing source.
+
+The platform runner now substitutes `https://archive.ubuntu.com/ubuntu` for that
+specific HTTP mirror endpoint in its ephemeral `/etc/apt/apt-mirrors.txt`. Other
+entries, APT signed repository checks, package selection, Playwright `--with-deps`,
+all tests, six checks and the 15-minute job deadline remain intact. An image
+without that endpoint keeps its existing entries; a missing mirror-list file
+fails visibly. This changes no owner workstation/backup/driver configuration.
+The actual hosted workflow must validate this change before any speed claim.
+Ubuntu documents [APT repository configuration](https://ubuntu.com/server/docs/how-to/software/package-management/).
+No third-party source code is copied; this is one official repository-origin
+configuration change, based on the actual download log.
+
 ## Reproduce
 
 ```bash
