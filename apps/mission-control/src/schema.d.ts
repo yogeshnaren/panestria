@@ -1463,7 +1463,27 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Approval Id */
+                    approval_id: string;
+                    /**
+                     * Decision
+                     * @enum {string}
+                     */
+                    decision: "approve" | "deny";
+                    /** Effect Digest */
+                    effect_digest: string;
+                    /** Expected Version */
+                    expected_version: number;
+                    /** Idempotency Key */
+                    idempotency_key: string;
+                    /** Review Sha256 */
+                    review_sha256: string;
+                };
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {

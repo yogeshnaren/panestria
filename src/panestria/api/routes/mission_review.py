@@ -36,7 +36,16 @@ async def read_review(goal_id: str, request: Request) -> JSONResponse:
     return await run_database(_review, request, goal_id, None)
 
 
-@router.post("/v1/mission/goals/{goal_id}/build-review/decision", responses={200: {"model": BuildReviewReceipt}})
+@router.post(
+    "/v1/mission/goals/{goal_id}/build-review/decision",
+    responses={200: {"model": BuildReviewReceipt}},
+    openapi_extra={
+        "requestBody": {
+            "required": True,
+            "content": {"application/json": {"schema": BuildReviewDecision.model_json_schema()}},
+        }
+    },
+)
 async def decide_review(goal_id: str, request: Request) -> JSONResponse:
     raw = await read_capped_body(request)
     if isinstance(raw, JSONResponse):
@@ -57,7 +66,11 @@ def _review(request: Request, goal: str, document: BuildReviewDecision | None) -
     try:
         api = _api(request)
         actor = authorize(request, api)
-        if str(UUID(goal)) != goal:
+        try:
+            valid_goal = str(UUID(goal)) == goal
+        except ValueError:
+            valid_goal = False
+        if not valid_goal:
             raise KernelDenied("not_found")
         service = getattr(request.app.state, "build_review", None)
         if not isinstance(service, BuildReviewService):

@@ -15,6 +15,8 @@ try {
  const section=page.getByRole('region',{name:'Exact Build review'});
  await section.getByRole('button',{name:'Review exact merge request',exact:true}).click();
  await expect(section.getByLabel('Protected diff')).toContainText('+value = 43');
+ await expect(section.getByLabel('Protected diff')).toContainText('<img src=x onerror=');
+ assert.equal(await page.title(),'Panestria Mission Control');
  await expect(section).toContainText('approval PENDING');
  await expect(section.getByLabel('Canonical merge preview')).toContainText('refs/heads/main@');
  const input=section.getByLabel('Type the exact effect digest to confirm this preview');

@@ -6,6 +6,7 @@ No worker, certificate, native profile or effect executor is loaded here.
 import json
 import os
 import re
+import time
 from functools import partial
 from pathlib import Path
 
@@ -89,7 +90,7 @@ class BuildReviewService:
         repository = self.root / "protected" / actor.owner_id / actor.project_id / "destination.git"
         if repository.resolve() != repository or not repository.is_dir():
             raise KernelDenied("build_review_repository_unavailable")
-        git = partial(protected_git, repository, limit=65536)
+        git = partial(protected_git, repository, limit=65536, deadline=time.monotonic() + 3)
         if git(("rev-parse", "--is-bare-repository")).strip() != b"true":
             raise KernelDenied("build_review_repository_unavailable")
         if (

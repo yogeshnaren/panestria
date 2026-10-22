@@ -151,6 +151,7 @@ def test_scoped_exact_preview_fences_and_denial_have_no_dispatch(native_plan, tm
 
 
 def test_physical_browser_review_offline_consent_and_existing_exact_merge(native_plan, tmp_path, record_property):
+    native_plan[3]["note_text"] = "<img src=x onerror=\"document.title='unsafe'\">"
     owner, plan, path, config, token = evidence_case(native_plan, tmp_path)
     record_property(
         "candidate_commit", subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()

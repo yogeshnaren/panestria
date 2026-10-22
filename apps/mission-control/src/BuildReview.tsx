@@ -1,8 +1,9 @@
 import {useEffect,useRef,useState, type FormEvent} from 'react';
-import type {components} from './schema';
+import type {components, operations} from './schema';
 import {Denied,json} from './client';
 type Review = components['schemas']['BuildReview'];
 type Receipt = components['schemas']['BuildReviewReceipt'];
+type Decision = operations['decide_review_v1_mission_goals__goal_id__build_review_decision_post']['requestBody']['content']['application/json'];
 export function BuildReview({goal,owner,project,csrf,deny}:{goal:string,owner:string,project:string,csrf:string|null,deny:()=>void}) {
   const [open,setOpen]=useState(false), [view,setView]=useState<Review|null>(null);
   const [digest,setDigest]=useState(''), [confirm,setConfirm]=useState(false), [busy,setBusy]=useState(false);
@@ -43,10 +44,11 @@ export function BuildReview({goal,owner,project,csrf,deny}:{goal:string,owner:st
     event.preventDefault();if(!canDecide || !view || !csrf || busy)return;
     setBusy(true);setConfirm(false);
     try {
-      const receipt=await json<Receipt>(`/v1/mission/goals/${goal}/build-review/decision`,lifetime.current!.signal,{
+      const body:Decision={
         approval_id:view.approval_id,effect_digest:view.effect_digest,expected_version:view.expected_version,
         review_sha256:view.review_sha256,decision,idempotency_key:crypto.randomUUID()
-      },csrf);
+      };
+      const receipt=await json<Receipt>(`/v1/mission/goals/${goal}/build-review/decision`,lifetime.current!.signal,body,csrf);
       if(lifetime.current!.signal.aborted)return;
       if(receipt.approval_id!==view.approval_id || receipt.effect_digest!==view.effect_digest ||
         receipt.state!==(decision==='approve'?'APPROVED':'DENIED') || receipt.dispatch_authority!=='NONE')
