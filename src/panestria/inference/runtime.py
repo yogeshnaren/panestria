@@ -15,6 +15,7 @@ from typing import Any
 from uuid import uuid4
 
 from panestria.contracts.inference import InferenceUnavailable
+from panestria.contracts.model_manifest import ModelManifest
 from panestria.inference import process_memory
 from panestria.resources.primary import PrimaryLease
 
@@ -282,6 +283,13 @@ class ModelRuntime:
         self.id = None
         self.socket_path.unlink(missing_ok=True)
         self.primary.release()
+
+    def describe_manifest(self) -> ModelManifest:
+        from panestria.inference.manifest import describe_cpu_model
+
+        if self.id is None or not self.effective or self.gpu:
+            raise InferenceUnavailable("model_manifest_runtime_unavailable")
+        return describe_cpu_model(self.models)
 
     def process_memory(self) -> dict[str, Any]:
         """Observe RSS/PSS only inside this running, private model PID namespace.

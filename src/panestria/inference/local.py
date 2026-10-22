@@ -15,6 +15,7 @@ from typing import Any
 import httpx2 as httpx
 
 from panestria.contracts.inference import InferenceRequest, InferenceResult, InferenceUnavailable, Usage
+from panestria.contracts.model_manifest import ModelManifest
 from panestria.inference.runtime import MODEL, MODEL_DIGEST
 from panestria.telemetry.tracing import metadata_span
 
@@ -36,6 +37,42 @@ class LocalProvider:
         if type(json_output) is not bool:
             raise ValueError("invalid_local_output_format")
         self.json_output = json_output
+        self._manifest: ModelManifest | None = None
+
+    @property
+    def model_manifest(self) -> ModelManifest | None:
+        return self._manifest
+
+    def bind_manifest(self, manifest: ModelManifest) -> None:
+        """One-time startup binding; never replace a running provider in place."""
+        if not self.capacity.acquire(blocking=False):
+            raise InferenceUnavailable("model_busy")
+        try:
+            manifest = ModelManifest.model_validate_json(manifest.model_dump_json())
+            if (
+                self._manifest is not None or self.gpu or self.json_output
+                or manifest.model_ref != MODEL or manifest.tools
+            ):
+                raise InferenceUnavailable("model_manifest_not_supported")
+            if manifest.model_bundle_sha256 != MODEL_DIGEST:
+                raise InferenceUnavailable("model_manifest_not_supported")
+            self._manifest = manifest
+        finally:
+            self.capacity.release()
+
+    def _require_manifest(self, request: InferenceRequest) -> str | None:
+        manifest = self._manifest
+        if manifest is None:
+            if request.model_manifest_sha256 is not None:
+                raise InferenceUnavailable("model_manifest_mismatch")
+            return None
+        if (
+            request.model_manifest_sha256 != manifest.sha256()
+            or request.context_tokens > manifest.max_context_tokens
+            or self.gpu or self.json_output
+        ):
+            raise InferenceUnavailable("model_manifest_mismatch")
+        return manifest.sha256()
 
     def _client(self, deadline: float) -> httpx.AsyncClient:
         transport = self.transport or httpx.AsyncHTTPTransport(uds=str(self.socket_path), retries=0, trust_env=False)
@@ -90,6 +127,7 @@ class LocalProvider:
             raise InferenceUnavailable("classification_required")
         if len(request.prompt.encode()) + request.max_output_tokens + 128 > request.context_tokens:
             raise InferenceUnavailable("context_budget_exceeded")
+        binding = self._require_manifest(request)
         if not self.capacity.acquire(blocking=False):
             raise InferenceUnavailable("model_capacity")
         began, first = time.monotonic(), None
@@ -165,6 +203,10 @@ class LocalProvider:
                     raise InferenceUnavailable("model_usage_invalid")
                 if counts[1] > request.max_output_tokens or counts[0] > request.context_tokens:
                     raise InferenceUnavailable("model_token_limit_exceeded")
+                # A changed controller configuration cannot publish a result for
+                # the prior exact manifest, even after the model has returned.
+                if self._require_manifest(request) != binding:
+                    raise InferenceUnavailable("model_manifest_mismatch")
                 eval_ns = terminal.get("eval_duration")
                 tps = counts[1] * 1e9 / eval_ns if type(eval_ns) is int and eval_ns > 0 else None
                 yield InferenceResult(
@@ -175,6 +217,7 @@ class LocalProvider:
                     first,
                     finish_reason=terminal["done_reason"],
                     decode_tokens_per_second=tps,
+                    model_manifest_sha256=binding,
                 )
         except (TimeoutError, httpx.HTTPError):
             raise InferenceUnavailable("model_timeout_or_response_unknown") from None

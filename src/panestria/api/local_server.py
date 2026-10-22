@@ -96,6 +96,7 @@ def build_local_app(
         probe.collect_cpu,
         include_charter=config.assistant_charter,
         lossless_presentation=config.lossless_presentation,
+        pin_model_manifest=config.pin_model_manifest,
     )
     app = create_app(settings, default_readiness_probe)
     # Scope without exposing unrelated synthetic goal/merge/tool routes.
@@ -138,6 +139,9 @@ def build_local_app(
             if admission.decision != "PERMIT":
                 raise InferenceUnavailable(admission.reasons[0])
             await asyncio.to_thread(model.start)
+            if config.pin_model_manifest:
+                descriptor = await asyncio.to_thread(model.describe_manifest)
+                provider.bind_manifest(descriptor)
             async with base_lifespan(application):
                 yield
         except (KernelDenied, InferenceUnavailable, LocalApplicationRejected) as exc:
@@ -182,6 +186,8 @@ def build_local_app(
                     "profiles": "DISABLED" if profiles is None else "EXPLICITLY_ENABLED",
                     "assistant_charter": "SHARED_DATA_FREE_V1" if config.assistant_charter else "LEGACY_CONTEXT",
                     "lossless_presentation": "STRUCTURED_PROFILE_ONLY" if config.lossless_presentation else "DISABLED",
+                    "model_manifest": provider.model_manifest.model_dump(mode="json")
+                    if config.pin_model_manifest and provider.model_manifest is not None else None,
                     "cloud_routes": "UNMOUNTED",
                     "resource_headroom": "rechecked_per_inference",
                     "release_gate": "NOT_EVALUATED",

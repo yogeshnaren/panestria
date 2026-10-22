@@ -476,6 +476,16 @@
             "title": "Context Pack Id",
             "type": "string"
           },
+          "model_manifest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelManifest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "model_ref": {
             "title": "Model Ref",
             "type": "string"
@@ -658,6 +668,16 @@
           "context_pack_id": {
             "title": "Context Pack Id",
             "type": "string"
+          },
+          "model_manifest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelManifest"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "model_ref": {
             "title": "Model Ref",
@@ -1633,6 +1653,167 @@
           "build_review_enabled"
         ],
         "title": "MissionCapabilities",
+        "type": "object"
+      },
+      "ModelManifest": {
+        "additionalProperties": false,
+        "properties": {
+          "bridge_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Bridge Sha256",
+            "type": "string"
+          },
+          "capacity_ref": {
+            "const": "LOCAL_PRIMARY_2CPU_2560MIB_FOREGROUND_RECHECK_V1",
+            "default": "LOCAL_PRIMARY_2CPU_2560MIB_FOREGROUND_RECHECK_V1",
+            "title": "Capacity Ref",
+            "type": "string"
+          },
+          "engine_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Engine Sha256",
+            "type": "string"
+          },
+          "evaluation": {
+            "const": "NOT_EVALUATED",
+            "default": "NOT_EVALUATED",
+            "title": "Evaluation",
+            "type": "string"
+          },
+          "generation": {
+            "const": "TEMPERATURE_0_SEED_7_THREADS_2_V1",
+            "default": "TEMPERATURE_0_SEED_7_THREADS_2_V1",
+            "title": "Generation",
+            "type": "string"
+          },
+          "libraries_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Libraries Sha256",
+            "type": "string"
+          },
+          "license_refs": {
+            "items": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "License Refs",
+            "type": "array"
+          },
+          "max_context_tokens": {
+            "default": 4096,
+            "maximum": 4096.0,
+            "minimum": 512.0,
+            "title": "Max Context Tokens",
+            "type": "integer"
+          },
+          "modalities": {
+            "default": [
+              "TEXT"
+            ],
+            "maxItems": 1,
+            "minItems": 1,
+            "prefixItems": [
+              {
+                "const": "TEXT",
+                "type": "string"
+              }
+            ],
+            "title": "Modalities",
+            "type": "array"
+          },
+          "model_bundle_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Model Bundle Sha256",
+            "type": "string"
+          },
+          "model_ref": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Model Ref",
+            "type": "string"
+          },
+          "quantization": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Quantization",
+            "type": "string"
+          },
+          "runtime_image": {
+            "pattern": "^[a-z0-9]+@sha256:[0-9a-f]{64}$",
+            "title": "Runtime Image",
+            "type": "string"
+          },
+          "runtime_profile": {
+            "const": "CPU_RAW_TEXT_V1",
+            "default": "CPU_RAW_TEXT_V1",
+            "title": "Runtime Profile",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "system_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "System Sha256",
+            "type": "string"
+          },
+          "template_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Template Sha256",
+            "type": "string"
+          },
+          "token_bound": {
+            "const": "UTF8_BYTES_WITH_OUTPUT_RESERVE_V1",
+            "default": "UTF8_BYTES_WITH_OUTPUT_RESERVE_V1",
+            "title": "Token Bound",
+            "type": "string"
+          },
+          "tokenizer_container_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Tokenizer Container Sha256",
+            "type": "string"
+          },
+          "tokenizer_identity": {
+            "const": "GGUF_CONTAINER_NOT_SEPARATELY_EXTRACTED",
+            "default": "GGUF_CONTAINER_NOT_SEPARATELY_EXTRACTED",
+            "title": "Tokenizer Identity",
+            "type": "string"
+          },
+          "tools": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 16,
+            "title": "Tools",
+            "type": "array"
+          },
+          "weights_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Weights Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_ref",
+          "model_bundle_sha256",
+          "weights_sha256",
+          "tokenizer_container_sha256",
+          "template_sha256",
+          "system_sha256",
+          "quantization",
+          "runtime_image",
+          "engine_sha256",
+          "libraries_sha256",
+          "bridge_sha256",
+          "license_refs"
+        ],
+        "title": "ModelManifest",
         "type": "object"
       },
       "PendingApproval": {

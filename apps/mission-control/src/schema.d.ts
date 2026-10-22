@@ -830,6 +830,7 @@ export interface components {
             code: string | null;
             /** Context Pack Id */
             context_pack_id: string;
+            model_manifest?: components["schemas"]["ModelManifest"] | null;
             /** Model Ref */
             model_ref: string;
             /**
@@ -896,6 +897,7 @@ export interface components {
             code: string | null;
             /** Context Pack Id */
             context_pack_id: string;
+            model_manifest?: components["schemas"]["ModelManifest"] | null;
             /** Model Ref */
             model_ref: string;
             /**
@@ -1324,6 +1326,94 @@ export interface components {
              * @default false
              */
             research_intake_enabled: boolean;
+        };
+        /** ModelManifest */
+        ModelManifest: {
+            /** Bridge Sha256 */
+            bridge_sha256: string;
+            /**
+             * Capacity Ref
+             * @default LOCAL_PRIMARY_2CPU_2560MIB_FOREGROUND_RECHECK_V1
+             * @constant
+             */
+            capacity_ref: "LOCAL_PRIMARY_2CPU_2560MIB_FOREGROUND_RECHECK_V1";
+            /** Engine Sha256 */
+            engine_sha256: string;
+            /**
+             * Evaluation
+             * @default NOT_EVALUATED
+             * @constant
+             */
+            evaluation: "NOT_EVALUATED";
+            /**
+             * Generation
+             * @default TEMPERATURE_0_SEED_7_THREADS_2_V1
+             * @constant
+             */
+            generation: "TEMPERATURE_0_SEED_7_THREADS_2_V1";
+            /** Libraries Sha256 */
+            libraries_sha256: string;
+            /** License Refs */
+            license_refs: string[];
+            /**
+             * Max Context Tokens
+             * @default 4096
+             */
+            max_context_tokens: number;
+            /**
+             * Modalities
+             * @default [
+             *       "TEXT"
+             *     ]
+             */
+            modalities: [
+                "TEXT"
+            ];
+            /** Model Bundle Sha256 */
+            model_bundle_sha256: string;
+            /** Model Ref */
+            model_ref: string;
+            /** Quantization */
+            quantization: string;
+            /** Runtime Image */
+            runtime_image: string;
+            /**
+             * Runtime Profile
+             * @default CPU_RAW_TEXT_V1
+             * @constant
+             */
+            runtime_profile: "CPU_RAW_TEXT_V1";
+            /**
+             * Schema Version
+             * @default 1
+             * @constant
+             */
+            schema_version: 1;
+            /** System Sha256 */
+            system_sha256: string;
+            /** Template Sha256 */
+            template_sha256: string;
+            /**
+             * Token Bound
+             * @default UTF8_BYTES_WITH_OUTPUT_RESERVE_V1
+             * @constant
+             */
+            token_bound: "UTF8_BYTES_WITH_OUTPUT_RESERVE_V1";
+            /** Tokenizer Container Sha256 */
+            tokenizer_container_sha256: string;
+            /**
+             * Tokenizer Identity
+             * @default GGUF_CONTAINER_NOT_SEPARATELY_EXTRACTED
+             * @constant
+             */
+            tokenizer_identity: "GGUF_CONTAINER_NOT_SEPARATELY_EXTRACTED";
+            /**
+             * Tools
+             * @default []
+             */
+            tools: string[];
+            /** Weights Sha256 */
+            weights_sha256: string;
         };
         /** PendingApproval */
         PendingApproval: {

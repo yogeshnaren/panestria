@@ -12,6 +12,7 @@ from pydantic import ValidationError
 from panestria.contracts.ask import AskSubmission, ProfileAskSubmission
 from panestria.contracts.inference import InferenceRequest, InferenceResult
 from panestria.contracts.learning import ExposureObservation, Observation, RouteCandidate
+from panestria.contracts.model_manifest import ModelManifest
 from panestria.contracts.policy import PolicyRequest
 from panestria.contracts.style import PresentationObservation
 from panestria.kernel.errors import KernelDenied
@@ -34,12 +35,19 @@ class PreparedAsk:
     inference: InferenceRequest
     policy_ref: str
     profile: ProfileSelection | None = None
+    model_manifest: ModelManifest | None = None
 
 
 class AskService:
-    def __init__(self, *, profile_context: ProfileContext | None = None, include_charter: bool = False) -> None:
+    def __init__(
+        self, *, profile_context: ProfileContext | None = None, include_charter: bool = False,
+        model_manifest: ModelManifest | None = None,
+    ) -> None:
         self.compiler = ContextCompiler(include_charter=include_charter)
         self.profile_context = profile_context
+        self.model_manifest = (
+            ModelManifest.model_validate_json(model_manifest.model_dump_json()) if model_manifest is not None else None
+        )
 
     def prepare(self, uow: UnitOfWork, actor: Actor, submission: AskSubmission) -> PreparedAsk:
         if isinstance(submission, ProfileAskSubmission):
@@ -51,6 +59,11 @@ class AskService:
                 raise KernelDenied("invalid_profile_ask") from None
         if submission.project_id != actor.project_id:
             raise KernelDenied("not_found")
+        if self.model_manifest is not None and (
+            self.model_manifest.model_ref != STEWARD.model_ref
+            or submission.context_tokens > self.model_manifest.max_context_tokens
+        ):
+            raise KernelDenied("model_manifest_incompatible")
         ref = active_policy_ref(uow, actor.owner_id, actor.project_id)
         if ref is None:
             raise KernelDenied("policy_unconfigured")
@@ -100,6 +113,7 @@ class AskService:
             submission.question,
             submission.privacy_label,
             token_budget=token_budget,
+            model_manifest=self.model_manifest,
         )
         decision = PolicyEngine().authorize(
             PolicyRequest(
@@ -127,6 +141,7 @@ class AskService:
             max_output_tokens=submission.max_output_tokens,
             deadline_seconds=submission.deadline_seconds,
             trace_id=trace,
+            model_manifest_sha256=self.model_manifest.sha256() if self.model_manifest is not None else None,
         )
         uow.execute(
             "INSERT INTO panestria.ask_request"
@@ -195,7 +210,7 @@ class AskService:
                     }
                 ),
             )
-        return PreparedAsk(submission, pack, inference, ref, selection)
+        return PreparedAsk(submission, pack, inference, ref, selection, self.model_manifest)
 
     def claim(self, uow: UnitOfWork, actor: Actor, prepared: PreparedAsk) -> InferenceRequest:
         require_current_policy(uow, actor, prepared.policy_ref)
@@ -214,6 +229,15 @@ class AskService:
             raise KernelDenied("context_integrity_failed")
         if prepared.inference.offline is not True:
             raise KernelDenied("context_integrity_failed")
+        retained = self.compiler.model_manifest(uow, actor, prepared.context.id)
+        expected = retained.sha256() if retained is not None else None
+        if retained != prepared.model_manifest or prepared.inference.model_manifest_sha256 != expected:
+            raise KernelDenied("model_manifest_mismatch")
+        if (
+            retained is not None and self.model_manifest is not None
+            and not retained.context_compatible(self.model_manifest)
+        ):
+            raise KernelDenied("model_manifest_incompatible")
         if isinstance(prepared.submission, ProfileAskSubmission) != (prepared.profile is not None):
             raise KernelDenied("profile_context_integrity_failed")
         require_binding(uow, actor, prepared.submission.request_id, prepared.context, prepared.profile)
@@ -271,7 +295,8 @@ class AskService:
         presentation: PresentationObservation | None = None,
     ) -> None:
         row = uow.execute(
-            "SELECT state,model_ref,deadline_at>clock_timestamp(),response_digest_mode FROM panestria.ask_request"
+            "SELECT state,model_ref,deadline_at>clock_timestamp(),response_digest_mode,context_pack_id::text"
+            " FROM panestria.ask_request"
             " WHERE id=%s AND owner_id=%s AND project_id=%s FOR UPDATE",
             (request_id, actor.owner_id, actor.project_id),
         ).fetchone()
@@ -279,6 +304,9 @@ class AskService:
             raise KernelDenied("not_found")
         if row[0] != "RUNNING" or row[1] != result.model_ref or not row[2]:
             raise KernelDenied("ask_not_admissible")
+        retained = self.compiler.model_manifest(uow, actor, row[4])
+        if result.model_manifest_sha256 != (retained.sha256() if retained is not None else None):
+            raise KernelDenied("model_manifest_mismatch")
         metadata: dict[str, object] = {
             "input_tokens": result.usage.input_tokens,
             "output_tokens": result.usage.output_tokens,
@@ -288,6 +316,8 @@ class AskService:
             "finish_reason": result.finish_reason,
             "cash_actual_microusd": result.usage.cash_actual_microusd,
         }
+        if retained is not None:
+            metadata["model_manifest_sha256"] = retained.sha256()
         if presentation is not None:
             purpose = uow.execute(
                 "SELECT request_body->>'purpose' FROM panestria.ask_profile_context"
@@ -354,6 +384,9 @@ class AskService:
             "response_retained": False,
             "offline": True,
         }
+        retained = self.compiler.model_manifest(uow, actor, row[2])
+        if retained is not None:
+            receipt["model_manifest"] = retained.model_dump(mode="json")
         if row[9] == "OMITTED_RESTRICTED_PROFILE":
             receipt["response_digest_mode"] = row[9]
             profile = uow.execute(

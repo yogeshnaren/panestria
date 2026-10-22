@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "component": "PINNED_LOCAL_CPU_MODEL_MANIFEST",
+  "status": "IMPLEMENTED_SUPPORTED_ASK_PATH_WITH_SOURCE_BOUND_CHECKS",
+  "observations": [
+    {
+      "source_commit": "b1e892fb08505fe8573991d8023044b4ff407305",
+      "source_tree": "a6378febee0e8ff76051b445c97945a787da44b4",
+      "report": "connected.xml",
+      "sha256": "30acaacfa70fa909384e19eb50a4d0ea9c580eca2b714efeaa331516e1cd0ece",
+      "results": {
+        "tests": "28",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "22.685"
+      },
+      "properties": {
+        "mode": "ACTUAL_PG_CRYPTO_HTTP__EXPLICIT_LOCAL_PROVIDER_KEY_CAPACITY_FIXTURES__NO_EXTRA_INFERENCE",
+        "candidate_commit": "b1e892fb08505fe8573991d8023044b4ff407305",
+        "fixture_digest": "30ca7b62b4f96507cd5533d98aea1142f3bd7ee9e11df5f82ec10dfdf859645e",
+        "worktree_state": "clean",
+        "lane": "contract",
+        "gate_case_id": "AOS-005-TC01",
+        "source_clauses": "AOS-016-F03,AOS-016-AC03",
+        "execution_mode": "HERMETIC"
+      },
+      "notes": "28 connected/default cases PASS; one optional live case deselected. Real PG/crypto/config/HTTP, declared provider/process/runtime/capacity fixtures. Legacy Ask/provider/charter/presentation and exact OpenAPI checks included."
+    },
+    {
+      "source_commit": "b1e892fb08505fe8573991d8023044b4ff407305",
+      "source_tree": "a6378febee0e8ff76051b445c97945a787da44b4",
+      "report": "actual-cpu.xml",
+      "sha256": "2839561ff530ea827a62753464e84d29a19af8b9c84bdea512e1f8b7c177df11",
+      "results": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "14.494"
+      },
+      "properties": {
+        "model_elapsed_seconds": "3.1550526119826827",
+        "model_input_tokens": "97",
+        "model_output_tokens": "2",
+        "candidate_commit": "b1e892fb08505fe8573991d8023044b4ff407305",
+        "execution_mode": "ACTUAL_CACHED_CPU_DOCKER_UDS_PG_ASGI__NO_PHYSICAL_TCP_OR_QUALITY_QUALIFICATION",
+        "model_calls": "1",
+        "release_gate": "NOT_EVALUATED"
+      },
+      "notes": "1 actual existing-cache CPU startup/hash/Unix-socket inference/PG/ASGI receipt/replay/owned-cleanup case PASS; no physical TCP or profile key-store/quality qualification."
+    }
+  ],
+  "outcomes": [
+    "Opt-in supported CPU/raw-text startup observes immutable model/runtime/artifact capabilities; defaults unchanged",
+    "Canonical immutable context stores public manifest; missing/tampered/different digest refuses claim/provider/completion",
+    "Incompatible tokenizer/template/tools/context rejects reconstruction; original context/memory/deadlines survive refusal and rollback",
+    "One-time provider binding cannot be replaced in place; receipt/replay preserves the original identity without another generation",
+    "Encrypted profile separation and restricted output-hash omission unchanged"
+  ],
+  "limits": [
+    "Tokenizer identity is the GGUF containing artifact, not independently extracted equivalence",
+    "Runtime/capacity/license refs are public identities/policy references, not factual/model/readability/fit/training-rights certificates",
+    "Actual case is one existing-cache CPU generation (97 input/2 output tokens;3.155s generation) over Unix socket with ASGI, not physical TCP/OS key store or latency distribution",
+    "Other local modes, broad new-work default replacement/rollback qualification and full TC07/TC08 remain; no embeddings/KV transfer/adaptive selection",
+    "No owner service/config/database/credential/cache change, model download, cloud/API inference or cumulative release/trial pass"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "ci": "Separate exact-head six-check CI required"
+}
