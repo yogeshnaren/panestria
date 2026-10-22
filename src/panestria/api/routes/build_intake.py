@@ -1,6 +1,7 @@
 """Opt-in local plan staging; same-transaction session, project and policy fences."""
 
 import asyncio
+from typing import Any
 
 import psycopg
 from fastapi import APIRouter, Request
@@ -21,7 +22,7 @@ _REJECTION_HEADER = {
     "description": "Present only after confirmed pre-commit rejection/rollback; absence preserves uncertainty.",
     "schema": {"type": "string", "enum": ["NOT_COMMITTED"]},
 }
-_FAILURE_RESPONSES = {
+_FAILURE_RESPONSES: dict[int | str, dict[str, Any]] = {
     409: {
         "description": "Canonical refusal; commit status is unknown unless explicitly marked.",
         "headers": {"X-Panestria-Mutation": _REJECTION_HEADER},
