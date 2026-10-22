@@ -23,6 +23,7 @@ from test_public_plan_submission import submission as submission  # noqa: F401
 from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.contracts.goal import contract_sha256
 from panestria.contracts.plan import PlanProposal, ProjectInventory
+from panestria.execution.build_intake import BuildIntakeService
 from panestria.kernel.approvals import ApprovalService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -144,13 +145,24 @@ def test_inbox_scope_paging_resolution_read_only_and_task_lock(submission, tmp_p
 
 @pytest.mark.parametrize("build", [PATHS], indirect=True)
 def test_actual_browser_discovers_plan_accepts_separately_and_refreshes_canonical_inbox(
-    submission, tmp_path, record_property
+    submission, tmp_path, monkeypatch, record_property
 ):
     b = submission[0]
     plans, approval = seed(submission)
     app, path, config, token = review_application(submission, tmp_path)
+    original, failed = BuildIntakeService.inspect, set()
+
+    def lose_reply(self, uow, actor, identifier):
+        value = original(self, uow, actor, identifier)
+        if value.plan.state == "ACCEPTED" and identifier not in failed:
+            failed.add(identifier)
+            raise OSError("synthetic committed acceptance reply lost")
+        return value
+
+    monkeypatch.setattr(BuildIntakeService, "inspect", lose_reply)
     record_property(
-        "mode", "ACTUAL_CHROMIUM_HTTP_PG_GIT_CLI_PAIRING__SEEDED_VERIFYING_TASK_AND_DECLARED_INVENTORY__NO_WORKER"
+        "mode",
+        "ACTUAL_CHROMIUM_HTTP_PG_GIT_CLI_PAIRING__SEEDED_VERIFYING_TASK_AND_DECLARED_INVENTORY__EXPLICIT_LOST_ACK__NO_WORKER",
     )
     server = uvicorn.Server(
         uvicorn.Config(
@@ -207,6 +219,7 @@ def test_actual_browser_discovers_plan_accepts_separately_and_refreshes_canonica
             timeout=45,
         )
         assert result.returncode == 0, result.stdout + result.stderr
+        assert failed == {plans[0].plan_id}
         with psycopg.connect(b.task["dsn"]) as db:
             assert db.execute(
                 "SELECT count(*) FROM panestria.build_plan_acceptance WHERE plan_id=%s", (plans[0].plan_id,)

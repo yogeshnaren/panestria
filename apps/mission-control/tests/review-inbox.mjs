@@ -12,7 +12,10 @@ try{
   const row=inbox.locator(`[data-review-id="${f.plan}"]`);await row.getByRole('button',{name:'Select plan for inspection',exact:true}).click();
   await expect(view.getByLabel('Recover staged plan by plan ID')).toHaveValue(f.plan);assert.equal(actions,0);
   await view.getByRole('button',{name:'Inspect staged plan',exact:true}).click();await expect(view.getByTestId('build-intake-plan-state')).toHaveText('PROPOSED');
-  await view.getByLabel('I reviewed the exact retained contract, checks, paths, DAG, inventory, budgets, digest and expiry.',{exact:false}).check();await view.getByRole('button',{name:'Accept exact plan',exact:true}).click();await expect(view.getByTestId('build-intake-plan-state')).toHaveText('ACCEPTED');assert.equal(actions,1);
+  await view.getByLabel('I reviewed the exact retained contract, checks, paths, DAG, inventory, budgets, digest and expiry.',{exact:false}).check();await view.getByRole('button',{name:'Accept exact plan',exact:true}).click();await expect(view.getByTestId('build-intake-notice')).toContainText('UNCONFIRMED acceptance');assert.equal(actions,1);
+  await inbox.locator(`[data-review-id="${f.other}"]`).getByRole('button',{name:'Select plan for inspection',exact:true}).click();
+  await expect(view.getByTestId('build-intake-notice')).toContainText('original pending plan ID');await expect(view.getByLabel('Recover staged plan by plan ID')).toHaveValue(f.plan);
+  await view.getByRole('button',{name:'Inspect staged plan',exact:true}).click();await expect(view.getByTestId('build-intake-plan-state')).toHaveText('ACCEPTED');assert.equal(actions,1);
   await inbox.getByRole('button',{name:'First page / refresh reviews',exact:true}).click();await expect(row).toHaveCount(0);await expect(inbox.locator('[data-review-id]')).toHaveCount(2);
   await page.screenshot({path:process.env.PANESTRIA_BROWSER_SCREENSHOT,fullPage:true});
   await context.setOffline(true);await inbox.getByRole('button',{name:'First page / refresh reviews',exact:true}).click();await expect(inbox.getByTestId('inbox-notice')).toContainText('UNCONFIRMED');await expect(inbox.locator('[data-review-id]')).toHaveCount(0);
