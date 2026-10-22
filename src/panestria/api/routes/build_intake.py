@@ -9,6 +9,7 @@ from pydantic import ValidationError
 
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body, reauthorize_mutation
 from panestria.api.db import DatabaseUnavailable, open_database
+from panestria.contracts.acceptance import ContractRejected
 from panestria.contracts.build_intake import BuildPlanAcceptance, BuildPlanStagingView, BuildPlanSubmission
 from panestria.execution.build_intake import BuildIntakeService
 from panestria.kernel.errors import KernelDenied
@@ -16,11 +17,33 @@ from panestria.kernel.repositories.policy import lock_project
 from panestria.kernel.uow import UnitOfWork
 
 router = APIRouter()
+_REJECTION_HEADER = {
+    "description": "Present only after confirmed pre-commit rejection/rollback; absence preserves uncertainty.",
+    "schema": {"type": "string", "enum": ["NOT_COMMITTED"]},
+}
+_FAILURE_RESPONSES = {
+    409: {
+        "description": "Canonical refusal; commit status is unknown unless explicitly marked.",
+        "headers": {"X-Panestria-Mutation": _REJECTION_HEADER},
+    },
+    422: {
+        "description": "Invalid document; only explicit NOT_COMMITTED permits correction without recovery.",
+        "headers": {"X-Panestria-Mutation": _REJECTION_HEADER},
+    },
+}
+
+
+def _failure(code: str, status: int, known_not_committed: bool = False) -> JSONResponse:
+    return JSONResponse(
+        status_code=status,
+        content=error_body(code),
+        headers={"X-Panestria-Mutation": "NOT_COMMITTED"} if known_not_committed else {},
+    )
 
 
 @router.post(
     "/v1/mission/build/plans",
-    responses={200: {"model": BuildPlanStagingView}},
+    responses={200: {"model": BuildPlanStagingView}, **_FAILURE_RESPONSES},
     openapi_extra={
         "requestBody": {
             "required": True,
@@ -35,7 +58,7 @@ async def stage_plan(request: Request) -> JSONResponse:
     try:
         body = BuildPlanSubmission.model_validate_json(raw)
     except ValidationError:
-        return JSONResponse(status_code=422, content=error_body("invalid_public_plan"))
+        return _failure("invalid_public_plan", 422, True)
     return await asyncio.to_thread(_operation, request, None, body)
 
 
@@ -46,7 +69,7 @@ async def inspect_plan(plan_id: str, request: Request) -> JSONResponse:
 
 @router.post(
     "/v1/mission/build/plans/{plan_id}/accept",
-    responses={200: {"model": BuildPlanStagingView}},
+    responses={200: {"model": BuildPlanStagingView}, **_FAILURE_RESPONSES},
     openapi_extra={
         "requestBody": {
             "required": True,
@@ -64,7 +87,7 @@ async def accept_plan(plan_id: str, request: Request) -> JSONResponse:
     try:
         body = BuildPlanAcceptance.model_validate_json(raw)
     except ValidationError:
-        return JSONResponse(status_code=422, content=error_body("invalid_plan_acceptance"))
+        return _failure("invalid_plan_acceptance", 422, True)
     return await asyncio.to_thread(_operation, request, plan_id, None, body)
 
 
@@ -74,6 +97,7 @@ def _operation(
     body: BuildPlanSubmission | None,
     acceptance: BuildPlanAcceptance | None = None,
 ) -> JSONResponse:
+    known_not_committed = False
     try:
         api, service = getattr(request.app.state, "goal_api", None), getattr(request.app.state, "build_intake", None)
         if not isinstance(api, GoalApi) or not isinstance(service, BuildIntakeService):
@@ -82,15 +106,23 @@ def _operation(
         if body is not None or acceptance is not None:
             with open_database(api.database_url) as connection:
                 uow = UnitOfWork(connection)
-                lock_project(uow, actor)
-                reauthorize_mutation(request, api, connection)
-                if body is not None:
-                    identifier = service.stage(uow, actor, body)
-                elif acceptance is not None and identifier is not None:
-                    identifier = service.accept(uow, actor, identifier, acceptance)
-                else:
-                    raise KernelDenied("not_found")
-                reauthorize_mutation(request, api, connection)
+                try:
+                    lock_project(uow, actor)
+                    reauthorize_mutation(request, api, connection)
+                    if body is not None:
+                        identifier = service.stage(uow, actor, body)
+                    elif acceptance is not None and identifier is not None:
+                        identifier = service.accept(uow, actor, identifier, acceptance)
+                    else:
+                        raise KernelDenied("not_found")
+                    reauthorize_mutation(request, api, connection)
+                except (KernelDenied, ValueError, ContractRejected):
+                    # Mark only an acknowledged rollback before COMMIT. Lost
+                    # COMMIT acknowledgments and later inspection failures do
+                    # not enter this block and must remain uncertain.
+                    connection.rollback()
+                    known_not_committed = True
+                    raise
         if identifier is None:
             raise KernelDenied("not_found")
         with open_database(api.database_url) as connection:
@@ -112,8 +144,8 @@ def _operation(
             if exc.code == "not_found"
             else 409
         )
-        return JSONResponse(status_code=status, content=error_body(exc.code))
-    except (ValueError, ValidationError):
-        return JSONResponse(status_code=422, content=error_body("invalid_public_plan"))
+        return _failure(exc.code, status, known_not_committed)
+    except (ValueError, ValidationError, ContractRejected):
+        return _failure("invalid_public_plan", 422, known_not_committed)
     except (DatabaseUnavailable, psycopg.Error, OSError):
         return JSONResponse(status_code=503, content=error_body("build_intake_unavailable"))

@@ -2213,6 +2213,24 @@ export interface operations {
                     "application/json": components["schemas"]["BuildPlanStagingView"];
                 };
             };
+            /** @description Canonical refusal; commit status is unknown unless explicitly marked. */
+            409: {
+                headers: {
+                    /** @description Present only after confirmed pre-commit rejection/rollback; absence preserves uncertainty. */
+                    "X-Panestria-Mutation"?: "NOT_COMMITTED";
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid document; only explicit NOT_COMMITTED permits correction without recovery. */
+            422: {
+                headers: {
+                    /** @description Present only after confirmed pre-commit rejection/rollback; absence preserves uncertainty. */
+                    "X-Panestria-Mutation"?: "NOT_COMMITTED";
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     inspect_plan_v1_mission_build_plans__plan_id__get: {
@@ -2278,14 +2296,23 @@ export interface operations {
                     "application/json": components["schemas"]["BuildPlanStagingView"];
                 };
             };
-            /** @description Validation Error */
-            422: {
+            /** @description Canonical refusal; commit status is unknown unless explicitly marked. */
+            409: {
                 headers: {
+                    /** @description Present only after confirmed pre-commit rejection/rollback; absence preserves uncertainty. */
+                    "X-Panestria-Mutation"?: "NOT_COMMITTED";
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                content?: never;
+            };
+            /** @description Invalid document; only explicit NOT_COMMITTED permits correction without recovery. */
+            422: {
+                headers: {
+                    /** @description Present only after confirmed pre-commit rejection/rollback; absence preserves uncertainty. */
+                    "X-Panestria-Mutation"?: "NOT_COMMITTED";
+                    [name: string]: unknown;
                 };
+                content?: never;
             };
         };
     };

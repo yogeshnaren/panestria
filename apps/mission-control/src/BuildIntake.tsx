@@ -1,5 +1,5 @@
 import {useEffect,useRef,useState,type FormEvent} from 'react';
-import {Denied,json} from './client';
+import {Denied,NotCommitted,json} from './client';
 import type {components,operations} from './schema';
 type Receipt=components['schemas']['BuildPlanStagingView'];
 type Acceptance=operations['accept_plan_v1_mission_build_plans__plan_id__accept_post']['requestBody']['content']['application/json'];
@@ -42,7 +42,9 @@ export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false}:{own
     try {
       const value=validate(await json<Receipt>('/v1/mission/build/plans',controller.current.signal,body,csrf),id);
       if(controller.current.signal.aborted)return;setReceipt(value);setUncertain(false);setNotice('STAGED_NO_EXECUTION. Inspect the canonical contract, proposal, validation and consent below.');
-    }catch(error){if(controller.current.signal.aborted)return;if(error instanceof Denied)denyRef.current();else setNotice('UNCONFIRMED. Inspect this plan ID before another submission. No automatic POST retry was sent.');}
+    }catch(error){if(controller.current.signal.aborted)return;if(error instanceof Denied)denyRef.current();
+      else if(error instanceof NotCommitted){setUncertain(false);setConfirmed(false);setNotice('REJECTED BEFORE COMMIT. This request created no change. Correct and review the bundle, then explicitly submit again. No automatic retry was sent.');}
+      else setNotice('UNCONFIRMED. Inspect this plan ID before another submission. No automatic POST retry was sent.');}
     finally{busy.current=false;setPending(false);}
   }
   async function inspect(event:FormEvent) {
@@ -61,7 +63,9 @@ export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false}:{own
     try{const value=validate(await json<Receipt>(`/v1/mission/build/plans/${id}/accept`,controller.current.signal,body,csrf),id);
       if(value.plan.state!=='ACCEPTED' || value.operation!=='PLAN_ACCEPTED_NO_EXECUTION' || value.plan.effect_digest!==body.effect_digest)throw new Error('Unconfirmed acceptance');
       if(controller.current.signal.aborted)return;setReceipt(value);setUncertain(false);setNotice('Plan ACCEPTED. Canonical tasks created; no attempt, worker or merge started.');
-    }catch(error){if(controller.current.signal.aborted)return;if(error instanceof Denied)denyRef.current();else setNotice('UNCONFIRMED acceptance. Inspect the same plan ID. No automatic acceptance retry was sent.');}
+    }catch(error){if(controller.current.signal.aborted)return;if(error instanceof Denied)denyRef.current();
+      else if(error instanceof NotCommitted){setUncertain(false);setNotice('ACCEPTANCE REJECTED BEFORE COMMIT. Inspect the same plan for a fresh review before deciding again. No automatic retry was sent.');}
+      else setNotice('UNCONFIRMED acceptance. Inspect the same plan ID. No automatic acceptance retry was sent.');}
     finally{busy.current=false;setPending(false);}
   }
   return <section aria-label="Build plan intake"><h2>Build · stage a PUBLIC plan</h2>

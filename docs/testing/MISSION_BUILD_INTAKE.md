@@ -76,3 +76,11 @@ remain required before R3 acceptance.
 The separate [plan review mode](MISSION_PLAN_ACCEPTANCE.md) adds explicit exact
 plan acceptance through the same canonical service. It requires a different
 launcher flag and session; this staging-only mode remains unchanged.
+
+A server-confirmed **REJECTED BEFORE COMMIT** unlocks correction and clears your
+PUBLIC acknowledgment. This request changed no canonical data: correct/review the
+bundle and explicitly submit again with its same plan ID. No automatic retry is
+sent. Malformed goal contracts return a bounded validation refusal. An absent
+rollback acknowledgment, lost COMMIT reply or post-commit inspection error stays
+UNCONFIRMED and still requires GET recovery of the original UUID. A status409 or422
+alone never proves a request did not commit.
