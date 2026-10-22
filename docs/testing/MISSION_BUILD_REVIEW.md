@@ -79,6 +79,13 @@ submits no automatic retry. Inspect the current canonical approval state first:
 the server may have committed a decision even if its response was lost. Exact
 idempotency receipts remain in the existing kernel store.
 
+While a consent request is in progress, the preview is hidden and the section
+reports busy/UNCONFIRMED. Close/refresh/decision controls remain disabled until
+that attempt settles. An UNCONFIRMED read or stale label alone does not establish
+that the decision finished. After a failed response, reopen the canonical review
+and inspect its actual approval state before any new explicit decision. There is
+no automatic decision retry or optimistic approval.
+
 ## Checks and limits
 
 ```bash
@@ -98,6 +105,14 @@ certificate relabeling occur in these checks. Prepare frontend/browser artifacts
 as in the observer guide, reuse installed runtimes/caches, and do not run suites
 sharing55439 concurrently. Original source-bound observations are indexed at
 `evidence/mission-build-review-2026-10-22/report.json`.
+
+The [pending/recovery correction](../../evidence/build-review-recovery-2026-10-22/report.json)
+retains the original failed CI source and an actual browser/PG/Git regression.
+The browser's offline request still fails normally; a test fault delays only its
+failure notification to exercise the pending UI deterministically. Canonical
+PENDING, one later explicit approval, no browser merge and the separate exact
+owner merge remain required. No sleep, timeout increase, force click or decision
+retry substitutes for those assertions.
 
 This is partial AOS-028-S2/S3. Full intake, approval inbox/dispatch integration,
 Firefox, phone/TLS/device qualification and cumulative G3/trial remain pending.
