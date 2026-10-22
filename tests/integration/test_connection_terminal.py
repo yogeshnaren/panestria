@@ -248,7 +248,9 @@ def test_actual_foreground_server_has_only_metadata_and_declaration_authority(co
             )
             for route in ("/v1/goals", "/v1/ask", "/v1/approvals", "/v1/session/code", "/v2/profiles"):
                 assert client.post(selected.origin + route, json={}).status_code == 404
-            occupied = CliRunner().invoke(app, ["connections", "serve", "--config", str(path)])
+            occupied = CliRunner().invoke(
+                app, ["connections", "serve", "--config", str(path)], env={"PANESTRIA_DATABASE_URL": f.task["dsn"]}
+            )
             assert occupied.exit_code == 2 and "local_bind_unavailable" in occupied.output
             assert client.get(selected.origin + "/v2/connections/scope").status_code == 200
     finally:
