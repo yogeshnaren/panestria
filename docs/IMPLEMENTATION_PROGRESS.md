@@ -276,14 +276,24 @@ by reading the same goal, with no duplicate event/request or task attempt.
 The input is useful independently of deferred search setup, but does not complete
 Delegate collection/synthesis/support or the original R2/R3 gates.
 
-Continue the dashboard with Build input and remaining approval inbox/dispatch,
-then remaining personal-platform/context/connections and finite release
-qualification. Existing keyboard Ask, research and Build terminals remain usable;
-[setup](testing/LOCAL_ASK_SETUP.md), [Build review](testing/BUILD_REVIEW_TUI.md) and
+Build input, separate exact plan acceptance and canonical plan/action review
+discovery are now delivered in PRs172–174. The current correction distinguishes
+acknowledged pre-commit refusals from uncertain commits; its evidence is linked
+below. Do not reopen those delivered input/discovery components as new work.
+
+Next, connect an explicitly reviewed, qualified Build run from the retained plan
+to the existing finite execution/cancellation services. First inspect their
+actual durable intent/admission interfaces; no inline generic subprocess, blind
+retry, renewed stale certificate or automatic final merge. Retain the existing
+current-source/runtime/account/privacy/capacity fences. Other review families,
+full dispatch/fleet integration, personal-platform/context/connections and finite
+release qualification remain. Existing keyboard Ask, research and Build terminals
+remain usable; [setup](testing/LOCAL_ASK_SETUP.md),
+[Build review](testing/BUILD_REVIEW_TUI.md) and
 [Mission Control instructions](testing/MISSION_CONTROL_OBSERVER.md) describe their
 separate settings/scopes. Actual search setup is still owner-deferred. Qualified
-research planning/support, remaining resource budgets and real owner trial are
-open; do not fabricate live certificates or renew stale billing consent.
+research planning/support, remaining resource budgets, phone/device evidence and
+real owner trial are open; never fabricate certificates or refresh stale consent.
 
 The full Delegate gate still requires adversarial briefs, qualified semantic
 support/contradiction handling, an actual authorized public brief and Ask/Build
