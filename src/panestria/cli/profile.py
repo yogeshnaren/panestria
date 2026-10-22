@@ -16,6 +16,7 @@ _CONFIG_OPTION = typer.Option(..., "--config")
 _SELECTION_OPTION = typer.Option(..., "--selection")
 _DIRECTORY_OPTION = typer.Option(..., "--directory")
 _CACHE_OPTION = typer.Option(..., "--model-cache")
+_EXAMPLES_OPTION = typer.Option(None, "--examples-file")
 
 
 def _operation(owner_id: str, project_id: str, profile_id: str, key_id: str, *, create: bool) -> None:
@@ -66,7 +67,7 @@ def style_terminal(
     key_id: str | None = typer.Option(None, "--key-id"),
     expected_version: int | None = typer.Option(None, "--expected-version", min=0),
     owner_review: bool = typer.Option(False, "--owner-review"),
-    examples_file: Path | None = typer.Option(None, "--examples-file"),
+    examples_file: Path | None = _EXAMPLES_OPTION,
 ) -> None:
     """Edit structured preferences through an already enabled owner API; no inference."""
     from panestria.cli.profile_style import run_style_terminal
