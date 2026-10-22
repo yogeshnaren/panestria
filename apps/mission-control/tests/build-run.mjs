@@ -1,0 +1,38 @@
+import {readFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+const fixture=JSON.parse(await readFile(process.env.PANESTRIA_BROWSER_FIXTURE,'utf8'));
+const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+try {
+  const page=await browser.newPage({viewport:{width:1440,height:1100}}),errors=[],posts=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.on('request',request=>{if(request.method()==='POST' && request.url().endsWith('/run'))posts.push(request.postDataJSON());});
+  await page.goto(fixture.origin);
+  await page.getByLabel('One-use pairing code from your terminal').fill(fixture.code);
+  await page.getByRole('button',{name:'Pair',exact:true}).click();
+  await page.getByLabel('Recover staged plan by plan ID').fill(fixture.plan);
+  await page.getByRole('button',{name:'Inspect staged plan',exact:true}).click();
+  await page.getByTestId('plan-run-state').filter({hasText:'NOT_REQUESTED'}).waitFor();
+  const section=page.getByRole('region',{name:'Finite Build run'});
+  assert.equal(await section.getByRole('button',{name:'Start finite Build run',exact:true}).isEnabled(),false);
+  await section.getByRole('checkbox').first().check();
+  await section.getByRole('button',{name:'Start finite Build run',exact:true}).dblclick();
+  await page.getByTestId('plan-run-result').filter({hasText:'WAITING_APPROVAL'}).waitFor({timeout:35000});
+  assert.equal(posts.length,1);
+  assert.equal(await section.getByRole('button',{name:'Start finite Build run',exact:true}).isEnabled(),false);
+  await page.getByRole('button',{name:'Open goal '+fixture.goal.slice(0,8),exact:true}).waitFor({timeout:15000});
+  await page.getByRole('button',{name:'Open goal '+fixture.goal.slice(0,8),exact:true}).click();
+  await page.getByRole('button',{name:'Review exact merge request',exact:true}).click();
+  await page.getByLabel('Protected diff', {exact:true}).waitFor({timeout:15000});
+  assert.match(await page.getByLabel('Protected diff', {exact:true}).innerText(),/value = 43/);
+  await page.evaluate(()=>window.getSelection()?.removeAllRanges());
+  await page.screenshot({path:process.env.PANESTRIA_BROWSER_SCREENSHOT,fullPage:true});
+  await page.reload();
+  await page.getByLabel('Recover staged plan by plan ID').fill(fixture.plan);
+  await page.getByRole('button',{name:'Inspect staged plan',exact:true}).click();
+  await page.getByTestId('plan-run-result').filter({hasText:'WAITING_APPROVAL'}).waitFor();
+  assert.equal(await page.getByRole('button',{name:'Start finite Build run',exact:true}).isEnabled(),false);
+  assert.equal(posts.length,1);
+  assert.deepEqual(errors,[]);
+  console.log(JSON.stringify({status:'PASS',run_posts:posts.length,request_id:posts[0].request_id,mode:'ACTUAL_BROWSER__NATIVE_FIXTURE'}));
+} finally {await browser.close();}

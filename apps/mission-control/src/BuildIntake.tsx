@@ -1,13 +1,14 @@
 import {useEffect,useRef,useState,type FormEvent} from 'react';
 import {Denied,NotCommitted,json} from './client';
 import type {components,operations} from './schema';
+import {PlanRun} from './PlanRun';
 type Receipt=components['schemas']['BuildPlanStagingView'];
 type Acceptance=operations['accept_plan_v1_mission_build_plans__plan_id__accept_post']['requestBody']['content']['application/json'];
 type Submission=operations['stage_plan_v1_mission_build_plans_post']['requestBody']['content']['application/json'];
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const bytes=(value:string)=>new TextEncoder().encode(value).length;
 
-export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false,selection=null}:{owner:string,project:string,csrf:string|null,deny:()=>void,allowAcceptance?:boolean,selection?:{id:string,version:number}|null}) {
+export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false,allowRun=false,selection=null}:{owner:string,project:string,csrf:string|null,deny:()=>void,allowAcceptance?:boolean,allowRun?:boolean,selection?:{id:string,version:number}|null}) {
   const [raw,setRaw]=useState(''),[confirmed,setConfirmed]=useState(false),[lookup,setLookup]=useState('');
   const [plan,setPlan]=useState(''),[receipt,setReceipt]=useState<Receipt|null>(null),[pending,setPending]=useState(false),[uncertain,setUncertain]=useState(false);
   const [notice,setNotice]=useState('Load an existing PUBLIC contract, proposal and inventory bundle. Review it before staging.');
@@ -95,7 +96,7 @@ export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false,selec
       <input id="build-plan-lookup" className="receipt-id" value={lookup} onChange={e=>setLookup(e.target.value)} disabled={pending || uncertain} autoComplete="off" spellCheck={false}/>
       <button disabled={pending || !(uncertain?plan:lookup).trim()}>Inspect staged plan</button></div></form>
     {receipt && <div aria-label="Canonical staged plan"><p>Operation <strong>{receipt.operation}</strong> · execution authority NONE · runtime qualification NOT_ASSESSED</p>
-      <p>Goal <strong data-testid="build-intake-goal-state">{receipt.goal_status}</strong> · plan <strong data-testid="build-intake-plan-state">{receipt.plan.state}</strong></p>
+      <p>Last plan inspection: goal <strong data-testid="build-intake-goal-state">{receipt.goal_status}</strong> · plan <strong data-testid="build-intake-plan-state">{receipt.plan.state}</strong>. Current execution status is shown separately.</p>
       <p>Consent digest <code>{receipt.plan.effect_digest}</code> · expires <code>{receipt.plan.consent.expires_at}</code>.</p>
       <p>{allowAcceptance?'Plan acceptance is a separate explicit action below. Scheduling, worker execution and final merge remain separate owner workflows.':'Plan acceptance, scheduling, worker execution and final merge require separate existing owner workflows.'} An expired pending consent cannot be accepted.</p>
       <details open={allowAcceptance || undefined}><summary>Exact retained contract, proposal, inventory and validation</summary><pre data-testid="build-intake-retained">{JSON.stringify(receipt,null,2)}</pre></details>
@@ -104,6 +105,7 @@ export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false,selec
           I reviewed the exact retained contract, checks, paths, DAG, inventory, budgets, digest and expiry. Accept this plan and create its tasks; do not execute them.</label>
         <button disabled={!csrf || pending || uncertain || !acceptConfirmed || Date.parse(receipt.plan.consent.expires_at)<=Date.now()}>Accept exact plan</button>
       </form>}
+      {allowRun && receipt.plan.state==='ACCEPTED' && <PlanRun key={receipt.plan.proposal.plan_id} owner={owner} project={project} plan={receipt.plan.proposal.plan_id} sha={receipt.plan.consent.plan_sha256} csrf={csrf} deny={deny}/>}
     </div>}
   </section>;
 }

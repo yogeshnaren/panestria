@@ -344,6 +344,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mission/build/plans/{plan_id}/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Inspect Run */
+        get: operations["inspect_run_v1_mission_build_plans__plan_id__run_get"];
+        put?: never;
+        /** Start Run */
+        post: operations["start_run_v1_mission_build_plans__plan_id__run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mission/build/plans/{plan_id}/run/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Run */
+        post: operations["cancel_run_v1_mission_build_plans__plan_id__run_cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mission/capabilities": {
         parameters: {
             query?: never;
@@ -1264,11 +1299,16 @@ export interface components {
             /** Build Review Enabled */
             build_review_enabled: boolean;
             /**
+             * Build Run Enabled
+             * @default false
+             */
+            build_run_enabled: boolean;
+            /**
              * Dispatch Authority
              * @default NONE
-             * @constant
+             * @enum {string}
              */
-            dispatch_authority: "NONE";
+            dispatch_authority: "NONE" | "EXPLICIT_FOREGROUND_BUILD";
             /**
              * Offline Ask Enabled
              * @default false
@@ -1396,6 +1436,130 @@ export interface components {
             schema_version: 2;
             /** Version */
             version: number;
+        };
+        /** PlanRunIntent */
+        PlanRunIntent: {
+            /** Plan Sha256 */
+            plan_sha256: string;
+            /**
+             * Public Subscription Run
+             * @constant
+             */
+            public_subscription_run: true;
+            /** Request Id */
+            request_id: string;
+        };
+        /** PlanRunRecord */
+        PlanRunRecord: {
+            /** Configuration Sha256 */
+            configuration_sha256: string;
+            /** Expires At */
+            expires_at: string;
+            /** Goal Id */
+            goal_id: string;
+            intent: components["schemas"]["PlanRunIntent"];
+            /** Owner Id */
+            owner_id: string;
+            /** Plan Id */
+            plan_id: string;
+            /** Project Id */
+            project_id: string;
+        };
+        /** PlanRunReturn */
+        PlanRunReturn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "RETURNED" | "ADMISSION_DENIED" | "CONTROLLER_ERROR";
+            /** Record Sha256 */
+            record_sha256: string;
+            /** Request Id */
+            request_id: string;
+            /** Runner Status */
+            runner_status: string;
+        };
+        /** PlanRunStorage */
+        PlanRunStorage: {
+            /** Anticipated Write Bytes */
+            anticipated_write_bytes?: number | null;
+            /** Available Bytes */
+            available_bytes?: number | null;
+            /**
+             * Cleanup Authority
+             * @default NONE
+             * @constant
+             */
+            cleanup_authority: "NONE";
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "ALLOW" | "DEFER";
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "capacity_observed" | "storage_capacity_unknown" | "storage_policy_filesystem_mismatch" | "storage_critical" | "storage_reserve_at_risk" | "storage_policy_unconfirmed";
+            /** Record Sha256 */
+            record_sha256: string;
+            /**
+             * Warnings
+             * @default []
+             */
+            warnings: ("capacity_unknown" | "disk_high" | "disk_critical" | "free_reserve_at_risk")[];
+        };
+        /** PlanRunView */
+        PlanRunView: {
+            /**
+             * Claim Release Authority
+             * @default NONE
+             * @constant
+             */
+            claim_release_authority: "NONE";
+            /** Configuration Current */
+            configuration_current: boolean;
+            /**
+             * Controller Active
+             * @default false
+             */
+            controller_active: boolean;
+            /** Expired */
+            expired: boolean;
+            /** Goal Id */
+            goal_id: string;
+            /** Goal Status */
+            goal_status: string;
+            /**
+             * Merge Authority
+             * @default NONE
+             * @constant
+             */
+            merge_authority: "NONE";
+            /** Observed At */
+            observed_at: string;
+            /** Owner Id */
+            owner_id: string;
+            /** Plan Id */
+            plan_id: string;
+            /** Plan Sha256 */
+            plan_sha256: string;
+            /** Project Id */
+            project_id: string;
+            record: components["schemas"]["PlanRunRecord"] | null;
+            /**
+             * Release Acceptance
+             * @default NOT_ASSESSED
+             * @constant
+             */
+            release_acceptance: "NOT_ASSESSED";
+            result: components["schemas"]["PlanRunReturn"] | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "NOT_REQUESTED" | "REQUESTED" | "CLAIMED_UNCONFIRMED" | "RETURN_RECORDED";
+            storage?: components["schemas"]["PlanRunStorage"] | null;
         };
         /** ProjectActivity */
         ProjectActivity: {
@@ -2430,6 +2594,127 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    inspect_run_v1_mission_build_plans__plan_id__run_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanRunView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_run_v1_mission_build_plans__plan_id__run_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Plan Sha256 */
+                    plan_sha256: string;
+                    /**
+                     * Public Subscription Run
+                     * @constant
+                     */
+                    public_subscription_run: true;
+                    /** Request Id */
+                    request_id: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanRunView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_run_v1_mission_build_plans__plan_id__run_cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Cancel Plan
+                     * @constant
+                     */
+                    cancel_plan: true;
+                    /** Plan Sha256 */
+                    plan_sha256: string;
+                    /** Request Id */
+                    request_id: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanRunView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

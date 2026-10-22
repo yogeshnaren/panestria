@@ -31,6 +31,10 @@ def capability(request: Request) -> JSONResponse:
             plan_acceptance_enabled=getattr(
                 getattr(request.app.state, "build_intake", None), "allow_acceptance", False
             ),
+            build_run_enabled=getattr(request.app.state, "mission_run", None) is not None,
+            dispatch_authority="EXPLICIT_FOREGROUND_BUILD"
+            if getattr(request.app.state, "mission_run", None) is not None
+            else "NONE",
         )
         return JSONResponse(body.model_dump(mode="json"), headers={"Cache-Control": "no-store"})
     except LoopbackDenied as exc:

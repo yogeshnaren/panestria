@@ -1599,9 +1599,17 @@
             "title": "Build Review Enabled",
             "type": "boolean"
           },
+          "build_run_enabled": {
+            "default": false,
+            "title": "Build Run Enabled",
+            "type": "boolean"
+          },
           "dispatch_authority": {
-            "const": "NONE",
             "default": "NONE",
+            "enum": [
+              "NONE",
+              "EXPLICIT_FOREGROUND_BUILD"
+            ],
             "title": "Dispatch Authority",
             "type": "string"
           },
@@ -1958,6 +1966,325 @@
           "cumulative_api_microusd"
         ],
         "title": "PlanRevisionConsent",
+        "type": "object"
+      },
+      "PlanRunIntent": {
+        "additionalProperties": false,
+        "properties": {
+          "plan_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Plan Sha256",
+            "type": "string"
+          },
+          "public_subscription_run": {
+            "const": true,
+            "title": "Public Subscription Run",
+            "type": "boolean"
+          },
+          "request_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "plan_sha256",
+          "public_subscription_run"
+        ],
+        "title": "PlanRunIntent",
+        "type": "object"
+      },
+      "PlanRunRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "configuration_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Configuration Sha256",
+            "type": "string"
+          },
+          "expires_at": {
+            "maxLength": 64,
+            "title": "Expires At",
+            "type": "string"
+          },
+          "goal_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Goal Id",
+            "type": "string"
+          },
+          "intent": {
+            "$ref": "#/components/schemas/PlanRunIntent"
+          },
+          "owner_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "plan_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "project_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Project Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "owner_id",
+          "project_id",
+          "goal_id",
+          "plan_id",
+          "intent",
+          "configuration_sha256",
+          "expires_at"
+        ],
+        "title": "PlanRunRecord",
+        "type": "object"
+      },
+      "PlanRunReturn": {
+        "additionalProperties": false,
+        "properties": {
+          "outcome": {
+            "enum": [
+              "RETURNED",
+              "ADMISSION_DENIED",
+              "CONTROLLER_ERROR"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "record_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Record Sha256",
+            "type": "string"
+          },
+          "request_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "runner_status": {
+            "pattern": "^[A-Z_]{1,64}$",
+            "title": "Runner Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "record_sha256",
+          "outcome",
+          "runner_status"
+        ],
+        "title": "PlanRunReturn",
+        "type": "object"
+      },
+      "PlanRunStorage": {
+        "additionalProperties": false,
+        "properties": {
+          "anticipated_write_bytes": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anticipated Write Bytes"
+          },
+          "available_bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Available Bytes"
+          },
+          "cleanup_authority": {
+            "const": "NONE",
+            "default": "NONE",
+            "title": "Cleanup Authority",
+            "type": "string"
+          },
+          "decision": {
+            "enum": [
+              "ALLOW",
+              "DEFER"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "reason": {
+            "enum": [
+              "capacity_observed",
+              "storage_capacity_unknown",
+              "storage_policy_filesystem_mismatch",
+              "storage_critical",
+              "storage_reserve_at_risk",
+              "storage_policy_unconfirmed"
+            ],
+            "title": "Reason",
+            "type": "string"
+          },
+          "record_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Record Sha256",
+            "type": "string"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "enum": [
+                "capacity_unknown",
+                "disk_high",
+                "disk_critical",
+                "free_reserve_at_risk"
+              ],
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "record_sha256",
+          "decision",
+          "reason"
+        ],
+        "title": "PlanRunStorage",
+        "type": "object"
+      },
+      "PlanRunView": {
+        "additionalProperties": false,
+        "properties": {
+          "claim_release_authority": {
+            "const": "NONE",
+            "default": "NONE",
+            "title": "Claim Release Authority",
+            "type": "string"
+          },
+          "configuration_current": {
+            "title": "Configuration Current",
+            "type": "boolean"
+          },
+          "controller_active": {
+            "default": false,
+            "title": "Controller Active",
+            "type": "boolean"
+          },
+          "expired": {
+            "title": "Expired",
+            "type": "boolean"
+          },
+          "goal_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Goal Id",
+            "type": "string"
+          },
+          "goal_status": {
+            "title": "Goal Status",
+            "type": "string"
+          },
+          "merge_authority": {
+            "const": "NONE",
+            "default": "NONE",
+            "title": "Merge Authority",
+            "type": "string"
+          },
+          "observed_at": {
+            "title": "Observed At",
+            "type": "string"
+          },
+          "owner_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "plan_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "plan_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Plan Sha256",
+            "type": "string"
+          },
+          "project_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "record": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanRunRecord"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "release_acceptance": {
+            "const": "NOT_ASSESSED",
+            "default": "NOT_ASSESSED",
+            "title": "Release Acceptance",
+            "type": "string"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanRunReturn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "enum": [
+              "NOT_REQUESTED",
+              "REQUESTED",
+              "CLAIMED_UNCONFIRMED",
+              "RETURN_RECORDED"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "storage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanRunStorage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "owner_id",
+          "project_id",
+          "goal_id",
+          "plan_id",
+          "plan_sha256",
+          "record",
+          "state",
+          "result",
+          "goal_status",
+          "configuration_current",
+          "observed_at",
+          "expired"
+        ],
+        "title": "PlanRunView",
         "type": "object"
       },
       "ProjectActivity": {
@@ -3635,6 +3962,189 @@
           }
         },
         "summary": "Accept Plan"
+      }
+    },
+    "/v1/mission/build/plans/{plan_id}/run": {
+      "get": {
+        "operationId": "inspect_run_v1_mission_build_plans__plan_id__run_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "title": "Plan Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanRunView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Inspect Run"
+      },
+      "post": {
+        "operationId": "start_run_v1_mission_build_plans__plan_id__run_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "title": "Plan Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "plan_sha256": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "title": "Plan Sha256",
+                    "type": "string"
+                  },
+                  "public_subscription_run": {
+                    "const": true,
+                    "title": "Public Subscription Run",
+                    "type": "boolean"
+                  },
+                  "request_id": {
+                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                    "title": "Request Id",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "request_id",
+                  "plan_sha256",
+                  "public_subscription_run"
+                ],
+                "title": "PlanRunIntent",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanRunView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Run"
+      }
+    },
+    "/v1/mission/build/plans/{plan_id}/run/cancel": {
+      "post": {
+        "operationId": "cancel_run_v1_mission_build_plans__plan_id__run_cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "title": "Plan Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "cancel_plan": {
+                    "const": true,
+                    "title": "Cancel Plan",
+                    "type": "boolean"
+                  },
+                  "plan_sha256": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "title": "Plan Sha256",
+                    "type": "string"
+                  },
+                  "request_id": {
+                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                    "title": "Request Id",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "request_id",
+                  "plan_sha256",
+                  "cancel_plan"
+                ],
+                "title": "PlanRunCancellation",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanRunView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Run"
       }
     },
     "/v1/mission/capabilities": {

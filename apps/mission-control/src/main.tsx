@@ -63,6 +63,7 @@ function Dashboard() {
   const [researchMode,setResearchMode] = useState(false);
   const [buildIntakeMode,setBuildIntakeMode] = useState(false);
   const [planAcceptanceMode,setPlanAcceptanceMode] = useState(false);
+  const [buildRunMode,setBuildRunMode] = useState(false);
   const [planSelection,setPlanSelection]=useState<{id:string,version:number}|null>(null);
   const denied = () => {setMayRead(false); setAuthenticated(false); setActivity(null); setGoal(null); setCsrf(null); setListFresh(false);setPlanSelection(null);};
   const timeline = useGoal(goal, activity, denied);
@@ -71,14 +72,15 @@ function Dashboard() {
     if (data.view_authority !== 'READ_ONLY_METADATA' || data.acceptance_authority !== 'NONE' ||
         !Array.isArray(data.entries) || data.entries.length > 16) throw new Error('Unconfirmed project response.');
     if (signal.aborted) return;
-    const capabilities = await json<{build_review_enabled:boolean,offline_ask_enabled:boolean,research_intake_enabled:boolean,build_intake_enabled:boolean,plan_acceptance_enabled:boolean,dispatch_authority:string}>('/v1/mission/capabilities',signal);
+    const capabilities = await json<{build_review_enabled:boolean,offline_ask_enabled:boolean,research_intake_enabled:boolean,build_intake_enabled:boolean,plan_acceptance_enabled:boolean,build_run_enabled:boolean,dispatch_authority:string}>('/v1/mission/capabilities',signal);
     if (signal.aborted) return;
-    if(typeof capabilities.build_review_enabled!=='boolean' || typeof capabilities.offline_ask_enabled!=='boolean' || typeof capabilities.research_intake_enabled!=='boolean' || typeof capabilities.build_intake_enabled!=='boolean' || typeof capabilities.plan_acceptance_enabled!=='boolean' || capabilities.dispatch_authority!=='NONE') throw new Error('Unconfirmed mode.');
+    if(typeof capabilities.build_review_enabled!=='boolean' || typeof capabilities.offline_ask_enabled!=='boolean' || typeof capabilities.research_intake_enabled!=='boolean' || typeof capabilities.build_intake_enabled!=='boolean' || typeof capabilities.plan_acceptance_enabled!=='boolean' || typeof capabilities.build_run_enabled!=='boolean' || capabilities.dispatch_authority!==(capabilities.build_run_enabled?'EXPLICIT_FOREGROUND_BUILD':'NONE')) throw new Error('Unconfirmed mode.');
     setReviewMode(capabilities.build_review_enabled);
     setAskMode(capabilities.offline_ask_enabled);
     setResearchMode(capabilities.research_intake_enabled);
     setBuildIntakeMode(capabilities.build_intake_enabled);
     setPlanAcceptanceMode(capabilities.plan_acceptance_enabled);
+    setBuildRunMode(capabilities.build_run_enabled);
     setMayRead(true); setActivity(data); setListAt(Date.now()); setListFresh(true); setAuthenticated(true); setNotice('Project snapshot confirmed.');
   }
   useEffect(() => {
@@ -110,8 +112,8 @@ function Dashboard() {
     finally {setBusy(false);}
   }
   return <main>
-    <header><p className="eyebrow">PANESTRIA · {askMode?'OFFLINE ASK':researchMode?'PUBLIC DELEGATE STAGING':planAcceptanceMode?'PUBLIC PLAN REVIEW':buildIntakeMode?'PUBLIC BUILD PLAN STAGING':'LOCAL OBSERVER'}</p><h1>Mission Control</h1>
-      <p>Canonical project activity and goal timelines. {askMode?'Explicit offline Ask input':researchMode?'Explicit PUBLIC question staging':planAcceptanceMode?'Explicit PUBLIC plan review and acceptance':buildIntakeMode?'Explicit PUBLIC Build plan staging':reviewMode?'Explicit PUBLIC Build review and consent records':'Read-only metadata'} · release acceptance authority: NONE.</p></header>
+    <header><p className="eyebrow">PANESTRIA · {buildRunMode?'EXPLICIT PUBLIC BUILD':askMode?'OFFLINE ASK':researchMode?'PUBLIC DELEGATE STAGING':planAcceptanceMode?'PUBLIC PLAN REVIEW':buildIntakeMode?'PUBLIC BUILD PLAN STAGING':'LOCAL OBSERVER'}</p><h1>Mission Control</h1>
+      <p>Canonical project activity and goal timelines. {buildRunMode?'Explicit PUBLIC plan review and finite subscription execution':askMode?'Explicit offline Ask input':researchMode?'Explicit PUBLIC question staging':planAcceptanceMode?'Explicit PUBLIC plan review and acceptance':buildIntakeMode?'Explicit PUBLIC Build plan staging':reviewMode?'Explicit PUBLIC Build review and consent records':'Read-only metadata'} · release acceptance authority: NONE.</p></header>
     <section aria-label="Connection"><p role="status">{notice}</p>
       {(!authenticated || !csrf) && <form onSubmit={pair}><label htmlFor="pair">One-use pairing code from your terminal</label>
         <div className="actions"><input id="pair" value={code} onChange={e=>setCode(e.target.value.toUpperCase())}
@@ -123,7 +125,7 @@ function Dashboard() {
     {authenticated && activity && <>
       {askMode && <OfflineAsk key={activity.project_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
       {researchMode && <ResearchIntake key={activity.project_id} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
-      {buildIntakeMode && <BuildIntake key={activity.project_id} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied} allowAcceptance={planAcceptanceMode} selection={planSelection}/>}
+      {buildIntakeMode && <BuildIntake key={activity.project_id} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied} allowAcceptance={planAcceptanceMode} allowRun={buildRunMode} selection={planSelection}/>}
       <ReviewInbox owner={activity.owner_id} project={activity.project_id} now={now} canInspectPlan={buildIntakeMode} onPlan={id=>setPlanSelection(prior=>({id,version:(prior?.version??0)+1}))} onGoal={setGoal} deny={denied}/>
       <section aria-label="Project activity"><h2>Project activity</h2>
         <p>Project <code>{activity.project_id}</code> · {listFresh && now-listAt < 15000 ? 'Confirmed' : 'STALE / UNCONFIRMED'}</p>
@@ -149,7 +151,7 @@ function Dashboard() {
       {goal && reviewMode && <BuildReview key={`review:${goal}`} goal={goal} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
       {goal && <BuildEvidence key={`evidence:${goal}`} goal={goal} owner={activity.owner_id} project={activity.project_id} deny={denied}/>}
     </>}
-    <footer>Local desktop only. {askMode?'Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.':researchMode?'PUBLIC questions can be staged here. Delegate execution, Build intake and phone access remain separate R3 work.':planAcceptanceMode?'Plans can be staged, reviewed and explicitly accepted here. Worker execution, final merge and phone access remain separate workflows.':buildIntakeMode?'PUBLIC plans can be staged here. Plan acceptance, execution, effect dispatch and phone access remain separate workflows.':reviewMode?'Consent records do not execute a merge. Job intake, effect dispatch and phone access remain separate R3 work.':'Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'}</footer>
+    <footer>Local desktop only. {buildRunMode?'Exact PUBLIC plans can be staged, accepted and explicitly run once. Final merge uses the existing separate owner CLI. Phone access and full R3 acceptance remain unfinished.':askMode?'Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.':researchMode?'PUBLIC questions can be staged here. Delegate execution, Build intake and phone access remain separate R3 work.':planAcceptanceMode?'Plans can be staged, reviewed and explicitly accepted here. Worker execution, final merge and phone access remain separate workflows.':buildIntakeMode?'PUBLIC plans can be staged here. Plan acceptance, execution, effect dispatch and phone access remain separate workflows.':reviewMode?'Consent records do not execute a merge. Job intake, effect dispatch and phone access remain separate R3 work.':'Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'}</footer>
   </main>;
 }
 class Boundary extends Component<{children: ReactNode},{failed:boolean}> {

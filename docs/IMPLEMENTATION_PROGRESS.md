@@ -9,6 +9,10 @@ The latest Mission Control delivery now provides distinct explicit offline Ask,
 PUBLIC Delegate question staging, PUBLIC Build plan staging and separate exact
 plan review/acceptance. Canonical pending plan/action review discovery connects
 the browser to retained records without a shadow queue or automatic dispatch.
+The separate [explicit finite Build mode](testing/MISSION_BUILD_RUN.md) now
+connects an accepted PUBLIC plan to durable request/claim/return facts, existing
+one/two-worker execution, cancellation and protected final review. Its original
+component evidence uses declared native/runtime fixtures, not live qualification.
 See [the inbox guide](testing/MISSION_REVIEW_INBOX.md) and
 [plan review guide](testing/MISSION_PLAN_ACCEPTANCE.md). All remain component
 outcomes: qualified Delegate execution/support, full dispatch/other review
@@ -281,12 +285,15 @@ discovery are now delivered in PRs172–174. The current correction distinguishe
 acknowledged pre-commit refusals from uncertain commits; its evidence is linked
 below. Do not reopen those delivered input/discovery components as new work.
 
-Next, connect an explicitly reviewed, qualified Build run from the retained plan
-to the existing finite execution/cancellation services. First inspect their
-actual durable intent/admission interfaces; no inline generic subprocess, blind
-retry, renewed stale certificate or automatic final merge. Retain the existing
-current-source/runtime/account/privacy/capacity fences. Other review families,
-full dispatch/fleet integration, personal-platform/context/connections and finite
+The explicit finite foreground Build handoff is now implemented: see
+[design91](design/91-MISSION-FINITE-BUILD-RUN.md), [operator steps](testing/MISSION_BUILD_RUN.md)
+and [source-bound component checks](../evidence/mission-build-run-2026-10-22/report.json).
+Do not reopen plan staging, acceptance or this one-shot handoff as new tasks.
+Next, inspect AOS-017-S5/S6 and the active MVP-X08 scope to connect the existing
+reviewed charter/style/model-context records across supported local modes.
+Preserve purpose/classification/model-compatibility and current authority checks;
+avoid replacing retained contracts with a second prompt store. Other review
+families, full fleet/dispatch integration, connections, resources/phone and finite
 release qualification remain. Existing keyboard Ask, research and Build terminals
 remain usable; [setup](testing/LOCAL_ASK_SETUP.md),
 [Build review](testing/BUILD_REVIEW_TUI.md) and
@@ -294,6 +301,24 @@ remain usable; [setup](testing/LOCAL_ASK_SETUP.md),
 separate settings/scopes. Actual search setup is still owner-deferred. Qualified
 research planning/support, remaining resource budgets, phone/device evidence and
 real owner trial are open; never fabricate certificates or refresh stale consent.
+
+## Explicit finite Build execution from Mission Control
+
+The separately enabled `--build-run` mode now stages/reviews/accepts an exact
+PUBLIC plan and offers a separate bounded subscription start action. Request and
+controller claim commit before native dispatch; request replay preserves the
+original nonce/deadline and cannot adopt a claimed run. Startup, polling, reload
+and another nonce cannot restart it. Cancellation reuses canonical plan fencing,
+including after policy revocation, and leaves uncertain physical claims held.
+Configured storage warnings/deferral are visible without path disclosure or
+cleanup. The existing exact protected diff/check/consent panel remains separate
+from final owner CLI merge. [Original checks](../evidence/mission-build-run-2026-10-22/report.json)
+retain fixture setup/assertion failures and corrected source-bound results. Actual
+PG/Git/HTTP/Chromium/MCP/Docker reach two handoffs and WAITING_APPROVAL with one
+start POST after a lost reply and no protected-ref change. Native auth/inference,
+certificates and capacity are explicit fixtures. No owner service was upgraded;
+8770 remains its prior observer. This is partial AOS-028 delivery, not current
+live qualification, complete dispatch/fleet scope, an original gate or R3 acceptance.
 
 The full Delegate gate still requires adversarial briefs, qualified semantic
 support/contradiction handling, an actual authorized public brief and Ask/Build

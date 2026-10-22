@@ -1,11 +1,14 @@
 """Explicit same-origin dashboard modes; reuse activity, auth and existing runtimes."""
 
+import asyncio
 import hashlib
 import hmac
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from fastapi.responses import Response
 
 from panestria.api.main import mount_browser_api
@@ -27,7 +30,26 @@ def mount_mission_control(
     research_intake: Path | None = None,
     build_intake: bool = False,
     build_plan_review: bool = False,
+    build_run: Path | None = None,
 ) -> None:
+    run_service = None
+    if build_run is not None:
+        from panestria.execution.mission_run import MissionRunService
+        from panestria.kernel.goals import Actor
+
+        if (
+            offline_ask
+            or research_intake is not None
+            or build_review_root is not None
+            or build_evidence_store is not None
+            or build_intake
+            or build_plan_review
+        ):
+            raise LocalApplicationRejected("mission_build_select_one_mode")
+        run_service = MissionRunService(
+            build_run, Actor(str(config.owner_id), str(config.project_id)), app.state.goal_api.database_url
+        )
+        build_plan_review = True
     build_intake = build_intake or build_plan_review
     if build_intake and (
         offline_ask or research_intake is not None or build_review_root is not None or build_evidence_store is not None
@@ -64,6 +86,8 @@ def mount_mission_control(
             assets[name] = data
     except OSError:
         raise LocalApplicationRejected("mission_build_required") from None
+    if run_service is not None:
+        build_review_root = run_service.settings.root
     if build_review_root is not None:
         from panestria.api.routes.mission_review import router
         from panestria.execution.build_review import BuildReviewService
@@ -103,6 +127,22 @@ def mount_mission_control(
             if build_plan_review
             else b"panestria.mission-build-intake-session.v1\0"
         )
+    if run_service is not None:
+        from panestria.api.routes.mission_run import router as run_router
+
+        app.state.mission_run = run_service
+        app.include_router(run_router)
+        active_service = run_service
+
+        @asynccontextmanager
+        async def run_lifecycle(_: FastAPI) -> AsyncIterator[None]:
+            try:
+                yield
+            finally:
+                await asyncio.to_thread(active_service.close)
+
+        app.include_router(APIRouter(lifespan=run_lifecycle))
+        purpose = b"panestria.mission-build-run-session.v1\0" + run_service.configuration.encode() + b"\0"
     secret = hmac.digest(token.encode(), purpose + config.origin.encode(), "sha256")
     mount_browser_api(
         app,
@@ -110,7 +150,9 @@ def mount_mission_control(
             config.origin,
             SessionService(secret),
             app.state.goal_api.database_url,
-            namespace="mission-plan-review"
+            namespace="mission-build-run"
+            if run_service is not None
+            else "mission-plan-review"
             if build_plan_review
             else "mission-build-intake"
             if build_intake

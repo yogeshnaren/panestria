@@ -33,6 +33,7 @@ class BrowserAccess:
             "mission-research",
             "mission-build-intake",
             "mission-plan-review",
+            "mission-build-run",
         ] = "default",
     ) -> None:
         parts = urlsplit(origin)
@@ -54,6 +55,7 @@ class BrowserAccess:
             "mission-research",
             "mission-build-intake",
             "mission-plan-review",
+            "mission-build-run",
         }:
             raise ValueError("invalid_browser_namespace")
         self.cookie_name = (
