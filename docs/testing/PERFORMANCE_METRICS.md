@@ -111,3 +111,12 @@ keys, with numerator/denominator and missing-data reasons. Compare compatible
 cohorts; preserve failed observations and original evidence. Full release gates
 and the real owner trial remain separate. Broader scheduled MVP work is paused;
 these explicit metrics and mutation tasks do not restart it.
+
+## Measurements from existing Ask receipts
+
+[Explicit Ask capture](ASK_RUNTIME_METRICS.md) now reads an existing scoped
+ordinary/profile receipt and retains reported generation/first-content/decode/
+token/cash values in this same private history without another inference. Missing
+accuracy/cash/source/time remain unknown, and one case is not a distribution.
+No private content or output/input hash is copied. Automatic instrumentation,
+latency distributions, quality, OTel/exposure and original gates remain open.

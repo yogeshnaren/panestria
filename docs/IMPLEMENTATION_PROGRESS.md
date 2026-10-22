@@ -144,6 +144,19 @@ the corrected connected checks and one actual cached CPU/PG/crypto request.
 Synthetic keys remain explicit; style quality, OS-key/runtime qualification,
 cross-harness compatibility and complete S4/TC08/G3 remain open.
 
+## Saved observations from existing Ask requests
+
+[Ask runtime metrics](testing/ASK_RUNTIME_METRICS.md) now reads an exact scoped
+canonical receipt and saves allowlisted timing/token/cash metadata into the same
+private history used by Build. Ordinary and protected profile cohorts remain
+separate; missing/incomplete values and accuracy stay unknown. No prompt, answer,
+profile/example value or private content hash is copied. Capture performs no
+inference, retry or canonical mutation, and full storage refuses growth.
+[Source-bound checks](../evidence/ask-runtime-metrics-2026-10-22/report.json)
+use actual PG/HTTP/CLI and declared synthetic key/model/capacity fixtures. This
+is partial AOS-029-S2 delivery, not a benchmark, automatic instrumentation,
+exposure dashboard or release qualification.
+
 ## Project activity terminal
 
 The [project activity terminal](testing/PROJECT_ACTIVITY_TERMINAL.md) now shows

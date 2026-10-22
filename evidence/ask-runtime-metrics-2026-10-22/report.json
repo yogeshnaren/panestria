@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "outcome": "ASK_RECEIPT_METRICS_COMPONENT_PASS_NOT_BENCHMARK_OR_RELEASE",
+  "observations": [
+    {
+      "file": "connected.xml",
+      "sha256": "c0bfc3c969c06b91709c44e966106709b2a9b33dc53666ac3c67120ef4bb13c7",
+      "source_commit": "b8a124a3282f5f4707cf345b9d8a821e9ec0c8b8",
+      "source_tree": "c7dc84777b44e0c9b2947e6e1c57f70baa2d80f5",
+      "worktree": "CLEAN",
+      "scope": "COLLECTION_ERROR: duplicate new unit/integration basenames, no executed pass",
+      "result": {
+        "name": "pytest",
+        "errors": "1",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "1",
+        "time": "1.487",
+        "timestamp": "2026-10-22T11:51:02.190247-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    },
+    {
+      "file": "corrected.xml",
+      "sha256": "7dae4c9acee43ba893b74ef41856aec2f195c705997d480bb071de63f6621645",
+      "source_commit": "43648f5cfcf423bb957eabe696bb5dd699ded6d8",
+      "source_tree": "a226e9c8ed01c4de5cd36458fcff2f9d7bae980f",
+      "worktree": "CLEAN",
+      "scope": "21PASS: new receipt checks, actual protected HTTP/CLI, existing history and exact OpenAPI",
+      "result": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "21",
+        "time": "5.664",
+        "timestamp": "2026-10-22T11:51:34.464837-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    },
+    {
+      "file": "cohorts.xml",
+      "sha256": "e2228e90508fdb81bea4203381ef47f37474403f4578f0f7be71b434362763da",
+      "source_commit": "9d1782c9e15f035266b66284f6b9665ebfa19c39",
+      "source_tree": "0f46f838ce8e221df3613a66e9c0efa56f21fd59",
+      "worktree": "CLEAN",
+      "scope": "10PASS: both actual scoped ordinary/profile HTTP cohorts plus allowlist/unknown/identity checks",
+      "result": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "10",
+        "time": "5.287",
+        "timestamp": "2026-10-22T11:53:26.050293-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    },
+    {
+      "file": "refusal-codes.xml",
+      "sha256": "31d75e2dbcd5688a09c78284bdb002898e0f59ddae5c9bc55834729ac53961ad",
+      "source_commit": "f143759cd5eda1f4e0667e03d67c1b212f6d4c30",
+      "source_tree": "6e82970df9fd589d985ea4f9389b8a7c0e81d55f",
+      "worktree": "COMMITTED_IMPLEMENTATION; pending documentation/plan/progress/evidence edits only",
+      "scope": "Affected actual CLI case PASS after exposing only allowlisted storage/scope refusal codes",
+      "result": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "1",
+        "time": "5.061",
+        "timestamp": "2026-10-22T11:57:04.835623-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    }
+  ],
+  "execution_scope": "Actual disposable PostgreSQL/loopback HTTP/CLI/private history; synthetic keys/model/capacity",
+  "live_inference_calls": 0,
+  "owner_services_or_storage_modified": false,
+  "private_originals": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/ask-runtime-metrics-2026-10-22",
+  "checks": [
+    "Exact authenticated owner/project scope and canonical receipt, no additional inference or mutation",
+    "Ordinary/profile cohorts, reported numerical usage/timing and honest incomplete/missing values",
+    "No private question/answer/profile/source-title/token/DSN or unkeyed private input/output fingerprint in saved history",
+    "Optional model manifest matches canonical completed usage; absent source/time identity remains unknown",
+    "Wrong-scope/full-history failures create no new source or provider call, canonical completed Ask unchanged",
+    "Shared writer lock, immutable source file and private snapshot, count/byte budget refusal without pruning"
+  ],
+  "limits": [
+    "Synthetic model timing in component cases is not an actual model or performance benchmark",
+    "Only explicit receipt capture; automatic per-request capture, latency distributions, domain quality, OTel/Phoenix/exposure/React integration remain open",
+    "Source9d measurements are not relabeled for later docs/main merge; full original AOS029/G3/trial remain pending",
+    "Original test collection error preserved; rename changes only module identity, no assertion/test skipped"
+  ]
+}
