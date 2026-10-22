@@ -7,12 +7,28 @@ from uuid import UUID
 
 import typer
 
+from panestria.cli.activity import initialize
 from panestria.cli.connection_client import ConnectionClient
 from panestria.cli.tui_client import TerminalUnavailable
 from panestria.config_local import LocalApplicationRejected, read_private
 from panestria.contracts.connections import ConnectionReviewRequest, SubmitReview, parse_connection_contract
 
 connections_app = typer.Typer(no_args_is_help=True)
+connections_app.command("init")(initialize)  # Same private owner/project format; no duplicate setup implementation.
+
+
+@connections_app.command("serve")
+def serve(config: Annotated[Path, typer.Option("--config")]) -> None:
+    """Run a foreground metadata/declaration API only; no model, worker or connector."""
+    from panestria.api.activity_server import serve_activity
+    from panestria.config import ProfileRejected
+
+    try:
+        serve_activity(config, connection_reviews=True)
+    except ProfileRejected as error:
+        failed(LocalApplicationRejected(error.code))
+    except (LocalApplicationRejected, TerminalUnavailable, ValueError, TypeError) as error:
+        failed(error)
 
 
 @connections_app.command("scope")
@@ -28,7 +44,7 @@ def failed(error: Exception) -> None:
     code = (
         error.code if isinstance(error, (LocalApplicationRejected, TerminalUnavailable)) else "connection_input_invalid"
     )
-    typer.echo(json.dumps({"code": code, "decision": "UNCONFIRMED", "runtime_available": False}), err=True)
+    typer.echo(json.dumps({"code": code, "runtime_available": False}), err=True)
     raise typer.Exit(2)
 
 

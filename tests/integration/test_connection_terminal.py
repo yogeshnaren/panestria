@@ -3,12 +3,15 @@
 import curses
 import json
 import os
+import signal
 import socket
+import subprocess
 import threading
 import time
 from types import SimpleNamespace
-from uuid import UUID, uuid4
+from uuid import uuid4
 
+import httpx2 as httpx
 import psycopg
 import pytest
 import uvicorn
@@ -17,15 +20,11 @@ from test_ask_tui import terminal
 from typer.testing import CliRunner
 
 from connection_support import manifest, proposal
-from panestria.api import create_app
-from panestria.api.auth import GoalApi
-from panestria.api.health import default_readiness_probe
+from panestria.api.activity_server import build_activity_app
 from panestria.api.local_server import server_config
-from panestria.api.main import mount_goal_api
 from panestria.cli.main import app
 from panestria.config import Settings
-from panestria.config_local import create_local_token
-from panestria.config_profile import ProfileClientSettings
+from panestria.config_activity import load_activity_settings
 from panestria.kernel.connection_roots import ConnectionRootSession
 from panestria.kernel.goals import Actor
 from panestria.kernel.policy import PolicyService
@@ -49,21 +48,29 @@ def connection_server(r1_migration_task, tmp_path, monkeypatch, record_property)
     listener = socket.socket()
     listener.bind(("127.0.0.1", 0))
     port = listener.getsockname()[1]
-    token_path = tmp_path / "owner.token"
-    create_local_token(token_path)
-    token = token_path.read_text().strip()
-    config = ProfileClientSettings(
-        schema_version=1,
-        owner_id=UUID(actor.owner_id),
-        project_id=UUID(actor.project_id),
-        bind_port=port,
-        token_file=token_path,
+    directory = tmp_path / "owner"
+    initialized = CliRunner().invoke(
+        app,
+        [
+            "connections",
+            "init",
+            "--directory",
+            str(directory),
+            "--owner-id",
+            actor.owner_id,
+            "--project-id",
+            actor.project_id,
+            "--port",
+            str(port),
+        ],
     )
-    path = tmp_path / "owner-client.json"
-    path.write_text(config.model_dump_json())
-    path.chmod(0o600)
-    application = create_app(Settings(database_url=f["dsn"], bind_port=port), default_readiness_probe)
-    mount_goal_api(application, GoalApi(token, actor.owner_id, actor.project_id, f["dsn"]))
+    assert initialized.exit_code == 0 and json.loads(initialized.stdout)["project_created"] is False
+    path = directory / "activity.json"
+    config, secret = load_activity_settings(path)
+    token = secret.get_secret_value()
+    application = build_activity_app(
+        config, Settings(database_url=f["dsn"], bind_port=port).validate_profile(), token, connection_reviews=True
+    )
     state = SimpleNamespace(decisions=0, proposals=0, lose_reply=False)
 
     @application.middleware("http")
@@ -201,3 +208,52 @@ def test_postcommit_error_never_retries_or_optimistically_reports_approval(conne
     assert current["version"] == 1 and current["state"] == "DECLARED_ACTIVE" and not current["runtime_available"]
     with psycopg.connect(f.task["dsn"]) as c:
         assert c.execute("SELECT count(*) FROM panestria.connection_grant_decision").fetchone() == (1,)
+
+
+def test_actual_foreground_server_has_only_metadata_and_declaration_authority(connection_server):
+    f = connection_server
+    config, _ = load_activity_settings(f.config)
+    with socket.socket() as reservation:
+        reservation.bind(("127.0.0.1", 0))
+        port = reservation.getsockname()[1]
+    selected = config.model_copy(update={"bind_port": port})
+    path = f.config.with_name("foreground.json")
+    path.write_text(selected.model_dump_json())
+    path.chmod(0o600)
+    root = Path(__file__).resolve().parents[2]
+    server = subprocess.Popen(
+        [str(root / ".venv/bin/python"), "-m", "panestria.cli.main", "connections", "serve", "--config", str(path)],
+        cwd=root,
+        env={**os.environ, "PANESTRIA_DATABASE_URL": f.task["dsn"]},
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    try:
+        with httpx.Client(trust_env=False, timeout=2, headers={"Authorization": "Bearer " + f.token}) as client:
+            deadline = time.monotonic() + 10
+            while True:
+                assert server.poll() is None and time.monotonic() < deadline
+                try:
+                    if client.get(selected.origin + "/healthz").status_code == 200:
+                        break
+                except httpx.HTTPError:
+                    pass
+                time.sleep(0.02)
+            response = client.get(selected.origin + "/v2/connections/scope")
+            assert response.status_code == 200 and response.json()["runtime_available"] is False
+            assert response.headers["cache-control"] == "no-store"
+            assert (
+                client.get(selected.origin + "/v2/connections/scope", headers={"Authorization": ""}).status_code == 401
+            )
+            for route in ("/v1/goals", "/v1/ask", "/v1/approvals", "/v1/session/code", "/v2/profiles"):
+                assert client.post(selected.origin + route, json={}).status_code == 404
+            occupied = CliRunner().invoke(app, ["connections", "serve", "--config", str(path)])
+            assert occupied.exit_code == 2 and "local_bind_unavailable" in occupied.output
+            assert client.get(selected.origin + "/v2/connections/scope").status_code == 200
+    finally:
+        if server.poll() is None:
+            server.send_signal(signal.SIGINT)
+        out, err = server.communicate(timeout=8)
+        assert server.returncode in {0, 130}, err
+        assert f.token.encode() not in out + err
+        assert b"CONNECTION_DECLARATION_REVIEW_ONLY" in out

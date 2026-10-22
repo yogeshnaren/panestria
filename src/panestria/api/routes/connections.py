@@ -23,6 +23,11 @@ _HEADERS = {"Cache-Control": "no-store", "Referrer-Policy": "no-referrer", "X-Co
 
 
 def _api(request: Request) -> GoalApi:
+    if (
+        getattr(request.app.state, "connection_terminal_only", False)
+        and getattr(request.app.state, "browser_access", None) is not None
+    ):
+        raise LoopbackDenied("connection_terminal_mode_only", 403)
     value = getattr(request.app.state, "goal_api", None)
     if not isinstance(value, GoalApi):
         raise LoopbackDenied("connections_not_configured", 503)
