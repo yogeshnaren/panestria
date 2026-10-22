@@ -10,13 +10,13 @@ import platform
 import shutil
 import sys
 from datetime import UTC, datetime, timedelta
-from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, SecretBytes, ValidationError, model_validator
 
 from panestria.config_local import LocalApplicationRejected, read_private
+from panestria.inference.artifacts import artifact_hash as _hash
 from panestria.inference.runtime import IMAGE, MODEL, MODEL_DIGEST
 from panestria.memory.keys import KeyStoreUnavailable, ProfileKeyHandle, ProfileKeyStore
 
@@ -27,21 +27,6 @@ NODES = (
     "tests/integration/test_profile_runtime_live.py::test_actual_profile_runtime_boundary",
 )
 MODES = ("ACTUAL_ISOLATED_OS_SECRET_SERVICE", "ACTUAL_ISOLATED_OS_STORE_LOCAL_MODEL_LOOPBACK_HTTP")
-
-
-@lru_cache(maxsize=4096)
-def _file_hash(path: str, identity: tuple[int, ...]) -> str:
-    # Cache public runtime bytes only. A changed inode/size/mtime/ctime invalidates
-    # the entry; no 3GB library rehash on every profile key load.
-    with Path(path).open("rb") as stream:
-        return hashlib.file_digest(stream, "sha256").hexdigest()
-
-
-def _hash(path: Path) -> str:
-    info = path.stat()
-    if not path.is_file():
-        raise ValueError
-    return _file_hash(str(path), (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns))
 
 
 def runtime_inputs() -> dict[str, str]:

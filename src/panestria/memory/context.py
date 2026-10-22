@@ -11,6 +11,7 @@ from psycopg.types.json import Jsonb
 
 from panestria.contracts.classification import derive_classification, resolve_classification
 from panestria.contracts.memory import MemoryObservation
+from panestria.contracts.model_manifest import ModelManifest
 from panestria.contracts.policy import DataLabel
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -93,6 +94,7 @@ class ContextCompiler:
         question_label: DataLabel,
         *,
         token_budget: int = 2048,
+        model_manifest: ModelManifest | None = None,
     ) -> ContextPack:
         try:
             UUID(request_id)
@@ -158,6 +160,8 @@ class ContextCompiler:
                     ).hexdigest(),
                 }
             )
+        if model_manifest is not None:
+            metadata["model_manifest"] = model_manifest.model_dump(mode="json")
         uow.execute(
             "INSERT INTO panestria.context_pack (id,owner_id,project_id,request_id,sha256,privacy_label,metadata)"
             " VALUES (%s,%s,%s,%s,%s,%s,%s)",
@@ -175,6 +179,20 @@ class ContextCompiler:
                     context_pack_id=pack_id,
                 )
         return ContextPack(pack_id, digest, label, prompt, tuple(h.ref for h in included), len(prompt.encode()))
+
+    def model_manifest(self, uow: UnitOfWork, actor: Actor, pack_id: str) -> ModelManifest | None:
+        row = uow.execute(
+            "SELECT metadata->'model_manifest' FROM panestria.context_pack"
+            " WHERE id=%s AND owner_id=%s AND project_id=%s", (pack_id, actor.owner_id, actor.project_id),
+        ).fetchone()
+        if row is None:
+            raise KernelDenied("context_integrity_failed")
+        if row[0] is None:
+            return None
+        try:
+            return ModelManifest.model_validate_json(json.dumps(row[0]))
+        except ValueError:
+            raise KernelDenied("model_manifest_invalid") from None
 
     def revalidate(self, uow: UnitOfWork, actor: Actor, pack: ContextPack) -> None:
         row = uow.execute(

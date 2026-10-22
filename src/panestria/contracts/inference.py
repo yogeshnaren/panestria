@@ -25,6 +25,9 @@ class InferenceRequest(BaseModel):
     context_tokens: int = Field(default=2048, ge=512, le=4096)
     deadline_seconds: float = Field(default=30.0, ge=0.1, le=60.0)
     trace_id: str = Field(pattern=r"^[0-9a-f]{32}$")
+    model_manifest_sha256: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{64}$", exclude_if=lambda value: value is None
+    )
 
     @model_validator(mode="after")
     def bounded_bytes(self) -> InferenceRequest:
@@ -55,6 +58,7 @@ class InferenceResult:
     completion: Literal["COMPLETED"] = "COMPLETED"
     finish_reason: Literal["stop", "length"] = "stop"
     decode_tokens_per_second: float | None = None
+    model_manifest_sha256: str | None = None
 
 
 class InferenceUnavailable(Exception):

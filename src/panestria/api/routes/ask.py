@@ -43,6 +43,7 @@ class AskApi:
     active: dict[str, asyncio.Task[InferenceResult]] = field(default_factory=dict)
     include_charter: bool = False
     lossless_presentation: bool = False
+    pin_model_manifest: bool = False
 
     def __post_init__(self) -> None:
         if not isinstance(self.provider, LocalProvider):
@@ -51,6 +52,8 @@ class AskApi:
             raise TypeError("invalid_context_renderer")
         if type(self.lossless_presentation) is not bool:
             raise TypeError("invalid_presentation_setting")
+        if type(self.pin_model_manifest) is not bool:
+            raise TypeError("invalid_model_manifest_setting")
 
 
 def _configured(request: Request) -> tuple[GoalApi, AskApi, Actor]:
@@ -150,6 +153,13 @@ async def _execute_ask(request: Request, service: AskService, submission_type: t
     client_disconnected = False
     try:
         api, ask, actor = _configured(request)
+        if ask.pin_model_manifest:
+            if ask.provider.model_manifest is None:
+                raise InferenceUnavailable("model_manifest_unavailable")
+            service = AskService(
+                profile_context=service.profile_context, include_charter=service.compiler.include_charter,
+                model_manifest=ask.provider.model_manifest,
+            )
         raw = await read_capped_body(request)
         if isinstance(raw, JSONResponse):
             return raw

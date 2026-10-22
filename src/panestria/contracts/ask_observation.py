@@ -4,6 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, JsonValue
 
+from panestria.contracts.model_manifest import ModelManifest
 from panestria.contracts.policy import DataLabel
 
 
@@ -23,6 +24,7 @@ class AskReceipt(BaseModel):
     offline: Literal[True]
     response_digest_mode: str | None = None
     profile_context: dict[str, JsonValue] | None = None
+    model_manifest: ModelManifest | None = None
 
 
 class AskAnswer(AskReceipt):

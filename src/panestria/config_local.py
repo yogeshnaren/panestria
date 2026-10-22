@@ -31,6 +31,7 @@ class LocalApplicationSettings(BaseModel):
     runtime_directory: Path
     assistant_charter: bool = False
     lossless_presentation: bool = False
+    pin_model_manifest: bool = False
 
     @property
     def origin(self) -> str:
