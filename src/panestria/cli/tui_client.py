@@ -14,6 +14,7 @@ from panestria.config_activity import load_activity_settings
 from panestria.config_local import load_local_settings
 from panestria.contracts.activity import ActivityTimeline, ProjectActivity
 from panestria.contracts.ask import AskSubmission
+from panestria.contracts.storage_status import StorageStatus
 
 CONTROL_SECONDS = 5.0
 ASK_SECONDS = 65.0
@@ -56,6 +57,15 @@ class LocalAskClient:
         if str(page.owner_id) != str(self.config.owner_id) or str(page.project_id) != str(self.config.project_id):
             raise TerminalUnavailable("server_scope_mismatch", clear=True)
         return page.model_dump(mode="json")
+
+    def storage(self) -> dict[str, Any]:
+        try:
+            view = StorageStatus.model_validate_json(json.dumps(self._request("GET", "/v1/activity/storage")))
+        except (TypeError, ValueError):
+            raise TerminalUnavailable("storage_status_unconfirmed") from None
+        if (str(view.owner_id), str(view.project_id)) != (str(self.config.owner_id), str(self.config.project_id)):
+            raise TerminalUnavailable("server_scope_mismatch", clear=True)
+        return view.model_dump(mode="json")
 
     def timeline(self, goal_id: str, after: str = "0") -> dict[str, Any]:
         identity = str(UUID(goal_id))

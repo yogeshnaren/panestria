@@ -2464,7 +2464,10 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-029-S2.md",
-      "scope_note": "Opt-in canonical Build lifecycle/receipt/final-check metrics and explicit metadata-only ordinary/profile Ask receipt capture delivered; unknown values/accuracy/source remain honest. Full automatic cross-mode usage, exposure, UI and qualification remain pending."
+      "scope_note": "Opt-in canonical Build lifecycle/receipt/final-check metrics and explicit metadata-only ordinary/profile Ask receipt capture delivered; unknown values/accuracy/source remain honest. Full automatic cross-mode usage, exposure, UI and qualification remain pending. Opt-in owner activity terminal now shows paced/coalesced storage warnings and read-only recommendations; browser/phone host scope, persistence and host qualification remain pending.",
+      "evidence_refs": [
+        "evidence/storage-status-terminal-2026-10-22/report.json"
+      ]
     },
     {
       "id": "AOS-029-S3",
@@ -3136,10 +3139,11 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "evidence_refs": [
-        "evidence/storage-awareness-2026-10-18/report.json"
+        "evidence/storage-awareness-2026-10-18/report.json",
+        "evidence/storage-status-terminal-2026-10-22/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code. Initial read-only storage/opt-in terminal component; host budgets, admission and unified notification qualification remain pending."
+      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code. Initial read-only storage/opt-in terminal component; host budgets, admission and unified notification qualification remain pending. Opt-in owner activity terminal now shows paced/coalesced storage warnings and read-only recommendations; browser/phone host scope, persistence and host qualification remain pending."
     },
     {
       "id": "AOS-018-S5",

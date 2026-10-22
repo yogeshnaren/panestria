@@ -21,9 +21,13 @@ already delivered components.
 | Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
 | Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |
 
-Next independent integration: connect opt-in storage warnings to the owner
-resource/inbox surface, then finish the outstanding connection/phone/qualified
-Delegate and cumulative evidence work. Saved metrics are descriptive; unknown
+The opt-in storage terminal integration is now merged; desktop/mobile resource
+inbox and host qualification remain open. The owner's current priority is the
+[CI reduction](testing/CI_REQUIRED_COVERAGE.md): retain functional/security and
+mutation-witness checks, condition repeated legacy/restore regressions and avoid
+rerunning an already-proven merge tree. Connection declaration review/onboarding
+is the next unfinished independent integration, followed by outstanding broker,
+phone, qualified Delegate and cumulative evidence work. Saved metrics are descriptive; unknown
 accuracy/cost/time/source never becomes a passing gate.
 
 The latest Mission Control delivery now provides distinct explicit offline Ask,
@@ -179,6 +183,15 @@ is partial AOS-029-S2 delivery, not a benchmark, automatic instrumentation,
 exposure dashboard or release qualification.
 
 ## Project activity terminal
+
+The [opt-in owner storage terminal](testing/OWNER_STORAGE_TERMINAL.md) now
+connects private notification settings and existing read-only probes to that
+activity view. A warning banner and scrollable recommendations show timestamps,
+estimates, unknown values and owner options. Sampling is coalesced and paced;
+opt-out/change/shutdown fence publication, and a stalled read starts no second
+collector. No cleanup or backup change is exposed. This is terminal-only;
+browser/phone host-data consent, persistent history, other write paths and real
+host-budget/whole-gate qualification remain pending.
 
 The [project activity terminal](testing/PROJECT_ACTIVITY_TERMINAL.md) now shows
 canonical Ask, Delegate, Build and kernel activity for one configured owner/project.

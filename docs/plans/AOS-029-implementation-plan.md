@@ -13,6 +13,12 @@ estimates as physical totals, infer project ownership, or execute cleanup/deleti
 backup changes. The standalone [terminal monitor](../testing/STORAGE_AWARENESS.md)
 does not yet satisfy the unified dashboard/inbox obligation; AOS-029 remains open.
 
+The [owner activity storage terminal](../testing/OWNER_STORAGE_TERMINAL.md) now
+delivers an opt-in banner and scrollable source/time/uncertainty/options view
+through a scoped no-store API. It exposes no cleanup or browser host-data grant.
+Desktop/mobile inbox, persistence, broader resource/usage/exposure integration
+and whole-case qualification remain open; see the [design](../design/99-OWNER-STORAGE-TERMINAL.md).
+
 A user can trace every relevant model/tool decision and inspect what data was authorized or accessible to cloud workers versus observed network traffic, without leaking secrets.
 
 Keep the release scope and dependencies above. Implement only the selected slice; other clauses remain pending until their work/tests complete. Models/UI cannot declare completion. Apply strict scopes, typed errors, transactions, limits and compatibility spikes from the global design.

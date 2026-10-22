@@ -1,5 +1,9 @@
 # Read-only storage visibility and terminal warnings
 
+The [owner activity terminal integration](OWNER_STORAGE_TERMINAL.md) now adds an
+opt-in warning banner and scrollable recommendations beside project activity.
+The standalone inspect/watch commands below remain available without a database.
+
 From a bootstrapped checkout containing this component:
 
 ```bash

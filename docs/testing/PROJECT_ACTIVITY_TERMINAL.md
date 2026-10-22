@@ -8,6 +8,9 @@ checks or MVP acceptance. Review content and exact actions in their existing
 mode-specific interfaces.
 
 Use current main in an agent/owner-selected checkout with `uv sync --frozen --group dev`.
+For optional host-capacity warnings in this same terminal, follow the separate
+[opt-in storage setup](OWNER_STORAGE_TERMINAL.md). Without that explicit setup,
+the activity service performs no storage probes.
 The database must already be migrated and contain the project. Load its existing
 private `PANESTRIA_DATABASE_URL` environment without printing it. This command
 does not initialize a database, create a project, widen its policy or fetch models.
