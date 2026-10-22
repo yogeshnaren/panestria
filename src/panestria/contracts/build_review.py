@@ -65,4 +65,5 @@ class MissionCapabilities(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
     build_review_enabled: bool
     offline_ask_enabled: bool = False
+    research_intake_enabled: bool = False
     dispatch_authority: Literal["NONE"] = "NONE"

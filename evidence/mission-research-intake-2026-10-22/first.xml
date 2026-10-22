@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="9" time="55.429" timestamp="2026-10-21T21:53:44.255295-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_mission_research_intake" name="test_public_staging_replay_scope_and_final_session_fence" file="tests/integration/test_mission_research_intake.py" line="73" time="6.037"><failure message="KeyError: 'contract_template'">staged = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_lease_migration_6030ea50cf8144fd...f588ed1d-b6a2-4c8f-8bf1-6d77981870d5', 'contract_version': 1, 'owner_id': '7e1ecdae-012c-42f6-b680-19dd13680f9f', ...})
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-86/test_public_staging_replay_sco0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x725a7a8d8da0&gt;
+
+    def test_public_staging_replay_scope_and_final_session_fence(staged, tmp_path, monkeypatch):
+        app, _, config, token, intake = application(staged, tmp_path)
+        route = "/v1/mission/research/questions"
+        bearer = {"Authorization": "Bearer " + token}
+        origin = {"Origin": config.origin}
+        initial = totals(staged[0], staged[1].project_id)
+        with TestClient(app, base_url=config.origin) as client:
+            assert client.get("/v1/mission/research/intake").status_code == 401
+            view = client.get("/v1/mission/research/intake", headers=bearer).json()
+&gt;           assert view["contract_template"] == app.state.research_intake.view.contract_template
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'contract_template'
+
+tests/integration/test_mission_research_intake.py:83: KeyError</failure></testcase><testcase classname="tests.integration.test_mission_research_intake" name="test_browser_public_question_and_committed_response_recovery" file="tests/integration/test_mission_research_intake.py" line="147" time="33.614"><properties><property name="mode" value="ACTUAL_CHROMIUM_HTTP_PG_CAS_CLI_PAIRING__NO_MODEL_OR_SEARCH__EXPLICIT_LOST_ACK_INJECTION" /></properties><failure message="AssertionError: node:internal/modules/run_main:107&#10;      triggerUncaughtException(&#10;      ^&#10;  &#10;  locator.click: Timeout 30000ms exceeded.&#10;  Call log:&#10;  #x1B[2m  - waiting for getByRole('region', { name: 'Delegate question' }).getByText('Exact owner-selected contract and bounds', { exact: true })#x1B[22m&#10;  &#10;      at /tmp/panestria-mission-research-intake-work/apps/mission-control/tests/research-intake.mjs:10:81 {&#10;    log: [&#10;      &quot;  - waiting for getByRole('region', { name: 'Delegate question' }).getByText('Exact owner-selected contract and bounds', { exact: true })&quot;&#10;    ],&#10;    name: 'TimeoutError'&#10;  }&#10;  &#10;  Node.js v24.19.0&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/home/yogesh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node', 'tests/r...xact owner-selected contract and bounds\', { exact: true })&quot;\n  ],\n  name: \'TimeoutError\'\n}\n\nNode.js v24.19.0\n').returncode">staged = ('postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_lease_migration_47abdf2ff8da4209...64d0eba7-89c7-44ef-a9c0-3a2671e86e23', 'contract_version': 1, 'owner_id': '9e573078-7f9d-4c1a-a194-9078b085a268', ...})
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-86/test_browser_public_question_a0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x725a7a8cb890&gt;
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x725a7a776480&gt;
+
+    def test_browser_public_question_and_committed_response_recovery(staged, tmp_path, monkeypatch, record_property):
+        app, path, config, token, _ = application(staged, tmp_path)
+        record_property("mode", "ACTUAL_CHROMIUM_HTTP_PG_CAS_CLI_PAIRING__NO_MODEL_OR_SEARCH__EXPLICIT_LOST_ACK_INJECTION")
+        original = ResearchIntakeService.inspect
+        failed = set()
+    
+        def lose_one_reply(self, dsn, actor, goal):
+            value = original(self, dsn, actor, goal)
+            if "LOST_ACK" in value.question and goal not in failed:
+                failed.add(goal)
+                raise OSError("synthetic committed response lost")
+            return value
+    
+        monkeypatch.setattr(ResearchIntakeService, "inspect", lose_one_reply)
+        server = uvicorn.Server(
+            uvicorn.Config(
+                app, host="127.0.0.1", port=config.bind_port, log_config=None, access_log=False, http=LocalHttpProtocol
+            )
+        )
+        thread = threading.Thread(target=server.run, daemon=True)
+        thread.start()
+        try:
+            deadline = time.monotonic() + 15
+            while not server.started:
+                assert thread.is_alive() and time.monotonic() &lt; deadline
+                time.sleep(0.02)
+            code = subprocess.run(
+                [
+                    str(ROOT / ".venv/bin/python"),
+                    "-m",
+                    "panestria.cli.main",
+                    "mission-control",
+                    "pair-code",
+                    "--config",
+                    str(path),
+                ],
+                cwd=ROOT,
+                env={**os.environ, "PANESTRIA_DATABASE_URL": staged[0]},
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            assert code.returncode == 0 and token not in code.stdout, code.stderr
+            fixture = tmp_path / "browser.json"
+            fixture.write_text(
+                json.dumps({"origin": config.origin, "code": json.loads(code.stdout)["code"], "question": QUESTION})
+            )
+            fixture.chmod(0o600)
+            screenshot = tmp_path / "research-intake.png"
+            browser = subprocess.run(
+                [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/research-intake.mjs"],
+                cwd=ROOT / "apps/mission-control",
+                env={
+                    **os.environ,
+                    "PANESTRIA_BROWSER_FIXTURE": str(fixture),
+                    "PANESTRIA_BROWSER_SCREENSHOT": str(screenshot),
+                },
+                capture_output=True,
+                text=True,
+                timeout=45,
+            )
+&gt;           assert browser.returncode == 0, browser.stdout + browser.stderr
+E           AssertionError: node:internal/modules/run_main:107
+E                 triggerUncaughtException(
+E                 ^
+E             
+E             locator.click: Timeout 30000ms exceeded.
+E             Call log:
+E             #x1B[2m  - waiting for getByRole('region', { name: 'Delegate question' }).getByText('Exact owner-selected contract and bounds', { exact: true })#x1B[22m
+E             
+E                 at /tmp/panestria-mission-research-intake-work/apps/mission-control/tests/research-intake.mjs:10:81 {
+E               log: [
+E                 "  - waiting for getByRole('region', { name: 'Delegate question' }).getByText('Exact owner-selected contract and bounds', { exact: true })"
+E               ],
+E               name: 'TimeoutError'
+E             }
+E             
+E             Node.js v24.19.0
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/home/yogesh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node', 'tests/r...xact owner-selected contract and bounds\', { exact: true })"\n  ],\n  name: \'TimeoutError\'\n}\n\nNode.js v24.19.0\n').returncode
+
+tests/integration/test_mission_research_intake.py:209: AssertionError</failure></testcase><testcase classname="tests.integration.test_research_submission" name="test_owner_question_to_retained_inspection_is_staged_and_cannot_acquire_lease" file="tests/integration/test_research_submission.py" line="94" time="2.042"><properties><property name="candidate_commit" value="749756fc345c6f72304cc8a17b68fcf46b036853" /><property name="fixture_digest" value="a6fd578b644d557f12cfcb89e8945a7e5ac570b578fecb555bc1222b405384c1" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_submission" name="test_replay_and_concurrent_submission_preserve_one_request_and_reject_changed_question_or_limits" file="tests/integration/test_research_submission.py" line="115" time="2.153"><properties><property name="candidate_commit" value="749756fc345c6f72304cc8a17b68fcf46b036853" /><property name="fixture_digest" value="a6fd578b644d557f12cfcb89e8945a7e5ac570b578fecb555bc1222b405384c1" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_submission" name="test_actual_commit_then_lost_ack_replays_without_duplicate_rows_or_events" file="tests/integration/test_research_submission.py" line="128" time="2.555"><properties><property name="candidate_commit" value="749756fc345c6f72304cc8a17b68fcf46b036853" /><property name="fixture_digest" value="a6fd578b644d557f12cfcb89e8945a7e5ac570b578fecb555bc1222b405384c1" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_submission" name="test_late_failure_rolls_back_all_db_rows_events_but_preserves_acknowledged_private_blob" file="tests/integration/test_research_submission.py" line="144" time="2.521"><properties><property name="candidate_commit" value="749756fc345c6f72304cc8a17b68fcf46b036853" /><property name="fixture_digest" value="a6fd578b644d557f12cfcb89e8945a7e5ac570b578fecb555bc1222b405384c1" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_submission" name="test_no_public_intent_cross_owner_or_stale_policy_cannot_stage" file="tests/integration/test_research_submission.py" line="167" time="2.447"><properties><property name="candidate_commit" value="749756fc345c6f72304cc8a17b68fcf46b036853" /><property name="fixture_digest" value="a6fd578b644d557f12cfcb89e8945a7e5ac570b578fecb555bc1222b405384c1" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_research_submission" name="test_actual_cli_stage_and_private_inspect_export_redact_terminal_and_preserve_no_execution" file="tests/integration/test_research_submission.py" line="180" time="2.643"><properties><property name="candidate_commit" value="749756fc345c6f72304cc8a17b68fcf46b036853" /><property name="fixture_digest" value="a6fd578b644d557f12cfcb89e8945a7e5ac570b578fecb555bc1222b405384c1" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.e2e.test_aos_005" name="test_openapi_matches_the_mounted_routes" file="tests/e2e/test_aos_005.py" line="1143" time="0.591"><properties><property name="gate_case_id" value="AOS-005-TC01" /><property name="candidate_commit" value="749756fc345c6f72304cc8a17b68fcf46b036853" /><property name="lane" value="contract" /><property name="execution_mode" value="HERMETIC" /></properties></testcase></testsuite></testsuites>

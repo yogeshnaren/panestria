@@ -1,6 +1,6 @@
 # Implementation progress
 
-Updated 2026-10-21 UTC. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
+Updated 2026-10-22 UTC. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
 The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
@@ -255,7 +255,18 @@ not the three-mode item, G3 or the real owner trial. Original failed observation
 and their fixes are indexed in
 [source-bound evidence](../evidence/mission-offline-ask-2026-10-22/report.json).
 
-Continue the dashboard with Delegate/Build inputs and remaining approval inbox/dispatch,
+The [distinct PUBLIC Delegate input](testing/MISSION_RESEARCH_INTAKE.md) now stages
+an owner-confirmed question using an explicitly selected frozen contract/bounds
+and the existing research CAS/submission service. It stores the original required
+checks and creates canonical CREATED goal/task/request records without execution,
+leases, network or a model. Separate session/config binding, same-transaction
+policy/authentication fences and no automatic POST retry preserve that boundary.
+Actual browser/HTTP/PG/CAS checks recover one injected post-commit lost response
+by reading the same goal, with no duplicate event/request or task attempt.
+The input is useful independently of deferred search setup, but does not complete
+Delegate collection/synthesis/support or the original R2/R3 gates.
+
+Continue the dashboard with Build input and remaining approval inbox/dispatch,
 then remaining personal-platform/context/connections and finite release
 qualification. Existing keyboard Ask, research and Build terminals remain usable;
 [setup](testing/LOCAL_ASK_SETUP.md), [Build review](testing/BUILD_REVIEW_TUI.md) and

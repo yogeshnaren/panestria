@@ -26,6 +26,7 @@ def capability(request: Request) -> JSONResponse:
         body = MissionCapabilities(
             build_review_enabled=isinstance(getattr(request.app.state, "build_review", None), BuildReviewService),
             offline_ask_enabled=getattr(request.app.state, "mission_offline_ask", False) is True,
+            research_intake_enabled=getattr(request.app.state, "research_intake", None) is not None,
         )
         return JSONResponse(body.model_dump(mode="json"), headers={"Cache-Control": "no-store"})
     except LoopbackDenied as exc:

@@ -26,6 +26,7 @@ def stage_question(
     idempotency_key: str,
     *,
     public_question: bool,
+    uow: UnitOfWork | None = None,
 ) -> ResearchSubmissionReceipt:
     if public_question is not True or type(question) is not SecretStr:
         raise KernelDenied("explicit_public_question_required")
@@ -60,5 +61,7 @@ def stage_question(
         ),
         limits=limits,
     )
+    if uow is not None:
+        return ResearchSubmissionService().stage(uow, actor, document, request, idempotency_key)
     with psycopg.connect(dsn, connect_timeout=2, options="-c statement_timeout=5000 -c lock_timeout=1000") as c:
         return ResearchSubmissionService().stage(UnitOfWork(c), actor, document, request, idempotency_key)

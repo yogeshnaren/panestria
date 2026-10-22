@@ -26,6 +26,9 @@ def serve(
             "--build-review-root", help="Explicit PUBLIC diff/report review and consent recording; no merge dispatch."
         ),
     ] = None,
+    research_intake: Annotated[
+        Path | None, typer.Option("--research-intake", help="Explicit PUBLIC question staging; no execution.")
+    ] = None,
 ) -> None:
     """Serve an explicit production dashboard build on the configured exclusive port."""
     from panestria.api.activity_server import serve_activity
@@ -37,6 +40,7 @@ def serve(
             dashboard_assets=assets,
             build_evidence_store=build_evidence_store,
             build_review_root=build_review_root,
+            research_intake=research_intake,
         )
         return
     except (LocalApplicationRejected, ProfileRejected, KernelDenied) as exc:
