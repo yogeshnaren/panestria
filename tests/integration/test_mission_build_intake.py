@@ -55,6 +55,7 @@ def fresh(value):
 
 def application(f, tmp_path, enabled=True):
     b = f[0]
+    tmp_path.mkdir(parents=True, exist_ok=True)
     path, config, token = configure({"owner": b.actor.owner_id, "project": b.actor.project_id}, tmp_path)
     app = build_activity_app(config, Settings(database_url=b.task["dsn"]).validate_profile(), token)
     mount_mission_control(app, config, token, ASSETS, build_intake=enabled)
