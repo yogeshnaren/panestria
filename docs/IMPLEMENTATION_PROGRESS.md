@@ -514,3 +514,13 @@ source identities. Physical HTTP/PG/CLI/Chromium uses declared fixture inventory
 and explicit reply-loss injection, with no intake execution. Exact-head CI must
 pass before merge; full inbox/dispatch, qualified Delegate, phone and original
 R3 gates remain pending.
+
+## Explicit plan review and acceptance
+
+The separate [plan review mode](testing/MISSION_PLAN_ACCEPTANCE.md) adds a fresh
+session purpose and exact owner acknowledgment of the retained PUBLIC plan. It
+reuses canonical digest/expiry/current-policy/membership guards and atomically
+creates CREATED tasks and one acceptance. It cannot schedule workers, infer or
+merge. Ambiguous acceptance is inspected by UUID without automatic retry;
+intake-only sessions still cannot accept. Connected evidence and exact-head CI
+remain required before promotion; full inbox/dispatch and R3 gates remain open.

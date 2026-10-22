@@ -3,7 +3,7 @@
 import json
 from uuid import UUID
 
-from panestria.contracts.build_intake import BuildPlanStagingView, BuildPlanSubmission
+from panestria.contracts.build_intake import BuildPlanAcceptance, BuildPlanStagingView, BuildPlanSubmission
 from panestria.contracts.goal import load_contract
 from panestria.contracts.plan import PlanProposal, ProjectInventory
 from panestria.kernel.errors import KernelDenied
@@ -14,6 +14,16 @@ from panestria.kernel.uow import UnitOfWork
 
 
 class BuildIntakeService:
+    def __init__(self, *, allow_acceptance: bool = False):
+        self.allow_acceptance = allow_acceptance
+
+    def accept(self, uow: UnitOfWork, actor: Actor, identifier: str, body: BuildPlanAcceptance) -> str:
+        if not self.allow_acceptance:
+            raise KernelDenied("not_found")
+        self.inspect(uow, actor, identifier)  # Includes PUBLIC and current-policy protected-read gates.
+        PlanStore().accept(uow, actor, identifier, body.effect_digest, accept_plan=body.accept_plan)
+        return identifier
+
     def stage(self, uow: UnitOfWork, actor: Actor, body: BuildPlanSubmission) -> str:
         proposal = PlanProposal.model_validate_json(json.dumps(body.proposal))
         inventory = ProjectInventory.model_validate_json(json.dumps(body.inventory))

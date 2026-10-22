@@ -26,7 +26,9 @@ def mount_mission_control(
     offline_ask: bool = False,
     research_intake: Path | None = None,
     build_intake: bool = False,
+    build_plan_review: bool = False,
 ) -> None:
+    build_intake = build_intake or build_plan_review
     if build_intake and (
         offline_ask or research_intake is not None or build_review_root is not None or build_evidence_store is not None
     ):
@@ -94,9 +96,13 @@ def mount_mission_control(
         from panestria.api.routes.build_intake import router as build_intake_router
         from panestria.execution.build_intake import BuildIntakeService
 
-        app.state.build_intake = BuildIntakeService()
+        app.state.build_intake = BuildIntakeService(allow_acceptance=build_plan_review)
         app.include_router(build_intake_router)
-        purpose = b"panestria.mission-build-intake-session.v1\0"
+        purpose = (
+            b"panestria.mission-plan-review-session.v1\0"
+            if build_plan_review
+            else b"panestria.mission-build-intake-session.v1\0"
+        )
     secret = hmac.digest(token.encode(), purpose + config.origin.encode(), "sha256")
     mount_browser_api(
         app,
@@ -104,7 +110,9 @@ def mount_mission_control(
             config.origin,
             SessionService(secret),
             app.state.goal_api.database_url,
-            namespace="mission-build-intake"
+            namespace="mission-plan-review"
+            if build_plan_review
+            else "mission-build-intake"
             if build_intake
             else "mission-research"
             if research_intake is not None

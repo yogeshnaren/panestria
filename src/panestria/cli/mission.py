@@ -32,6 +32,9 @@ def serve(
     build_intake: Annotated[
         bool, typer.Option("--build-intake", help="Explicit PUBLIC zero-cash plan staging; no acceptance or execution.")
     ] = False,
+    build_plan_review: Annotated[
+        bool, typer.Option("--build-plan-review", help="Explicit PUBLIC plan intake/review/acceptance; no execution.")
+    ] = False,
 ) -> None:
     """Serve an explicit production dashboard build on the configured exclusive port."""
     from panestria.api.activity_server import serve_activity
@@ -45,6 +48,7 @@ def serve(
             build_review_root=build_review_root,
             research_intake=research_intake,
             build_intake=build_intake,
+            build_plan_review=build_plan_review,
         )
         return
     except (LocalApplicationRejected, ProfileRejected, KernelDenied) as exc:

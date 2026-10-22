@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, JsonValue, field_validator
 
-from panestria.contracts.plan import StoredPlan
+from panestria.contracts.plan import PlanSha, StoredPlan
 
 
 class BuildPlanSubmission(BaseModel):
@@ -24,6 +24,19 @@ class BuildPlanSubmission(BaseModel):
         return value
 
 
+class BuildPlanAcceptance(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, hide_input_in_errors=True)
+    effect_digest: PlanSha
+    accept_plan: Literal[True]
+
+    @field_validator("accept_plan", mode="before")
+    @classmethod
+    def explicit_acceptance(cls, value: object) -> object:
+        if value is not True:
+            raise ValueError("explicit_plan_acceptance_required")
+        return value
+
+
 class BuildPlanStagingView(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     owner_id: str
@@ -32,6 +45,6 @@ class BuildPlanStagingView(BaseModel):
     goal_status: str
     contract_document: dict[str, JsonValue]
     plan: StoredPlan
-    operation: Literal["STAGED_NO_EXECUTION"] = "STAGED_NO_EXECUTION"
+    operation: Literal["STAGED_NO_EXECUTION", "PLAN_ACCEPTED_NO_EXECUTION"] = "STAGED_NO_EXECUTION"
     runtime_qualification: Literal["NOT_ASSESSED"] = "NOT_ASSESSED"
     execution_authority: Literal["NONE"] = "NONE"
