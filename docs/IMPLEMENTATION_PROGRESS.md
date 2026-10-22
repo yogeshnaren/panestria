@@ -310,6 +310,14 @@ Actual cached CPU startup/Unix-socket inference/PG/ASGI and one-call receipt rep
 passed on the recorded source. This is partial S6 delivery: broad replacement,
 other local modes, model/style quality and original gates remain pending. Do not
 reopen this supported Ask identity path as another metadata-only task.
+The [local Build model pin](testing/LOCAL_BUILD_MODEL_PINS.md) now extends exact
+identity to opted-in JSON plan/repair drafts. Public identity export performs no
+inference; the selected digest enters the request before durable repair intent,
+and actual startup/returned identity must match before proposal publication.
+Canonical replay preserves the original identity after new-work settings change.
+Source-bound component checks and a separate actual cached CPU JSON journey cover
+this path. Research query/synthesis identity and broader S6/quality still remain;
+do not reopen completed Ask/Build pinning as new metadata work.
 Preserve purpose/classification/model-compatibility and current authority checks;
 avoid replacing retained contracts with a second prompt store. Other review
 families, full fleet/dispatch integration, connections, resources/phone and finite
@@ -390,6 +398,16 @@ qualification or cumulative release pass. S5 quality, remaining S6 replacement/
 mode compatibility, private examples/connections, Delegate/phone/resources and
 the original gates/real trial remain required. Owner checkouts/services/caches
 were preserved; the historical8770 observer remains unchanged.
+
+The [Build model extension](testing/LOCAL_BUILD_MODEL_PINS.md) adds a usable
+`local model-manifest` export and optional private planner selection, without
+chat/profile export or new permissions. [Its evidence](../evidence/local-build-model-pins-2026-10-22/report.json)
+preserves the new fixture generator/state failure and correction, actual committed
+repair-intent identity/budget/replay checks, legacy defaults and a separate actual
+existing-cache CPU JSON generation. It remains proposal-only, with original
+finite repair charges/current authority and separate owner review unchanged.
+Actual query/synthesis/general replacement qualification, S5 semantic quality,
+remaining platform integration, original gates and real owner trial stay open.
 
 The full Delegate gate still requires adversarial briefs, qualified semantic
 support/contradiction handling, an actual authorized public brief and Ask/Build

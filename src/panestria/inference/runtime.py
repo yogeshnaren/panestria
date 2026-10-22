@@ -284,12 +284,13 @@ class ModelRuntime:
         self.socket_path.unlink(missing_ok=True)
         self.primary.release()
 
-    def describe_manifest(self) -> ModelManifest:
+    def describe_manifest(self, *, json_output: bool = False) -> ModelManifest:
         from panestria.inference.manifest import describe_cpu_model
 
         if self.id is None or not self.effective or self.gpu:
             raise InferenceUnavailable("model_manifest_runtime_unavailable")
-        return describe_cpu_model(self.models)
+        descriptor = describe_cpu_model(self.models)
+        return descriptor.for_json_output() if json_output else descriptor
 
     def process_memory(self) -> dict[str, Any]:
         """Observe RSS/PSS only inside this running, private model PID namespace.

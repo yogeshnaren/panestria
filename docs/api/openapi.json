@@ -1746,8 +1746,11 @@
             "type": "string"
           },
           "runtime_profile": {
-            "const": "CPU_RAW_TEXT_V1",
             "default": "CPU_RAW_TEXT_V1",
+            "enum": [
+              "CPU_RAW_TEXT_V1",
+              "CPU_JSON_V1"
+            ],
             "title": "Runtime Profile",
             "type": "string"
           },

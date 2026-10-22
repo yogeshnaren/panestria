@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "component": "LOCAL_BUILD_MODEL_PINS",
+  "status": "IMPLEMENTED_OPT_IN_PLAN_REPAIR_PATH_WITH_SOURCE_BOUND_CHECKS",
+  "observations": [
+    {
+      "source_commit": "9d3d11ced2f4c937077d3c4d5a5da0989f521bfc",
+      "source_tree": "c255ed8b5f0a630a2b1cbb86b66feea851d9961c",
+      "report": "connected.xml",
+      "sha256": "4f04be8be53ab4dce91ff61fd0f1026b6937512e3cf9bce65f3abf9468d75761",
+      "results": {
+        "tests": "21",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "36.677"
+      },
+      "properties": {},
+      "notes": "21 cases:20 PASS/1 new fixture FAIL; one unrelated live planner case deselected. New repair check confirmed acknowledged request hash then fixture confused generator with state. Production unchanged; original failure retained."
+    },
+    {
+      "source_commit": "b8507d16ca8ce166473dae3bba948b4b0e0c2b14",
+      "source_tree": "23ac6e6d9464de7dd1a3100d316d01fdbaa2553e",
+      "report": "repair-corrected.xml",
+      "sha256": "5de7c2fabc8cd51aac138beb90a901c99659ba39af19b610984171ca16fce36d",
+      "results": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "7.441"
+      },
+      "properties": {},
+      "notes": "Affected real repair-intent case PASS after test-only correction. No weakening of identity, acknowledgment, replay or budget checks."
+    },
+    {
+      "source_commit": "b8507d16ca8ce166473dae3bba948b4b0e0c2b14",
+      "source_tree": "23ac6e6d9464de7dd1a3100d316d01fdbaa2553e",
+      "report": "actual-json-cpu.xml",
+      "sha256": "629ed68208ff40dbd67cd65123e9395962a355c5d4baff39400d2d29f21f4fd3",
+      "results": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "14.741"
+      },
+      "properties": {
+        "candidate_commit": "b8507d16ca8ce166473dae3bba948b4b0e0c2b14",
+        "execution_mode": "ACTUAL_CACHED_CPU_STARTUP_UDS_JSON_PG_ASGI_METADATA__NO_TCP_OR_PLAN_QUALITY",
+        "model_calls": "1",
+        "model_manifest_sha256": "6e34273933e3ae65a1e3f92be482fb014e9641e77aed98f38d3290e418a07ff8",
+        "model_elapsed_seconds": "2.1350586930057034",
+        "model_input_tokens": "39",
+        "model_output_tokens": "6",
+        "release_gate": "NOT_EVALUATED"
+      },
+      "notes": "Actual existing-cache CPU startup/Unix-socket JSON generation/PG/ASGI metadata selection and owned model cleanup PASS; one generation, no external API/download, physical TCP or plan-quality qualification."
+    },
+    {
+      "source_commit": "826da58039874ae23f121acfead070b33bf2eb74",
+      "source_tree": "3dda425a22859437c5e5e9f4909a5ddbab856d2a",
+      "report": "lazy-selection.xml",
+      "sha256": "034cb60e416b57a634cb4a26e81335d6b3ae7b15bc2810fedb97f7aadee76f9c",
+      "results": {
+        "tests": "21",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "37.755"
+      },
+      "notes": "21 relevant default/component cases PASS after review moved model-file selection to actual new-draft preparation. Configuration/repair construction and canonical replay no longer read the current file; replay succeeds after its owned fixture is renamed/preserved. New-request snapshot remains fixed after acknowledgment. Existing durable budget/unknown/restore and legacy planner cases remain intact. One unchanged live planner case deselected; original actual CPU observation remains bound to b8507d1, not relabeled."
+    }
+  ],
+  "outcomes": [
+    "Public model metadata export from authenticated ordinary Ask; no generation/overwrite/cache write/qualification refresh",
+    "Explicit JSON profile/strict private planner manifest snapshot before request/journal/durable repair intent",
+    "Startup and returned identity must match the retained request pin before proposal publication",
+    "Committed repair intent binds exact request hash; replay preserves original protected files and budget after new-work manifest changes",
+    "Legacy unbound paths unchanged; proposals still require separate canonical stage/accept/run/final review",
+    "Canonical replay remains model-file independent, including unavailable current new-work files; only actual new-draft preparation opens the selection"
+  ],
+  "limits": [
+    "Component generation/native/runtime/capacity are explicit fixtures; one separate actual cached CPU JSON observation is narrow",
+    "Derived JSON profile is expectation data, not a fresh certificate or license/training permission",
+    "No physical TCP/OS-key/profile/factual or plan-quality qualification; no latency distribution",
+    "Research query/synthesis, GPU/general replacement, full original S6 cases and cumulative gates/real trial remain",
+    "Owner services/checkouts/databases/configurations/caches/private material preserved; no external inference/API/download or cleanup of owner storage"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "ci": "All six exact-head checks required separately"
+}

@@ -50,8 +50,9 @@ class LocalProvider:
         try:
             manifest = ModelManifest.model_validate_json(manifest.model_dump_json())
             if (
-                self._manifest is not None or self.gpu or self.json_output
+                self._manifest is not None or self.gpu
                 or manifest.model_ref != MODEL or manifest.tools
+                or manifest.runtime_profile != ("CPU_JSON_V1" if self.json_output else "CPU_RAW_TEXT_V1")
             ):
                 raise InferenceUnavailable("model_manifest_not_supported")
             if manifest.model_bundle_sha256 != MODEL_DIGEST:
@@ -69,7 +70,8 @@ class LocalProvider:
         if (
             request.model_manifest_sha256 != manifest.sha256()
             or request.context_tokens > manifest.max_context_tokens
-            or self.gpu or self.json_output
+            or self.gpu
+            or manifest.runtime_profile != ("CPU_JSON_V1" if self.json_output else "CPU_RAW_TEXT_V1")
         ):
             raise InferenceUnavailable("model_manifest_mismatch")
         return manifest.sha256()
