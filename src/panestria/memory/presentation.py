@@ -9,7 +9,7 @@ from panestria.contracts.style import PresentationObservation, StyleProfile
 
 _UNSAFE = re.compile(
     r"[`<>|]|!\[|^[ \t]*(?:[#>*+-]|\d+[.)])(?:\s|$)|^\s*\[[^\]]+\]:|^(?: {4}|\t)"
-    r"|[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\u202a-\u202e\u2066-\u2069]",
+    r"|[\x00-\x08\x0b-\x1f\x7f\u202a-\u202e\u2066-\u2069]",
     re.MULTILINE,
 )
 
@@ -26,7 +26,15 @@ def present(text: str, style: StyleProfile, *, complete: bool = True) -> Present
     state: Literal["APPLIED", "UNCHANGED", "ABSTAIN"] = "ABSTAIN"
     paragraphs = re.split(r"(\n[ \t]*\n)", text) if len(text) <= 65536 else [text]
     count = sum(bool(part.strip()) for part in paragraphs[::2])
-    if complete is True and text and len(text.encode()) <= 65536 and count <= 16 and not _UNSAFE.search(text):
+    leading_space = any(part.strip() and part[0].isspace() for part in paragraphs[::2])
+    if (
+        complete is True
+        and text
+        and len(text.encode()) <= 65536
+        and count <= 16
+        and not leading_space
+        and not _UNSAFE.search(text)
+    ):
         if style.formatting == "paragraphs":
             state = "UNCHANGED"  # Already plain paragraphs; preserve every byte.
         elif style.formatting == "bullets":

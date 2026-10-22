@@ -36,6 +36,8 @@ def test_plain_layout_keeps_every_fact_number_citation_uncertainty_and_unicode_b
         "    protected indentation 42 [S1]",
         "[S1]: https://example.invalid/source",
         "<script>untrusted()</script>",
+        "\nAmbiguous leading line [S1]",
+        "First [S1]\r\n\r\nSecond [S2]",
     ],
 )
 def test_structured_or_ambiguous_output_abstains_without_a_semantic_rewrite(source):
