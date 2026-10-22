@@ -13,6 +13,7 @@ from panestria.contracts.ask import AskSubmission, ProfileAskSubmission
 from panestria.contracts.inference import InferenceRequest, InferenceResult
 from panestria.contracts.learning import ExposureObservation, Observation, RouteCandidate
 from panestria.contracts.policy import PolicyRequest
+from panestria.contracts.style import PresentationObservation
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.policy import active_policy_ref, current_policy, require_current_policy
@@ -260,7 +261,15 @@ class AskService:
             }
         )
 
-    def finish(self, uow: UnitOfWork, actor: Actor, request_id: str, result: InferenceResult) -> None:
+    def finish(
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        request_id: str,
+        result: InferenceResult,
+        *,
+        presentation: PresentationObservation | None = None,
+    ) -> None:
         row = uow.execute(
             "SELECT state,model_ref,deadline_at>clock_timestamp(),response_digest_mode FROM panestria.ask_request"
             " WHERE id=%s AND owner_id=%s AND project_id=%s FOR UPDATE",
@@ -270,7 +279,7 @@ class AskService:
             raise KernelDenied("not_found")
         if row[0] != "RUNNING" or row[1] != result.model_ref or not row[2]:
             raise KernelDenied("ask_not_admissible")
-        metadata = {
+        metadata: dict[str, object] = {
             "input_tokens": result.usage.input_tokens,
             "output_tokens": result.usage.output_tokens,
             "elapsed_seconds": result.elapsed_seconds,
@@ -279,6 +288,15 @@ class AskService:
             "finish_reason": result.finish_reason,
             "cash_actual_microusd": result.usage.cash_actual_microusd,
         }
+        if presentation is not None:
+            purpose = uow.execute(
+                "SELECT request_body->>'purpose' FROM panestria.ask_profile_context"
+                " WHERE request_id=%s AND owner_id=%s AND project_id=%s",
+                (request_id, actor.owner_id, actor.project_id),
+            ).fetchone()
+            if row[3] != "OMITTED_RESTRICTED_PROFILE" or purpose != ("STRUCTURED_RESPONSE_STYLE",):
+                raise KernelDenied("profile_presentation_required")
+            metadata["presentation"] = presentation.model_dump(mode="json")
         uow.execute(
             "UPDATE panestria.ask_request SET state='COMPLETED',response_sha256=%s,metadata=%s"
             " WHERE id=%s AND owner_id=%s AND project_id=%s",

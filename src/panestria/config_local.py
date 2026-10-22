@@ -30,6 +30,7 @@ class LocalApplicationSettings(BaseModel):
     model_cache: Path
     runtime_directory: Path
     assistant_charter: bool = False
+    lossless_presentation: bool = False
 
     @property
     def origin(self) -> str:
