@@ -563,5 +563,7 @@ post-commit read failures remain unconfirmed and require inspection, with no
 automatic stage/accept retry. The marker describes this request, not absence of
 an older plan. [Five connected cases](../evidence/mission-intake-rejections-2026-10-22/report.json)
 pass with actual PG/HTTP/CLI/Chromium, declared inventory and explicit lost-ack
-fixtures, including both existing uncertain reply-recovery regressions.
-Exact-head CI must pass before merge; no runtime or R3 release qualification.
+fixtures, including both existing uncertain reply-recovery regressions. Two
+combined inbox/rejection browser regressions also pass after integrating current
+main, preserving the uncertain ID guard. Exact-head CI must pass before merge;
+no runtime or R3 release qualification.

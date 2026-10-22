@@ -30,5 +30,21 @@
     "Explicit actual-commit-then-lost-ack injection returns503 without NOT_COMMITTED marker; canonical GET recovers one retained plan. Existing lost stage/acceptance browser recovery remains passing",
     "Mypy response metadata annotation corrected separately at a98c563; no behavior or source evidence relabeled",
     "No owner service/data/private/history changes, no runtime/release gate qualification"
-  ]
+  ],
+  "combined_inbox_regression": {
+    "source_commit": "4245de50b142f6c9ad44564b79399f159505c112",
+    "source_tree": "6d9f5b90f94ab34b28d5ba9aaa6c3f785fd3320b",
+    "report": "merged.xml",
+    "sha256": "d308e27b30c7a33b00366a6eacf12788dddeb76827bf483c84455d501b488c79",
+    "exit_code": 0,
+    "result": {
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "13.823"
+    },
+    "command": "pytest tests/integration/test_mission_review_inbox.py::test_actual_browser_discovers_plan_accepts_separately_and_refreshes_canonical_inbox tests/integration/test_mission_intake_rejections.py::test_browser_corrects_rejected_bundle_with_same_plan_id_without_unknown_retry -q --junitxml=<original-report>",
+    "interpretation": "2 browser cases pass after ordinary merge of verified main174: uncertain selection is still fenced; rejected bundle remains correctable. Original component observation dc48134 retained unchanged."
+  }
 }
