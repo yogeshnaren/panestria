@@ -2019,6 +2019,61 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "approval_id": {
+                    "pattern": "^[0-9a-f-]{36}$",
+                    "title": "Approval Id",
+                    "type": "string"
+                  },
+                  "decision": {
+                    "enum": [
+                      "approve",
+                      "deny"
+                    ],
+                    "title": "Decision",
+                    "type": "string"
+                  },
+                  "effect_digest": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "title": "Effect Digest",
+                    "type": "string"
+                  },
+                  "expected_version": {
+                    "minimum": 0,
+                    "title": "Expected Version",
+                    "type": "integer"
+                  },
+                  "idempotency_key": {
+                    "pattern": "^[0-9a-f-]{36}$",
+                    "title": "Idempotency Key",
+                    "type": "string"
+                  },
+                  "review_sha256": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "title": "Review Sha256",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "approval_id",
+                  "effect_digest",
+                  "expected_version",
+                  "review_sha256",
+                  "decision",
+                  "idempotency_key"
+                ],
+                "title": "BuildReviewDecision",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "content": {
