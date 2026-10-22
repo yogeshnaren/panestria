@@ -276,6 +276,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mission/build/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stage Plan */
+        post: operations["stage_plan_v1_mission_build_plans_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mission/build/plans/{plan_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Inspect Plan */
+        get: operations["inspect_plan_v1_mission_build_plans__plan_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mission/capabilities": {
         parameters: {
             query?: never;
@@ -953,6 +987,40 @@ export interface components {
              */
             view_authority: "READ_ONLY_PUBLIC_BUILD_EVIDENCE_METADATA";
         };
+        /** BuildPlanStagingView */
+        BuildPlanStagingView: {
+            /** Contract Document */
+            contract_document: {
+                [key: string]: components["schemas"]["JsonValue"];
+            };
+            /**
+             * Execution Authority
+             * @default NONE
+             * @constant
+             */
+            execution_authority: "NONE";
+            /** Goal Id */
+            goal_id: string;
+            /** Goal Status */
+            goal_status: string;
+            /**
+             * Operation
+             * @default STAGED_NO_EXECUTION
+             * @constant
+             */
+            operation: "STAGED_NO_EXECUTION";
+            /** Owner Id */
+            owner_id: string;
+            plan: components["schemas"]["StoredPlan"];
+            /** Project Id */
+            project_id: string;
+            /**
+             * Runtime Qualification
+             * @default NOT_ASSESSED
+             * @constant
+             */
+            runtime_qualification: "NOT_ASSESSED";
+        };
         /** BuildReview */
         BuildReview: {
             /** Approval Id */
@@ -1154,6 +1222,11 @@ export interface components {
         };
         /** MissionCapabilities */
         MissionCapabilities: {
+            /**
+             * Build Intake Enabled
+             * @default false
+             */
+            build_intake_enabled: boolean;
             /** Build Review Enabled */
             build_review_enabled: boolean;
             /**
@@ -1188,6 +1261,103 @@ export interface components {
             /** Goal Id */
             goal_id: string;
         };
+        /** PlanConsent */
+        PlanConsent: {
+            /** Contract Sha256 */
+            contract_sha256: string;
+            /** Expires At */
+            expires_at: string;
+            /** Inventory Sha256 */
+            inventory_sha256: string;
+            /** Plan Sha256 */
+            plan_sha256: string;
+            /** Policy Ref */
+            policy_ref: string;
+        };
+        /** PlanNode */
+        PlanNode: {
+            /** Acceptance Keys */
+            acceptance_keys: string[];
+            /** Api Microusd Per Attempt */
+            api_microusd_per_attempt: number;
+            /** Attempts */
+            attempts: number;
+            /** Capabilities */
+            capabilities: string[];
+            /**
+             * Depends On
+             * @default []
+             */
+            depends_on: string[];
+            /** Expected Artifacts */
+            expected_artifacts: string[];
+            /** Paths */
+            paths: string[];
+            /** Task Id */
+            task_id: string;
+            /** Wall Seconds Per Attempt */
+            wall_seconds_per_attempt: number;
+            /** Worker Ref */
+            worker_ref: string;
+        };
+        /** PlanProposal */
+        PlanProposal: {
+            /** Contract Sha256 */
+            contract_sha256: string;
+            /** Goal Id */
+            goal_id: string;
+            /** Inventory Sha256 */
+            inventory_sha256: string;
+            /** Nodes */
+            nodes: components["schemas"]["PlanNode"][];
+            /** Owner Id */
+            owner_id: string;
+            /** Plan Id */
+            plan_id: string;
+            /**
+             * Privacy Class
+             * @enum {string}
+             */
+            privacy_class: "PUBLIC" | "INTERNAL" | "CONFIDENTIAL" | "RESTRICTED";
+            /** Project Id */
+            project_id: string;
+            /**
+             * Schema Version
+             * @default 1
+             */
+            schema_version: number;
+        };
+        /** PlanRevisionConsent */
+        PlanRevisionConsent: {
+            /** Contract Sha256 */
+            contract_sha256: string;
+            /** Cumulative Api Microusd */
+            cumulative_api_microusd: number;
+            /** Cumulative Wall Seconds */
+            cumulative_wall_seconds: number;
+            /** Expires At */
+            expires_at: string;
+            /** Inventory Sha256 */
+            inventory_sha256: string;
+            /** Maximum Versions */
+            maximum_versions: number;
+            /** Parent Sha256 */
+            parent_sha256: string;
+            /** Plan Sha256 */
+            plan_sha256: string;
+            /** Policy Ref */
+            policy_ref: string;
+            /** Return Proof Sha256 */
+            return_proof_sha256: string;
+            /**
+             * Schema Version
+             * @default 2
+             * @constant
+             */
+            schema_version: 2;
+            /** Version */
+            version: number;
+        };
         /** ProjectActivity */
         ProjectActivity: {
             /**
@@ -1221,6 +1391,39 @@ export interface components {
              * @constant
              */
             view_authority: "READ_ONLY_METADATA";
+        };
+        /** ProjectInventory */
+        ProjectInventory: {
+            /** Base Commit */
+            base_commit: string;
+            /**
+             * Maximum Depth
+             * @default 8
+             */
+            maximum_depth: number;
+            /**
+             * Maximum Nodes
+             * @default 16
+             */
+            maximum_nodes: number;
+            /**
+             * Maximum Parallel
+             * @default 2
+             */
+            maximum_parallel: number;
+            /** Owner Id */
+            owner_id: string;
+            /** Project Id */
+            project_id: string;
+            /**
+             * Schema Version
+             * @default 1
+             */
+            schema_version: number;
+            /** Snapshot Sha256 */
+            snapshot_sha256: string;
+            /** Workers */
+            workers: components["schemas"]["WorkerInventory"][];
         };
         /** Readiness */
         Readiness: {
@@ -1336,6 +1539,54 @@ export interface components {
             /** Report */
             report: string;
         };
+        /** StoredPlan */
+        StoredPlan: {
+            /** Consent */
+            consent: components["schemas"]["PlanConsent"] | components["schemas"]["PlanRevisionConsent"];
+            /** Effect Digest */
+            effect_digest: string;
+            /**
+             * Execution Authority
+             * @default NONE
+             * @constant
+             */
+            execution_authority: "NONE";
+            inventory: components["schemas"]["ProjectInventory"];
+            /** Parent Sha256 */
+            parent_sha256?: string | null;
+            proposal: components["schemas"]["PlanProposal"];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "PROPOSED" | "ACCEPTED";
+            validation: components["schemas"]["ValidatedDAG"];
+            /** Version */
+            version: number;
+        };
+        /** ValidatedDAG */
+        ValidatedDAG: {
+            /**
+             * Authority
+             * @default PROPOSAL_ONLY
+             * @constant
+             */
+            authority: "PROPOSAL_ONLY";
+            /** Contract Sha256 */
+            contract_sha256: string;
+            /** Inventory Sha256 */
+            inventory_sha256: string;
+            /** Layers */
+            layers: string[][];
+            /** Maximum Parallel */
+            maximum_parallel: number;
+            /** Proposal Sha256 */
+            proposal_sha256: string;
+            /** Upper Api Microusd */
+            upper_api_microusd: number;
+            /** Upper Wall Seconds */
+            upper_wall_seconds: number;
+        };
         /** ValidationError */
         ValidationError: {
             /** Context */
@@ -1348,6 +1599,19 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** WorkerInventory */
+        WorkerInventory: {
+            /** Binary Sha256 */
+            binary_sha256: string;
+            /** Capabilities */
+            capabilities: string[];
+            /** Maximum Parallel */
+            maximum_parallel: number;
+            /** Profile Sha256 */
+            profile_sha256: string;
+            /** Worker Ref */
+            worker_ref: string;
         };
     };
     responses: never;
@@ -1874,6 +2138,79 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EventPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stage_plan_v1_mission_build_plans_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Contract Document */
+                    contract_document: {
+                        [key: string]: unknown;
+                    };
+                    /** Inventory */
+                    inventory: {
+                        [key: string]: unknown;
+                    };
+                    /** Proposal */
+                    proposal: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * Public Plan
+                     * @constant
+                     */
+                    public_plan: true;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuildPlanStagingView"];
+                };
+            };
+        };
+    };
+    inspect_plan_v1_mission_build_plans__plan_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuildPlanStagingView"];
                 };
             };
             /** @description Validation Error */
