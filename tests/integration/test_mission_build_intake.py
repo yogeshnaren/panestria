@@ -92,7 +92,12 @@ def test_plan_intake_atomic_scope_replay_and_separate_acceptance(submission, tmp
         assert (
             client.post(route, json=document, headers={**headers, "Origin": "https://evil.invalid"}).status_code == 403
         )
-        assert client.post(route, content=b" " * 65537, headers=headers).status_code == 413
+        assert (
+            client.post(
+                route, content=b" " * 65537, headers={**headers, "Content-Type": "application/json"}
+            ).status_code
+            == 413
+        )
         for value in (False, 1, "true"):
             assert client.post(route, json={**document, "public_plan": value}, headers=headers).status_code == 422
         invalid = copy.deepcopy(document)
