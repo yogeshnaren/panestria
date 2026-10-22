@@ -96,7 +96,7 @@ export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false,allow
       <input id="build-plan-lookup" className="receipt-id" value={lookup} onChange={e=>setLookup(e.target.value)} disabled={pending || uncertain} autoComplete="off" spellCheck={false}/>
       <button disabled={pending || !(uncertain?plan:lookup).trim()}>Inspect staged plan</button></div></form>
     {receipt && <div aria-label="Canonical staged plan"><p>Operation <strong>{receipt.operation}</strong> · execution authority NONE · runtime qualification NOT_ASSESSED</p>
-      <p>Goal <strong data-testid="build-intake-goal-state">{receipt.goal_status}</strong> · plan <strong data-testid="build-intake-plan-state">{receipt.plan.state}</strong></p>
+      <p>Last plan inspection: goal <strong data-testid="build-intake-goal-state">{receipt.goal_status}</strong> · plan <strong data-testid="build-intake-plan-state">{receipt.plan.state}</strong>. Current execution status is shown separately.</p>
       <p>Consent digest <code>{receipt.plan.effect_digest}</code> · expires <code>{receipt.plan.consent.expires_at}</code>.</p>
       <p>{allowAcceptance?'Plan acceptance is a separate explicit action below. Scheduling, worker execution and final merge remain separate owner workflows.':'Plan acceptance, scheduling, worker execution and final merge require separate existing owner workflows.'} An expired pending consent cannot be accepted.</p>
       <details open={allowAcceptance || undefined}><summary>Exact retained contract, proposal, inventory and validation</summary><pre data-testid="build-intake-retained">{JSON.stringify(receipt,null,2)}</pre></details>

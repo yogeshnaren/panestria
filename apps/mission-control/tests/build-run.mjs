@@ -25,6 +25,7 @@ try {
   await page.getByRole('button',{name:'Review exact merge request',exact:true}).click();
   await page.getByLabel('Protected diff', {exact:true}).waitFor({timeout:15000});
   assert.match(await page.getByLabel('Protected diff', {exact:true}).innerText(),/value = 43/);
+  await page.evaluate(()=>window.getSelection()?.removeAllRanges());
   await page.screenshot({path:process.env.PANESTRIA_BROWSER_SCREENSHOT,fullPage:true});
   await page.reload();
   await page.getByLabel('Recover staged plan by plan ID').fill(fixture.plan);
