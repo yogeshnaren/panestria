@@ -42,7 +42,8 @@ export function BuildReview({goal,owner,project,csrf,deny}:{goal:string,owner:st
   const canDecide=fresh && view?.decision_available && csrf && digest===view.effect_digest && confirm && !busy;
   async function decide(event:FormEvent,decision:'approve'|'deny') {
     event.preventDefault();if(!canDecide || !view || !csrf || busy)return;
-    setBusy(true);setConfirm(false);
+    setBusy(true);setConfirm(false);setView(null);
+    setNotice('Decision UNCONFIRMED while the request is in progress. Do not retry.');
     try {
       const body:Decision={
         approval_id:view.approval_id,effect_digest:view.effect_digest,expected_version:view.expected_version,
@@ -62,7 +63,7 @@ export function BuildReview({goal,owner,project,csrf,deny}:{goal:string,owner:st
       if(error instanceof Denied)deny();
     } finally {if(!lifetime.current!.signal.aborted){setBusy(false);setDigest('');}}
   }
-  return <section aria-label="Exact Build review"><h2>Exact Build review and consent</h2>
+  return <section aria-label="Exact Build review" aria-busy={busy}><h2>Exact Build review and consent</h2>
     <p>PUBLIC protected diff and check reports are untrusted text. Recording consent does not dispatch, merge or accept a release.</p>
     <button disabled={busy} onClick={()=>{setOpen(!open);setView(null);setDigest('');setConfirm(false);}}>{open?'Close exact review':'Review exact merge request'}</button>
     <p role="status">{notice}</p>
