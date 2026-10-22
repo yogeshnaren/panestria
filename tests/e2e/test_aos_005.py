@@ -1125,6 +1125,11 @@ def _openapi_document() -> dict[str, Any]:
     app = create_app(settings, probe)
     try:
         mount_goal_api(app, GoalApi(TOKEN, OWNER, PROJECT, DATABASE_URL))
+        # Optional local mode's actual registered routes, for the shared typed
+        # catalog only. No provider is instantiated and no service is enabled.
+        from panestria.api.routes.ask import router as ask_router
+
+        app.include_router(ask_router)
         document = app.openapi()
     finally:
         app.state.health.shutdown()

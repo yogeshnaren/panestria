@@ -31,6 +31,10 @@ Expect `status: CONFIGURED`, `server_started: false`, a policy reference and two
 commands in `next_steps`. Run `panestria local serve --config ...` in terminal A
 with the same private database environment, then `panestria tui --config ...` in
 terminal B. See [the keyboard guide](LOCAL_ASK_TUI.md) for what the screen does.
+For the optional production Mission Control page, use the same local settings
+with explicit `--mission-assets` as described in the
+[offline Ask browser guide](MISSION_OFFLINE_ASK.md). The default page and TUI
+remain available; the separate metadata observer cannot submit questions.
 
 An identical `init` retry keeps the same file bytes and identities; completed
 setup returns `replayed: true`. A database error retains the settings for retry

@@ -13,9 +13,9 @@ export function event(value: unknown): value is Event {
   return cursor(x.seq) && typeof x.id === 'string' && /^[0-9a-f-]{36}$/.test(x.id) &&
     typeof x.kind === 'string' && x.kind.length <= 128 && typeof x.privacy_label === 'string';
 }
-export async function json<T>(path: string, signal: AbortSignal, body?: object, csrf?: string): Promise<T> {
+export async function json<T>(path: string, signal: AbortSignal, body?: object, csrf?: string, timeoutMs = 8000): Promise<T> {
   const response = await fetch(path, {method: body ? 'POST' : 'GET', credentials: 'same-origin',
-    cache: 'no-store', signal: AbortSignal.any([signal,AbortSignal.timeout(8000)]), headers: body ? {'Content-Type': 'application/json',
+    mode: 'same-origin', redirect: 'error', cache: 'no-store', signal: AbortSignal.any([signal,AbortSignal.timeout(timeoutMs)]), headers: body ? {'Content-Type': 'application/json',
       ...(csrf ? {'X-Panestria-CSRF': csrf} : {})} : {}, body: body ? JSON.stringify(body) : undefined});
   if (response.status === 401 || response.status === 403) throw new Denied('Pairing required or access denied.');
   if (!response.ok) throw new Error('Server unavailable or request denied.');

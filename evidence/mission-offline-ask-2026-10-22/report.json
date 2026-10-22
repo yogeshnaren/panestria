@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "outcome": "OFFLINE_ASK_INTAKE_COMPONENT_ONLY",
+  "release_gate": "NOT_EVALUATED",
+  "live_inference": "NOT_RUN",
+  "identity": "ACTUAL_CHROMIUM_HTTP_POSTGRES_CLI_PAIRING__MODEL_PROCESS_HARDWARE_TEST_FIXTURE_NOT_LIVE",
+  "observations": [
+    {
+      "source_commit": "8f688978f9485dfefca0dd17a058dd78a742adf4",
+      "source_tree": "cbb8cdc88ca3b1d11e96941b5e6db314797615d5",
+      "report": "first.xml",
+      "sha256": "405292716f17837d97c6b9e11fc9782506b32bc4de6e4c404b4a5723455fe52e",
+      "result": {
+        "tests": "2",
+        "failures": "2",
+        "errors": "0",
+        "skipped": "0",
+        "time": "17.698"
+      },
+      "interpretation": "Initial fixture lifecycle and pending-loopback offline emulation failures.",
+      "exit_code": 1,
+      "command": "pytest tests/integration/test_mission_offline_ask.py -q --junitxml=<original-report>"
+    },
+    {
+      "source_commit": "45ffe58ec40b400011ddf6342ae756bead037cbb",
+      "source_tree": "0817855456b7b1f3f6576b6f397e81af88482af7",
+      "report": "connected.xml",
+      "sha256": "9875fcf2aee3844c426917c5c7fbc62781ec090ae907738238144c5e29bff256",
+      "result": {
+        "tests": "39",
+        "failures": "2",
+        "errors": "0",
+        "skipped": "0",
+        "time": "85.529"
+      },
+      "interpretation": "Legacy regressions pass; private fixture parent and null usage receipt failures remain.",
+      "exit_code": 1,
+      "command": "pytest tests/integration/test_mission_offline_ask.py tests/integration/test_local_server.py tests/integration/test_local_web.py tests/integration/test_mission_control_browser.py tests/e2e/test_aos_005.py -q --junitxml=<original-report>"
+    },
+    {
+      "source_commit": "c465cd3dc29c06a3c2a2705bd6746e8199ab9542",
+      "source_tree": "8c24e45e747474d232be8a0b853a335ffd5b1435",
+      "report": "receipt.xml",
+      "sha256": "bc9945503652cb7a5e264a00436a4158fd6b231e6b2f910aabca00bda8713a25",
+      "result": {
+        "tests": "3",
+        "failures": "2",
+        "errors": "0",
+        "skipped": "0",
+        "time": "13.081"
+      },
+      "interpretation": "OpenAPI passes; CSP inherited policy and error-response recovery expectations corrected afterward.",
+      "exit_code": 1,
+      "command": "pytest tests/integration/test_mission_offline_ask.py tests/e2e/test_aos_005.py::test_openapi_matches_the_mounted_routes -q --junitxml=<original-report>"
+    },
+    {
+      "source_commit": "481696d67e240f01250034389bf79a4e46dbd31f",
+      "source_tree": "634a18f92313244c19a6acc9e8d0d9603d5530bc",
+      "report": "canonical.xml",
+      "sha256": "2216fdcef4b8c4aaaeca195db7472df8ff78ecd056ded5285b8a611326625940",
+      "result": {
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "8.240"
+      },
+      "interpretation": "Actual browser/HTTP/PG and CLI pairing; nonlive model/process/hardware. Completion, cancellation, lost response recovery, model failure; no redispatch.",
+      "exit_code": 0,
+      "command": "pytest tests/integration/test_mission_offline_ask.py -q --junitxml=<original-report>"
+    },
+    {
+      "source_commit": "f359e78837b88dc4132270100b857e4e91a718e4",
+      "source_tree": "198f3401f7aeb3c7e3c35dedda1a704c4b73cda0",
+      "report": "review-refresh.xml",
+      "sha256": "c0be017dab5abe0731c60b01e649ae38db6661b58d60dd571f1d3db4351b5c2c",
+      "result": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "37.570"
+      },
+      "exit_code": 0,
+      "command": "pytest tests/integration/test_mission_build_review.py tests/integration/test_mission_offline_ask.py -q --junitxml=<original-report>",
+      "interpretation": "CI exposed sibling React key collision during canonical refresh; unique panel keys preserve exact review, consent and Ask across refresh. Actual Chromium/HTTP/PG/Git/independent verifier; native/model/hardware identities explicit nonlive fixtures."
+    },
+    {
+      "source_commit": "00166da03ace1aa8d1031220e0cdafe124520e8b",
+      "source_tree": "269ee0546eaed15da1b73861f9b67582abc78be0",
+      "report": "offline-review-recovery.xml",
+      "sha256": "4545c645d53028bd9c4c1db1e84dda97bb8442b06ae70af21efad22409ed5ed6",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "25.467"
+      },
+      "exit_code": 0,
+      "command": "pytest tests/integration/test_mission_build_review.py::test_physical_browser_review_offline_consent_and_existing_exact_merge -q --junitxml=<original-report>",
+      "interpretation": "Physical offline keyboard flow allows either protected-read fencing before submission or failed decision transport. Actual network failure, hidden protected content, canonical PENDING and later separate consent/exact owner merge remain required. No timeout or final-state assertion weakened."
+    }
+  ],
+  "changes": "Explicit --mission-assets on existing local Ask lifecycle; distinct session scope, canonical receipts/cancellation, no model/provider fallback or retention. Null incomplete usage is unavailable. Original failures retained.",
+  "limits": [
+    "Not whole AOS-028/G3/MVP acceptance",
+    "No owner trial or new source runtime certificate",
+    "Owner8770 review server untouched",
+    "No real model/provider call or download in these tests"
+  ],
+  "fixture_sources": {
+    "tests/integration/test_mission_offline_ask.py": "ee6c4ffddf267dddf24214f287596ba3902b695514f5a4a7632b3d4da3db78d4",
+    "apps/mission-control/tests/offline-ask.mjs": "45d766bcd36433bbe556e38100326b8f54584ff80c18f27f1bc17377567f9bfb",
+    "tests/integration/test_local_server.py": "f414b95461c4d357802ffe7c7a053f5aac059a70bb04b0c58d071ebbde379d05",
+    "uv.lock": "7292da3d0efcea78cda08efe5b2888cfcbc71653c1ce41f360af3c5af9d1fb25",
+    "apps/mission-control/package-lock.json": "377abc70c29d26e435c0a1aacada5c9259cc4ddbcc5fbc6ba3c59a183f43d026",
+    "docs/specification/attachments/agentos-skills-v0.1.0.zip": "bf9178cbd7800852e0167452900659f5a8238eb71754aa3b7944117ef35ceba6"
+  },
+  "initial_ci": {
+    "run_id": 39723841529,
+    "head": "3f5f4eafbc798e6a869e1121361966a1cca76bd5",
+    "tested_preview": "0151fcb3886ed94c26e64112d95b8d794f5495bd",
+    "result": "FAILURE",
+    "tests": 2232,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "reason": "Protected Build browser review lost panel during refresh; colliding sibling React keys corrected at f359e78. All original four CI XMLs retained in durable workspace pr170/attempt-1."
+  },
+  "second_ci": {
+    "run_id": 39738553759,
+    "head": "51769730839c4368762a296b09d31fa6ad487e6e",
+    "result": "FAILURE",
+    "tests": 2232,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "reason": "Simulated offline mouse click raced with valid protected-read fencing. Unique panels and refresh assertions passed. Raw four XMLs/run/summary retained in durable workspace pr170/attempt-2."
+  }
+}

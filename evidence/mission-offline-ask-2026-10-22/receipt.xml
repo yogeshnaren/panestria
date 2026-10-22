@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="3" time="13.081" timestamp="2026-10-21T21:39:37.978919-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_mission_offline_ask" name="test_mission_ask_scope_and_session_purpose" file="tests/integration/test_mission_offline_ask.py" line="83" time="3.452"><failure message="assert &quot;script-src 'self'&quot; in &quot;default-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; form-action 'self'&quot;">ask_application = (PosixPath('/tmp/pytest-of-yogesh/pytest-84/test_mission_ask_scope_and_ses0/local.json'), LocalApplicationSettings(sch...ness_budget_ms=500, database_url=SecretStr('**********')), &lt;fastapi.applications.FastAPI object at 0x7525c86aa120&gt;, [])
+
+    def test_mission_ask_scope_and_session_purpose(ask_application):
+        _, config, token, settings, app, calls = ask_application
+        original = local_server.build_local_app(
+            config.model_copy(update={"runtime_directory": config.runtime_directory.with_name("legacy-runtime")}),
+            settings,
+            token,
+        )
+        origin = {"Origin": config.origin}
+        bearer = {"Authorization": "Bearer " + token}
+        with TestClient(original, base_url=config.origin) as old:
+            assert 'id="question"' in old.get("/").text
+            old_code = old.post("/v1/session/code", headers=bearer, json={}).json()["code"]
+            old.post("/v1/session/pair", headers=origin, json={"code": old_code}).raise_for_status()
+            cookies = dict(old.cookies)
+        with TestClient(app, base_url=config.origin) as client:
+            assert client.get("/v1/mission/capabilities").status_code == 401
+            assert client.get("/ui/mission.js").headers["cache-control"] == "no-store"
+&gt;           assert "script-src 'self'" in client.get("/").headers["content-security-policy"]
+E           assert "script-src 'self'" in "default-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; form-action 'self'"
+
+tests/integration/test_mission_offline_ask.py:101: AssertionError</failure></testcase><testcase classname="tests.integration.test_mission_offline_ask" name="test_browser_offline_ask_answer_cancel_recovery_and_refusal" file="tests/integration/test_mission_offline_ask.py" line="142" time="8.491"><properties><property name="mode" value="ACTUAL_CHROMIUM_HTTP_PG__TEST_FIXTURE_NOT_LIVE_MODEL_PROCESS_HARDWARE" /></properties><failure message="AssertionError: node:internal/modules/run_main:107&#10;      triggerUncaughtException(&#10;      ^&#10;  &#10;  ExpectError: expect(locator).toHaveText(expected) failed&#10;  &#10;  Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')&#10;  Expected: &quot;UNAVAILABLE&quot;&#10;  Timeout: 5000ms&#10;  Error: element(s) not found&#10;  &#10;  Call log:&#10;    - Expect &quot;toHaveText&quot; getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms&#10;    - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')&#10;  &#10;      at captureRawStack (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright-core/lib/coreBundle.js:9282:17)&#10;      at callMatcherAsStep (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13316:57)&#10;      at Object.toHaveText (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13308:23)&#10;      at /tmp/panestria-mission-offline-ask-work/apps/mission-control/tests/offline-ask.mjs:62:46 {&#10;    matcherResult: {&#10;      name: 'toHaveText',&#10;      expected: 'UNAVAILABLE',&#10;      message: 'expect(locator).toHaveText(expected) failed\n' +&#10;        '\n' +&#10;        &quot;Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')\n&quot; +&#10;        'Expected: &quot;UNAVAILABLE&quot;\n' +&#10;        'Timeout: 5000ms\n' +&#10;        'Error: element(s) not found\n' +&#10;        '\n' +&#10;        'Call log:\n' +&#10;        `  - Expect &quot;toHaveText&quot; getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms\n` +&#10;        &quot;  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')\n&quot;,&#10;      pass: false,&#10;      actual: undefined,&#10;      log: [&#10;        `  - Expect &quot;toHaveText&quot; getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms`,&#10;        &quot;  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')&quot;&#10;      ],&#10;      timeout: 5000,&#10;      ariaSnapshot: '- main:\n' +&#10;        '  - paragraph: PANESTRIA · OFFLINE ASK\n' +&#10;        '  - heading &quot;Mission Control&quot; [level=1]\n' +&#10;        '  - paragraph: &quot;Canonical project activity and goal timelines. Explicit offline Ask input · acceptance authority: NONE.&quot;\n' +&#10;        '  - region &quot;Connection&quot;:\n' +&#10;        '    - status: Project snapshot confirmed.\n' +&#10;        '    - button &quot;Log out&quot;\n' +&#10;        '    - paragraph: Enter questions only in Offline Ask below. Never enter credentials or bearer tokens.\n' +&#10;        '  - region &quot;Offline Ask&quot;:\n' +&#10;        '    - heading &quot;Offline Ask&quot; [level=2]\n' +&#10;        '    - paragraph: Uses this workstation’s configured local model. RESTRICTED · offline · no response retention · no profile context.\n' +&#10;        '    - status: UNCONFIRMED. Inspect this request ID before starting another question. No automatic retry was sent.\n' +&#10;        '    - text: Question\n' +&#10;        '    - textbox &quot;Question&quot; [disabled]: SYNTHETIC MODEL_UNAVAILABLE\n' +&#10;        '    - paragraph: 27 / 4096 UTF-8 bytes. Output is limited to 128 tokens; deadline 60 seconds.\n' +&#10;        '    - button &quot;Ask offline&quot; [disabled]\n' +&#10;        '    - button &quot;Cancel request&quot;\n' +&#10;        '    - paragraph:\n' +&#10;        '      - text: Request ID\n' +&#10;        '      - code: 9b85acb3-2956-47d0-80c9-e7f12a3377eb\n' +&#10;        '    - text: Recover receipt by request ID\n' +&#10;        '    - textbox &quot;Recover receipt by request ID&quot; [disabled]: 9b85acb3-2956-47d0-80c9-e7f12a3377eb\n' +&#10;        '    - button &quot;Inspect receipt&quot;\n' +&#10;        '  - region &quot;Project activity&quot;:\n' +&#10;        '    - heading &quot;Project activity&quot; [level=2]\n' +&#10;        '    - paragraph:\n' +&#10;        '      - text: Project\n' +&#10;        '      - code: 87d320e2-bf79-4f97-8ebd-571a43a184f9\n' +&#10;        '      - text: · Confirmed\n' +&#10;        '    - paragraph: Observed 2026-10-22T04:39:43.676040Z. Statuses are canonical observations, not release acceptance.\n' +&#10;        '    - paragraph: No activity in this project yet.\n' +&#10;        '    - table:\n' +&#10;        '      - rowgroup:\n' +&#10;        '        - row &quot;Work State Tasks / reviews Inspect&quot;:\n' +&#10;        '          - columnheader &quot;Work&quot;\n' +&#10;        '          - columnheader &quot;State&quot;\n' +&#10;        '          - columnheader &quot;Tasks / reviews&quot;\n' +&#10;        '          - columnheader &quot;Inspect&quot;\n' +&#10;        '      - rowgroup\n' +&#10;        '    - button &quot;Latest&quot; [disabled]\n' +&#10;        '    - button &quot;Older activity&quot; [disabled]\n' +&#10;        '  - text: Local desktop only. Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.'&#10;    }&#10;  }&#10;  &#10;  Node.js v24.19.0&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/home/yogesh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node', 'tests/o...k is available here. Delegate, Build intake and phone access remain separate R3 work.\'\n  }\n}\n\nNode.js v24.19.0\n').returncode">ask_application = (PosixPath('/tmp/pytest-of-yogesh/pytest-84/test_browser_offline_ask_answe0/local.json'), LocalApplicationSettings(sch...inguish conflicting facts and uncertainty.","untrusted_reference_data":[]}', 'stream': True, 'keep_alive': '5m', ...}])
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-84/test_browser_offline_ask_answe0')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x7525c6b6f240&gt;
+
+    def test_browser_offline_ask_answer_cancel_recovery_and_refusal(ask_application, tmp_path, record_property):
+        path, config, token, settings, app, calls = ask_application
+        record_property("mode", "ACTUAL_CHROMIUM_HTTP_PG__TEST_FIXTURE_NOT_LIVE_MODEL_PROCESS_HARDWARE")
+        listener = local_server.owned_listener(config)
+        server = uvicorn.Server(uvicorn.Config(app, log_config=None, access_log=False, http=LocalHttpProtocol))
+        thread = threading.Thread(target=lambda: server.run(sockets=[listener]), daemon=True)
+        thread.start()
+        try:
+            deadline = time.monotonic() + 15
+            while not server.started:
+                assert thread.is_alive() and time.monotonic() &lt; deadline, "local test server failed startup"
+                time.sleep(0.02)
+            code = subprocess.run(
+                [str(ROOT / ".venv/bin/python"), "-m", "panestria.cli.main", "local", "pair-code", "--config", str(path)],
+                cwd=ROOT,
+                env={**os.environ, "PANESTRIA_DATABASE_URL": settings.database_url.get_secret_value()},
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            assert code.returncode == 0 and token not in code.stdout, code.stderr
+            fixture = tmp_path / "browser.json"
+            fixture.write_text(json.dumps({"origin": config.origin, "code": json.loads(code.stdout)["code"]}))
+            fixture.chmod(0o600)
+            screenshot = tmp_path / "offline-ask.png"
+            result = subprocess.run(
+                [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/offline-ask.mjs"],
+                cwd=ROOT / "apps/mission-control",
+                env={
+                    **os.environ,
+                    "PANESTRIA_BROWSER_FIXTURE": str(fixture),
+                    "PANESTRIA_BROWSER_SCREENSHOT": str(screenshot),
+                },
+                capture_output=True,
+                text=True,
+                timeout=80,
+            )
+&gt;           assert result.returncode == 0, result.stdout + result.stderr
+E           AssertionError: node:internal/modules/run_main:107
+E                 triggerUncaughtException(
+E                 ^
+E             
+E             ExpectError: expect(locator).toHaveText(expected) failed
+E             
+E             Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')
+E             Expected: "UNAVAILABLE"
+E             Timeout: 5000ms
+E             Error: element(s) not found
+E             
+E             Call log:
+E               - Expect "toHaveText" getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms
+E               - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')
+E             
+E                 at captureRawStack (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright-core/lib/coreBundle.js:9282:17)
+E                 at callMatcherAsStep (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13316:57)
+E                 at Object.toHaveText (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13308:23)
+E                 at /tmp/panestria-mission-offline-ask-work/apps/mission-control/tests/offline-ask.mjs:62:46 {
+E               matcherResult: {
+E                 name: 'toHaveText',
+E                 expected: 'UNAVAILABLE',
+E                 message: 'expect(locator).toHaveText(expected) failed\n' +
+E                   '\n' +
+E                   "Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')\n" +
+E                   'Expected: "UNAVAILABLE"\n' +
+E                   'Timeout: 5000ms\n' +
+E                   'Error: element(s) not found\n' +
+E                   '\n' +
+E                   'Call log:\n' +
+E                   `  - Expect "toHaveText" getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms\n` +
+E                   "  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')\n",
+E                 pass: false,
+E                 actual: undefined,
+E                 log: [
+E                   `  - Expect "toHaveText" getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms`,
+E                   "  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')"
+E                 ],
+E                 timeout: 5000,
+E                 ariaSnapshot: '- main:\n' +
+E                   '  - paragraph: PANESTRIA · OFFLINE ASK\n' +
+E                   '  - heading "Mission Control" [level=1]\n' +
+E                   '  - paragraph: "Canonical project activity and goal timelines. Explicit offline Ask input · acceptance authority: NONE."\n' +
+E                   '  - region "Connection":\n' +
+E                   '    - status: Project snapshot confirmed.\n' +
+E                   '    - button "Log out"\n' +
+E                   '    - paragraph: Enter questions only in Offline Ask below. Never enter credentials or bearer tokens.\n' +
+E                   '  - region "Offline Ask":\n' +
+E                   '    - heading "Offline Ask" [level=2]\n' +
+E                   '    - paragraph: Uses this workstation’s configured local model. RESTRICTED · offline · no response retention · no profile context.\n' +
+E                   '    - status: UNCONFIRMED. Inspect this request ID before starting another question. No automatic retry was sent.\n' +
+E                   '    - text: Question\n' +
+E                   '    - textbox "Question" [disabled]: SYNTHETIC MODEL_UNAVAILABLE\n' +
+E                   '    - paragraph: 27 / 4096 UTF-8 bytes. Output is limited to 128 tokens; deadline 60 seconds.\n' +
+E                   '    - button "Ask offline" [disabled]\n' +
+E                   '    - button "Cancel request"\n' +
+E                   '    - paragraph:\n' +
+E                   '      - text: Request ID\n' +
+E                   '      - code: 9b85acb3-2956-47d0-80c9-e7f12a3377eb\n' +
+E                   '    - text: Recover receipt by request ID\n' +
+E                   '    - textbox "Recover receipt by request ID" [disabled]: 9b85acb3-2956-47d0-80c9-e7f12a3377eb\n' +
+E                   '    - button "Inspect receipt"\n' +
+E                   '  - region "Project activity":\n' +
+E                   '    - heading "Project activity" [level=2]\n' +
+E                   '    - paragraph:\n' +
+E                   '      - text: Project\n' +
+E                   '      - code: 87d320e2-bf79-4f97-8ebd-571a43a184f9\n' +
+E                   '      - text: · Confirmed\n' +
+E                   '    - paragraph: Observed 2026-10-22T04:39:43.676040Z. Statuses are canonical observations, not release acceptance.\n' +
+E                   '    - paragraph: No activity in this project yet.\n' +
+E                   '    - table:\n' +
+E                   '      - rowgroup:\n' +
+E                   '        - row "Work State Tasks / reviews Inspect":\n' +
+E                   '          - columnheader "Work"\n' +
+E                   '          - columnheader "State"\n' +
+E                   '          - columnheader "Tasks / reviews"\n' +
+E                   '          - columnheader "Inspect"\n' +
+E                   '      - rowgroup\n' +
+E                   '    - button "Latest" [disabled]\n' +
+E                   '    - button "Older activity" [disabled]\n' +
+E                   '  - text: Local desktop only. Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.'
+E               }
+E             }
+E             
+E             Node.js v24.19.0
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/home/yogesh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node', 'tests/o...k is available here. Delegate, Build intake and phone access remain separate R3 work.\'\n  }\n}\n\nNode.js v24.19.0\n').returncode
+
+tests/integration/test_mission_offline_ask.py:180: AssertionError</failure></testcase><testcase classname="tests.e2e.test_aos_005" name="test_openapi_matches_the_mounted_routes" file="tests/e2e/test_aos_005.py" line="1140" time="0.494"><properties><property name="gate_case_id" value="AOS-005-TC01" /><property name="candidate_commit" value="c465cd3dc29c06a3c2a2705bd6746e8199ab9542" /><property name="lane" value="contract" /><property name="execution_mode" value="HERMETIC" /></properties></testcase></testsuite></testsuites>

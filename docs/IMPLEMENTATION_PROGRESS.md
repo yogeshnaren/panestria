@@ -240,7 +240,22 @@ Native/auth/OS/capacity identities are explicit nonlive fixtures. This is partia
 AOS-028-S2/S3, no full approval inbox/intakes/dispatch UI or G3/trial pass. The
 owner's historical review server on8770 remains unchanged.
 
-Continue the dashboard with distinct mode inputs and remaining approval inbox/dispatch,
+The [offline Ask input](testing/MISSION_OFFLINE_ASK.md) now selects the production
+dashboard explicitly through the existing local Ask launcher. Its separate
+session purpose, one-model lifecycle, RESTRICTED/no-profile questions, literal
+memory-only answers, measured receipts, cancellation and uncertain-response
+recovery reuse the canonical Ask controller. A receipt with no completed usage
+measurement remains unavailable, never zero. The physical Chromium/HTTP/PG
+journey checks completion, cancellation, disconnect/recovery and model failure,
+with exactly four submitted inference turns and no automatic redispatch/fallback.
+Model/process/hardware identities are explicitly nonlive fixtures; runtime and
+release qualification remain separate. Default local Ask and the8770 observer
+retain their existing modes. This closes the Ask intake portion of AOS-028-F01,
+not the three-mode item, G3 or the real owner trial. Original failed observations
+and their fixes are indexed in
+[source-bound evidence](../evidence/mission-offline-ask-2026-10-22/report.json).
+
+Continue the dashboard with Delegate/Build inputs and remaining approval inbox/dispatch,
 then remaining personal-platform/context/connections and finite release
 qualification. Existing keyboard Ask, research and Build terminals remain usable;
 [setup](testing/LOCAL_ASK_SETUP.md), [Build review](testing/BUILD_REVIEW_TUI.md) and

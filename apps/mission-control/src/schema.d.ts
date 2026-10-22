@@ -157,6 +157,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ask Question */
+        post: operations["ask_question_v1_ask_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ask/{request_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ask Receipt */
+        get: operations["ask_receipt_v1_ask__request_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ask/{request_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Ask */
+        post: operations["cancel_ask_v1_ask__request_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/goals": {
         parameters: {
             query?: never;
@@ -270,6 +321,43 @@ export interface paths {
         put?: never;
         /** Decide Review */
         post: operations["decide_review_v1_mission_goals__goal_id__build_review_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/ask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Profile Ask Question */
+        post: operations["profile_ask_question_v2_ask_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/ask/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Profile Ask Status
+         * @description Configured scope only: never read a key/profile or qualify inference readiness.
+         */
+        get: operations["profile_ask_status_v2_ask_status_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -582,6 +670,121 @@ export interface components {
             /** Verdict */
             verdict: string;
         };
+        /** AskAnswer */
+        AskAnswer: {
+            /** Code */
+            code: string | null;
+            /** Context Pack Id */
+            context_pack_id: string;
+            /** Model Ref */
+            model_ref: string;
+            /**
+             * Offline
+             * @constant
+             */
+            offline: true;
+            /**
+             * Privacy Label
+             * @enum {string}
+             */
+            privacy_label: "PUBLIC" | "INTERNAL" | "CONFIDENTIAL" | "RESTRICTED" | "PRIVATE" | "UNKNOWN";
+            /** Profile Context */
+            profile_context?: {
+                [key: string]: components["schemas"]["JsonValue"];
+            } | null;
+            /**
+             * Replayed Receipt
+             * @default false
+             */
+            replayed_receipt: boolean;
+            /** Request Id */
+            request_id: string;
+            /** Response Digest Mode */
+            response_digest_mode?: string | null;
+            /**
+             * Response Retained
+             * @constant
+             */
+            response_retained: false;
+            /** Response Sha256 */
+            response_sha256: string | null;
+            /** Sources */
+            sources: {
+                [key: string]: components["schemas"]["JsonValue"];
+            }[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "PREPARED" | "RUNNING" | "COMPLETED" | "CANCELLED" | "UNAVAILABLE";
+            /** Text */
+            text?: string | null;
+            /** Trace Id */
+            trace_id: string;
+            /** Usage */
+            usage: {
+                [key: string]: components["schemas"]["JsonValue"];
+            } | null;
+        };
+        /** AskCancellation */
+        AskCancellation: {
+            /** Request Id */
+            request_id: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "PREPARED" | "RUNNING" | "COMPLETED" | "CANCELLED" | "UNAVAILABLE";
+        };
+        /** AskReceipt */
+        AskReceipt: {
+            /** Code */
+            code: string | null;
+            /** Context Pack Id */
+            context_pack_id: string;
+            /** Model Ref */
+            model_ref: string;
+            /**
+             * Offline
+             * @constant
+             */
+            offline: true;
+            /**
+             * Privacy Label
+             * @enum {string}
+             */
+            privacy_label: "PUBLIC" | "INTERNAL" | "CONFIDENTIAL" | "RESTRICTED" | "PRIVATE" | "UNKNOWN";
+            /** Profile Context */
+            profile_context?: {
+                [key: string]: components["schemas"]["JsonValue"];
+            } | null;
+            /** Request Id */
+            request_id: string;
+            /** Response Digest Mode */
+            response_digest_mode?: string | null;
+            /**
+             * Response Retained
+             * @constant
+             */
+            response_retained: false;
+            /** Response Sha256 */
+            response_sha256: string | null;
+            /** Sources */
+            sources: {
+                [key: string]: components["schemas"]["JsonValue"];
+            }[];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "PREPARED" | "RUNNING" | "COMPLETED" | "CANCELLED" | "UNAVAILABLE";
+            /** Trace Id */
+            trace_id: string;
+            /** Usage */
+            usage: {
+                [key: string]: components["schemas"]["JsonValue"];
+            } | null;
+        };
         /** BuildCheck */
         BuildCheck: {
             /** Check Id */
@@ -877,6 +1080,7 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        JsonValue: unknown;
         /** Liveness */
         Liveness: {
             /**
@@ -907,6 +1111,11 @@ export interface components {
              * @constant
              */
             dispatch_authority: "NONE";
+            /**
+             * Offline Ask Enabled
+             * @default false
+             */
+            offline_ask_enabled: boolean;
         };
         /** PendingApproval */
         PendingApproval: {
@@ -1278,6 +1487,132 @@ export interface operations {
             };
         };
     };
+    ask_question_v1_ask_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Context Tokens
+                     * @default 2048
+                     */
+                    context_tokens?: number;
+                    /**
+                     * Deadline Seconds
+                     * @default 30
+                     */
+                    deadline_seconds?: number;
+                    /**
+                     * Max Output Tokens
+                     * @default 128
+                     */
+                    max_output_tokens?: number;
+                    /**
+                     * Offline
+                     * @default true
+                     * @constant
+                     */
+                    offline?: true;
+                    /**
+                     * Privacy Label
+                     * @default PRIVATE
+                     * @enum {string}
+                     */
+                    privacy_label?: "PUBLIC" | "INTERNAL" | "CONFIDENTIAL" | "RESTRICTED" | "PRIVATE" | "UNKNOWN";
+                    /** Project Id */
+                    project_id: string;
+                    /** Question */
+                    question: string;
+                    /** Request Id */
+                    request_id: string;
+                    /**
+                     * Retain Response
+                     * @default false
+                     * @constant
+                     */
+                    retain_response?: false;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AskAnswer"];
+                };
+            };
+        };
+    };
+    ask_receipt_v1_ask__request_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AskReceipt"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_ask_v1_ask__request_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AskCancellation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     submit_goal_v1_goals_post: {
         parameters: {
             query?: never;
@@ -1501,6 +1836,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    profile_ask_question_v2_ask_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    profile_ask_status_v2_ask_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };

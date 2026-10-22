@@ -108,12 +108,15 @@ def token_create(token_file: Path = _TOKEN_FILE) -> None:
 
 
 @local_app.command("serve")
-def serve(config: Path = _CONFIG_FILE) -> None:
+def serve(
+    config: Path = _CONFIG_FILE,
+    mission_assets: Annotated[Path | None, typer.Option("--mission-assets")] = None,
+) -> None:
     """Run the foreground local Ask process; Ctrl+C stops its owned model."""
     from panestria.api.local_server import serve_local
 
     try:
-        serve_local(config)
+        serve_local(config, mission_assets=mission_assets)
     except (LocalApplicationRejected, ProfileRejected, KernelDenied, InferenceUnavailable) as exc:
         code = exc.code
     except (DatabaseUnavailable, psycopg.Error, OSError, ValueError):
