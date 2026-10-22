@@ -327,6 +327,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mission/research/intake": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Intake */
+        get: operations["intake_v1_mission_research_intake_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mission/research/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stage */
+        post: operations["stage_v1_mission_research_questions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mission/research/questions/{goal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Inspect */
+        get: operations["inspect_v1_mission_research_questions__goal_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/ask": {
         parameters: {
             query?: never;
@@ -1116,6 +1167,11 @@ export interface components {
              * @default false
              */
             offline_ask_enabled: boolean;
+            /**
+             * Research Intake Enabled
+             * @default false
+             */
+            research_intake_enabled: boolean;
         };
         /** PendingApproval */
         PendingApproval: {
@@ -1180,6 +1236,99 @@ export interface components {
              * @enum {string}
              */
             status: "ready" | "not_ready" | "degraded";
+        };
+        /** ResearchIntakeView */
+        ResearchIntakeView: {
+            /** Contract Template */
+            contract_template: {
+                [key: string]: components["schemas"]["JsonValue"];
+            };
+            /**
+             * Execution Authority
+             * @default NONE
+             * @constant
+             */
+            execution_authority: "NONE";
+            limits: components["schemas"]["ResearchLimits"];
+            /** Owner Id */
+            owner_id: string;
+            /** Project Id */
+            project_id: string;
+            /** Template Sha256 */
+            template_sha256: string;
+        };
+        /** ResearchLimits */
+        ResearchLimits: {
+            /**
+             * Deadline Seconds
+             * @default 60
+             */
+            deadline_seconds: number;
+            /**
+             * Max Redirects
+             * @default 3
+             */
+            max_redirects: number;
+            /**
+             * Max Source Bytes
+             * @default 1048576
+             */
+            max_source_bytes: number;
+            /**
+             * Max Sources
+             * @default 8
+             */
+            max_sources: number;
+            /**
+             * Max Total Bytes
+             * @default 8388608
+             */
+            max_total_bytes: number;
+            /**
+             * Schema Version
+             * @default 1
+             */
+            schema_version: number;
+        };
+        /** ResearchStagingView */
+        ResearchStagingView: {
+            /**
+             * Execution Authority
+             * @default NONE
+             * @constant
+             */
+            execution_authority: "NONE";
+            /** Goal Id */
+            goal_id: string;
+            /** Goal Status */
+            goal_status: string;
+            limits: components["schemas"]["ResearchLimits"];
+            /**
+             * Operation
+             * @default STAGED_NO_EXECUTION
+             * @constant
+             */
+            operation: "STAGED_NO_EXECUTION";
+            /** Owner Id */
+            owner_id: string;
+            /** Project Id */
+            project_id: string;
+            /** Question */
+            question: string;
+            /** Request Id */
+            request_id: string;
+            /** Request Sha256 */
+            request_sha256: string;
+            /**
+             * Semantic Support
+             * @default NOT_ASSESSED
+             * @constant
+             */
+            semantic_support: "NOT_ASSESSED";
+            /** Task Id */
+            task_id: string;
+            /** Task State */
+            task_state: string;
         };
         /** ReviewCheck */
         ReviewCheck: {
@@ -1827,6 +1976,96 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BuildReviewReceipt"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    intake_v1_mission_research_intake_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResearchIntakeView"];
+                };
+            };
+        };
+    };
+    stage_v1_mission_research_questions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Goal Id */
+                    goal_id: string;
+                    /**
+                     * Public Question
+                     * @constant
+                     */
+                    public_question: true;
+                    /**
+                     * Question
+                     * Format: password
+                     */
+                    question: string;
+                    /** Template Sha256 */
+                    template_sha256: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResearchStagingView"];
+                };
+            };
+        };
+    };
+    inspect_v1_mission_research_questions__goal_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                goal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResearchStagingView"];
                 };
             };
             /** @description Validation Error */

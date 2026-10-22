@@ -33,6 +33,7 @@ def serve_activity(
     dashboard_assets: Path | None = None,
     build_evidence_store: Path | None = None,
     build_review_root: Path | None = None,
+    research_intake: Path | None = None,
 ) -> None:
     config, token = load_activity_settings(path)
     settings = Settings(
@@ -60,6 +61,7 @@ def serve_activity(
                 dashboard_assets,
                 build_evidence_store=build_evidence_store,
                 build_review_root=build_review_root,
+                research_intake=research_intake,
             )
         server = uvicorn.Server(server_config(app))
         print(
@@ -67,7 +69,11 @@ def serve_activity(
                 {
                     "status": "STARTING",
                     "origin": config.origin,
-                    "authority": "PUBLIC_BUILD_REVIEW_CONSENT_ONLY" if build_review_root else "READ_ONLY_METADATA",
+                    "authority": "PUBLIC_RESEARCH_STAGING_ONLY"
+                    if research_intake
+                    else "PUBLIC_BUILD_REVIEW_CONSENT_ONLY"
+                    if build_review_root
+                    else "READ_ONLY_METADATA",
                 }
             ),
             flush=True,

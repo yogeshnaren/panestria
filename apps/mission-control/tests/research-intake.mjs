@@ -1,0 +1,35 @@
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+import {chromium,expect} from '@playwright/test';
+const f=JSON.parse(readFileSync(process.env.PANESTRIA_BROWSER_FIXTURE,'utf8'));
+const browser=await chromium.launch({headless:true});
+try {
+  const page=await browser.newPage();await page.goto(f.origin);
+  await page.getByLabel('One-use pairing code from your terminal').fill(f.code);await page.getByRole('button',{name:'Pair',exact:true}).click();
+  const view=page.getByRole('region',{name:'Delegate question'});await expect(view).toBeVisible();
+  await view.getByText('Exact owner-selected contract and bounds',{exact:true}).click();
+  await expect(view).toContainText('human-review');
+  await view.getByLabel('PUBLIC research question',{exact:true}).fill(f.question);
+  await expect(view.getByRole('button',{name:'Stage PUBLIC question',exact:true})).toBeDisabled();
+  await view.getByRole('checkbox').check();await view.getByRole('button',{name:'Stage PUBLIC question',exact:true}).click();
+  await expect(view.getByTestId('research-task-state')).toHaveText('CREATED');
+  await expect(view.getByTestId('research-question-text')).toHaveText(f.question);
+  await expect(view.locator('script,img')).toHaveCount(0);assert.equal(await page.evaluate(()=>localStorage.length+sessionStorage.length),0);
+  const first=await view.getByTestId('research-goal').textContent();
+  await page.screenshot({path:process.env.PANESTRIA_BROWSER_SCREENSHOT,fullPage:true});
+  await view.getByRole('button',{name:'New PUBLIC question',exact:true}).click();
+  await view.getByLabel('PUBLIC research question',{exact:true}).fill('PUBLIC SYNTHETIC LOST_ACK');
+  await view.getByRole('checkbox').check();await view.getByRole('button',{name:'Stage PUBLIC question',exact:true}).click();
+  await expect(view.getByTestId('research-notice')).toContainText('UNCONFIRMED');
+  const second=await view.getByTestId('research-goal').textContent();
+  await expect(view.getByRole('button',{name:'Stage PUBLIC question',exact:true})).toBeDisabled();
+  await view.getByRole('button',{name:'Inspect staged question',exact:true}).click();
+  await expect(view.getByTestId('research-task-state')).toHaveText('CREATED');
+  await expect(view.getByTestId('research-question-text')).toHaveText('PUBLIC SYNTHETIC LOST_ACK');
+  await page.reload();
+  await view.getByLabel('Recover staged question by goal ID').fill(first);
+  await view.getByRole('button',{name:'Inspect staged question',exact:true}).click();
+  await expect(view.getByTestId('research-question-text')).toHaveText(f.question);
+  await expect(view.getByTestId('research-goal-state')).toHaveText('CREATED');
+  console.log(JSON.stringify([first,second]));
+} finally {await browser.close();}
