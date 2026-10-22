@@ -15,6 +15,13 @@ try {
  const section=page.getByRole('region',{name:'Exact Build review'});
  await section.getByRole('button',{name:'Review exact merge request',exact:true}).click();
  await expect(section.getByLabel('Protected diff')).toContainText('+value = 43');
+ // Parent reconciliation must preserve the one open review and its evidence
+ // sibling across a canonical activity refresh (previously their keys collided).
+ const observed=await page.getByRole('region',{name:'Project activity'}).getByText(/^Observed /).textContent();
+ await expect.poll(()=>page.getByRole('region',{name:'Project activity'}).getByText(/^Observed /).textContent(),{timeout:15000}).not.toBe(observed);
+ await expect(section).toHaveCount(1);
+ await expect(page.getByRole('region',{name:'Verified Build progress'})).toHaveCount(1);
+ await expect(section.getByLabel('Protected diff')).toContainText('+value = 43');
  await expect(section.getByLabel('Protected diff')).toContainText('<img src=x onerror=');
  assert.equal(await page.title(),'Panestria Mission Control');
  await expect(section).toContainText('approval PENDING');
