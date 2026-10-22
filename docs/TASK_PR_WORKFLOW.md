@@ -28,8 +28,11 @@ ancestry. Do not automatically merge or rewrite branches.
 Task branches run CI on `pull_request` events. Other branches retain push CI.
 This avoids duplicate push and PR runs for each task. CI checks the full
 candidate tree, including prerequisites: one quality job and four isolated
-behavioral lanes cover the complete non-live suite. The aggregate `test` check
-requires every job; JUnit artifacts and slowest-test timings aid diagnosis.
+behavioral lanes run [required coverage plus relevant regressions](testing/CI_REQUIRED_COVERAGE.md).
+CI-policy/migration/common changes use full coverage; local/full/manual release
+regressions remain available. The aggregate `test` check requires every PR job;
+JUnit and selection artifacts show the actual scope. A proven identical main
+merge may reuse that passing PR result; direct/unverified pushes still run full.
 See the [test audit and lane commands](testing/CI_TEST_AUDIT.md). New pushes cancel
 obsolete runs for the same PR. Required live/GPU/provider cases remain separate
 and must be reported explicitly; default CI is not a release gate substitute.

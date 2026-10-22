@@ -1,5 +1,32 @@
 # CI test audit and execution lanes
 
+## Active policy — 2026-10-22 owner-requested reduction
+
+The [required/full policy](CI_REQUIRED_COVERAGE.md) supersedes the historical
+always-full execution description below. PRs keep all unit/contract checks,
+current functional/security/approval journeys, mutation witnesses and real restore
+coverage. Only 46 explicitly reviewed old synthetic-demo/domain restore functions
+become conditional regressions. Relevant source/test/helper changes restore them;
+CI policy changes, unknown bases and unverified pushes use full coverage. No test
+body, release requirement or original evidence is removed.
+
+Unrelated required coverage collects 2,253 cases; full collects 2,299 (65 live
+cases remain separately excluded). The 46 deferred cases consumed 167.862 seconds
+in original run39842217044, not a guaranteed future saving. Ledger/activity families
+rebalance the same four runners. The old case timings project roughly237/250
+seconds for required kernel/platform, excluding setup and quality serialization.
+Actual workflow timings must establish the result.
+
+Main is currently unprotected. A direct/unverified push still runs full CI.
+Only a main merge with an existing passing PR run, all six successful jobs,
+four nonexpired same-preview artifacts, exact merge parents and identical tree
+can reuse that result. Unavailable metadata runs checks; this optional proof is
+bounded to twenty seconds. The retained JSON identifies the upstream source/run.
+Reuse is not fresh execution or release evidence. See the
+[implementation report](../../evidence/ci-required-coverage-2026-10-22/report.json).
+
+## Historical full-suite audit
+
 This change reviews the existing suite rather than replacing it with a smoke
 allowlist. The baseline is main `723153849ae3c9982fdc2df9f1d70285a8420831`:
 161 test files, 998 statically discovered test definitions and 2,101 selected

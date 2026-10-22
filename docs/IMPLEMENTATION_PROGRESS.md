@@ -21,9 +21,13 @@ already delivered components.
 | Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
 | Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |
 
-Next independent integration: connect opt-in storage warnings to the owner
-resource/inbox surface, then finish the outstanding connection/phone/qualified
-Delegate and cumulative evidence work. Saved metrics are descriptive; unknown
+The opt-in storage terminal integration is now merged; desktop/mobile resource
+inbox and host qualification remain open. The owner's current priority is the
+[CI reduction](testing/CI_REQUIRED_COVERAGE.md): retain functional/security and
+mutation-witness checks, condition repeated legacy/restore regressions and avoid
+rerunning an already-proven merge tree. Connection declaration review/onboarding
+is the next unfinished independent integration, followed by outstanding broker,
+phone, qualified Delegate and cumulative evidence work. Saved metrics are descriptive; unknown
 accuracy/cost/time/source never becomes a passing gate.
 
 The latest Mission Control delivery now provides distinct explicit offline Ask,

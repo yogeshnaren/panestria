@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "outcome": "CI_SELECTION_AND_SOURCE_EQUIVALENCE_COMPONENT_OBSERVATIONS_NOT_RELEASE",
+  "baseline": {
+    "main": "1ef22c05c97ca8b5d9539c08cd62c417ae888c97",
+    "run_id": 39842217044,
+    "non_live_cases": 2299,
+    "all_six_checks": "SUCCESS_AT_ORIGINAL_SOURCE"
+  },
+  "local_execution": [
+    {
+      "file": "fast-sandbox-denied.xml",
+      "sha256": "aec3c42224489390951c5315782fdfb1362c48da58d09b6b7497c2a95cfdd33e",
+      "source_commit": "57234a04df8f77fb057056860ee6f6d4a62d9559",
+      "source_tree": "2da039d42068451547fc6278205d2af48e58a85b",
+      "worktree": "CLEAN",
+      "scope": "Restricted sandbox: local TCP/Unix sockets and uv cache unavailable; 47 failures/1 setup error retained, no assertions changed",
+      "result": {
+        "tests": "902",
+        "failures": "47",
+        "errors": "1",
+        "skipped": "0",
+        "time": "15.186"
+      }
+    },
+    {
+      "file": "fast-permitted.xml",
+      "sha256": "46df71f71de58a38ce2ad03bf582f9ea3fb3aadaf67e27efaf163b5234c85027",
+      "source_commit": "57234a04df8f77fb057056860ee6f6d4a62d9559",
+      "source_tree": "2da039d42068451547fc6278205d2af48e58a85b",
+      "worktree": "CLEAN",
+      "scope": "Same required fast suite with required local socket/cache capabilities; all902non-live checks pass,1liveexcluded",
+      "result": {
+        "tests": "902",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "24.355"
+      }
+    }
+  ],
+  "manual_and_collection_observations": [
+    {
+      "file": "actual-merge-proof.json",
+      "sha256": "4c17d1ec60f1df5d043bc1ddd9712242e9646d757ae5a97c315137773fadd597",
+      "source_commit": "57234a04df8f77fb057056860ee6f6d4a62d9559",
+      "source_tree": "2da039d42068451547fc6278205d2af48e58a85b",
+      "scope": "Actual GitHub metadata proves PR187 tested preview/actual merge parent and tree equivalence; not a new test execution"
+    },
+    {
+      "file": "proof-inputs.json",
+      "sha256": "30fe2af770e85ecca070e92f5f0bafb584ef3b56da296369e899e53a7b75e6b4",
+      "source_commit": "57234a04df8f77fb057056860ee6f6d4a62d9559",
+      "source_tree": "2da039d42068451547fc6278205d2af48e58a85b",
+      "scope": "Private original REST metadata for actual PR187/run39842217044, no authentication token recorded"
+    },
+    {
+      "file": "proof-negative-matrix.json",
+      "sha256": "64ccd73405beb67e27966d6d8ba2e60eb451022c9577e3e6c7e923f64f6d9eff",
+      "source_commit": "57234a04df8f77fb057056860ee6f6d4a62d9559",
+      "source_tree": "2da039d42068451547fc6278205d2af48e58a85b",
+      "scope": "15 manual metadata-derived fault fixtures: only matching positive allows reuse; all14negative outcomes run checks"
+    },
+    {
+      "file": "aggregate-shell.json",
+      "sha256": "8d651340b39c52d1244f288864fdae9ec2420092ef34b953d62306bf9ab119fe",
+      "source_commit": "57234a04df8f77fb057056860ee6f6d4a62d9559",
+      "source_tree": "2da039d42068451547fc6278205d2af48e58a85b",
+      "scope": "Actual workflow aggregate Bash executed for32quality/behavioral/proof combinations; only2valid combinations green"
+    },
+    {
+      "file": "selection-probe.json",
+      "sha256": "6b206cb8d10020caac64d420d48257ba4d62dcd5ca643a6654c30303e6b47fab",
+      "source_commit": "57234a04df8f77fb057056860ee6f6d4a62d9559",
+      "source_tree": "2da039d42068451547fc6278205d2af48e58a85b",
+      "scope": "Nine manual selector scenarios and21witness-node preservation; its preliminary computed aggregate table is superseded by actual aggregate-shell.json"
+    },
+    {
+      "file": "inventory-and-projection.json",
+      "sha256": "3d6b2b7f818fc600b874e1d5be90c35dd6828f3eb06acb6bc610a20210601d27",
+      "source_commit": "fdf080e51cdbdace9d3d2ab19f4d984d00fb88af",
+      "source_tree": "c689fec962e61c54adf0a985cac7887e1e6c2970",
+      "scope": "217files assigned once; old source-run timing projection only; required kernel237.410/platform249.857 seconds before setup"
+    },
+    {
+      "file": "policy-self-change.json",
+      "sha256": "74cf17995cf8a360a4d270047ee5c0b334a3903581dbf7107dc112a27dc1468f",
+      "source_commit": "7f6f095edf451d074e71da8f8662de45446c23ea",
+      "source_tree": "cd25e1941a6e4cd66217a7155e1d9bb3b201a56f",
+      "scope": "Manual policy check: CI-policy changes/full profile defer0; unchanged required profile defers46"
+    },
+    {
+      "file": "collection-summary.json",
+      "sha256": "5a39021ac04266dfe8041223d1c3d9561868014ef668dc52b34d1d1abd18f48d",
+      "source_commit": "7f6f095edf451d074e71da8f8662de45446c23ea",
+      "source_tree": "cd25e1941a6e4cd66217a7155e1d9bb3b201a56f",
+      "scope": "Actual full/required pytest COLLECTION ONLY:2299/2253cases; exactly46reviewed omissions, no unmatched omission, all21witnesses included"
+    }
+  ],
+  "required_when_no_related_changes": {
+    "full_cases": 2299,
+    "required_cases": 2253,
+    "conditional_functions": 46,
+    "legacy_demo_functions": 21,
+    "domain_restore_functions": 25,
+    "all_unit_and_contract_checks": "RETAINED",
+    "mutation_witness_nodes_retained": 21
+  },
+  "limits": [
+    "Collection and manual metadata fixtures are not test execution, mutation scores or release qualification.",
+    "Old case timings attribute167.862seconds to deferred cases; actual fixture/setup/job scheduling can change, so no measured new speedup is claimed here.",
+    "The CI policy change itself runs all2299non-live cases to validate new lane ordering; full profile remains mandatory for release/regression needs.",
+    "Main is unprotected. Direct/unverified pushes run full; only exact successful PR preview parents/tree with all six successful jobs and fresh artifacts can avoid duplicate merge execution.",
+    "Missing/stale metadata or unknown bases cause more verification, never a skip. Reuse is not a new measurement or source-certificate refresh.",
+    "Original tests, failure reports, historical evidence and G1/G2/G3/live/owner requirements remain intact; no provider/model/credential or owner service change."
+  ]
+}
