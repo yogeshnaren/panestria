@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "component": "LOSSLESS_LOCAL_PRESENTATION",
+  "status": "IMPLEMENTED_SOURCE_BOUND_COMPONENT_CHECKS",
+  "observations": [
+    {
+      "source_commit": "a3756bb082f114debe8e78790718be6a2f3eba52",
+      "source_tree": "9276f0996044242013fd3ff124da2d84a058b304",
+      "report": "connected.xml",
+      "sha256": "607dd9af9f2dc25823a2590e370243acf02bbbbb82a915afbc57db439134b152",
+      "results": {
+        "tests": "14",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "13.253"
+      },
+      "notes": "14 passed: paired layout/abstention plus actual PG/crypto/HTTP publication, metadata/receipt replay, late real profile withdrawal and relevant legacy profile HTTP cases. Provider/model/key/capacity are explicit fixtures."
+    },
+    {
+      "source_commit": "b760357cfb3c24787ef771167186cbba03edd5a8",
+      "source_tree": "923c66f440dc3d1d751c526c40102c8bb5052c9e",
+      "report": "ambiguous-layout.xml",
+      "sha256": "19bd6278706e9360d9014ebf1b8257f81367077fbc10bd6fb3159c4b367e8ddb",
+      "results": {
+        "tests": "9",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "0.085"
+      },
+      "notes": "9 pure paired cases passed after adding conservative leading-newline/carriage-return abstention; no new model turn."
+    }
+  ],
+  "outcomes": [
+    "Opt-in selected structured-profile local publication only; original default/non-structured path unchanged",
+    "Added paragraph bullet markers invert to every original content byte; partial/ambiguous/structural output abstains",
+    "Actual profile withdrawal after model return prevents publication and no presentation observation is saved",
+    "Canonical receipt retains local timing/byte/content counts with no text/preference value/unkeyed hash; response digest remains omitted",
+    "One local inference POST and receipt replay without additional generation"
+  ],
+  "limits": [
+    "Native model/provider/keys/capacity are declared fixtures; no actual model quality/latency qualification",
+    "Content preservation applies to the returned model text, not truth of generated facts or adherence during generation",
+    "Readability counts are descriptive; factual support, readability quality and owner preference remain NOT_ASSESSED",
+    "No semantic rewrite, translation, model replacement, new grant/key, private export or provider/API call",
+    "Owner checkouts/configs/services/caches and historical evidence preserved; no original cumulative gate or real trial pass"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "ci": "Separate exact-head CI required"
+}

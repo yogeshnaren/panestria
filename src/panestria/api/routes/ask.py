@@ -6,7 +6,7 @@ import asyncio
 import json
 import time
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import TypeVar
 
 import psycopg
@@ -20,11 +20,13 @@ from panestria.contracts.ask import AskSubmission, ProfileAskSubmission
 from panestria.contracts.ask_observation import AskAnswer, AskCancellation, AskReceipt
 from panestria.contracts.hardware import HardwareManifest
 from panestria.contracts.inference import InferenceResult, InferenceUnavailable
+from panestria.contracts.style import StyleProfile
 from panestria.inference.local import LocalProvider
 from panestria.kernel.ask import AskService, PreparedAsk
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.uow import UnitOfWork
+from panestria.memory.presentation import present
 from panestria.resources.admission import RuntimeGovernor, admit
 from panestria.resources.hardware import ProbeUnavailable
 
@@ -40,12 +42,15 @@ class AskApi:
     governor: RuntimeGovernor = field(default_factory=RuntimeGovernor)
     active: dict[str, asyncio.Task[InferenceResult]] = field(default_factory=dict)
     include_charter: bool = False
+    lossless_presentation: bool = False
 
     def __post_init__(self) -> None:
         if not isinstance(self.provider, LocalProvider):
             raise TypeError("Ask requires the registered local provider")
         if type(self.include_charter) is not bool:
             raise TypeError("invalid_context_renderer")
+        if type(self.lossless_presentation) is not bool:
+            raise TypeError("invalid_presentation_setting")
 
 
 def _configured(request: Request) -> tuple[GoalApi, AskApi, Actor]:
@@ -177,16 +182,26 @@ async def _execute_ask(request: Request, service: AskService, submission_type: t
                 raise asyncio.CancelledError()
         result = await model_task
 
-        def finish(uow: UnitOfWork) -> None:
+        def finish(uow: UnitOfWork) -> InferenceResult:
+            published, observation = result, None
             # Expired qualification, locked keys, withdrawal or changed selected
             # content also fences publication after the actual model has returned.
             if prepared is not None and prepared.profile is not None:
                 if service.profile_context is None:
                     raise KernelDenied("profile_disabled")
-                service.profile_context.revalidate(uow, actor, prepared.profile)
-            service.finish(uow, actor, submission.request_id, result)
+                selected = service.profile_context.revalidate(uow, actor, prepared.profile)
+                if ask.lossless_presentation and selected.request.purpose == "STRUCTURED_RESPONSE_STYLE":
+                    fields = json.loads(selected.content.get_secret_value())["fields"]
+                    layout = present(
+                        result.text,
+                        StyleProfile.model_validate_json(fields["communication"]),
+                        complete=result.finish_reason == "stop",
+                    )
+                    published, observation = replace(result, text=layout.text), layout.observation
+            service.finish(uow, actor, submission.request_id, published, presentation=observation)
+            return published
 
-        await asyncio.to_thread(_transaction, request, api, finish)
+        result = await asyncio.to_thread(_transaction, request, api, finish)
         receipt = await asyncio.to_thread(
             _transaction, request, api, lambda u: service.receipt(u, actor, submission.request_id)
         )
