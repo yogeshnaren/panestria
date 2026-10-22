@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "outcome": "BOUNDED_ENCRYPTED_OWNER_EXAMPLES_COMPONENT_PASS_NOT_RELEASE_OR_STYLE_QUALITY",
+  "observations": [
+    {
+      "file": "collection-error.xml",
+      "sha256": "a8220f698562fbf8bcfe8994db6f4d372213c1c7b66f620099d58eae5ee701ea",
+      "source_commit": "9615a51638e8ceea79438c64baadea08ca968db7",
+      "source_tree": "a88b5a8d0ec84d3abe346d285545df0fdaca57fc",
+      "worktree": "CLEAN",
+      "scope": "OPERATOR_PATH_TYPO_ZERO_CASES_NOT_PASS",
+      "result": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "0",
+        "time": "0.003",
+        "timestamp": "2026-10-22T10:37:57.404309-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    },
+    {
+      "file": "connected.xml",
+      "sha256": "1881fcde21229a38c53137be2f5a4b8b0b8a3dc842d3e3ea359c7909d215e127",
+      "source_commit": "cae323cad9ee2c551e2d11fd036bf1593cd35812",
+      "source_tree": "4c058e551396d39dd0872986fe95290e66287e05",
+      "worktree": "COMMITTED_TRACKED_SOURCE; untracked operator runbooks added while the default run completed",
+      "scope": "21_PASS_ONE_NEW_TERMINAL_TRANSCRIPT_ASSERTION_FAIL_ONE_OLD_LIVE_DESELECTED",
+      "result": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "22",
+        "time": "62.875",
+        "timestamp": "2026-10-22T10:38:19.706419-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    },
+    {
+      "file": "corrected.xml",
+      "sha256": "26a3913af09382682dec99e288ac4e80132110cc70e55e92910b482167014a0f",
+      "source_commit": "91708f68e4410f8bc6c684301853c21ed0659ff3",
+      "source_tree": "68400a4df9c29f5b4bd3351ddedeb2cc85dc5a79",
+      "worktree": "COMMITTED_TRACKED_SOURCE; untracked operator runbooks pending",
+      "scope": "FOUR_PASS_NEW_CASES_SCROLL_CONSENT_AND_EXACT_OPENAPI",
+      "result": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "4",
+        "time": "10.878",
+        "timestamp": "2026-10-22T10:40:15.032518-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    },
+    {
+      "file": "actual-cpu.xml",
+      "sha256": "7255cc47ede40e1325452c57c2bac76dc9503ac851060f02103ad97fcc5220fb",
+      "source_commit": "2779e5fba7effe2f3e4615629443c3ca8b5316f7",
+      "source_tree": "8b2e888c4dfd6714c18047389b45c908e718d919",
+      "worktree": "CLEAN",
+      "scope": "ONE_ACTUAL_CPU_SMOKE_SYNTHETIC_KEYS_NOT_QUALIFICATION",
+      "result": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "1",
+        "time": "21.999",
+        "timestamp": "2026-10-22T10:42:03.770066-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    },
+    {
+      "file": "view-lifetime.xml",
+      "sha256": "6499f80c60cc38c6f4be04fff57b819b13128e091e24f9bfad24f6a2e9a6d843",
+      "source_commit": "8fa67b429a958dc2e34fc01df1ea68284f7763f1",
+      "source_tree": "ab04cae40dca5f91d2a39e56e2ed32b0fadb55d5",
+      "worktree": "CLEAN",
+      "scope": "ONE_AFFECTED_TERMINAL_CASE_AFTER_REVIEW_BUFFER_LIFETIME_CORRECTION",
+      "result": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "1",
+        "time": "7.212",
+        "timestamp": "2026-10-22T10:48:33.810876-07:00",
+        "hostname": "yogesh-verisim"
+      }
+    }
+  ],
+  "actual_cpu": {
+    "execution_mode": "ACTUAL_CACHED_CPU_PG_CRYPTO_PRIVATE_OVERLAY_SYNTHETIC_KEYS",
+    "runtime_identity": "01850c3e1b96478a84d21ff917305c4f",
+    "input_tokens": "430",
+    "output_tokens": "2",
+    "generation_seconds": "10.512666449008975",
+    "paid_provider_calls": "0",
+    "qualification": "NOT_QUALIFIED: no physical TCP/OS keys/style quality/owner trial"
+  },
+  "checks": [
+    "Owner-local reference and bounded visible UTF-8 statements; duplicate/extra authority/control/oversize denied; default serialization masks text",
+    "Empty example set preserves exact legacy JSON/prompt compilation; other profile fields/approvals/expiry preserved",
+    "Actual encrypted profile version/ciphertext/purpose pins private overlay and correction/suppression fences prior request",
+    "No example text or unkeyed private prompt digest in general pack/audit/revision/learning records",
+    "Actual PTY reaches end and acknowledges private example review before separate one-attempt encrypted save; local-context approval stays off by default",
+    "Source input file preserved; no provider/API/model download or owner service/key/cache change",
+    "One actual network-none cached CPU model request completes through scoped PG/crypto and private overlay; output digest omitted"
+  ],
+  "limits": [
+    "Synthetic fixture keys/model in default checks; actual CPU smoke uses synthetic in-memory keys and Unix-socket provider, not physical TCP/OS-key qualification",
+    "No factual/style/readability/owner preference assessment, cross-harness export or training permission",
+    "Source2779 probe is not refreshed for later merge/doc commits; original certificates remain original",
+    "Zero-case collection error and original new PTY timing assertion failure retained, not relabeled as passing",
+    "No owner profile/service configured and no release gate or 14-day trial satisfied",
+    "Later 8fa67b4 changes only terminal viewer buffer lifetime; the actual CPU/compiler proof remains source2779 and was not repeated or relabeled."
+  ],
+  "private_originals": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/private-style-examples-2026-10-22"
+}

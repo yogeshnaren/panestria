@@ -130,6 +130,20 @@ altered evidence cannot retain a PASS score, and worker heartbeats cannot advanc
 it. Repair budgets, held/unknown capacity and repeated unchanged failures remain
 visible. The existing Build terminal now loads it with p or a fourth Tab view, without starting workers or changing the exact approval flow. This is partial X10/S4 delivery, with semantic/non-goal assessment, controller repair policy and a unified cross-mode Mission Control still pending.
 
+## Bounded private style examples
+
+[Encrypted owner examples](testing/PRIVATE_STYLE_EXAMPLES.md) now extend the
+existing explicit profile editor and restricted offline Ask selection. A small
+owner-supplied set retains profile-local refs/ciphertext provenance; it grants no
+fact, policy or training authority. The terminal requires scroll-to-end review
+and acknowledgment before its separate one-attempt save. Empty examples preserve
+legacy bytes, wider profile fields remain intact and correction/suppression
+fences a pinned request. [Source-bound evidence](../evidence/private-style-examples-2026-10-22/report.json)
+retains the initial zero-case operator error and failed PTY transcript assertion,
+the corrected connected checks and one actual cached CPU/PG/crypto request.
+Synthetic keys remain explicit; style quality, OS-key/runtime qualification,
+cross-harness compatibility and complete S4/TC08/G3 remain open.
+
 ## Project activity terminal
 
 The [project activity terminal](testing/PROJECT_ACTIVITY_TERMINAL.md) now shows
