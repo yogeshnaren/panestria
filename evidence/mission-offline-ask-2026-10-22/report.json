@@ -68,6 +68,22 @@
       "interpretation": "Actual browser/HTTP/PG and CLI pairing; nonlive model/process/hardware. Completion, cancellation, lost response recovery, model failure; no redispatch.",
       "exit_code": 0,
       "command": "pytest tests/integration/test_mission_offline_ask.py -q --junitxml=<original-report>"
+    },
+    {
+      "source_commit": "f359e78837b88dc4132270100b857e4e91a718e4",
+      "source_tree": "198f3401f7aeb3c7e3c35dedda1a704c4b73cda0",
+      "report": "review-refresh.xml",
+      "sha256": "c0be017dab5abe0731c60b01e649ae38db6661b58d60dd571f1d3db4351b5c2c",
+      "result": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "37.570"
+      },
+      "exit_code": 0,
+      "command": "pytest tests/integration/test_mission_build_review.py tests/integration/test_mission_offline_ask.py -q --junitxml=<original-report>",
+      "interpretation": "CI exposed sibling React key collision during canonical refresh; unique panel keys preserve exact review, consent and Ask across refresh. Actual Chromium/HTTP/PG/Git/independent verifier; native/model/hardware identities explicit nonlive fixtures."
     }
   ],
   "changes": "Explicit --mission-assets on existing local Ask lifecycle; distinct session scope, canonical receipts/cancellation, no model/provider fallback or retention. Null incomplete usage is unavailable. Original failures retained.",
@@ -84,5 +100,16 @@
     "uv.lock": "7292da3d0efcea78cda08efe5b2888cfcbc71653c1ce41f360af3c5af9d1fb25",
     "apps/mission-control/package-lock.json": "377abc70c29d26e435c0a1aacada5c9259cc4ddbcc5fbc6ba3c59a183f43d026",
     "docs/specification/attachments/agentos-skills-v0.1.0.zip": "bf9178cbd7800852e0167452900659f5a8238eb71754aa3b7944117ef35ceba6"
+  },
+  "initial_ci": {
+    "run_id": 39723841529,
+    "head": "3f5f4eafbc798e6a869e1121361966a1cca76bd5",
+    "tested_preview": "0151fcb3886ed94c26e64112d95b8d794f5495bd",
+    "result": "FAILURE",
+    "tests": 2232,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "reason": "Protected Build browser review lost panel during refresh; colliding sibling React keys corrected at f359e78. All original four CI XMLs retained in durable workspace pr170/attempt-1."
   }
 }
