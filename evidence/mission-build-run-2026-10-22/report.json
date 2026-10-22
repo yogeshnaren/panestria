@@ -8,14 +8,11 @@
       "report": "initial.xml",
       "sha256": "a4d47f3bfb32d3e3ebbce3f15b00d46540eca35a034597ccda156af3226c0548",
       "results": {
-        "name": "pytest",
-        "errors": "0",
-        "failures": "3",
-        "skipped": "0",
         "tests": "6",
-        "time": "40.922",
-        "timestamp": "2026-10-22T02:59:19.729074-07:00",
-        "hostname": "yogesh-verisim"
+        "failures": "3",
+        "errors": "0",
+        "skipped": "0",
+        "time": "40.922"
       },
       "notes": "Cancellation/held-capacity, actual storage deferral and mounted OpenAPI passed. Two restart helpers lacked their parent directory; browser required the deliberate protected-preview click."
     },
@@ -25,14 +22,11 @@
       "report": "restart-and-browser.xml",
       "sha256": "2c0b8280e6adace2650db58dea9d15b723851c57409374c15354562fe2ed030f",
       "results": {
-        "name": "pytest",
-        "errors": "0",
-        "failures": "1",
-        "skipped": "0",
         "tests": "3",
-        "time": "22.087",
-        "timestamp": "2026-10-22T03:00:46.689605-07:00",
-        "hostname": "yogesh-verisim"
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "22.087"
       },
       "notes": "Both lost-commit/restart guards passed. Physical Chromium/two-worker/review/reload succeeded before a final test SQL percent-placeholder assertion failed."
     },
@@ -42,14 +36,11 @@
       "report": "browser-final.xml",
       "sha256": "82e83880eb0f47a14c7d55469af3cdb4fbd3416e0177d94dc9bbdb5a96e76fb3",
       "results": {
-        "name": "pytest",
-        "errors": "0",
-        "failures": "0",
-        "skipped": "0",
         "tests": "1",
-        "time": "18.903",
-        "timestamp": "2026-10-22T03:02:03.797990-07:00",
-        "hostname": "yogesh-verisim"
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "18.903"
       },
       "notes": "Full physical browser/two-worker/review/reload and canonical no-merge assertions passed after test-only SQL parameter correction."
     }
