@@ -34,6 +34,12 @@ KERNEL = (
     "test_canonical_plan_",
     "test_plan_",
     "test_final_plan_",
+    # Metadata ledgers/views balance the required profile without adding a runner
+    # or changing isolated fixture ports. Physical browser tests stay in platform.
+    "test_connection_",
+    "test_quota_",
+    "test_activity_",
+    "test_project_activity",
 )
 RESEARCH = (
     "test_research_",
