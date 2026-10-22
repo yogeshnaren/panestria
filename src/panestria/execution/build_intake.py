@@ -53,6 +53,7 @@ class BuildIntakeService:
             goal_status=row[0],
             contract_document=contract.model_dump(mode="json"),
             plan=plan,
+            operation="PLAN_ACCEPTED_NO_EXECUTION" if plan.state == "ACCEPTED" else "STAGED_NO_EXECUTION",
         )
         if len(view.model_dump_json().encode()) > 128 * 1024:
             raise KernelDenied("build_intake_view_limit")

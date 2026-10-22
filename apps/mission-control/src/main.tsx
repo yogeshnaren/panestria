@@ -109,7 +109,7 @@ function Dashboard() {
   }
   return <main>
     <header><p className="eyebrow">PANESTRIA · {askMode?'OFFLINE ASK':researchMode?'PUBLIC DELEGATE STAGING':planAcceptanceMode?'PUBLIC PLAN REVIEW':buildIntakeMode?'PUBLIC BUILD PLAN STAGING':'LOCAL OBSERVER'}</p><h1>Mission Control</h1>
-      <p>Canonical project activity and goal timelines. {askMode?'Explicit offline Ask input':researchMode?'Explicit PUBLIC question staging':planAcceptanceMode?'Explicit PUBLIC plan review and acceptance':buildIntakeMode?'Explicit PUBLIC Build plan staging':reviewMode?'Explicit PUBLIC Build review and consent records':'Read-only metadata'} · acceptance authority: NONE.</p></header>
+      <p>Canonical project activity and goal timelines. {askMode?'Explicit offline Ask input':researchMode?'Explicit PUBLIC question staging':planAcceptanceMode?'Explicit PUBLIC plan review and acceptance':buildIntakeMode?'Explicit PUBLIC Build plan staging':reviewMode?'Explicit PUBLIC Build review and consent records':'Read-only metadata'} · release acceptance authority: NONE.</p></header>
     <section aria-label="Connection"><p role="status">{notice}</p>
       {(!authenticated || !csrf) && <form onSubmit={pair}><label htmlFor="pair">One-use pairing code from your terminal</label>
         <div className="actions"><input id="pair" value={code} onChange={e=>setCode(e.target.value.toUpperCase())}
@@ -146,7 +146,7 @@ function Dashboard() {
       {goal && reviewMode && <BuildReview key={`review:${goal}`} goal={goal} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
       {goal && <BuildEvidence key={`evidence:${goal}`} goal={goal} owner={activity.owner_id} project={activity.project_id} deny={denied}/>}
     </>}
-    <footer>Local desktop only. {askMode?'Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.':researchMode?'PUBLIC questions can be staged here. Delegate execution, Build intake and phone access remain separate R3 work.':buildIntakeMode?'PUBLIC plans can be staged here. Plan acceptance, execution, effect dispatch and phone access remain separate workflows.':reviewMode?'Consent records do not execute a merge. Job intake, effect dispatch and phone access remain separate R3 work.':'Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'}</footer>
+    <footer>Local desktop only. {askMode?'Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.':researchMode?'PUBLIC questions can be staged here. Delegate execution, Build intake and phone access remain separate R3 work.':planAcceptanceMode?'Plans can be staged, reviewed and explicitly accepted here. Worker execution, final merge and phone access remain separate workflows.':buildIntakeMode?'PUBLIC plans can be staged here. Plan acceptance, execution, effect dispatch and phone access remain separate workflows.':reviewMode?'Consent records do not execute a merge. Job intake, effect dispatch and phone access remain separate R3 work.':'Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'}</footer>
   </main>;
 }
 class Boundary extends Component<{children: ReactNode},{failed:boolean}> {
