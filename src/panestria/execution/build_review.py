@@ -47,8 +47,11 @@ class BuildReviewService:
         row = uow.execute(
             "SELECT a.id::text,a.state,a.effect_digest,a.preview,t.id::text,t.state,t.row_version,"
             "a.expires_at>clock_timestamp() FROM panestria.approval_request a "
-            "JOIN panestria.task t ON t.id=a.task_id WHERE a.goal_id=%s AND a.owner_id=%s AND a.project_id=%s "
-            "AND a.action_kind='merge' ORDER BY a.expires_at DESC,a.id DESC LIMIT 1",
+            "JOIN panestria.task t ON t.id=a.task_id "
+            "JOIN panestria.task_event e ON e.goal_id=a.goal_id AND e.task_id=a.task_id "
+            "AND e.kind='approval.requested' AND e.payload->>'approval_id'=a.id::text "
+            "WHERE a.goal_id=%s AND a.owner_id=%s AND a.project_id=%s "
+            "AND a.action_kind='merge' ORDER BY e.seq DESC LIMIT 1",
             (goal, actor.owner_id, actor.project_id),
         ).fetchone()
         if row is None:
