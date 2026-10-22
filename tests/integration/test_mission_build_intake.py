@@ -151,7 +151,8 @@ def test_plan_intake_atomic_scope_replay_and_separate_acceptance(submission, tmp
             )
         assert client.post(route, json=fresh(document), headers=headers).status_code == 409
         assert client.get(route + "/" + identifier).status_code == 409
-    default, _, _, _ = application(submission, tmp_path / "default", enabled=False)
+    default = build_activity_app(config, Settings(database_url=b.task["dsn"]).validate_profile(), token)
+    mount_mission_control(default, config, token, ASSETS)
     with TestClient(default, base_url=config.origin) as client:
         assert client.post(route, json=document, headers=bearer).status_code == 404
         assert client.get("/v1/mission/capabilities", headers=bearer).json()["build_intake_enabled"] is False
