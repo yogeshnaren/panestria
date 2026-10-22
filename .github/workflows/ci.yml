@@ -5,9 +5,17 @@ on:
     branches-ignore:
       - "task/**"
   pull_request:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Full non-live regression or required coverage (live gates remain separate)
+        type: choice
+        options: [full, required]
+        default: full
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
@@ -17,22 +25,32 @@ jobs:
   quality:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    outputs:
+      already_tested: ${{ steps.proof.outputs.already_tested }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # The license-preservation check compares against the original commit.
           fetch-depth: 0
+      - name: Reuse only proven passing PR merge content
+        id: proof
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/ci_merge_proof.py
       - name: Install pinned uv
+        if: steps.proof.outputs.already_tested != 'true'
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           version: "0.12.3"
           python-version: "3.12"
       - name: Node for Mission Control
+        if: steps.proof.outputs.already_tested != 'true'
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "24.19.0"
       - name: Typed production dashboard
+        if: steps.proof.outputs.already_tested != 'true'
         working-directory: apps/mission-control
         run: |
           npm ci --ignore-scripts --no-audit --no-fund
@@ -40,19 +58,35 @@ jobs:
           git diff --exit-code -- src/schema.d.ts
           npm run build
       - name: Check lock
+        if: steps.proof.outputs.already_tested != 'true'
         run: uv lock --check
       - name: Install frozen dependencies
+        if: steps.proof.outputs.already_tested != 'true'
         run: uv sync --frozen --group dev
       - name: Ruff
+        if: steps.proof.outputs.already_tested != 'true'
         run: uv run --frozen ruff check .
       - name: Mypy
+        if: steps.proof.outputs.already_tested != 'true'
         run: uv run --frozen mypy src/panestria
       - name: Import boundaries
+        if: steps.proof.outputs.already_tested != 'true'
         run: uv run --frozen lint-imports --config .importlinter
       - name: Secret scan
+        if: steps.proof.outputs.already_tested != 'true'
         run: uv run --frozen python tools/secret_scan.py
+      - name: Retain source-equivalence decision
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-merge-proof-${{ github.sha }}
+          path: evidence/ci-merge-proof.json
+          if-no-files-found: error
+          retention-days: 7
 
   behavioral:
+    needs: quality
+    if: needs.quality.outputs.already_tested != 'true'
     name: behavioral (${{ matrix.suite }})
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -105,13 +139,18 @@ jobs:
         if: matrix.suite != 'fast'
         run: uv run --frozen python -c 'from panestria.cli.review_demo import prepare_worker_image; prepare_worker_image()'
       - name: Tests
-        run: uv run --frozen python tools/ci_tests.py ${{ matrix.suite }}
+        env:
+          CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || 'required' }}
+          CI_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+        run: uv run --frozen python tools/ci_tests.py ${{ matrix.suite }} --profile "$CI_PROFILE" --base "$CI_BASE"
       - name: Retain timings and failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ci-${{ matrix.suite }}-${{ github.sha }}
-          path: evidence/ci-${{ matrix.suite }}.xml
+          path: |
+            evidence/ci-${{ matrix.suite }}.xml
+            evidence/ci-${{ matrix.suite }}-selection.json
           if-no-files-found: error
           retention-days: 7
 
@@ -126,4 +165,11 @@ jobs:
         env:
           QUALITY_RESULT: ${{ needs.quality.result }}
           BEHAVIORAL_RESULT: ${{ needs.behavioral.result }}
-        run: test "$QUALITY_RESULT" = success && test "$BEHAVIORAL_RESULT" = success
+          ALREADY_TESTED: ${{ needs.quality.outputs.already_tested }}
+        run: |
+          test "$QUALITY_RESULT" = success
+          if test "$ALREADY_TESTED" = true; then
+            test "$BEHAVIORAL_RESULT" = skipped
+          else
+            test "$BEHAVIORAL_RESULT" = success
+          fi
