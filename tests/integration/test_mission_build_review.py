@@ -10,6 +10,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import httpx2 as httpx
+import pytest
 from fastapi.testclient import TestClient
 from test_mission_control_browser import configure
 from test_native_plan_execution import native_plan as native_plan  # noqa: F401
@@ -150,8 +151,10 @@ def test_scoped_exact_preview_fences_and_denial_have_no_dispatch(native_plan, tm
             ).fetchone() == (0,)
 
 
+@pytest.mark.parametrize(
+    "owner_cli", [{"baseline_suffix": "# <img src=x onerror=\"document.title='unsafe'\">\n"}], indirect=True
+)
 def test_physical_browser_review_offline_consent_and_existing_exact_merge(native_plan, tmp_path, record_property):
-    native_plan[3]["note_text"] = "<img src=x onerror=\"document.title='unsafe'\">"
     owner, plan, path, config, token = evidence_case(native_plan, tmp_path)
     record_property(
         "candidate_commit", subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()

@@ -5,7 +5,6 @@ transport drives the actual MCP/gateway and independent verification boundaries.
 """
 
 import json
-import shlex
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
@@ -146,11 +145,7 @@ def native_plan(prepared_plan, monkeypatch):
                 if "calculator.py" in paths:
                     commands.append("printf 'value = 43\\n' > calculator.py")
                 if "notes/build.txt" in paths:
-                    commands.append(
-                        "mkdir -p notes; printf '%s\\n' "
-                        + shlex.quote(state.get("note_text", "bounded Bash build"))
-                        + " > notes/build.txt"
-                    )
+                    commands.append("mkdir -p notes; printf 'bounded Bash build\\n' > notes/build.txt")
                 script = "; ".join(commands)
                 for body in (
                     {
