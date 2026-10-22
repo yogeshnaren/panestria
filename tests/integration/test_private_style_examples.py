@@ -171,3 +171,73 @@ def test_bounds_masking_and_legacy_compilation_and_snapshot_preservation():
         with pytest.raises(ValidationError) as caught:
             StyleProfile.model_validate_json(json.dumps(data))
         assert INPUT not in str(caught.value) and RESPONSE not in str(caught.value)
+
+
+@pytest.mark.live
+def test_actual_cached_cpu_uses_private_examples_without_retaining_profile_output(styled, tmp_path, record_property):  # noqa: F811
+    import subprocess
+    from pathlib import Path
+
+    from panestria.inference.local import LocalProvider
+    from panestria.inference.runtime import ModelRuntime
+    from panestria.resources.admission import admit
+    from panestria.resources.hardware import HardwareProbe
+
+    cache = os.environ.get("PANESTRIA_PROFILE_TEST_MODEL_CACHE")
+    if not cache:
+        pytest.skip("Explicit existing cache required, no download")
+    root = Path(__file__).resolve().parents[2]
+    assert not subprocess.check_output(
+        ["docker", "ps", "-a", "-q", "--filter", "label=panestria.purpose=local-model"], text=True
+    ).strip(), "Existing owner model preserved; probe not run"
+    assert (
+        admit(
+            HardwareProbe(root / "docs/specification/attachments/agentos-skills-v0.1.0.zip").collect_cpu(), gpu=False
+        ).decision
+        == "PERMIT"
+    )
+    dsn, actor, handle, _, vault, service, request, _ = styled
+    with psycopg.connect(dsn) as c:
+        vault.revise(
+            UnitOfWork(c),
+            actor,
+            handle,
+            1,
+            ProfileDocument(
+                fields={"communication": SecretStr(example_style().private_json())},
+                approved_for_local_context=("communication",),
+            ),
+            consent_ref=str(uuid4()),
+        )
+    request = request.model_copy(
+        update={
+            "profile": request.profile.model_copy(update={"expected_row_version": 2}),
+            "question": "Reply with only READY. Synthetic private example boundary check.",
+            "max_output_tokens": 32,
+            "deadline_seconds": 60.0,
+        }
+    )
+    with psycopg.connect(dsn) as c:
+        ready = service.prepare(UnitOfWork(c), actor, request)
+    assert RESPONSE in ready.inference.prompt and RESPONSE not in ready.context.prompt
+    runtime = ModelRuntime(Path(cache), tmp_path / "owned-cpu", preserve_existing=True)
+    try:
+        runtime.start()
+        with psycopg.connect(dsn) as c:
+            inferred = service.claim(UnitOfWork(c), actor, ready)
+        result = LocalProvider(runtime.socket_path).generate(inferred)
+        assert result.text.strip() and result.finish_reason == "stop"
+        with psycopg.connect(dsn) as c:
+            service.finish(UnitOfWork(c), actor, request.request_id, result)
+        with psycopg.connect(dsn) as c:
+            receipt = service.receipt(UnitOfWork(c), actor, request.request_id)
+            assert receipt["state"] == "COMPLETED" and receipt["response_sha256"] is None
+        record_property("execution_mode", "ACTUAL_CACHED_CPU_PG_CRYPTO_PRIVATE_OVERLAY_SYNTHETIC_KEYS")
+        record_property("runtime_identity", runtime.identity)
+        record_property("input_tokens", result.usage.input_tokens)
+        record_property("output_tokens", result.usage.output_tokens)
+        record_property("generation_seconds", result.elapsed_seconds)
+        record_property("paid_provider_calls", 0)
+        record_property("qualification", "NOT_QUALIFIED: no physical TCP/OS keys/style quality/owner trial")
+    finally:
+        runtime.stop()
