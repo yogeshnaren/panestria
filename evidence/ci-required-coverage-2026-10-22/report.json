@@ -95,6 +95,20 @@
       "source_commit": "7f6f095edf451d074e71da8f8662de45446c23ea",
       "source_tree": "cd25e1941a6e4cd66217a7155e1d9bb3b201a56f",
       "scope": "Actual full/required pytest COLLECTION ONLY:2299/2253cases; exactly46reviewed omissions, no unmatched omission, all21witnesses included"
+    },
+    {
+      "file": "actual-merge-proof-latest-history.json",
+      "sha256": "4c17d1ec60f1df5d043bc1ddd9712242e9646d757ae5a97c315137773fadd597",
+      "source_commit": "fcb5d5ff35e2b22995316bd74e5a8faffa73a3ad",
+      "source_tree": "119d76a51eb31eabd5732419d0234db18d3607fc",
+      "scope": "Actual GitHub positive proof after removing status/event filters; all CI history on head must be complete/successful"
+    },
+    {
+      "file": "latest-history-matrix.json",
+      "sha256": "3269bfe12327cacf7e2e0f6642a09dcf9fb76c1564f213e2fd4f0b3241906023",
+      "source_commit": "fcb5d5ff35e2b22995316bd74e5a8faffa73a3ad",
+      "source_tree": "119d76a51eb31eabd5732419d0234db18d3607fc",
+      "scope": "Eight metadata-derived fixtures; failed/pending/manual-full failure/truncated/missing history cannot be hidden by an older green"
     }
   ],
   "required_when_no_related_changes": {
@@ -112,6 +126,7 @@
     "The CI policy change itself runs all2299non-live cases to validate new lane ordering; full profile remains mandatory for release/regression needs.",
     "Main is unprotected. Direct/unverified pushes run full; only exact successful PR preview parents/tree with all six successful jobs and fresh artifacts can avoid duplicate merge execution.",
     "Missing/stale metadata or unknown bases cause more verification, never a skip. Reuse is not a new measurement or source-certificate refresh.",
-    "Original tests, failure reports, historical evidence and G1/G2/G3/live/owner requirements remain intact; no provider/model/credential or owner service change."
+    "Original tests, failure reports, historical evidence and G1/G2/G3/live/owner requirements remain intact; no provider/model/credential or owner service change.",
+    "Final review corrected the initial completed-PR-only lookup: failed/pending/manual full or incomplete CI history now prevents reuse, rather than searching backward for an older green."
   ]
 }

@@ -77,7 +77,9 @@ insufficient. The optional proof reads existing GitHub metadata only. It require
 an actual two-parent main merge, a completed successful PR run on that exact
 second parent, all six successful jobs, four nonexpired artifacts sharing one
 tested preview SHA, and that preview's exact parent list and full tree matching
-the pushed merge. Metadata access, parsing, job/artifact, parent or tree uncertainty
+the pushed merge. Any failed/pending run on that head, failed manual full run or incomplete history
+also prevents reuse; it never searches backward for an older green.
+Metadata access, parsing, job/artifact, parent or tree uncertainty
 runs full checks. The GitHub token has repository contents/actions read scope;
 no provider secret is supplied or printed.
 
