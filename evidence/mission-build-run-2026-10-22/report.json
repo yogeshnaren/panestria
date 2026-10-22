@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "component": "MISSION_FINITE_PUBLIC_BUILD_RUN",
+  "observations": [
+    {
+      "source_commit": "308476dc17ab8bf7b2819888a030b89c62f55808",
+      "source_tree": "23b1116cec3b73febf411e4901827460bdaa31e8",
+      "report": "initial.xml",
+      "sha256": "a4d47f3bfb32d3e3ebbce3f15b00d46540eca35a034597ccda156af3226c0548",
+      "results": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "3",
+        "skipped": "0",
+        "tests": "6",
+        "time": "40.922",
+        "timestamp": "2026-10-22T02:59:19.729074-07:00",
+        "hostname": "yogesh-verisim"
+      },
+      "notes": "Cancellation/held-capacity, actual storage deferral and mounted OpenAPI passed. Two restart helpers lacked their parent directory; browser required the deliberate protected-preview click."
+    },
+    {
+      "source_commit": "44661a20bf84e0206c10f73755d1507a1125a4df",
+      "source_tree": "983eab239daa94b5e5c278dcb82340d569aa796f",
+      "report": "restart-and-browser.xml",
+      "sha256": "2c0b8280e6adace2650db58dea9d15b723851c57409374c15354562fe2ed030f",
+      "results": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "3",
+        "time": "22.087",
+        "timestamp": "2026-10-22T03:00:46.689605-07:00",
+        "hostname": "yogesh-verisim"
+      },
+      "notes": "Both lost-commit/restart guards passed. Physical Chromium/two-worker/review/reload succeeded before a final test SQL percent-placeholder assertion failed."
+    },
+    {
+      "source_commit": "11f397045961e024faaaff6fe2349701c0efe535",
+      "source_tree": "85144ca9a4087a21ac706c64c0d010f53737ced5",
+      "report": "browser-final.xml",
+      "sha256": "82e83880eb0f47a14c7d55469af3cdb4fbd3416e0177d94dc9bbdb5a96e76fb3",
+      "results": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "1",
+        "time": "18.903",
+        "timestamp": "2026-10-22T03:02:03.797990-07:00",
+        "hostname": "yogesh-verisim"
+      },
+      "notes": "Full physical browser/two-worker/review/reload and canonical no-merge assertions passed after test-only SQL parameter correction."
+    }
+  ],
+  "status": "IMPLEMENTED_WITH_SOURCE_BOUND_COMPONENT_CHECKS",
+  "mode": "ACTUAL_PG_HTTP_CHROMIUM_CLI_GIT_MCP_DOCKER_WITH_DECLARED_NATIVE_AUTH_CERTIFICATE_CAPACITY_FIXTURES",
+  "outcomes": [
+    "Explicit reviewed run request commits before unique controller claim and native dispatch",
+    "Lost request or claim acknowledgments cannot dispatch/adopt an uncertain claim",
+    "No startup/read/poll execution, no nonce bypass or automatic resume",
+    "Two actual scoped local fixture edits and canonical handoffs reach independent final verification and exact PUBLIC review",
+    "Cancellation remains available after policy revocation and retains two uncertain physical claims",
+    "Configured real disk reserve defers before native task claim with retained bounded notice; no cleanup",
+    "One start POST despite lost reply; reload inspects canonical return with no extra inference or merge"
+  ],
+  "limits": [
+    "No live provider inference/authentication or current runtime qualification",
+    "Expiry is a preparation-only clock fixture, not elapsed operational evidence",
+    "Storage uses actual statvfs with an intentionally excessive synthetic owner reserve",
+    "A controller return is not physical stop, claim release, check PASS, merge or release acceptance",
+    "Existing owner services/databases/caches/credentials were not modified",
+    "Paid SDK TC04 remains DEFERRED; search owner-deferred; stale billing not refreshed",
+    "Other revision-3 integrations and original cumulative gates/real owner trial remain"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "ci": "Separate exact-head PR evidence required"
+}
