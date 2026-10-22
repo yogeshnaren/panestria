@@ -59,7 +59,12 @@ try {
   await expect(ask.getByTestId('ask-state')).toHaveText('CANCELLED');outcomes[disconnected]='CANCELLED';
   await ask.getByRole('button',{name:'New question',exact:true}).click();
   const unavailable = await submit('SYNTHETIC MODEL_UNAVAILABLE');
+  // The existing controller returns an error response after retaining failure.
+  // A response error is not a completed answer: recover the canonical receipt.
+  await expect(ask.getByTestId('ask-notice')).toContainText('UNCONFIRMED');
+  await ask.getByRole('button',{name:'Inspect receipt',exact:true}).click();
   await expect(ask.getByTestId('ask-state')).toHaveText('UNAVAILABLE');
+  await expect(ask).toContainText('Unavailable: no completed usage measurement.');
   await expect(ask.getByTestId('ask-answer')).toHaveCount(0);outcomes[unavailable]='UNAVAILABLE';
   await page.reload();
   await ask.getByLabel('Recover receipt by request ID').fill(completed);

@@ -98,7 +98,8 @@ def test_mission_ask_scope_and_session_purpose(ask_application):
     with TestClient(app, base_url=config.origin) as client:
         assert client.get("/v1/mission/capabilities").status_code == 401
         assert client.get("/ui/mission.js").headers["cache-control"] == "no-store"
-        assert "script-src 'self'" in client.get("/").headers["content-security-policy"]
+        csp = client.get("/").headers["content-security-policy"]
+        assert "default-src 'self'" in csp and "unsafe-inline" not in csp and "unsafe-eval" not in csp
         assert client.post("/v1/session/pair", headers=origin, json={"code": old_code}).status_code == 401
         assert (
             client.get(
