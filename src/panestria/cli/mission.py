@@ -20,13 +20,24 @@ def serve(
     config: Annotated[Path, typer.Option("--config")],
     assets: Annotated[Path, typer.Option("--assets")],
     build_evidence_store: Annotated[Path | None, typer.Option("--build-evidence-store")] = None,
+    build_review_root: Annotated[
+        Path | None,
+        typer.Option(
+            "--build-review-root", help="Explicit PUBLIC diff/report review and consent recording; no merge dispatch."
+        ),
+    ] = None,
 ) -> None:
     """Serve an explicit production dashboard build on the configured exclusive port."""
     from panestria.api.activity_server import serve_activity
     from panestria.kernel.errors import KernelDenied
 
     try:
-        serve_activity(config, dashboard_assets=assets, build_evidence_store=build_evidence_store)
+        serve_activity(
+            config,
+            dashboard_assets=assets,
+            build_evidence_store=build_evidence_store,
+            build_review_root=build_review_root,
+        )
         return
     except (LocalApplicationRejected, ProfileRejected, KernelDenied) as exc:
         code = exc.code
