@@ -84,6 +84,22 @@
       "exit_code": 0,
       "command": "pytest tests/integration/test_mission_build_review.py tests/integration/test_mission_offline_ask.py -q --junitxml=<original-report>",
       "interpretation": "CI exposed sibling React key collision during canonical refresh; unique panel keys preserve exact review, consent and Ask across refresh. Actual Chromium/HTTP/PG/Git/independent verifier; native/model/hardware identities explicit nonlive fixtures."
+    },
+    {
+      "source_commit": "00166da03ace1aa8d1031220e0cdafe124520e8b",
+      "source_tree": "269ee0546eaed15da1b73861f9b67582abc78be0",
+      "report": "offline-review-recovery.xml",
+      "sha256": "4545c645d53028bd9c4c1db1e84dda97bb8442b06ae70af21efad22409ed5ed6",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "25.467"
+      },
+      "exit_code": 0,
+      "command": "pytest tests/integration/test_mission_build_review.py::test_physical_browser_review_offline_consent_and_existing_exact_merge -q --junitxml=<original-report>",
+      "interpretation": "Physical offline keyboard flow allows either protected-read fencing before submission or failed decision transport. Actual network failure, hidden protected content, canonical PENDING and later separate consent/exact owner merge remain required. No timeout or final-state assertion weakened."
     }
   ],
   "changes": "Explicit --mission-assets on existing local Ask lifecycle; distinct session scope, canonical receipts/cancellation, no model/provider fallback or retention. Null incomplete usage is unavailable. Original failures retained.",
@@ -111,5 +127,15 @@
     "errors": 0,
     "skipped": 0,
     "reason": "Protected Build browser review lost panel during refresh; colliding sibling React keys corrected at f359e78. All original four CI XMLs retained in durable workspace pr170/attempt-1."
+  },
+  "second_ci": {
+    "run_id": 39738553759,
+    "head": "51769730839c4368762a296b09d31fa6ad487e6e",
+    "result": "FAILURE",
+    "tests": 2232,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "reason": "Simulated offline mouse click raced with valid protected-read fencing. Unique panels and refresh assertions passed. Raw four XMLs/run/summary retained in durable workspace pr170/attempt-2."
   }
 }
