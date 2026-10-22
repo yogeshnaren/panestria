@@ -39,6 +39,7 @@ def capture_ask(
     from uuid import UUID
 
     from panestria.cli.profile_client import ProfileClient
+    from panestria.cli.tui_client import TerminalUnavailable
     from panestria.telemetry.ask_metrics import capture_ask_metrics
 
     try:
@@ -50,8 +51,21 @@ def capture_ask(
             directory, str(client.config.owner_id), str(client.config.project_id), identity, receipt
         )
         typer.echo(json.dumps(result))
-    except Exception:
-        typer.echo('{"status":"UNAVAILABLE","reason":"ask_receipt_or_private_metrics_invalid"}', err=True)
+    except Exception as error:
+        reason = "ask_receipt_or_private_metrics_invalid"
+        if type(error) is ValueError and str(error) in {
+            "ask_metrics_history_budget_reached",
+            "metrics_history_budget_reached",
+            "metrics_directory_must_be_private",
+            "metrics_path_invalid",
+            "ask_model_manifest_mismatch",
+        }:
+            reason = str(error)
+        elif isinstance(error, BlockingIOError):
+            reason = "metrics_capture_busy"
+        elif isinstance(error, TerminalUnavailable) and error.code in {"server_scope_mismatch", "authentication_lost"}:
+            reason = error.code
+        typer.echo(json.dumps({"status": "UNAVAILABLE", "reason": reason}), err=True)
         raise typer.Exit(1) from None
 
 

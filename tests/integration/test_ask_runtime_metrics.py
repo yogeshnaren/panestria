@@ -88,4 +88,4 @@ def test_capture_reads_one_protected_receipt_without_more_model_calls_or_plainte
     result = CliRunner().invoke(app, [*args[:-1], str(full)])
     assert result.exit_code == 1 and list((full / "sources").iterdir()) == []
     assert len(state.calls) == 2 and client.receipt(request_id) == receipt
-    assert json.loads(result.output)["reason"] == "ask_receipt_or_private_metrics_invalid"
+    assert json.loads(result.output)["reason"] == "ask_metrics_history_budget_reached"
