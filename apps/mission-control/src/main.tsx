@@ -133,8 +133,8 @@ function Dashboard() {
           <ol aria-label="Events">{timeline.events.map(event=><li key={event.id} data-event-id={event.id}><code>{event.seq}</code> · {event.kind} · {event.privacy_label}</li>)}</ol>
           <p>Replay cursor <code data-testid="cursor">{timeline.page.next_cursor}</code></p></>}
       </section>}
-      {goal && reviewMode && <BuildReview key={goal} goal={goal} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
-      {goal && <BuildEvidence key={goal} goal={goal} owner={activity.owner_id} project={activity.project_id} deny={denied}/>}
+      {goal && reviewMode && <BuildReview key={`review:${goal}`} goal={goal} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
+      {goal && <BuildEvidence key={`evidence:${goal}`} goal={goal} owner={activity.owner_id} project={activity.project_id} deny={denied}/>}
     </>}
     <footer>Local desktop only. {askMode?'Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.':reviewMode?'Consent records do not execute a merge. Job intake, effect dispatch and phone access remain separate R3 work.':'Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'}</footer>
   </main>;
