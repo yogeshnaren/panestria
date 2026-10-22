@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "outcome": "PUBLIC_DELEGATE_STAGING_ONLY",
+  "release_gate": "NOT_EVALUATED",
+  "live_search": "OWNER_DEFERRED_NOT_RUN",
+  "model_inference": "NOT_RUN",
+  "execution_authority": "NONE",
+  "observations": [
+    {
+      "source_commit": "749756fc345c6f72304cc8a17b68fcf46b036853",
+      "source_tree": "cf255b6b7ebaa92f011a2333fdbe350edea3cbc5",
+      "report": "first.xml",
+      "sha256": "86f12663c30030fd5e44e0b5f2d24c2bb8d807680ef5cdb72a03231ef3a9a850",
+      "result": {
+        "tests": "9",
+        "failures": "2",
+        "errors": "0",
+        "skipped": "0",
+        "time": "55.429"
+      },
+      "exit_code": 1,
+      "interpretation": "7 existing staging/OpenAPI cases pass; two new cases correctly fail because Actor objects require field-based owner/project comparison, not object identity.",
+      "command": "pytest tests/integration/test_mission_research_intake.py tests/integration/test_research_submission.py tests/e2e/test_aos_005.py::test_openapi_matches_the_mounted_routes -q --junitxml=<original-report>"
+    },
+    {
+      "source_commit": "f7adc9d831a59609ea0768b8ba8182e4c4c4dfb5",
+      "source_tree": "1aca1c6c2fff0f588128ca81716743d819df01d1",
+      "report": "scoped.xml",
+      "sha256": "8c62ff307a9df8648c53dbf8fe030fece4984ae3e6908a7e33f156cc74addd79",
+      "result": {
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "16.368"
+      },
+      "exit_code": 0,
+      "interpretation": "Both new cases pass after canonical owner/project comparison. Actual browser/HTTP/PG/CAS/CLI pairing; one explicit post-commit response-loss injection, no network/model execution.",
+      "command": "pytest tests/integration/test_mission_research_intake.py -q --junitxml=<original-report>"
+    }
+  ],
+  "fixture_sources": {
+    "tests/integration/test_mission_research_intake.py": "92aa4e108156b185b3acb4daa6c7dbfd65b86e7bc2f92a2ef35fc7cbec01fb6f",
+    "tests/integration/test_research_submission.py": "f4eb50f659a3125e7cd04b84461b22a53b642deed52a926285f708e34830e69f",
+    "apps/mission-control/tests/research-intake.mjs": "6c17ad7cfb357d8f6b68b6929a8c6033775d3b37b7ee3cfc5d855222404ccb98",
+    "uv.lock": "7292da3d0efcea78cda08efe5b2888cfcbc71653c1ce41f360af3c5af9d1fb25",
+    "apps/mission-control/package-lock.json": "377abc70c29d26e435c0a1aacada5c9259cc4ddbcc5fbc6ba3c59a183f43d026"
+  },
+  "limits": [
+    "Not complete Delegate execution, synthesis/support or three-mode Mission Control",
+    "No new policy, live certificate or source-certificate renewal",
+    "CREATED canonical state, original checks retained; no task attempts",
+    "Owner8770 review server and owner data unchanged"
+  ]
+}
