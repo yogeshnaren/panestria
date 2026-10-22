@@ -535,5 +535,7 @@ plan UUID and a fresh acknowledgment; malformed canonical goal documents return
 a bounded validation refusal. Unknown COMMIT/rollback acknowledgments and
 post-commit read failures remain unconfirmed and require inspection, with no
 automatic stage/accept retry. The marker describes this request, not absence of
-an older plan. Connected evidence and exact-head CI are required before merge;
-this supplies no runtime or R3 release qualification.
+an older plan. [Five connected cases](../evidence/mission-intake-rejections-2026-10-22/report.json)
+pass with actual PG/HTTP/CLI/Chromium, declared inventory and explicit lost-ack
+fixtures, including both existing uncertain reply-recovery regressions.
+Exact-head CI must pass before merge; no runtime or R3 release qualification.
