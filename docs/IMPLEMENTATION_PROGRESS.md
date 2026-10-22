@@ -5,6 +5,27 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+## Current delivery checkpoint
+
+**R3 is building; the MVP has not reached candidate acceptance.** Historical
+component sections below preserve what each source established. The current
+remaining work is summarized here, so their older “next” notes do not reopen
+already delivered components.
+
+| Area | Usable implementation now | Remaining MVP acceptance/integration |
+| --- | --- | --- |
+| Ask | Offline terminal, approved encrypted profile/style/private examples, optional pinned local identity | Full quality/latency corpus and cumulative runtime qualification |
+| Build | Canonical plans, scoped one/two-worker execution, conflicts/final-tree checks, finite repairs, exact owner review/merge | Broader adapter/DAG compatibility and complete B-1/gates |
+| Delegate | Question/query staging, explicit collection, retained excerpts, local draft and owner claim review | Actual search is owner-deferred; qualified support/iterative planning and complete D-1/G2 remain |
+| Personal platform | Reviewed quota queue, finite runner/controller, offline confirmed-result references, local profile/context components | Actual connection broker/onboarding, remaining context/capture/rights integration and qualification |
+| Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
+| Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |
+
+Next independent integration: connect opt-in storage warnings to the owner
+resource/inbox surface, then finish the outstanding connection/phone/qualified
+Delegate and cumulative evidence work. Saved metrics are descriptive; unknown
+accuracy/cost/time/source never becomes a passing gate.
+
 The latest Mission Control delivery now provides distinct explicit offline Ask,
 PUBLIC Delegate question staging, PUBLIC Build plan staging and separate exact
 plan review/acceptance. Canonical pending plan/action review discovery connects
@@ -38,7 +59,7 @@ Recent usable outcomes are [goal discovery/review/progress](testing/BUILD_REVIEW
 (PR144/146), [opt-in runtime measurements](testing/RUNTIME_BUILD_METRICS.md) (PR147),
 [before-claim storage warnings/deferral](testing/STORAGE_AWARENESS.md) (PR148), and
 [offline confirmed-result references](testing/OFFLINE_BUILD_REFERENCES.md) (PR149).
-Current work is the [reviewed quota-aware queue](testing/BACKGROUND_WORK_QUEUE.md):
+Delivered queue components include the [reviewed quota-aware queue](testing/BACKGROUND_WORK_QUEUE.md):
 it records exact intent and honest eligibility. The [finite runner](testing/BACKGROUND_RUN.md)
 now runs one selected eligible job serially, yields new claims to foreground Ask/held
 work, reuses verified handoffs on explicit resume, and retains uncertain claims.

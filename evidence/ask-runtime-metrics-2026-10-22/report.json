@@ -73,6 +73,24 @@
         "timestamp": "2026-10-22T11:57:04.835623-07:00",
         "hostname": "yogesh-verisim"
       }
+    },
+    {
+      "file": "isolated-restore.xml",
+      "sha256": "55faa08f45d8a5c3e71aa1f4f1a3da8b2c6ba8ab3a76538f8c6e64af00a569f1",
+      "source_commit": "04937ef0e8d723b1ad61f2b378b9135cb2733286",
+      "source_tree": "b8bb2754c2f360b1e6f6fbe32decfbe63cf37deb",
+      "worktree": "CLEAN",
+      "scope": "New metrics case in a dedicated disposable database followed by three unchanged real backup/restore guard cases; ALL4PASS",
+      "result": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "4",
+        "time": "17.891",
+        "timestamp": "2026-10-22T12:08:40.700143-07:00",
+        "hostname": "yogesh-verisim"
+      }
     }
   ],
   "execution_scope": "Actual disposable PostgreSQL/loopback HTTP/CLI/private history; synthetic keys/model/capacity",
@@ -92,5 +110,15 @@
     "Only explicit receipt capture; automatic per-request capture, latency distributions, domain quality, OTel/Phoenix/exposure/React integration remain open",
     "Source9d measurements are not relabeled for later docs/main merge; full original AOS029/G3/trial remain pending",
     "Original test collection error preserved; rename changes only module identity, no assertion/test skipped"
-  ]
+  ],
+  "ci_development_failure": {
+    "run_id": 39836027615,
+    "head_commit": "3b56f0503763024b7e487a70cfdaf59569bf181c",
+    "tested_preview": "9fe6f406289f0ba4c021b228e701c3bdb805e27f",
+    "total_cases": 2290,
+    "failed": 3,
+    "reason": "The new profile-based metrics fixture populated a shared database before older restore guards; production migrations correctly refused data loss but reached a newer populated audit layer. The new case now uses the existing dedicated disposable database fixture. All original restore assertions remain unchanged.",
+    "original_archive": "outputs/r3-build-ci-2026-10-20/pr186/attempt-1-failed",
+    "promotion": "FAILED_NOT_PROMOTED"
+  }
 }

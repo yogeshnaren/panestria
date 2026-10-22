@@ -74,3 +74,8 @@ performed. See [design98](../design/98-ASK-RUNTIME-METRICS.md) and the
 retain the initial duplicate-module collection error, corrected21-case suite,
 both-cohort10-case checks and affected refusal-code case separately. No new live
 model benchmark was run for this read-only metadata feature.
+
+Full CI also exposed a new fixture sharing profile audit data with older restore
+checks. The metrics case now uses its own disposable database. The corrected
+case and all three unchanged restore guards pass together; no migration or
+restore assertion was weakened, and the original failed CI is retained.
