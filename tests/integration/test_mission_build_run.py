@@ -289,8 +289,8 @@ def test_browser_finite_two_worker_run_recovers_lost_reply_and_reaches_review(
                 "SELECT count(*) FROM panestria.build_handoff WHERE plan_id=%s", (plan.plan_id,)
             ).fetchone() == (2,)
             assert c.execute(
-                "SELECT count(*) FROM panestria.task_event WHERE goal_id=%s AND kind LIKE 'mission.build_run.%'",
-                (plan.goal_id,),
+                    "SELECT count(*) FROM panestria.task_event WHERE goal_id=%s AND kind LIKE %s",
+                    (plan.goal_id, "mission.build_run.%"),
             ).fetchone() == (3,)
             assert c.execute(
                 "SELECT count(*) FROM panestria.side_effect WHERE task_id=%s", (plan.nodes[-1].task_id,)
