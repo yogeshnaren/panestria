@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 import psycopg
 from pydantic import SecretStr
 
+from panestria.config_model import expected_json_manifest
 from panestria.config_synthesis import SynthesisSettings
 from panestria.contracts.inference import InferenceRequest
 from panestria.contracts.policy import PolicyRequest
@@ -155,6 +156,11 @@ class OwnerQueryPlan:
                 return {**receipt, "replayed": True}
             identifier = str(uuid4())
             prompt = prompt_for(packet)
+            selected = expected_json_manifest(
+                self.settings.model_manifest_file, self.settings.model_cache, self.settings.runtime_directory,
+            )
+            if selected is not None and (selected.model_ref != MODEL or selected.model_bundle_sha256 != MODEL_DIGEST):
+                raise KernelDenied("model_manifest_not_supported")
             request = InferenceRequest(
                 owner_id=self.actor.owner_id,
                 project_id=self.actor.project_id,
@@ -167,6 +173,7 @@ class OwnerQueryPlan:
                 context_tokens=4096,
                 deadline_seconds=60.0,
                 trace_id=uuid4().hex,
+                model_manifest_sha256=selected.sha256() if selected is not None else None,
             )
             ref = self.artifacts._artifact(c, packet.scope.task_id, "research.query-plan-input", packet_bytes(packet))
             prior = {
@@ -177,6 +184,7 @@ class OwnerQueryPlan:
                 "model_ref": MODEL,
                 "model_digest": MODEL_DIGEST,
                 "inference_request_sha256": request.sha256(),
+                **({"model_manifest": selected.model_dump(mode="json")} if selected is not None else {}),
             }
             self._event(c, packet, STARTED, prior)
         try:
@@ -186,7 +194,9 @@ class OwnerQueryPlan:
                     if packet_bytes(self._current(c, request_id)) != packet_bytes(packet):
                         raise KernelDenied("query_plan_inputs_changed")
 
-            result = LocalDraftModel(self.settings, before_dispatch).generate(request)
+            result = LocalDraftModel(self.settings, before_dispatch, manifest=selected).generate(request)
+            if result.model_manifest_sha256 != request.model_manifest_sha256:
+                raise KernelDenied("model_manifest_mismatch")
             if (
                 result.model_ref != MODEL
                 or result.completion != "COMPLETED"
@@ -203,6 +213,7 @@ class OwnerQueryPlan:
                 prompt_sha256=prior["prompt_sha256"],
                 model_ref=MODEL,
                 model_digest=MODEL_DIGEST,
+                model_manifest=selected,
                 input_tokens=result.usage.input_tokens,
                 output_tokens=result.usage.output_tokens,
                 model_request_elapsed_seconds=result.elapsed_seconds,
@@ -275,6 +286,8 @@ class OwnerQueryPlan:
             or digest(prompt_for(retained.packet).encode()) != retained.prompt_sha256
             or retained.model_ref != prior["model_ref"]
             or retained.model_digest != prior["model_digest"]
+            or (retained.model_manifest.model_dump(mode="json") if retained.model_manifest is not None else None)
+            != prior.get("model_manifest")
         ):
             raise KernelDenied("query_plan_binding_changed")
         return retained

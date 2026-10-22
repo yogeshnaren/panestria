@@ -164,6 +164,15 @@ export command reads existing authenticated Ask status without inference or
 qualification refresh. This extends partial S6 to the supported Build drafts;
 query/synthesis/GPU/general replacement and full original evidence remain open.
 
+The [research extension](../testing/LOCAL_RESEARCH_MODEL_PINS.md) now binds local
+query/synthesis intents and retained outputs to that same optional CPU JSON
+identity. Current-file-independent replay/inspection and omitted legacy None
+fields preserve history. Actual PG/CAS/reader component checks and one separate
+actual cached CPU synthesis observation cover this path; HTTPS/request state were
+explicit fixtures and semantic support remains NOT_ASSESSED. Supported CPU local
+paths now retain model identity, but general replacement/compatibility, GPU,
+paired quality/owner preference and full original gates/trial remain open.
+
 The [pinned profile Ask terminal](../testing/PROFILE_ASK_TERMINAL.md) now connects
 explicit row/field/purpose selection to the existing restricted local inference
 boundary, with cancellation and content-free receipt recovery. Real key/model

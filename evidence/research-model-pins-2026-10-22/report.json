@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "component": "LOCAL_RESEARCH_MODEL_PINS",
+  "status": "IMPLEMENTED_SUPPORTED_CPU_QUERY_SYNTHESIS_PATH",
+  "observations": [
+    {
+      "source_commit": "f2cb35f6e324fac8d9a0fcaededd9ca08f5a2cc6",
+      "source_tree": "1ae15ac94b4167153d3a67b050fc724f4ec94e21",
+      "report": "collection-error.xml",
+      "sha256": "80bc73fa1ec36105ebc74310ed73220cf3b5a7c3ee1bc956b2f837fdaea1f59f",
+      "results": {
+        "tests": "0",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "0.002"
+      },
+      "notes": "Command exit4 selected a nonexistent legacy review filename;0 cases ran. NOT A PASS. Original XML preserved; corrected selection used actual test_research_review.py without source changes.",
+      "command_exit_code": 4,
+      "result_state": "NOT_EXECUTED_COLLECTION_ERROR"
+    },
+    {
+      "source_commit": "f2cb35f6e324fac8d9a0fcaededd9ca08f5a2cc6",
+      "source_tree": "1ae15ac94b4167153d3a67b050fc724f4ec94e21",
+      "report": "connected.xml",
+      "sha256": "a570fccc5bc797e1a5bf33741f4eddd899428d19ba18bfdd9d4493a565a17061",
+      "results": {
+        "tests": "26",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "71.079"
+      },
+      "notes": "26 connected/default cases PASS, one unchanged live query case deselected. Actual PG/CAS/isolated reader/acknowledged intent/publication/inspection/replay; generation/runtime and HTTPS are explicit fixtures. Coupled legacy query/synthesis/review, shared Build selection and exact OpenAPI checked."
+    },
+    {
+      "source_commit": "cde12f16873b34db78d7551952c09b902eba2690",
+      "source_tree": "9f0835651ad9ea2d71e9beb99cffbfd579341d0b",
+      "report": "actual-cpu-synthesis.xml",
+      "sha256": "1f5d74b4340b8e5793a3a713d341206024a867b88565cd2d0769e963e2a91e75",
+      "results": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "23.735"
+      },
+      "notes": "1 actual existing-cache CPU JSON/PG/CAS/isolated-reader synthesis and one-call replay/owned cleanup PASS. Request state/HTTPS were explicit synthetic fixtures; no actual search/factual-support/physical TCP/OS-profile-key or release qualification.",
+      "properties": {
+        "candidate_commit": "cde12f16873b34db78d7551952c09b902eba2690",
+        "execution_mode": "ACTUAL_CACHED_CPU_JSON_PG_CAS_READER__SYNTHETIC_REQUEST_STATE_HTTPS__NO_SUPPORT_GATE",
+        "model_calls": "1",
+        "model_manifest_sha256": "6e34273933e3ae65a1e3f92be482fb014e9641e77aed98f38d3290e418a07ff8",
+        "controller_elapsed_seconds_including_start_stop": "9.536893402982969",
+        "model_input_tokens": "201",
+        "model_output_tokens": "46",
+        "release_gate": "NOT_EVALUATED"
+      }
+    }
+  ],
+  "outcomes": [
+    "Optional strict CPU JSON expectation read only for a genuinely new query/synthesis intent",
+    "Exact manifest/request hash acknowledged in original STARTED event before owned startup/generation",
+    "Actual provider and returned identity must match before retained output publication",
+    "Original manifest retained in protected output and compared with original immutable intent on inspection/replay",
+    "Current selection changes/unavailability do not affect history or redispatch; legacy None fields omitted to preserve canonical bytes",
+    "Query quality/semantic support remain NOT_ASSESSED with no web/task/training authority"
+  ],
+  "limits": [
+    "Component model/runtime/HTTPS are explicit fixtures; separate actual model observation still uses synthetic request state/HTTPS",
+    "Actual cached CPU synthesis recorded201input/46output tokens;9.536893402982969s is controller time INCLUDING start/stop, not TTFT/model-only latency or a distribution",
+    "No actual search/physical TCP/OS key-profile/factual or general replacement qualification",
+    "No new owner configuration/service/database/key/cache changes, external inference/API, model download, implicit fallback, storage deletion or release/trial pass"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "ci": "Separate all-six exact-head CI required"
+}
