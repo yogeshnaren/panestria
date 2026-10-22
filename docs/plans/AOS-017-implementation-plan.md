@@ -168,3 +168,11 @@ The [pinned profile Ask terminal](../testing/PROFILE_ASK_TERMINAL.md) now connec
 explicit row/field/purpose selection to the existing restricted local inference
 boundary, with cancellation and content-free receipt recovery. Real key/model
 qualification, supported service/onboarding and full original cases remain open.
+
+The [private-example extension](../testing/PRIVATE_STYLE_EXAMPLES.md) now stores
+a bounded owner-reviewed set inside the encrypted communication snapshot and
+compiles it only into the explicitly selected offline overlay. Ciphertext/version
+refs retain provenance; no public private-text fingerprint or training grant is
+introduced. Actual PG/crypto/HTTP/PTY and one cached CPU smoke are source-bound
+components. Full style/owner preference, broader cross-harness TC08 and original
+release evidence remain pending; historical results above stay unchanged.

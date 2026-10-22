@@ -10,9 +10,8 @@ This is partial AOS-017-S4 delivery. The ordinary local Ask/activity launchers
 still leave profile routes disabled/unmounted. Use this client only with a
 separately configured, qualified, explicitly enabled owner-profile API, including
 the canonical activity scope route. It does not certify or bypass the remaining
-[profile setup/runtime boundary](PROFILE_RUNTIME_QUALIFICATION.md). Supported
-owner personal-mode service onboarding, private examples and full S4/S5/S6
-qualification remain pending. No owner server/database/key store was configured
+[profile setup/runtime boundary](PROFILE_RUNTIME_QUALIFICATION.md). The [bounded private-example extension](PRIVATE_STYLE_EXAMPLES.md) is now available;
+full S4/S5/S6 qualification remains pending. No owner server/database/key store was configured
 by the implementation checks.
 
 Prepare a private mode0600 JSON client file with the already selected
