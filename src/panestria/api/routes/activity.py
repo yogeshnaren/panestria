@@ -12,6 +12,7 @@ from panestria.api.db import open_database, run_database
 from panestria.api.routes.goals import _api
 from panestria.contracts.activity import ActivityTimeline, ProjectActivity
 from panestria.contracts.review_inbox import ReviewInbox
+from panestria.contracts.storage_status import StorageStatus
 from panestria.kernel.activity import project_activity
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -54,23 +55,63 @@ async def activity(
     try:
         api = _api(request)
         actor = authorize(request, api)
-        response = await run_database(_page, api.database_url, actor, before, limit)
+        response = await run_database(
+            _page,
+            api.database_url,
+            actor,
+            before,
+            limit,
+            getattr(request.app.state, "storage_observer", None) is not None,
+        )
         await asyncio.to_thread(authorize, request, api)
         return response
     except LoopbackDenied as exc:
         return JSONResponse(status_code=exc.status_code, content=error_body(exc.code))
 
 
-def _page(dsn: str, actor: Actor, before: str | None, limit: int) -> JSONResponse:
+def _page(dsn: str, actor: Actor, before: str | None, limit: int, storage_available: bool = False) -> JSONResponse:
     try:
         with open_database(dsn) as c:
             c.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
             view = project_activity(UnitOfWork(c), actor, before=before, limit=limit)
+            if storage_available:
+                view = view.model_copy(update={"storage_available": True})
         return JSONResponse(content=view.model_dump(mode="json"), headers={"Cache-Control": "no-store"})
     except KernelDenied as exc:
         return JSONResponse(status_code=404 if exc.code == "not_found" else 422, content=error_body(exc.code))
     except Exception:
         return JSONResponse(status_code=503, content=error_body("activity_unavailable"))
+
+
+@router.get("/v1/activity/storage", responses={200: {"model": StorageStatus}})
+async def storage_status(request: Request) -> JSONResponse:
+    from panestria.resources.storage_status import StorageObserver
+
+    try:
+        api = _api(request)
+        actor = authorize(request, api)
+        if getattr(request.app.state, "browser_access", None) is not None:
+            raise LoopbackDenied("storage_terminal_mode_only", 403)
+        observer = getattr(request.app.state, "storage_observer", None)
+        if isinstance(observer, StorageObserver):
+            view = observer.view(actor)  # Cached memory / coalesced daemon; no disk I/O here.
+        else:
+            view = StorageStatus.model_validate_json(
+                json.dumps(
+                    {
+                        "owner_id": actor.owner_id,
+                        "project_id": actor.project_id,
+                        "state": "NOT_CONFIGURED",
+                        "reason": "not_configured",
+                    }
+                )
+            )
+        authorize(request, api)
+        return JSONResponse(view.model_dump(mode="json"), headers={"Cache-Control": "no-store"})
+    except LoopbackDenied as exc:
+        return JSONResponse(status_code=exc.status_code, content=error_body(exc.code))
+    except Exception:
+        return JSONResponse(status_code=503, content=error_body("storage_status_unavailable"))
 
 
 @router.get("/v1/activity/goals/{goal_id}/events", response_model=None, responses={200: {"model": ActivityTimeline}})

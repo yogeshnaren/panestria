@@ -26,6 +26,7 @@ class ProjectActivity(BaseModel):
     project_id: UUID
     observed_at: datetime
     entries: tuple[ActivityEntry, ...] = Field(max_length=32)
+    storage_available: bool = Field(default=False, exclude_if=lambda v: not v)
     next_cursor: str | None = Field(default=None, max_length=41, pattern=r"^(ASK|GOAL):[0-9a-f-]{36}$")
     view_authority: Literal["READ_ONLY_METADATA"] = "READ_ONLY_METADATA"
     acceptance_authority: Literal["NONE"] = "NONE"
