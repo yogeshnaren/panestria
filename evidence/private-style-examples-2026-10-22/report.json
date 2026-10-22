@@ -25,7 +25,7 @@
       "sha256": "1881fcde21229a38c53137be2f5a4b8b0b8a3dc842d3e3ea359c7909d215e127",
       "source_commit": "cae323cad9ee2c551e2d11fd036bf1593cd35812",
       "source_tree": "4c058e551396d39dd0872986fe95290e66287e05",
-      "worktree": "CLEAN",
+      "worktree": "COMMITTED_TRACKED_SOURCE; untracked operator runbooks added while the default run completed",
       "scope": "21_PASS_ONE_NEW_TERMINAL_TRANSCRIPT_ASSERTION_FAIL_ONE_OLD_LIVE_DESELECTED",
       "result": {
         "name": "pytest",
@@ -43,7 +43,7 @@
       "sha256": "26a3913af09382682dec99e288ac4e80132110cc70e55e92910b482167014a0f",
       "source_commit": "91708f68e4410f8bc6c684301853c21ed0659ff3",
       "source_tree": "68400a4df9c29f5b4bd3351ddedeb2cc85dc5a79",
-      "worktree": "CLEAN",
+      "worktree": "COMMITTED_TRACKED_SOURCE; untracked operator runbooks pending",
       "scope": "FOUR_PASS_NEW_CASES_SCROLL_CONSENT_AND_EXACT_OPENAPI",
       "result": {
         "name": "pytest",
