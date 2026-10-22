@@ -35,6 +35,7 @@ def serve_activity(
     build_review_root: Path | None = None,
     research_intake: Path | None = None,
     build_intake: bool = False,
+    build_plan_review: bool = False,
 ) -> None:
     config, token = load_activity_settings(path)
     settings = Settings(
@@ -64,6 +65,7 @@ def serve_activity(
                 build_review_root=build_review_root,
                 research_intake=research_intake,
                 build_intake=build_intake,
+                build_plan_review=build_plan_review,
             )
         server = uvicorn.Server(server_config(app))
         print(
@@ -71,7 +73,9 @@ def serve_activity(
                 {
                     "status": "STARTING",
                     "origin": config.origin,
-                    "authority": "PUBLIC_BUILD_PLAN_STAGING_ONLY"
+                    "authority": "PUBLIC_PLAN_ACCEPTANCE_ONLY"
+                    if build_plan_review
+                    else "PUBLIC_BUILD_PLAN_STAGING_ONLY"
                     if build_intake
                     else "PUBLIC_RESEARCH_STAGING_ONLY"
                     if research_intake

@@ -26,7 +26,13 @@ class BrowserAccess:
         database_url: str,
         *,
         namespace: Literal[
-            "default", "mission", "mission-review", "mission-ask", "mission-research", "mission-build-intake"
+            "default",
+            "mission",
+            "mission-review",
+            "mission-ask",
+            "mission-research",
+            "mission-build-intake",
+            "mission-plan-review",
         ] = "default",
     ) -> None:
         parts = urlsplit(origin)
@@ -47,6 +53,7 @@ class BrowserAccess:
             "mission-ask",
             "mission-research",
             "mission-build-intake",
+            "mission-plan-review",
         }:
             raise ValueError("invalid_browser_namespace")
         self.cookie_name = (

@@ -72,3 +72,7 @@ lost reply injection. No intake model/worker/provider/search call or live
 qualification is claimed. Preserve owner databases/services. Full AOS-028,
 remaining revision-3 work, original cumulative gates and the real owner trial
 remain required before R3 acceptance.
+
+The separate [plan review mode](MISSION_PLAN_ACCEPTANCE.md) adds explicit exact
+plan acceptance through the same canonical service. It requires a different
+launcher flag and session; this staging-only mode remains unchanged.

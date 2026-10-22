@@ -1097,8 +1097,11 @@
             "type": "string"
           },
           "operation": {
-            "const": "STAGED_NO_EXECUTION",
             "default": "STAGED_NO_EXECUTION",
+            "enum": [
+              "STAGED_NO_EXECUTION",
+              "PLAN_ACCEPTED_NO_EXECUTION"
+            ],
             "title": "Operation",
             "type": "string"
           },
@@ -1605,6 +1608,11 @@
           "offline_ask_enabled": {
             "default": false,
             "title": "Offline Ask Enabled",
+            "type": "boolean"
+          },
+          "plan_acceptance_enabled": {
+            "default": false,
+            "title": "Plan Acceptance Enabled",
             "type": "boolean"
           },
           "research_intake_enabled": {
@@ -3326,6 +3334,73 @@
           }
         },
         "summary": "Inspect Plan"
+      }
+    },
+    "/v1/mission/build/plans/{plan_id}/accept": {
+      "post": {
+        "operationId": "accept_plan_v1_mission_build_plans__plan_id__accept_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "title": "Plan Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "accept_plan": {
+                    "const": true,
+                    "title": "Accept Plan",
+                    "type": "boolean"
+                  },
+                  "effect_digest": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "title": "Effect Digest",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "effect_digest",
+                  "accept_plan"
+                ],
+                "title": "BuildPlanAcceptance",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildPlanStagingView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Accept Plan"
       }
     },
     "/v1/mission/capabilities": {

@@ -310,6 +310,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mission/build/plans/{plan_id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept Plan */
+        post: operations["accept_plan_v1_mission_build_plans__plan_id__accept_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mission/capabilities": {
         parameters: {
             query?: never;
@@ -1006,9 +1023,9 @@ export interface components {
             /**
              * Operation
              * @default STAGED_NO_EXECUTION
-             * @constant
+             * @enum {string}
              */
-            operation: "STAGED_NO_EXECUTION";
+            operation: "STAGED_NO_EXECUTION" | "PLAN_ACCEPTED_NO_EXECUTION";
             /** Owner Id */
             owner_id: string;
             plan: components["schemas"]["StoredPlan"];
@@ -1240,6 +1257,11 @@ export interface components {
              * @default false
              */
             offline_ask_enabled: boolean;
+            /**
+             * Plan Acceptance Enabled
+             * @default false
+             */
+            plan_acceptance_enabled: boolean;
             /**
              * Research Intake Enabled
              * @default false
@@ -2203,6 +2225,49 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuildPlanStagingView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    accept_plan_v1_mission_build_plans__plan_id__accept_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Accept Plan
+                     * @constant
+                     */
+                    accept_plan: true;
+                    /** Effect Digest */
+                    effect_digest: string;
+                };
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {

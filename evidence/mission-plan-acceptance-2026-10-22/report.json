@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "outcome": "EXPLICIT_PUBLIC_PLAN_ACCEPTANCE_NO_EXECUTION",
+  "release_gate": "NOT_EVALUATED",
+  "runtime_qualification": "NOT_ASSESSED",
+  "worker_or_provider_inference": "NOT_RUN",
+  "observations": [
+    {
+      "source_commit": "6eaf44416fc8bb733282fd020038812c22c97ac2",
+      "source_tree": "9b47dd114a82cc695d74f9cbd48130c2a331c22d",
+      "report": "first.xml",
+      "sha256": "9eb5a5eecd0d4504b7d323d2e3e64f17c9431bd7279ad0b0d4cb02ff6cf15ac1",
+      "command": "pytest tests/integration/test_mission_plan_acceptance.py tests/integration/test_mission_build_intake.py tests/e2e/test_aos_005.py::test_openapi_matches_the_mounted_routes -q --junitxml=<original-report>",
+      "exit_code": 0,
+      "result": {
+        "tests": "5",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "25.425"
+      },
+      "interpretation": "5 connected acceptance/intake/OpenAPI cases pass. Actual browser/HTTP/PG/CLI pairing, exact digest, expiry, cross-mode isolation, replay, final-session rollback and lost-commit reply recovery; no execution."
+    },
+    {
+      "source_commit": "9b344c98945565c0bde246cdac1f128e58919f9d",
+      "source_tree": "3e3036c436af0157c4e16efa54df5b10cb8200b1",
+      "report": "final.xml",
+      "sha256": "223b591a10e78ec8fb43d1a33f75407e480cbd18e1d1dbc4b4c41f5ac65a8d91",
+      "command": "pytest tests/integration/test_mission_plan_acceptance.py -q --junitxml=<original-report>",
+      "exit_code": 0,
+      "result": {
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "12.020"
+      },
+      "interpretation": "2 acceptance cases pass after truthful retained ACCEPTED operation and release-acceptance label correction. Browser screenshot retained at this exact source."
+    }
+  ],
+  "fixture_sources": {
+    "tests/integration/test_mission_plan_acceptance.py": "072f0a6ee0ed1985ed0432e1992c323a2d2c509bd7e880eaebc15b106a94c2a0",
+    "tests/integration/test_mission_build_intake.py": "ab812bfcbf797ab07c40c2a28b5c1cb2647ec25bd64d05389c935c51a37a8d08",
+    "apps/mission-control/tests/plan-acceptance.mjs": "921a29f5ede8c129a34283606b86e6ab096e258e0e0ebce28c91fe3b65d6ca74",
+    "uv.lock": "7292da3d0efcea78cda08efe5b2888cfcbc71653c1ce41f360af3c5af9d1fb25",
+    "apps/mission-control/package-lock.json": "377abc70c29d26e435c0a1aacada5c9259cc4ddbcc5fbc6ba3c59a183f43d026"
+  },
+  "limits": [
+    "Actual disposable PG55439/Git/loopback HTTP/CLI pairing/Chromium with declared synthetic worker inventory",
+    "Explicit one committed acceptance reply-loss injection; recovery sends no second accept POST",
+    "Expired consent prepared using a test-only clock SELECT replacement; actual stored hash/expiry/server rejection, not fifteen-minute elapsed operational evidence",
+    "Canonical CREATED tasks/one acceptance/event; zero attempts or worker dispatch. Intake-only mode remains unauthorized",
+    "Owner8770 review service and all owner data/private/historical evidence preserved",
+    "Original cumulative gates and real R3 owner trial remain unassessed"
+  ]
+}
