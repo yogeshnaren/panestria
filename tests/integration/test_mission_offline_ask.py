@@ -84,7 +84,9 @@ def ask_application(r1_database, tmp_path, monkeypatch):
 def test_mission_ask_scope_and_session_purpose(ask_application):
     _, config, token, settings, app, calls = ask_application
     original = local_server.build_local_app(
-        config.model_copy(update={"runtime_directory": config.runtime_directory / "legacy"}), settings, token
+        config.model_copy(update={"runtime_directory": config.runtime_directory.with_name("legacy-runtime")}),
+        settings,
+        token,
     )
     origin = {"Origin": config.origin}
     bearer = {"Authorization": "Bearer " + token}

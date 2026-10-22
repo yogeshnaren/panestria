@@ -14,7 +14,7 @@ class AskReceipt(BaseModel):
     model_ref: str
     context_pack_id: str
     trace_id: str
-    usage: dict[str, JsonValue]
+    usage: dict[str, JsonValue] | None
     code: str | None
     response_sha256: str | None
     privacy_label: DataLabel

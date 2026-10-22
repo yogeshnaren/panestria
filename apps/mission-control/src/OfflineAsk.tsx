@@ -11,7 +11,7 @@ const terminal = (state: Receipt['state']) => ['COMPLETED','CANCELLED','UNAVAILA
 function validate(value: Receipt, id: string): Receipt {
   if(value.request_id !== id || !['PREPARED','RUNNING','COMPLETED','CANCELLED','UNAVAILABLE'].includes(value.state) ||
       value.offline !== true || value.response_retained !== false || !Array.isArray(value.sources) ||
-      !value.usage || typeof value.usage !== 'object') throw new Error('Unconfirmed receipt.');
+      (value.usage !== null && (typeof value.usage !== 'object' || Array.isArray(value.usage)))) throw new Error('Unconfirmed receipt.');
   return value;
 }
 
@@ -126,7 +126,7 @@ export function OfflineAsk({project, csrf, deny}: {project:string, csrf:string|n
     {receipt && <div aria-label="Ask receipt"><p>Canonical state: <strong data-testid="ask-state">{receipt.state}</strong></p>
       <p>Model <code>{receipt.model_ref}</code> · privacy {receipt.privacy_label} · {receipt.code??'no error code'}</p>
       <p>Context pack <code>{receipt.context_pack_id}</code> · trace <code>{receipt.trace_id}</code></p>
-      <h3>Measured usage</h3><pre>{JSON.stringify(receipt.usage,null,2)}</pre>
+      <h3>Measured usage</h3>{receipt.usage===null?<p>Unavailable: no completed usage measurement.</p>:<pre>{JSON.stringify(receipt.usage,null,2)}</pre>}
       <p>Source context IDs: {receipt.sources.map((source,i)=><code key={i}>{String(source.source_id??source.id??'unavailable')} </code>)}</p>
     </div>}
     {answer!==null && <div aria-label="Local answer"><h3>Local answer</h3><pre data-testid="ask-answer">{answer}</pre></div>}

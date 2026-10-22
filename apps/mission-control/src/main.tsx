@@ -142,6 +142,6 @@ function Dashboard() {
 class Boundary extends Component<{children: ReactNode},{failed:boolean}> {
   state = {failed:false};
   static getDerivedStateFromError() {return {failed:true};}
-  render() {return this.state.failed ? <main><h1>View unconfirmed</h1><p>Reload and pair again. No action was submitted.</p></main> : this.props.children;}
+  render() {return this.state.failed ? <main><h1>View unconfirmed</h1><p>Reload and pair again. Inspect canonical state before retrying any action.</p></main> : this.props.children;}
 }
 createRoot(document.getElementById('root')!).render(<Boundary><Dashboard/></Boundary>);

@@ -724,7 +724,7 @@ export interface components {
             /** Usage */
             usage: {
                 [key: string]: components["schemas"]["JsonValue"];
-            };
+            } | null;
         };
         /** AskCancellation */
         AskCancellation: {
@@ -783,7 +783,7 @@ export interface components {
             /** Usage */
             usage: {
                 [key: string]: components["schemas"]["JsonValue"];
-            };
+            } | null;
         };
         /** BuildCheck */
         BuildCheck: {
