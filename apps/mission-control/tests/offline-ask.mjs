@@ -47,6 +47,9 @@ try {
   const disconnected = await submit('SYNTHETIC WAIT_FOR_CANCEL disconnect');
   await state(disconnected,'RUNNING');
   await context.setOffline(true);
+  // Chromium offline emulation can leave an existing loopback response open.
+  // Exercise the real Stop waiting control to close that physical HTTP stream.
+  await ask.getByRole('button',{name:'Stop waiting',exact:true}).click();
   await expect(ask.getByTestId('ask-notice')).toContainText('UNCONFIRMED',{timeout:10000});
   await expect(ask.getByRole('button',{name:'Ask offline',exact:true})).toBeDisabled();
   await expect(ask.getByRole('button',{name:'New question',exact:true})).toHaveCount(0);

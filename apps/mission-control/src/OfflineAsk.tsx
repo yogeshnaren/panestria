@@ -114,8 +114,10 @@ export function OfflineAsk({project, csrf, deny}: {project:string, csrf:string|n
       <p className="muted">{bytes} / 4096 UTF-8 bytes. Output is limited to 128 tokens; deadline 60 seconds.</p>
       <div className="actions"><button disabled={!csrf || unresolved || phase==='TERMINAL' || !question.trim() || bytes>4096}>Ask offline</button>
         {id && <button type="button" onClick={()=>void cancel()} disabled={!csrf || !unresolved || reading}>Cancel request</button>}
+        {phase==='POSTING' && <button type="button" onClick={()=>post.current?.abort()}>Stop waiting</button>}
         {phase==='TERMINAL' && <button type="button" onClick={newQuestion} disabled={reading}>New question</button>}</div>
     </form>
+    {phase==='POSTING' && <p className="muted">Stop waiting disconnects this response. It does not confirm cancellation; inspect the same receipt afterward.</p>}
     {id && <p>Request ID <code data-testid="ask-id">{id}</code></p>}
     <form onSubmit={inspect}><label htmlFor="ask-receipt">Recover receipt by request ID</label>
       <div className="actions"><input id="ask-receipt" className="receipt-id" value={lookup} onChange={e=>setLookup(e.target.value)}

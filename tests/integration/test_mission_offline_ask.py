@@ -83,7 +83,9 @@ def ask_application(r1_database, tmp_path, monkeypatch):
 
 def test_mission_ask_scope_and_session_purpose(ask_application):
     _, config, token, settings, app, calls = ask_application
-    original = local_server.build_local_app(config, settings, token)
+    original = local_server.build_local_app(
+        config.model_copy(update={"runtime_directory": config.runtime_directory / "legacy"}), settings, token
+    )
     origin = {"Origin": config.origin}
     bearer = {"Authorization": "Bearer " + token}
     with TestClient(original, base_url=config.origin) as old:
@@ -96,8 +98,12 @@ def test_mission_ask_scope_and_session_purpose(ask_application):
         assert client.get("/ui/mission.js").headers["cache-control"] == "no-store"
         assert "script-src 'self'" in client.get("/").headers["content-security-policy"]
         assert client.post("/v1/session/pair", headers=origin, json={"code": old_code}).status_code == 401
-        with TestClient(app, base_url=config.origin, cookies=cookies) as wrong:
-            assert wrong.get("/v1/activity").status_code == 401
+        assert (
+            client.get(
+                "/v1/activity", headers={"Cookie": "; ".join(f"{key}={value}" for key, value in cookies.items())}
+            ).status_code
+            == 401
+        )
         caps = client.get("/v1/mission/capabilities", headers=bearer).json()
         assert caps["offline_ask_enabled"] is True and caps["build_review_enabled"] is False
         assert caps["dispatch_authority"] == "NONE"
