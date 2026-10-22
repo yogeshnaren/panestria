@@ -63,6 +63,8 @@ try {
  await expect(section.getByLabel('Protected diff')).toHaveCount(0);
  await expect(section.getByRole('button',{name:'Refresh exact review',exact:true})).toBeDisabled();
  assert(networkFailures.some(path=>path.endsWith('/build-review/decision')));
+ if(process.env.PANESTRIA_BROWSER_PENDING_SCREENSHOT)
+   await page.screenshot({path:process.env.PANESTRIA_BROWSER_PENDING_SCREENSHOT,fullPage:true});
  await page.evaluate(()=>window.__reviewFailureFault.release());
  // A read error or stale label is not proof that the consent attempt finished.
  // Settle it while still offline before choosing the canonical recovery action.
