@@ -91,7 +91,7 @@ def build_local_app(
     provider = LocalProvider(model.socket_path)
     archive = Path(__file__).resolve().parents[3] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
     probe = HardwareProbe(archive)
-    ask = AskApi(provider, probe.collect_cpu)
+    ask = AskApi(provider, probe.collect_cpu, include_charter=config.assistant_charter)
     app = create_app(settings, default_readiness_probe)
     # Scope without exposing unrelated synthetic goal/merge/tool routes.
     api = GoalApi(token, actor.owner_id, actor.project_id, settings.database_url.get_secret_value())
@@ -175,6 +175,7 @@ def build_local_app(
                     "model_catalog": "checked_per_inference",
                     "admission": ask.governor.status(),
                     "profiles": "DISABLED" if profiles is None else "EXPLICITLY_ENABLED",
+                    "assistant_charter": "SHARED_DATA_FREE_V1" if config.assistant_charter else "LEGACY_CONTEXT",
                     "cloud_routes": "UNMOUNTED",
                     "resource_headroom": "rechecked_per_inference",
                     "release_gate": "NOT_EVALUATED",

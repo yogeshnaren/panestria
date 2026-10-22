@@ -29,6 +29,7 @@ class LocalApplicationSettings(BaseModel):
     token_file: Path
     model_cache: Path
     runtime_directory: Path
+    assistant_charter: bool = False
 
     @property
     def origin(self) -> str:

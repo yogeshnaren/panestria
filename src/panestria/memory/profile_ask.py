@@ -23,7 +23,7 @@ def overlay(prompt: str, selection: ProfileSelection) -> str:
     selected = json.loads(selection.content.get_secret_value())
     if selection.request.purpose == "STRUCTURED_RESPONSE_STYLE":
         selected = structured_overlay(selected)
-        if "assistant_charter" in body:
+        if "assistant_charter" in body and body["assistant_charter"] != charter():
             raise KernelDenied("profile_context_integrity_failed")
         body["assistant_charter"] = charter()
         body["presentation_rules"] = (

@@ -36,8 +36,8 @@ class PreparedAsk:
 
 
 class AskService:
-    def __init__(self, *, profile_context: ProfileContext | None = None) -> None:
-        self.compiler = ContextCompiler()
+    def __init__(self, *, profile_context: ProfileContext | None = None, include_charter: bool = False) -> None:
+        self.compiler = ContextCompiler(include_charter=include_charter)
         self.profile_context = profile_context
 
     def prepare(self, uow: UnitOfWork, actor: Actor, submission: AskSubmission) -> PreparedAsk:
@@ -82,7 +82,13 @@ class AskService:
             if self.profile_context is None:
                 raise KernelDenied("profile_disabled")
             selection = self.profile_context.select(uow, actor, submission.profile)
-            reserve = len(overlay("{}", selection).encode()) + 2
+            if self.compiler.include_charter:
+                # Budget the overlay delta against the actual data-free renderer;
+                # a shared charter appears once, not twice in a private prompt.
+                seed = self.compiler.render("", [])
+                reserve = len(overlay(seed, selection).encode()) - len(seed.encode()) + 2
+            else:
+                reserve = len(overlay("{}", selection).encode()) + 2
         token_budget = submission.context_tokens - submission.max_output_tokens - 128 - reserve
         if selection is not None and token_budget < 512:
             raise KernelDenied("profile_context_budget_exceeded")
