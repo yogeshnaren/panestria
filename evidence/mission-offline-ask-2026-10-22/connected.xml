@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="39" time="85.529" timestamp="2026-10-21T21:37:24.966013-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_mission_offline_ask" name="test_mission_ask_scope_and_session_purpose" file="tests/integration/test_mission_offline_ask.py" line="83" time="3.516"><failure message="panestria.config_local.LocalApplicationRejected: local_runtime_directory_not_private">ask_application = (PosixPath('/tmp/pytest-of-yogesh/pytest-83/test_mission_ask_scope_and_ses0/local.json'), LocalApplicationSettings(sch...ness_budget_ms=500, database_url=SecretStr('**********')), &lt;fastapi.applications.FastAPI object at 0x79a7d261b5c0&gt;, [])
+
+    def test_mission_ask_scope_and_session_purpose(ask_application):
+        _, config, token, settings, app, calls = ask_application
+        original = local_server.build_local_app(
+            config.model_copy(update={"runtime_directory": config.runtime_directory / "legacy"}), settings, token
+        )
+        origin = {"Origin": config.origin}
+        bearer = {"Authorization": "Bearer " + token}
+        with TestClient(original, base_url=config.origin) as old:
+            assert 'id="question"' in old.get("/").text
+            old_code = old.post("/v1/session/code", headers=bearer, json={}).json()["code"]
+            old.post("/v1/session/pair", headers=origin, json={"code": old_code}).raise_for_status()
+            cookies = dict(old.cookies)
+&gt;       with TestClient(app, base_url=config.origin) as client:
+
+tests/integration/test_mission_offline_ask.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/starlette/testclient.py:517: in __enter__
+    portal.call(self.wait_startup)
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/yogesh/anaconda3/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/yogesh/anaconda3/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/testclient.py:552: in wait_startup
+    await receive()
+.venv/lib/python3.12/site-packages/starlette/testclient.py:543: in receive
+    self.task.result()
+/home/yogesh/anaconda3/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/yogesh/anaconda3/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/testclient.py:533: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1203: in __call__
+    await lifespan(
+.venv/lib/python3.12/site-packages/fastapi/telemetry/_runtime.py:238: in lifespan
+    await app(scope, wrapped_receive, wrapped_send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:96: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/telemetry/_asgi.py:151: in __call__
+    await self.app(scope, receive, send)
+src/panestria/api/security.py:54: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:676: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:2773: in app
+    await self.lifespan(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:654: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+/home/yogesh/anaconda3/lib/python3.12/contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+application = &lt;fastapi.applications.FastAPI object at 0x79a7d261b5c0&gt;
+
+    @asynccontextmanager
+    async def lifespan(application: FastAPI) -&gt; AsyncIterator[None]:
+        try:
+            await asyncio.to_thread(require_setup, settings, actor)
+            config.runtime_directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+            info = config.runtime_directory.stat()
+            if config.runtime_directory.is_symlink() or info.st_uid != os.getuid() or info.st_mode &amp; 0o077:
+&gt;               raise LocalApplicationRejected("local_runtime_directory_not_private")
+E               panestria.config_local.LocalApplicationRejected: local_runtime_directory_not_private
+
+src/panestria/api/local_server.py:131: LocalApplicationRejected</failure></testcase><testcase classname="tests.integration.test_mission_offline_ask" name="test_browser_offline_ask_answer_cancel_recovery_and_refusal" file="tests/integration/test_mission_offline_ask.py" line="140" time="8.198"><properties><property name="mode" value="ACTUAL_CHROMIUM_HTTP_PG__TEST_FIXTURE_NOT_LIVE_MODEL_PROCESS_HARDWARE" /></properties><failure message="AssertionError: node:internal/modules/run_main:107&#10;      triggerUncaughtException(&#10;      ^&#10;  &#10;  ExpectError: expect(locator).toHaveText(expected) failed&#10;  &#10;  Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')&#10;  Expected: &quot;CANCELLED&quot;&#10;  Timeout: 5000ms&#10;  Error: element(s) not found&#10;  &#10;  Call log:&#10;    - Expect &quot;toHaveText&quot; getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms&#10;    - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')&#10;  &#10;      at captureRawStack (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright-core/lib/coreBundle.js:9282:17)&#10;      at callMatcherAsStep (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13316:57)&#10;      at Object.toHaveText (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13308:23)&#10;      at /tmp/panestria-mission-offline-ask-work/apps/mission-control/tests/offline-ask.mjs:59:46 {&#10;    matcherResult: {&#10;      name: 'toHaveText',&#10;      expected: 'CANCELLED',&#10;      message: 'expect(locator).toHaveText(expected) failed\n' +&#10;        '\n' +&#10;        &quot;Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')\n&quot; +&#10;        'Expected: &quot;CANCELLED&quot;\n' +&#10;        'Timeout: 5000ms\n' +&#10;        'Error: element(s) not found\n' +&#10;        '\n' +&#10;        'Call log:\n' +&#10;        `  - Expect &quot;toHaveText&quot; getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms\n` +&#10;        &quot;  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')\n&quot;,&#10;      pass: false,&#10;      actual: undefined,&#10;      log: [&#10;        `  - Expect &quot;toHaveText&quot; getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms`,&#10;        &quot;  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')&quot;&#10;      ],&#10;      timeout: 5000,&#10;      ariaSnapshot: '- main:\n' +&#10;        '  - paragraph: PANESTRIA · OFFLINE ASK\n' +&#10;        '  - heading &quot;Mission Control&quot; [level=1]\n' +&#10;        '  - paragraph: &quot;Canonical project activity and goal timelines. Explicit offline Ask input · acceptance authority: NONE.&quot;\n' +&#10;        '  - region &quot;Connection&quot;:\n' +&#10;        '    - status: Project snapshot confirmed.\n' +&#10;        '    - button &quot;Log out&quot;\n' +&#10;        '    - paragraph: Enter questions only in Offline Ask below. Never enter credentials or bearer tokens.\n' +&#10;        '  - region &quot;Offline Ask&quot;:\n' +&#10;        '    - heading &quot;Offline Ask&quot; [level=2]\n' +&#10;        '    - paragraph: Uses this workstation’s configured local model. RESTRICTED · offline · no response retention · no profile context.\n' +&#10;        '    - status: Receipt unconfirmed or unavailable in this project. No request was submitted or retried.\n' +&#10;        '    - text: Question\n' +&#10;        '    - textbox &quot;Question&quot; [disabled]: SYNTHETIC WAIT_FOR_CANCEL disconnect\n' +&#10;        '    - paragraph: 36 / 4096 UTF-8 bytes. Output is limited to 128 tokens; deadline 60 seconds.\n' +&#10;        '    - button &quot;Ask offline&quot; [disabled]\n' +&#10;        '    - button &quot;Cancel request&quot;\n' +&#10;        '    - paragraph:\n' +&#10;        '      - text: Request ID\n' +&#10;        '      - code: b8c949c5-6553-495f-910c-744468c99c6f\n' +&#10;        '    - text: Recover receipt by request ID\n' +&#10;        '    - textbox &quot;Recover receipt by request ID&quot; [disabled]: b8c949c5-6553-495f-910c-744468c99c6f\n' +&#10;        '    - button &quot;Inspect receipt&quot;\n' +&#10;        '  - region &quot;Project activity&quot;:\n' +&#10;        '    - heading &quot;Project activity&quot; [level=2]\n' +&#10;        '    - paragraph:\n' +&#10;        '      - text: Project\n' +&#10;        '      - code: c96095e0-2704-41f5-b87d-4fddc6584b2e\n' +&#10;        '      - text: · Confirmed\n' +&#10;        '    - paragraph: Observed 2026-10-22T04:37:30.843024Z. Statuses are canonical observations, not release acceptance.\n' +&#10;        '    - paragraph: No activity in this project yet.\n' +&#10;        '    - table:\n' +&#10;        '      - rowgroup:\n' +&#10;        '        - row &quot;Work State Tasks / reviews Inspect&quot;:\n' +&#10;        '          - columnheader &quot;Work&quot;\n' +&#10;        '          - columnheader &quot;State&quot;\n' +&#10;        '          - columnheader &quot;Tasks / reviews&quot;\n' +&#10;        '          - columnheader &quot;Inspect&quot;\n' +&#10;        '      - rowgroup\n' +&#10;        '    - button &quot;Latest&quot; [disabled]\n' +&#10;        '    - button &quot;Older activity&quot; [disabled]\n' +&#10;        '  - text: Local desktop only. Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.'&#10;    }&#10;  }&#10;  &#10;  Node.js v24.19.0&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/home/yogesh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node', 'tests/o...k is available here. Delegate, Build intake and phone access remain separate R3 work.\'\n  }\n}\n\nNode.js v24.19.0\n').returncode">ask_application = (PosixPath('/tmp/pytest-of-yogesh/pytest-83/test_browser_offline_ask_answe0/local.json'), LocalApplicationSettings(sch...inguish conflicting facts and uncertainty.","untrusted_reference_data":[]}', 'stream': True, 'keep_alive': '5m', ...}])
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-83/test_browser_offline_ask_answe0')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x79a7d22f77e0&gt;
+
+    def test_browser_offline_ask_answer_cancel_recovery_and_refusal(ask_application, tmp_path, record_property):
+        path, config, token, settings, app, calls = ask_application
+        record_property("mode", "ACTUAL_CHROMIUM_HTTP_PG__TEST_FIXTURE_NOT_LIVE_MODEL_PROCESS_HARDWARE")
+        listener = local_server.owned_listener(config)
+        server = uvicorn.Server(uvicorn.Config(app, log_config=None, access_log=False, http=LocalHttpProtocol))
+        thread = threading.Thread(target=lambda: server.run(sockets=[listener]), daemon=True)
+        thread.start()
+        try:
+            deadline = time.monotonic() + 15
+            while not server.started:
+                assert thread.is_alive() and time.monotonic() &lt; deadline, "local test server failed startup"
+                time.sleep(0.02)
+            code = subprocess.run(
+                [str(ROOT / ".venv/bin/python"), "-m", "panestria.cli.main", "local", "pair-code", "--config", str(path)],
+                cwd=ROOT,
+                env={**os.environ, "PANESTRIA_DATABASE_URL": settings.database_url.get_secret_value()},
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            assert code.returncode == 0 and token not in code.stdout, code.stderr
+            fixture = tmp_path / "browser.json"
+            fixture.write_text(json.dumps({"origin": config.origin, "code": json.loads(code.stdout)["code"]}))
+            fixture.chmod(0o600)
+            screenshot = tmp_path / "offline-ask.png"
+            result = subprocess.run(
+                [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/offline-ask.mjs"],
+                cwd=ROOT / "apps/mission-control",
+                env={
+                    **os.environ,
+                    "PANESTRIA_BROWSER_FIXTURE": str(fixture),
+                    "PANESTRIA_BROWSER_SCREENSHOT": str(screenshot),
+                },
+                capture_output=True,
+                text=True,
+                timeout=80,
+            )
+&gt;           assert result.returncode == 0, result.stdout + result.stderr
+E           AssertionError: node:internal/modules/run_main:107
+E                 triggerUncaughtException(
+E                 ^
+E             
+E             ExpectError: expect(locator).toHaveText(expected) failed
+E             
+E             Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')
+E             Expected: "CANCELLED"
+E             Timeout: 5000ms
+E             Error: element(s) not found
+E             
+E             Call log:
+E               - Expect "toHaveText" getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms
+E               - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')
+E             
+E                 at captureRawStack (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright-core/lib/coreBundle.js:9282:17)
+E                 at callMatcherAsStep (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13316:57)
+E                 at Object.toHaveText (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13308:23)
+E                 at /tmp/panestria-mission-offline-ask-work/apps/mission-control/tests/offline-ask.mjs:59:46 {
+E               matcherResult: {
+E                 name: 'toHaveText',
+E                 expected: 'CANCELLED',
+E                 message: 'expect(locator).toHaveText(expected) failed\n' +
+E                   '\n' +
+E                   "Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')\n" +
+E                   'Expected: "CANCELLED"\n' +
+E                   'Timeout: 5000ms\n' +
+E                   'Error: element(s) not found\n' +
+E                   '\n' +
+E                   'Call log:\n' +
+E                   `  - Expect "toHaveText" getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms\n` +
+E                   "  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')\n",
+E                 pass: false,
+E                 actual: undefined,
+E                 log: [
+E                   `  - Expect "toHaveText" getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state') with timeout 5000ms`,
+E                   "  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-state')"
+E                 ],
+E                 timeout: 5000,
+E                 ariaSnapshot: '- main:\n' +
+E                   '  - paragraph: PANESTRIA · OFFLINE ASK\n' +
+E                   '  - heading "Mission Control" [level=1]\n' +
+E                   '  - paragraph: "Canonical project activity and goal timelines. Explicit offline Ask input · acceptance authority: NONE."\n' +
+E                   '  - region "Connection":\n' +
+E                   '    - status: Project snapshot confirmed.\n' +
+E                   '    - button "Log out"\n' +
+E                   '    - paragraph: Enter questions only in Offline Ask below. Never enter credentials or bearer tokens.\n' +
+E                   '  - region "Offline Ask":\n' +
+E                   '    - heading "Offline Ask" [level=2]\n' +
+E                   '    - paragraph: Uses this workstation’s configured local model. RESTRICTED · offline · no response retention · no profile context.\n' +
+E                   '    - status: Receipt unconfirmed or unavailable in this project. No request was submitted or retried.\n' +
+E                   '    - text: Question\n' +
+E                   '    - textbox "Question" [disabled]: SYNTHETIC WAIT_FOR_CANCEL disconnect\n' +
+E                   '    - paragraph: 36 / 4096 UTF-8 bytes. Output is limited to 128 tokens; deadline 60 seconds.\n' +
+E                   '    - button "Ask offline" [disabled]\n' +
+E                   '    - button "Cancel request"\n' +
+E                   '    - paragraph:\n' +
+E                   '      - text: Request ID\n' +
+E                   '      - code: b8c949c5-6553-495f-910c-744468c99c6f\n' +
+E                   '    - text: Recover receipt by request ID\n' +
+E                   '    - textbox "Recover receipt by request ID" [disabled]: b8c949c5-6553-495f-910c-744468c99c6f\n' +
+E                   '    - button "Inspect receipt"\n' +
+E                   '  - region "Project activity":\n' +
+E                   '    - heading "Project activity" [level=2]\n' +
+E                   '    - paragraph:\n' +
+E                   '      - text: Project\n' +
+E                   '      - code: c96095e0-2704-41f5-b87d-4fddc6584b2e\n' +
+E                   '      - text: · Confirmed\n' +
+E                   '    - paragraph: Observed 2026-10-22T04:37:30.843024Z. Statuses are canonical observations, not release acceptance.\n' +
+E                   '    - paragraph: No activity in this project yet.\n' +
+E                   '    - table:\n' +
+E                   '      - rowgroup:\n' +
+E                   '        - row "Work State Tasks / reviews Inspect":\n' +
+E                   '          - columnheader "Work"\n' +
+E                   '          - columnheader "State"\n' +
+E                   '          - columnheader "Tasks / reviews"\n' +
+E                   '          - columnheader "Inspect"\n' +
+E                   '      - rowgroup\n' +
+E                   '    - button "Latest" [disabled]\n' +
+E                   '    - button "Older activity" [disabled]\n' +
+E                   '  - text: Local desktop only. Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.'
+E               }
+E             }
+E             
+E             Node.js v24.19.0
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/home/yogesh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node', 'tests/o...k is available here. Delegate, Build intake and phone access remain separate R3 work.\'\n  }\n}\n\nNode.js v24.19.0\n').returncode
+
+tests/integration/test_mission_offline_ask.py:178: AssertionError</failure></testcase><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation0]" file="tests/integration/test_local_server.py" line="56" time="0.009" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation1]" file="tests/integration/test_local_server.py" line="56" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation2]" file="tests/integration/test_local_server.py" line="56" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation3]" file="tests/integration/test_local_server.py" line="56" time="0.007" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation4]" file="tests/integration/test_local_server.py" line="56" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation5]" file="tests/integration/test_local_server.py" line="56" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation6]" file="tests/integration/test_local_server.py" line="56" time="0.005" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation7]" file="tests/integration/test_local_server.py" line="56" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_configuration_rejects_authority_and_version_overrides[mutation8]" file="tests/integration/test_local_server.py" line="56" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_configuration_and_token_are_private_and_never_overwritten" file="tests/integration/test_local_server.py" line="78" time="0.009" /><testcase classname="tests.integration.test_local_server" name="test_port_conflict_preserves_original_listener" file="tests/integration/test_local_server.py" line="103" time="0.008" /><testcase classname="tests.integration.test_local_server" name="test_owned_listener_reserves_port_before_model_start" file="tests/integration/test_local_server.py" line="115" time="0.006" /><testcase classname="tests.integration.test_local_server" name="test_preserve_existing_runtime_never_inspects_or_reaps_a_container" file="tests/integration/test_local_server.py" line="126" time="0.002" /><testcase classname="tests.integration.test_local_server" name="test_local_lifespan_scope_no_build_routes_and_shutdown" file="tests/integration/test_local_server.py" line="174" time="0.500" /><testcase classname="tests.integration.test_local_server" name="test_unconfigured_policy_stops_before_model_start" file="tests/integration/test_local_server.py" line="200" time="0.148" /><testcase classname="tests.integration.test_local_server" name="test_startup_denial_cleans_owned_state_and_preserves_fixed_reason[schema-local_schema_migration_required]" file="tests/integration/test_local_server.py" line="211" time="0.191" /><testcase classname="tests.integration.test_local_server" name="test_startup_denial_cleans_owned_state_and_preserves_fixed_reason[runtime_permissions-local_runtime_directory_not_private]" file="tests/integration/test_local_server.py" line="211" time="0.200" /><testcase classname="tests.integration.test_local_server" name="test_startup_denial_cleans_owned_state_and_preserves_fixed_reason[resources-capacity_unknown]" file="tests/integration/test_local_server.py" line="211" time="0.199" /><testcase classname="tests.integration.test_local_server" name="test_startup_denial_cleans_owned_state_and_preserves_fixed_reason[model-model_missing_or_digest_mismatch]" file="tests/integration/test_local_server.py" line="211" time="0.195" /><testcase classname="tests.integration.test_local_server" name="test_real_http_enforces_headers_and_slow_header_deadline" file="tests/integration/test_local_server.py" line="245" time="0.862" /><testcase classname="tests.integration.test_local_web" name="test_packaged_assets_preserve_csp_and_fixed_route_scope" file="tests/integration/test_local_web.py" line="19" time="0.218" /><testcase classname="tests.integration.test_local_web" name="test_terminal_code_pairs_scoped_browser_without_exposing_bearer" file="tests/integration/test_local_web.py" line="36" time="0.411" /><testcase classname="tests.integration.test_local_web" name="test_pairing_cli_rejects_bounded_malformed_or_unauthorized_responses[401-body0]" file="tests/integration/test_local_web.py" line="88" time="0.204" /><testcase classname="tests.integration.test_local_web" name="test_pairing_cli_rejects_bounded_malformed_or_unauthorized_responses[200-body1]" file="tests/integration/test_local_web.py" line="88" time="0.131" /><testcase classname="tests.integration.test_local_web" name="test_pairing_cli_rejects_bounded_malformed_or_unauthorized_responses[200-body2]" file="tests/integration/test_local_web.py" line="88" time="0.137" /><testcase classname="tests.integration.test_local_web" name="test_pairing_cli_rejects_bounded_malformed_or_unauthorized_responses[200-body3]" file="tests/integration/test_local_web.py" line="88" time="0.135" /><testcase classname="tests.integration.test_local_web" name="test_browser_storage_and_rendering_contract" file="tests/integration/test_local_web.py" line="106" time="0.001" /><testcase classname="tests.integration.test_mission_control_browser" name="test_dashboard_namespace_read_only_routes_and_envelope" file="tests/integration/test_mission_control_browser.py" line="57" time="0.438" /><testcase classname="tests.integration.test_mission_control_browser" name="test_actual_chromium_pair_reconnect_large_cursor_resync_and_revoke" file="tests/integration/test_mission_control_browser.py" line="117" time="17.888"><properties><property name="candidate_commit" value="45ffe58ec40b400011ddf6342ae756bead037cbb" /><property name="worktree_state" value="clean" /><property name="mode" value="ACTUAL_CHROMIUM_POSTGRES_LOOPBACK_HTTP_METADATA_ONLY" /></properties></testcase><testcase classname="tests.e2e.test_aos_005" name="test_loopback_submit_scope_and_replay" file="tests/e2e/test_aos_005.py" line="115" time="5.702"><properties><property name="slice_id" value="AOS-005-S1" /><property name="candidate_commit" value="45ffe58ec40b400011ddf6342ae756bead037cbb" /><property name="fixture_digest" value="9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283" /><property name="lane" value="e2e" /><property name="execution_mode" value="OS_BOUNDARY" /><property name="worktree_state" value="clean" /><property name="aos_005_tc01" value="NOT_RUN" /><property name="gate_case_id" value="AOS-005-TC01" /></properties></testcase><testcase classname="tests.e2e.test_aos_005" name="test_approval_digest_actor_expiry" file="tests/e2e/test_aos_005.py" line="404" time="6.277"><properties><property name="gate_case_id" value="AOS-005-TC02" /><property name="candidate_commit" value="45ffe58ec40b400011ddf6342ae756bead037cbb" /><property name="fixture_digest" value="9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283" /><property name="lane" value="security" /><property name="execution_mode" value="OS_BOUNDARY" /><property name="worktree_state" value="clean" /><property name="aos_005_tc01" value="NOT_RUN" /></properties></testcase><testcase classname="tests.e2e.test_aos_005" name="test_r0_positive_journey" file="tests/e2e/test_aos_005.py" line="626" time="9.536"><properties><property name="gate_case_id" value="AOS-005-TC01" /><property name="candidate_commit" value="45ffe58ec40b400011ddf6342ae756bead037cbb" /><property name="fixture_digest" value="9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283" /><property name="lane" value="e2e" /><property name="execution_mode" value="OS_BOUNDARY" /><property name="worktree_state" value="clean" /></properties></testcase><testcase classname="tests.e2e.test_aos_005" name="test_corrupted_check_report_prepares_no_merge" file="tests/e2e/test_aos_005.py" line="700" time="9.765"><properties><property name="gate_case_id" value="AOS-005-TC02" /><property name="candidate_commit" value="45ffe58ec40b400011ddf6342ae756bead037cbb" /><property name="fixture_digest" value="9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283" /><property name="lane" value="security" /><property name="execution_mode" value="OS_BOUNDARY" /><property name="worktree_state" value="clean" /></properties></testcase><testcase classname="tests.e2e.test_aos_005" name="test_decision_race_idempotency" file="tests/e2e/test_aos_005.py" line="794" time="6.346"><properties><property name="gate_case_id" value="AOS-005-TC03" /><property name="candidate_commit" value="45ffe58ec40b400011ddf6342ae756bead037cbb" /><property name="fixture_digest" value="9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283" /><property name="lane" value="integration" /><property name="execution_mode" value="OS_BOUNDARY" /><property name="worktree_state" value="dirty" /></properties></testcase><testcase classname="tests.e2e.test_aos_005" name="test_wait_restart_continuation" file="tests/e2e/test_aos_005.py" line="941" time="12.775"><properties><property name="gate_case_id" value="AOS-005-TC04" /><property name="candidate_commit" value="45ffe58ec40b400011ddf6342ae756bead037cbb" /><property name="fixture_digest" value="9177c4ec481cf480bc866db2adf4fde9c7bb5571c7238016e58833a61d573283" /><property name="lane" value="chaos" /><property name="execution_mode" value="OS_BOUNDARY" /><property name="worktree_state" value="dirty" /></properties></testcase><testcase classname="tests.e2e.test_aos_005" name="test_openapi_matches_the_mounted_routes" file="tests/e2e/test_aos_005.py" line="1140" time="0.106"><properties><property name="gate_case_id" value="AOS-005-TC01" /><property name="candidate_commit" value="45ffe58ec40b400011ddf6342ae756bead037cbb" /><property name="lane" value="contract" /><property name="execution_mode" value="HERMETIC" /></properties></testcase><testcase classname="tests.e2e.test_aos_005" name="test_cli_rejects_a_status_body_outside_the_published_model" file="tests/e2e/test_aos_005.py" line="1157" time="0.497"><properties><property name="gate_case_id" value="AOS-005-TC01" /><property name="candidate_commit" value="45ffe58ec40b400011ddf6342ae756bead037cbb" /><property name="lane" value="contract" /><property name="execution_mode" value="HERMETIC" /></properties></testcase></testsuite></testsuites>

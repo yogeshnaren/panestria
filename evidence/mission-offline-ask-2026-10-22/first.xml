@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="17.698" timestamp="2026-10-21T21:36:16.004277-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_mission_offline_ask" name="test_mission_ask_scope_and_session_purpose" file="tests/integration/test_mission_offline_ask.py" line="83" time="3.670"><failure message="panestria.config_local.LocalApplicationRejected: local_runtime_unavailable">ask_application = (PosixPath('/tmp/pytest-of-yogesh/pytest-82/test_mission_ask_scope_and_ses0/local.json'), LocalApplicationSettings(sch...ness_budget_ms=500, database_url=SecretStr('**********')), &lt;fastapi.applications.FastAPI object at 0x7efa6580a120&gt;, [])
+
+    def test_mission_ask_scope_and_session_purpose(ask_application):
+        _, config, token, settings, app, calls = ask_application
+        original = local_server.build_local_app(config, settings, token)
+        origin = {"Origin": config.origin}
+        bearer = {"Authorization": "Bearer " + token}
+        with TestClient(original, base_url=config.origin) as old:
+            assert 'id="question"' in old.get("/").text
+            old_code = old.post("/v1/session/code", headers=bearer, json={}).json()["code"]
+            old.post("/v1/session/pair", headers=origin, json={"code": old_code}).raise_for_status()
+            cookies = dict(old.cookies)
+&gt;       with TestClient(app, base_url=config.origin) as client:
+
+tests/integration/test_mission_offline_ask.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/starlette/testclient.py:517: in __enter__
+    portal.call(self.wait_startup)
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/yogesh/anaconda3/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/yogesh/anaconda3/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/testclient.py:552: in wait_startup
+    await receive()
+.venv/lib/python3.12/site-packages/starlette/testclient.py:543: in receive
+    self.task.result()
+/home/yogesh/anaconda3/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/yogesh/anaconda3/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/testclient.py:533: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1203: in __call__
+    await lifespan(
+.venv/lib/python3.12/site-packages/fastapi/telemetry/_runtime.py:238: in lifespan
+    await app(scope, wrapped_receive, wrapped_send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:96: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/telemetry/_asgi.py:151: in __call__
+    await self.app(scope, receive, send)
+src/panestria/api/security.py:54: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:676: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/fastapi/routing.py:2773: in app
+    await self.lifespan(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:654: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+/home/yogesh/anaconda3/lib/python3.12/contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+application = &lt;fastapi.applications.FastAPI object at 0x7efa6580a120&gt;
+
+    @asynccontextmanager
+    async def lifespan(application: FastAPI) -&gt; AsyncIterator[None]:
+        try:
+            await asyncio.to_thread(require_setup, settings, actor)
+            config.runtime_directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+            info = config.runtime_directory.stat()
+            if config.runtime_directory.is_symlink() or info.st_uid != os.getuid() or info.st_mode &amp; 0o077:
+                raise LocalApplicationRejected("local_runtime_directory_not_private")
+            admission = admit(await asyncio.to_thread(probe.collect_cpu), gpu=False)
+            if admission.decision != "PERMIT":
+                raise InferenceUnavailable(admission.reasons[0])
+            await asyncio.to_thread(model.start)
+            async with base_lifespan(application):
+                yield
+        except (KernelDenied, InferenceUnavailable, LocalApplicationRejected) as exc:
+            app.state.local_failure = exc.code
+            raise
+        except (psycopg.Error, DatabaseUnavailable):
+            app.state.local_failure = "database_unavailable"
+            raise LocalApplicationRejected("database_unavailable") from None
+        except (OSError, ProbeUnavailable):
+            app.state.local_failure = "local_runtime_unavailable"
+&gt;           raise LocalApplicationRejected("local_runtime_unavailable") from None
+E           panestria.config_local.LocalApplicationRejected: local_runtime_unavailable
+
+src/panestria/api/local_server.py:146: LocalApplicationRejected</failure></testcase><testcase classname="tests.integration.test_mission_offline_ask" name="test_browser_offline_ask_answer_cancel_recovery_and_refusal" file="tests/integration/test_mission_offline_ask.py" line="134" time="13.338"><properties><property name="mode" value="ACTUAL_CHROMIUM_HTTP_PG__TEST_FIXTURE_NOT_LIVE_MODEL_PROCESS_HARDWARE" /></properties><failure message="AssertionError: node:internal/modules/run_main:107&#10;      triggerUncaughtException(&#10;      ^&#10;  &#10;  ExpectError: expect(locator).toContainText(expected) failed&#10;  &#10;  Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice')&#10;  Expected substring: &quot;UNCONFIRMED&quot;&#10;  Received string:    &quot;Running offline. Keep this request ID to inspect or cancel the same request.&quot;&#10;  Timeout: 10000ms&#10;  &#10;  Call log:&#10;    - Expect &quot;toContainText&quot; getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice') with timeout 10000ms&#10;    - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice')&#10;      24 × locator resolved to &lt;p role=&quot;status&quot; data-testid=&quot;ask-notice&quot;&gt;Running offline. Keep this request ID to inspect …&lt;/p&gt;&#10;         - unexpected value &quot;Running offline. Keep this request ID to inspect or cancel the same request.&quot;&#10;  &#10;      at captureRawStack (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright-core/lib/coreBundle.js:9282:17)&#10;      at callMatcherAsStep (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13316:57)&#10;      at Object.toContainText (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13308:23)&#10;      at /tmp/panestria-mission-offline-ask-work/apps/mission-control/tests/offline-ask.mjs:50:47 {&#10;    matcherResult: {&#10;      name: 'toContainText',&#10;      expected: 'UNCONFIRMED',&#10;      message: 'expect(locator).toContainText(expected) failed\n' +&#10;        '\n' +&#10;        &quot;Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice')\n&quot; +&#10;        'Expected substring: &quot;UNCONFIRMED&quot;\n' +&#10;        'Received string:    &quot;Running offline. Keep this request ID to inspect or cancel the same request.&quot;\n' +&#10;        'Timeout: 10000ms\n' +&#10;        '\n' +&#10;        'Call log:\n' +&#10;        `  - Expect &quot;toContainText&quot; getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice') with timeout 10000ms\n` +&#10;        &quot;  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice')\n&quot; +&#10;        '    24 × locator resolved to &lt;p role=&quot;status&quot; data-testid=&quot;ask-notice&quot;&gt;Running offline. Keep this request ID to inspect …&lt;/p&gt;\n' +&#10;        '       - unexpected value &quot;Running offline. Keep this request ID to inspect or cancel the same request.&quot;\n',&#10;      pass: false,&#10;      actual: 'Running offline. Keep this request ID to inspect or cancel the same request.',&#10;      log: [&#10;        `  - Expect &quot;toContainText&quot; getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice') with timeout 10000ms`,&#10;        &quot;  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice')&quot;,&#10;        '    24 × locator resolved to &lt;p role=&quot;status&quot; data-testid=&quot;ask-notice&quot;&gt;Running offline. Keep this request ID to inspect …&lt;/p&gt;',&#10;        '       - unexpected value &quot;Running offline. Keep this request ID to inspect or cancel the same request.&quot;'&#10;      ],&#10;      timeout: 10000,&#10;      ariaSnapshot: '- status: Running offline. Keep this request ID to inspect or cancel the same request.'&#10;    }&#10;  }&#10;  &#10;  Node.js v24.19.0&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/home/yogesh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node', 'tests/o... status: Running offline. Keep this request ID to inspect or cancel the same request.\'\n  }\n}\n\nNode.js v24.19.0\n').returncode">ask_application = (PosixPath('/tmp/pytest-of-yogesh/pytest-82/test_browser_offline_ask_answe0/local.json'), LocalApplicationSettings(sch...inguish conflicting facts and uncertainty.","untrusted_reference_data":[]}', 'stream': True, 'keep_alive': '5m', ...}])
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-82/test_browser_offline_ask_answe0')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x7efa64336700&gt;
+
+    def test_browser_offline_ask_answer_cancel_recovery_and_refusal(ask_application, tmp_path, record_property):
+        path, config, token, settings, app, calls = ask_application
+        record_property("mode", "ACTUAL_CHROMIUM_HTTP_PG__TEST_FIXTURE_NOT_LIVE_MODEL_PROCESS_HARDWARE")
+        listener = local_server.owned_listener(config)
+        server = uvicorn.Server(uvicorn.Config(app, log_config=None, access_log=False, http=LocalHttpProtocol))
+        thread = threading.Thread(target=lambda: server.run(sockets=[listener]), daemon=True)
+        thread.start()
+        try:
+            deadline = time.monotonic() + 15
+            while not server.started:
+                assert thread.is_alive() and time.monotonic() &lt; deadline, "local test server failed startup"
+                time.sleep(0.02)
+            code = subprocess.run(
+                [str(ROOT / ".venv/bin/python"), "-m", "panestria.cli.main", "local", "pair-code", "--config", str(path)],
+                cwd=ROOT,
+                env={**os.environ, "PANESTRIA_DATABASE_URL": settings.database_url.get_secret_value()},
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            assert code.returncode == 0 and token not in code.stdout, code.stderr
+            fixture = tmp_path / "browser.json"
+            fixture.write_text(json.dumps({"origin": config.origin, "code": json.loads(code.stdout)["code"]}))
+            fixture.chmod(0o600)
+            screenshot = tmp_path / "offline-ask.png"
+            result = subprocess.run(
+                [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/offline-ask.mjs"],
+                cwd=ROOT / "apps/mission-control",
+                env={
+                    **os.environ,
+                    "PANESTRIA_BROWSER_FIXTURE": str(fixture),
+                    "PANESTRIA_BROWSER_SCREENSHOT": str(screenshot),
+                },
+                capture_output=True,
+                text=True,
+                timeout=80,
+            )
+&gt;           assert result.returncode == 0, result.stdout + result.stderr
+E           AssertionError: node:internal/modules/run_main:107
+E                 triggerUncaughtException(
+E                 ^
+E             
+E             ExpectError: expect(locator).toContainText(expected) failed
+E             
+E             Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice')
+E             Expected substring: "UNCONFIRMED"
+E             Received string:    "Running offline. Keep this request ID to inspect or cancel the same request."
+E             Timeout: 10000ms
+E             
+E             Call log:
+E               - Expect "toContainText" getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice') with timeout 10000ms
+E               - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice')
+E                 24 × locator resolved to &lt;p role="status" data-testid="ask-notice"&gt;Running offline. Keep this request ID to inspect …&lt;/p&gt;
+E                    - unexpected value "Running offline. Keep this request ID to inspect or cancel the same request."
+E             
+E                 at captureRawStack (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright-core/lib/coreBundle.js:9282:17)
+E                 at callMatcherAsStep (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13316:57)
+E                 at Object.toContainText (/tmp/panestria-mission-control-work/apps/mission-control/node_modules/playwright/lib/matchers/expect.js:13308:23)
+E                 at /tmp/panestria-mission-offline-ask-work/apps/mission-control/tests/offline-ask.mjs:50:47 {
+E               matcherResult: {
+E                 name: 'toContainText',
+E                 expected: 'UNCONFIRMED',
+E                 message: 'expect(locator).toContainText(expected) failed\n' +
+E                   '\n' +
+E                   "Locator: getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice')\n" +
+E                   'Expected substring: "UNCONFIRMED"\n' +
+E                   'Received string:    "Running offline. Keep this request ID to inspect or cancel the same request."\n' +
+E                   'Timeout: 10000ms\n' +
+E                   '\n' +
+E                   'Call log:\n' +
+E                   `  - Expect "toContainText" getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice') with timeout 10000ms\n` +
+E                   "  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice')\n" +
+E                   '    24 × locator resolved to &lt;p role="status" data-testid="ask-notice"&gt;Running offline. Keep this request ID to inspect …&lt;/p&gt;\n' +
+E                   '       - unexpected value "Running offline. Keep this request ID to inspect or cancel the same request."\n',
+E                 pass: false,
+E                 actual: 'Running offline. Keep this request ID to inspect or cancel the same request.',
+E                 log: [
+E                   `  - Expect "toContainText" getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice') with timeout 10000ms`,
+E                   "  - waiting for getByRole('region', { name: 'Offline Ask' }).getByTestId('ask-notice')",
+E                   '    24 × locator resolved to &lt;p role="status" data-testid="ask-notice"&gt;Running offline. Keep this request ID to inspect …&lt;/p&gt;',
+E                   '       - unexpected value "Running offline. Keep this request ID to inspect or cancel the same request."'
+E                 ],
+E                 timeout: 10000,
+E                 ariaSnapshot: '- status: Running offline. Keep this request ID to inspect or cancel the same request.'
+E               }
+E             }
+E             
+E             Node.js v24.19.0
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/home/yogesh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node', 'tests/o... status: Running offline. Keep this request ID to inspect or cancel the same request.\'\n  }\n}\n\nNode.js v24.19.0\n').returncode
+
+tests/integration/test_mission_offline_ask.py:172: AssertionError</failure></testcase></testsuite></testsuites>
