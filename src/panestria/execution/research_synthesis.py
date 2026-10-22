@@ -14,8 +14,10 @@ from uuid import UUID, uuid4
 import psycopg
 from pydantic import SecretStr
 
+from panestria.config_model import expected_json_manifest
 from panestria.config_synthesis import SynthesisSettings
 from panestria.contracts.inference import InferenceRequest, InferenceResult, InferenceUnavailable
+from panestria.contracts.model_manifest import ModelManifest
 from panestria.contracts.policy import PolicyRequest
 from panestria.contracts.research import ResearchArtifactRef
 from panestria.contracts.research_brief import EvidenceBrief
@@ -139,11 +141,20 @@ class SynthesisReceipt:
 
 
 class LocalDraftModel:
-    def __init__(self, settings: SynthesisSettings, before_dispatch: Callable[[], None]):
+    def __init__(
+        self, settings: SynthesisSettings, before_dispatch: Callable[[], None],
+        *, manifest: ModelManifest | None = None,
+    ):
         self.settings, self.before_dispatch = settings, before_dispatch
+        self.manifest = manifest
 
     def generate(self, request: InferenceRequest) -> InferenceResult:
         settings = self.settings
+        if (
+            (settings.model_manifest_file is not None and self.manifest is None)
+            or request.model_manifest_sha256 != (self.manifest.sha256() if self.manifest is not None else None)
+        ):
+            raise InferenceUnavailable("model_manifest_mismatch")
         archive = Path(__file__).resolve().parents[3] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
         decision = admit(HardwareProbe(archive).collect_cpu(), gpu=False)
         if decision.decision != "PERMIT":
@@ -155,8 +166,11 @@ class LocalDraftModel:
         model = ModelRuntime(settings.model_cache, settings.runtime_directory / "model", preserve_existing=True)
         try:
             model.start()
+            provider = LocalProvider(model.socket_path, json_output=True)
+            if self.manifest is not None:
+                provider.bind_manifest(model.describe_manifest(json_output=True))
             self.before_dispatch()
-            return LocalProvider(model.socket_path, json_output=True).generate(request)
+            return provider.generate(request)
         finally:
             model.stop()  # Exact owned runtime only; never reap/stop an existing owner controller.
 
@@ -265,6 +279,11 @@ class OwnerSynthesis:
                     self._read_output(c, packet, prior, receipt)
                 return receipt
             prompt = prompt_for(packet)
+            selected = expected_json_manifest(
+                self.settings.model_manifest_file, self.settings.model_cache, self.settings.runtime_directory,
+            )
+            if selected is not None and (selected.model_ref != MODEL or selected.model_bundle_sha256 != MODEL_DIGEST):
+                raise KernelDenied("model_manifest_not_supported")
             identifier = str(uuid4())
             request = InferenceRequest(
                 owner_id=self.actor.owner_id,
@@ -278,6 +297,7 @@ class OwnerSynthesis:
                 context_tokens=4096,
                 deadline_seconds=60.0,
                 trace_id=uuid4().hex,
+                model_manifest_sha256=selected.sha256() if selected is not None else None,
             )
             input_ref = self._artifact(c, packet.scope.task_id, "research.synthesis-input", packet_json(packet))
             self._event(
@@ -293,6 +313,7 @@ class OwnerSynthesis:
                     "model_digest": MODEL_DIGEST,
                     "inference_request_sha256": request.sha256(),
                     "scope": "LOCAL_CPU_DRAFT_ONLY",
+                    **({"model_manifest": selected.model_dump(mode="json")} if selected is not None else {}),
                 },
             )
         try:
@@ -302,7 +323,9 @@ class OwnerSynthesis:
                     if packet_json(self._current(c, request_id)) != packet_json(packet):
                         raise KernelDenied("synthesis_inputs_changed")
 
-            result = LocalDraftModel(self.settings, before_dispatch).generate(request)
+            result = LocalDraftModel(self.settings, before_dispatch, manifest=selected).generate(request)
+            if result.model_manifest_sha256 != request.model_manifest_sha256:
+                raise KernelDenied("model_manifest_mismatch")
             if result.completion != "COMPLETED" or result.finish_reason != "stop" or result.model_ref != MODEL:
                 raise KernelDenied("synthesis_incomplete_response")
             response = SynthesisResponse.model_validate_json(result.text)
@@ -316,6 +339,7 @@ class OwnerSynthesis:
                 response=response,
                 model_ref=MODEL,
                 model_digest=MODEL_DIGEST,
+                model_manifest=selected,
                 prompt_sha256=_sha(prompt.encode()),
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
@@ -451,6 +475,8 @@ class OwnerSynthesis:
             or draft.synthesis_id != receipt.synthesis_id
             or draft.model_ref != MODEL
             or draft.model_digest != MODEL_DIGEST
+            or (draft.model_manifest.model_dump(mode="json") if draft.model_manifest is not None else None)
+            != prior.get("model_manifest")
             or draft.prompt_sha256 != _sha(prompt_for(packet).encode())
             or synthesis_json(draft) != raw
         ):

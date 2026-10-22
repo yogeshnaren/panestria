@@ -340,6 +340,15 @@ Canonical replay preserves the original identity after new-work settings change.
 Source-bound component checks and a separate actual cached CPU JSON journey cover
 this path. Research query/synthesis identity and broader S6/quality still remain;
 do not reopen completed Ask/Build pinning as new metadata work.
+The [research model pin](testing/LOCAL_RESEARCH_MODEL_PINS.md) now connects the
+same optional JSON expectation to query/synthesis STARTED intents, actual local
+dispatch, retained outputs and model-file-independent inspection/replay.26
+connected checks and one actual existing-cache CPU synthesis journey pass on
+their recorded sources. The latter retained a cited draft with201 input/46
+output tokens and9.54s controller time including startup/stop; support remains
+NOT_ASSESSED and its request-state/HTTPS observations were explicit fixtures.
+Supported CPU Ask/Build/research identity hooks are implemented; general model
+replacement/quality qualification and the other R3 platform/gate gaps remain.
 Preserve purpose/classification/model-compatibility and current authority checks;
 avoid replacing retained contracts with a second prompt store. Other review
 families, full fleet/dispatch integration, connections, resources/phone and finite
@@ -430,6 +439,19 @@ existing-cache CPU JSON generation. It remains proposal-only, with original
 finite repair charges/current authority and separate owner review unchanged.
 Actual query/synthesis/general replacement qualification, S5 semantic quality,
 remaining platform integration, original gates and real owner trial stay open.
+
+The [research extension](testing/LOCAL_RESEARCH_MODEL_PINS.md) reuses the same
+private expectation and public identity export for local query/synthesis work.
+Its [source-bound evidence](../evidence/research-model-pins-2026-10-22/report.json)
+retains a command collection error separately from26 passing component checks
+and a separate actual cached CPU synthesis observation. The actual model produced
+a retained cited draft; canonical replay made no second call. It did not qualify
+actual HTTPS/search, factual support, private profile keys or a release gate.
+New optional artifact metadata preserves legacy canonical bytes by omitting
+None. Current model-selection files are read only for genuinely new intents;
+history remains independently readable. Full S6 replacement/compatibility, S5
+quality, other personal-platform/resource/phone work and original acceptance
+requirements remain open.
 
 The full Delegate gate still requires adversarial briefs, qualified semantic
 support/contradiction handling, an actual authorized public brief and Ask/Build

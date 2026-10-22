@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, StrictInt
 
 from panestria.config_local import read_private
+from panestria.config_model import expected_json_manifest
 from panestria.contracts.model_manifest import ModelManifest
 
 
@@ -21,18 +22,7 @@ class PlanModelSettings(BaseModel):
 
 
 def expected_plan_manifest(settings: PlanModelSettings) -> ModelManifest | None:
-    path = settings.model_manifest_file
-    if path is None:
-        return None
-    if (
-        not path.is_absolute() or path.resolve() != path
-        or path.is_relative_to(settings.model_cache) or path.is_relative_to(settings.runtime_directory)
-    ):
-        raise ValueError("plan_model_manifest_path_invalid")
-    manifest = ModelManifest.model_validate_json(read_private(path, 8192))
-    if manifest.runtime_profile != "CPU_JSON_V1" or manifest.tools or manifest.max_context_tokens < 4096:
-        raise ValueError("plan_json_model_manifest_required")
-    return manifest
+    return expected_json_manifest(settings.model_manifest_file, settings.model_cache, settings.runtime_directory)
 
 
 def load_plan_settings(path: Path) -> PlanModelSettings:

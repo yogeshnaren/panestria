@@ -5,6 +5,7 @@ from typing import Literal, Self
 
 from pydantic import Field, SecretStr, StrictInt, model_validator
 
+from panestria.contracts.model_manifest import ModelManifest
 from panestria.contracts.research import PassageRef, ResearchContract, ResearchId, ResearchScope, Sha256
 
 
@@ -58,6 +59,7 @@ class RetainedSynthesis(ResearchContract):
     response: SynthesisResponse
     model_ref: str
     model_digest: Sha256
+    model_manifest: ModelManifest | None = Field(default=None, exclude_if=lambda value: value is None)
     prompt_sha256: Sha256
     input_tokens: StrictInt = Field(ge=0)
     output_tokens: StrictInt = Field(ge=0, le=768)
