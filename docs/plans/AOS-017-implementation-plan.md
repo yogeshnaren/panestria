@@ -138,6 +138,15 @@ This is a usable S4/context component, not completed S5 quality or S6 model
 compatibility/replacement. Private example references and full original evidence
 remain open; no owner profile/configuration or qualification was changed.
 
+[Lossless local presentation](../testing/LOSSLESS_LOCAL_PRESENTATION.md) now offers
+an opt-in supported layout pass after exact profile revalidation. Plain paragraph
+bullet markers must invert to all original bytes; unsafe/partial structure
+abstains. Timing/length/content counts are saved without profile values or content
+hashes, with factual/readability/preference judgments explicitly NOT_ASSESSED.
+Actual paired/PG/crypto/HTTP observations use declared model/key/capacity fixtures.
+This is partial S5 delivery; no semantic rewrite, full quality qualification,
+ModelManifest compatibility or original case/gate is marked complete.
+
 The [pinned profile Ask terminal](../testing/PROFILE_ASK_TERMINAL.md) now connects
 explicit row/field/purpose selection to the existing restricted local inference
 boundary, with cancellation and content-free receipt recovery. Real key/model

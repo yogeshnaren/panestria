@@ -296,6 +296,11 @@ ordinary and profile Ask to the same data-free rules with pinned context packs;
 this opt-in component does not complete paired style fidelity or ModelManifest
 compatibility/replacement. Continue those actual S5/S6 gaps rather than reopening
 this local setting or silently exporting private context to another client.
+The separate [lossless local presentation](testing/LOSSLESS_LOCAL_PRESENTATION.md)
+pass now handles supported plain paragraph layouts with exact content-byte
+retention or abstention and saves descriptive timing/length observations. It
+does not qualify semantic rewriting, factual support, readability quality or
+owner preference. Those S5 quality cases and S6 compatibility remain open.
 Preserve purpose/classification/model-compatibility and current authority checks;
 avoid replacing retained contracts with a second prompt store. Other review
 families, full fleet/dispatch integration, connections, resources/phone and finite
@@ -340,6 +345,21 @@ fixtures and preserve the initial Unix-socket fixture failure. These are context
 binding/consent component checks, not paired factual/style quality, owner
 preference, actual model latency or an original gate. [Guide](testing/SHARED_LOCAL_CHARTER.md),
 [design92](design/92-SHARED-LOCAL-CHARTER-CONTEXT.md). S4/S5/S6 and R3 remain in progress.
+
+## Lossless local layout and saved observations
+
+An independent private `lossless_presentation: true` setting now enables a bounded
+layout pass for an existing approved STRUCTURED_RESPONSE_STYLE profile request.
+It adds plain-paragraph bullet markers only when the inverse recovers every
+original byte; code/tables/markup/ambiguous/partial output abstains unchanged.
+Actual profile revalidation after model return fences publication. The canonical
+receipt saves formatting time, UTF-8 before/after length and content word/paragraph
+counts without private preference values, text or a new unkeyed hash. Original
+generation usage is distinct, one inference call remains one, and factual support,
+readability quality and preference stay NOT_ASSESSED. [Connected paired evidence](../evidence/lossless-presentation-2026-10-22/report.json)
+uses real PG/crypto/HTTP with explicit local provider/key/capacity fixtures, including
+late actual profile withdrawal and no-repeat receipt recovery. No owner service
+was changed; full S5 semantic quality, S6 compatibility, original gates/trial remain.
 
 The full Delegate gate still requires adversarial briefs, qualified semantic
 support/contradiction handling, an actual authorized public brief and Ask/Build
