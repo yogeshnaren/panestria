@@ -537,5 +537,9 @@ expired records without claiming decision eligibility. Reads are transactionally
 read-only and add no events. Selection fills the existing explicit plan inspection
 form and cannot replace an uncertain operation; action approvals open their goal.
 It grants no generic decision or dispatch. Failed/stale/auth-lost views hide rows.
-Connected evidence and exact-head CI are required before promotion. Other review
-families/full dispatch, remaining revision-3 obligations and real owner trial remain.
+[Connected observations](../evidence/mission-review-inbox-2026-10-22/report.json)
+retain three passing canonical/browser/OpenAPI cases and a passing lost-reply
+navigation case at its original source. These use actual PG/HTTP/CLI/Chromium
+with explicit seeded task/inventory/lost-reply fixtures and no inference.
+Exact-head CI must pass before merge. Other review families/full dispatch,
+remaining revision-3 obligations and real owner trial remain.

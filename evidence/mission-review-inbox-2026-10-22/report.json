@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "outcome": "CANONICAL_PLAN_AND_ACTION_REVIEW_DISCOVERY",
+  "release_gate": "NOT_EVALUATED",
+  "runtime_qualification": "NOT_ASSESSED",
+  "observations": [
+    {
+      "source_commit": "56df41b6e009a920c5079f0f9dca9dbd01abc7f5",
+      "source_tree": "5c48512f9a75a9a6edd9a6763a8e3486fdadfecc",
+      "report": "first.xml",
+      "sha256": "9b9840b92f353bf723ac9c5862ce91fc085d5d94c3d91aeaf989be6a32ff1e1a",
+      "command": "pytest tests/integration/test_mission_review_inbox.py tests/e2e/test_aos_005.py::test_openapi_matches_the_mounted_routes -q --junitxml=<original-report>",
+      "result": {
+        "tests": "3",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "12.414"
+      },
+      "exit_code": 0,
+      "interpretation": "3 cases pass: actual canonical PG pagination/resolved anchors/scoping/read-only/task-lock observation and browser discovery -> exact separate acceptance -> refreshed canonical removal; OpenAPI matches."
+    },
+    {
+      "source_commit": "4fe4d5002b5b4c01a784934380c97963cbaa9a12",
+      "source_tree": "775f793ab9f8e89f6da0b3ed6eb3cc907d1bda27",
+      "report": "recovery.xml",
+      "sha256": "7da90632626a762d6a4c960d8d537c3ef9f48a1d472c874bcb5406fd1722df40",
+      "command": "pytest tests/integration/test_mission_review_inbox.py::test_actual_browser_discovers_plan_accepts_separately_and_refreshes_canonical_inbox -q --junitxml=<original-report>",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "9.396"
+      },
+      "exit_code": 0,
+      "interpretation": "1 actual browser case passes with explicit post-commit reply-loss injection: selecting another inbox item cannot replace the uncertain original plan ID; GET recovers without another acceptance POST. Offline rows hide; reconnect and logout behave canonically."
+    }
+  ],
+  "fixture_sources": {
+    "tests/integration/test_mission_review_inbox.py": "3c0d10ff19c2224f67563b57b408c31c9395f028d1c443611ca914bfee577a8b",
+    "apps/mission-control/tests/review-inbox.mjs": "d256a9cf71adf89daa3971486712e02e0b0f42251d1da2ce7a700a8fa2640fa1",
+    "uv.lock": "7292da3d0efcea78cda08efe5b2888cfcbc71653c1ce41f360af3c5af9d1fb25",
+    "apps/mission-control/package-lock.json": "377abc70c29d26e435c0a1aacada5c9259cc4ddbcc5fbc6ba3c59a183f43d026"
+  },
+  "limits": [
+    "Actual disposable PG55439/Git/HTTP/CLI pairing/Chromium; explicit seeded VERIFYING task and declared synthetic inventory, no executed worker or model/provider call",
+    "Canonical contract-consent request, explicit test-owner denial/plan acceptance and one lost-commit reply injection; not owner operational/live qualification",
+    "Inbox metadata has no preview content/digest/decision authority. Reads add no event, use READ ONLY snapshot and do not block on a held task writer lock",
+    "Other review families/full dispatch and original revision3/release/real trial obligations remain open",
+    "Owner8770 and other services/databases/private/history preserved"
+  ]
+}
