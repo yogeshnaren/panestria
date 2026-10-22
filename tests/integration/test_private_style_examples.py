@@ -90,7 +90,8 @@ def test_private_example_is_ciphertext_pinned_and_never_general_context_or_audit
 def test_terminal_requires_full_example_review_then_one_encrypted_save(style_server, tmp_path):  # noqa: F811
     f = style_server
     path = tmp_path / "private-examples.json"
-    path.write_text(json.dumps({"examples": [example_style().examples[0].private_data()]}))
+    sample = {**example_style().examples[0].private_data(), "response": RESPONSE + "\n" + "line\n" * 24}
+    path.write_text(json.dumps({"examples": [sample]}))
     path.chmod(0o600)
     args = (
         "--profile-id",
@@ -110,14 +111,21 @@ def test_terminal_requires_full_example_review_then_one_encrypted_save(style_ser
         assert f.state.writes == 0
         os.write(t.master, b"v")
         t.until(INPUT.encode())
-        t.until(RESPONSE.encode())
-        t.until(b"END: a acknowledges")
+        t.until(RESPONSE.encode(), after=0)
+        t.until(b"More below", after=0)
+        # Seeing the first screen alone cannot acknowledge a longer example.
+        mark = len(t.transcript)
+        os.write(t.master, b"aqsy")
+        t.until(b"No write sent", after=mark)
+        assert f.state.writes == 0
+        os.write(t.master, b"v" + b"j" * 40)
+        t.until(b"END: a acknowledges", after=0)
         os.write(t.master, b"asysy")
         t.until(b"SAVED row version 0")
         os.write(t.master, b"q")
     assert f.state.writes == 1 and path.read_bytes() == original
     source = ProfileClient(f.path).source(f.handle.profile_id, 0)
-    assert source.style.examples[0].response.get_secret_value() == RESPONSE
+    assert source.style.examples[0].response.get_secret_value() == sample["response"]
     assert not source.approved  # Local-context consent is still a separate choice.
     with psycopg.connect(f.dsn) as c:
         _, doc = f.vault.read(UnitOfWork(c), f.actor, f.handle.profile_id)
