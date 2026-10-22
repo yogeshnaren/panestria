@@ -11,12 +11,40 @@ from panestria.api.auth import LoopbackDenied, authorize, error_body
 from panestria.api.db import open_database, run_database
 from panestria.api.routes.goals import _api
 from panestria.contracts.activity import ActivityTimeline, ProjectActivity
+from panestria.contracts.review_inbox import ReviewInbox
 from panestria.kernel.activity import project_activity
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
+from panestria.kernel.review_inbox import review_inbox
 from panestria.kernel.uow import UnitOfWork
 
 router = APIRouter()
+
+
+@router.get("/v1/activity/reviews", responses={200: {"model": ReviewInbox}})
+async def reviews(
+    request: Request, after: str | None = Query(None, max_length=45), limit: int = Query(16, ge=1, le=32)
+) -> JSONResponse:
+    try:
+        api = _api(request)
+        actor = authorize(request, api)
+        response = await run_database(_reviews, api.database_url, actor, after, limit)
+        await asyncio.to_thread(authorize, request, api)
+        return response
+    except LoopbackDenied as exc:
+        return JSONResponse(status_code=exc.status_code, content=error_body(exc.code))
+
+
+def _reviews(dsn: str, actor: Actor, after: str | None, limit: int) -> JSONResponse:
+    try:
+        with open_database(dsn) as c:
+            c.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+            value = review_inbox(UnitOfWork(c), actor, after=after, limit=limit)
+        return JSONResponse(value.model_dump(mode="json"), headers={"Cache-Control": "no-store"})
+    except KernelDenied as exc:
+        return JSONResponse(status_code=404 if exc.code == "not_found" else 422, content=error_body(exc.code))
+    except Exception:
+        return JSONResponse(status_code=503, content=error_body("review_inbox_unavailable"))
 
 
 @router.get("/v1/activity", responses={200: {"model": ProjectActivity}})

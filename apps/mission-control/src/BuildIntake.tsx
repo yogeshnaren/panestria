@@ -7,7 +7,7 @@ type Submission=operations['stage_plan_v1_mission_build_plans_post']['requestBod
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const bytes=(value:string)=>new TextEncoder().encode(value).length;
 
-export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false}:{owner:string,project:string,csrf:string|null,deny:()=>void,allowAcceptance?:boolean}) {
+export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false,selection=null}:{owner:string,project:string,csrf:string|null,deny:()=>void,allowAcceptance?:boolean,selection?:{id:string,version:number}|null}) {
   const [raw,setRaw]=useState(''),[confirmed,setConfirmed]=useState(false),[lookup,setLookup]=useState('');
   const [plan,setPlan]=useState(''),[receipt,setReceipt]=useState<Receipt|null>(null),[pending,setPending]=useState(false),[uncertain,setUncertain]=useState(false);
   const [notice,setNotice]=useState('Load an existing PUBLIC contract, proposal and inventory bundle. Review it before staging.');
@@ -15,6 +15,12 @@ export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false}:{own
   const busy=useRef(false),controller=useRef(new AbortController()),denyRef=useRef(deny);denyRef.current=deny;
   useEffect(()=>{const current=controller.current;const clear=()=>{setRaw('');setReceipt(null);setConfirmed(false);};
     window.addEventListener('pagehide',clear);return()=>{current.abort();window.removeEventListener('pagehide',clear);};},[owner,project]);
+  useEffect(()=>{
+    if(!selection)return;
+    if(busy.current || uncertain){setNotice('Inspect the original pending plan ID first. Inbox selection did not replace an uncertain operation.');return;}
+    setLookup(selection.id);setReceipt(null);setRaw('');setConfirmed(false);setAcceptConfirmed(false);setPlan('');
+    setNotice('Pending plan selected. Press Inspect staged plan to read its exact current canonical content.');
+  },[selection]);
   function parse():Submission {
     const value=JSON.parse(raw);
     if(!value || typeof value!=='object' || Object.keys(value).sort().join(',')!=='contract_document,inventory,proposal' ||
