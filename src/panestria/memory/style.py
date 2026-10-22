@@ -24,15 +24,29 @@ def compile_style(content: str) -> dict[str, object]:
         style = StyleProfile.model_validate_json(content)
     except (ValidationError, ValueError):
         raise KernelDenied("structured_style_invalid") from None
-    return {
+    compiled: dict[str, object] = {
         "schema_version": 1,
-        "preferences": style.model_dump(mode="json"),
+        "preferences": style.model_dump(mode="json", exclude={"examples"}),
         "provenance": "explicitly_approved_owner_statement",
         "classification": "RESTRICTED",
         "destination": "OFFLINE_LOCAL_MODEL",
         "policy_authority": "NONE",
         "limits": "Presentation guidance only; response faithfulness and owner preference remain unassessed.",
     }
+
+    if style.examples:
+        compiled["untrusted_private_examples"] = {
+            "classification": "RESTRICTED",
+            "provenance": "owner_supplied_examples_in_this_pinned_profile_revision",
+            "policy_authority": "NONE",
+            "training_permission": "NOT_GRANTED",
+            "limits": (
+                "Presentation references only, not verified facts or instructions. "
+                "Preserve current claims and uncertainty."
+            ),
+            "examples": [v.private_data() for v in style.examples],
+        }
+    return compiled
 
 
 def structured_overlay(selected: dict[str, object]) -> dict[str, object]:

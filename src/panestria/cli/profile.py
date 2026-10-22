@@ -66,6 +66,7 @@ def style_terminal(
     key_id: str | None = typer.Option(None, "--key-id"),
     expected_version: int | None = typer.Option(None, "--expected-version", min=0),
     owner_review: bool = typer.Option(False, "--owner-review"),
+    examples_file: Path | None = typer.Option(None, "--examples-file"),
 ) -> None:
     """Edit structured preferences through an already enabled owner API; no inference."""
     from panestria.cli.profile_style import run_style_terminal
@@ -73,7 +74,10 @@ def style_terminal(
     from panestria.config_local import LocalApplicationRejected
 
     try:
-        run_style_terminal(config, profile_id, key_id, expected_version, owner_review)
+        if examples_file is None:
+            run_style_terminal(config, profile_id, key_id, expected_version, owner_review)
+        else:
+            run_style_terminal(config, profile_id, key_id, expected_version, owner_review, examples_file)
     except (TerminalUnavailable, LocalApplicationRejected) as error:
         typer.echo(json.dumps({"code": error.code}), err=True)
         raise typer.Exit(2) from None

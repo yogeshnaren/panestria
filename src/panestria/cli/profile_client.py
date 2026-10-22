@@ -48,7 +48,7 @@ def style_document(source: StyleSource, style: StyleProfile, approved: bool) -> 
     # approval and expiry; never silently replace a wider profile with style alone.
     old = source.document
     fields = {k: v.get_secret_value() for k, v in old.fields.items()} if old else {}
-    fields["communication"] = style.model_dump_json()
+    fields["communication"] = style.private_json()
     selected: list[ProfileField] = [v for v in old.approved_for_local_context if v != "communication"] if old else []
     if approved:
         selected.append("communication")
