@@ -135,7 +135,8 @@ def test_owner_terminal_delivers_read_only_storage_warnings_and_disabled_setting
         assert client.post(config.origin + "/v1/activity/storage", json={}).status_code == 405
         with terminal(path, entry=("activity", "tui")) as t:
             t.until(b"PROJECT TASKS")
-            t.until(b"free_reserve_at_risk", after=0)
+            highest = max(body["warnings"], key=lambda w: {"INFO": 0, "WARNING": 1, "CRITICAL": 2}[w["severity"]])
+            t.until((highest["severity"] + " " + highest["code"]).encode(), after=0)
             os.write(t.master, b"o")
             t.until(b"HOST STORAGE")
             t.until(b"last free", after=0)
