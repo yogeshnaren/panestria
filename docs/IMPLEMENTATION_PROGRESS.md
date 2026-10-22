@@ -522,5 +522,8 @@ session purpose and exact owner acknowledgment of the retained PUBLIC plan. It
 reuses canonical digest/expiry/current-policy/membership guards and atomically
 creates CREATED tasks and one acceptance. It cannot schedule workers, infer or
 merge. Ambiguous acceptance is inspected by UUID without automatic retry;
-intake-only sessions still cannot accept. Connected evidence and exact-head CI
-remain required before promotion; full inbox/dispatch and R3 gates remain open.
+intake-only sessions still cannot accept. [Connected observations](../evidence/mission-plan-acceptance-2026-10-22/report.json)
+retain five passing acceptance/intake/OpenAPI cases and two passing corrected-label
+cases at distinct original sources. They use actual PG/HTTP/CLI/Chromium with
+explicit lost-reply/expired-consent fixtures and no inference. Exact-head CI must
+pass before merge; full inbox/dispatch and R3 gates remain open.
