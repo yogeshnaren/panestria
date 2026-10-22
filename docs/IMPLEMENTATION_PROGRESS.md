@@ -180,6 +180,15 @@ exposure dashboard or release qualification.
 
 ## Project activity terminal
 
+The [opt-in owner storage terminal](testing/OWNER_STORAGE_TERMINAL.md) now
+connects private notification settings and existing read-only probes to that
+activity view. A warning banner and scrollable recommendations show timestamps,
+estimates, unknown values and owner options. Sampling is coalesced and paced;
+opt-out/change/shutdown fence publication, and a stalled read starts no second
+collector. No cleanup or backup change is exposed. This is terminal-only;
+browser/phone host-data consent, persistent history, other write paths and real
+host-budget/whole-gate qualification remain pending.
+
 The [project activity terminal](testing/PROJECT_ACTIVITY_TERMINAL.md) now shows
 canonical Ask, Delegate, Build and kernel activity for one configured owner/project.
 Standalone `activity init/serve/tui` requires no model/cache; its loopback server

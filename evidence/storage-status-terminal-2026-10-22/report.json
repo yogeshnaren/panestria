@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "outcome": "OWNER_STORAGE_TERMINAL_COMPONENT_PASS_NOT_RELEASE_OR_PRESSURE_QUALIFICATION",
+  "observations": [
+    {
+      "file": "connected-initial.xml",
+      "sha256": "2055fc3a7df2a900b8d8e0759f096ecc0c60b41ae6d634c29012da795e43ba1b",
+      "source_commit": "f590e2c2ed8e1a1c156a7fdd50a5978e84bfb064",
+      "source_tree": "3ed0943320520defed946296f8ed3db475e50291",
+      "worktree": "CLEAN",
+      "scope": "44PASS/1FAIL: actual owner HTTP exposed incorrect object-identity scope comparison; baseline Ask/activity/storage cases passed",
+      "result": {
+        "tests": "45",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "26.789"
+      }
+    },
+    {
+      "file": "connected-corrected.xml",
+      "sha256": "ad05fc0507fd48c646a96cbd81c769f270551613d462b9892b4170f69692c760",
+      "source_commit": "dd851a74ae3906b6559e962188c33415c298c72d",
+      "source_tree": "c094612227ea2c4fa8a209eb6955800c8be18ff7",
+      "worktree": "CLEAN",
+      "scope": "9PASS/1FAIL: actor correction works; terminal expected reserve notice but correctly prioritized actual CRITICAL capacity notice",
+      "result": {
+        "tests": "10",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "16.579"
+      }
+    },
+    {
+      "file": "terminal-priority.xml",
+      "sha256": "51b3ad91d188b78df4af950a57291589c7228b8c8a02ee61e044c020475e236e",
+      "source_commit": "1575ad99ca28744224615974a251ced00abd974c",
+      "source_tree": "e97b9d93776b37c48c999401f4121eb6a96a8a6d",
+      "worktree": "CLEAN",
+      "scope": "2PASS: actual disposable PG/HTTP/CLI/PTY capacity warnings, source privacy, no mutations, disabled restart and browser/default refusal",
+      "result": {
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "13.621"
+      }
+    }
+  ],
+  "host_observation": {
+    "file": "host-capacity.json",
+    "sha256": "a3177460ac676c3c2f96f35b351abf89f14600546b26090963c2dc52765d14a3",
+    "source_commit": "1575ad99ca28744224615974a251ced00abd974c",
+    "source_tree": "e97b9d93776b37c48c999401f4121eb6a96a8a6d",
+    "worktree": "CLEAN",
+    "observed_at": "2026-10-22T19:38:21.577591+00:00",
+    "scope": "READ_ONLY_CAPACITY_OBSERVATION_NOT_PRESSURE_TEST_OR_ATTRIBUTION",
+    "capacity": {
+      "status": "OBSERVED",
+      "total_bytes": 1006450962432,
+      "used_bytes": 929651261440,
+      "available_bytes": 25599361024,
+      "reserved_bytes": 51200339968,
+      "used_percent": 97.32
+    },
+    "changes": "NONE",
+    "qualification": "NOT_ASSESSED"
+  },
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS (336 source files)",
+    "import_boundaries": "11 KEPT",
+    "secret_scan": "PASS",
+    "typescript_production_build": "PASS",
+    "openapi": "exact mounted snapshot and regenerated TypeScript; passing original/corrected report cases"
+  },
+  "limits": [
+    "No real resource pressure was induced; the free-reserve threshold is synthetic. The ordinary filesystem independently reported a critical capacity notice.",
+    "Clock and controlled probe/Event fixtures test coalescing, intervals, opt-out/config changes, close and late/stalled publication; not a hard OS I/O cancellation qualification.",
+    "No Docker daemon usage scan, Timeshift configuration scan, model, provider, OS scheduler or owner service/config change was performed.",
+    "Owner-wide metadata is not project attribution. Filesystem/config locators, device IDs and contents are excluded from the view.",
+    "No deletion/pruning/remediation authority; owner performs any later chosen cleanup.",
+    "Terminal-only, no Mission Control/phone scope; no persisted cross-restart growth history or full resource/write-path integration.",
+    "AOS-018/AOS-029 whole cases and G1/G2/G3 remain NOT_EVALUATED; no 14-day trial."
+  ]
+}
