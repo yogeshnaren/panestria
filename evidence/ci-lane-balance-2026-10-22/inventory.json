@@ -1,0 +1,90 @@
+{
+  "baseline_source": "e1e6568fc026e300e90ac90bf2df8f76ac2392e8",
+  "timing_run": 39805028940,
+  "file_inventory_preserved": true,
+  "duplicates": 0,
+  "total_files": 211,
+  "previous": {
+    "fast": {
+      "files": 42,
+      "observed_test_seconds": 17.605
+    },
+    "kernel": {
+      "files": 13,
+      "observed_test_seconds": 225.298
+    },
+    "platform": {
+      "files": 134,
+      "observed_test_seconds": 582.296
+    },
+    "research": {
+      "files": 22,
+      "observed_test_seconds": 294.783
+    }
+  },
+  "balanced": {
+    "fast": {
+      "files": 42,
+      "same_report_projected_test_seconds": 17.605
+    },
+    "kernel": {
+      "files": 32,
+      "same_report_projected_test_seconds": 395.249
+    },
+    "platform": {
+      "files": 115,
+      "same_report_projected_test_seconds": 412.345
+    },
+    "research": {
+      "files": 22,
+      "same_report_projected_test_seconds": 294.783
+    }
+  },
+  "moved": {
+    "tests/integration/test_background_account.py": "kernel",
+    "tests/integration/test_background_controller.py": "kernel",
+    "tests/integration/test_background_owner_journey.py": "kernel",
+    "tests/integration/test_background_queue.py": "kernel",
+    "tests/integration/test_background_run.py": "kernel",
+    "tests/integration/test_background_selection.py": "kernel",
+    "tests/integration/test_build_evidence.py": "kernel",
+    "tests/integration/test_build_invocation_fence.py": "kernel",
+    "tests/integration/test_build_model_pin_live.py": "kernel",
+    "tests/integration/test_build_progress.py": "kernel",
+    "tests/integration/test_build_runtime_metrics.py": "kernel",
+    "tests/integration/test_build_snapshot.py": "kernel",
+    "tests/integration/test_build_storage_admission.py": "kernel",
+    "tests/integration/test_build_tui.py": "kernel",
+    "tests/integration/test_canonical_plan_store.py": "kernel",
+    "tests/integration/test_final_plan_integration.py": "kernel",
+    "tests/integration/test_plan_lifecycle.py": "kernel",
+    "tests/integration/test_plan_revisions.py": "kernel",
+    "tests/integration/test_plan_scheduler.py": "kernel"
+  },
+  "limits": "Reassignment of original JUnit test durations only, excludes setup and is not a measured new CI speedup. No tests, fixtures, marks, timeout, assertions or six required checks changed.",
+  "reassignment_source": "a6ace9d8e72f4759b6edcfb0dce97cbb1cf86525",
+  "collection": {
+    "fast": {
+      "selected_non_live_cases": 886,
+      "live_deselected": 1,
+      "log_sha256": "fd1aea541c1cd06997c0fddb4d7590f1216048f7499ba01970c52159acc5df9e"
+    },
+    "kernel": {
+      "selected_non_live_cases": 176,
+      "live_deselected": 3,
+      "log_sha256": "51e0f015914fa8871e5c3736e9c02e73a6011cb1593674bfa534b7b8dc0f1537"
+    },
+    "platform": {
+      "selected_non_live_cases": 944,
+      "live_deselected": 52,
+      "log_sha256": "9590bf2613e89e545d3be99dd996a39068205f996d28b216897de4b26ad57b50"
+    },
+    "research": {
+      "selected_non_live_cases": 267,
+      "live_deselected": 7,
+      "log_sha256": "3dcb82d371be6415e2cbd0e6fd99d6e53bac8c67457740970809dbd5566c8e67"
+    }
+  },
+  "total_selected_non_live_cases": 2273,
+  "validation": "COLLECTION_ONLY; runtime results require exact-head CI"
+}
