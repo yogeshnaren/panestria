@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "component": "BUILD_REVIEW_PENDING_RECOVERY",
+  "status": "IMPLEMENTED_WITH_DETERMINISTIC_PHYSICAL_BROWSER_REGRESSION",
+  "original_failure": {
+    "pr": 181,
+    "run_id": 39808388980,
+    "head_commit": "0f47150a1cbcc0061cc084527a5b964ce6512960",
+    "tested_preview": "b56396d669b17284967785986a485f375b954004",
+    "test": "tests/integration/test_mission_build_review.py::test_physical_browser_review_offline_consent_and_existing_exact_merge",
+    "reason": "Recovery chose Refresh while the decision request remained busy; control detached when failure settled. Original platform1FAIL/1002PASS, all four original reports retained privately, FAILED_NOT_PROMOTED."
+  },
+  "observations": [
+    {
+      "source_commit": "711964b7239b2d996e3299783c2216d8439e788d",
+      "source_tree": "da71a275217daba9e0930c3aa565ab7374b7e8d1",
+      "report": "connected.xml",
+      "sha256": "aa6dc78e867d9ad679a815b8c3a3326a208e3aac3fe6c4465218c78f3ec2c944",
+      "results": {
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "34.612"
+      },
+      "notes": "2 cases PASS: actual Chromium/PG/protected Git/scoped tools/independent verifier; native/auth/capacity explicit fixtures. Real offline POST failure with deliberately delayed client rejection notification; pending hidden content/disabled controls, settled canonical PENDING recovery, exactly one later explicit approval, no browser side effect and separate exact owner merge required."
+    }
+  ],
+  "outcomes": [
+    "Pending decision is explicitly busy and UNCONFIRMED; protected preview hidden immediately",
+    "Recovery waits for decision settlement instead of interpreting a read/stale status as a finished POST",
+    "No automatic decision retry/optimistic consent, changed expiry/digest/CSRF authority or merge dispatch",
+    "Deterministic client fault retains actual offline fetch/request-failed boundary; existing canonical permission/consent/merge assertions remain"
+  ],
+  "screenshots": [
+    {
+      "name": "approved.png",
+      "sha256": "c4d98c749d1a46dc797b134c63e0ba2d5e5295866f5dc20145683617194ce7ba",
+      "bytes": 423541
+    },
+    {
+      "name": "pending.png",
+      "sha256": "e3594bc7ab6927930b7ff1309fc573f309d2dca678211e943825f304c97c007f",
+      "bytes": 428144
+    }
+  ],
+  "limits": [
+    "Native provider/auth/capacity are declared fixtures, not live qualification",
+    "No timeout increase/sleep/force click/assertion weakening or unchanged CI rerun used to hide the failure",
+    "Owner checkouts/services/databases/caches/configurations/private data and historical evidence preserved",
+    "No API/provider inference/new credentials/storage deletion/release or real trial pass"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "ci": "All six exact-head checks required separately"
+}

@@ -17,7 +17,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUITES = ("fast", "kernel", "platform", "research")
-KERNEL = ("test_aos_001", "test_aos_002", "test_aos_003", "test_aos_004", "test_r0_")
+# Keep durable Build/queue integration with kernel recovery, leaving physical
+# browser/profile/native checks in platform. All files still run exactly once.
+KERNEL = (
+    "test_aos_001", "test_aos_002", "test_aos_003", "test_aos_004", "test_r0_",
+    "test_background_", "test_build_", "test_canonical_plan_", "test_plan_", "test_final_plan_",
+)
 RESEARCH = (
     "test_research_",
     "test_owner_research_",
