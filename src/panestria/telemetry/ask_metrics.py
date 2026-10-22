@@ -115,7 +115,7 @@ def capture_ask_metrics(
     _private(directory)
     sources = directory / "sources"
     _private(sources)
-    fd = os.open(directory / "ask-capture.lock", os.O_WRONLY | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+    fd = os.open(directory / "capture.lock", os.O_WRONLY | os.O_CREAT | os.O_NOFOLLOW, 0o600)
     try:
         info = os.fstat(fd)
         if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or info.st_mode & 0o077:

@@ -11,6 +11,8 @@ from typer.testing import CliRunner
 
 from panestria.cli.main import app
 from panestria.cli.profile_ask import ProfileAskClient
+from panestria.cli.profile_client import ProfileClient
+from panestria.contracts.ask import AskSubmission
 from panestria.telemetry.performance import latest_snapshot
 
 
@@ -49,12 +51,34 @@ def test_capture_reads_one_protected_receipt_without_more_model_calls_or_plainte
         assert c.execute("SELECT state FROM panestria.ask_request WHERE id=%s", (request_id,)).fetchone() == (
             "COMPLETED",
         )
+    # The same owner metadata client can inspect an ordinary Ask without loading
+    # model-cache settings or a profile. This fixture's inference stays synthetic.
+    ordinary_id = str(uuid4())
+    owner = ProfileClient(f.path)
+    owner.scope()
+    submission = AskSubmission(
+        request_id=ordinary_id,
+        project_id=f.actor.project_id,
+        question="SYNTHETIC_ORDINARY_METRICS_QUESTION",
+        privacy_label="RESTRICTED",
+        offline=True,
+        retain_response=False,
+    )
+    owner._request("POST", "/v1/ask", submission.model_dump(mode="json"))
+    ordinary = tmp_path / "ordinary-metrics"
+    result = CliRunner().invoke(
+        app,
+        ["metrics", "capture-ask", "--config", str(f.path), "--request-id", ordinary_id, "--directory", str(ordinary)],
+    )
+    assert result.exit_code == 0, result.output
+    assert {m.scope for m in latest_snapshot(ordinary).observations} == {"runtime_local_ask"}
+    assert len(state.calls) == 2
     # Wrong project scope refuses before any new history/model/canonical mutation.
     f.path.write_text(f.config.model_copy(update={"project_id": uuid4()}).model_dump_json())
     denied = tmp_path / "denied"
     result = CliRunner().invoke(app, [*args[:-1], str(denied)])
     assert result.exit_code == 1 and "UNAVAILABLE" in result.output
-    assert not denied.exists() and len(state.calls) == 1
+    assert not denied.exists() and len(state.calls) == 2
     f.path.write_text(f.config.model_dump_json())
     # A full private history cannot affect the already completed Ask or start a retry.
     full = tmp_path / "full"
@@ -63,5 +87,5 @@ def test_capture_reads_one_protected_receipt_without_more_model_calls_or_plainte
         stream.truncate(16 * 1024 * 1024)
     result = CliRunner().invoke(app, [*args[:-1], str(full)])
     assert result.exit_code == 1 and list((full / "sources").iterdir()) == []
-    assert len(state.calls) == 1 and client.receipt(request_id) == receipt
+    assert len(state.calls) == 2 and client.receipt(request_id) == receipt
     assert json.loads(result.output)["reason"] == "ask_receipt_or_private_metrics_invalid"
