@@ -19,6 +19,14 @@ outcomes: qualified Delegate execution/support, full dispatch/other review
 families, remaining personal-platform/phone/resource work, original cumulative
 gates and the real owner trial still prevent R3 acceptance.
 
+The [Build review recovery correction](../evidence/build-review-recovery-2026-10-22/report.json)
+now distinguishes an in-flight consent request from a settled read/error state.
+Pending requests hide the protected preview and expose busy/UNCONFIRMED status;
+recovery inspects canonical state after settlement, with no decision retry or
+optimistic consent. A deterministic actual browser/PG/Git check retains one later
+explicit approval and a separate owner merge. Native/auth/capacity remain fixtures;
+this corrects the observed CI failure without granting a release pass.
+
 The owner explicitly resumed implementation through R3 on2026-10-20. The current
 Build path has canonical plans/handoffs, admission, conflict handling, independent
 final-tree checks, exact owner merge, supported one/two-Claude execution, local
