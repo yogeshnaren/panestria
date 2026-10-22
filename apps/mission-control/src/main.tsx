@@ -7,6 +7,7 @@ import {BuildReview} from './BuildReview';
 import {OfflineAsk} from './OfflineAsk';
 import {ResearchIntake} from './ResearchIntake';
 import {BuildIntake} from './BuildIntake';
+import {ReviewInbox} from './ReviewInbox';
 
 function useGoal(goal: string | null, scope: Activity | null, denied: () => void) {
   const [view, setView] = useState<{page: Timeline | null, events: Event[], notice: string, fresh: boolean, observedAt: number}>(
@@ -62,7 +63,8 @@ function Dashboard() {
   const [researchMode,setResearchMode] = useState(false);
   const [buildIntakeMode,setBuildIntakeMode] = useState(false);
   const [planAcceptanceMode,setPlanAcceptanceMode] = useState(false);
-  const denied = () => {setMayRead(false); setAuthenticated(false); setActivity(null); setGoal(null); setCsrf(null); setListFresh(false);};
+  const [planSelection,setPlanSelection]=useState<{id:string,version:number}|null>(null);
+  const denied = () => {setMayRead(false); setAuthenticated(false); setActivity(null); setGoal(null); setCsrf(null); setListFresh(false);setPlanSelection(null);};
   const timeline = useGoal(goal, activity, denied);
   async function load(cursor: string|null, signal: AbortSignal) {
     const data = await json<Activity>(`/v1/activity?limit=16${cursor ? `&before=${cursor}` : ''}`,AbortSignal.any([signal,AbortSignal.timeout(5000)]));
@@ -121,7 +123,8 @@ function Dashboard() {
     {authenticated && activity && <>
       {askMode && <OfflineAsk key={activity.project_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
       {researchMode && <ResearchIntake key={activity.project_id} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
-      {buildIntakeMode && <BuildIntake key={activity.project_id} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied} allowAcceptance={planAcceptanceMode}/>}
+      {buildIntakeMode && <BuildIntake key={activity.project_id} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied} allowAcceptance={planAcceptanceMode} selection={planSelection}/>}
+      <ReviewInbox owner={activity.owner_id} project={activity.project_id} now={now} canInspectPlan={buildIntakeMode} onPlan={id=>setPlanSelection(prior=>({id,version:(prior?.version??0)+1}))} onGoal={setGoal} deny={denied}/>
       <section aria-label="Project activity"><h2>Project activity</h2>
         <p>Project <code>{activity.project_id}</code> · {listFresh && now-listAt < 15000 ? 'Confirmed' : 'STALE / UNCONFIRMED'}</p>
         <p className="muted">Observed {activity.observed_at}. Statuses are canonical observations, not release acceptance.</p>

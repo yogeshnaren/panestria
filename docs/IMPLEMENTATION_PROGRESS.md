@@ -527,3 +527,15 @@ retain five passing acceptance/intake/OpenAPI cases and two passing corrected-la
 cases at distinct original sources. They use actual PG/HTTP/CLI/Chromium with
 explicit lost-reply/expired-consent fixtures and no inference. Exact-head CI must
 pass before merge; full inbox/dispatch and R3 gates remain open.
+
+## Canonical pending-review discovery
+
+The [review inbox](testing/MISSION_REVIEW_INBOX.md) shows latest unaccepted plans
+and pending action approvals for open goals from retained canonical records.
+Bounded expiry/ID pagination remains valid after resolution; metadata includes
+expired records without claiming decision eligibility. Reads are transactionally
+read-only and add no events. Selection fills the existing explicit plan inspection
+form and cannot replace an uncertain operation; action approvals open their goal.
+It grants no generic decision or dispatch. Failed/stale/auth-lost views hide rows.
+Connected evidence and exact-head CI are required before promotion. Other review
+families/full dispatch, remaining revision-3 obligations and real owner trial remain.

@@ -89,6 +89,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/activity/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reviews */
+        get: operations["reviews_v1_activity_reviews_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/approvals": {
         parameters: {
             query?: never;
@@ -1561,6 +1578,74 @@ export interface components {
             /** Report */
             report: string;
         };
+        /** ReviewInbox */
+        ReviewInbox: {
+            /**
+             * Decision Authority
+             * @default NONE
+             * @constant
+             */
+            decision_authority: "NONE";
+            /** Entries */
+            entries: components["schemas"]["ReviewInboxEntry"][];
+            /** Next Cursor */
+            next_cursor?: string | null;
+            /**
+             * Observed At
+             * Format: date-time
+             */
+            observed_at: string;
+            /**
+             * Owner Id
+             * Format: uuid
+             */
+            owner_id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * View Authority
+             * @default READ_ONLY_METADATA
+             * @constant
+             */
+            view_authority: "READ_ONLY_METADATA";
+        };
+        /** ReviewInboxEntry */
+        ReviewInboxEntry: {
+            /**
+             * Canonical State
+             * @enum {string}
+             */
+            canonical_state: "PROPOSED" | "PENDING";
+            /** Expired */
+            expired: boolean;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /**
+             * Goal Id
+             * Format: uuid
+             */
+            goal_id: string;
+            /** Goal Status */
+            goal_status: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "PLAN" | "APPROVAL";
+            /** Task Id */
+            task_id: string | null;
+        };
         /** StoredPlan */
         StoredPlan: {
             /** Consent */
@@ -1785,6 +1870,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActivityTimeline"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reviews_v1_activity_reviews_get: {
+        parameters: {
+            query?: {
+                after?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewInbox"];
                 };
             };
             /** @description Validation Error */
