@@ -51,7 +51,8 @@ settings. Its durable repair intent binds the complete request digest before
 dispatch. An admitted failed/unknown turn remains charged to the original finite
 budget. A different new-work manifest/file cannot reset that budget or rewrite a
 retained result. Canonical replay keeps the original protected files/identity and
-does not generate again. A fresh incompatible selection requires owner review
+does not generate again, even if today's selected model file is unavailable.
+Only preparing a new draft opens that file. A fresh incompatible selection requires owner review
 and supported runtime/compatibility evidence; no hot-swap is provided.
 
 Relevant checks cover public export/no overwrite, typed proposal publication,

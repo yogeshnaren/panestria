@@ -50,7 +50,7 @@ def test_manifest_pin_is_in_acknowledged_repair_intent_and_replay_keeps_original
         *args, local_model_run=True, idempotency_key="manifest",
     )
     assert replay["replayed"] and replay["proposal_sha256"] == result["proposal_sha256"] and len(seen) == 1
-    expected.unlink()  # Only this fixture's owned small file; no owner storage.
+    expected.rename(expected.with_name("preserved-new-work-model.json"))
     replay_missing = LocalBuildRepair(owner, settings, BoundModel()).propose(
         *args, local_model_run=True, idempotency_key="manifest",
     )
