@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="6" time="16.685" timestamp="2026-10-22T01:19:30.240299-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_mission_build_intake" name="test_plan_intake_atomic_scope_replay_and_separate_acceptance[build0]" file="tests/integration/test_mission_build_intake.py" line="77" time="5.772"><failure message="ValueError: invalid_browser_namespace">submission = (BuildFixture(task={'owner': '13adb519-f610-488e-aae9-2cd6331fe322', 'project': '84e2ac96-686e-4098-9f20-c902387d6fb5'...cd', capabilities=('scoped-file-edit',), maximum_parallel=2),), maximum_nodes=16, maximum_depth=8, maximum_parallel=2))
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-90/test_plan_intake_atomic_scope_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x71e40d1ebf20&gt;
+
+    @pytest.mark.parametrize("build", [PATHS], indirect=True)
+    def test_plan_intake_atomic_scope_replay_and_separate_acceptance(submission, tmp_path, monkeypatch):
+        b = submission[0]
+&gt;       app, _, config, token = application(submission, tmp_path)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_mission_build_intake.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_mission_build_intake.py:60: in application
+    mount_mission_control(app, config, token, ASSETS, build_intake=enabled)
+src/panestria/api/mission_web.py:103: in mount_mission_control
+    BrowserAccess(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;panestria.api.sessions.BrowserAccess object at 0x71e40d1c1160&gt;
+origin = 'http://127.0.0.1:54729'
+service = &lt;panestria.kernel.sessions.SessionService object at 0x71e40d1c0a40&gt;
+database_url = 'postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_lease_migration_724759de9ae6404981eb010ae0355f5a'
+namespace = 'mission-build-intake'
+
+    def __init__(
+        self,
+        origin: str,
+        service: SessionService,
+        database_url: str,
+        *,
+        namespace: Literal["default", "mission", "mission-review", "mission-ask", "mission-research"] = "default",
+    ) -&gt; None:
+        parts = urlsplit(origin)
+        if (
+            parts.scheme not in {"http", "https"}
+            or parts.hostname not in {"127.0.0.1", "localhost", "::1"}
+            or parts.port is None
+            or parts.path
+            or parts.query
+            or parts.fragment
+            or parts.username is not None
+        ):
+            raise ValueError("invalid_browser_origin")
+        if namespace not in {"default", "mission", "mission-review", "mission-ask", "mission-research"}:
+&gt;           raise ValueError("invalid_browser_namespace")
+E           ValueError: invalid_browser_namespace
+
+src/panestria/api/sessions.py:42: ValueError</failure></testcase><testcase classname="tests.integration.test_mission_build_intake" name="test_browser_plan_intake_lost_reply_and_reload_recovery[build0]" file="tests/integration/test_mission_build_intake.py" line="155" time="2.295"><failure message="ValueError: invalid_browser_namespace">submission = (BuildFixture(task={'owner': 'd162bd26-ee58-40af-8d9a-ddeb6ee4d5c0', 'project': 'db69a335-8d65-4963-b362-6fa1629aba31'...cd', capabilities=('scoped-file-edit',), maximum_parallel=2),), maximum_nodes=16, maximum_depth=8, maximum_parallel=2))
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-90/test_browser_plan_intake_lost_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x71e40d1384a0&gt;
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x71e40d001b20&gt;
+
+    @pytest.mark.parametrize("build", [PATHS], indirect=True)
+    def test_browser_plan_intake_lost_reply_and_reload_recovery(submission, tmp_path, monkeypatch, record_property):
+        b = submission[0]
+&gt;       app, path, config, token = application(submission, tmp_path)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_mission_build_intake.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_mission_build_intake.py:60: in application
+    mount_mission_control(app, config, token, ASSETS, build_intake=enabled)
+src/panestria/api/mission_web.py:103: in mount_mission_control
+    BrowserAccess(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;panestria.api.sessions.BrowserAccess object at 0x71e40cee22d0&gt;
+origin = 'http://127.0.0.1:60745'
+service = &lt;panestria.kernel.sessions.SessionService object at 0x71e40cee3650&gt;
+database_url = 'postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_lease_migration_19f24016245f4dab943c50b17c6166d0'
+namespace = 'mission-build-intake'
+
+    def __init__(
+        self,
+        origin: str,
+        service: SessionService,
+        database_url: str,
+        *,
+        namespace: Literal["default", "mission", "mission-review", "mission-ask", "mission-research"] = "default",
+    ) -&gt; None:
+        parts = urlsplit(origin)
+        if (
+            parts.scheme not in {"http", "https"}
+            or parts.hostname not in {"127.0.0.1", "localhost", "::1"}
+            or parts.port is None
+            or parts.path
+            or parts.query
+            or parts.fragment
+            or parts.username is not None
+        ):
+            raise ValueError("invalid_browser_origin")
+        if namespace not in {"default", "mission", "mission-review", "mission-ask", "mission-research"}:
+&gt;           raise ValueError("invalid_browser_namespace")
+E           ValueError: invalid_browser_namespace
+
+src/panestria/api/sessions.py:42: ValueError</failure></testcase><testcase classname="tests.integration.test_public_plan_submission" name="test_concurrent_stage_creates_one_goal_checkset_and_proposal_before_separate_owner_acceptance[build0]" file="tests/integration/test_public_plan_submission.py" line="84" time="2.399" /><testcase classname="tests.integration.test_public_plan_submission" name="test_atomic_rollback_invalid_privacy_cash_and_replay_checkset_tampering_are_refused[build0]" file="tests/integration/test_public_plan_submission.py" line="123" time="2.406" /><testcase classname="tests.integration.test_public_plan_submission" name="test_owner_cli_stages_private_files_without_launch_or_task_acceptance[build0]" file="tests/integration/test_public_plan_submission.py" line="150" time="2.363" /><testcase classname="tests.e2e.test_aos_005" name="test_openapi_matches_the_mounted_routes" file="tests/e2e/test_aos_005.py" line="1146" time="0.606"><properties><property name="gate_case_id" value="AOS-005-TC01" /><property name="candidate_commit" value="5f9312c5c9afe530189935d82e5f9721bcf03cbd" /><property name="lane" value="contract" /><property name="execution_mode" value="HERMETIC" /></properties></testcase></testsuite></testsuites>

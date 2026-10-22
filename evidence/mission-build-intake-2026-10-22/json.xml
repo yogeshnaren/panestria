@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="7.291" timestamp="2026-10-22T01:20:50.406278-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_mission_build_intake" name="test_plan_intake_atomic_scope_replay_and_separate_acceptance[build0]" file="tests/integration/test_mission_build_intake.py" line="77" time="6.651"><failure message="AssertionError: {&quot;code&quot;: &quot;activity_initialization_unavailable&quot;, &quot;files_preserved&quot;: true}&#10;  &#10;assert 2 == 0&#10; +  where 2 = &lt;Result SystemExit(2)&gt;.exit_code">submission = (BuildFixture(task={'owner': '0f8d2ec5-a34b-460d-8636-9ce76b14d0a7', 'project': '96bbf26a-4a16-4f09-99b7-59769dc9bf67'...cd', capabilities=('scoped-file-edit',), maximum_parallel=2),), maximum_nodes=16, maximum_depth=8, maximum_parallel=2))
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-92/test_plan_intake_atomic_scope_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x76370ae3a450&gt;
+
+    @pytest.mark.parametrize("build", [PATHS], indirect=True)
+    def test_plan_intake_atomic_scope_replay_and_separate_acceptance(submission, tmp_path, monkeypatch):
+        b = submission[0]
+        app, _, config, token = application(submission, tmp_path)
+        route = "/v1/mission/build/plans"
+        initial = counts(submission)
+        bearer, origin = {"Authorization": "Bearer " + token}, {"Origin": config.origin}
+        with TestClient(app, base_url=config.origin) as client:
+            assert client.get(route + "/" + str(uuid4())).status_code == 401
+            code = client.post("/v1/session/code", headers=bearer, json={}).json()["code"]
+            csrf = client.post("/v1/session/pair", headers=origin, json={"code": code}).json()["csrf_token"]
+            headers = {**origin, "X-Panestria-CSRF": csrf}
+            document = {**bundle(submission), "public_plan": True}
+            assert client.post(route, json=document, headers=origin).status_code == 403
+            assert (
+                client.post(route, json=document, headers={**headers, "Origin": "https://evil.invalid"}).status_code == 403
+            )
+            assert (
+                client.post(
+                    route, content=b" " * 65537, headers={**headers, "Content-Type": "application/json"}
+                ).status_code
+                == 413
+            )
+            for value in (False, 1, "true"):
+                assert client.post(route, json={**document, "public_plan": value}, headers=headers).status_code == 422
+            invalid = copy.deepcopy(document)
+            invalid["proposal"]["inventory_sha256"] = "ff" * 32
+            assert client.post(route, json=invalid, headers=headers).status_code == 409
+            for key, value in (("privacy_class", "RESTRICTED"), ("project_id", str(uuid4()))):
+                invalid = copy.deepcopy(document)
+                invalid["contract_document"][key] = value
+                assert client.post(route, json=invalid, headers=headers).status_code == 409
+            assert counts(submission) == initial
+            response = client.post(route, json=document, headers=headers)
+            assert response.status_code == 200, response.text
+            view = response.json()
+            assert view["goal_status"] == "CREATED" and view["plan"]["state"] == "PROPOSED"
+            assert view["contract_document"] == document["contract_document"]
+            assert view["plan"]["proposal"] == document["proposal"] and view["plan"]["inventory"] == document["inventory"]
+            assert view["execution_authority"] == "NONE" and view["runtime_qualification"] == "NOT_ASSESSED"
+            assert client.post(route, json=document, headers=headers).json() == view
+            assert counts(submission) == tuple(n + extra for n, extra in zip(initial, (1, 1, 0, 0, 0), strict=True))
+            identifier = document["proposal"]["plan_id"]
+            assert client.get(route + "/" + identifier).json() == view
+            assert client.get(route + "/" + str(uuid4())).status_code == 404
+            assert client.post("/v1/goals", json={}, headers=headers).status_code == 404
+            assert client.post("/v1/ask", json={}, headers=headers).status_code == 404
+            assert client.post(route + "/" + identifier + "/accept", json={}, headers=headers).status_code == 404
+            actual = build_intake.reauthorize_mutation
+            seen = []
+    
+            def revoke(request, api, connection):
+                seen.append(1)
+                if len(seen) == 2:
+                    connection.execute(
+                        "UPDATE panestria.browser_session SET revoked_at=clock_timestamp() WHERE project_id=%s",
+                        (b.actor.project_id,),
+                    )
+                return actual(request, api, connection)
+    
+            recorded = counts(submission)
+            monkeypatch.setattr(build_intake, "reauthorize_mutation", revoke)
+            assert client.post(route, json=fresh(document), headers=headers).status_code == 401
+            assert counts(submission) == recorded
+            monkeypatch.setattr(build_intake, "reauthorize_mutation", actual)
+            with psycopg.connect(b.task["dsn"]) as db:
+                PlanStore().accept(UnitOfWork(db), b.actor, identifier, view["plan"]["effect_digest"], accept_plan=True)
+            assert client.get(route + "/" + identifier).json()["plan"]["state"] == "ACCEPTED"
+            assert counts(submission) == tuple(n + extra for n, extra in zip(recorded, (0, 0, 2, 0, 1), strict=True))
+            with psycopg.connect(b.task["dsn"]) as db:
+                db.execute(
+                    "UPDATE panestria.project SET policy_version=policy_version+1 WHERE id=%s", (b.actor.project_id,)
+                )
+            assert client.post(route, json=fresh(document), headers=headers).status_code == 409
+            assert client.get(route + "/" + identifier).status_code == 409
+&gt;       default, _, _, _ = application(submission, tmp_path / "default", enabled=False)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_mission_build_intake.py:153: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_mission_build_intake.py:58: in application
+    path, config, token = configure({"owner": b.actor.owner_id, "project": b.actor.project_id}, tmp_path)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+f = {'owner': '0f8d2ec5-a34b-460d-8636-9ce76b14d0a7', 'project': '96bbf26a-4a16-4f09-99b7-59769dc9bf67'}
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-92/test_plan_intake_atomic_scope_0/default')
+
+    def configure(f, tmp_path):
+        with socket.socket() as s:
+            s.bind(("127.0.0.1", 0))
+            port = s.getsockname()[1]
+        result = CliRunner().invoke(
+            cli,
+            [
+                "activity",
+                "init",
+                "--directory",
+                str(tmp_path / "config"),
+                "--owner-id",
+                f["owner"],
+                "--project-id",
+                f["project"],
+                "--port",
+                str(port),
+            ],
+        )
+&gt;       assert result.exit_code == 0, result.output
+E       AssertionError: {"code": "activity_initialization_unavailable", "files_preserved": true}
+E         
+E       assert 2 == 0
+E        +  where 2 = &lt;Result SystemExit(2)&gt;.exit_code
+
+tests/integration/test_mission_control_browser.py:52: AssertionError</failure></testcase></testsuite></testsuites>

@@ -498,3 +498,19 @@ billing/capacity values and zero native/provider launches. A scheduling candidat
 has execution authority NONE and runtime/account/no-spill qualification NOT_ASSESSED.
 Actual authenticated binding, one-job dispatch/reservation/yield/reconciliation
 remain next; AOS-012-S5/full TC06/07/10/G3 are not complete.
+
+## Explicit PUBLIC Build plan input
+
+The [Build intake](testing/MISSION_BUILD_INTAKE.md) now imports or pastes an existing
+PUBLIC zero-cash contract/proposal/inventory bundle and stages it through the
+canonical service. A separate session/mode, exact PUBLIC acknowledgment, bounded
+body and same-transaction session/current-policy fences preserve scope. The UI
+shows retained validation and pending consent, recovers a lost reply by plan UUID
+without another POST, and grants no acceptance, task, attempt or worker execution.
+Existing plan acceptance/run/final merge remain separate owner workflows.
+[Connected component observations](../evidence/mission-build-intake-2026-10-22/report.json)
+retain initial failures and passing browser/transaction results with their actual
+source identities. Physical HTTP/PG/CLI/Chromium uses declared fixture inventory
+and explicit reply-loss injection, with no intake execution. Exact-head CI must
+pass before merge; full inbox/dispatch, qualified Delegate, phone and original
+R3 gates remain pending.

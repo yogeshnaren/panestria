@@ -7,3 +7,5 @@ input[type=checkbox] { width: auto; margin-right: .5rem; }
 textarea { display: block; width: 100%; font: inherit; padding: 12px; color: #fff; background: #0c1520; border: 1px solid #7f9eb5; border-radius: 5px; }
 textarea:focus-visible { outline: 3px solid #85e9df; outline-offset: 3px; }
 input.receipt-id { max-width: 100%; width: 27em; }
+
+input[type=file] { display: block; max-width: 100%; width: 100%; margin: 8px 0 16px; }

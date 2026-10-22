@@ -1133,6 +1133,9 @@ def _openapi_document() -> dict[str, Any]:
         from panestria.api.routes.research_intake import router as research_intake_router
 
         app.include_router(research_intake_router)
+        from panestria.api.routes.build_intake import router as build_intake_router
+
+        app.include_router(build_intake_router)
         document = app.openapi()
     finally:
         app.state.health.shutdown()

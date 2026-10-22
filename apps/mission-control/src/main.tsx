@@ -6,6 +6,7 @@ import {BuildEvidence} from './BuildEvidence';
 import {BuildReview} from './BuildReview';
 import {OfflineAsk} from './OfflineAsk';
 import {ResearchIntake} from './ResearchIntake';
+import {BuildIntake} from './BuildIntake';
 
 function useGoal(goal: string | null, scope: Activity | null, denied: () => void) {
   const [view, setView] = useState<{page: Timeline | null, events: Event[], notice: string, fresh: boolean, observedAt: number}>(
@@ -59,6 +60,7 @@ function Dashboard() {
   const [reviewMode,setReviewMode] = useState(false);
   const [askMode,setAskMode] = useState(false);
   const [researchMode,setResearchMode] = useState(false);
+  const [buildIntakeMode,setBuildIntakeMode] = useState(false);
   const denied = () => {setMayRead(false); setAuthenticated(false); setActivity(null); setGoal(null); setCsrf(null); setListFresh(false);};
   const timeline = useGoal(goal, activity, denied);
   async function load(cursor: string|null, signal: AbortSignal) {
@@ -66,12 +68,13 @@ function Dashboard() {
     if (data.view_authority !== 'READ_ONLY_METADATA' || data.acceptance_authority !== 'NONE' ||
         !Array.isArray(data.entries) || data.entries.length > 16) throw new Error('Unconfirmed project response.');
     if (signal.aborted) return;
-    const capabilities = await json<{build_review_enabled:boolean,offline_ask_enabled:boolean,research_intake_enabled:boolean,dispatch_authority:string}>('/v1/mission/capabilities',signal);
+    const capabilities = await json<{build_review_enabled:boolean,offline_ask_enabled:boolean,research_intake_enabled:boolean,build_intake_enabled:boolean,dispatch_authority:string}>('/v1/mission/capabilities',signal);
     if (signal.aborted) return;
-    if(typeof capabilities.build_review_enabled!=='boolean' || typeof capabilities.offline_ask_enabled!=='boolean' || typeof capabilities.research_intake_enabled!=='boolean' || capabilities.dispatch_authority!=='NONE') throw new Error('Unconfirmed mode.');
+    if(typeof capabilities.build_review_enabled!=='boolean' || typeof capabilities.offline_ask_enabled!=='boolean' || typeof capabilities.research_intake_enabled!=='boolean' || typeof capabilities.build_intake_enabled!=='boolean' || capabilities.dispatch_authority!=='NONE') throw new Error('Unconfirmed mode.');
     setReviewMode(capabilities.build_review_enabled);
     setAskMode(capabilities.offline_ask_enabled);
     setResearchMode(capabilities.research_intake_enabled);
+    setBuildIntakeMode(capabilities.build_intake_enabled);
     setMayRead(true); setActivity(data); setListAt(Date.now()); setListFresh(true); setAuthenticated(true); setNotice('Project snapshot confirmed.');
   }
   useEffect(() => {
@@ -103,19 +106,20 @@ function Dashboard() {
     finally {setBusy(false);}
   }
   return <main>
-    <header><p className="eyebrow">PANESTRIA · {askMode?'OFFLINE ASK':researchMode?'PUBLIC DELEGATE STAGING':'LOCAL OBSERVER'}</p><h1>Mission Control</h1>
-      <p>Canonical project activity and goal timelines. {askMode?'Explicit offline Ask input':researchMode?'Explicit PUBLIC question staging':reviewMode?'Explicit PUBLIC Build review and consent records':'Read-only metadata'} · acceptance authority: NONE.</p></header>
+    <header><p className="eyebrow">PANESTRIA · {askMode?'OFFLINE ASK':researchMode?'PUBLIC DELEGATE STAGING':buildIntakeMode?'PUBLIC BUILD PLAN STAGING':'LOCAL OBSERVER'}</p><h1>Mission Control</h1>
+      <p>Canonical project activity and goal timelines. {askMode?'Explicit offline Ask input':researchMode?'Explicit PUBLIC question staging':buildIntakeMode?'Explicit PUBLIC Build plan staging':reviewMode?'Explicit PUBLIC Build review and consent records':'Read-only metadata'} · acceptance authority: NONE.</p></header>
     <section aria-label="Connection"><p role="status">{notice}</p>
       {(!authenticated || !csrf) && <form onSubmit={pair}><label htmlFor="pair">One-use pairing code from your terminal</label>
         <div className="actions"><input id="pair" value={code} onChange={e=>setCode(e.target.value.toUpperCase())}
           pattern="[0-9A-F]{8}" maxLength={8} minLength={8} required autoComplete="off" spellCheck={false}/>
           <button disabled={busy}>Pair</button></div></form>}
       {csrf && <button onClick={()=>void logout()} disabled={busy}>Log out</button>}
-      <p className="muted">{askMode?'Enter questions only in Offline Ask below. Never enter credentials or bearer tokens.':researchMode?'Only explicitly PUBLIC questions belong in Delegate staging. Never enter credentials or private information.':reviewMode?'Never enter credentials or private content. Protected PUBLIC evidence is displayed only below.':'No bearer token, private question, diff or source text belongs in this view.'}</p>
+      <p className="muted">{askMode?'Enter questions only in Offline Ask below. Never enter credentials or bearer tokens.':researchMode?'Only explicitly PUBLIC questions belong in Delegate staging. Never enter credentials or private information.':buildIntakeMode?'Only explicitly PUBLIC zero-cash plan bundles belong here. Never include credentials or private information.':reviewMode?'Never enter credentials or private content. Protected PUBLIC evidence is displayed only below.':'No bearer token, private question, diff or source text belongs in this view.'}</p>
     </section>
     {authenticated && activity && <>
       {askMode && <OfflineAsk key={activity.project_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
       {researchMode && <ResearchIntake key={activity.project_id} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
+      {buildIntakeMode && <BuildIntake key={activity.project_id} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
       <section aria-label="Project activity"><h2>Project activity</h2>
         <p>Project <code>{activity.project_id}</code> · {listFresh && now-listAt < 15000 ? 'Confirmed' : 'STALE / UNCONFIRMED'}</p>
         <p className="muted">Observed {activity.observed_at}. Statuses are canonical observations, not release acceptance.</p>
@@ -140,7 +144,7 @@ function Dashboard() {
       {goal && reviewMode && <BuildReview key={`review:${goal}`} goal={goal} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
       {goal && <BuildEvidence key={`evidence:${goal}`} goal={goal} owner={activity.owner_id} project={activity.project_id} deny={denied}/>}
     </>}
-    <footer>Local desktop only. {askMode?'Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.':researchMode?'PUBLIC questions can be staged here. Delegate execution, Build intake and phone access remain separate R3 work.':reviewMode?'Consent records do not execute a merge. Job intake, effect dispatch and phone access remain separate R3 work.':'Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'}</footer>
+    <footer>Local desktop only. {askMode?'Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.':researchMode?'PUBLIC questions can be staged here. Delegate execution, Build intake and phone access remain separate R3 work.':buildIntakeMode?'PUBLIC plans can be staged here. Plan acceptance, execution, effect dispatch and phone access remain separate workflows.':reviewMode?'Consent records do not execute a merge. Job intake, effect dispatch and phone access remain separate R3 work.':'Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'}</footer>
   </main>;
 }
 class Boundary extends Component<{children: ReactNode},{failed:boolean}> {

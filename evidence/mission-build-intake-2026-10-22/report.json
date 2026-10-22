@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "outcome": "PUBLIC_BUILD_PLAN_STAGING_ONLY",
+  "release_gate": "NOT_EVALUATED",
+  "runtime_qualification": "NOT_ASSESSED",
+  "intake_worker_or_model_execution": "NOT_RUN",
+  "observations": [
+    {
+      "source_commit": "5f9312c5c9afe530189935d82e5f9721bcf03cbd",
+      "source_tree": "e8be465defc9c008b000ce3ed5f9223e2760c158",
+      "report": "initial.xml",
+      "sha256": "55faba68fd8fce87cc1446a59466be43256fae34f663e12ef781452120caab79",
+      "result": {
+        "tests": "6",
+        "failures": "2",
+        "errors": "0",
+        "skipped": "0",
+        "time": "16.685"
+      },
+      "exit_code": 1,
+      "interpretation": "4 existing canonical submission/OpenAPI cases passed. Both new cases refused startup: missing explicit BrowserAccess namespace registration."
+    },
+    {
+      "source_commit": "8a5b915ff6427b6e4823cab44e9056e0d94bdbdb",
+      "source_tree": "68a42b0c34a1c95fbb4f61426511c1450a0df9e6",
+      "report": "namespace.xml",
+      "sha256": "1889c79e1910c765e7d50f8d7d8774a4eb301714d4b79848f9f11eb12bbf2d86",
+      "result": {
+        "tests": "2",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "11.735"
+      },
+      "exit_code": 1,
+      "interpretation": "Physical browser/HTTP/PG/CLI pairing and committed reply recovery passed. Transaction case stopped at fixture missing JSON media type (415 rather than body-cap413)."
+    },
+    {
+      "source_commit": "ee45a973c5757eeb006e7d6d2bedbf47fbdc0e24",
+      "source_tree": "e61a3de293b38e1f01169c94497453eb3fe7c569",
+      "report": "json.xml",
+      "sha256": "aac05bc8a3d5c8ef4e2a2fb20217217fa3c3c8149b2ec9ea89644f9f8c7657b1",
+      "result": {
+        "tests": "1",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "7.291"
+      },
+      "exit_code": 1,
+      "interpretation": "Atomic staging, replay, session rollback, separate acceptance and stale policy assertions passed before missing fixture parent refused alternate configuration setup."
+    },
+    {
+      "source_commit": "58d7d2430c484d890f3d9003eacf010cdd76402a",
+      "source_tree": "0009a780f3f68fb5ea5e8f6297ed14b64e38ba3c",
+      "report": "layout.xml",
+      "sha256": "58cf6a549c5d001150cd55804ee02ccf98efcd8cf781ed6a4cf2202b21e9c212",
+      "result": {
+        "tests": "2",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "12.164"
+      },
+      "exit_code": 1,
+      "interpretation": "Actual browser and improved upload layout passed. Transaction case reached disabled-mode assertion with different fixture origin/token and correctly got403, not route404."
+    },
+    {
+      "source_commit": "4e0073c55ab12cae8c6b41edd7bd516de24c5fb9",
+      "source_tree": "672d809ccd0735be4c56d0d4b33f78d66fd620a0",
+      "report": "scope.xml",
+      "sha256": "b5edcc62c63784e00a5df9708c8667ab2873371d2ae194ed5fcb00e3b14535e3",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "7.379"
+      },
+      "exit_code": 0,
+      "interpretation": "Complete transaction/scope/replay/session/current-policy/separate acceptance and disabled-mode case passed with same valid origin/credential."
+    }
+  ],
+  "fixture_sources": {
+    "tests/integration/test_mission_build_intake.py": "ab812bfcbf797ab07c40c2a28b5c1cb2647ec25bd64d05389c935c51a37a8d08",
+    "tests/integration/test_public_plan_submission.py": "8de99d9be21131e46bfc4022b564f688bef8a8015768894da6ad037e0cca365e",
+    "apps/mission-control/tests/build-intake.mjs": "e51c8724e221e010c8ea5e6b604e156c37f16e21b8af52f6f7e501fff134eb25",
+    "uv.lock": "7292da3d0efcea78cda08efe5b2888cfcbc71653c1ce41f360af3c5af9d1fb25",
+    "apps/mission-control/package-lock.json": "377abc70c29d26e435c0a1aacada5c9259cc4ddbcc5fbc6ba3c59a183f43d026"
+  },
+  "limits": [
+    "Actual disposable PG55439/Git/loopback HTTP/CLI pairing/Chromium; declared synthetic worker inventory, no intake dispatch or provider/search/model calls",
+    "Explicit one committed reply-loss injection; GET recovery retained one canonical plan/event and no accepted tasks/attempts",
+    "Browser source58d7d24 and final transaction source4e0073c are distinct; do not relabel as a live or cumulative release pass",
+    "Owner review8770 and databases/services/private material unchanged",
+    "Remaining full inbox/dispatch, qualified Delegate, phone/revision3 obligations and real owner trial remain open"
+  ]
+}

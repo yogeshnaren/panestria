@@ -66,4 +66,5 @@ class MissionCapabilities(BaseModel):
     build_review_enabled: bool
     offline_ask_enabled: bool = False
     research_intake_enabled: bool = False
+    build_intake_enabled: bool = False
     dispatch_authority: Literal["NONE"] = "NONE"

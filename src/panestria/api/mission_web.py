@@ -25,7 +25,12 @@ def mount_mission_control(
     build_review_root: Path | None = None,
     offline_ask: bool = False,
     research_intake: Path | None = None,
+    build_intake: bool = False,
 ) -> None:
+    if build_intake and (
+        offline_ask or research_intake is not None or build_review_root is not None or build_evidence_store is not None
+    ):
+        raise LocalApplicationRejected("mission_build_select_one_mode")
     if research_intake is not None and (
         offline_ask or build_review_root is not None or build_evidence_store is not None
     ):
@@ -85,6 +90,13 @@ def mount_mission_control(
         app.include_router(research_router)
         purpose = b"panestria.mission-research-session.v1\0" + service.view.template_sha256.encode() + b"\0"
     app.state.mission_offline_ask = offline_ask
+    if build_intake:
+        from panestria.api.routes.build_intake import router as build_intake_router
+        from panestria.execution.build_intake import BuildIntakeService
+
+        app.state.build_intake = BuildIntakeService()
+        app.include_router(build_intake_router)
+        purpose = b"panestria.mission-build-intake-session.v1\0"
     secret = hmac.digest(token.encode(), purpose + config.origin.encode(), "sha256")
     mount_browser_api(
         app,
@@ -92,7 +104,9 @@ def mount_mission_control(
             config.origin,
             SessionService(secret),
             app.state.goal_api.database_url,
-            namespace="mission-research"
+            namespace="mission-build-intake"
+            if build_intake
+            else "mission-research"
             if research_intake is not None
             else "mission-ask"
             if offline_ask
