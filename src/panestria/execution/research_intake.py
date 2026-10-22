@@ -60,7 +60,10 @@ class ResearchIntakeService:
             raise KernelDenied("research_intake_template_limit")
 
     def stage(self, uow: UnitOfWork, dsn: str, actor: Actor, body: ResearchIntakeSubmission) -> str:
-        if actor != self.actor or body.template_sha256 != self.view.template_sha256:
+        if (actor.owner_id, actor.project_id) != (
+            self.actor.owner_id,
+            self.actor.project_id,
+        ) or body.template_sha256 != self.view.template_sha256:
             raise KernelDenied("research_intake_template_changed")
         document = {**self.view.contract_template, "goal_id": body.goal_id}
         receipt = stage_question(
@@ -77,7 +80,9 @@ class ResearchIntakeService:
         return receipt.goal_id
 
     def inspect(self, dsn: str, actor: Actor, goal: str) -> ResearchStagingView:
-        if actor != self.actor or str(UUID(goal)) != goal:
+        if (actor.owner_id, actor.project_id) != (self.actor.owner_id, self.actor.project_id) or str(
+            UUID(goal)
+        ) != goal:
             raise KernelDenied("not_found")
         task = str(uuid5(UUID(goal), "owner-research-task-v1"))
         request = str(uuid5(UUID(goal), "owner-research-request-v1"))

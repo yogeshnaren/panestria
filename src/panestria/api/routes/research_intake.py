@@ -55,7 +55,7 @@ def _operation(request: Request, goal: str | None, body: ResearchIntakeSubmissio
         if not isinstance(api, GoalApi) or not isinstance(service, ResearchIntakeService):
             raise KernelDenied("not_found")
         actor = authorize(request, api)
-        if actor != service.actor:
+        if (actor.owner_id, actor.project_id) != (service.actor.owner_id, service.actor.project_id):
             raise KernelDenied("not_found")
         if body is not None:
             with open_database(api.database_url) as connection:
