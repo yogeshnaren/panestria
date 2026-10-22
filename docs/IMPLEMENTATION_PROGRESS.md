@@ -5,6 +5,16 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+The latest Mission Control delivery now provides distinct explicit offline Ask,
+PUBLIC Delegate question staging, PUBLIC Build plan staging and separate exact
+plan review/acceptance. Canonical pending plan/action review discovery connects
+the browser to retained records without a shadow queue or automatic dispatch.
+See [the inbox guide](testing/MISSION_REVIEW_INBOX.md) and
+[plan review guide](testing/MISSION_PLAN_ACCEPTANCE.md). All remain component
+outcomes: qualified Delegate execution/support, full dispatch/other review
+families, remaining personal-platform/phone/resource work, original cumulative
+gates and the real owner trial still prevent R3 acceptance.
+
 The owner explicitly resumed implementation through R3 on2026-10-20. The current
 Build path has canonical plans/handoffs, admission, conflict handling, independent
 final-tree checks, exact owner merge, supported one/two-Claude execution, local
@@ -527,3 +537,19 @@ retain five passing acceptance/intake/OpenAPI cases and two passing corrected-la
 cases at distinct original sources. They use actual PG/HTTP/CLI/Chromium with
 explicit lost-reply/expired-consent fixtures and no inference. Exact-head CI must
 pass before merge; full inbox/dispatch and R3 gates remain open.
+
+## Canonical pending-review discovery
+
+The [review inbox](testing/MISSION_REVIEW_INBOX.md) shows latest unaccepted plans
+and pending action approvals for open goals from retained canonical records.
+Bounded expiry/ID pagination remains valid after resolution; metadata includes
+expired records without claiming decision eligibility. Reads are transactionally
+read-only and add no events. Selection fills the existing explicit plan inspection
+form and cannot replace an uncertain operation; action approvals open their goal.
+It grants no generic decision or dispatch. Failed/stale/auth-lost views hide rows.
+[Connected observations](../evidence/mission-review-inbox-2026-10-22/report.json)
+retain three passing canonical/browser/OpenAPI cases and a passing lost-reply
+navigation case at its original source. These use actual PG/HTTP/CLI/Chromium
+with explicit seeded task/inventory/lost-reply fixtures and no inference.
+Exact-head CI must pass before merge. Other review families/full dispatch,
+remaining revision-3 obligations and real owner trial remain.
