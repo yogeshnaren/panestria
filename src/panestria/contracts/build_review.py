@@ -68,4 +68,5 @@ class MissionCapabilities(BaseModel):
     research_intake_enabled: bool = False
     build_intake_enabled: bool = False
     plan_acceptance_enabled: bool = False
-    dispatch_authority: Literal["NONE"] = "NONE"
+    build_run_enabled: bool = False
+    dispatch_authority: Literal["NONE", "EXPLICIT_FOREGROUND_BUILD"] = "NONE"

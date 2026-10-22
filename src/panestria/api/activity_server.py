@@ -1,4 +1,4 @@
-"""Foreground read-only project observations: no model, grants or mutation routes."""
+"""Foreground project server; explicitly selected modes retain distinct authority."""
 
 import json
 import os
@@ -36,6 +36,7 @@ def serve_activity(
     research_intake: Path | None = None,
     build_intake: bool = False,
     build_plan_review: bool = False,
+    build_run: Path | None = None,
 ) -> None:
     config, token = load_activity_settings(path)
     settings = Settings(
@@ -66,6 +67,7 @@ def serve_activity(
                 research_intake=research_intake,
                 build_intake=build_intake,
                 build_plan_review=build_plan_review,
+                build_run=build_run,
             )
         server = uvicorn.Server(server_config(app))
         print(
@@ -73,7 +75,9 @@ def serve_activity(
                 {
                     "status": "STARTING",
                     "origin": config.origin,
-                    "authority": "PUBLIC_PLAN_ACCEPTANCE_ONLY"
+                    "authority": "EXPLICIT_FOREGROUND_BUILD"
+                    if build_run is not None
+                    else "PUBLIC_PLAN_ACCEPTANCE_ONLY"
                     if build_plan_review
                     else "PUBLIC_BUILD_PLAN_STAGING_ONLY"
                     if build_intake

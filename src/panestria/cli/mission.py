@@ -1,4 +1,4 @@
-"""Explicit local read-only browser entry point; existing private metadata settings."""
+"""Explicit local browser modes; private operator settings determine capability."""
 
 import json
 import re
@@ -35,6 +35,10 @@ def serve(
     build_plan_review: Annotated[
         bool, typer.Option("--build-plan-review", help="Explicit PUBLIC plan intake/review/acceptance; no execution.")
     ] = False,
+    build_run: Annotated[
+        Path | None,
+        typer.Option("--build-run", help="Existing private Build config: explicit finite PUBLIC subscription runs."),
+    ] = None,
 ) -> None:
     """Serve an explicit production dashboard build on the configured exclusive port."""
     from panestria.api.activity_server import serve_activity
@@ -49,6 +53,7 @@ def serve(
             research_intake=research_intake,
             build_intake=build_intake,
             build_plan_review=build_plan_review,
+            build_run=build_run,
         )
         return
     except (LocalApplicationRejected, ProfileRejected, KernelDenied) as exc:
