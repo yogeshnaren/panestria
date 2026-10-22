@@ -4,6 +4,7 @@ import json
 from uuid import uuid4
 
 import psycopg
+import pytest
 from test_profile_ask_terminal import profile_terminal as profile_terminal  # noqa: F401
 from test_profile_style_terminal import style_server as style_server  # noqa: F401
 from test_profile_vault import profile as profile  # noqa: F401
@@ -14,6 +15,13 @@ from panestria.cli.profile_ask import ProfileAskClient
 from panestria.cli.profile_client import ProfileClient
 from panestria.contracts.ask import AskSubmission
 from panestria.telemetry.performance import latest_snapshot
+
+
+@pytest.fixture
+def r1_task(r1_migration_task):
+    # Profile Ask creates a newer immutable audit layer. Keep this case out of
+    # the shared database whose backup fixtures intentionally test older guards.
+    return r1_migration_task
 
 
 def test_capture_reads_one_protected_receipt_without_more_model_calls_or_plaintext(profile_terminal, tmp_path):  # noqa: F811
