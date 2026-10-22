@@ -1,6 +1,10 @@
 """Actual PG/CAS/reader/intent/replay; model and HTTPS are explicit fixtures."""
 
 import json
+import os
+import subprocess
+import time
+from pathlib import Path
 
 import pytest
 from test_research_query_plan import planner as planner  # noqa: F401
@@ -16,8 +20,10 @@ from panestria.contracts.research_plan import plan_bytes
 from panestria.contracts.research_synthesis import synthesis_json
 from panestria.execution.research_query_plan import OwnerQueryPlan
 from panestria.execution.research_synthesis import LocalDraftModel, OwnerSynthesis
-from panestria.inference.runtime import MODEL
+from panestria.inference.runtime import MODEL, ModelRuntime
 from panestria.kernel.errors import KernelDenied
+from panestria.resources.admission import admit
+from panestria.resources.hardware import HardwareProbe
 
 
 def selected_file(root):
@@ -40,7 +46,8 @@ def test_query_intent_return_and_replay_bind_original_manifest(planner, monkeypa
         with service.connect() as c:
             event = c.execute(
                 "SELECT payload FROM panestria.task_event WHERE kind='research.query_plan.started'"
-                " AND payload->>'request_id'=%s", (staged_request.request_id,),
+                " AND payload->>'request_id'=%s",
+                (staged_request.request_id,),
             ).fetchone()[0]
         assert event["inference_request_sha256"] == request.sha256()
         assert event["model_manifest"] == selected.model_dump(mode="json")
@@ -49,7 +56,11 @@ def test_query_intent_return_and_replay_bind_original_manifest(planner, monkeypa
         self.before_dispatch()
         calls.append(request)
         return InferenceResult(
-            MODEL, json.dumps({"queries": ["synthetic source provenance"]}), Usage(100, 20, 0), 0.2, 0.1,
+            MODEL,
+            json.dumps({"queries": ["synthetic source provenance"]}),
+            Usage(100, 20, 0),
+            0.2,
+            0.1,
             model_manifest_sha256=None if wrong_identity else selected.sha256(),
         )
 
@@ -65,7 +76,9 @@ def test_query_intent_return_and_replay_bind_original_manifest(planner, monkeypa
         assert json.loads(plan_bytes(retained))["model_manifest"] == selected.model_dump(mode="json")
         assert "model_manifest" not in json.loads(plan_bytes(retained.model_copy(update={"model_manifest": None})))
     replay = OwnerQueryPlan(prior.artifacts.dsn, settings).plan(
-        staged_request.request_id, "pin", retain_local_plan=True,
+        staged_request.request_id,
+        "pin",
+        retain_local_plan=True,
     )
     assert replay["replayed"] and len(calls) == 1 and not path.exists()
     assert replay["status"] == ("FAILED" if wrong_identity else "QUERY_PLAN_RETAINED")
@@ -74,7 +87,10 @@ def test_query_intent_return_and_replay_bind_original_manifest(planner, monkeypa
 
 @pytest.mark.parametrize("wrong_identity", [False, True])
 def test_synthesis_intent_return_and_inspection_keep_original_manifest(
-    synthesis_context, monkeypatch, wrong_identity, record_property,
+    synthesis_context,
+    monkeypatch,
+    wrong_identity,
+    record_property,
 ):
     prior, staged_request = synthesis_context
     path, selected = selected_file(prior.settings.root)
@@ -86,7 +102,8 @@ def test_synthesis_intent_return_and_inspection_keep_original_manifest(
         with service.connect() as c:
             event = c.execute(
                 "SELECT payload FROM panestria.task_event WHERE kind='research.synthesis.started'"
-                " AND payload->>'request_id'=%s", (staged_request.request_id,),
+                " AND payload->>'request_id'=%s",
+                (staged_request.request_id,),
             ).fetchone()[0]
         assert event["inference_request_sha256"] == request.sha256()
         assert event["model_manifest"] == selected.model_dump(mode="json")
@@ -95,7 +112,11 @@ def test_synthesis_intent_return_and_inspection_keep_original_manifest(
         self.before_dispatch()
         calls.append(request)
         return InferenceResult(
-            MODEL, json.dumps(RESPONSE), Usage(123, 42, 0), 0.2, 0.1,
+            MODEL,
+            json.dumps(RESPONSE),
+            Usage(123, 42, 0),
+            0.2,
+            0.1,
             model_manifest_sha256=None if wrong_identity else selected.sha256(),
         )
 
@@ -114,3 +135,56 @@ def test_synthesis_intent_return_and_inspection_keep_original_manifest(
     assert replay.replayed and len(calls) == 1 and not path.exists()
     assert replay.status == ("FAILED" if wrong_identity else "DRAFT_RETAINED")
     record_property("execution_mode", "ACTUAL_PG_CAS_READER_INTENT_REPLAY__EXPLICIT_MODEL_HTTPS_FIXTURES")
+
+
+@pytest.mark.live
+def test_actual_cpu_pinned_synthesis_retains_a_draft_without_claiming_support(
+    synthesis_context,
+    tmp_path_factory,
+    record_property,
+):
+    cache = os.environ.get("PANESTRIA_PROFILE_TEST_MODEL_CACHE")
+    if not cache:
+        pytest.skip("explicit existing read-only cache required; no download or live model evidence")
+    prior, staged_request = synthesis_context
+    archive = Path(__file__).resolve().parents[2] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
+    decision = admit(HardwareProbe(archive).collect_cpu(), gpu=False)
+    assert decision.decision == "PERMIT", decision.reasons
+    runtime_root = tmp_path_factory.mktemp("synthpin")
+    observer = ModelRuntime(Path(cache), runtime_root / "observe", preserve_existing=True)
+    assert not observer._docker(["ps", "-a", "-q", "--filter", "label=panestria.purpose=local-model"]).strip()
+    try:
+        observer.start()
+        selected = observer.describe_manifest(json_output=True)
+    finally:
+        observer.stop()
+    expected = prior.settings.root / "expected-model.json"
+    expected.write_text(selected.model_dump_json())
+    expected.chmod(0o600)
+    settings = prior.settings.model_copy(
+        update={
+            "model_cache": Path(cache),
+            "runtime_directory": runtime_root / "draft",
+            "model_manifest_file": expected,
+        }
+    )
+    service = OwnerSynthesis(prior.dsn, settings)
+    began = time.perf_counter()
+    receipt = service.synthesize(staged_request.request_id, "actual-cpu-pin", retain_local_draft=True)
+    elapsed = time.perf_counter() - began
+    assert receipt.status == "DRAFT_RETAINED" and receipt.task_completion_authority == "NONE"
+    draft = service.inspect(staged_request.request_id)
+    assert draft.model_manifest == selected and draft.semantic_support == "NOT_ASSESSED"
+    assert draft.input_tokens > 0 and draft.output_tokens > 0
+    assert service.synthesize(staged_request.request_id, "actual-cpu-pin", retain_local_draft=True).replayed
+    assert not observer._docker(["ps", "-a", "-q", "--filter", "label=panestria.purpose=local-model"]).strip()
+    record_property("candidate_commit", subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip())
+    record_property(
+        "execution_mode", "ACTUAL_CACHED_CPU_JSON_PG_CAS_READER__SYNTHETIC_REQUEST_STATE_HTTPS__NO_SUPPORT_GATE"
+    )
+    record_property("model_calls", 1)
+    record_property("model_manifest_sha256", selected.sha256())
+    record_property("controller_elapsed_seconds_including_start_stop", elapsed)
+    record_property("model_input_tokens", draft.input_tokens)
+    record_property("model_output_tokens", draft.output_tokens)
+    record_property("release_gate", "NOT_EVALUATED")
