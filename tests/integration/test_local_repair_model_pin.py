@@ -22,7 +22,7 @@ def test_manifest_pin_is_in_acknowledged_repair_intent_and_replay_keeps_original
 ):
     owner, _, parent, _, claims = failed(native_plan)
     proof = returned(owner, parent, claims)
-    prior, model = local(owner, tmp_path)
+    prior, _state = local(owner, tmp_path)
     selected = model_manifest().for_json_output()
     expected = tmp_path / "expected.json"
     expected.write_text(selected.model_dump_json())
@@ -37,7 +37,7 @@ def test_manifest_pin_is_in_acknowledged_repair_intent_and_replay_keeps_original
                 assert len(ledger.intents) == 1 and ledger.intents[0].request_sha256 == request.sha256()
             assert request.model_manifest_sha256 == selected.sha256()
             seen.append(request)
-            return replace(model.generate(request), model_manifest_sha256=selected.sha256())
+            return replace(prior.planner.model.generate(request), model_manifest_sha256=selected.sha256())
 
     repair = LocalBuildRepair(owner, settings, BoundModel())
     output = tmp_path / "bound-draft"
