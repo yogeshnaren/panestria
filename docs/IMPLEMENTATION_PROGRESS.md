@@ -291,6 +291,11 @@ and [source-bound component checks](../evidence/mission-build-run-2026-10-22/rep
 Do not reopen plan staging, acceptance or this one-shot handoff as new tasks.
 Next, inspect AOS-017-S5/S6 and the active MVP-X08 scope to connect the existing
 reviewed charter/style/model-context records across supported local modes.
+The [shared local charter setting](testing/SHARED_LOCAL_CHARTER.md) now connects
+ordinary and profile Ask to the same data-free rules with pinned context packs;
+this opt-in component does not complete paired style fidelity or ModelManifest
+compatibility/replacement. Continue those actual S5/S6 gaps rather than reopening
+this local setting or silently exporting private context to another client.
 Preserve purpose/classification/model-compatibility and current authority checks;
 avoid replacing retained contracts with a second prompt store. Other review
 families, full fleet/dispatch integration, connections, resources/phone and finite
@@ -319,6 +324,22 @@ start POST after a lost reply and no protected-ref change. Native auth/inference
 certificates and capacity are explicit fixtures. No owner service was upgraded;
 8770 remains its prior observer. This is partial AOS-028 delivery, not current
 live qualification, complete dispatch/fleet scope, an original gate or R3 acceptance.
+
+## Shared local assistant charter
+
+An explicit private `assistant_charter: true` setting now uses the existing fixed
+data-free charter in ordinary offline Ask and the existing selected profile Ask
+path. General context metadata retains renderer/version/hash; an active prepared
+request claims its exact original bytes even when the compiler setting changes.
+Private structured style includes one charter and reserves only the actual
+overlay byte delta. Mandatory content refuses when it cannot fit. Default false
+preserves the original general renderer and enables no profile, key, cloud path,
+private export or model replacement. [Source-bound observations](../evidence/local-charter-context-2026-10-22/report.json)
+use actual PG/crypto/config/HTTP with explicit non-live provider/process/key/capacity
+fixtures and preserve the initial Unix-socket fixture failure. These are context
+binding/consent component checks, not paired factual/style quality, owner
+preference, actual model latency or an original gate. [Guide](testing/SHARED_LOCAL_CHARTER.md),
+[design92](design/92-SHARED-LOCAL-CHARTER-CONTEXT.md). S4/S5/S6 and R3 remain in progress.
 
 The full Delegate gate still requires adversarial briefs, qualified semantic
 support/contradiction handling, an actual authorized public brief and Ask/Build
