@@ -138,7 +138,7 @@ class AskTerminal:
             if kind == "storage":
                 v.storage = StorageStatus.model_validate_json(json.dumps(result))
                 v.storage_next_check = time.monotonic() + v.storage.next_check_seconds
-                v.storage_notice = "Read-only observations; cleanup and task acceptance authority NONE."
+                v.storage_notice = "Read-only observations; no storage changes are performed."
                 continue
             if kind == "status":
                 if not v.connected:
@@ -351,7 +351,7 @@ class AskTerminal:
                          f"{min(len(body), v.storage_scroll + visible)}/{len(body)}")
                     line(rows - 3, v.storage_notice)
                     line(rows - 2, "PgUp/PgDn Scroll | F5/r Read cache | o/b/Esc Back | q Quit")
-                    line(rows - 1, "Samples are at least60s apart. Owner review only; no storage changes are made.")
+                    line(rows - 1, "Samples are at least 60s apart. Owner review only; no storage changes are made.")
                 elif v.activity_active and v.timeline_goal:
                     timeline_page = v.timeline
                     fresh = v.timeline_fresh and time.monotonic() - v.timeline_received_at <= 15
