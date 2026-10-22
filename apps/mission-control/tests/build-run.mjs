@@ -22,6 +22,7 @@ try {
   assert.equal(await section.getByRole('button',{name:'Start finite Build run',exact:true}).isEnabled(),false);
   await page.getByRole('button',{name:'Open goal '+fixture.goal.slice(0,8),exact:true}).waitFor({timeout:15000});
   await page.getByRole('button',{name:'Open goal '+fixture.goal.slice(0,8),exact:true}).click();
+  await page.getByRole('button',{name:'Review exact merge request',exact:true}).click();
   await page.getByLabel('Protected diff', {exact:true}).waitFor({timeout:15000});
   assert.match(await page.getByLabel('Protected diff', {exact:true}).innerText(),/value = 43/);
   await page.screenshot({path:process.env.PANESTRIA_BROWSER_SCREENSHOT,fullPage:true});

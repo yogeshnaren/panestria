@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def application(native_plan, owner_cli, tmp_path):
     owner = native_plan[0]
+    tmp_path.mkdir(parents=True, exist_ok=True)
     path, config, token = configure({"owner": owner.actor.owner_id, "project": owner.actor.project_id}, tmp_path)
     app = build_activity_app(config, Settings(database_url=owner.dsn).validate_profile(), token)
     mount_mission_control(app, config, token, ASSETS, build_run=owner_cli.config)
