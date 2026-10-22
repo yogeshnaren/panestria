@@ -147,6 +147,15 @@ Actual paired/PG/crypto/HTTP observations use declared model/key/capacity fixtur
 This is partial S5 delivery; no semantic rewrite, full quality qualification,
 ModelManifest compatibility or original case/gate is marked complete.
 
+The [pinned CPU model manifest](../testing/PINNED_LOCAL_MODEL_MANIFEST.md) now
+connects opt-in raw-text local Ask startup, immutable context metadata, claim,
+provider dispatch/publication and receipts. Compatibility refusal/rollback leaves
+original context and memory intact; the tokenizer is identified only by its GGUF
+container, evaluation remains NOT_EVALUATED. Source-bound component evidence and
+one actual cached CPU/PG/Unix-socket/ASGI journey cover this supported path. This
+is partial S6, not general model replacement, other-mode qualification, full
+TC07/TC08 or G3. No default, owner service/configuration or model cache was changed.
+
 The [pinned profile Ask terminal](../testing/PROFILE_ASK_TERMINAL.md) now connects
 explicit row/field/purpose selection to the existing restricted local inference
 boundary, with cancellation and content-free receipt recovery. Real key/model

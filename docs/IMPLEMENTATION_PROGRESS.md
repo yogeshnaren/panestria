@@ -301,6 +301,15 @@ pass now handles supported plain paragraph layouts with exact content-byte
 retention or abstention and saves descriptive timing/length observations. It
 does not qualify semantic rewriting, factual support, readability quality or
 owner preference. Those S5 quality cases and S6 compatibility remain open.
+The [pinned local model manifest](testing/PINNED_LOCAL_MODEL_MANIFEST.md) now
+connects the supported CPU/raw-text Ask launcher to retained immutable model,
+runtime, containing-tokenizer, template, quantization and capability metadata.
+Prepare/claim/provider/completion and canonical receipts retain the exact pin;
+incompatible replacement refuses while original memory/context survives rollback.
+Actual cached CPU startup/Unix-socket inference/PG/ASGI and one-call receipt replay
+passed on the recorded source. This is partial S6 delivery: broad replacement,
+other local modes, model/style quality and original gates remain pending. Do not
+reopen this supported Ask identity path as another metadata-only task.
 Preserve purpose/classification/model-compatibility and current authority checks;
 avoid replacing retained contracts with a second prompt store. Other review
 families, full fleet/dispatch integration, connections, resources/phone and finite
@@ -360,6 +369,27 @@ readability quality and preference stay NOT_ASSESSED. [Connected paired evidence
 uses real PG/crypto/HTTP with explicit local provider/key/capacity fixtures, including
 late actual profile withdrawal and no-repeat receipt recovery. No owner service
 was changed; full S5 semantic quality, S6 compatibility, original gates/trial remain.
+
+## Pinned CPU model identity through Ask
+
+The [manifest guide](testing/PINNED_LOCAL_MODEL_MANIFEST.md) and
+[design94](design/94-PINNED-LOCAL-MODEL-MANIFEST.md) describe the optional private
+setting. It records public artifact/runtime identities in the existing immutable
+context pack, checks the exact digest before inference and before completion,
+and shows the original model identity in the receipt without retaining answers
+or private profile text. Tokenizer equivalence stays unknown beyond its identified
+GGUF container; evaluation remains NOT_EVALUATED. There is no automatic model
+replacement, download, new credential, cache transfer or cross-client sharing.
+
+[Source-bound observations](../evidence/pinned-model-manifest-2026-10-22/report.json)
+retain28 connected checks and one actual existing-cache CPU journey. The live
+case observed one generation (97 input/2 output tokens,3.16s generation time),
+canonical identity/replay and owned model cleanup. This single observation is not
+a latency distribution, factual/style assessment, physical TCP/profile key-store
+qualification or cumulative release pass. S5 quality, remaining S6 replacement/
+mode compatibility, private examples/connections, Delegate/phone/resources and
+the original gates/real trial remain required. Owner checkouts/services/caches
+were preserved; the historical8770 observer remains unchanged.
 
 The full Delegate gate still requires adversarial briefs, qualified semantic
 support/contradiction handling, an actual authorized public brief and Ask/Build
