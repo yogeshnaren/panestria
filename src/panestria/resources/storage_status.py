@@ -48,7 +48,7 @@ class StorageObserver:
         )
 
     def view(self, actor: Actor) -> StorageStatus:
-        if actor != self.actor:
+        if (actor.owner_id, actor.project_id) != (self.actor.owner_id, self.actor.project_id):
             raise KernelDenied("not_found")
         with self.lock:
             if self.closed:

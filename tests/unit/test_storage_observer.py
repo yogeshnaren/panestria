@@ -55,7 +55,7 @@ def test_disabled_configuration_and_foreign_actor_never_probe(tmp_path):
     with pytest.raises(KernelDenied):
         observer.view(Actor(actor.owner_id, str(uuid4())))
     assert not observer.inflight
-    assert observer.view(actor).state == "COLLECTING"
+    assert observer.view(Actor(actor.owner_id, actor.project_id)).state == "COLLECTING"
     assert settle(observer).state == "DISABLED"
     assert observer.view(actor).notifications_enabled is False
     observer.close()
