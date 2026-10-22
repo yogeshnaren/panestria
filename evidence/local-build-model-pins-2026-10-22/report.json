@@ -56,6 +56,20 @@
         "release_gate": "NOT_EVALUATED"
       },
       "notes": "Actual existing-cache CPU startup/Unix-socket JSON generation/PG/ASGI metadata selection and owned model cleanup PASS; one generation, no external API/download, physical TCP or plan-quality qualification."
+    },
+    {
+      "source_commit": "826da58039874ae23f121acfead070b33bf2eb74",
+      "source_tree": "3dda425a22859437c5e5e9f4909a5ddbab856d2a",
+      "report": "lazy-selection.xml",
+      "sha256": "034cb60e416b57a634cb4a26e81335d6b3ae7b15bc2810fedb97f7aadee76f9c",
+      "results": {
+        "tests": "21",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "37.755"
+      },
+      "notes": "21 relevant default/component cases PASS after review moved model-file selection to actual new-draft preparation. Configuration/repair construction and canonical replay no longer read the current file; replay succeeds after its owned fixture is renamed/preserved. New-request snapshot remains fixed after acknowledgment. Existing durable budget/unknown/restore and legacy planner cases remain intact. One unchanged live planner case deselected; original actual CPU observation remains bound to b8507d1, not relabeled."
     }
   ],
   "outcomes": [
@@ -63,7 +77,8 @@
     "Explicit JSON profile/strict private planner manifest snapshot before request/journal/durable repair intent",
     "Startup and returned identity must match the retained request pin before proposal publication",
     "Committed repair intent binds exact request hash; replay preserves original protected files and budget after new-work manifest changes",
-    "Legacy unbound paths unchanged; proposals still require separate canonical stage/accept/run/final review"
+    "Legacy unbound paths unchanged; proposals still require separate canonical stage/accept/run/final review",
+    "Canonical replay remains model-file independent, including unavailable current new-work files; only actual new-draft preparation opens the selection"
   ],
   "limits": [
     "Component generation/native/runtime/capacity are explicit fixtures; one separate actual cached CPU JSON observation is narrow",
