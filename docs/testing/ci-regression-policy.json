@@ -2,6 +2,10 @@
   "schema_version": 1,
   "scope": "Required PR coverage defers only these reviewed regressions; full profile and all release requirements remain. All unit/contract and unlisted/new tests remain required.",
   "full_on_change": [
+    ".github/workflows/ci.yml",
+    "tools/ci_tests.py",
+    "tools/ci_merge_proof.py",
+    "docs/testing/ci-regression-policy.json",
     "migrations/**",
     "tests/conftest.py",
     "tests/integration/conftest.py",
