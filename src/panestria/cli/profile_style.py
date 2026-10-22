@@ -96,6 +96,24 @@ class StyleTerminal:
             self.review = True
         return True
 
+    def example_rows(self, width: int, height: int) -> list[str]:
+        content = []
+        for example in self.source.style.examples:
+            content += wrapped(
+                f"Reference: {example.reference}\nInput: {example.input.get_secret_value()}\n"
+                f"Response: {example.response.get_secret_value()}\n",
+                width - 2,
+            )
+        available = height - 5
+        self.example_offset = min(self.example_offset, max(0, len(content) - available))
+        self.example_end = self.example_offset + available >= len(content)
+        return [
+            "RESTRICTED local examples | owner-supplied, not verified facts or policy",
+            "j/k: scroll | a: acknowledge after end | Esc/q: return without acknowledging",
+            *content[self.example_offset : self.example_offset + available],
+            "END: a acknowledges this review" if self.example_end else "More below; scroll to review all examples",
+        ]
+
     def run(self, screen: Any) -> None:
         import curses
 
@@ -133,24 +151,7 @@ class StyleTerminal:
                     "Press y to save once; Esc/q returns. Saving does not submit a question.",
                 ]
             if self.example_view and height >= 22 and width >= 80:
-                content = []
-                for example in self.source.style.examples:
-                    content += wrapped(
-                        f"Reference: {example.reference}\nInput: {example.input.get_secret_value()}\n"
-                        f"Response: {example.response.get_secret_value()}\n",
-                        width - 2,
-                    )
-                available = height - 5
-                self.example_offset = min(self.example_offset, max(0, len(content) - available))
-                self.example_end = self.example_offset + available >= len(content)
-                rows = [
-                    "RESTRICTED local examples | owner-supplied, not verified facts or policy",
-                    "j/k: scroll | a: acknowledge after end | Esc/q: return without acknowledging",
-                    *content[self.example_offset : self.example_offset + available],
-                    "END: a acknowledges this review"
-                    if self.example_end
-                    else "More below; scroll to review all examples",
-                ]
+                rows = self.example_rows(width, height)
             if height < 22 or width < 80:
                 rows = ["Resize to at least 80 columns and 22 rows. q exits."]
             for n, text in enumerate(rows[: height - 1]):
@@ -215,6 +216,7 @@ def run_style_terminal(
                 f"Imported replacement: {previous_count} -> {len(source.style.examples)} examples. "
                 "v reviews; s reviews save. Source file preserved."
             )
+        del source
         curses.wrapper(terminal.run)
     except KeyboardInterrupt:
         # An interrupted write might have committed. Never submit it again here.
