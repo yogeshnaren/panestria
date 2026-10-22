@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="24.969" timestamp="2026-10-21T21:04:48.528883-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_mission_build_review" name="test_scoped_exact_preview_fences_and_denial_have_no_dispatch" file="tests/integration/test_mission_build_review.py" line="51" time="10.241"><properties><property name="mode" value="ACTUAL_HTTP_PG_GIT_VERIFIER__TEST_FIXTURE_NOT_LIVE_NATIVE_AUTH_CAPACITY" /></properties></testcase><testcase classname="tests.integration.test_mission_build_review" name="test_physical_browser_review_offline_consent_and_existing_exact_merge" file="tests/integration/test_mission_build_review.py" line="152" time="6.607"><failure message="AssertionError: {'status': 'FAILED', 'plan_id': '832eeaac-052b-4444-a6e8-88488eedf3a2', 'report_sha256': '51d8439f2891e6da868ca3d0c37f...k_id': '56b3c372-2458-4d04-a38c-54d57c2d496a', 'status': 'NODE_VERIFIED', 'reason': 'independent_checks_passed'}], ...}&#10;assert 'FAILED' == 'WAITING_APPROVAL'&#10;  &#10;  - WAITING_APPROVAL&#10;  + FAILED">native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x720ce507e090&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-79/test_physical_browser_review_o0')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x720ce617f380&gt;
+
+    def test_physical_browser_review_offline_consent_and_existing_exact_merge(native_plan, tmp_path, record_property):
+        native_plan[3]["note_text"] = "&lt;img src=x onerror=\"document.title='unsafe'\"&gt;"
+&gt;       owner, plan, path, config, token = evidence_case(native_plan, tmp_path)
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_mission_build_review.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x720ce507e090&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-79/test_physical_browser_review_o0')
+
+    def evidence_case(native_plan, tmp_path):
+        owner, runner, plan, state = native_plan
+        result = runner.run(plan.plan_id, public_subscription_run=True)
+&gt;       assert result["status"] == "WAITING_APPROVAL", result
+E       AssertionError: {'status': 'FAILED', 'plan_id': '832eeaac-052b-4444-a6e8-88488eedf3a2', 'report_sha256': '51d8439f2891e6da868ca3d0c37f...k_id': '56b3c372-2458-4d04-a38c-54d57c2d496a', 'status': 'NODE_VERIFIED', 'reason': 'independent_checks_passed'}], ...}
+E       assert 'FAILED' == 'WAITING_APPROVAL'
+E         
+E         - WAITING_APPROVAL
+E         + FAILED
+
+tests/integration/test_mission_build_review.py:33: AssertionError</failure></testcase><testcase classname="tests.integration.test_native_plan_execution" name="test_two_scoped_workers_and_create_only_node_reach_exact_owner_review" file="tests/integration/test_native_plan_execution.py" line="202" time="6.844"><properties><property name="candidate_commit" value="a19dfb71c52287fe6a203a6de2facbb86005e3db" /><property name="fixture_digest" value="3c51bc44b0351372dba1a0561115e84628668717cb4a5772bcbb14f5c7088346" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.e2e.test_aos_005" name="test_openapi_matches_the_mounted_routes" file="tests/e2e/test_aos_005.py" line="1135" time="0.603"><properties><property name="gate_case_id" value="AOS-005-TC01" /><property name="candidate_commit" value="a19dfb71c52287fe6a203a6de2facbb86005e3db" /><property name="lane" value="contract" /><property name="execution_mode" value="HERMETIC" /></properties></testcase></testsuite></testsuites>

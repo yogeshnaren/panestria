@@ -89,6 +89,9 @@ def mount_goal_api(app: FastAPI, goal_api: GoalApi) -> None:
     app.include_router(artifacts_router)
     app.include_router(quota_router)
     app.include_router(connections_router)
+    from panestria.api.routes.mission_review import router as mission_review_router
+
+    app.include_router(mission_review_router)
     mount_activity_api(app)
 
 
@@ -100,6 +103,9 @@ def mount_activity_api(app: FastAPI) -> None:
 
     app.include_router(activity_router)
     app.include_router(build_observation_router)
+    from panestria.api.routes.mission_review import capabilities
+
+    app.include_router(capabilities)
 
 
 def mount_browser_api(app: FastAPI, access: object) -> None:

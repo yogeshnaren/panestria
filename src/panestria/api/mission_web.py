@@ -16,7 +16,13 @@ from panestria.kernel.sessions import SessionService
 
 
 def mount_mission_control(
-    app: FastAPI, config: ActivitySettings, token: str, directory: Path, *, build_evidence_store: Path | None = None
+    app: FastAPI,
+    config: ActivitySettings,
+    token: str,
+    directory: Path,
+    *,
+    build_evidence_store: Path | None = None,
+    build_review_root: Path | None = None,
 ) -> None:
     # A deliberate, local production build; never run a dev server or fetch assets.
     try:
@@ -35,14 +41,31 @@ def mount_mission_control(
             assets[name] = data
     except OSError:
         raise LocalApplicationRejected("mission_build_required") from None
-    if build_evidence_store is not None:
+    if build_review_root is not None:
+        from panestria.api.routes.mission_review import router
+        from panestria.execution.build_review import BuildReviewService
+
+        if build_evidence_store is not None:
+            raise LocalApplicationRejected("mission_review_select_one_store")
+        app.state.build_review = BuildReviewService(build_review_root)
+        app.state.build_evidence_reader = app.state.build_review.evidence
+        app.include_router(router)
+    elif build_evidence_store is not None:
         from panestria.kernel.build import BuildEvidenceService, BuildEvidenceStore
 
         app.state.build_evidence_reader = BuildEvidenceService(BuildEvidenceStore(build_evidence_store, read_only=True))
-    secret = hmac.digest(token.encode(), b"panestria.mission-session.v1\0" + config.origin.encode(), "sha256")
+    purpose = (
+        b"panestria.mission-review-session.v1\0" if build_review_root is not None else b"panestria.mission-session.v1\0"
+    )
+    secret = hmac.digest(token.encode(), purpose + config.origin.encode(), "sha256")
     mount_browser_api(
         app,
-        BrowserAccess(config.origin, SessionService(secret), app.state.goal_api.database_url, namespace="mission"),
+        BrowserAccess(
+            config.origin,
+            SessionService(secret),
+            app.state.goal_api.database_url,
+            namespace="mission-review" if build_review_root is not None else "mission",
+        ),
     )
     app.state.mission_build_sha256 = hashlib.sha256(b"".join(assets.values())).hexdigest()
 

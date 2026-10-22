@@ -102,7 +102,7 @@ def owner_cli(tmp_path, r1_database, monkeypatch, request):
     git(source, "init", "-b", "main")
     git(source, "config", "user.name", "Synthetic owner fixture")
     git(source, "config", "user.email", "fixture@panestria.invalid")
-    (source / "calculator.py").write_text("value = 42\n")
+    (source / "calculator.py").write_text("value = 42\n" + getattr(request, "param", {}).get("baseline_suffix", ""))
     git(source, "add", "calculator.py")
     git(source, "commit", "-m", "public synthetic baseline")
     bare = root / "protected" / owner / project / "destination.git"

@@ -2376,9 +2376,10 @@
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-028-S2.md",
       "evidence_refs": [
-        "evidence/mission-build-progress-2026-10-21/report.json"
+        "evidence/mission-build-progress-2026-10-21/report.json",
+        "evidence/mission-build-review-2026-10-22/report.json"
       ],
-      "scope_note": "Optional existing read-only protected Build report store plus PUBLIC-only closed progress API and React evidence/check bar. Actual browser/PG/Git/verifier with explicitly nonlive native/auth/capacity fixtures. Full artifact/diff/test previews, exact approvals, intakes and full release scenarios remain pending."
+      "scope_note": "PUBLIC protected progress plus explicit exact diff/report/merge-preview review and canonical consent records delivered. Separate session purpose, current byte/version/CSRF fences, actual browser offline/inert HTML and existing-CLI merge handoff. Native/auth/OS/capacity remain nonlive fixtures. Full approval inbox/dispatch, intakes, phone and original release cases remain pending; IN_PROGRESS."
     },
     {
       "id": "AOS-028-S3",

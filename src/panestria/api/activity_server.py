@@ -28,7 +28,11 @@ def build_activity_app(config: ActivitySettings, settings: ValidatedSettings, to
 
 
 def serve_activity(
-    path: Path, *, dashboard_assets: Path | None = None, build_evidence_store: Path | None = None
+    path: Path,
+    *,
+    dashboard_assets: Path | None = None,
+    build_evidence_store: Path | None = None,
+    build_review_root: Path | None = None,
 ) -> None:
     config, token = load_activity_settings(path)
     settings = Settings(
@@ -50,11 +54,23 @@ def serve_activity(
             from panestria.api.mission_web import mount_mission_control
 
             mount_mission_control(
-                app, config, token.get_secret_value(), dashboard_assets, build_evidence_store=build_evidence_store
+                app,
+                config,
+                token.get_secret_value(),
+                dashboard_assets,
+                build_evidence_store=build_evidence_store,
+                build_review_root=build_review_root,
             )
         server = uvicorn.Server(server_config(app))
         print(
-            json.dumps({"status": "STARTING", "origin": config.origin, "authority": "READ_ONLY_METADATA"}), flush=True
+            json.dumps(
+                {
+                    "status": "STARTING",
+                    "origin": config.origin,
+                    "authority": "PUBLIC_BUILD_REVIEW_CONSENT_ONLY" if build_review_root else "READ_ONLY_METADATA",
+                }
+            ),
+            flush=True,
         )
         try:
             server.run(sockets=[listener])

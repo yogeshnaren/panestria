@@ -1,6 +1,103 @@
 {
   "components": {
     "schemas": {
+      "ActionPreview": {
+        "additionalProperties": false,
+        "properties": {
+          "action_kind": {
+            "enum": [
+              "contract_consent",
+              "merge",
+              "finalize"
+            ],
+            "title": "Action Kind",
+            "type": "string"
+          },
+          "candidate_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Candidate Sha256",
+            "type": "string"
+          },
+          "contract_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Contract Sha256",
+            "type": "string"
+          },
+          "contract_version": {
+            "minimum": 1.0,
+            "title": "Contract Version",
+            "type": "integer"
+          },
+          "destination": {
+            "maxLength": 512,
+            "minLength": 1,
+            "title": "Destination",
+            "type": "string"
+          },
+          "expected_base": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Expected Base",
+            "type": "string"
+          },
+          "expires_at": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?\\+00:00$",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "minimum_actor_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Minimum Actor Id",
+            "type": "string"
+          },
+          "owner_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "policy_version": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Policy Version",
+            "type": "string"
+          },
+          "project_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "required_checks": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Required Checks",
+            "type": "array"
+          },
+          "task_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Task Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action_kind",
+          "owner_id",
+          "project_id",
+          "task_id",
+          "contract_sha256",
+          "contract_version",
+          "policy_version",
+          "destination",
+          "expected_base",
+          "candidate_sha256",
+          "required_checks",
+          "minimum_actor_id",
+          "expires_at"
+        ],
+        "title": "ActionPreview",
+        "type": "object"
+      },
       "ActivityEntry": {
         "additionalProperties": false,
         "properties": {
@@ -361,6 +458,56 @@
         "title": "ArtifactVerdict",
         "type": "object"
       },
+      "BuildCheck": {
+        "additionalProperties": false,
+        "properties": {
+          "check_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Check Id",
+            "type": "string"
+          },
+          "check_key": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Check Key",
+            "type": "string"
+          },
+          "report_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Report Sha256",
+            "type": "string"
+          },
+          "required": {
+            "title": "Required",
+            "type": "boolean"
+          },
+          "spec_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Spec Sha256",
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "UNKNOWN",
+              "ERROR"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "check_id",
+          "check_key",
+          "required",
+          "spec_sha256",
+          "verdict",
+          "report_sha256"
+        ],
+        "title": "BuildCheck",
+        "type": "object"
+      },
       "BuildCheckObservation": {
         "additionalProperties": false,
         "properties": {
@@ -599,6 +746,166 @@
           "owner_merge"
         ],
         "title": "BuildObservation",
+        "type": "object"
+      },
+      "BuildReview": {
+        "additionalProperties": false,
+        "properties": {
+          "approval_id": {
+            "title": "Approval Id",
+            "type": "string"
+          },
+          "approval_state": {
+            "title": "Approval State",
+            "type": "string"
+          },
+          "base_commit": {
+            "title": "Base Commit",
+            "type": "string"
+          },
+          "candidate_commit": {
+            "title": "Candidate Commit",
+            "type": "string"
+          },
+          "candidate_tree": {
+            "title": "Candidate Tree",
+            "type": "string"
+          },
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewCheck"
+            },
+            "title": "Checks",
+            "type": "array"
+          },
+          "decision_available": {
+            "title": "Decision Available",
+            "type": "boolean"
+          },
+          "diff": {
+            "maxLength": 65536,
+            "title": "Diff",
+            "type": "string"
+          },
+          "dispatch_authority": {
+            "const": "NONE",
+            "default": "NONE",
+            "title": "Dispatch Authority",
+            "type": "string"
+          },
+          "effect_digest": {
+            "title": "Effect Digest",
+            "type": "string"
+          },
+          "expected_version": {
+            "title": "Expected Version",
+            "type": "integer"
+          },
+          "goal_id": {
+            "title": "Goal Id",
+            "type": "string"
+          },
+          "goal_status": {
+            "title": "Goal Status",
+            "type": "string"
+          },
+          "observed_at": {
+            "title": "Observed At",
+            "type": "string"
+          },
+          "owner_id": {
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "preview": {
+            "$ref": "#/components/schemas/ActionPreview"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "release_acceptance": {
+            "const": "NOT_ASSESSED",
+            "default": "NOT_ASSESSED",
+            "title": "Release Acceptance",
+            "type": "string"
+          },
+          "review_sha256": {
+            "title": "Review Sha256",
+            "type": "string"
+          },
+          "task_state": {
+            "title": "Task State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "owner_id",
+          "project_id",
+          "goal_id",
+          "goal_status",
+          "task_state",
+          "approval_id",
+          "approval_state",
+          "expected_version",
+          "effect_digest",
+          "preview",
+          "observed_at",
+          "review_sha256",
+          "base_commit",
+          "candidate_commit",
+          "candidate_tree",
+          "diff",
+          "checks",
+          "decision_available"
+        ],
+        "title": "BuildReview",
+        "type": "object"
+      },
+      "BuildReviewReceipt": {
+        "additionalProperties": false,
+        "properties": {
+          "approval_id": {
+            "title": "Approval Id",
+            "type": "string"
+          },
+          "dispatch_authority": {
+            "const": "NONE",
+            "default": "NONE",
+            "title": "Dispatch Authority",
+            "type": "string"
+          },
+          "effect_digest": {
+            "title": "Effect Digest",
+            "type": "string"
+          },
+          "next_action": {
+            "const": "INSPECT_CANONICAL_STATE_USE_EXISTING_OWNER_BUILD_CLI",
+            "default": "INSPECT_CANONICAL_STATE_USE_EXISTING_OWNER_BUILD_CLI",
+            "title": "Next Action",
+            "type": "string"
+          },
+          "replayed": {
+            "title": "Replayed",
+            "type": "boolean"
+          },
+          "row_version": {
+            "title": "Row Version",
+            "type": "integer"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "approval_id",
+          "state",
+          "effect_digest",
+          "row_version",
+          "replayed"
+        ],
+        "title": "BuildReviewReceipt",
         "type": "object"
       },
       "CancelResult": {
@@ -893,6 +1200,26 @@
         "title": "Liveness",
         "type": "object"
       },
+      "MissionCapabilities": {
+        "additionalProperties": false,
+        "properties": {
+          "build_review_enabled": {
+            "title": "Build Review Enabled",
+            "type": "boolean"
+          },
+          "dispatch_authority": {
+            "const": "NONE",
+            "default": "NONE",
+            "title": "Dispatch Authority",
+            "type": "string"
+          }
+        },
+        "required": [
+          "build_review_enabled"
+        ],
+        "title": "MissionCapabilities",
+        "type": "object"
+      },
       "PendingApproval": {
         "additionalProperties": false,
         "properties": {
@@ -1028,6 +1355,25 @@
           "checks"
         ],
         "title": "Readiness",
+        "type": "object"
+      },
+      "ReviewCheck": {
+        "additionalProperties": false,
+        "properties": {
+          "check": {
+            "$ref": "#/components/schemas/BuildCheck"
+          },
+          "report": {
+            "maxLength": 32768,
+            "title": "Report",
+            "type": "string"
+          }
+        },
+        "required": [
+          "check",
+          "report"
+        ],
+        "title": "ReviewCheck",
         "type": "object"
       },
       "ValidationError": {
@@ -1600,6 +1946,157 @@
           }
         },
         "summary": "Read Events"
+      }
+    },
+    "/v1/mission/capabilities": {
+      "get": {
+        "operationId": "capability_v1_mission_capabilities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissionCapabilities"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Capability"
+      }
+    },
+    "/v1/mission/goals/{goal_id}/build-review": {
+      "get": {
+        "operationId": "read_review_v1_mission_goals__goal_id__build_review_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildReview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Review"
+      }
+    },
+    "/v1/mission/goals/{goal_id}/build-review/decision": {
+      "post": {
+        "operationId": "decide_review_v1_mission_goals__goal_id__build_review_decision_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "approval_id": {
+                    "pattern": "^[0-9a-f-]{36}$",
+                    "title": "Approval Id",
+                    "type": "string"
+                  },
+                  "decision": {
+                    "enum": [
+                      "approve",
+                      "deny"
+                    ],
+                    "title": "Decision",
+                    "type": "string"
+                  },
+                  "effect_digest": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "title": "Effect Digest",
+                    "type": "string"
+                  },
+                  "expected_version": {
+                    "minimum": 0,
+                    "title": "Expected Version",
+                    "type": "integer"
+                  },
+                  "idempotency_key": {
+                    "pattern": "^[0-9a-f-]{36}$",
+                    "title": "Idempotency Key",
+                    "type": "string"
+                  },
+                  "review_sha256": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "title": "Review Sha256",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "approval_id",
+                  "effect_digest",
+                  "expected_version",
+                  "review_sha256",
+                  "decision",
+                  "idempotency_key"
+                ],
+                "title": "BuildReviewDecision",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildReviewReceipt"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Decide Review"
       }
     },
     "/v2/connections/grants/{grant_id}": {

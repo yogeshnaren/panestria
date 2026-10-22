@@ -225,6 +225,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mission/capabilities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Capability */
+        get: operations["capability_v1_mission_capabilities_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mission/goals/{goal_id}/build-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Review */
+        get: operations["read_review_v1_mission_goals__goal_id__build_review_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mission/goals/{goal_id}/build-review/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide Review */
+        post: operations["decide_review_v1_mission_goals__goal_id__build_review_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/connections/grants/{grant_id}": {
         parameters: {
             query?: never;
@@ -348,6 +399,38 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActionPreview */
+        ActionPreview: {
+            /**
+             * Action Kind
+             * @enum {string}
+             */
+            action_kind: "contract_consent" | "merge" | "finalize";
+            /** Candidate Sha256 */
+            candidate_sha256: string;
+            /** Contract Sha256 */
+            contract_sha256: string;
+            /** Contract Version */
+            contract_version: number;
+            /** Destination */
+            destination: string;
+            /** Expected Base */
+            expected_base: string;
+            /** Expires At */
+            expires_at: string;
+            /** Minimum Actor Id */
+            minimum_actor_id: string;
+            /** Owner Id */
+            owner_id: string;
+            /** Policy Version */
+            policy_version: string;
+            /** Project Id */
+            project_id: string;
+            /** Required Checks */
+            required_checks: string[];
+            /** Task Id */
+            task_id: string;
+        };
         /** ActivityEntry */
         ActivityEntry: {
             /** Active Tasks */
@@ -499,6 +582,24 @@ export interface components {
             /** Verdict */
             verdict: string;
         };
+        /** BuildCheck */
+        BuildCheck: {
+            /** Check Id */
+            check_id: string;
+            /** Check Key */
+            check_key: string;
+            /** Report Sha256 */
+            report_sha256: string;
+            /** Required */
+            required: boolean;
+            /** Spec Sha256 */
+            spec_sha256: string;
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "PASS" | "FAIL" | "UNKNOWN" | "ERROR";
+        };
         /** BuildCheckObservation */
         BuildCheckObservation: {
             /** Key */
@@ -597,6 +698,81 @@ export interface components {
              * @constant
              */
             view_authority: "READ_ONLY_PUBLIC_BUILD_EVIDENCE_METADATA";
+        };
+        /** BuildReview */
+        BuildReview: {
+            /** Approval Id */
+            approval_id: string;
+            /** Approval State */
+            approval_state: string;
+            /** Base Commit */
+            base_commit: string;
+            /** Candidate Commit */
+            candidate_commit: string;
+            /** Candidate Tree */
+            candidate_tree: string;
+            /** Checks */
+            checks: components["schemas"]["ReviewCheck"][];
+            /** Decision Available */
+            decision_available: boolean;
+            /** Diff */
+            diff: string;
+            /**
+             * Dispatch Authority
+             * @default NONE
+             * @constant
+             */
+            dispatch_authority: "NONE";
+            /** Effect Digest */
+            effect_digest: string;
+            /** Expected Version */
+            expected_version: number;
+            /** Goal Id */
+            goal_id: string;
+            /** Goal Status */
+            goal_status: string;
+            /** Observed At */
+            observed_at: string;
+            /** Owner Id */
+            owner_id: string;
+            preview: components["schemas"]["ActionPreview"];
+            /** Project Id */
+            project_id: string;
+            /**
+             * Release Acceptance
+             * @default NOT_ASSESSED
+             * @constant
+             */
+            release_acceptance: "NOT_ASSESSED";
+            /** Review Sha256 */
+            review_sha256: string;
+            /** Task State */
+            task_state: string;
+        };
+        /** BuildReviewReceipt */
+        BuildReviewReceipt: {
+            /** Approval Id */
+            approval_id: string;
+            /**
+             * Dispatch Authority
+             * @default NONE
+             * @constant
+             */
+            dispatch_authority: "NONE";
+            /** Effect Digest */
+            effect_digest: string;
+            /**
+             * Next Action
+             * @default INSPECT_CANONICAL_STATE_USE_EXISTING_OWNER_BUILD_CLI
+             * @constant
+             */
+            next_action: "INSPECT_CANONICAL_STATE_USE_EXISTING_OWNER_BUILD_CLI";
+            /** Replayed */
+            replayed: boolean;
+            /** Row Version */
+            row_version: number;
+            /** State */
+            state: string;
         };
         /** CancelResult */
         CancelResult: {
@@ -721,6 +897,17 @@ export interface components {
             /** Version */
             version: string;
         };
+        /** MissionCapabilities */
+        MissionCapabilities: {
+            /** Build Review Enabled */
+            build_review_enabled: boolean;
+            /**
+             * Dispatch Authority
+             * @default NONE
+             * @constant
+             */
+            dispatch_authority: "NONE";
+        };
         /** PendingApproval */
         PendingApproval: {
             /** Action Kind */
@@ -784,6 +971,12 @@ export interface components {
              * @enum {string}
              */
             status: "ready" | "not_ready" | "degraded";
+        };
+        /** ReviewCheck */
+        ReviewCheck: {
+            check: components["schemas"]["BuildCheck"];
+            /** Report */
+            report: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -1197,6 +1390,108 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EventPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    capability_v1_mission_capabilities_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionCapabilities"];
+                };
+            };
+        };
+    };
+    read_review_v1_mission_goals__goal_id__build_review_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                goal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuildReview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_review_v1_mission_goals__goal_id__build_review_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                goal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Approval Id */
+                    approval_id: string;
+                    /**
+                     * Decision
+                     * @enum {string}
+                     */
+                    decision: "approve" | "deny";
+                    /** Effect Digest */
+                    effect_digest: string;
+                    /** Expected Version */
+                    expected_version: number;
+                    /** Idempotency Key */
+                    idempotency_key: string;
+                    /** Review Sha256 */
+                    review_sha256: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuildReviewReceipt"];
                 };
             };
             /** @description Validation Error */

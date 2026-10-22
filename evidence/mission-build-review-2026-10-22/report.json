@@ -1,0 +1,62 @@
+{
+  "scope": "PARTIAL_AOS_028_S2_S3_PUBLIC_BUILD_REVIEW_CONSENT_ONLY",
+  "mode": "ACTUAL_CHROMIUM_HTTP_POSTGRES_GIT_DOCKER_VERIFIER",
+  "fixture_limits": [
+    "Native transport, login, OS qualification and hardware capacity are TEST_FIXTURE_NOT_LIVE",
+    "No provider/model calls; scripted synthetic owner decisions are not human acceptance",
+    "No full AOS-028 or G3/trial promotion"
+  ],
+  "observations": [
+    "Default observer has no review content/decision routes and cannot borrow review-purpose sessions",
+    "Current PUBLIC owner/project/contract, complete independent reports, exact frozen preview/version/review hash and protected Git bytes fence consent",
+    "Foreign/private, stale digest/version/hash, cross-origin/missing-CSRF and corrupt report requests cannot record consent",
+    "Consent is canonical and idempotent with no effect dispatch or goal completion",
+    "Actual offline browser submission is UNCONFIRMED with no automatic retry; fresh review shows PENDING",
+    "An inert malicious HTML line removed from the baseline appears in the protected diff without DOM execution",
+    "Browser approval leaves task WAITING_APPROVAL and goal ACTIVE until the existing owner Build CLI executes and confirms its protected Git CAS"
+  ],
+  "runs": [
+    {
+      "candidate_commit": "5e07dd6b6f863a809dcbcff908433c5d2d1903fb",
+      "worktree_state": "clean",
+      "report": "evidence/mission-build-review-2026-10-22/component.xml",
+      "sha256": "97534cfd22460f26f0ad509f1f4dee02d8bb576de383d0e7a242121ea89004ad",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 88.355
+    },
+    {
+      "candidate_commit": "a19dfb71c52287fe6a203a6de2facbb86005e3db",
+      "worktree_state": "clean",
+      "report": "evidence/mission-build-review-2026-10-22/hostile-required-output-rejected.xml",
+      "sha256": "4e850decdc9c5747fad2d67654acb56256a7bc725812f2ac3ad69f789fe74e03",
+      "tests": 4,
+      "failures": 1,
+      "errors": 0,
+      "seconds": 24.969
+    },
+    {
+      "candidate_commit": "a2273adae0e66b57b8759f1b15344753b9ef9ecc",
+      "worktree_state": "clean",
+      "report": "evidence/mission-build-review-2026-10-22/hostile-baseline.xml",
+      "sha256": "7517de5d908e69ceb3dd1bb3352f980c8461c77ae9d5ac56e9fbc39f85a1b649",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 20.137
+    },
+    {
+      "candidate_commit": "931db68eabc2da1c70d68534d588bbb748be0f71",
+      "worktree_state": "clean",
+      "report": "evidence/mission-build-review-2026-10-22/request-order-final.xml",
+      "sha256": "05ee8b3b0972d7bb01fd72ace6297c2c7df914345568cb7a196f5e7af3cea8f9",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 20.514
+    }
+  ],
+  "release_acceptance": "NOT_ASSESSED",
+  "failure_history": "The first hostile fixture replaced required output. Its independent verifier correctly failed unchanged exact-content checks before browser review. This remains a failed test observation. Corrected fixture places hostile text in old baseline content removed by a valid exact candidate; no verifier assertion was weakened."
+}

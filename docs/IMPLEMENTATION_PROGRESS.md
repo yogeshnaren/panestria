@@ -212,7 +212,7 @@ large decimal cursors, expiry and auth revocation remain explicit. It never star
 work or grants completion/approval. The physical Chromium/PG/CLI journey and its
 initial logout-lifecycle failure are retained with their original sources. This
 is partial AOS-028-S1/S3; three-mode intake, artifact/diff/test evidence, exact
-approval review/actions, Firefox/phone/TLS/device qualification and cumulative
+full approval inbox/dispatch, Firefox/phone/TLS/device qualification and cumulative
 release evidence remain pending. Original scope/gate requirements are unchanged.
 
 The [protected Build progress panel](testing/MISSION_BUILD_PROGRESS.md) now reuses
@@ -224,7 +224,23 @@ protected bytes are corrupted. Native/auth/capacity remain explicit fixtures;
 this is no new live qualification or whole AOS-028/G3 pass. The default observer
 still reads no protected store and cannot submit work or approve a merge.
 
-Continue the dashboard with exact evidence/review controls and separate mode inputs,
+The [explicit PUBLIC Build review mode](testing/MISSION_BUILD_REVIEW.md) now
+shows the exact protected diff, complete bounded independent report records and
+canonical merge preview. A separate session purpose and opt-in root permit exact
+CSRF-protected approval/denial records, without mounting generic mutation routes
+on the observer. The browser must confirm the digest; stale/changed/expired
+content cannot create consent. Offline response ambiguity remains UNCONFIRMED,
+with no automatic POST retry. A physical browser journey records consent while
+the task remains WAITING_APPROVAL/goal ACTIVE; only the existing separately verified
+owner Build CLI performs and confirms the final Git effect. The actual malicious
+baseline HTML is inert text; the failed hostile-required-output fixture and its
+unchanged verifier rejection remain preserved in
+[source-bound evidence](../evidence/mission-build-review-2026-10-22/report.json).
+Native/auth/OS/capacity identities are explicit nonlive fixtures. This is partial
+AOS-028-S2/S3, no full approval inbox/intakes/dispatch UI or G3/trial pass. The
+owner's historical review server on8770 remains unchanged.
+
+Continue the dashboard with distinct mode inputs and remaining approval inbox/dispatch,
 then remaining personal-platform/context/connections and finite release
 qualification. Existing keyboard Ask, research and Build terminals remain usable;
 [setup](testing/LOCAL_ASK_SETUP.md), [Build review](testing/BUILD_REVIEW_TUI.md) and

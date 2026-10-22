@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Denied, json, mergeEvents, validateTimeline, waitForChange, type Activity, type Timeline, type Event } from './client';
 import './style.css';
 import {BuildEvidence} from './BuildEvidence';
+import {BuildReview} from './BuildReview';
 
 function useGoal(goal: string | null, scope: Activity | null, denied: () => void) {
   const [view, setView] = useState<{page: Timeline | null, events: Event[], notice: string, fresh: boolean, observedAt: number}>(
@@ -53,6 +54,7 @@ function Dashboard() {
   const [busy,setBusy] = useState(false);
   const [before,setBefore] = useState<string|null>(null);
   const [listFresh,setListFresh] = useState(false);
+  const [reviewMode,setReviewMode] = useState(false);
   const denied = () => {setMayRead(false); setAuthenticated(false); setActivity(null); setGoal(null); setCsrf(null); setListFresh(false);};
   const timeline = useGoal(goal, activity, denied);
   async function load(cursor: string|null, signal: AbortSignal) {
@@ -60,6 +62,10 @@ function Dashboard() {
     if (data.view_authority !== 'READ_ONLY_METADATA' || data.acceptance_authority !== 'NONE' ||
         !Array.isArray(data.entries) || data.entries.length > 16) throw new Error('Unconfirmed project response.');
     if (signal.aborted) return;
+    const capabilities = await json<{build_review_enabled:boolean,dispatch_authority:string}>('/v1/mission/capabilities',signal);
+    if (signal.aborted) return;
+    if(typeof capabilities.build_review_enabled!=='boolean' || capabilities.dispatch_authority!=='NONE') throw new Error('Unconfirmed mode.');
+    setReviewMode(capabilities.build_review_enabled);
     setMayRead(true); setActivity(data); setListAt(Date.now()); setListFresh(true); setAuthenticated(true); setNotice('Project snapshot confirmed.');
   }
   useEffect(() => {
@@ -92,14 +98,14 @@ function Dashboard() {
   }
   return <main>
     <header><p className="eyebrow">PANESTRIA · LOCAL OBSERVER</p><h1>Mission Control</h1>
-      <p>Canonical project activity and goal timelines. Read-only metadata · acceptance authority: NONE.</p></header>
+      <p>Canonical project activity and goal timelines. {reviewMode?'Explicit PUBLIC Build review and consent records':'Read-only metadata'} · acceptance authority: NONE.</p></header>
     <section aria-label="Connection"><p role="status">{notice}</p>
       {(!authenticated || !csrf) && <form onSubmit={pair}><label htmlFor="pair">One-use pairing code from your terminal</label>
         <div className="actions"><input id="pair" value={code} onChange={e=>setCode(e.target.value.toUpperCase())}
           pattern="[0-9A-F]{8}" maxLength={8} minLength={8} required autoComplete="off" spellCheck={false}/>
           <button disabled={busy}>Pair</button></div></form>}
       {csrf && <button onClick={()=>void logout()} disabled={busy}>Log out</button>}
-      <p className="muted">No bearer token, private question, diff or source text belongs in this view.</p>
+      <p className="muted">{reviewMode?'Never enter credentials or private content. Protected PUBLIC evidence is displayed only below.':'No bearer token, private question, diff or source text belongs in this view.'}</p>
     </section>
     {authenticated && activity && <>
       <section aria-label="Project activity"><h2>Project activity</h2>
@@ -123,9 +129,10 @@ function Dashboard() {
           <ol aria-label="Events">{timeline.events.map(event=><li key={event.id} data-event-id={event.id}><code>{event.seq}</code> · {event.kind} · {event.privacy_label}</li>)}</ol>
           <p>Replay cursor <code data-testid="cursor">{timeline.page.next_cursor}</code></p></>}
       </section>}
+      {goal && reviewMode && <BuildReview key={goal} goal={goal} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
       {goal && <BuildEvidence key={goal} goal={goal} owner={activity.owner_id} project={activity.project_id} deny={denied}/>}
     </>}
-    <footer>Local desktop only. Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.</footer>
+    <footer>Local desktop only. {reviewMode?'Consent records do not execute a merge. Job intake, effect dispatch and phone access remain separate R3 work.':'Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'}</footer>
   </main>;
 }
 class Boundary extends Component<{children: ReactNode},{failed:boolean}> {

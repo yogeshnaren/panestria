@@ -25,7 +25,7 @@ class BrowserAccess:
         service: SessionService,
         database_url: str,
         *,
-        namespace: Literal["default", "mission"] = "default",
+        namespace: Literal["default", "mission", "mission-review"] = "default",
     ) -> None:
         parts = urlsplit(origin)
         if (
@@ -38,12 +38,12 @@ class BrowserAccess:
             or parts.username is not None
         ):
             raise ValueError("invalid_browser_origin")
-        if namespace not in {"default", "mission"}:
+        if namespace not in {"default", "mission", "mission-review"}:
             raise ValueError("invalid_browser_namespace")
         self.cookie_name = (
             COOKIE_NAME
             if namespace == "default"
-            else "panestria_mission_" + hashlib.sha256(origin.encode()).hexdigest()[:12]
+            else "panestria_" + namespace.replace("-", "_") + "_" + hashlib.sha256(origin.encode()).hexdigest()[:12]
         )
         self.origin = origin
         self.host = parts.netloc.lower()
