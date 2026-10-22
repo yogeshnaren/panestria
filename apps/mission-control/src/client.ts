@@ -3,6 +3,7 @@ export type Activity = components['schemas']['ProjectActivity'];
 export type Timeline = components['schemas']['ActivityTimeline'];
 export type Event = components['schemas']['ActivityEvent'];
 export class Denied extends Error {}
+export class NotCommitted extends Error {}
 const decimal = /^(0|[1-9][0-9]{0,18})$/;
 export function cursor(value: unknown): value is string {
   return typeof value === 'string' && decimal.test(value) && BigInt(value) <= 9223372036854775807n;
@@ -18,7 +19,12 @@ export async function json<T>(path: string, signal: AbortSignal, body?: object, 
     mode: 'same-origin', redirect: 'error', cache: 'no-store', signal: AbortSignal.any([signal,AbortSignal.timeout(timeoutMs)]), headers: body ? {'Content-Type': 'application/json',
       ...(csrf ? {'X-Panestria-CSRF': csrf} : {})} : {}, body: body ? JSON.stringify(body) : undefined});
   if (response.status === 401 || response.status === 403) throw new Denied('Pairing required or access denied.');
-  if (!response.ok) throw new Error('Server unavailable or request denied.');
+  if (!response.ok) {
+    if(body && /^\/v1\/mission\/build\/plans(?:\/[0-9a-f-]{36}\/accept)?$/.test(path) &&
+       [409,422].includes(response.status) && response.headers.get('X-Panestria-Mutation')==='NOT_COMMITTED')
+      throw new NotCommitted('This request was rejected before commit.');
+    throw new Error('Server unavailable or request denied.');
+  }
   // Bounded response retention; error messages never echo bodies, URLs or private data.
   const reader = response.body?.getReader();
   if (!reader) throw new Error('Missing response.');

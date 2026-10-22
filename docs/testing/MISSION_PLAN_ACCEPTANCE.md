@@ -54,3 +54,9 @@ The fixtures use disposable PG55439, random owned ports, actual HTTP/CLI/browser
 synthetic inventory, one lost reply and a preparation-only expired-clock injection.
 They do not certify native inference, the complete dashboard/inbox, original
 release scenarios or R3 acceptance. Preserve owner services and original evidence.
+
+**ACCEPTANCE REJECTED BEFORE COMMIT** means the server confirmed rollback of this
+request. Inspect the same plan for a fresh review before another explicit decision.
+This is different from an uncertain COMMIT or reply: those remain UNCONFIRMED and
+block redispatch. The UI trusts a bounded explicit rollback marker, not status409
+or422 alone. It never repeats an acceptance automatically.

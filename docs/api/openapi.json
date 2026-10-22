@@ -3480,6 +3480,34 @@
               }
             },
             "description": "Successful Response"
+          },
+          "409": {
+            "description": "Canonical refusal; commit status is unknown unless explicitly marked.",
+            "headers": {
+              "X-Panestria-Mutation": {
+                "description": "Present only after confirmed pre-commit rejection/rollback; absence preserves uncertainty.",
+                "schema": {
+                  "enum": [
+                    "NOT_COMMITTED"
+                  ],
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid document; only explicit NOT_COMMITTED permits correction without recovery.",
+            "headers": {
+              "X-Panestria-Mutation": {
+                "description": "Present only after confirmed pre-commit rejection/rollback; absence preserves uncertainty.",
+                "schema": {
+                  "enum": [
+                    "NOT_COMMITTED"
+                  ],
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "summary": "Stage Plan"
@@ -3577,15 +3605,33 @@
             },
             "description": "Successful Response"
           },
-          "422": {
-            "content": {
-              "application/json": {
+          "409": {
+            "description": "Canonical refusal; commit status is unknown unless explicitly marked.",
+            "headers": {
+              "X-Panestria-Mutation": {
+                "description": "Present only after confirmed pre-commit rejection/rollback; absence preserves uncertainty.",
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "enum": [
+                    "NOT_COMMITTED"
+                  ],
+                  "type": "string"
                 }
               }
-            },
-            "description": "Validation Error"
+            }
+          },
+          "422": {
+            "description": "Invalid document; only explicit NOT_COMMITTED permits correction without recovery.",
+            "headers": {
+              "X-Panestria-Mutation": {
+                "description": "Present only after confirmed pre-commit rejection/rollback; absence preserves uncertainty.",
+                "schema": {
+                  "enum": [
+                    "NOT_COMMITTED"
+                  ],
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "summary": "Accept Plan"

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "outcome": "CORRECTABLE_PRECOMMIT_REJECTION_WITH_UNKNOWN_COMMIT_PRESERVED",
+  "release_gate": "NOT_EVALUATED",
+  "runtime_qualification": "NOT_ASSESSED",
+  "observation": {
+    "source_commit": "dc481344619ef6045fce347ed7197c75170f83c9",
+    "source_tree": "81d9ec9fa135a62432025fdc767b6d2a23035ef6",
+    "report": "first.xml",
+    "sha256": "84495bc609105bddff84fd856b7847e71503557e811fff6524877d40a592c31c",
+    "result": {
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "22.070"
+    },
+    "exit_code": 0,
+    "command": "pytest tests/integration/test_mission_intake_rejections.py tests/integration/test_mission_build_intake.py::test_browser_plan_intake_lost_reply_and_reload_recovery tests/integration/test_mission_plan_acceptance.py::test_browser_exact_plan_acceptance_and_lost_commit_reply tests/e2e/test_aos_005.py::test_openapi_matches_the_mounted_routes -q --junitxml=<original-report>"
+  },
+  "fixture_sources": {
+    "tests/integration/test_mission_intake_rejections.py": "0364c3c7912dd8018ae3a6f40ec85b60ce8beb0053ea8c25ac8cefee283d0829",
+    "apps/mission-control/tests/intake-rejections.mjs": "a752cd9bc595ec7ad156090f8f8326d02d9ae3274a60af0c6be7d59aa3c1994e",
+    "uv.lock": "7292da3d0efcea78cda08efe5b2888cfcbc71653c1ce41f360af3c5af9d1fb25",
+    "apps/mission-control/package-lock.json": "377abc70c29d26e435c0a1aacada5c9259cc4ddbcc5fbc6ba3c59a183f43d026"
+  },
+  "limits": [
+    "5 cases pass with actual disposable PG/Git/HTTP/CLI pairing/Chromium and declared synthetic worker inventory; no worker/inference/provider/search",
+    "Actual canonical inventory-hash refusal and malformed contract have confirmed precommit rejection. UI corrects/reviews same plan ID, one explicit POST per decision",
+    "Explicit actual-commit-then-lost-ack injection returns503 without NOT_COMMITTED marker; canonical GET recovers one retained plan. Existing lost stage/acceptance browser recovery remains passing",
+    "Mypy response metadata annotation corrected separately at a98c563; no behavior or source evidence relabeled",
+    "No owner service/data/private/history changes, no runtime/release gate qualification"
+  ],
+  "combined_inbox_regression": {
+    "source_commit": "4245de50b142f6c9ad44564b79399f159505c112",
+    "source_tree": "6d9f5b90f94ab34b28d5ba9aaa6c3f785fd3320b",
+    "report": "merged.xml",
+    "sha256": "d308e27b30c7a33b00366a6eacf12788dddeb76827bf483c84455d501b488c79",
+    "exit_code": 0,
+    "result": {
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "13.823"
+    },
+    "command": "pytest tests/integration/test_mission_review_inbox.py::test_actual_browser_discovers_plan_accepts_separately_and_refreshes_canonical_inbox tests/integration/test_mission_intake_rejections.py::test_browser_corrects_rejected_bundle_with_same_plan_id_without_unknown_retry -q --junitxml=<original-report>",
+    "interpretation": "2 browser cases pass after ordinary merge of verified main174: uncertain selection is still fenced; rejected bundle remains correctable. Original component observation dc48134 retained unchanged."
+  }
+}
