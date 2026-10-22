@@ -108,7 +108,9 @@ def test_shared_profile_charter_is_single_and_legacy_private_binding_survives(st
             overlay(json.dumps(forged), new.profile)
 
 
-def test_private_setting_reaches_local_http_without_implicitly_enabling_profiles(configured, tmp_path, record_property):
+def test_private_setting_reaches_local_http_without_implicitly_enabling_profiles(
+    configured, tmp_path, tmp_path_factory, record_property
+):
     config, token, settings, previous, _ = configured
     previous.state.health.shutdown()
     path = tmp_path / "local.json"
@@ -119,7 +121,10 @@ def test_private_setting_reaches_local_http_without_implicitly_enabling_profiles
         with pytest.raises(LocalApplicationRejected):
             load_local_settings(path)
     for enabled in (True, False):
-        path.write_text(json.dumps({**data, "assistant_charter": enabled}))
+        # Keep each owned fixture socket below Linux's Unix-path bound and avoid
+        # reusing a stopped model fixture's directory. No owner path is changed.
+        runtime = tmp_path_factory.mktemp("charter") / "r"
+        path.write_text(json.dumps({**data, "assistant_charter": enabled, "runtime_directory": str(runtime)}))
         selected, _ = load_local_settings(path)
         app = local_server.build_local_app(selected, settings, token)
         mock, calls = transport(valid_frames())
