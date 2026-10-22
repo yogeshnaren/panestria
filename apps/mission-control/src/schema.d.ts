@@ -1380,9 +1380,9 @@ export interface components {
             /**
              * Runtime Profile
              * @default CPU_RAW_TEXT_V1
-             * @constant
+             * @enum {string}
              */
-            runtime_profile: "CPU_RAW_TEXT_V1";
+            runtime_profile: "CPU_RAW_TEXT_V1" | "CPU_JSON_V1";
             /**
              * Schema Version
              * @default 1

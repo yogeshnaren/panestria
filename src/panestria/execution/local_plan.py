@@ -17,9 +17,10 @@ from pathlib import Path
 from typing import Protocol
 from uuid import uuid4
 
-from panestria.config_plan import PlanModelSettings
+from panestria.config_plan import PlanModelSettings, expected_plan_manifest
 from panestria.contracts.goal import GoalContract, contract_sha256, load_contract
 from panestria.contracts.inference import InferenceRequest, InferenceResult, InferenceUnavailable
+from panestria.contracts.model_manifest import ModelManifest
 from panestria.contracts.native_tools import canonical_payload
 from panestria.contracts.plan import PlanNode, PlanProposal, ProjectInventory, ValidatedDAG
 from panestria.contracts.plan_draft import ModelPlanDraft, RepairDraftContext
@@ -38,10 +39,13 @@ class PlanGenerator(Protocol):
 
 
 class LocalPlanModel:
-    def __init__(self, settings: PlanModelSettings):
+    def __init__(self, settings: PlanModelSettings, *, manifest: ModelManifest | None = None):
         self.settings = settings
+        self.manifest = manifest if manifest is not None else expected_plan_manifest(settings)
 
     def generate(self, request: InferenceRequest) -> InferenceResult:
+        if request.model_manifest_sha256 != (self.manifest.sha256() if self.manifest is not None else None):
+            raise InferenceUnavailable("model_manifest_mismatch")
         archive = Path(__file__).resolve().parents[3] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
         decision = admit(HardwareProbe(archive).collect_cpu(), gpu=False)
         if decision.decision != "PERMIT":
@@ -50,7 +54,10 @@ class LocalPlanModel:
         model = ModelRuntime(self.settings.model_cache, runtime / "model", preserve_existing=True)
         try:
             model.start()
-            return LocalProvider(model.socket_path, json_output=True).generate(request)
+            provider = LocalProvider(model.socket_path, json_output=True)
+            if self.manifest is not None:
+                provider.bind_manifest(model.describe_manifest(json_output=True))
+            return provider.generate(request)
         finally:
             model.stop()  # Only this owned runtime; preserve existing owner controllers.
 
@@ -194,7 +201,8 @@ class LocalBuildPlanner:
     def __init__(self, settings: PlanModelSettings, model: PlanGenerator | None = None):
         self.settings = settings
         self.actor = Actor(str(settings.owner_id), str(settings.project_id))
-        self.model = model or LocalPlanModel(settings)
+        self.manifest = expected_plan_manifest(settings)
+        self.model = model or LocalPlanModel(settings, manifest=self.manifest)
 
     def propose(
         self,
@@ -209,6 +217,10 @@ class LocalBuildPlanner:
     ) -> dict[str, object]:
         if local_model_run is not True:
             raise KernelDenied("explicit_local_plan_model_intent_required")
+        if self.manifest is not None and (
+            self.manifest.model_ref != MODEL or self.manifest.model_bundle_sha256 != MODEL_DIGEST
+        ):
+            raise KernelDenied("model_manifest_not_supported")
         contract = load_contract(contract.model_dump(mode="json"))
         inventory = ProjectInventory.model_validate(inventory)
         if (
@@ -243,6 +255,7 @@ class LocalBuildPlanner:
             context_tokens=4096,
             deadline_seconds=60.0,
             trace_id=uuid4().hex,
+            model_manifest_sha256=self.manifest.sha256() if self.manifest is not None else None,
         )
         _write(directory / "contract.json", contract.model_dump_json().encode())
         _write(directory / "inventory.json", inventory.model_dump_json().encode())
@@ -263,11 +276,15 @@ class LocalBuildPlanner:
         }
         if repair is not None:
             journal["repair_context_sha256"] = repair.sha256()
+        if self.manifest is not None:
+            journal["model_manifest"] = self.manifest.model_dump(mode="json")
         _atomic(directory / "result.json", journal)
         try:
             if before_dispatch is not None:
                 before_dispatch(request)
             result = self.model.generate(request)
+            if result.model_manifest_sha256 != request.model_manifest_sha256:
+                raise KernelDenied("model_manifest_mismatch")
             if (
                 result.model_ref != MODEL
                 or result.completion != "COMPLETED"

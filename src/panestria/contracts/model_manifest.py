@@ -26,7 +26,7 @@ class ModelManifest(BaseModel):
     engine_sha256: Digest
     libraries_sha256: Digest
     bridge_sha256: Digest
-    runtime_profile: Literal["CPU_RAW_TEXT_V1"] = "CPU_RAW_TEXT_V1"
+    runtime_profile: Literal["CPU_RAW_TEXT_V1", "CPU_JSON_V1"] = "CPU_RAW_TEXT_V1"
     modalities: tuple[Literal["TEXT"]] = ("TEXT",)
     tools: tuple[str, ...] = Field(default=(), max_length=16)
     max_context_tokens: int = Field(default=4096, ge=512, le=4096)
@@ -49,6 +49,10 @@ class ModelManifest(BaseModel):
         return hashlib.sha256(
             json.dumps(self.model_dump(mode="json"), sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest()
+
+    def for_json_output(self) -> "ModelManifest":
+        """Derive a format expectation; this grants no fresh runtime qualification."""
+        return self.model_copy(update={"runtime_profile": "CPU_JSON_V1"})
 
     def context_compatible(self, other: "ModelManifest") -> bool:
         """Conservative reconstruction compatibility, never permission to repin.

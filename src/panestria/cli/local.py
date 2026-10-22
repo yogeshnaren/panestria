@@ -16,9 +16,11 @@ from pydantic import ValidationError
 
 from panestria.api.db import DatabaseUnavailable, open_database
 from panestria.cli.local_init import configured_message, first_run_files
+from panestria.cli.tui_client import LocalAskClient, TerminalUnavailable
 from panestria.config import ProfileRejected, Settings
 from panestria.config_local import LocalApplicationRejected, create_local_token, load_local_settings
 from panestria.contracts.inference import InferenceUnavailable
+from panestria.contracts.model_manifest import ModelManifest
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.local_setup import LocalSetupIntent, LocalSetupService
 from panestria.kernel.uow import UnitOfWork
@@ -26,6 +28,44 @@ from panestria.kernel.uow import UnitOfWork
 local_app = typer.Typer(no_args_is_help=True)
 _TOKEN_FILE = typer.Option(..., "--token-file")
 _CONFIG_FILE = typer.Option(..., "--config")
+_MANIFEST_OUTPUT = typer.Option(..., "--output")
+
+
+@local_app.command("model-manifest")
+def model_manifest(
+    config: Path = _CONFIG_FILE,
+    output: Path = _MANIFEST_OUTPUT,
+    json_output: bool = typer.Option(False, "--json-output"),
+) -> None:
+    """Save public identity from your running pinned Ask; no inference or qualification."""
+    try:
+        if not output.is_absolute() or output.resolve() != output or not output.parent.is_dir():
+            raise ValueError
+        settings, _ = load_local_settings(config)
+        if output.is_relative_to(settings.model_cache) or output.is_relative_to(settings.runtime_directory):
+            raise ValueError
+        body = LocalAskClient(config).status().get("model_manifest")
+        descriptor = ModelManifest.model_validate_json(json.dumps(body))
+        if json_output:
+            descriptor = descriptor.for_json_output()
+        raw = (descriptor.model_dump_json(indent=2) + "\n").encode()
+        descriptor_fd = os.open(output, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+        with os.fdopen(descriptor_fd, "wb") as stream:
+            stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
+    except (LocalApplicationRejected, TerminalUnavailable) as exc:
+        code = exc.code
+    except (OSError, ValueError):
+        code = "model_manifest_export_unavailable"
+    else:
+        typer.echo(json.dumps({
+            "status": "EXPECTED_MODEL_MANIFEST_WRITTEN", "sha256": descriptor.sha256(),
+            "qualification": "NOT_EVALUATED", "inference_started": False,
+        }))
+        return
+    typer.echo(json.dumps({"code": code, "existing_files_preserved": True}), err=True)
+    raise typer.Exit(2)
 
 
 @local_app.command("init")
