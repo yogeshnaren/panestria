@@ -17,6 +17,11 @@ from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, FiniteFloat, S
 from panestria.config_local import read_private
 
 CATALOG = {
+    "latency.ask_generation": "seconds",
+    "latency.ask_first_token": "seconds",
+    "runtime.ask_decode_tokens_per_second": "tokens/second",
+    "usage.ask_input_tokens": "count",
+    "usage.ask_output_tokens": "count",
     "latency.invocation_lifecycle_p50": "seconds",
     "latency.invocation_lifecycle_p95": "seconds",
     "runtime.receipt_present_fraction": "fraction",

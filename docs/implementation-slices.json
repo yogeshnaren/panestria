@@ -2452,7 +2452,10 @@
         "src/panestria/api/routes/usage.py",
         "src/panestria/api/routes/audit.py",
         "apps/mission-control/src/views/Usage.tsx",
-        "apps/mission-control/src/views/Exposure.tsx"
+        "apps/mission-control/src/views/Exposure.tsx",
+        "src/panestria/telemetry/ask_metrics.py",
+        "src/panestria/telemetry/performance.py",
+        "src/panestria/cli/metrics.py"
       ],
       "planned_test_file": "tests/integration/test_aos_029.py",
       "case_ids": [
@@ -2461,7 +2464,7 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-029-S2.md",
-      "scope_note": "Opt-in canonical Build lifecycle/receipt/final-check metrics and honest unknown accuracy/cash delivered; full cross-mode usage, exposure, UI and qualification remain pending."
+      "scope_note": "Opt-in canonical Build lifecycle/receipt/final-check metrics and explicit metadata-only ordinary/profile Ask receipt capture delivered; unknown values/accuracy/source remain honest. Full automatic cross-mode usage, exposure, UI and qualification remain pending."
     },
     {
       "id": "AOS-029-S3",

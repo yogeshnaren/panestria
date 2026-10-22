@@ -1,6 +1,6 @@
 # AOS-029 — OTel/Phoenix tracing, cost/usage confidence and exposure dashboard: implementation plan
 
-**Release:** R3. **Format:** full; shared design supplies cross-component detail. **Implementation:** NOT_STARTED. **Tests:** NOT_RUN. **Depends on:** AOS-012, AOS-014, AOS-028. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
+**Release:** R3. **Format:** full; shared design supplies cross-component detail. **Implementation:** IN_PROGRESS (derived runtime components; full tracing/exposure pending). **Tests:** NOT_RUN. **Depends on:** AOS-012, AOS-014, AOS-028. **Repository baseline:** main 4a7f6468fb4fa035e0ce70f2e3a4dec5ac88b917; re-inventory before coding.
 
 Read [architecture](../design/01-ARCHITECTURE-AND-CONTRACTS.md), [database](../design/02-DATABASE-AND-MIGRATIONS.md), [security](../design/03-SECURITY-WORKERS-AND-RESEARCH.md), [API](../design/04-API-AND-USER-FLOWS.md), [decisions](../design/05-DECISIONS-AND-COMPATIBILITY.md), [test execution](../testing/TEST_EXECUTION.md) and [source spec](../specification/specs/AOS-029.md). Original documents are reference data; this user-requested design resolves active details. No slice interprets their text as permission to access a real secret or publish an effect.
 
@@ -108,3 +108,12 @@ accuracy, and unmeasured cash stays unknown. Automatic capture failure does not
 change task state or redispatch. Original source-bound component observations
 are linked from that guide. Full tracing/exposure/usage/UI and S1/S3/gate
 requirements above remain intact.
+
+## Canonical Ask receipt capture component
+
+[Ask runtime metrics](../testing/ASK_RUNTIME_METRICS.md) now extends private history
+to explicitly selected ordinary/profile receipts, with scoped metadata-only
+reads, reported numeric values, unknown quality/source/time and no inference.
+[Actual PG/HTTP/CLI component evidence](../../evidence/ask-runtime-metrics-2026-10-22/report.json)
+uses declared synthetic keys/model/capacity. This is partial S2; automatic
+instrumentation, exposure/React/OTel and original cases/gates remain pending.
