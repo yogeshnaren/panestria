@@ -1,4 +1,4 @@
-"""Owner-invoked performance snapshots; no backend, model or provider required."""
+"""Owner-invoked derived performance snapshots; never start models or providers."""
 
 import json
 from pathlib import Path
@@ -26,6 +26,46 @@ def capture(
         typer.echo(json.dumps({"status": "SAVED", "path": str(path), "observations": len(report.observations)}))
     except Exception:
         typer.echo('{"status":"UNAVAILABLE","reason":"metrics_evidence_or_private_storage_invalid"}', err=True)
+        raise typer.Exit(1) from None
+
+
+@metrics_app.command("capture-ask")
+def capture_ask(
+    config: Annotated[Path, typer.Option()],
+    request_id: Annotated[str, typer.Option()],
+    directory: Annotated[Path, typer.Option()] = DEFAULT,
+) -> None:
+    """Read one scoped canonical receipt and save numeric metadata, without inference."""
+    from uuid import UUID
+
+    from panestria.cli.profile_client import ProfileClient
+    from panestria.cli.tui_client import TerminalUnavailable
+    from panestria.telemetry.ask_metrics import capture_ask_metrics
+
+    try:
+        identity = str(UUID(request_id))
+        client = ProfileClient(config)  # Same private loopback metadata/token scope; no key access.
+        client.scope()
+        receipt = client.receipt(identity)
+        result = capture_ask_metrics(
+            directory, str(client.config.owner_id), str(client.config.project_id), identity, receipt
+        )
+        typer.echo(json.dumps(result))
+    except Exception as error:
+        reason = "ask_receipt_or_private_metrics_invalid"
+        if type(error) is ValueError and str(error) in {
+            "ask_metrics_history_budget_reached",
+            "metrics_history_budget_reached",
+            "metrics_directory_must_be_private",
+            "metrics_path_invalid",
+            "ask_model_manifest_mismatch",
+        }:
+            reason = str(error)
+        elif isinstance(error, BlockingIOError):
+            reason = "metrics_capture_busy"
+        elif isinstance(error, TerminalUnavailable) and error.code in {"server_scope_mismatch", "authentication_lost"}:
+            reason = error.code
+        typer.echo(json.dumps({"status": "UNAVAILABLE", "reason": reason}), err=True)
         raise typer.Exit(1) from None
 
 
