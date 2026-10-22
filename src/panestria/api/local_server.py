@@ -28,6 +28,7 @@ from panestria.api.routes.ask import AskApi
 from panestria.api.routes.profiles import ProfileApi
 from panestria.api.sessions import BrowserAccess
 from panestria.config import Settings, ValidatedSettings
+from panestria.config_activity import ActivitySettings
 from panestria.config_local import LocalApplicationRejected, LocalApplicationSettings, load_local_settings
 from panestria.contracts.inference import InferenceUnavailable
 from panestria.inference.local import LocalProvider
@@ -81,7 +82,10 @@ def build_local_app(
     token: str,
     *,
     profiles: ProfileApi | None = None,
+    mission_assets: Path | None = None,
 ) -> FastAPI:
+    if mission_assets is not None and (profiles is not None or config.bind_host != "127.0.0.1"):
+        raise LocalApplicationRejected("mission_ask_scope_unavailable")
     actor = Actor(str(config.owner_id), str(config.project_id))
     model = ModelRuntime(config.model_cache, config.runtime_directory / "model", preserve_existing=True)
     provider = LocalProvider(model.socket_path)
@@ -93,14 +97,26 @@ def build_local_app(
     api = GoalApi(token, actor.owner_id, actor.project_id, settings.database_url.get_secret_value())
     app.state.goal_api = api
     mount_activity_api(app)
-    session_secret = hmac.digest(token.encode(), b"panestria.local-browser-session.v1", hashlib.sha256)
-    mount_browser_api(app, BrowserAccess(config.origin, SessionService(session_secret), api.database_url))
     mount_ask_api(app, ask)
     if profiles is not None:
         from panestria.api.main import mount_profile_api
 
         mount_profile_api(app, profiles)
-    mount_local_web(app)
+    if mission_assets is None:
+        session_secret = hmac.digest(token.encode(), b"panestria.local-browser-session.v1", hashlib.sha256)
+        mount_browser_api(app, BrowserAccess(config.origin, SessionService(session_secret), api.database_url))
+        mount_local_web(app)
+    else:
+        from panestria.api.mission_web import mount_mission_control
+
+        observation = ActivitySettings(
+            schema_version=1,
+            owner_id=config.owner_id,
+            project_id=config.project_id,
+            bind_port=config.bind_port,
+            token_file=config.token_file,
+        )
+        mount_mission_control(app, observation, token, mission_assets, offline_ask=True)
     app.state.local_model = model
     app.state.local_failure = None
     base_lifespan = app.router.lifespan_context
@@ -208,7 +224,7 @@ def server_config(app: FastAPI) -> uvicorn.Config:
     )
 
 
-def serve_local(path: Path, *, profiles: ProfileApi | None = None) -> None:
+def serve_local(path: Path, *, profiles: ProfileApi | None = None, mission_assets: Path | None = None) -> None:
     config, token = load_local_settings(path)
     settings = Settings(
         database_url=os.environ.get("PANESTRIA_DATABASE_URL", ""),
@@ -220,7 +236,9 @@ def serve_local(path: Path, *, profiles: ProfileApi | None = None) -> None:
     listener = owned_listener(config)
     app = None
     try:
-        app = build_local_app(config, settings, token.get_secret_value(), profiles=profiles)
+        app = build_local_app(
+            config, settings, token.get_secret_value(), profiles=profiles, mission_assets=mission_assets
+        )
         server = uvicorn.Server(server_config(app))
         print(json.dumps({"schema_version": 1, "status": "STARTING", "origin": config.origin}), flush=True)
         try:

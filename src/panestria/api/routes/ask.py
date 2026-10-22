@@ -17,6 +17,7 @@ from pydantic import ValidationError
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body, reauthorize_mutation
 from panestria.api.db import DatabaseUnavailable, open_database
 from panestria.contracts.ask import AskSubmission, ProfileAskSubmission
+from panestria.contracts.ask_observation import AskAnswer, AskCancellation, AskReceipt
 from panestria.contracts.hardware import HardwareManifest
 from panestria.contracts.inference import InferenceResult, InferenceUnavailable
 from panestria.inference.local import LocalProvider
@@ -65,7 +66,16 @@ def _status(code: str) -> int:
     return {"not_found": 404, "idempotency_conflict": 409, "unauthorized": 401, "csrf_denied": 403}.get(code, 422)
 
 
-@router.post("/v1/ask")
+@router.post(
+    "/v1/ask",
+    responses={200: {"model": AskAnswer}},
+    openapi_extra={
+        "requestBody": {
+            "required": True,
+            "content": {"application/json": {"schema": AskSubmission.model_json_schema()}},
+        }
+    },
+)
 async def ask_question(request: Request) -> JSONResponse:
     return await _execute_ask(request, _SERVICE, AskSubmission)
 
@@ -261,7 +271,7 @@ async def _execute_ask(request: Request, service: AskService, submission_type: t
             ask.governor.release(ticket)
 
 
-@router.get("/v1/ask/{request_id}")
+@router.get("/v1/ask/{request_id}", responses={200: {"model": AskReceipt}})
 async def ask_receipt(request_id: str, request: Request) -> JSONResponse:
     try:
         api, _ask, actor = _configured(request)
@@ -275,7 +285,7 @@ async def ask_receipt(request_id: str, request: Request) -> JSONResponse:
         return JSONResponse(status_code=503, content=error_body("database_unavailable"))
 
 
-@router.post("/v1/ask/{request_id}/cancel")
+@router.post("/v1/ask/{request_id}/cancel", responses={200: {"model": AskCancellation}})
 async def cancel_ask(request_id: str, request: Request) -> JSONResponse:
     try:
         api, ask, actor = _configured(request)

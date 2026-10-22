@@ -458,6 +458,316 @@
         "title": "ArtifactVerdict",
         "type": "object"
       },
+      "AskAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "context_pack_id": {
+            "title": "Context Pack Id",
+            "type": "string"
+          },
+          "model_ref": {
+            "title": "Model Ref",
+            "type": "string"
+          },
+          "offline": {
+            "const": true,
+            "title": "Offline",
+            "type": "boolean"
+          },
+          "privacy_label": {
+            "enum": [
+              "PUBLIC",
+              "INTERNAL",
+              "CONFIDENTIAL",
+              "RESTRICTED",
+              "PRIVATE",
+              "UNKNOWN"
+            ],
+            "title": "Privacy Label",
+            "type": "string"
+          },
+          "profile_context": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Context"
+          },
+          "replayed_receipt": {
+            "default": false,
+            "title": "Replayed Receipt",
+            "type": "boolean"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "response_digest_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Digest Mode"
+          },
+          "response_retained": {
+            "const": false,
+            "title": "Response Retained",
+            "type": "boolean"
+          },
+          "response_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Sha256"
+          },
+          "sources": {
+            "items": {
+              "additionalProperties": {
+                "$ref": "#/components/schemas/JsonValue"
+              },
+              "type": "object"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "state": {
+            "enum": [
+              "PREPARED",
+              "RUNNING",
+              "COMPLETED",
+              "CANCELLED",
+              "UNAVAILABLE"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "trace_id": {
+            "title": "Trace Id",
+            "type": "string"
+          },
+          "usage": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "title": "Usage",
+            "type": "object"
+          }
+        },
+        "required": [
+          "request_id",
+          "state",
+          "model_ref",
+          "context_pack_id",
+          "trace_id",
+          "usage",
+          "code",
+          "response_sha256",
+          "privacy_label",
+          "sources",
+          "response_retained",
+          "offline"
+        ],
+        "title": "AskAnswer",
+        "type": "object"
+      },
+      "AskCancellation": {
+        "additionalProperties": false,
+        "properties": {
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "PREPARED",
+              "RUNNING",
+              "COMPLETED",
+              "CANCELLED",
+              "UNAVAILABLE"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "state"
+        ],
+        "title": "AskCancellation",
+        "type": "object"
+      },
+      "AskReceipt": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "context_pack_id": {
+            "title": "Context Pack Id",
+            "type": "string"
+          },
+          "model_ref": {
+            "title": "Model Ref",
+            "type": "string"
+          },
+          "offline": {
+            "const": true,
+            "title": "Offline",
+            "type": "boolean"
+          },
+          "privacy_label": {
+            "enum": [
+              "PUBLIC",
+              "INTERNAL",
+              "CONFIDENTIAL",
+              "RESTRICTED",
+              "PRIVATE",
+              "UNKNOWN"
+            ],
+            "title": "Privacy Label",
+            "type": "string"
+          },
+          "profile_context": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Context"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "response_digest_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Digest Mode"
+          },
+          "response_retained": {
+            "const": false,
+            "title": "Response Retained",
+            "type": "boolean"
+          },
+          "response_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Sha256"
+          },
+          "sources": {
+            "items": {
+              "additionalProperties": {
+                "$ref": "#/components/schemas/JsonValue"
+              },
+              "type": "object"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "state": {
+            "enum": [
+              "PREPARED",
+              "RUNNING",
+              "COMPLETED",
+              "CANCELLED",
+              "UNAVAILABLE"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "trace_id": {
+            "title": "Trace Id",
+            "type": "string"
+          },
+          "usage": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "title": "Usage",
+            "type": "object"
+          }
+        },
+        "required": [
+          "request_id",
+          "state",
+          "model_ref",
+          "context_pack_id",
+          "trace_id",
+          "usage",
+          "code",
+          "response_sha256",
+          "privacy_label",
+          "sources",
+          "response_retained",
+          "offline"
+        ],
+        "title": "AskReceipt",
+        "type": "object"
+      },
       "BuildCheck": {
         "additionalProperties": false,
         "properties": {
@@ -1168,6 +1478,7 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "JsonValue": {},
       "Liveness": {
         "additionalProperties": false,
         "properties": {
@@ -1212,6 +1523,11 @@
             "default": "NONE",
             "title": "Dispatch Authority",
             "type": "string"
+          },
+          "offline_ask_enabled": {
+            "default": false,
+            "title": "Offline Ask Enabled",
+            "type": "boolean"
           }
         },
         "required": [
@@ -1785,6 +2101,181 @@
         "summary": "Read Artifact"
       }
     },
+    "/v1/ask": {
+      "post": {
+        "operationId": "ask_question_v1_ask_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "context_tokens": {
+                    "default": 2048,
+                    "maximum": 4096.0,
+                    "minimum": 512.0,
+                    "title": "Context Tokens",
+                    "type": "integer"
+                  },
+                  "deadline_seconds": {
+                    "default": 30.0,
+                    "maximum": 60.0,
+                    "minimum": 0.1,
+                    "title": "Deadline Seconds",
+                    "type": "number"
+                  },
+                  "max_output_tokens": {
+                    "default": 128,
+                    "maximum": 1024.0,
+                    "minimum": 16.0,
+                    "title": "Max Output Tokens",
+                    "type": "integer"
+                  },
+                  "offline": {
+                    "const": true,
+                    "default": true,
+                    "title": "Offline",
+                    "type": "boolean"
+                  },
+                  "privacy_label": {
+                    "default": "PRIVATE",
+                    "enum": [
+                      "PUBLIC",
+                      "INTERNAL",
+                      "CONFIDENTIAL",
+                      "RESTRICTED",
+                      "PRIVATE",
+                      "UNKNOWN"
+                    ],
+                    "title": "Privacy Label",
+                    "type": "string"
+                  },
+                  "project_id": {
+                    "title": "Project Id",
+                    "type": "string"
+                  },
+                  "question": {
+                    "maxLength": 4096,
+                    "minLength": 1,
+                    "title": "Question",
+                    "type": "string"
+                  },
+                  "request_id": {
+                    "title": "Request Id",
+                    "type": "string"
+                  },
+                  "retain_response": {
+                    "const": false,
+                    "default": false,
+                    "title": "Retain Response",
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "request_id",
+                  "project_id",
+                  "question"
+                ],
+                "title": "AskSubmission",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskAnswer"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ask Question"
+      }
+    },
+    "/v1/ask/{request_id}": {
+      "get": {
+        "operationId": "ask_receipt_v1_ask__request_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "request_id",
+            "required": true,
+            "schema": {
+              "title": "Request Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskReceipt"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ask Receipt"
+      }
+    },
+    "/v1/ask/{request_id}/cancel": {
+      "post": {
+        "operationId": "cancel_ask_v1_ask__request_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "request_id",
+            "required": true,
+            "schema": {
+              "title": "Request Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskCancellation"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Ask"
+      }
+    },
     "/v1/goals": {
       "post": {
         "operationId": "submit_goal_v1_goals_post",
@@ -2097,6 +2588,39 @@
           }
         },
         "summary": "Decide Review"
+      }
+    },
+    "/v2/ask": {
+      "post": {
+        "operationId": "profile_ask_question_v2_ask_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Profile Ask Question"
+      }
+    },
+    "/v2/ask/status": {
+      "get": {
+        "description": "Configured scope only: never read a key/profile or qualify inference readiness.",
+        "operationId": "profile_ask_status_v2_ask_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Profile Ask Status"
       }
     },
     "/v2/connections/grants/{grant_id}": {

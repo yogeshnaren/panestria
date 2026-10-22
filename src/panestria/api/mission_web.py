@@ -1,4 +1,4 @@
-"""Explicit same-origin metadata dashboard; reuse activity and auth, no work routes."""
+"""Explicit same-origin dashboard modes; reuse activity, auth and existing runtimes."""
 
 import hashlib
 import hmac
@@ -23,7 +23,18 @@ def mount_mission_control(
     *,
     build_evidence_store: Path | None = None,
     build_review_root: Path | None = None,
+    offline_ask: bool = False,
 ) -> None:
+    if offline_ask:
+        from panestria.api.routes.ask import AskApi
+
+        if (
+            build_review_root is not None
+            or build_evidence_store is not None
+            or not isinstance(getattr(app.state, "ask_api", None), AskApi)
+            or getattr(app.state, "profile_api", None) is not None
+        ):
+            raise LocalApplicationRejected("mission_ask_scope_unavailable")
     # A deliberate, local production build; never run a dev server or fetch assets.
     try:
         if not directory.is_absolute() or directory.resolve() != directory or not directory.is_dir():
@@ -57,6 +68,9 @@ def mount_mission_control(
     purpose = (
         b"panestria.mission-review-session.v1\0" if build_review_root is not None else b"panestria.mission-session.v1\0"
     )
+    if offline_ask:
+        purpose = b"panestria.mission-ask-session.v1\0"
+    app.state.mission_offline_ask = offline_ask
     secret = hmac.digest(token.encode(), purpose + config.origin.encode(), "sha256")
     mount_browser_api(
         app,
@@ -64,7 +78,9 @@ def mount_mission_control(
             config.origin,
             SessionService(secret),
             app.state.goal_api.database_url,
-            namespace="mission-review" if build_review_root is not None else "mission",
+            namespace="mission-ask"
+            if offline_ask
+            else ("mission-review" if build_review_root is not None else "mission"),
         ),
     )
     app.state.mission_build_sha256 = hashlib.sha256(b"".join(assets.values())).hexdigest()
