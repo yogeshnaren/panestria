@@ -508,5 +508,9 @@ body and same-transaction session/current-policy fences preserve scope. The UI
 shows retained validation and pending consent, recovers a lost reply by plan UUID
 without another POST, and grants no acceptance, task, attempt or worker execution.
 Existing plan acceptance/run/final merge remain separate owner workflows.
-Connected evidence and exact-head CI must be recorded before promotion; full
-inbox/dispatch, qualified Delegate, phone and original R3 gates remain pending.
+[Connected component observations](../evidence/mission-build-intake-2026-10-22/report.json)
+retain initial failures and passing browser/transaction results with their actual
+source identities. Physical HTTP/PG/CLI/Chromium uses declared fixture inventory
+and explicit reply-loss injection, with no intake execution. Exact-head CI must
+pass before merge; full inbox/dispatch, qualified Delegate, phone and original
+R3 gates remain pending.

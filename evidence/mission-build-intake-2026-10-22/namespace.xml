@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="11.735" timestamp="2026-10-22T01:20:02.894352-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_mission_build_intake" name="test_plan_intake_atomic_scope_replay_and_separate_acceptance[build0]" file="tests/integration/test_mission_build_intake.py" line="77" time="5.508"><failure message="AssertionError: assert 415 == 413&#10; +  where 415 = &lt;Response [415 Unsupported Media Type]&gt;.status_code&#10; +    where &lt;Response [415 Unsupported Media Type]&gt; = post('/v1/mission/build/plans', content=(b' ' * 65537), headers={'Origin': 'http://127.0.0.1:37237', 'X-Panestria-CSRF': 'DVj39bZEnYOf8u5VhjHUmWZAtzSTULIX5BJenc-H-q0'})&#10; +      where post = &lt;starlette.testclient.TestClient object at 0x7c4108184a40&gt;.post">submission = (BuildFixture(task={'owner': '22adf0e6-e74d-4e74-9209-43019ccbcc59', 'project': '6e38bf0e-ccf5-409f-a878-09d8daebcb8d'...cd', capabilities=('scoped-file-edit',), maximum_parallel=2),), maximum_nodes=16, maximum_depth=8, maximum_parallel=2))
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-91/test_plan_intake_atomic_scope_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7c410810e9c0&gt;
+
+    @pytest.mark.parametrize("build", [PATHS], indirect=True)
+    def test_plan_intake_atomic_scope_replay_and_separate_acceptance(submission, tmp_path, monkeypatch):
+        b = submission[0]
+        app, _, config, token = application(submission, tmp_path)
+        route = "/v1/mission/build/plans"
+        initial = counts(submission)
+        bearer, origin = {"Authorization": "Bearer " + token}, {"Origin": config.origin}
+        with TestClient(app, base_url=config.origin) as client:
+            assert client.get(route + "/" + str(uuid4())).status_code == 401
+            code = client.post("/v1/session/code", headers=bearer, json={}).json()["code"]
+            csrf = client.post("/v1/session/pair", headers=origin, json={"code": code}).json()["csrf_token"]
+            headers = {**origin, "X-Panestria-CSRF": csrf}
+            document = {**bundle(submission), "public_plan": True}
+            assert client.post(route, json=document, headers=origin).status_code == 403
+            assert (
+                client.post(route, json=document, headers={**headers, "Origin": "https://evil.invalid"}).status_code == 403
+            )
+&gt;           assert client.post(route, content=b" " * 65537, headers=headers).status_code == 413
+E           AssertionError: assert 415 == 413
+E            +  where 415 = &lt;Response [415 Unsupported Media Type]&gt;.status_code
+E            +    where &lt;Response [415 Unsupported Media Type]&gt; = post('/v1/mission/build/plans', content=(b' ' * 65537), headers={'Origin': 'http://127.0.0.1:37237', 'X-Panestria-CSRF': 'DVj39bZEnYOf8u5VhjHUmWZAtzSTULIX5BJenc-H-q0'})
+E            +      where post = &lt;starlette.testclient.TestClient object at 0x7c4108184a40&gt;.post
+
+tests/integration/test_mission_build_intake.py:95: AssertionError</failure></testcase><testcase classname="tests.integration.test_mission_build_intake" name="test_browser_plan_intake_lost_reply_and_reload_recovery[build0]" file="tests/integration/test_mission_build_intake.py" line="155" time="5.596"><properties><property name="mode" value="ACTUAL_CHROMIUM_HTTP_PG_GIT_CLI_PAIRING__DECLARED_FIXTURE_INVENTORY__NO_INTAKE_EXECUTION__LOST_ACK_INJECTION" /></properties></testcase></testsuite></testsuites>
