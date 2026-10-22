@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "component": "SHARED_LOCAL_CHARTER_CONTEXT",
+  "status": "IMPLEMENTED_COMPONENT_OBSERVATIONS",
+  "observations": [
+    {
+      "source_commit": "236afcb249ef38797c3417207f1259979a75b5ff",
+      "source_tree": "404c9eb1b6576afef579df4a033cf38cf86c44d8",
+      "report": "initial.xml",
+      "sha256": "bbb547947714633d857ac0b23c53c7edadea83b028d6eab6ef51414929cec1ac",
+      "results": {
+        "tests": "32",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "32.637"
+      },
+      "notes": "31 passed, including both new prepared-context/private-overlay cases and relevant legacy regressions. One HTTP fixture failed from an overlong/reused Unix socket directory. One actual-model live case was explicitly deselected."
+    },
+    {
+      "source_commit": "0042ccaa5ca23e08bce7255ac646b2d7d5b0b000",
+      "source_tree": "ec438df843deaeacbcc89cdf839cd36c051c9dfe",
+      "report": "http-corrected.xml",
+      "sha256": "761ffd8df03b304cd67d26056f889c2317a67582d31af1814b0414772367d188",
+      "results": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "4.558"
+      },
+      "notes": "Corrected owned short per-server Unix socket paths; true/false private configuration, local status, actual PG/HTTP, prompt transport and one-call receipt replay passed. No live model or credentials."
+    }
+  ],
+  "mode": "ACTUAL_PG_CRYPTO_CONFIG_HTTP_WITH_EXPLICIT_PROVIDER_PROCESS_KEYS_CAPACITY_FIXTURES",
+  "outcomes": [
+    "Private Boolean setting reaches ordinary offline Ask and existing qualified profile Ask",
+    "Prepared original/new context packs remain pinned when the compiler setting changes in either direction",
+    "One data-free charter is distinct from untrusted restricted source material and approved private preferences",
+    "General metadata retains version/charter hash/source provenance without profile plaintext",
+    "Overlay byte delta avoids duplicate charter budget and too-small contexts refuse before inference",
+    "False/default preserves old general renderer; profile/cloud authority remains unchanged; HTTP receipt replay causes no second model POST"
+  ],
+  "limits": [
+    "No actual model style/faithfulness/owner preference/latency qualification",
+    "Private profile key and model/process/capacity identities are explicit fixtures",
+    "No private export, cross-client chat sharing, provider/API call, model download or owner server/configuration change",
+    "Private examples, paired style evaluation, ModelManifest compatibility/replacement and original cumulative gates/real trial remain",
+    "No current runtime certificate was refreshed or inferred"
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "ci": "Separate exact-head PR evidence required"
+}

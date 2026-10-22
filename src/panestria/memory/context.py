@@ -17,6 +17,7 @@ from panestria.kernel.goals import Actor
 from panestria.kernel.uow import UnitOfWork
 from panestria.memory.classification import MemoryClassificationService, SourceClassification
 from panestria.memory.service import MemoryHit, MemoryRef, MemoryService
+from panestria.memory.style import charter
 from panestria.policy.labels import LabelService
 
 _RULES = (
@@ -37,8 +38,21 @@ class ContextPack:
 
 
 class ContextCompiler:
-    def __init__(self, memory: MemoryService | None = None) -> None:
+    def __init__(self, memory: MemoryService | None = None, *, include_charter: bool = False) -> None:
+        if type(include_charter) is not bool:
+            raise ValueError("invalid_context_renderer")
         self.memory = memory or MemoryService()
+        self.include_charter = include_charter
+
+    def render(self, question: str, reference_data: list[dict[str, object]]) -> str:
+        body: dict[str, object] = {
+            "standing_rules": _RULES,
+            "question": question,
+            "untrusted_reference_data": reference_data,
+        }
+        if self.include_charter:
+            body["assistant_charter"] = charter()
+        return json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
     def _classification(self, uow: UnitOfWork, actor: Actor, ref: MemoryRef) -> SourceClassification:
         try:
@@ -89,12 +103,7 @@ class ContextCompiler:
         reference_data: list[dict[str, object]] = []
 
         def render() -> str:
-            return json.dumps(
-                {"standing_rules": _RULES, "question": question, "untrusted_reference_data": reference_data},
-                ensure_ascii=False,
-                sort_keys=True,
-                separators=(",", ":"),
-            )
+            return self.render(question, reference_data)
 
         # UTF-8 bytes bound textual tokens conservatively. Do not silently lose pins,
         # the user's question or standing rules to a tokenizer estimate/truncation.
@@ -140,6 +149,15 @@ class ContextCompiler:
                 for h in hits
             ],
         }
+        if self.include_charter:
+            metadata.update(
+                {
+                    "render_version": 2,
+                    "assistant_charter_sha256": hashlib.sha256(
+                        json.dumps(charter(), sort_keys=True, separators=(",", ":")).encode()
+                    ).hexdigest(),
+                }
+            )
         uow.execute(
             "INSERT INTO panestria.context_pack (id,owner_id,project_id,request_id,sha256,privacy_label,metadata)"
             " VALUES (%s,%s,%s,%s,%s,%s,%s)",
@@ -168,6 +186,16 @@ class ContextCompiler:
             raise KernelDenied("context_integrity_failed")
         if hashlib.sha256(pack.prompt.encode()).hexdigest() != pack.sha256:
             raise KernelDenied("context_integrity_failed")
+        renderer = row[2].get("render_version", 1)
+        if type(renderer) is not int or renderer not in {1, 2}:
+            raise KernelDenied("context_renderer_unavailable")
+        if renderer == 2:
+            body = json.loads(pack.prompt)
+            retained = body.get("assistant_charter") if isinstance(body, dict) else None
+            if retained is None or hashlib.sha256(
+                json.dumps(retained, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest() != row[2].get("assistant_charter_sha256"):
+                raise KernelDenied("context_integrity_failed")
         persisted_refs = [
             (s["item_id"], s["revision_id"], s["source_id"], s["sha256"]) for s in row[2]["sources"] if s["included"]
         ]

@@ -39,10 +39,13 @@ class AskApi:
     probe: Callable[[], HardwareManifest]
     governor: RuntimeGovernor = field(default_factory=RuntimeGovernor)
     active: dict[str, asyncio.Task[InferenceResult]] = field(default_factory=dict)
+    include_charter: bool = False
 
     def __post_init__(self) -> None:
         if not isinstance(self.provider, LocalProvider):
             raise TypeError("Ask requires the registered local provider")
+        if type(self.include_charter) is not bool:
+            raise TypeError("invalid_context_renderer")
 
 
 def _configured(request: Request) -> tuple[GoalApi, AskApi, Actor]:
@@ -77,7 +80,9 @@ def _status(code: str) -> int:
     },
 )
 async def ask_question(request: Request) -> JSONResponse:
-    return await _execute_ask(request, _SERVICE, AskSubmission)
+    ask = getattr(request.app.state, "ask_api", None)
+    service = AskService(include_charter=True) if isinstance(ask, AskApi) and ask.include_charter else _SERVICE
+    return await _execute_ask(request, service, AskSubmission)
 
 
 @router.get("/v2/ask/status")
@@ -102,6 +107,9 @@ async def profile_ask_status(request: Request) -> JSONResponse:
                 "offline": True,
                 "cloud_fallback": "NONE",
                 "readiness": "KEY_MODEL_CHECKED_PER_REQUEST",
+                "assistant_charter": "SHARED_DATA_FREE_V1"
+                if getattr(request.app.state.ask_api, "include_charter", False)
+                else "PROFILE_RENDERER_ONLY",
             },
             headers=headers,
         )
@@ -120,7 +128,12 @@ async def profile_ask_question(request: Request) -> JSONResponse:
     if not isinstance(profiles, ProfileApi):
         return JSONResponse(status_code=503, content=error_body("profile_not_configured"))
     response = await _execute_ask(
-        request, AskService(profile_context=ProfileContext(profiles.vault)), ProfileAskSubmission
+        request,
+        AskService(
+            profile_context=ProfileContext(profiles.vault),
+            include_charter=getattr(getattr(request.app.state, "ask_api", None), "include_charter", False),
+        ),
+        ProfileAskSubmission,
     )
     response.headers.update({"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"})
     return response

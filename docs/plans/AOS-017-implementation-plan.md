@@ -129,6 +129,15 @@ version and a separate save review, and never retries an ambiguous write.
 Default launchers remain unchanged; actual owner onboarding/key qualification,
 full S4/S5/S6 evidence remain pending.
 
+The [shared local charter](../testing/SHARED_LOCAL_CHARTER.md) setting now connects
+ordinary and profile Ask through the existing data-free rules and pinned general
+context packs. The private overlay remains separately approved/local and includes
+the charter once. Actual PG/crypto/config/HTTP checks preserve old/new prepared
+bytes across setting changes; model/process/key/capacity are explicit fixtures.
+This is a usable S4/context component, not completed S5 quality or S6 model
+compatibility/replacement. Private example references and full original evidence
+remain open; no owner profile/configuration or qualification was changed.
+
 The [pinned profile Ask terminal](../testing/PROFILE_ASK_TERMINAL.md) now connects
 explicit row/field/purpose selection to the existing restricted local inference
 boundary, with cancellation and content-free receipt recovery. Real key/model
