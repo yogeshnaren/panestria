@@ -57,8 +57,23 @@ def prove() -> dict[str, object]:
             raise ValueError("metadata_size_limit")
         return json.loads(raw)
 
-    runs = api(f"actions/workflows/ci.yml/runs?event=pull_request&head_sha={parents[1]}&status=completed&per_page=5")
-    for run in runs["workflow_runs"]:
+    runs = api(f"actions/workflows/ci.yml/runs?head_sha={parents[1]}&per_page=100")
+    entries = runs["workflow_runs"]
+    # Never search past a failed/pending/manual full run for an older green.
+    # Reruns update their existing run; incomplete/truncated history is unknown.
+    if (
+        not entries
+        or runs["total_count"] != len(entries)
+        or any(
+            r.get("head_sha") != parents[1]
+            or r.get("path") != ".github/workflows/ci.yml"
+            or r.get("status") != "completed"
+            or r.get("conclusion") != "success"
+            for r in entries
+        )
+    ):
+        return {"already_tested": False, "reason": "head_has_failed_pending_or_incomplete_ci_history"}
+    for run in entries:
         if (run.get("head_sha"), run.get("event"), run.get("status"), run.get("conclusion"), run.get("path")) != (
             parents[1],
             "pull_request",
