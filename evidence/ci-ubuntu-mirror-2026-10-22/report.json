@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "kind": "CI_SETUP_DIAGNOSIS_NOT_RELEASE_EVIDENCE",
+  "source_head": "ca30b02c0546270fdecadbc59481a9f49e6e487e",
+  "run_id": 39825157362,
+  "original_platform_job": 119986394296,
+  "original_log_sha256": "dd701be20ab71fbcb806495271a513753fa13833dc3f19f946afb5cb54b74369",
+  "observed_apt_transfer": "22.3 MB in 12min 3s (30.8 kB/s)",
+  "setup_started_utc": "2026-10-22T17:43:35Z",
+  "setup_finished_utc": "2026-10-22T17:56:03Z",
+  "outcome": "TIMED_OUT_NOT_PROMOTED",
+  "changed_scope": "Ephemeral platform CI VM APT mirror origin only; all tests, dependencies, signature checks, six checks and deadline retained",
+  "owner_workstation_modified": false,
+  "new_speedup": "NOT_MEASURED"
+}

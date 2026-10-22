@@ -77,6 +77,22 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "24.19.0"
+      - name: Prefer official HTTPS Ubuntu archive for browser dependencies
+        if: matrix.suite == 'platform'
+        run: |
+          sudo python3 - <<'PYCODE'
+          from pathlib import Path
+          mirrors = Path('/etc/apt/apt-mirrors.txt')
+          if not mirrors.is_file():
+              raise SystemExit('Expected Ubuntu hosted-runner mirror list is missing')
+          original = mirrors.read_text()
+          slow = 'http://azure.archive.ubuntu.com/ubuntu'
+          if slow in original:
+              mirrors.write_text(original.replace(slow, 'https://archive.ubuntu.com/ubuntu'))
+              print('Replaced the slow Azure HTTP endpoint with the official Ubuntu HTTPS archive')
+          else:
+              print('No Azure HTTP endpoint present; original signed package sources preserved')
+          PYCODE
       - name: Build dashboard and prepare Chromium
         if: matrix.suite == 'platform'
         working-directory: apps/mission-control
