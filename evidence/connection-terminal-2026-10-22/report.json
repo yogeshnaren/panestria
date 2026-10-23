@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "outcome": "CONNECTION_DECLARATION_TERMINAL_COMPONENT_OBSERVATIONS_NOT_LIVE_CONNECTION_OR_RELEASE",
+  "observations": [
+    {
+      "file": "connected-initial.xml",
+      "sha256": "8eb2bf3a278a7c9df4140111293e412b68248f6c60251ab0742fc9db15620d91",
+      "source_commit": "ecf7b8ec9f44aa5b5acf9b6b4aacf8b3c441de7e",
+      "source_tree": "96891d8436edfc4cac3049b75bb89b29c8fa7488",
+      "worktree": "CLEAN",
+      "scope": "84PASS: actual PG/HTTP/CLI/PTY exact review/current-policy revoke, postcommit503/no retry, existing connection contracts/API and exact OpenAPI. Initial fixture mounts the broader kernel API; not foreground-mode qualification.",
+      "result": {
+        "tests": "84",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "22.976"
+      }
+    },
+    {
+      "file": "foreground.xml",
+      "sha256": "5309475aecd64fddd069300bf942fa6adc18cdc4c2fbae02bd0b60f7e9463bea",
+      "source_commit": "600182e074f4b30155d8d0b1e1afcbcc5853adca",
+      "source_tree": "fb89dd3d6d828dfa865d43cea15cf74638ba8f6c",
+      "worktree": "CLEAN",
+      "scope": "5PASS/1FAIL: terminal/recovery/activity/OpenAPI pass; actual foreground routes/startup also work, but occupied-port in-process CLI lacked its fixture DSN and refused invalid_database_url before bind. No production guard weakened.",
+      "result": {
+        "tests": "6",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "23.640"
+      }
+    },
+    {
+      "file": "foreground-corrected.xml",
+      "sha256": "bcbff8af1c8193ea4b1705577852093a70aacadaef5f26afd15cea79accc1f26",
+      "source_commit": "63ddfb031b954c471f593704b67e32e9a6735ed6",
+      "source_tree": "132c438b6764779f27e08333ed25144c124a0a87",
+      "worktree": "CLEAN",
+      "scope": "1PASS: affected actual connections init/serve/scope, no-store/auth/no unrelated mutations, occupied-port preservation and shutdown with explicit fixture database environment; unchanged assertions.",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "7.616"
+      }
+    }
+  ],
+  "delivered": [
+    "private owner/project initialization reuses existing safe activity format without creating a project/policy",
+    "foreground loopback activity/declaration API only, no goal/Ask/pairing/profile/job/merge mutations",
+    "current scoped policy metadata for exact intent and current-policy revoke preparation",
+    "closed canonical request/parser shared by CLI/API, typed scoped declaration-only responses",
+    "full scroll then a/d then separate y; fresh source/policy and one decision attempt; no automatic retry/optimistic consent",
+    "caller-chosen stable revoke proposal ID and model-free canonical inspection after uncertainty"
+  ],
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS (339 source files)",
+    "import_boundaries": "11 KEPT",
+    "secret_scan": "PASS",
+    "production_typescript_build": "PASS",
+    "openapi": "exact mounted routes, generated TypeScript; original passing source-bound cases retained"
+  },
+  "limits": [
+    "Declarations stay DECLARATION_ONLY/UNVERIFIED/runtime unavailable, including when a conformance hash is supplied.",
+    "No actual account enrollment, root resolution, connector execution, credential/key access, provider call, installed service, owner database/config change or data cleanup.",
+    "Actual PostgreSQL/HTTP/CLI/PTY use disposable projects/ports and synthetic account/declaration values. Postcommit503 is an explicit response-loss fixture, not a physical provider/network failure.",
+    "Included existing activity regression uses its explicitly labeled MODEL_FIXTURE; the new declaration commands create no model/provider request.",
+    "Actual GrantBroker/current capability/account/configuration/lease/budget/approval/purpose/revocation/secret/OS lifecycle and complete onboarding remain required.",
+    "No full AOS-008-TC05-TC08/S4/S5 or G1/G2/G3/trial promotion; all historical evidence remains bound to original sources."
+  ]
+}
