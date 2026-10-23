@@ -52,6 +52,9 @@ def owner_question(synthetic_https):  # noqa: F811
                 "certificates": str(f.reports.root),
                 "certificate_sha256": f.policy.trust.runtime_certificate_sha256,
                 "search": f.settings.model_dump(mode="json"),
+                "fetch_connection": getattr(f.plan, "connection", None).model_dump(mode="json")
+                if getattr(f.plan, "connection", None) is not None
+                else None,
             }
         )
     )
