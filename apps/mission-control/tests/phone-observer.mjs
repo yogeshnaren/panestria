@@ -10,18 +10,30 @@ try{
  // UX-only mobile emulation, not a real phone/certificate qualification.
  const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,ignoreHTTPSErrors:true});
  const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ // Observe the real browser fetch body inside its renderer. Chromium can discard
+ // the no-store body before CDP's Network.getResponseBody, even on response events.
+ // Clone only this response; preserve the actual request, cookie, headers and body.
+ await page.addInitScript(()=>{
+  const fetch=window.fetch.bind(window);
+  window.__panestriaPairResponse=new Promise((resolve,reject)=>{
+   window.fetch=async(...args)=>{
+    const response=await fetch(...args);
+    if(new URL(response.url).pathname==='/v1/session/pair'){
+     try{resolve({status:response.status,body:await response.clone().json()});}
+     catch(error){reject(error);throw error;}
+    }
+    return response;
+   };
+  });
+ });
  await page.goto(f.origin);
  await expect(page.locator('header')).toContainText('PRIVATE PHONE OBSERVER');
  await expect(page.locator('footer')).toContainText('No background push or remote approvals');
- // Consume the authenticated response as soon as it arrives. Waiting for the
- // click to settle first can leave Chromium's transient no-store body unavailable.
- const paired=page.waitForResponse(r=>r.url().endsWith('/v1/session/pair')).then(async response=>{
-  assert.equal(response.status(),200);
-  return response.json();
- });
  await page.getByLabel('One-use pairing code from your terminal').fill(f.code);
  await page.getByRole('button',{name:'Pair',exact:true}).click();
- const csrf=(await paired).csrf_token;
+ const paired=await page.evaluate(()=>window.__panestriaPairResponse);
+ await page.evaluate(()=>{delete window.__panestriaPairResponse;});
+ assert.equal(paired.status,200);const csrf=paired.body.csrf_token;
  assert.equal(typeof csrf,'string');assert(csrf.length>0);
  const project=page.getByRole('region',{name:'Project activity'});
  const inbox=page.getByRole('region',{name:'Pending review inbox'});
