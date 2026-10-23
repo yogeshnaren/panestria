@@ -161,6 +161,12 @@ def test_production_cli_tls_pairing_read_only_roles_revoke_and_desktop_scope(
             assert [row["session_id"] for row in listed] == [identity]
             no_confirm = CliRunner().invoke(app, ["phone", "revoke", identity, "--config", str(path)])
             assert no_confirm.exit_code == 2 and client.get("/v1/activity").status_code == 200
+            # Local owner administration can retire this project's inactive
+            # profile too; the running listener keeps its original fixed scope.
+            updated = json.loads(path.read_text())
+            updated["allowed_clients"].append("127.0.0.2")
+            path.write_text(json.dumps(updated))
+            assert cli(path, "devices")["devices"][0]["current_profile"] is False
             assert cli(path, "revoke", identity, "--confirm-revocation")["state"] == "REVOKED"
             assert client.get("/v1/activity").status_code == 401
             assert cli(path, "devices")["devices"][0]["revoked_at"] is not None

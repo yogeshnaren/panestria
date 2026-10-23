@@ -110,10 +110,14 @@ def build_phone_app(config: PhoneSettings, settings: ValidatedSettings, token: s
         config.origin, service, settings.database_url.get_secret_value(), namespace="mission-phone"
     )
     access.session_seconds = 3600
-    mount_mission_control(app, config, token, assets, phone_access=access)
-    app.add_middleware(PhoneBoundary, clients=config.allowed_clients)
-    app.state.phone_certificate_sha256 = certificate_hash
-    return app
+    try:
+        mount_mission_control(app, config, token, assets, phone_access=access)
+        app.add_middleware(PhoneBoundary, clients=config.allowed_clients)
+        app.state.phone_certificate_sha256 = certificate_hash
+        return app
+    except BaseException:
+        app.state.health.shutdown()
+        raise
 
 
 def tls_server_config(app: FastAPI, config: PhoneSettings) -> uvicorn.Config:
@@ -137,6 +141,7 @@ def tls_server_config(app: FastAPI, config: PhoneSettings) -> uvicorn.Config:
         os.lseek(descriptors[0], 0, os.SEEK_SET)
         result.ssl_certfile = f"/proc/self/fd/{descriptors[0]}"
         result.ssl_keyfile = f"/proc/self/fd/{descriptors[1]}"
+        result.ssl_keyfile_password = ""  # Unsupported encrypted keys fail instead of prompting on stdin.
         result.ssl_version = ssl.PROTOCOL_TLS_SERVER
         result.load()
         if result.ssl is None:
@@ -158,7 +163,10 @@ def serve_phone(path: Path, assets: Path) -> None:
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         runtime = tls_server_config(app, config)
-        listener.bind((config.bind_address, config.bind_port))
+        try:
+            listener.bind((config.bind_address, config.bind_port))
+        except OSError:
+            raise LocalApplicationRejected("phone_bind_unavailable") from None
         listener.listen(16)
         listener.setblocking(False)
         server = uvicorn.Server(runtime)

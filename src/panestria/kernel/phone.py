@@ -49,10 +49,12 @@ class PhoneSessionService(SessionService):
 
     def devices(self, uow: UnitOfWork, actor: Actor) -> list[dict[str, object]]:
         rows = uow.execute(
-            "SELECT s.id::text,s.created_at,s.expires_at,s.revoked_at FROM panestria.phone_device p "
+            "SELECT s.id::text,s.created_at,s.expires_at,s.revoked_at,p.scope_ref,"
+            "CASE WHEN s.revoked_at IS NOT NULL THEN 'REVOKED' WHEN s.expires_at<=clock_timestamp() "
+            "THEN 'EXPIRED' ELSE 'ACTIVE' END FROM panestria.phone_device p "
             "JOIN panestria.browser_session s ON s.id=p.session_id WHERE p.owner_id=%s AND p.project_id=%s "
-            "AND p.scope_ref=%s ORDER BY s.created_at,s.id LIMIT 256",
-            (actor.owner_id, actor.project_id, self.challenge_scope),
+            "ORDER BY s.created_at,s.id LIMIT 256",
+            (actor.owner_id, actor.project_id),
         ).fetchall()
         return [
             dict(
@@ -61,6 +63,9 @@ class PhoneSessionService(SessionService):
                 expires_at=r[2].isoformat(),
                 revoked_at=r[3].isoformat() if r[3] else None,
                 role="READ_ONLY_METADATA",
+                scope_ref=str(r[4]).strip(),
+                current_profile=str(r[4]).strip() == self.challenge_scope,
+                state=r[5],
             )
             for r in rows
         ]
@@ -68,8 +73,8 @@ class PhoneSessionService(SessionService):
     def revoke_device(self, uow: UnitOfWork, actor: Actor, identity: str) -> None:
         row = uow.execute(
             "SELECT s.id FROM panestria.phone_device p JOIN panestria.browser_session s ON s.id=p.session_id "
-            "WHERE p.session_id=%s AND p.owner_id=%s AND p.project_id=%s AND p.scope_ref=%s FOR UPDATE OF s",
-            (identity, actor.owner_id, actor.project_id, self.challenge_scope),
+            "WHERE p.session_id=%s AND p.owner_id=%s AND p.project_id=%s FOR UPDATE OF s",
+            (identity, actor.owner_id, actor.project_id),
         ).fetchone()
         if row is None:
             raise KernelDenied("not_found")
