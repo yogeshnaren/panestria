@@ -163,6 +163,14 @@ column check_run evidence_artifact_id uuid YES
 column check_run id uuid NO
 column check_run task_id uuid NO
 column check_run verdict text NO
+column connection_fetch_reservation created_at timestamptz NO
+column connection_fetch_reservation dispatch_id uuid NO
+column connection_fetch_reservation grant_id uuid NO
+column connection_fetch_reservation grant_version int4 NO
+column connection_fetch_reservation request_id uuid NO
+column connection_fetch_reservation reserved_bytes int8 NO
+column connection_fetch_reservation reserved_hops int4 NO
+column connection_fetch_reservation task_id uuid NO
 column connection_grant created_at timestamptz NO
 column connection_grant current_version int4 NO
 column connection_grant id uuid NO
@@ -247,6 +255,8 @@ column fetch_outcome source_metadata_sha256 bpchar YES
 column fetch_outcome status text NO
 column fetch_outcome task_id uuid NO
 column fetch_plan configuration_sha256 bpchar NO
+column fetch_plan connection_grant_id uuid YES
+column fetch_plan connection_grant_version int4 YES
 column fetch_plan contract_sha256 bpchar NO
 column fetch_plan created_at timestamptz NO
 column fetch_plan plan_sha256 bpchar NO
@@ -786,6 +796,12 @@ constraint panestria.check_run f FOREIGN KEY (attempt_id, task_id) REFERENCES pa
 constraint panestria.check_run f FOREIGN KEY (evidence_artifact_id, task_id) REFERENCES panestria.artifact(id, task_id)
 constraint panestria.check_run f FOREIGN KEY (task_id, contract_id) REFERENCES panestria.task(id, contract_id)
 constraint panestria.check_run p PRIMARY KEY (id)
+constraint panestria.connection_fetch_reservation c CHECK (((reserved_bytes >= 49155) AND (reserved_bytes <= 67108864)))
+constraint panestria.connection_fetch_reservation c CHECK (((reserved_hops >= 1) AND (reserved_hops <= 6)))
+constraint panestria.connection_fetch_reservation f FOREIGN KEY (dispatch_id, task_id, request_id) REFERENCES panestria.fetch_dispatch(id, task_id, request_id)
+constraint panestria.connection_fetch_reservation f FOREIGN KEY (task_id, request_id, grant_id, grant_version) REFERENCES panestria.fetch_plan(task_id, request_id, connection_grant_id, connection_grant_version)
+constraint panestria.connection_fetch_reservation p PRIMARY KEY (dispatch_id)
+constraint panestria.connection_fetch_reservation t TRIGGER DEFERRABLE INITIALLY DEFERRED
 constraint panestria.connection_grant c CHECK (((current_version >= 0) AND (current_version <= 1000001)))
 constraint panestria.connection_grant f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.connection_grant p PRIMARY KEY (id)
@@ -868,14 +884,17 @@ constraint panestria.fetch_outcome f FOREIGN KEY (dispatch_id, task_id, request_
 constraint panestria.fetch_outcome f FOREIGN KEY (snapshot_id) REFERENCES panestria.research_source_capture(snapshot_id)
 constraint panestria.fetch_outcome f FOREIGN KEY (snapshot_id, request_id, task_id, source_metadata_sha256) REFERENCES panestria.research_source_snapshot(id, request_id, task_id, body_sha256)
 constraint panestria.fetch_outcome p PRIMARY KEY (dispatch_id)
+constraint panestria.fetch_plan c CHECK ((((connection_grant_id IS NULL) AND (connection_grant_version IS NULL)) OR ((connection_grant_id IS NOT NULL) AND (connection_grant_version IS NOT NULL) AND ((connection_grant_version >= 1) AND (connection_grant_version <= 1000001)))))
 constraint panestria.fetch_plan c CHECK ((configuration_sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.fetch_plan c CHECK ((contract_sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.fetch_plan c CHECK ((plan_sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.fetch_plan c CHECK ((policy_sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.fetch_plan c CHECK ((request_sha256 ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.fetch_plan f FOREIGN KEY (connection_grant_id, connection_grant_version) REFERENCES panestria.connection_grant_revision(grant_id, version)
 constraint panestria.fetch_plan f FOREIGN KEY (request_id, task_id) REFERENCES panestria.research_request(id, task_id)
 constraint panestria.fetch_plan p PRIMARY KEY (task_id)
 constraint panestria.fetch_plan u UNIQUE (task_id, request_id)
+constraint panestria.fetch_plan u UNIQUE (task_id, request_id, connection_grant_id, connection_grant_version)
 constraint panestria.goal c CHECK ((status = ANY (ARRAY['CREATED'::text, 'ACTIVE'::text, 'COMPLETED'::text, 'FAILED'::text, 'CANCELLED'::text])))
 constraint panestria.goal f FOREIGN KEY (owner_id) REFERENCES panestria.principal(id)
 constraint panestria.goal f FOREIGN KEY (project_id) REFERENCES panestria.project(id)
@@ -1247,6 +1266,7 @@ constraint panestria.workflow_link f FOREIGN KEY (attempt_id, task_id) REFERENCE
 constraint panestria.workflow_link f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.workflow_link p PRIMARY KEY (task_id, attempt_id)
 constraint panestria.workflow_link u UNIQUE (dbos_workflow_id)
+index CREATE INDEX fetch_connection_budget ON panestria.fetch_plan USING btree (connection_grant_id, connection_grant_version) WHERE (connection_grant_id IS NOT NULL)
 index CREATE INDEX ix_approvals_owner_pending ON panestria.approval_request USING btree (owner_id, state, expires_at)
 index CREATE INDEX ix_attempt_expiry ON panestria.task_attempt USING btree (lease_expires_at) WHERE (status = ANY (ARRAY['PENDING'::text, 'RUNNING'::text]))
 index CREATE INDEX ix_event_goal_seq ON panestria.task_event USING btree (goal_id, seq)
@@ -1289,6 +1309,7 @@ index CREATE UNIQUE INDEX build_plan_task_plan_id_task_id_key ON panestria.build
 index CREATE UNIQUE INDEX build_worker_claim_active_task ON panestria.build_worker_claim USING btree (task_id) WHERE (released_at IS NULL)
 index CREATE UNIQUE INDEX build_worker_claim_pkey ON panestria.build_worker_claim USING btree (attempt_id)
 index CREATE UNIQUE INDEX check_run_pkey ON panestria.check_run USING btree (id)
+index CREATE UNIQUE INDEX connection_fetch_reservation_pkey ON panestria.connection_fetch_reservation USING btree (dispatch_id)
 index CREATE UNIQUE INDEX connection_grant_decision_pkey ON panestria.connection_grant_decision USING btree (review_id)
 index CREATE UNIQUE INDEX connection_grant_decision_review_id_grant_id_granted_versio_key ON panestria.connection_grant_decision USING btree (review_id, grant_id, granted_version, decision)
 index CREATE UNIQUE INDEX connection_grant_decision_seq_key ON panestria.connection_grant_decision USING btree (seq)
@@ -1306,6 +1327,7 @@ index CREATE UNIQUE INDEX context_pack_id_owner_id_project_id_key ON panestria.c
 index CREATE UNIQUE INDEX context_pack_pkey ON panestria.context_pack USING btree (id)
 index CREATE UNIQUE INDEX effect_outbox_pkey ON panestria.effect_outbox USING btree (effect_id)
 index CREATE UNIQUE INDEX event_retention_pkey ON panestria.event_retention USING btree (goal_id)
+index CREATE UNIQUE INDEX fetch_connection_identity ON panestria.fetch_plan USING btree (task_id, request_id, connection_grant_id, connection_grant_version)
 index CREATE UNIQUE INDEX fetch_dispatch_id_task_id_request_id_key ON panestria.fetch_dispatch USING btree (id, task_id, request_id)
 index CREATE UNIQUE INDEX fetch_dispatch_pkey ON panestria.fetch_dispatch USING btree (id)
 index CREATE UNIQUE INDEX fetch_dispatch_task_id_ordinal_key ON panestria.fetch_dispatch USING btree (task_id, ordinal)

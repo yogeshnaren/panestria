@@ -35,7 +35,7 @@ def component_scope(record_property):
 
 def search_controller(f):
     versions = f.controller.versions
-    binding = f.plan.model_dump()
+    binding = f.plan.model_dump(exclude={"connection"})
     binding["configuration_sha256"] = versions["search_configuration_sha256"]
     return AdmittedSearch(
         f.dsn,

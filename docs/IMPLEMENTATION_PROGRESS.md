@@ -17,7 +17,7 @@ already delivered components.
 | Ask | Offline terminal, approved encrypted profile/style/private examples, optional pinned local identity | Full quality/latency corpus and cumulative runtime qualification |
 | Build | Canonical plans, scoped one/two-worker execution, conflicts/final-tree checks, finite repairs, exact owner review/merge | Broader adapter/DAG compatibility and complete B-1/gates |
 | Delegate | Question/query staging, explicit collection, retained excerpts, local draft and owner claim review | Actual search is owner-deferred; qualified support/iterative planning and complete D-1/G2 remain |
-| Personal platform | Reviewed quota queue, finite runner/controller, offline confirmed-result references, local profile/context and exact connection declaration review/revoke terminal | Actual connection broker/account/enrollment/conformance, remaining context/capture/rights integration and qualification |
+| Personal platform | Reviewed quota queue, finite runner/controller, offline confirmed-result references, local profile/context and exact connection declaration review/revoke terminal | General authenticated account/root/secret lifecycle and actual conformance, remaining context/capture/rights integration and qualification |
 | Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build/research metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
 | Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |
 
@@ -27,7 +27,7 @@ inbox and host qualification remain open. The merged
 mutation-witness checks, conditions repeated legacy/restore regressions and avoids
 rerunning an already-proven merge tree. The [connection declaration terminal](testing/CONNECTION_DECLARATION_TERMINAL.md)
 now supplies private setup/serving, exact owner review/recovery and fresh-policy
-revocation. It connects no account/folder/tool; actual broker, verified enrollment,
+revocation. The review service connects no account/folder/tool; general broker/enrollment,
 phone, qualified Delegate and cumulative evidence work remain. Saved metrics are descriptive; unknown
 accuracy/cost/time/source never becomes a passing gate.
 
@@ -38,6 +38,21 @@ model/search request and changes no database state; missing semantic accuracy,
 cash, model-only timing and runtime build source remain UNKNOWN. Source-bound
 component checks and original collection errors stay preserved. Full tracing,
 exposure, resources and domain/release qualification remain open.
+
+The [initial public fetch grant integration](testing/PUBLIC_FETCH_CONNECTION.md)
+now binds anonymous PUBLIC HTTPS GET to an exact reviewed declaration and existing
+certified policy/contract/lease checks. Every hop checks its exact origin/current
+revision; durable calls/application-byte reservations span goals and survive
+uncertainty. A new private template command supports separate proposal/consent;
+missing or exhausted grants stop before a new search, and collection stops when
+capacity is spent. Anonymous service identity is not authenticated account
+onboarding. The [component evidence](../evidence/fetch-connection-grants-2026-10-23/report.json)
+uses actual disposable PG/HTTP/CLI/CAS/reader with synthetic HTTPS/certificates;
+actual search/runtime qualification, general accounts/roots/secrets and full
+S4/S5/TC05–TC08/G2/G3 remain open. Historical plans/certificates are not upgraded.
+The first full task CI caught missed joint fixtures and the local startup schema
+pin; originals remain retained. The correction preserves exact wrong-schema
+refusal and adds no timeout or permission bypass.
 
 The latest Mission Control delivery now provides distinct explicit offline Ask,
 PUBLIC Delegate question staging, PUBLIC Build plan staging and separate exact

@@ -15,8 +15,11 @@ from typer.testing import CliRunner
 
 from panestria.cli.main import app
 from panestria.config_research import ResearchSettings
+from panestria.contracts.connections import ConnectionReviewRequest
+from panestria.contracts.fetch_connection import FetchConnectionBinding, anonymous_fetch_account
 from panestria.contracts.policy import PolicyContext, PrivacyAxis
 from panestria.execution.research_policy import OwnerResearchPolicy
+from panestria.kernel.connections import ConnectionReviewService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.local_setup import LocalSetupIntent, LocalSetupService, offline_policy
 from panestria.kernel.policy import PolicyService
@@ -159,6 +162,38 @@ def test_owner_review_then_actual_stage_collect_export_with_exact_public_scope(o
     )
     assert staged.exit_code == 0, (staged.output, staged.exception)
     request = json.loads(staged.output)
+    # The dedicated project also needs its own separately reviewed fetch grant;
+    # neither the fixture's other project nor the PUBLIC policy implies it.
+    grants = ConnectionReviewService()
+    with psycopg.connect(q.f.dsn) as c:
+        original = grants.current(UnitOfWork(c), q.f.actor, q.f.plan.connection.grant_id).manifest
+        body = original.model_copy(
+            update={
+                "owner_id": q.service.actor.owner_id,
+                "project_id": q.service.actor.project_id,
+                "account_ref": anonymous_fetch_account(
+                    q.service.actor.owner_id, q.service.actor.project_id, original.configuration_sha256
+                ),
+            }
+        )
+        pending = grants.propose(
+            UnitOfWork(c),
+            q.service.actor,
+            request["task_id"],
+            ConnectionReviewRequest(
+                proposal_id=str(uuid4()),
+                policy_ref=receipt["policy_ref"],
+                expected_version=0,
+                operation="REPLACE",
+                manifest=body,
+            ),
+        )
+    with psycopg.connect(q.f.dsn) as c:
+        decision = grants.decide(UnitOfWork(c), q.service.actor, pending.proposal_id, pending.effect_digest, "approve")
+    q.settings = q.settings.model_copy(
+        update={"fetch_connection": FetchConnectionBinding(grant_id=pending.grant_id, version=decision.granted_version)}
+    )
+    q.config.write_text(q.settings.model_dump_json())
     collected = invoke(
         q,
         "collect",
@@ -271,9 +306,9 @@ def test_concurrent_preparation_and_stale_or_broader_reviews_cannot_widen_scope(
         assert c.execute(
             "SELECT owner_id::text FROM panestria.project WHERE id=%s", (q.service.actor.project_id,)
         ).fetchall() == [(q.service.actor.owner_id,)]
-        assert c.execute(
-            "SELECT count(*) FROM panestria.task WHERE goal_id=%s", (q.service.goal_id,)
-        ).fetchone() == (1,)
+        assert c.execute("SELECT count(*) FROM panestria.task WHERE goal_id=%s", (q.service.goal_id,)).fetchone() == (
+            1,
+        )
     other_scope = OwnerResearchPolicy(q.f.dsn, q.settings.model_copy(update={"project_id": uuid4()}))
     other_scope.prepare(public_web_policy=True)
     with pytest.raises(KernelDenied, match="not_found"):

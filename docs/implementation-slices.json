@@ -2809,15 +2809,20 @@
         "evidence/connection-reviews-2026-10-16/report.json",
         "evidence/connection-root-sessions-2026-10-18/report.json",
         "evidence/r1-runtime-qualification-2026-10-18/report.json",
-        "evidence/connection-terminal-2026-10-22/report.json"
+        "evidence/connection-terminal-2026-10-22/report.json",
+        "evidence/fetch-connection-grants-2026-10-23/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3. Original declaration/root/runtime observations remain source-bound. The owner declaration setup/review/revoke terminal and isolated foreground mode now provide a usable metadata/review prerequisite, with conformance UNVERIFIED/runtime unavailable. Actual GrantBroker, verified account/capability/enrollment/source-purpose, current lease/budget/approval/secret/lifecycle remain pending. Full S4/S5/TC05-TC08 and release remain incomplete.",
+      "scope_note": "Extension delivered in R3. Exact declaration setup/review/revoke is now connected to an initial anonymous PUBLIC HTTPS GET broker: current grant/configuration/scoped anonymous identity, policy/certificate/lease, cross-goal application capacity and per-hop revoke/origin fences. No authenticated account, private root/native connector or secret injection is enabled. Connected HTTPS/certificates are explicit fixtures. General enrollment/secret/OS lifecycle, full TC05-TC08/S4/S5 and release qualification remain incomplete.",
       "implemented_component_files": [
         "src/panestria/cli/connections.py",
         "src/panestria/cli/connection_client.py",
         "src/panestria/cli/connection_terminal.py",
-        "docs/testing/CONNECTION_DECLARATION_TERMINAL.md"
+        "docs/testing/CONNECTION_DECLARATION_TERMINAL.md",
+        "src/panestria/kernel/connection_broker.py",
+        "src/panestria/contracts/fetch_connection.py",
+        "migrations/versions/0038_fetch_connection_grants.py",
+        "docs/testing/PUBLIC_FETCH_CONNECTION.md"
       ]
     },
     {
@@ -2844,12 +2849,19 @@
         "AOS-008-TC08"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "evidence_refs": [
-        "evidence/r1-runtime-qualification-2026-10-18/report.json"
+        "evidence/r1-runtime-qualification-2026-10-18/report.json",
+        "evidence/fetch-connection-grants-2026-10-23/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent evidence remains unchanged. S4 supplies the declaration review/revoke UI prerequisite, but this runtime revocation/secret-boundary/broker slice remains NOT_STARTED; no live connector or full-case pass is inferred."
+      "scope_note": "Extension delivered in R3. Exact declaration setup/review/revoke is now connected to an initial anonymous PUBLIC HTTPS GET broker: current grant/configuration/scoped anonymous identity, policy/certificate/lease, cross-goal application capacity and per-hop revoke/origin fences. No authenticated account, private root/native connector or secret injection is enabled. Connected HTTPS/certificates are explicit fixtures. General enrollment/secret/OS lifecycle, full TC05-TC08/S4/S5 and release qualification remain incomplete.",
+      "implemented_component_files": [
+        "src/panestria/kernel/connection_broker.py",
+        "src/panestria/contracts/fetch_connection.py",
+        "migrations/versions/0038_fetch_connection_grants.py",
+        "docs/testing/PUBLIC_FETCH_CONNECTION.md"
+      ]
     },
     {
       "id": "AOS-025-S4",
