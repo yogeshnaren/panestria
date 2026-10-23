@@ -51,6 +51,13 @@ def eligibility(
         return "UNKNOWN", ("separate_origin_rights_validation_evidence_required",)
     if any(e.assessment != "ALLOWED" or e.valid_until <= now for e in evidence):
         return "UNKNOWN", ("owner_evidence_unknown_or_expired",)
+    by_role = {e.role: e for e in evidence}
+    if (
+        by_role["ORIGIN"].provider_basis != "NO_PROVIDER_OR_MODEL_INPUTS"
+        or by_role["DATA_RIGHTS"].permitted_purpose != "LOCAL_TRAINING_DATA_PREPARATION"
+        or by_role["VALIDATION"].validation_method != "OWNER_REVIEWED"
+    ):
+        return "UNKNOWN", ("explicit_provider_purpose_and_validation_basis_required",)
     return "ALLOWED", ("explicit_owner_review_and_separate_purpose_consent_still_required",)
 
 

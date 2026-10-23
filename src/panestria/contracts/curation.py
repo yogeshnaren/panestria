@@ -55,6 +55,15 @@ class OwnerEvidence(Closed):
     basis: str = Field(min_length=1, max_length=2048, repr=False)
     valid_until: AwareDatetime
     assessment_source: Literal["OWNER_ATTESTED"] = "OWNER_ATTESTED"
+    provider_basis: Literal["NO_PROVIDER_OR_MODEL_INPUTS"] | None = None
+    permitted_purpose: Literal["LOCAL_TRAINING_DATA_PREPARATION"] | None = None
+    validation_method: Literal["OWNER_REVIEWED"] | None = None
+
+    @model_validator(mode="after")
+    def meaningful_basis(self) -> "OwnerEvidence":
+        if not self.basis.strip():
+            raise ValueError("owner_evidence_basis_required")
+        return self
 
 
 class CurationPreview(Closed):

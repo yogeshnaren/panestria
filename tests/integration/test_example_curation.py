@@ -76,6 +76,9 @@ def files(
                 }[role],
                 "valid_until": (datetime.now(UTC) + timedelta(days=2)).isoformat(),
                 "assessment_source": "OWNER_ATTESTED",
+                "provider_basis": "NO_PROVIDER_OR_MODEL_INPUTS" if role == "ORIGIN" else None,
+                "permitted_purpose": "LOCAL_TRAINING_DATA_PREPARATION" if role == "DATA_RIGHTS" else None,
+                "validation_method": "OWNER_REVIEWED" if role == "VALIDATION" else None,
             },
         )
         for role in ("ORIGIN", "DATA_RIGHTS", "VALIDATION")
@@ -89,10 +92,15 @@ def cli(f, *args, expected=0):
     return json.loads(result.stdout if expected == 0 else result.output)
 
 
-def accepted(f, candidate, proofs):
-    review = f.service.prepare(candidate, proofs)
+def accepted(f, candidate, proofs, days=7):
+    review = f.service.prepare(candidate, proofs, days)
     f.service.record(
-        candidate, proofs, review["review_sha256"], confirm_owner_review=True, accept_training_data_purpose=True
+        candidate,
+        proofs,
+        review["review_sha256"],
+        days=days,
+        confirm_owner_review=True,
+        accept_training_data_purpose=True,
     )
     return review["review_sha256"]
 
@@ -147,6 +155,12 @@ def test_exact_separate_consent_concurrent_replay_and_offline_export_restore_cli
     cli(f, "validate-export", str(copy), expected=1)
     with pytest.raises(KernelDenied, match="not_found"):
         ExampleCuration(Actor(f.actor.owner_id, str(uuid4())), f.dsn).withdraw(digest, confirm=True)
+    # Isolate withdrawal itself while policy and the positive review still permit use.
+    assert f.service.validate_export(output)["status"] == "CURRENT_ELIGIBILITY_CONFIRMED"
+    f.service.withdraw(digest, confirm=True)
+    with pytest.raises(KernelDenied, match="current_eligibility"):
+        f.service.validate_export(output)
+    assert output.read_bytes() == original
 
 
 def test_new_denial_old_replay_and_canonical_withdrawal_cannot_be_overridden_by_copied_packet(curation):
@@ -205,12 +219,13 @@ def test_known_model_lineage_duplicate_inputs_and_expiry_stay_ineligible(curatio
     assert f.service.prepare(own, own_proofs)["preview"]["proposed_eligibility"] == "DENIED"
     a, ap = files(f, question="Synthetic count?", answer="One.")
     b, bp = files(f, question="Synthetic count?", answer="Two.")
-    first, second = accepted(f, a, ap), accepted(f, b, bp)
+    first, second = accepted(f, a, ap, days=1), accepted(f, b, bp)
     with pytest.raises(KernelDenied, match="duplicate_or_conflicting_input"):
         f.service.export((first, second), f.directory / "conflict.json")
     f.service.export((first,), f.directory / "current.json")
     real_now = f.service._now
-    monkeypatch.setattr(f.service, "_now", lambda c: real_now(c) + timedelta(days=3))
+    # Consent expired, but the original two-day evidence period remains valid.
+    monkeypatch.setattr(f.service, "_now", lambda c: real_now(c) + timedelta(hours=36))
     with pytest.raises(KernelDenied, match="current_eligibility"):
         f.service.validate_export(f.directory / "current.json")
     assert not (f.directory / "conflict.json").exists()
