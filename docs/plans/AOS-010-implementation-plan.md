@@ -206,3 +206,7 @@ This covers one registered-tool recovery path. Other worker/verifier/private
 control-stage lifecycle recovery, connected native auth/proxy/MCP, full grant/
 lease/budget/capability enforcement and G1/G2/G3 evidence remain required.
 No provider inference, credentials or paid API are used or enabled here.
+
+## Reviewed foreground model component — 2026-10-23
+
+See [design115](../design/115-REVIEWED-NATIVE-MODELS.md) and [test/setup guide](../testing/NATIVE_MODEL_SELECTION.md). Explicit request IDs now bind separate visible connection consent, model-specific runtime qualification/inventory, launcher and protected receipts. Legacy defaults remain unchanged. Synthetic connected checks and actual empty-auth zero-turn metadata do not establish provider inference, billing, model quality or an original release-case pass. Model-scoped background queue integration remains a separate ready task.

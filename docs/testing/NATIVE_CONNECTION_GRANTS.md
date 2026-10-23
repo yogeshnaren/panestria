@@ -1,5 +1,9 @@
 # Select a reviewed native account/context connection
 
+For an explicit foreground model, also follow [model selection](NATIVE_MODEL_SELECTION.md).
+It requires a schema3 declaration with a visible requested model and model-specific
+runtime qualification. Omitted settings retain the schema2 behavior described here.
+
 This adds a separately reviewed connection to PUBLIC Claude subscription Build.
 It checks the exact existing private account/profile, configuration, current
 policy/certificate, expiry and shared capacity during work. Revocation blocks
