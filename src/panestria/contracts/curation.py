@@ -73,7 +73,7 @@ class CurationPreview(Closed):
     example: CuratedExample
     evidence: tuple[OwnerEvidence, ...] = Field(max_length=3)
     policy_ref: str = Field(pattern=r"^project-policy:[1-9][0-9]*:[a-f0-9]{64}$")
-    retain_days: StrictInt = Field(ge=1, le=30)
+    eligibility_days: StrictInt = Field(ge=1, le=30)
     proposed_eligibility: Eligibility
     reasons: tuple[str, ...]
     purpose: Literal["LOCAL_TRAINING_DATA_PREPARATION"] = "LOCAL_TRAINING_DATA_PREPARATION"

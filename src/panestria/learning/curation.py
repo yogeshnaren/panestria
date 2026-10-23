@@ -151,7 +151,7 @@ class ExampleCuration:
             example=example,
             evidence=evidence,
             policy_ref=self._policy(c),
-            retain_days=days,
+            eligibility_days=days,
             proposed_eligibility=state,
             reasons=reasons,
         )

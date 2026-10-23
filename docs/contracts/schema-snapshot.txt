@@ -222,6 +222,25 @@ column context_pack privacy_label text NO
 column context_pack project_id uuid NO
 column context_pack request_id uuid NO
 column context_pack sha256 bpchar NO
+column curated_example_review content_sha256 bpchar NO
+column curated_example_review decided_at timestamptz NO
+column curated_example_review decided_by uuid NO
+column curated_example_review eligibility text NO
+column curated_example_review example_sha256 bpchar NO
+column curated_example_review expires_at timestamptz NO
+column curated_example_review owner_id uuid NO
+column curated_example_review preview jsonb NO
+column curated_example_review project_id uuid NO
+column curated_example_review purpose_consent bool NO
+column curated_example_review review_sha256 bpchar NO
+column curated_example_review seq int8 NO
+column curated_example_withdrawal content_sha256 bpchar NO
+column curated_example_withdrawal owner_id uuid NO
+column curated_example_withdrawal project_id uuid NO
+column curated_example_withdrawal review_sha256 bpchar NO
+column curated_example_withdrawal seq int8 NO
+column curated_example_withdrawal withdrawn_at timestamptz NO
+column curated_example_withdrawal withdrawn_by uuid NO
 column effect_outbox claim_expires_at timestamptz YES
 column effect_outbox created_at timestamptz NO
 column effect_outbox due_at timestamptz NO
@@ -852,6 +871,24 @@ constraint panestria.context_pack c CHECK ((sha256 ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.context_pack f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.context_pack p PRIMARY KEY (id)
 constraint panestria.context_pack u UNIQUE (id, owner_id, project_id)
+constraint panestria.curated_example_review c CHECK (((eligibility <> 'ALLOWED'::text) OR purpose_consent))
+constraint panestria.curated_example_review c CHECK (((expires_at > decided_at) AND (expires_at <= (decided_at + '30 days'::interval))))
+constraint panestria.curated_example_review c CHECK (((jsonb_typeof(preview) = 'object'::text) AND ((octet_length((preview)::text) >= 1) AND (octet_length((preview)::text) <= 32768))))
+constraint panestria.curated_example_review c CHECK ((content_sha256 ~ '^[a-f0-9]{64}$'::text))
+constraint panestria.curated_example_review c CHECK ((decided_by = owner_id))
+constraint panestria.curated_example_review c CHECK ((eligibility = ANY (ARRAY['ALLOWED'::text, 'DENIED'::text, 'UNKNOWN'::text])))
+constraint panestria.curated_example_review c CHECK ((example_sha256 ~ '^[a-f0-9]{64}$'::text))
+constraint panestria.curated_example_review c CHECK ((review_sha256 ~ '^[a-f0-9]{64}$'::text))
+constraint panestria.curated_example_review f FOREIGN KEY (decided_by) REFERENCES panestria.principal(id)
+constraint panestria.curated_example_review f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.curated_example_review p PRIMARY KEY (review_sha256)
+constraint panestria.curated_example_review u UNIQUE (review_sha256, owner_id, project_id, content_sha256)
+constraint panestria.curated_example_review u UNIQUE (seq)
+constraint panestria.curated_example_withdrawal c CHECK ((withdrawn_by = owner_id))
+constraint panestria.curated_example_withdrawal f FOREIGN KEY (review_sha256, owner_id, project_id, content_sha256) REFERENCES panestria.curated_example_review(review_sha256, owner_id, project_id, content_sha256)
+constraint panestria.curated_example_withdrawal f FOREIGN KEY (withdrawn_by) REFERENCES panestria.principal(id)
+constraint panestria.curated_example_withdrawal p PRIMARY KEY (owner_id, project_id, content_sha256)
+constraint panestria.curated_example_withdrawal u UNIQUE (seq)
 constraint panestria.effect_outbox c CHECK ((state = ANY (ARRAY['PENDING'::text, 'CLAIMED'::text, 'DONE'::text, 'PAUSED'::text])))
 constraint panestria.effect_outbox f FOREIGN KEY (effect_id, task_id) REFERENCES panestria.side_effect(id, task_id)
 constraint panestria.effect_outbox p PRIMARY KEY (effect_id)
@@ -1266,6 +1303,7 @@ constraint panestria.workflow_link f FOREIGN KEY (attempt_id, task_id) REFERENCE
 constraint panestria.workflow_link f FOREIGN KEY (task_id) REFERENCES panestria.task(id)
 constraint panestria.workflow_link p PRIMARY KEY (task_id, attempt_id)
 constraint panestria.workflow_link u UNIQUE (dbos_workflow_id)
+index CREATE INDEX curated_example_current ON panestria.curated_example_review USING btree (owner_id, project_id, content_sha256, seq DESC)
 index CREATE INDEX fetch_connection_budget ON panestria.fetch_plan USING btree (connection_grant_id, connection_grant_version) WHERE (connection_grant_id IS NOT NULL)
 index CREATE INDEX ix_approvals_owner_pending ON panestria.approval_request USING btree (owner_id, state, expires_at)
 index CREATE INDEX ix_attempt_expiry ON panestria.task_attempt USING btree (lease_expires_at) WHERE (status = ANY (ARRAY['PENDING'::text, 'RUNNING'::text]))
@@ -1325,6 +1363,11 @@ index CREATE UNIQUE INDEX connection_grant_revision_review_id_key ON panestria.c
 index CREATE UNIQUE INDEX connection_grant_revision_seq_key ON panestria.connection_grant_revision USING btree (seq)
 index CREATE UNIQUE INDEX context_pack_id_owner_id_project_id_key ON panestria.context_pack USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX context_pack_pkey ON panestria.context_pack USING btree (id)
+index CREATE UNIQUE INDEX curated_example_review_pkey ON panestria.curated_example_review USING btree (review_sha256)
+index CREATE UNIQUE INDEX curated_example_review_review_sha256_owner_id_project_id_co_key ON panestria.curated_example_review USING btree (review_sha256, owner_id, project_id, content_sha256)
+index CREATE UNIQUE INDEX curated_example_review_seq_key ON panestria.curated_example_review USING btree (seq)
+index CREATE UNIQUE INDEX curated_example_withdrawal_pkey ON panestria.curated_example_withdrawal USING btree (owner_id, project_id, content_sha256)
+index CREATE UNIQUE INDEX curated_example_withdrawal_seq_key ON panestria.curated_example_withdrawal USING btree (seq)
 index CREATE UNIQUE INDEX effect_outbox_pkey ON panestria.effect_outbox USING btree (effect_id)
 index CREATE UNIQUE INDEX event_retention_pkey ON panestria.event_retention USING btree (goal_id)
 index CREATE UNIQUE INDEX fetch_connection_identity ON panestria.fetch_plan USING btree (task_id, request_id, connection_grant_id, connection_grant_version)
