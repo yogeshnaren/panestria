@@ -69,7 +69,7 @@ def test_visible_model_mismatch_cannot_hide_behind_correct_configuration_hash(na
     original = service.current
 
     def mismatched(self, *args, **kwargs):
-        grant = original(self, *args, **kwargs)
+        grant = original(*args, **kwargs)
         return replace(grant, manifest=manifest.model_copy(update={"requested_model": "claude-opus-5"}))
 
     monkeypatch.setattr(service.__class__, "current", mismatched)
