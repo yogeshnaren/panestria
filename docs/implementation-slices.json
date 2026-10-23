@@ -1958,7 +1958,7 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-023-S1.md",
-      "implementation_note": "Dedicated owner PUBLIC-web policy prepare/confirm now connects to staged-question collection, admitted search/fetch/read/excerpts/private inspection and VERIFYING/RECONCILING. Existing Ask scopes are preserved. Synthetic HTTPS/certificates only; guided TUI, planner/synthesis, qualified support/live runtime/G2 pending.",
+      "implementation_note": "Dedicated owner PUBLIC-web policy prepare/confirm connects staged-question collection, admitted search/fetch/read/excerpts/private inspection and VERIFYING/RECONCILING. Existing Ask scopes are preserved. Local query proposals and retained draft/owner claim review terminal are component outcomes; broader guided intake/collection, qualified iterative planning/support, actual search/public runtime and G2 remain pending.",
       "evidence_refs": [
         "evidence/owner-research-submission-2026-10-18/report.json",
         "evidence/owner-research-collection-2026-10-18/report.json",
@@ -1986,13 +1986,18 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-023-S2.md",
-      "implementation_note": "Owner collection and explicit local CPU draft synthesis connect retained PUBLIC passages to controller-bound citations and immutable receipts. Invalid, stale or ambiguous outputs cannot complete/replay work. Support NOT_ASSESSED; bounded query planner, qualified semantic support, guided TUI, actual search/public runtime and G2 remain pending.",
+      "implementation_note": "Owner collection and explicit local CPU draft synthesis connect retained PUBLIC passages to controller-bound citations and immutable receipts. The exact claim/source review terminal now adds bounded local owner judgments with full scroll/validation/separate digest confirmation and fresh canonical fences. Judgments remain OWNER_REPORTED with no automatic support/task/training authority. Local query proposals exist; qualified iterative planning/semantic support, actual search/public runtime and G2 remain pending.",
       "evidence_refs": [
         "evidence/retained-research-brief-2026-10-18/report.json",
         "evidence/admitted-research-fetch-2026-10-18/report.json",
         "evidence/shared-research-runtime-2026-10-18/report.json",
         "evidence/owner-research-collection-2026-10-18/report.json",
-        "evidence/local-research-synthesis-2026-10-18/report.json"
+        "evidence/local-research-synthesis-2026-10-18/report.json",
+        "evidence/research-review-terminal-2026-10-23/report.json"
+      ],
+      "implemented_component_files": [
+        "src/panestria/cli/research_review_terminal.py",
+        "docs/testing/RESEARCH_CLAIM_REVIEW_TUI.md"
       ]
     },
     {

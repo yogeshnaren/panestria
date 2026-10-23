@@ -63,3 +63,9 @@ The [component evidence](../../evidence/owner-claim-review-2026-10-21/report.jso
 uses real disposable PostgreSQL/CAS/reader/CLI, an explicit model-output fixture
 and no live inference. It checks exact confirmation, private notes, corrections,
 replay, original task state and cancellation/claim-binding guards.
+
+
+For keyboard review without editing a JSON template, use the
+[exact claim-review terminal](RESEARCH_CLAIM_REVIEW_TUI.md). It uses this same
+canonical review service, current-source checks and OWNER_REPORTED limitations;
+full scroll review and separate digest confirmation are required.

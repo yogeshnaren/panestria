@@ -167,6 +167,20 @@ public TLS, OS qualification or verified factual support. Search setup was
 explicitly deferred by the owner. No service, engine, credential, provider/model,
 download or paid call is silently selected by this work.
 
+## Guided owner research review
+
+The [claim-review terminal](testing/RESEARCH_CLAIM_REVIEW_TUI.md) now shows the
+exact retained question/passages/claims and lets the owner enter verdicts,
+controller-source citations and bounded rationales. Full scroll review, validation
+and a separate exact-digest confirmation reuse the existing private immutable
+review service; cancellation/source changes fence saving and uncertain writes
+cannot retry from that view. It starts no model/search request. Judgments remain
+OWNER_REPORTED / NOT_QUALIFIED, with no task/training authority. [Physical PTY and
+canonical evidence](../evidence/research-review-terminal-2026-10-23/report.json)
+uses real disposable PG/CAS/reader and declared synthetic model/fetch setup.
+This closes the manual-JSON review interaction gap; qualified automatic support,
+planning/runtime/search and the complete Delegate/release gates remain open.
+
 ## Current Build integration
 
 Canonical plans/consent/handoffs merged in [PR127](https://github.com/yogeshnaren/panestria/pull/127) with passing exact-head CI39385719878 and verified merge tree.
