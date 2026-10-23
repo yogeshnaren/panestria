@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="38.370" timestamp="2026-10-22T23:00:55.471883-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_background_integration_authority" name="test_withdrawn_final_claim_or_confirmed_checks_cannot_publish_approval[claimed]" file="tests/integration/test_background_integration_authority.py" line="15" time="11.164"><failure message="assert (0,) == (1,)&#10;  &#10;  At index 0 diff: 0 != 1&#10;  Use -v to get more diff">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-151/test_withdrawn_final_claim_or_0/build.json...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x787b4af12840&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x787b4b0e7770&gt;
+boundary = 'claimed'
+
+    @pytest.mark.parametrize("boundary", ["claimed", "returned"])
+    def test_withdrawn_final_claim_or_confirmed_checks_cannot_publish_approval(
+        prepared_plan, native_plan, monkeypatch, boundary
+    ):
+        f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+        final_task = plan.nodes[-1].task_id
+        reached = []
+    
+        def withdraw():
+            with owner.connect() as c:
+                assert c.execute(
+                    "SELECT count(*) FROM panestria.build_active_worker_claim WHERE task_id=%s", (final_task,)
+                ).fetchone() == (1,)
+            cli(f, "withdraw", request.item_id, cli(f, "show", request.item_id)["binding_sha256"])
+            reached.append(boundary)
+    
+        integrate = BuildIntegrator.verify_for_review
+    
+        def before(integrator, *args, **kwargs):
+            if boundary == "claimed":
+                withdraw()
+            return integrate(integrator, *args, **kwargs)
+    
+        verify = build_plan.verify_build
+    
+        def returned(*args, **kwargs):
+            checked = verify(*args, **kwargs)
+            assert checked.bundle.task_id == final_task and checked.bundle.passed()
+            withdraw()  # All actual checks have returned; this is not a mocked PASS.
+            return checked
+    
+        monkeypatch.setattr(BuildIntegrator, "verify_for_review", before)
+        if boundary == "returned":
+            monkeypatch.setattr(build_plan, "verify_build", returned)
+        result = BackgroundPlanRunner(owner, request.item_id).run_item(allow_background_subscription_run=True)
+        assert reached == [boundary] and state["launches"] == 2
+        assert result["status"] == "WAIT" and result["reason"] == "background_item_withdrawn", result
+        assert git(owner.settings.repository, "rev-parse", "refs/heads/main") == f.base
+        with owner.connect() as c:
+            assert c.execute(
+                "SELECT count(*) FROM panestria.build_handoff WHERE plan_id=%s", (plan.plan_id,)
+            ).fetchone() == (2,)
+            assert c.execute(
+                "SELECT count(*) FROM panestria.build_evidence WHERE task_id=%s", (final_task,)
+            ).fetchone() == (0,)
+            assert c.execute(
+                "SELECT count(*) FROM panestria.approval_request WHERE goal_id=%s", (plan.goal_id,)
+            ).fetchone() == (0,)
+            invocations = c.execute(
+                "SELECT state,receipt_sha256 FROM panestria.worker_invocation "
+                "WHERE task_id=%s AND binding-&gt;&gt;'kind'='build-integration'",
+                (final_task,),
+            ).fetchall()
+            if boundary == "claimed":
+                assert invocations == []
+            else:
+                assert len(invocations) == 1 and invocations[0][0] == "RETURNED" and invocations[0][1] is not None
+&gt;           assert c.execute(
+                "SELECT count(*) FROM panestria.build_active_worker_claim WHERE task_id=%s", (final_task,)
+            ).fetchone() == (1,)  # Neither withdrawal nor a historical return is claim release.
+E           assert (0,) == (1,)
+E             
+E             At index 0 diff: 0 != 1
+E             Use -v to get more diff
+
+tests/integration/test_background_integration_authority.py:73: AssertionError</failure></testcase><testcase classname="tests.integration.test_background_integration_authority" name="test_withdrawn_final_claim_or_confirmed_checks_cannot_publish_approval[returned]" file="tests/integration/test_background_integration_authority.py" line="15" time="8.931" /><testcase classname="tests.integration.test_background_run" name="test_actual_serial_background_job_preserves_foreground_slot_and_exact_final_owner_review" file="tests/integration/test_background_run.py" line="70" time="10.811"><properties><property name="candidate_commit" value="bdd89f083d6d37f7b5b595bd1b6af0dfe099d328" /><property name="fixture_digest" value="0c0be522d84b6f102c4e7d9b031f65697cfabf54cbdace8bd9be51ef0085c61b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase><testcase classname="tests.integration.test_native_plan_execution" name="test_two_scoped_workers_and_create_only_node_reach_exact_owner_review" file="tests/integration/test_native_plan_execution.py" line="197" time="6.859"><properties><property name="candidate_commit" value="bdd89f083d6d37f7b5b595bd1b6af0dfe099d328" /><property name="fixture_digest" value="5c87cce4965e093464c149a4548a59551822f6a433b6054e5cf71123992e0fcf" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties></testcase></testsuite></testsuites>

@@ -29,8 +29,10 @@ After return, a changed principal cannot publish a verified result or handoff.
 Inspect original invocation/claim history; withdrawal does not erase prior
 disclosure or edits and is not proof of instantaneous physical cancellation.
 
-This is an editing-worker guard. Final trusted integration, general connection
-grants and full host/provider/resource qualification remain separate work.
+This page describes the editing guard. The subsequent
+[final integration guard](BACKGROUND_FINAL_AUTHORITY.md) covers trusted assembly/
+checks/review creation. General connection grants and full host/provider/resource
+qualification remain separate work.
 Do not change the active review service, use a private task for these checks or
 run live calls merely to reproduce synthetic evidence. The focused developer
 suite uses disposable synthetic PostgreSQL/Git/MCP/Docker and explicit fake

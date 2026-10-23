@@ -15,10 +15,14 @@ return. Withdrawal, expired original eligibility and foreground work stop future
 effects; uncertain claims stay held. [Evidence](../evidence/background-worker-authority-2026-10-23/report.json)
 retains original failures and six passing connected checks using actual disposable
 PG/Git/MCP/Docker with explicit native/auth/hardware fixtures. The new guard did
-not perform live inference, renew billing or enable background work. Trusted
-final integration still needs its queue lifecycle intersection; full connection/
-secret boundaries, host/resource qualification, original gates and owner trial
-remain pending. AOS-012-S5 and R3 stay IN_PROGRESS.
+not perform live inference, renew billing or enable background work. The [final integration guard](testing/BACKGROUND_FINAL_AUTHORITY.md) now also
+checks the current queue/run before trusted assembly, each independent check,
+publication and review creation. Actual returned checks remain historical after
+withdrawal; a never-invoked final claim releases only through canonical
+NO_DISPATCH proof. [Evidence](../evidence/background-integration-authority-2026-10-23/report.json)
+preserves the incorrect new release expectation and its correction. Full
+connection/secret boundaries, host/resource qualification, original gates and
+owner trial remain pending. AOS-012-S5 and R3 stay IN_PROGRESS.
 
 
 ## Current delivery checkpoint
