@@ -1,5 +1,7 @@
 """Actual PG/HTTP/CLI grant enforcement; HTTPS and certificates are explicit fixtures."""
 
+# ruff: noqa: F811 -- imported pytest fixtures are injected by name
+
 import json
 from uuid import uuid4
 
