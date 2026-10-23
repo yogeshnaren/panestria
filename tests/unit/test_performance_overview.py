@@ -35,6 +35,7 @@ def other_mode(directory, owner, project, mode, metric, value, scope):
     (directory / "sources").mkdir(mode=0o700)
     raw = json.dumps(
         {
+            "schema_version": 1,
             "kind": f"derived-{mode}-runtime-metrics",
             "authority": "DERIVED_MEASUREMENTS_ONLY",
             "owner_id": owner,

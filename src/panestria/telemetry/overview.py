@@ -47,7 +47,7 @@ class PerformanceOverview(Closed):
     snapshots_read: int = Field(ge=1, le=4096)
     historical_observations_omitted: int = Field(ge=0)
     entries: tuple[OverviewEntry, ...] = Field(max_length=128)
-    missing_areas: tuple[str, ...]
+    missing_areas: tuple[str, ...] = Field(max_length=128)
 
 
 def _directory(path: Path) -> None:
@@ -104,7 +104,12 @@ def runtime_overview(directories: tuple[Path, ...]) -> PerformanceOverview:
                     raise ValueError("metrics_source_hash_or_budget_invalid")
                 document = json.loads(body)
                 kind = document["kind"]
-                if kind not in KINDS or document.get("authority") != "DERIVED_MEASUREMENTS_ONLY":
+                if (
+                    type(document.get("schema_version")) is not int
+                    or document["schema_version"] != 1
+                    or kind not in KINDS
+                    or document.get("authority") != "DERIVED_MEASUREMENTS_ONLY"
+                ):
                     raise ValueError("metrics_source_kind_invalid")
                 owner, project = str(UUID(document["owner_id"])), str(UUID(document["project_id"]))
                 record = str(UUID(document["goal_id"] if KINDS[kind] == "BUILD" else document["request_id"]))
