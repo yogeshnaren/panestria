@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="4.383" timestamp="2026-10-22T23:59:51.772439-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_offline_build_recall" name="test_actual_cached_cpu_retrieves_the_reviewed_build_excerpt" file="tests/integration/test_offline_build_recall.py" line="148" time="3.760"><error message="failed on setup with &quot;KeyError: 'PANESTRIA_NATIVE_QUALIFICATION_DIRECTORY'&quot;">tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-154/test_actual_cached_cpu_retriev0')
+r1_database = 'postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic'
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7ab9f0f5ef90&gt;
+request = &lt;SubRequest 'owner_cli' for &lt;Function test_actual_cached_cpu_retrieves_the_reviewed_build_excerpt&gt;&gt;
+
+    @pytest.fixture
+    def owner_cli(tmp_path, r1_database, monkeypatch, request):
+        root = tmp_path / "build"
+        root.mkdir(mode=0o700)
+        reviewed = root / "reviewed"
+        reviewed.mkdir(mode=0o700)
+        check = reviewed / "required.py"
+        check.write_text(
+            "from pathlib import Path\nassert Path('/workspace/calculator.py').read_text() == 'value = 43\\n'\n"
+            "assert Path('/workspace/notes/build.txt').read_text() == 'bounded Bash build\\n'\n"
+        )
+        check.chmod(0o600)
+        actual = request.node.get_closest_marker("live") is not None
+        if actual:
+&gt;           directory = Path(os.environ["PANESTRIA_NATIVE_QUALIFICATION_DIRECTORY"])
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'PANESTRIA_NATIVE_QUALIFICATION_DIRECTORY'
+
+tests/integration/test_owner_build_cli.py:41: KeyError</error></testcase></testsuite></testsuites>

@@ -79,8 +79,12 @@ with no database or credentials, wrong-owner/tamper refusal, and full-history
 failure preserving the confirmed merge with no extra worker. Native generation,
 authentication and capacity are labeled fixtures. No new model/provider call.
 
+A separate [explicit local recall review](OFFLINE_BUILD_RECALL.md) now copies a
+bounded note into ordinary suppressible memory for offline Ask. The archive alone
+still grants no memory permission.
+
 This is partial AOS-012-S6/X11 delivery. Legacy single-worker/Ask/Delegate and raw
 candidate capture, automatic retrieval, known model identity where absent,
-retention/suppression integration, curated ALLOWED training-purpose examples,
+broader retention/suppression qualification, curated ALLOWED training-purpose examples,
 queue/foreground scheduling, live qualification and full TC08/TC09/G3 remain
 pending. Historical evidence and original gate requirements remain intact.
