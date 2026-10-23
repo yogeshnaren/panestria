@@ -346,11 +346,13 @@ def test_real_bash_build_freezes_verifies_and_requires_exact_approval_before_mer
 
 @pytest.mark.live
 def test_actual_claude_subscription_bash_build_and_exact_review(build, record_property):
+    import os
     from dataclasses import asdict
 
     from panestria.brokers.harness.claude_build import ClaudeScopedBashAdapter
     from panestria.brokers.harness.claude_proposal import PINNED_BINARY_SHA256, ClaudeProposalAdapter
     from panestria.brokers.harness.cli_profile import BinaryPin
+    from panestria.contracts.native_model import validate_native_model
 
     task, args, _cid, _policy = build
     controller = ScopedBashController(*args)
@@ -364,10 +366,16 @@ def test_actual_claude_subscription_bash_build_and_exact_review(build, record_pr
         "Change it to exactly 'value = 43\\n'. Also create notes/build.txt with exactly "
         "'bounded Bash build\\n'. Do not create other files. No repository access or package installation is needed."
     )
-    observation = ClaudeScopedBashAdapter(native).build_public(controller.session(), public_context=context)
+    model = validate_native_model(os.environ.get("PANESTRIA_QUALIFICATION_NATIVE_MODEL"))
+    observation = ClaudeScopedBashAdapter(native, native_model=model).build_public(
+        controller.session(), public_context=context
+    )
     record_property("native_observation", json.dumps(asdict(observation), sort_keys=True))
     assert observation.process is not None and observation.process.status == "CANDIDATE", asdict(observation)
     assert observation.hostile_configuration_ignored and observation.startup_observed
+    if model is not None:
+        assert observation.requested_model == model
+        assert observation.process.result is not None and observation.process.result.reported_init_model == model
     assert len(rows(task)) == 1 and rows(task)[0][0] == "RETURNED"
     review = complete_review(task, controller)
     record_property(

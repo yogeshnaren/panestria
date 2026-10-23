@@ -94,19 +94,21 @@ def setup(native_plan, monkeypatch, *, max_calls=2, max_bytes=32768, observation
         # synthetic CLI metadata through the actual private observation helper.
         digest = observation_sha256
     anchor = NativeAccountObservation.model_validate_json(reports.read_blob(digest))
+    model = owner.settings.native_model
     with owner.connect() as c:
         scope = ConnectionReviewService().scope(UnitOfWork(c), owner.actor)
     manifest = ConnectionManifest(
-        schema_version=2,
+        schema_version=3 if model is not None else 2,
         owner_id=owner.actor.owner_id,
         project_id=owner.actor.project_id,
         connector_ref="claude-public-bash",
-        connector_version="account-context-v1",
+        connector_version="model-context-v2" if model is not None else "account-context-v1",
+        requested_model=model,
         provider_route="claude-subscription",
         budget_scope="SELECTED_PUBLIC_CONTEXT_AND_NATIVE_LAUNCHES",
         account_ref=anchor.account_ref,
         root_refs=(anchor.profile_sha256,),
-        configuration_sha256=native_configuration(anchor, runtime_versions(), REQUESTED_MODEL),
+        configuration_sha256=native_configuration(anchor, runtime_versions(model), model or REQUESTED_MODEL),
         actions=("read", "write", "send"),
         data_classes=("PUBLIC",),
         budget=ConnectionBudget(max_calls=max_calls, max_bytes=max_bytes, max_wall_seconds=600),
