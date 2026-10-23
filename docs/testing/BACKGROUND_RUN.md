@@ -15,6 +15,11 @@ setting. Queue/link metadata, a dollar cap and synthetic test results do not
 prove it. This implementation neither reads nor changes the billing setting.
 An unstarted item's policy can be renewed only by withdrawal and fresh review.
 
+Native editing workers now carry that same queue/run intersection into launch,
+tools, monitoring and publication. Fresh scoped account metadata is compared
+immediately before disclosure and after return. See the exact
+[worker authority checks and limits](BACKGROUND_WORKER_AUTHORITY.md).
+
 Existing Build configuration, current runtime/source qualification, independent
 checks, privacy/permission and exact plan acceptance remain mandatory. The owner
 reported the dedicated account's extra usage disabled on2026-10-21. This is
@@ -83,9 +88,11 @@ One PostgreSQL session advisory lock serializes background controllers on the
 single canonical database. An immutable start fact retains the coordinator after
 crash. Worker concurrency is one, leaving the second of the existing two slots
 for foreground work. Any PREPARED/RUNNING Ask or held Build claim defers the next
-background claim. A foreground arrival lets the bounded in-flight call finish
-and preserves its real outcome/handoff; it pauses new work. It does not forcibly
-kill a process or promise resources in other provider clients.
+background claim. During a native editing call, a foreground arrival now requests
+stop through the same current-eligibility watchdog and fences future tools or
+publication. Already confirmed handoffs remain reusable. An uncertain call keeps
+its claim for inspection; this does not promise immediate cancellation or
+resources in other provider clients.
 
 After foreground work clears, run the same explicit command to continue from
 verified handoffs within the original budget. Completed workers are not repeated.

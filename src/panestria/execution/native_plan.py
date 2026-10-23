@@ -29,6 +29,7 @@ from panestria.execution.native_build import AdmittedNativeBuild, NativeBuildOut
 from panestria.execution.owner_build import OwnerBuild
 from panestria.execution.proposal_demo import _lock, _private
 from panestria.execution.scoped_bash import ScopedBashController
+from panestria.execution.worker_authority import WorkerAuthority
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.plan_lifecycle import PlanLifecycle
@@ -88,6 +89,9 @@ class NativePlanRunner:
             return Scheduler().claim_ready(
                 UnitOfWork(c), self.owner.actor, plan.proposal.plan_id, capacity, self.evidence
             )
+
+    def _worker_authority(self, job: Scheduled, scope: ToolScope) -> WorkerAuthority | None:
+        return None
 
     def _storage_allows_new_work(self) -> bool:
         observation = build_storage_admission(self.owner.settings)
@@ -236,6 +240,7 @@ class NativePlanRunner:
             parent / job.lease.attempt_id,
             owner.certificates,
             owner.reports,
+            authority=self._worker_authority(job, scope),
         )
         selected = tuple(path for path in node.paths if path in {entry[0] for entry in source.files})
         adapter = ClaudeScopedBashAdapter(
@@ -252,6 +257,8 @@ class NativePlanRunner:
         )
         if outcome.status == "NODE_VERIFIED" and outcome.review is not None:
             with owner.connect() as c:
+                if controller.authority is not None:
+                    controller.authority.authorize(c)
                 version = c.execute("SELECT row_version FROM panestria.task WHERE id=%s", (node.task_id,)).fetchone()
                 assert version is not None
                 handoff = PlanStore().handoff(
@@ -267,6 +274,8 @@ class NativePlanRunner:
                     self.evidence,
                 )
             with owner.connect() as c:
+                if controller.authority is not None:
+                    controller.authority.authorize(c)
                 Scheduler().complete_node(
                     UnitOfWork(c), owner.actor, plan.proposal.plan_id, handoff.submission.handoff_id, self.evidence
                 )

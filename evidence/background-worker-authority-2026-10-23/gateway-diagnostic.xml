@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="7.707" timestamp="2026-10-22T22:48:57.692776-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_background_worker_authority" name="test_account_change_on_tool_return_cannot_publish_verified_result" file="tests/integration/test_background_worker_authority.py" line="98" time="7.324"><failure message="assert (0,) == (1,)&#10;  &#10;  At index 0 diff: 0 != 1&#10;  Use -v to get more diff">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-148/test_account_change_on_tool_re0/build.json...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x72f7428451f0&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x72f74296df40&gt;
+
+    def test_account_change_on_tool_return_cannot_publish_verified_result(prepared_plan, native_plan, monkeypatch):
+        f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+        native = ClaudeScopedBashAdapter.build_public
+    
+        def returned(adapter, session, **kwargs):
+            outcome = native(adapter, session, **kwargs)  # Actual scoped tool edit and durable physical receipt.
+            change_account(monkeypatch)
+            return outcome
+    
+        monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", returned)
+        result = BackgroundPlanRunner(owner, request.item_id).run_item(allow_background_subscription_run=True)
+        assert result["status"] == "STOPPED" and state["launches"] == 1
+        with owner.connect() as c:
+&gt;           assert c.execute(
+                "SELECT count(*) FROM panestria.worker_invocation i JOIN panestria.task t ON t.id=i.task_id "
+                "WHERE t.goal_id=%s AND i.binding-&gt;&gt;'kind'='native-tool' AND i.state='RETURNED'",
+                (plan.goal_id,),
+            ).fetchone() == (1,)
+E           assert (0,) == (1,)
+E             
+E             At index 0 diff: 0 != 1
+E             Use -v to get more diff
+
+tests/integration/test_background_worker_authority.py:112: AssertionError</failure></testcase></testsuite></testsuites>

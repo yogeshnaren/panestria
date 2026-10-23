@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "outcome": "CURRENT_BACKGROUND_EDITING_WORKER_INTERSECTION_NOT_FULL_CONNECTION_OR_RELEASE",
+  "observations": [
+    {
+      "file": "connected.xml",
+      "sha256": "67d6c8aac7db9047f03ab9cdb0b8e14e07ef57ac6b6abd015a00a92287d47d50",
+      "source_commit": "0f6042a8ae0a30c32a9880ede430d0828be26e8f",
+      "source_tree": "c1bd510c0ba87c337426cea888a41c1905766f92",
+      "worktree": "CLEAN",
+      "scope": "6 cases: 2PASS/4FAIL; initial running guard used share-locking plan reads in a read-only watchdog; scratch trusted runtime files were group writable. Negative cases lacked an explicit reached-boundary assertion at this source.",
+      "result": {
+        "tests": "6",
+        "failures": "4",
+        "errors": "0",
+        "skipped": "0",
+        "time": "27.237"
+      }
+    },
+    {
+      "file": "readonly.xml",
+      "sha256": "fa41c2ae8e7491af5fb6596f78820174179bc8d29805b07e9d2a4f8563cdd34b",
+      "source_commit": "17c4e199513c9015d234e13cc719aebabd9165a9",
+      "source_tree": "ac2b45902ae2789acf7a4c6d4ec75fe664302dc4",
+      "worktree": "CLEAN",
+      "scope": "6 cases: 3PASS/3FAIL; read-only guard correction and reached-boundary assertion; strict installed-script guard still refused group-writable agent-owned scratch runtime files.",
+      "result": {
+        "tests": "6",
+        "failures": "3",
+        "errors": "0",
+        "skipped": "0",
+        "time": "33.697"
+      }
+    },
+    {
+      "file": "diagnostic.xml",
+      "sha256": "452b4ab107fd2bffe38b15dccbc70b377644f4ff27da91652ee1f8fb7a8d96fc",
+      "source_commit": "6de69283a997fe5da00dad477afdb526e92ad9ba",
+      "source_tree": "84aebcec481aa7cb0ea0aecb10e90da28daae9d5",
+      "worktree": "CLEAN",
+      "scope": "1FAIL with explicit external diagnostic plugin; synthetic tool UNKNOWN, no returned tool receipt. No release/runtime inference.",
+      "result": {
+        "tests": "1",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "9.274"
+      }
+    },
+    {
+      "file": "gateway-diagnostic.xml",
+      "sha256": "b09de6a0c72f7b285c878d33f5bb42cd23f34a247850fcbebf67159f2063b26e",
+      "source_commit": "6de69283a997fe5da00dad477afdb526e92ad9ba",
+      "source_tree": "84aebcec481aa7cb0ea0aecb10e90da28daae9d5",
+      "worktree": "CLEAN",
+      "scope": "1FAIL with extended external diagnostic plugin; tool UNKNOWN before a returned gateway result. Group-write modes subsequently measured as0664. No guard weakened.",
+      "result": {
+        "tests": "1",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "7.707"
+      }
+    },
+    {
+      "file": "safe-runtime-files.xml",
+      "sha256": "53f07e9b1d2a3ad5ee42f253592c4fc328ae6640203a3ec1d8031d08439f78ca",
+      "source_commit": "6de69283a997fe5da00dad477afdb526e92ad9ba",
+      "source_tree": "84aebcec481aa7cb0ea0aecb10e90da28daae9d5",
+      "worktree": "CLEAN_AT_START_DOCS_ONLY_ADDED_DURING_RUN",
+      "scope": "6PASS; tracked agent-owned scratch files have group/world write removed, same production strict script guard. Actual PG/Git/MCP/Docker, explicit native/account/hardware fixtures; healthy serial/final-review and foreground handoff reuse plus four new guarded cases. Production Python/test bytes remained at the stated commit; documentation was added during this run, so it is not claimed as a wholly frozen worktree qualification.",
+      "result": {
+        "tests": "6",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "46.796"
+      }
+    }
+  ],
+  "delivered": [
+    "Same immutable run and exact claim guard at native admission/disclosure, tool/create/start/receipt/watchdogs, evidence publication and handoff/completion.",
+    "Pinned scoped pseudonymous account metadata refreshed immediately before disclosure and after return; native invocation binds the additional run/scope authority hash.",
+    "Read-only current eligibility monitoring preserves original billing/quota/deadline, foreground reserves, withdrawal and uncertain claims without renewed consent or redispatch."
+  ],
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS (341 source files)",
+    "import_boundaries": "11 KEPT",
+    "secret_scan": "PASS"
+  },
+  "limits": [
+    "No live inference, native host qualification, new credential/provider/model download or current billing attestation.",
+    "Account identity is observed at disclosure and return, not atomically locked through the provider process. Completed effects cannot be undone.",
+    "Trusted final integration still needs its own queue lifecycle intersection. No full connection/secret/grant integration, foreground/resource/TC06/07/10/G3/trial pass.",
+    "Current owner billing observation remains stale and background OFF. No owner configuration/service/database/backup/storage deletion.",
+    "Initial failed and diagnostic observations remain distinct source-bound originals; diagnostics are not qualification."
+  ],
+  "mutation_witness": {
+    "source_commit": "07c997bc59713821b27f6ae2361a10e057d73742",
+    "source_tree": "819de78f2cd6fdb174378771acc2bf845ee44c1f",
+    "worktree": "CLEAN",
+    "file": "guard-removed-mutant.xml",
+    "sha256": "e651e38cd1148be9939ebe361cb7250f0a34d4f3e10606a84af65dd207703b13",
+    "plugin": "guard-removal-plugin.txt",
+    "plugin_sha256": "c74362018a95af20d30112a50a2202bcb91c83035c05a0532abe81ca4e1eedfa",
+    "result": "KILLED",
+    "expected_pytest_exit_code": 1,
+    "scope": "Explicit external plugin removes only BackgroundPlanRunner worker-authority wiring. One actual post-claim withdrawal case fails at launches==0 with observed launches=1. This expected mutant failure is not a production test pass, broad mutation score or live provider qualification."
+  }
+}

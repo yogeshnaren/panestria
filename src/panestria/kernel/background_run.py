@@ -14,6 +14,7 @@ from panestria.contracts.background_run import BackgroundRun
 from panestria.contracts.build import canonical_sha256
 from panestria.contracts.hardware import HardwareManifest
 from panestria.contracts.native_account import BackgroundAccountLink
+from panestria.contracts.native_tools import ToolScope
 from panestria.kernel.background import BackgroundWorkService
 from panestria.kernel.background_account import BackgroundAccountService
 from panestria.kernel.build import BuildEvidenceService, BuildEvidenceStore
@@ -161,8 +162,14 @@ class BackgroundRunService:
             raise KernelDenied("background_current_auth_principal_changed")
         return linked
 
-    def _eligibility(self, uow: UnitOfWork, actor: Actor, binding: BackgroundBinding) -> dict[str, Any]:
-        view = BackgroundWorkService().inspect(uow, actor, binding)
+    def _eligibility(
+        self, uow: UnitOfWork, actor: Actor, binding: BackgroundBinding, *, worker: ToolScope | None = None
+    ) -> dict[str, Any]:
+        queue = BackgroundWorkService()
+        # Watchdogs use read-only snapshots. The ordinary admission path still
+        # reconstructs the full accepted plan/handoffs under its share guards;
+        # a worker guard intersects that existing claim, never creates one.
+        view = queue._conditions(uow, actor, binding) if worker is not None else queue.inspect(uow, actor, binding)
         withdrawn = uow.execute(
             "SELECT 1 FROM panestria.task_event WHERE goal_id=%s AND kind='background.withdrawn' "
             "AND payload->>'item_id'=%s LIMIT 1",
@@ -182,6 +189,8 @@ class BackgroundRunService:
             for task, state in tasks:
                 if state in {"CREATED", "READY"}:
                     continue
+                if worker is not None and task == str(worker.task_id) and state in {"RUNNING", "VERIFYING"}:
+                    continue  # authorize_worker already proved this exact current claim, not another running task.
                 if state != "COMPLETED" or task == binding.task_id:
                     raise KernelDenied("background_task_requires_owner_inspection")
                 handoff = uow.execute(
@@ -191,8 +200,17 @@ class BackgroundRunService:
                 ).fetchone()
                 if not handoff:
                     raise KernelDenied("background_dependency_not_verified")
-                PlanStore().read_handoff(uow, actor, handoff[0], self.evidence)
+                if worker is None:
+                    PlanStore().read_handoff(uow, actor, handoff[0], self.evidence)
             reasons.remove("goal_already_started_or_requires_owner_inspection")
+        if worker is not None and "foreground_or_held_capacity_reserved" in reasons:
+            other = uow.execute(
+                "SELECT EXISTS(SELECT 1 FROM panestria.build_active_worker_claim WHERE attempt_id<>%s) OR "
+                "EXISTS(SELECT 1 FROM panestria.ask_request WHERE state IN ('PREPARED','RUNNING'))",
+                (str(worker.attempt_id),),
+            ).fetchone()
+            if other == (False,):
+                reasons.remove("foreground_or_held_capacity_reserved")
         if reasons:
             raise KernelDenied("background_wait:" + sorted(set(reasons))[0])
         signal = uow.execute(
@@ -215,6 +233,66 @@ class BackgroundRunService:
                 ):
                     raise KernelDenied("background_route_limit_requires_new_eligibility_evidence")
         return view
+
+    def authorize_worker(
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        run: BackgroundRun,
+        scope: ToolScope,
+        *,
+        observation_sha256: str | None = None,
+    ) -> None:
+        """Intersect live queue eligibility with this already claimed worker.
+
+        Read-only for invocation/tool watchdogs: never acquires entity/event
+        locks, refreshes consent, consumes quota, releases a claim or retries.
+        Existing native/tool policy, lease and OS checks remain mandatory.
+        """
+        PlanStore()._transaction(uow)
+        if (run.owner_id, run.project_id) != (actor.owner_id, actor.project_id) or (
+            str(scope.owner_id),
+            str(scope.project_id),
+        ) != (actor.owner_id, actor.project_id):
+            raise KernelDenied("not_found")
+        binding = self.accounts.binding(uow, actor, run.item_id)
+        latest = uow.execute(
+            "SELECT id::text FROM panestria.build_plan WHERE goal_id=%s ORDER BY version DESC LIMIT 1",
+            (binding.goal_id,),
+        ).fetchone()
+        if latest != (binding.request.plan_id,):
+            raise KernelDenied("background_plan_superseded")
+        rows = self._history(uow, binding)
+        if not rows or self._run(rows[-1], binding) != run or binding.sha256() != run.binding_sha256:
+            raise KernelDenied("background_run_not_current")
+        if uow.execute(
+            "SELECT 1 FROM panestria.task_event WHERE goal_id=%s AND kind='background.run_returned' "
+            "AND payload->>'run_sha256'=%s LIMIT 1",
+            (binding.goal_id, run.sha256()),
+        ).fetchone():
+            raise KernelDenied("background_run_already_returned")
+        links = self.accounts._links(uow, binding)
+        if not links or self.accounts._link(links[-1], binding).sha256() != run.link_sha256:
+            raise KernelDenied("background_run_account_review_changed")
+        if observation_sha256 is not None:
+            linked = self._current_account(uow, actor, binding, observation_sha256)
+            if linked.sha256() != run.link_sha256:
+                raise KernelDenied("background_run_account_review_changed")
+        current = uow.execute(
+            "SELECT 1 FROM panestria.build_active_worker_claim c "
+            "JOIN panestria.task t ON t.id=c.task_id JOIN panestria.task_attempt a ON a.id=c.attempt_id "
+            "WHERE c.plan_id=%s AND c.task_id=%s AND c.attempt_id=%s AND c.lease_epoch=%s "
+            "AND c.worker_ref='claude-public-bash' AND t.lease_epoch=c.lease_epoch "
+            "AND t.state IN ('RUNNING','VERIFYING') AND a.lease_expires_at>clock_timestamp()",
+            (binding.request.plan_id, str(scope.task_id), str(scope.attempt_id), scope.lease_epoch),
+        ).fetchone()
+        if current is None:
+            raise KernelDenied("background_worker_claim_not_current")
+        now = uow.execute("SELECT clock_timestamp()").fetchone()
+        assert now is not None
+        if not run.started_at <= now[0] < run.deadline:
+            raise KernelDenied("background_run_deadline")
+        self._eligibility(uow, actor, binding, worker=scope)
 
     def start(self, uow: UnitOfWork, actor: Actor, item_id: str, observation_sha256: str, run_id: str) -> BackgroundRun:
         self._lock(uow, actor)

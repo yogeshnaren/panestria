@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="6" time="27.237" timestamp="2026-10-22T22:45:12.134304-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_background_worker_authority" name="test_change_after_invocation_claim_stops_context_disclosure[withdraw]" file="tests/integration/test_background_worker_authority.py" line="39" time="6.776" /><testcase classname="tests.integration.test_background_worker_authority" name="test_change_after_invocation_claim_stops_context_disclosure[account]" file="tests/integration/test_background_worker_authority.py" line="39" time="3.440" /><testcase classname="tests.integration.test_background_worker_authority" name="test_withdrawal_interrupts_active_worker_and_retains_uncertain_claim" file="tests/integration/test_background_worker_authority.py" line="76" time="3.835"><failure message="assert 0 == 1">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-145/test_withdrawal_interrupts_act0/build.json...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x743259545bb0&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x74325962b050&gt;
+
+    def test_withdrawal_interrupts_active_worker_and_retains_uncertain_claim(prepared_plan, native_plan, monkeypatch):
+        f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+        state["block"] = True
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(
+                lambda: BackgroundPlanRunner(owner, request.item_id).run_item(allow_background_subscription_run=True)
+            )
+            deadline = time.monotonic() + 10
+            while not state["active"] and not future.done() and time.monotonic() &lt; deadline:
+                time.sleep(0.02)
+&gt;           assert state["active"] == 1
+E           assert 0 == 1
+
+tests/integration/test_background_worker_authority.py:87: AssertionError</failure></testcase><testcase classname="tests.integration.test_background_worker_authority" name="test_account_change_on_tool_return_cannot_publish_verified_result" file="tests/integration/test_background_worker_authority.py" line="95" time="3.882"><failure message="assert (0,) == (1,)&#10;  &#10;  At index 0 diff: 0 != 1&#10;  Use -v to get more diff">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-145/test_account_change_on_tool_re0/build.json...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x743259514050&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7432595452b0&gt;
+
+    def test_account_change_on_tool_return_cannot_publish_verified_result(prepared_plan, native_plan, monkeypatch):
+        f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+        native = ClaudeScopedBashAdapter.build_public
+    
+        def returned(adapter, session, **kwargs):
+            outcome = native(adapter, session, **kwargs)  # Actual scoped tool edit and durable physical receipt.
+            change_account(monkeypatch)
+            return outcome
+    
+        monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", returned)
+        result = BackgroundPlanRunner(owner, request.item_id).run_item(allow_background_subscription_run=True)
+        assert result["status"] == "STOPPED" and state["launches"] == 1
+        with owner.connect() as c:
+&gt;           assert c.execute(
+                "SELECT count(*) FROM panestria.worker_invocation i JOIN panestria.task t ON t.id=i.task_id "
+                "WHERE t.goal_id=%s AND i.binding-&gt;&gt;'kind'='native-tool' AND i.state='RETURNED'",
+                (plan.goal_id,),
+            ).fetchone() == (1,)
+E           assert (0,) == (1,)
+E             
+E             At index 0 diff: 0 != 1
+E             Use -v to get more diff
+
+tests/integration/test_background_worker_authority.py:109: AssertionError</failure></testcase><testcase classname="tests.integration.test_background_run" name="test_actual_serial_background_job_preserves_foreground_slot_and_exact_final_owner_review" file="tests/integration/test_background_run.py" line="70" time="3.969"><properties><property name="candidate_commit" value="0f6042a8ae0a30c32a9880ede430d0828be26e8f" /><property name="fixture_digest" value="0c0be522d84b6f102c4e7d9b031f65697cfabf54cbdace8bd9be51ef0085c61b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: {'status': 'STOPPED', 'plan_id': 'db1380f3-d4c7-4551-b389-293dfae484a2', 'worker_observations': [{'task_id': '54d9c55f...lease_epoch': 2}, {'task_id': '99495a56-ce94-4725-98d6-b55973fca27a', 'task_state': 'CREATED', 'lease_epoch': 0}], ...}&#10;assert 'STOPPED' == 'WAITING_APPROVAL'&#10;  &#10;  - WAITING_APPROVAL&#10;  + STOPPED">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-145/test_actual_serial_background_0/build.json...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x74325d138410&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7432595338c0&gt;
+
+    def test_actual_serial_background_job_preserves_foreground_slot_and_exact_final_owner_review(
+        prepared_plan, native_plan, monkeypatch
+    ):
+        f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+        cli(f, "run", request.item_id, expected=1)
+        entered, proceed = threading.Event(), threading.Event()
+        original = BackgroundPlanRunner._one
+    
+        def pause(self, plan, job):
+            if not entered.is_set():
+                entered.set()
+                assert proceed.wait(10)
+            return original(self, plan, job)
+    
+        monkeypatch.setattr(BackgroundPlanRunner, "_one", pause)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(
+                lambda: BackgroundPlanRunner(owner, request.item_id).run_item(allow_background_subscription_run=True)
+            )
+            assert entered.wait(10)
+            duplicate = cli(f, "run", request.item_id, "--allow-background-subscription-run")
+            assert duplicate["status"] == "WAIT" and duplicate["reason"] == "background_controller_already_active"
+            with owner.connect() as c:
+                assert c.execute("SELECT count(*) FROM panestria.build_active_worker_claim").fetchone() == (1,)
+            proceed.set()
+            result = future.result(timeout=30)
+&gt;       assert result["status"] == "WAITING_APPROVAL", result
+E       AssertionError: {'status': 'STOPPED', 'plan_id': 'db1380f3-d4c7-4551-b389-293dfae484a2', 'worker_observations': [{'task_id': '54d9c55f...lease_epoch': 2}, {'task_id': '99495a56-ce94-4725-98d6-b55973fca27a', 'task_state': 'CREATED', 'lease_epoch': 0}], ...}
+E       assert 'STOPPED' == 'WAITING_APPROVAL'
+E         
+E         - WAITING_APPROVAL
+E         + STOPPED
+
+tests/integration/test_background_run.py:97: AssertionError</failure></testcase><testcase classname="tests.integration.test_background_run" name="test_actual_foreground_ask_yields_new_background_claims_and_explicit_resume_reuses_handoff" file="tests/integration/test_background_run.py" line="113" time="4.454"><properties><property name="candidate_commit" value="0f6042a8ae0a30c32a9880ede430d0828be26e8f" /><property name="fixture_digest" value="0c0be522d84b6f102c4e7d9b031f65697cfabf54cbdace8bd9be51ef0085c61b" /><property name="worktree_state" value="clean" /><property name="lane" value="integration" /></properties><failure message="AssertionError: assert ('STOPPED' == 'WAIT'&#10;  &#10;  - WAIT&#10;  + STOPPED)">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-145/test_actual_foreground_ask_yie0/build.json...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x743259628bc0&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x743259589b50&gt;
+
+    def test_actual_foreground_ask_yields_new_background_claims_and_explicit_resume_reuses_handoff(
+        prepared_plan, native_plan, monkeypatch
+    ):
+        from uuid import uuid4
+    
+        f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+        ask_id = str(uuid4())
+        original = BackgroundPlanRunner._one
+        prepared = []
+    
+        def foreground(self, plan, job):
+            result = original(self, plan, job)
+            if not prepared:
+                with owner.connect() as c:
+                    AskService().prepare(
+                        UnitOfWork(c),
+                        owner.actor,
+                        AskSubmission(
+                            request_id=ask_id,
+                            project_id=owner.actor.project_id,
+                            question="Synthetic foreground question",
+                            privacy_label="PUBLIC",
+                        ),
+                    )
+                prepared.append(ask_id)
+            return result
+    
+        monkeypatch.setattr(BackgroundPlanRunner, "_one", foreground)
+        paused = cli(f, "run", request.item_id, "--allow-background-subscription-run")
+&gt;       assert paused["status"] == "WAIT" and "foreground_or_held_capacity_reserved" in paused["background_wait_reason"]
+E       AssertionError: assert ('STOPPED' == 'WAIT'
+E         
+E         - WAIT
+E         + STOPPED)
+
+tests/integration/test_background_run.py:143: AssertionError</failure></testcase></testsuite></testsuites>

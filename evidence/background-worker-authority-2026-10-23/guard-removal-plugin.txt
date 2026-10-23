@@ -1,0 +1,5 @@
+"""Explicit negative witness: simulate removal of the newly connected worker guard."""
+from panestria.execution.background_run import BackgroundPlanRunner
+
+def pytest_configure(config):
+    BackgroundPlanRunner._worker_authority = lambda self, job, scope: None

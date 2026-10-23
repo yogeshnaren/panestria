@@ -4,12 +4,15 @@ from typing import Any
 from uuid import uuid4
 
 from panestria.contracts.background_run import BackgroundRun
+from panestria.contracts.build import canonical_sha256
 from panestria.contracts.hardware import HardwareManifest
+from panestria.contracts.native_tools import ToolScope
 from panestria.contracts.plan import StoredPlan
 from panestria.execution.background_account import account_reports, collect_account
 from panestria.execution.native_plan import NativePlanRunner
 from panestria.execution.owner_build import OwnerBuild
 from panestria.execution.proposal_demo import _lock
+from panestria.execution.worker_authority import WorkerAuthority
 from panestria.kernel.background_run import BACKGROUND_SESSION_LOCK, BackgroundRunService
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
@@ -58,6 +61,30 @@ class BackgroundPlanRunner(NativePlanRunner):
         if isinstance(result, Queued):
             self.wait_reason = result.reason
         return result
+
+    def _worker_authority(self, job: Scheduled, scope: ToolScope) -> WorkerAuthority:
+        run = self.run_record
+        if run is None or (str(scope.task_id), str(scope.attempt_id), scope.lease_epoch) != (
+            job.lease.task_id,
+            job.lease.attempt_id,
+            job.lease.epoch,
+        ):
+            raise KernelDenied("background_worker_binding_required")
+
+        def authorize(connection: Any) -> None:
+            self.service.authorize_worker(UnitOfWork(connection), self.owner.actor, run, scope)
+
+        def refresh() -> None:
+            # Bounded pinned CLI metadata only, immediately before disclosure
+            # and after return. No provider/model prompt or raw identity archive.
+            with self.owner.connect() as c:
+                authorize(c)
+                binding = self.service.accounts.binding(UnitOfWork(c), self.owner.actor, self.item_id)
+            digest = collect_account(self.owner, binding.request.policy.quota_windows[0].account_ref)
+            with self.owner.connect() as c:
+                self.service.authorize_worker(UnitOfWork(c), self.owner.actor, run, scope, observation_sha256=digest)
+
+        return WorkerAuthority(canonical_sha256({"run": run.sha256(), "scope": scope.sha256()}), authorize, refresh)
 
     def run_item(self, *, allow_background_subscription_run: bool) -> dict[str, Any]:
         if allow_background_subscription_run is not True:
