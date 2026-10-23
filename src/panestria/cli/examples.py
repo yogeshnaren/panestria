@@ -84,3 +84,9 @@ def validate_export(config: Config, packet: Path) -> None:
 def withdraw(config: Config, review_sha256: str, confirm_withdrawal: bool = False) -> None:
     """Permanently withdraw the same content in this project, preserving history and existing files."""
     _finish(lambda: _service(config).withdraw(review_sha256, confirm=confirm_withdrawal))
+
+
+@examples_app.command("inspect")
+def inspect(config: Config, review_sha256: str) -> None:
+    """Recover scoped canonical review/expiry/withdrawal metadata without repeating consent or exporting data."""
+    _finish(lambda: _service(config).inspect(review_sha256))

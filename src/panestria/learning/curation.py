@@ -297,6 +297,43 @@ class ExampleCuration:
             "existing_exports_deleted": False,
         }
 
+    def inspect(self, digest: str) -> dict[str, Any]:
+        with self.connect() as c:
+            c.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+            review = self._get(c, digest)
+            p = review.preview
+            now = self._now(c)
+            policy = current_policy(UnitOfWork(c), self.actor)
+            policy_current = p.policy_ref == f"project-policy:{policy.version}:{policy.sha256()}"
+            latest = c.execute(
+                "SELECT review_sha256 FROM panestria.curated_example_review "
+                "WHERE owner_id=%s AND project_id=%s AND content_sha256=%s ORDER BY seq DESC LIMIT 1",
+                (self.actor.owner_id, self.actor.project_id, p.example.content_sha256),
+            ).fetchone()
+            current = latest is not None and str(latest[0]).strip() == digest
+            withdrawn = self._withdrawn(c, p.example.content_sha256)
+            state = p.proposed_eligibility
+            if withdrawn:
+                state = "DENIED"
+            elif not current or not policy_current or review.expires_at <= now:
+                state = "UNKNOWN"
+            elif state == "ALLOWED":
+                state = eligibility(p.example, p.evidence, now)[0]
+            return {
+                "status": "REVIEW_METADATA",
+                "review_sha256": digest,
+                "example_sha256": p.example.sha256(),
+                "content_sha256": p.example.content_sha256,
+                "recorded_eligibility": p.proposed_eligibility,
+                "observed_eligibility": state,
+                "current_revision": current,
+                "policy_current": policy_current,
+                "withdrawn": withdrawn,
+                "expires_at": review.expires_at.isoformat(),
+                "observed_at": now.isoformat(),
+                "authority": "METADATA_NOT_EXPORT_PERMISSION",
+            }
+
     def _entries(self, c: psycopg.Connection[Any], reviews: tuple[str, ...]) -> tuple[ExportEntry, ...]:
         if not 1 <= len(reviews) <= 16 or len(set(reviews)) != len(reviews):
             raise KernelDenied("curation_export_selection_invalid")

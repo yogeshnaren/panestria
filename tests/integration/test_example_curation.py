@@ -144,6 +144,7 @@ def test_exact_separate_consent_concurrent_replay_and_offline_export_restore_cli
         )
     assert sorted(r["replayed"] for r in results) == [False, True]
     assert all(r["current"] and r["eligibility"] == "ALLOWED" for r in results)
+    assert cli(f, "inspect", digest)["observed_eligibility"] == "ALLOWED"
     with f.service.connect() as c:
         saved = c.execute("SELECT expires_at,seq FROM panestria.curated_example_review").fetchall()
         assert len(saved) == 1
@@ -171,6 +172,7 @@ def test_exact_separate_consent_concurrent_replay_and_offline_export_restore_cli
     # Isolate withdrawal itself while policy and the positive review still permit use.
     assert f.service.validate_export(output)["status"] == "CURRENT_ELIGIBILITY_CONFIRMED"
     f.service.withdraw(digest, confirm=True)
+    assert cli(f, "inspect", digest)["observed_eligibility"] == "DENIED"
     with pytest.raises(KernelDenied, match="current_eligibility"):
         f.service.validate_export(output)
     assert output.read_bytes() == original
