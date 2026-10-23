@@ -1,6 +1,8 @@
 """Actual PG/Git/Docker/archive/recall; native and local model transports are fixtures."""
 
 import json
+import os
+import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from uuid import uuid4
@@ -142,3 +144,57 @@ def test_suppression_and_correction_fence_prepared_ask_and_cannot_be_bypassed_by
         service.remember(digest, review["review_sha256"], accept_local_recall=True)
     assert files == {p.name: p.read_bytes() for p in (f.root / "offline-results/blobs").iterdir()}
     assert state["launches"] == 2
+
+
+@pytest.mark.live
+def test_actual_cached_cpu_retrieves_the_reviewed_build_excerpt(prepared_plan, native_plan, tmp_path, record_property):
+    from panestria.inference.runtime import ModelRuntime
+    from panestria.resources.admission import admit
+    from panestria.resources.hardware import HardwareProbe
+
+    cache = os.environ.get("PANESTRIA_RECALL_TEST_MODEL_CACHE")
+    if not cache:
+        pytest.skip("Explicit existing cache required; no model download")
+    assert not subprocess.check_output(
+        ["docker", "ps", "-a", "-q", "--filter", "label=panestria.purpose=local-model"], text=True
+    ).strip(), "Existing owner model preserved; probe not run"
+    archive = Path(__file__).resolve().parents[2] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
+    assert admit(HardwareProbe(archive).collect_cpu(), gpu=False).decision == "PERMIT"
+    _, owner, state, digest = confirmed(prepared_plan, native_plan)
+    recall = OfflineBuildRecall(owner.settings, owner.dsn)
+    preview = recall.prepare(digest)
+    saved = recall.remember(digest, preview["review_sha256"], accept_local_recall=True)
+    ask = AskService()
+    question = AskSubmission(
+        request_id=str(uuid4()),
+        project_id=owner.actor.project_id,
+        context_tokens=4096,
+        max_output_tokens=16,
+        deadline_seconds=60.0,
+        question="What number did the calculator Build change to? Reply with only the number.",
+    )
+    with owner.connect() as c:
+        ready = ask.prepare(UnitOfWork(c), owner.actor, question)
+        assert len(ready.context.sources) == 1 and ready.context.sources[0].item_id == saved["item_id"]
+    runtime = ModelRuntime(Path(cache), tmp_path / "owned-cpu", preserve_existing=True)
+    try:
+        runtime.start()
+        with owner.connect() as c:
+            inference = ask.claim(UnitOfWork(c), owner.actor, ready)
+        result = LocalProvider(runtime.socket_path).generate(inference)
+        with owner.connect() as c:
+            ask.finish(UnitOfWork(c), owner.actor, question.request_id, result)
+        record_property("mode", "ACTUAL_CACHED_CPU_PG_ARCHIVE_RECALL__NATIVE_BUILD_GENERATION_FIXTURE")
+        record_property("source_commit", subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip())
+        record_property("runtime_identity", runtime.identity)
+        record_property("input_tokens", result.usage.input_tokens)
+        record_property("output_tokens", result.usage.output_tokens)
+        record_property("generation_seconds", result.elapsed_seconds)
+        record_property("first_token_seconds", result.first_token_seconds)
+        record_property("expected_answer", "43")
+        record_property("observed_answer", result.text.strip())
+        record_property("quality_scope", "ONE_SYNTHETIC_RECALL_SAMPLE_NOT_MODEL_OR_RELEASE_QUALIFICATION")
+        assert result.text.strip() == "43" and result.finish_reason == "stop"
+        assert state["launches"] == 2  # No additional cloud/native call for capture/recall.
+    finally:
+        runtime.stop()
