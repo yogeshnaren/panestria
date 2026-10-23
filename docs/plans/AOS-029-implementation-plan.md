@@ -135,3 +135,14 @@ search, state write, judgment or training right. [Original component evidence](.
 uses actual PG/CAS/reader/CLI with explicit model/transport/dispatch fixtures.
 S2 remains partial; tracing/exposure/UI, resource samples, domain baselines and
 original gates/owner acceptance above remain open.
+
+## Saved runtime overview component
+
+The [performance overview](../testing/PERFORMANCE_OVERVIEW.md) now reads existing
+private Ask/Build/research captures and preserves the latest original measurement
+per scoped cohort. Repeated captures do not inflate original record inventory.
+Unknowns, sample denominators and timing scopes remain explicit; no pooled
+benchmark, new inference or release authority. See
+[design108](../design/108-PERFORMANCE-OVERVIEW.md) and linked evidence. This is a
+partial AOS-029-S2 outcome; full tracing/exposure/resources/phone and original
+qualification remain open.

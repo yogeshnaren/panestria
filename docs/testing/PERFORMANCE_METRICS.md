@@ -128,3 +128,7 @@ inference/search or database mutation. Missing quality/cash remains UNKNOWN;
 owner judgments are not a measured accuracy score or automatic qualification.
 No private content or output/input hash is copied. Automatic instrumentation,
 latency distributions, quality, OTel/exposure and original gates remain open.
+
+For a separate saved view across retained runtime captures, use the
+[performance overview](PERFORMANCE_OVERVIEW.md). It keeps modes/cohorts separate,
+deduplicates original record inventory and introduces no pooled accuracy or p95.

@@ -5,6 +5,17 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+## Current saved performance overview
+
+The [runtime overview](testing/PERFORMANCE_OVERVIEW.md) now combines explicitly
+selected private Ask/Build/research capture histories into one terminal view and
+optional saved report. It preserves latest observations by owner/project/model/
+source cohort, original sample denominators and UNKNOWN values. Distinct original
+record inventory deduplicates repeated captures; no pooled benchmark or accuracy
+is invented. [22 focused checks](../evidence/performance-overview-2026-10-23/report.json)
+pass using actual filesystem/CLI and synthetic measurements, with no new inference.
+Full tracing/exposure/resources/phone and cumulative acceptance stay open.
+
 ## Current background editing authority
 
 [Background worker authority](testing/BACKGROUND_WORKER_AUTHORITY.md) now carries
