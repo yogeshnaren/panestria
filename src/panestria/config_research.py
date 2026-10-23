@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, StrictInt
 
 from panestria.config_local import read_private
+from panestria.contracts.fetch_connection import FetchConnectionBinding
 from panestria.contracts.search import LocalSearchSettings
 
 
@@ -19,6 +20,7 @@ class ResearchSettings(BaseModel):
     certificates: Path
     certificate_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     search: LocalSearchSettings
+    fetch_connection: FetchConnectionBinding | None = None
 
 
 def validate_research_settings(settings: ResearchSettings) -> ResearchSettings:

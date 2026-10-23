@@ -8,6 +8,7 @@ import ssl
 import sys
 from pathlib import Path
 
+from panestria.contracts.fetch_connection import FETCH_CONFIGURATION_SHA256
 from panestria.contracts.search import LocalSearchSettings
 from panestria.policy.research import RESEARCH_PROFILE
 from panestria.policy.research_fetch import FETCH_PROFILE
@@ -35,7 +36,7 @@ def fetch_runtime_versions() -> dict[str, str]:
     return {
         "profile": FETCH_PROFILE,
         "source_sha256": _source_sha256(),
-        "configuration_sha256": hashlib.sha256(b"public-https443-fixed-reader-no-network-v1").hexdigest(),
+        "configuration_sha256": FETCH_CONFIGURATION_SHA256,
         "python": sys.version,
         "openssl": ssl.OPENSSL_VERSION,
         "kernel": platform.release(),
