@@ -7,6 +7,7 @@ import os
 from collections.abc import Callable
 from pathlib import Path
 from typing import Annotated, Any
+from uuid import UUID
 
 import typer
 
@@ -118,7 +119,12 @@ def capture_reference(config: Config, goal_id: str) -> None:
 
 
 @build_app.command("reference")
-def show_reference(config: Config, reference_sha256: str, diff: bool = False) -> None:
+def show_reference(
+    config: Config,
+    reference_sha256: str,
+    diff: bool = False,
+    input_invocation: Annotated[UUID | None, typer.Option("--input")] = None,
+) -> None:
     """Inspect integrity-checked historical metadata offline without a database connection."""
     from panestria.execution.offline_build import read_reference
 
@@ -130,6 +136,19 @@ def show_reference(config: Config, reference_sha256: str, diff: bool = False) ->
         if diff:
             store = BuildEvidenceStore(settings.root / "offline-results/blobs")
             result["diff"] = b"".join(store.read_blob(sha) for sha in manifest.parts["diff"].chunks).decode()
+        if input_invocation is not None:
+            selected = next((i for i in manifest.invocations if i.invocation_id == input_invocation), None)
+            if selected is None or selected.selected_context_part is None:
+                raise KernelDenied("offline_context_not_retained")
+            store = BuildEvidenceStore(settings.root / "offline-results/blobs")
+            part = manifest.parts[selected.selected_context_part]
+            result["selected_context"] = {
+                "invocation_id": str(input_invocation),
+                "scope": "SELECTED_PUBLIC_CONTEXT_NOT_ALL_MODEL_TRAFFIC",
+                "sha256": part.sha256,
+                "size_bytes": part.size_bytes,
+                "payload": json.loads(b"".join(store.read_blob(sha) for sha in part.chunks)),
+            }
         return result
 
     _finish(read)

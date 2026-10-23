@@ -67,6 +67,43 @@ Old schema1 archives remain readable without rewriting. Explicit recapture can
 create a separate schema2 reference from original canonical records; it never
 updates an old reference hash. No migration or new inference is needed.
 
+New source receipts also record a bounded original selected-context metadata
+manifest: the exact task/assignment header, Git tree and selected file paths,
+hashes and byte lengths. It contains no file content or credentials. Confirmed
+capture can now reconstruct those exact original files from their protected
+immutable Git tree, verify the complete original request hash and retain the
+selected context in a new schema3 archive. Its original binding/receipt travel
+with it. Missing/changed original metadata, file content, assignment or source
+tree refuses capture while preserving the confirmed merge. No current launcher
+or plan is used to guess old inputs. Original schema1/2 archives and absent
+original input metadata remain immutable and UNKNOWN.
+
+Default viewing still shows metadata only. To view one retained selected input,
+use its invocation UUID from the manifest:
+
+```bash
+panestria build reference --config /absolute/private/build.json REFERENCE_SHA256 \
+  --input INVOCATION_UUID
+```
+
+Expect `selected_context` with its original hash/size and payload. This is at
+most16KiB of selected PUBLIC input, including pre-edit file contents. It does not
+include fixed harness prompts, later tool conversations, raw native output or
+physical network observations. A legacy/unretained selection returns
+`offline_context_not_retained`. A copied complete archive verifies and displays
+this data without a database, Git, auth, certificate or model. It grants no new
+task, source-quality, memory or training permission. Schema3 retains the existing
+1MiB capture/8MiB history caps; larger captures refuse instead of silently dropping
+input evidence. Nothing is pruned automatically.
+
+[Source-bound context checks](../../evidence/native-context-archive-2026-10-23/report.json)
+cover exact original pre-edit input/new-file empty selection, copied offline
+view, original metadata/hash/assignment/tree refusal, forged provenance refusal,
+legacy UNKNOWN, archive capacity and ordinary recall. They use real disposable
+PG/Git/MCP/Docker and scripted test-owner approval; native/auth/account/runtime
+qualification remains synthetic. No provider request or source certificate is
+created or renewed.
+
 [Identity design](../design/110-OFFLINE-INVOCATION-IDENTITY.md) and
 [source-bound checks](../../evidence/offline-invocation-identity-2026-10-23/report.json)
 cover new and legacy receipt transport, offline copied-archive reads and recall

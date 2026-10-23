@@ -22,6 +22,7 @@ from panestria.brokers.harness.claude_build import PROFILE, ClaudeScopedBashAdap
 from panestria.brokers.harness.claude_proposal import PINNED_BINARY_SHA256
 from panestria.contracts.build import canonical_sha256
 from panestria.contracts.invocation import InvocationBinding
+from panestria.contracts.native_context import NativeContextManifest
 from panestria.contracts.policy import Action, PolicyRequest
 from panestria.execution.scoped_bash import BuildReview, ScopedBashController
 from panestria.kernel.errors import KernelDenied
@@ -349,6 +350,9 @@ class AdmittedNativeBuild:
                     {
                         "kind": "admitted-native-build",
                         "context_sha256": self.context_sha256,
+                        "selected_context_manifest": NativeContextManifest.from_context(context).model_dump(
+                            mode="json"
+                        ),
                         "scope_sha256": controller.scope.sha256(),
                         "runtime_versions": self.versions,
                         "observation": asdict(observation),

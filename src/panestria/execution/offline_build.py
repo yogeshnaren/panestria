@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import re
+import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
@@ -15,6 +16,7 @@ from uuid import UUID
 from panestria.contracts.goal import load_contract
 from panestria.contracts.invocation import InvocationBinding
 from panestria.contracts.offline_result import InvocationProvenance, OfflineBuildReference, RetainedPart
+from panestria.execution.offline_context import context_parts, reconstruct_context, verify_context
 from panestria.execution.proposal_demo import _lock, _private
 from panestria.kernel.build import BuildEvidenceService, BuildEvidenceStore
 from panestria.kernel.build_progress import BuildProgressService
@@ -33,6 +35,7 @@ def _bytes(value: object) -> bytes:
 
 def capture_reference(owner: "OwnerBuild", goal: str) -> dict[str, Any]:
     payloads: dict[str, bytes] = {}
+    context_deadline = time.monotonic() + 10
     with owner.connect() as c:
         c.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
         uow = UnitOfWork(c)
@@ -83,7 +86,7 @@ def capture_reference(owner: "OwnerBuild", goal: str) -> dict[str, Any]:
         if len(rows) > 64:
             raise KernelDenied("offline_reference_provenance_limit")
         provenance = []
-        for identity, document, binding_hash, receipt, task, attempt in rows:
+        for index, (identity, document, binding_hash, receipt, task, attempt) in enumerate(rows):
             binding = InvocationBinding.model_validate_json(json.dumps(document))
             if binding.sha256() != str(binding_hash).strip() or (
                 str(binding.scope.owner_id),
@@ -95,8 +98,10 @@ def capture_reference(owner: "OwnerBuild", goal: str) -> dict[str, Any]:
                 raise KernelDenied("offline_reference_binding_mismatch")
             source = None
             requested_model = reported_init_model = None
+            selected_context_part = None
             if receipt:
-                body = json.loads(owner.reports.read_blob(str(receipt).strip()))
+                original_receipt = owner.reports.read_blob(str(receipt).strip())
+                body = json.loads(original_receipt)
                 versions = body.get("runtime_versions", {}) if isinstance(body, dict) else {}
                 candidate = versions.get("source_sha256") if isinstance(versions, dict) else None
                 if isinstance(candidate, str) and re.fullmatch(r"[a-f0-9]{64}", candidate):
@@ -122,6 +127,13 @@ def capture_reference(owner: "OwnerBuild", goal: str) -> dict[str, Any]:
                             type(value) is not str or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}", value) is None
                         ):
                             raise KernelDenied("offline_reference_invalid_model_metadata")
+                    if "selected_context_manifest" in body:
+                        selected_context_part, binding_part, receipt_part = context_parts(index)
+                        payloads[selected_context_part] = reconstruct_context(
+                            owner.settings.repository, binding, body, deadline=context_deadline
+                        )
+                        payloads[binding_part] = _bytes(binding.model_dump(mode="json"))
+                        payloads[receipt_part] = original_receipt
             provenance.append(
                 InvocationProvenance(
                     invocation_id=identity,
@@ -133,6 +145,7 @@ def capture_reference(owner: "OwnerBuild", goal: str) -> dict[str, Any]:
                     configuration_sha256=binding.configuration_sha256,
                     requested_model=requested_model,
                     reported_init_model=reported_init_model,
+                    selected_context_part=selected_context_part,
                 )
             )
     payloads["diff"] = protected_git(
@@ -162,7 +175,7 @@ def capture_reference(owner: "OwnerBuild", goal: str) -> dict[str, Any]:
             refs.append(digest)
         parts[name] = RetainedPart(sha256=hashlib.sha256(raw).hexdigest(), size_bytes=len(raw), chunks=tuple(refs))
     manifest = OfflineBuildReference(
-        schema_version=2,
+        schema_version=3 if any(p.selected_context_part is not None for p in provenance) else 2,
         owner_id=UUID(owner.actor.owner_id),
         project_id=UUID(owner.actor.project_id),
         goal_id=UUID(goal),
@@ -236,6 +249,51 @@ def read_reference(root: Path, owner: str, project: str, digest: str) -> Offline
 
     contract = load_contract(json.loads(contents["contract"]))
     bundle = BuildEvidenceBundle.model_validate_json(contents["final_evidence"])
+    expected_parts = {"contract", "diff", "final_evidence"} | {
+        f"check-report-{i}" for i in range(len(bundle.checks))
+    }
+    for index, invocation in enumerate(manifest.invocations):
+        if invocation.selected_context_part is None:
+            continue
+        context_part, binding_part, receipt_part = context_parts(index)
+        try:
+            if invocation.selected_context_part != context_part or not {
+                context_part, binding_part, receipt_part
+            } <= contents.keys():
+                raise ValueError("context_parts_missing")
+            binding = InvocationBinding.model_validate_json(contents[binding_part])
+            receipt = json.loads(contents[receipt_part])
+            if (
+                binding.sha256() != invocation.binding_sha256
+                or manifest.parts[receipt_part].sha256 != invocation.receipt_sha256
+                or (str(binding.scope.owner_id), str(binding.scope.project_id), binding.scope.contract_sha256)
+                != (str(manifest.owner_id), str(manifest.project_id), manifest.contract_sha256)
+                or binding.kind != invocation.kind
+                or binding.request_sha256 != invocation.request_sha256
+                or binding.configuration_sha256 != invocation.configuration_sha256
+                or type(receipt) is not dict
+            ):
+                raise ValueError("context_binding_mismatch")
+            verify_context(binding, receipt, contents[context_part])
+            versions = receipt.get("runtime_versions", {})
+            source = versions.get("source_sha256") if isinstance(versions, dict) else None
+            if not isinstance(source, str) or re.fullmatch(r"[a-f0-9]{64}", source) is None:
+                source = None
+            observation = receipt.get("observation", {})
+            if not isinstance(observation, dict):
+                raise ValueError("context_model_metadata_invalid")
+            process = observation.get("process")
+            result = process.get("result") if isinstance(process, dict) else None
+            reported = result.get("reported_init_model") if isinstance(result, dict) else None
+            if (
+                source != invocation.controller_source_sha256
+                or observation.get("requested_model") != invocation.requested_model
+                or reported != invocation.reported_init_model
+            ):
+                raise ValueError("context_source_mismatch")
+        except (KeyError, TypeError, ValueError, RecursionError):
+            raise KernelDenied("offline_context_unavailable_or_mismatched") from None
+        expected_parts.update((context_part, binding_part, receipt_part))
     if (
         manifest.parts["contract"].sha256 != manifest.contract_sha256
         or manifest.parts["final_evidence"].sha256 != manifest.evidence_sha256
@@ -260,8 +318,7 @@ def read_reference(root: Path, owner: str, project: str, digest: str) -> Offline
         or (contract.owner_id, contract.project_id, contract.privacy_class, contract.contract_version)
         != (str(manifest.owner_id), str(manifest.project_id), "PUBLIC", bundle.contract_version)
         or not bundle.passed()
-        or set(contents)
-        != {"contract", "diff", "final_evidence"} | {f"check-report-{i}" for i in range(len(bundle.checks))}
+        or set(contents) != expected_parts
         or any(
             manifest.parts[f"check-report-{i}"].sha256 != check.report_sha256 for i, check in enumerate(bundle.checks)
         )
