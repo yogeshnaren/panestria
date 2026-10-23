@@ -33,6 +33,14 @@ def setup(prepared_plan, native_plan, monkeypatch, *, billing=True, billing_fres
     state = native_plan[3]
     state["expected_workers"] = 1
     request = request_for(owner, plan)
+    model = owner.settings.native_model
+    if model is not None:
+        body = request.model_dump(mode="json")
+        body["policy"].update(schema_version=2, model_ref=model)
+        body["policy"]["quota_windows"].append(
+            {**body["policy"]["quota_windows"][0], "window_ref": "selected-model", "model_ref": model}
+        )
+        request = BackgroundEnqueue.model_validate_json(json.dumps(body))
     if billing:
         request = BackgroundEnqueue.model_validate_json(
             json.dumps(

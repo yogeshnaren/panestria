@@ -13,7 +13,6 @@ from test_owner_build_cli import owner_cli as owner_cli  # noqa: F401
 from panestria.cli.connection_terminal import review_lines
 from panestria.contracts.connections import ConnectionReviewView
 from panestria.contracts.native_connection import NativeConnectionReservation
-from panestria.execution.background_run import BackgroundPlanRunner
 from panestria.execution.native_connection import preflight_connection
 from panestria.kernel.connections import ConnectionReviewService
 from panestria.kernel.errors import KernelDenied
@@ -61,9 +60,7 @@ def test_selected_two_worker_model_reaches_exact_review_with_retained_grant_and_
         assert receipt["runtime_versions"]["requested_model"] == selected
         assert receipt["observation"]["requested_model"] == selected
         assert receipt["observation"]["process"]["result"]["reported_init_model"] == selected
-    # Foreground selection cannot reinterpret a legacy reviewed background policy.
-    with pytest.raises(KernelDenied, match="background_selected_model_not_supported"):
-        BackgroundPlanRunner(owner, plan.plan_id)._preflight(plan.plan_id)
+    # Model-scoped queue admission is covered separately in test_background_model_scope.
 
 
 @pytest.mark.parametrize("owner_cli", [{"native_model": "claude-sonnet-5"}], indirect=True)
