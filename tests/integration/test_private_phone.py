@@ -229,6 +229,17 @@ def test_explicit_configuration_and_private_client_boundary(r1_migration_task, t
             assert plaintext.get("/").status_code == 403
     finally:
         app_.state.health.shutdown()
+    # HTTPS's default port is omitted by browser Origin serialization.
+    standard = config.model_copy(update={"bind_port": 443})
+    assert standard.origin == "https://127.0.0.1"
+    standard_app = build_phone_app(
+        standard, Settings(database_url=r1_migration_task["dsn"]).validate_profile(), token, ASSETS
+    )
+    try:
+        with TestClient(standard_app, base_url=standard.origin, client=("127.0.0.1", 1000)) as browser:
+            assert browser.get("/").status_code == 200
+    finally:
+        standard_app.state.health.shutdown()
 
 
 def test_empty_phone_schema_roundtrip_and_original_observation(r1_migration_task):

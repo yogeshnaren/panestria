@@ -42,7 +42,7 @@ class BrowserAccess:
         if (
             parts.scheme not in {"http", "https"}
             or not self._origin_host_allowed(parts.hostname, parts.scheme)
-            or parts.port is None
+            or (parts.port is None and not (self.private_read_only and parts.scheme == "https"))
             or parts.path
             or parts.query
             or parts.fragment

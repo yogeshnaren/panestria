@@ -1,6 +1,6 @@
 # Private read-only phone observer
 
-This optional mode shows existing project/task/worker/check metadata and the
+This optional mode shows existing project/task/worker metadata and the
 attention inbox in a browser. It cannot start work, approve/merge changes, change
 grants or read raw/private artifacts. The workstation runs the work and must stay
 online. Desktop modes remain loopback-only. Nothing is enabled by installation.
@@ -88,5 +88,5 @@ and never automatically deleted.
 use real CLI/PG/TLS/cookies and a temporary synthetic test CA on loopback. They do
 not establish compatibility with your phone, certificate trust store or private
 network. The peer/clock/configuration failure checks include explicit fixtures.
-Full responsive/stale/offline/reconnect/device qualification and TC05–TC08/G3
+Protected Build evidence-store integration, full responsive/stale/offline/reconnect/device qualification and TC05–TC08/G3
 acceptance remain separate. No browser background-push delivery is claimed.

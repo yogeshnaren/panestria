@@ -46,7 +46,7 @@ class PhoneSettings(ActivitySettings):
 
     @property
     def origin(self) -> str:
-        return f"https://{self.bind_address}:{self.bind_port}"
+        return f"https://{self.bind_address}" + ("" if self.bind_port == 443 else f":{self.bind_port}")
 
 
 def load_phone_settings(path: Path) -> tuple[PhoneSettings, SecretStr]:
