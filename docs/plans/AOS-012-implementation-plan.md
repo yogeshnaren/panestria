@@ -192,3 +192,7 @@ offline view, legacy/refusal/capacity/recall with synthetic native/auth fixtures
 This advances S6 selected-input lineage; Ask/Delegate/raw candidate capture,
 broader rights and full TC08/TC09/G3 remain open. No original certificate is
 reissued or source evidence relabeled by these component checks.
+
+## Reviewed foreground model component — 2026-10-23
+
+See [design115](../design/115-REVIEWED-NATIVE-MODELS.md) and [test/setup guide](../testing/NATIVE_MODEL_SELECTION.md). Explicit request IDs now bind separate visible connection consent, model-specific runtime qualification/inventory, launcher and protected receipts. Legacy defaults remain unchanged. Synthetic connected checks and actual empty-auth zero-turn metadata do not establish provider inference, billing, model quality or an original release-case pass. Model-scoped background queue integration remains a separate ready task.

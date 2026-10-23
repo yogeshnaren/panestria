@@ -18,6 +18,7 @@ from test_registered_check_authority import git
 from panestria.brokers.harness.claude_build import PROFILE, ClaudeScopedBashAdapter
 from panestria.brokers.harness.claude_check import CheckProfileObservation
 from panestria.brokers.harness.claude_proposal import ClaudeProposalAdapter
+from panestria.brokers.harness.event_parser import NativeResult
 from panestria.brokers.harness.process_runner import ProcessReceipt
 from panestria.config_build import load_build_settings
 from panestria.contracts.goal import contract_sha256, load_contract
@@ -183,12 +184,15 @@ def native_plan(prepared_plan, monkeypatch):
                 "quota_unavailable" if unavailable else "TEST_FIXTURE_NOT_LIVE",
                 "ab" * 32,
                 "cd" * 32,
-                None,
+                NativeResult("CANDIDATE", False, "TEST_FIXTURE_NOT_LIVE", "ab" * 32, _self.native_model)
+                if _self.native_model is not None
+                else None,
             ),
             True,
             True,
             "ef" * 32,
             profile=PROFILE,
+            requested_model=_self.native_model,
         )
 
     monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", native)

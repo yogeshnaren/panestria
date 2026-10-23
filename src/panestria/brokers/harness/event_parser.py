@@ -69,7 +69,7 @@ def _reason(text: str) -> str:
     return "native_error"
 
 
-def _result_metadata(body: dict[str, Any], *, failed: bool) -> None:
+def _result_metadata(body: dict[str, Any], *, failed: bool, selected_model: bool = False) -> None:
     for field in ("first_content_frame_ms", "time_to_request_ms", "ttft_ms", "ttft_stream_ms"):
         if field in body and (type(body[field]) is not int or not 0 <= body[field] <= 900_000):
             raise ProtocolRejected("invalid_result_metadata")
@@ -79,6 +79,7 @@ def _result_metadata(body: dict[str, Any], *, failed: bool) -> None:
     if body.get("fast_mode_state", "off") != "off" or body.get("fast_mode_disabled_reason") not in (
         None,
         "sdk_opt_in_required",
+        *(("model_not_allowed",) if selected_model else ()),
     ):
         raise ProtocolRejected("unexpected_fast_mode")
     if "terminal_reason" in body:
@@ -118,9 +119,11 @@ class ClaudeEventParser:
         *,
         capture_candidate: bool = False,
         allowed_mcp_servers: frozenset[str] = frozenset(),
+        expected_model: str | None = None,
     ) -> None:
         self.allowed_tools = allowed_tools
         self.allowed_mcp_servers = allowed_mcp_servers
+        self.expected_model = expected_model
         self._mcp_display_names = {"panestria"}
         # Display labels are pinned to the explicitly selected tool profile.
         # A new label never grants another tool/server or widens the read mode.
@@ -242,7 +245,7 @@ class ClaudeEventParser:
                 raise ProtocolRejected("unexpected_terminal_command")
             if body.get("fast_mode_state", "off") != "off" or body.get(
                 "fast_mode_disabled_reason", "sdk_opt_in_required"
-            ) not in (None, "sdk_opt_in_required"):
+            ) not in (None, "sdk_opt_in_required", *(("model_not_allowed",) if self.expected_model else ())):
                 raise ProtocolRejected("unexpected_fast_mode")
             for flag in ("analytics_disabled", "product_feedback_disabled"):
                 if flag in body and body[flag] is not True:
@@ -276,7 +279,7 @@ class ClaudeEventParser:
                     or body.get("permissionMode") != "default"
                     or any(body.get(field, []) != [] for field in ("skills", "slash_commands", "plugins"))
                     or body.get("apiKeySource") != "none"
-                    or body.get("model") != "claude-haiku-4-5-20251001"
+                    or body.get("model") != (self.expected_model or "claude-haiku-4-5-20251001")
                     or body.get("agents") != ["claude", "Explore", "general-purpose", "Plan", "statusline-setup"]
                 ):
                     raise ProtocolRejected("unexpected_mcp_profile_metadata")
@@ -353,6 +356,8 @@ class ClaudeEventParser:
                 raise ProtocolRejected("invalid_message")
             if self.allowed_mcp_servers:
                 self._mcp_metadata(body, message, kind)
+            if kind == "assistant" and self.expected_model is not None and message.get("model") != self.expected_model:
+                raise ProtocolRejected("native_model_changed")
             for block in message["content"]:
                 if not isinstance(block, dict):
                     raise ProtocolRejected("invalid_block")
@@ -392,6 +397,10 @@ class ClaudeEventParser:
                 },
             )
             self._session(body, allow_before_init=True)
+            if self.expected_model is not None and (
+                not isinstance(body.get("modelUsage"), dict) or set(body["modelUsage"]) - {self.expected_model}
+            ):
+                raise ProtocolRejected("native_model_usage_mismatch")
             failed = body.get("is_error")
             subtype = body.get("subtype")
             if type(failed) is not bool or subtype not in {
@@ -402,7 +411,7 @@ class ClaudeEventParser:
                 "error_max_structured_output_retries",
             }:
                 raise ProtocolRejected("unknown_result_state")
-            _result_metadata(body, failed=failed)
+            _result_metadata(body, failed=failed, selected_model=self.expected_model is not None)
             if body.get("permission_denials"):
                 raise ProtocolRejected("privilege_request_denied")
             text = _text(body.get("result", ""))

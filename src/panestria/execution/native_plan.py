@@ -20,6 +20,7 @@ from panestria.brokers.harness.claude_proposal import PINNED_BINARY_SHA256, Clau
 from panestria.brokers.harness.cli_profile import BinaryPin
 from panestria.contracts.build import canonical_sha256
 from panestria.contracts.goal import contract_sha256, load_contract
+from panestria.contracts.native_model import NativeModel
 from panestria.contracts.native_tools import ToolScope
 from panestria.contracts.plan import HandoffSubmission, ProjectInventory, StoredPlan, WorkerInventory
 from panestria.contracts.policy import PolicyRequest
@@ -52,8 +53,8 @@ def controller_binary_sha256() -> str:
     return hashlib.sha256(running.read_bytes()).hexdigest()
 
 
-def worker_declarations() -> tuple[WorkerInventory, ...]:
-    versions = runtime_versions()
+def worker_declarations(native_model: NativeModel | None = None) -> tuple[WorkerInventory, ...]:
+    versions = runtime_versions(native_model)
     return tuple(
         WorkerInventory(
             worker_ref=role,
@@ -154,7 +155,7 @@ class NativePlanRunner:
             project_id=self.owner.actor.project_id,
             base_commit=base,
             snapshot_sha256=snapshot.manifest_sha256,
-            workers=worker_declarations(),
+            workers=worker_declarations(s.native_model),
             maximum_nodes=3,
             maximum_depth=2,
         )
@@ -182,7 +183,7 @@ class NativePlanRunner:
                 or contract.constraints.cloud_egress != "allow"
                 or contract.budget.max_api_usd != "0"
                 or policy.trust.profile != "PERSONAL_SANDBOX"
-                or owner.certificates.runtime_versions != runtime_versions()
+                or owner.certificates.runtime_versions != runtime_versions(owner.settings.native_model)
             ):
                 raise KernelDenied("public_native_plan_not_eligible")
             decision = PolicyEngine().authorize(
@@ -198,7 +199,7 @@ class NativePlanRunner:
             )
             if decision.outcome != "PERMIT":
                 raise KernelDenied("native_plan_disclosure_not_permitted")
-        expected = {w.worker_ref: w for w in worker_declarations()}
+        expected = {w.worker_ref: w for w in worker_declarations(owner.settings.native_model)}
         if set(w.worker_ref for w in plan.inventory.workers) != set(expected):
             raise KernelDenied("native_plan_worker_unavailable")
         for declared in plan.inventory.workers:
@@ -271,9 +272,10 @@ class NativePlanRunner:
         )
         selected = tuple(path for path in node.paths if path in {entry[0] for entry in source.files})
         adapter = ClaudeScopedBashAdapter(
-            ClaudeProposalAdapter(BinaryPin(s.native_binary, PINNED_BINARY_SHA256), s.native_config, s.skills_archive)
+            ClaudeProposalAdapter(BinaryPin(s.native_binary, PINNED_BINARY_SHA256), s.native_config, s.skills_archive),
+            native_model=s.native_model,
         )
-        admitted = AdmittedNativeBuild(controller, selected)
+        admitted = AdmittedNativeBuild(controller, selected, native_model=s.native_model)
         try:
             controller.authority = intersect_authorities(
                 controller.authority, selected_authority(owner, scope, admitted.context)

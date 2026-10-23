@@ -5,6 +5,22 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+## Current reviewed foreground model selection
+
+[Explicit native model selection](testing/NATIVE_MODEL_SELECTION.md) removes the
+fixed-Haiku limitation for deliberately configured PUBLIC foreground Builds.
+A visible exact model binds the separate connection decision, runtime certificate,
+worker inventory, native launch and retained result. Defaults remain unchanged.
+Connected checks use real disposable PG/Git/MCP/Docker with synthetic native,
+account/certificates; two actual empty-auth zero-turn checks cover pinned startup
+only. No inference, owner setup or certificate was performed by this delivery.
+[Evidence](../evidence/native-model-selection-2026-10-23/report.json) preserves initial
+permission/fixture, startup metadata and test-module failures with corrections.
+Model-scoped background policy/window/run integration remains next; current queue
+policies refuse explicit foreground model settings. Fresh no-extra-spend consent,
+model qualification, original gates and R3 acceptance remain required. Search
+and real-phone setup remain owner-deferred.
+
 ## Current original selected Build inputs
 
 Confirmed [offline Build references](testing/OFFLINE_BUILD_REFERENCES.md) now

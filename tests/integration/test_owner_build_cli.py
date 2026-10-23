@@ -41,6 +41,7 @@ def owner_cli(tmp_path, r1_database, monkeypatch, request):
     actual = request.node.get_closest_marker("live") is not None and getattr(request, "param", {}).get(
         "live_native", True
     )
+    native_model = getattr(request, "param", {}).get("native_model")
     if actual:
         directory = Path(os.environ["PANESTRIA_NATIVE_QUALIFICATION_DIRECTORY"])
         result = json.loads(read_private(directory / "latest.json", 4096))
@@ -48,7 +49,7 @@ def owner_cli(tmp_path, r1_database, monkeypatch, request):
         store = BuildEvidenceStore(directory / "certificates")
         digest = result["certificate_sha256"]
         certificate = json.loads(store.read_blob(digest))
-        assert certificate["runtime_versions"] == runtime_versions()
+        assert certificate["runtime_versions"] == runtime_versions(native_model)
         assert "TEST_FIXTURE_NOT_LIVE" not in json.dumps(certificate)
         auth = Path.home() / ".panestria-native-claude"
     else:
@@ -60,7 +61,7 @@ def owner_cli(tmp_path, r1_database, monkeypatch, request):
                     "schema_version": 1,
                     "profile": "PERSONAL_SANDBOX",
                     "verdict": "PASS",
-                    "runtime_versions": runtime_versions(),
+                    "runtime_versions": runtime_versions(native_model),
                     "candidate_commit": "ab" * 20,
                     "expires_at": (datetime.now(UTC) + timedelta(hours=1)).isoformat(),
                     "allowed_actions": ["read", "edit", "external-send", "merge"],
@@ -82,6 +83,7 @@ def owner_cli(tmp_path, r1_database, monkeypatch, request):
     owner, project = str(uuid4()), str(uuid4())
     cfg = {
         "schema_version": 1,
+        **({"native_model": native_model} if native_model is not None else {}),
         "owner_id": owner,
         "project_id": project,
         "root": str(root),

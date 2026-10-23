@@ -23,6 +23,7 @@ from panestria.brokers.harness.claude_proposal import PINNED_BINARY_SHA256
 from panestria.contracts.build import canonical_sha256
 from panestria.contracts.invocation import InvocationBinding
 from panestria.contracts.native_context import NativeContextManifest
+from panestria.contracts.native_model import NativeModel, validate_native_model
 from panestria.contracts.policy import Action, PolicyRequest
 from panestria.execution.scoped_bash import BuildReview, ScopedBashController
 from panestria.kernel.errors import KernelDenied
@@ -41,7 +42,8 @@ from panestria.verification.paths import path_permitted
 from panestria.verification.registry import CommandRegistry
 
 
-def runtime_versions() -> dict[str, str]:
+def runtime_versions(native_model: NativeModel | None = None) -> dict[str, str]:
+    validate_native_model(native_model)
     source = Path(__file__).resolve().parents[1]
     digest = hashlib.sha256()
     for path in sorted(source.rglob("*.py")):
@@ -51,6 +53,7 @@ def runtime_versions() -> dict[str, str]:
         "binary_sha256": PINNED_BINARY_SHA256,
         "source_sha256": digest.hexdigest(),
         "image": DEFAULT_IMAGE,
+        **({"requested_model": native_model} if native_model is not None else {}),
     }
 
 
@@ -64,9 +67,16 @@ class NativeBuildOutcome:
 
 
 class AdmittedNativeBuild:
-    def __init__(self, controller: ScopedBashController, selected_paths: tuple[str, ...]) -> None:
+    def __init__(
+        self,
+        controller: ScopedBashController,
+        selected_paths: tuple[str, ...],
+        *,
+        native_model: NativeModel | None = None,
+    ) -> None:
         self.controller = controller
-        self.versions = runtime_versions()
+        self.native_model = validate_native_model(native_model)
+        self.versions = runtime_versions(native_model)
         if (
             # Narrow fixed-demo attestations cannot certify this worker. Require
             # the general source-bound OS/native certificate store and profile.
@@ -141,7 +151,10 @@ class AdmittedNativeBuild:
 
     def authorize(self, connection: psycopg.Connection[Any], *, observation: bool = False) -> None:
         controller = self.controller
-        if runtime_versions() != self.versions or controller.certificates.runtime_versions != self.versions:
+        if (
+            runtime_versions(self.native_model) != self.versions
+            or controller.certificates.runtime_versions != self.versions
+        ):
             raise KernelDenied("native_build_runtime_changed")
         controller.authorize(connection, observation=observation)  # Current local edit, contract and policy.
         if self.plan_scope is not None:
@@ -218,7 +231,11 @@ class AdmittedNativeBuild:
             context = self.context
             if hashlib.sha256(context.encode()).hexdigest() != self.context_sha256:
                 raise KernelDenied("native_build_context_changed")
-            if not isinstance(adapter, ClaudeScopedBashAdapter) or adapter.native.pin.sha256 != PINNED_BINARY_SHA256:
+            if (
+                not isinstance(adapter, ClaudeScopedBashAdapter)
+                or adapter.native.pin.sha256 != PINNED_BINARY_SHA256
+                or getattr(adapter, "native_model", None) != self.native_model
+            ):
                 raise KernelDenied("native_build_transport_denied")
             config = adapter.native.config
             info = config.lstat()
@@ -239,6 +256,7 @@ class AdmittedNativeBuild:
                 configuration_sha256=canonical_sha256(
                     {
                         "runtime_versions": self.versions,
+                        **({"requested_model": self.native_model} if self.native_model is not None else {}),
                         "config_ref_sha256": canonical_sha256(
                             {"path": str(config), "device": info.st_dev, "inode": info.st_ino}
                         ),
@@ -374,6 +392,14 @@ class AdmittedNativeBuild:
                 or observation.profile != PROFILE
                 or not observation.startup_observed
                 or not observation.hostile_configuration_ignored
+                or (
+                    self.native_model is not None
+                    and (
+                        observation.requested_model != self.native_model
+                        or observation.process.result is None
+                        or observation.process.result.reported_init_model != self.native_model
+                    )
+                )
             ):
                 self._stop_attempt()
                 reason = observation.process.reason if observation.process is not None else "native_build_not_candidate"

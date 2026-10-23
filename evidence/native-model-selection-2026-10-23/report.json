@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "component": "EXPLICIT_REVIEWED_FOREGROUND_NATIVE_MODEL",
+  "implementation_status": "IMPLEMENTED_COMPONENT_ONLY",
+  "base_commit": "8b6aef8eff15a93784bdcd0fe2f4099f072b2c82",
+  "design": "docs/design/115-REVIEWED-NATIVE-MODELS.md",
+  "guide": "docs/testing/NATIVE_MODEL_SELECTION.md",
+  "selected_requests": [
+    "claude-haiku-4-5-20251001",
+    "claude-sonnet-5",
+    "claude-opus-5"
+  ],
+  "original_runs": [
+    {
+      "name": "initial-integration",
+      "sha256": "803b78eb9704b4ef43018d6ded9dd65ed1803d2880ee424e92b1fc3693da5aec",
+      "raw_path": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/native-model-selection-2026-10-23/initial-integration.xml",
+      "source_commit": "09684b6475d4e241ac92242ec06a218e1ae54f6f",
+      "source_tree": "8ee94a6b15ec95963dcabac332bd5ff363fd2b65",
+      "outcome": "FAIL",
+      "totals": {
+        "tests": 27,
+        "failures": 10,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 63.644
+    },
+    {
+      "name": "corrected-integration",
+      "sha256": "5c06ed9ceb9dae3132f7010a33d975a98afb1f82cee89c62cb0edc9179d39e55",
+      "raw_path": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/native-model-selection-2026-10-23/corrected-integration.xml",
+      "source_commit": "e668da41c1c04b5664e6b4903ce9c6d49c7ba636",
+      "source_tree": "403c485e667207934a897c4323fe0a740f06bf92",
+      "outcome": "PASS",
+      "totals": {
+        "tests": 27,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 108.352
+    },
+    {
+      "name": "initial-empty-auth-startup",
+      "sha256": "2f33ace8bf63cfe36173fb1da924e290a293ba5cc828b6aef4244abbfab6dd80",
+      "raw_path": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/native-model-selection-2026-10-23/initial-empty-auth-startup.xml",
+      "source_commit": "d1153d726fd8ac858f91e0cd554e5139591bf4de",
+      "source_tree": "bcbef9e4ec0479de513b46e65f200f472f1ac152",
+      "outcome": "FAIL",
+      "totals": {
+        "tests": 2,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 2.41
+    },
+    {
+      "name": "collection-module-collision",
+      "sha256": "5c08ef9416b82a801402be072a1ab802bd0269038c7c73d39c833776b9af1c1b",
+      "raw_path": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/native-model-selection-2026-10-23/collection-module-collision.xml",
+      "source_commit": "cda37819af488e9c7afd3c8f903e9e3631d5880d",
+      "source_tree": "3ff12caae2d07071a54e5a4ab3497abb20bdb5ca",
+      "outcome": "ERROR",
+      "totals": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 1,
+        "skipped": 0
+      },
+      "seconds": 0.694
+    },
+    {
+      "name": "final-focused",
+      "sha256": "7a1c419c5da29c0bdf97d806806c942be5936f5a2906574577145ba9d53c3a5b",
+      "raw_path": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/native-model-selection-2026-10-23/final-focused.xml",
+      "source_commit": "cda0919a30ae94d05136bb8f812226e6474018ee",
+      "source_tree": "bdc3fc944cb28084759f45f83ca1cc4774c32e2f",
+      "outcome": "PASS",
+      "totals": {
+        "tests": 75,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 18.18
+    },
+    {
+      "name": "isolated-visible-model-mutation",
+      "sha256": "30c528ff6386f1e56e01918f07769b34d5e4c790011432781ef874f0bc6e4e48",
+      "raw_path": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/native-model-selection-2026-10-23/isolated-visible-model-mutation.xml",
+      "source_commit": "cda0919a30ae94d05136bb8f812226e6474018ee",
+      "source_tree": "bdc3fc944cb28084759f45f83ca1cc4774c32e2f",
+      "outcome": "DETECTED",
+      "totals": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 7.31
+    }
+  ],
+  "observed": [
+    "Actual disposable PG/Git/MCP/Docker with synthetic native/auth/account/capacity/certificates: selected Sonnet two-worker handoffs, independent final-tree checks and exact approval staging; legacy connection, revoke, capacity, account/background composition and cancellation regressions.",
+    "Actual pinned CLI2.1.273 with fresh empty authentication and zero turns: Sonnet5/Opus5 init metadata and hostile-configuration isolation, no tool call or inference. Final raw XML retains native stdout.",
+    "Final focused run75 passing:70 unit,3 connected,2 empty-auth startup. Earlier corrected regression27 passing/1 actual-provider live case excluded.",
+    "Removing only visible requested-model preflight comparison is detected by actual connected mismatch witness (DID NOT RAISE); unchanged clean baseline passes in final-focused. No global mutation score."
+  ],
+  "corrections": [
+    "Initial integration10 failures: agent checkout scoped Bash entrypoint mode0664 correctly refused; corrected only scratch file to0644. New bound-method fixture had one extra self argument; corrected. Initial17 passes preserved.",
+    "First actual empty-auth Sonnet startup refused observed fast_mode_disabled_reason=model_not_allowed; Opus passed. Accept this exact disabled reason only for explicit model with fast modeoff; unknown reasons/on remain refused. Original failure retained.",
+    "Initial combined unit/integration collection failed because new test module basenames matched. Renamed unit module; no test removed/skip introduced."
+  ],
+  "quality": {
+    "source_commit": "ea2bcbae0c28f0c15f21a2c24fb2046a8c11d0d6",
+    "ruff": "PASS",
+    "mypy": "PASS_356_SOURCE_FILES",
+    "secret_scan": "PASS",
+    "import_boundaries": "11_KEPT_0_BROKEN_BEFORE_METADATA_ONLY_CORRECTION",
+    "frontend": "CACHED_NODE_GENERATE_AND_BUILD_PASS_UNCHANGED_OPENAPI_TYPES",
+    "record_basis": "Observed local tool exit/output; remote exact-head CI remains required."
+  },
+  "mutation_patch_sha256": "f54d4862814c608156448ab7bd9b5803171db21028d5297f7b481f594400fb6b",
+  "not_established": [
+    "No actual selected-model provider inference, availability, current subscription entitlement/billing, quality/latency qualification or model-specific runtime certificate.",
+    "No owner settings/profile/login/services/DB were configured or migrated.",
+    "No model-scoped background policies/windows/run support. Existing queue refuses explicit foreground selections; stale billing remains stale/background OFF.",
+    "No new provider/API calls, model/CLI/package downloads, paid overflow, fallback, training rights, phone/search setup, original acceptance-case or gate promotion."
+  ],
+  "release_gates": {
+    "G1": "NOT_PASSED",
+    "G2": "NOT_PASSED",
+    "G3": "NOT_PASSED",
+    "paid_sdk_TC04": "DEFERRED",
+    "real_search": "OWNER_DEFERRED",
+    "real_phone": "OWNER_DEFERRED",
+    "owner_trial": "NOT_STARTED"
+  }
+}

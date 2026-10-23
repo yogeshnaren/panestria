@@ -5,6 +5,7 @@ from pydantic import Field, StrictInt
 from panestria.contracts.build import canonical_sha256
 from panestria.contracts.connections import ConnectionContract, ConnectionId, Digest
 from panestria.contracts.native_account import NativeAccountObservation
+from panestria.contracts.native_model import NativeModel
 from panestria.contracts.native_tools import ToolScope
 
 
@@ -20,6 +21,7 @@ class NativeConnectionReservation(ConnectionContract):
     configuration_sha256: Digest
     context_sha256: Digest
     context_bytes: StrictInt = Field(ge=1, le=16 * 1024)
+    requested_model: NativeModel | None = Field(default=None, exclude_if=lambda value: value is None)
 
     def sha256(self) -> str:
         return canonical_sha256(self.model_dump(mode="json"))
@@ -31,7 +33,7 @@ def native_configuration(observation: NativeAccountObservation, runtime: dict[st
     return canonical_sha256(
         {
             "connector": "claude-public-bash",
-            "version": "account-context-v1",
+            "version": "model-context-v2" if "requested_model" in runtime else "account-context-v1",
             "route": "claude-subscription",
             "budget_scope": "SELECTED_PUBLIC_CONTEXT_AND_NATIVE_LAUNCHES",
             "account_ref": observation.account_ref,

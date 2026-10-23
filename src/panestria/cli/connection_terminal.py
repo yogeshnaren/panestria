@@ -22,6 +22,11 @@ def review_lines(source: ConnectionReviewView, width: int) -> list[str]:
         f"Proposal {source.proposal_id} | grant {source.grant_id}",
         f"Operation {source.operation} | expected version {source.expected_version} | state {source.state}",
         f"Connector {m.connector_ref} version {m.connector_version} | account reference {m.account_ref}",
+        *(
+            ["Requested model: " + m.requested_model + " | availability/billing/weights NOT verified"]
+            if m.requested_model
+            else []
+        ),
         "Declared actions: "
         + ", ".join(f"{a}={'YES' if a in m.actions else 'NO'}" for a in ("read", "write", "send", "delete", "spend")),
         "Data classes: " + ", ".join(m.data_classes),
@@ -29,7 +34,7 @@ def review_lines(source: ConnectionReviewView, width: int) -> list[str]:
         *(["Provider route: " + m.provider_route, "Budget scope: " + str(m.budget_scope)] if m.provider_route else []),
         (
             "Pinned private profile reference (no folder-read grant): "
-            if m.schema_version == 2
+            if m.schema_version in {2, 3}
             else "Opaque root references (not live enrollment): "
         )
         + (", ".join(m.root_refs) or "NONE"),
@@ -38,7 +43,7 @@ def review_lines(source: ConnectionReviewView, width: int) -> list[str]:
                 "Native calls count process launches; bytes count selected PUBLIC context only. "
                 "Wire traffic and billing are not measured or certified by this declaration."
             ]
-            if m.schema_version == 2
+            if m.schema_version in {2, 3}
             else []
         ),
         f"Declared limits: {m.budget.max_calls} calls, {m.budget.max_bytes} bytes, "
@@ -53,7 +58,7 @@ def review_lines(source: ConnectionReviewView, width: int) -> list[str]:
         (
             "A REVOKE approval fences future selected native work; its supervisor checks revocation. "
             "Already sent data cannot be recalled. This review launches no worker."
-            if m.schema_version == 2
+            if m.schema_version in {2, 3}
             else "A REVOKE approval records disconnection intent/state; "
             "this component starts/stops no external process."
         ),
