@@ -241,8 +241,12 @@ def test_stopped_native_worker_retains_safe_cause_and_unknown_claim(native_plan,
     assert result["worker_observations"] and all(r["reason"] == code for r in result["worker_observations"])
     assert "PRIVATE_" not in json.dumps(result)
     with owner.connect() as c:
-        assert c.execute("SELECT count(*) FROM panestria.build_handoff WHERE plan_id=%s", (plan.plan_id,)).fetchone() == (0,)
-        assert c.execute("SELECT count(*) FROM panestria.approval_request WHERE goal_id=%s", (plan.goal_id,)).fetchone() == (0,)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.build_handoff WHERE plan_id=%s", (plan.plan_id,)
+        ).fetchone() == (0,)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.approval_request WHERE goal_id=%s", (plan.goal_id,)
+        ).fetchone() == (0,)
         assert c.execute(
             "SELECT count(*) FROM panestria.worker_invocation i JOIN panestria.task t ON t.id=i.task_id "
             "WHERE t.goal_id=%s AND i.state='UNKNOWN'", (plan.goal_id,),
