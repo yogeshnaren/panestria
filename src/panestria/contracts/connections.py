@@ -34,7 +34,7 @@ class ConnectionBudget(ConnectionContract):
 
 
 class ConnectionManifest(ConnectionContract):
-    schema_version: StrictInt = Field(default=1, ge=1, le=1)
+    schema_version: StrictInt = Field(default=1, ge=1, le=2)
     owner_id: ConnectionId
     project_id: ConnectionId
     connector_ref: str = Field(pattern=r"^[a-z][a-z0-9-]{0,63}$")
@@ -50,6 +50,10 @@ class ConnectionManifest(ConnectionContract):
     budget: ConnectionBudget
     expires_at: AwareDatetime
     conformance_sha256: Digest | None = None
+    provider_route: Literal["claude-subscription"] | None = Field(default=None, exclude_if=lambda value: value is None)
+    budget_scope: Literal["SELECTED_PUBLIC_CONTEXT_AND_NATIVE_LAUNCHES"] | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
 
     @field_validator("actions", "root_refs")
     @classmethod
@@ -104,6 +108,23 @@ class ConnectionManifest(ConnectionContract):
 
     @model_validator(mode="after")
     def bounded_scope(self) -> Self:
+        if self.schema_version == 2:
+            if (
+                self.connector_ref != "claude-public-bash"
+                or self.connector_version != "account-context-v1"
+                or self.provider_route != "claude-subscription"
+                or self.budget_scope != "SELECTED_PUBLIC_CONTEXT_AND_NATIVE_LAUNCHES"
+                or len(self.root_refs) != 1
+                or self.origins
+                or set(self.actions) != {"read", "write", "send"}
+                or self.data_classes != ("PUBLIC",)
+                or self.budget.max_cash_microusd != 0
+                or self.budget.max_calls > 64
+            ):
+                raise ValueError("native_connection_scope_invalid")
+            return self
+        if self.provider_route is not None or self.budget_scope is not None:
+            raise ValueError("connection_v1_route_invalid")
         if not self.root_refs and not self.origins:
             raise ValueError("unbounded_connection_scope")
         # Remote APIs may write/delete within exact origins; filesystem

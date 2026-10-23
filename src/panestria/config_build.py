@@ -10,6 +10,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from panestria.config_local import read_private
+from panestria.contracts.native_connection import NativeConnectionSelection
 from panestria.verification.registry import CommandRegistry, RegisteredCommand
 
 
@@ -37,6 +38,7 @@ class BuildSettings(BaseModel):
     anticipated_build_write_bytes: int = Field(default=1024**3, ge=1, le=32 * 1024**3)
     record_runtime_metrics: bool = False
     capture_verified_results: bool = False
+    native_connection: NativeConnectionSelection | None = Field(default=None, exclude_if=lambda value: value is None)
 
     @property
     def protected(self) -> Path:

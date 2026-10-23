@@ -26,10 +26,11 @@ from panestria.contracts.policy import PolicyRequest
 from panestria.execution.build_plan import BuildIntegrator
 from panestria.execution.build_storage import build_storage_admission
 from panestria.execution.native_build import AdmittedNativeBuild, NativeBuildOutcome, runtime_versions
+from panestria.execution.native_connection import preflight_connection, selected_authority
 from panestria.execution.owner_build import OwnerBuild
 from panestria.execution.proposal_demo import _lock, _private
 from panestria.execution.scoped_bash import ScopedBashController
-from panestria.execution.worker_authority import WorkerAuthority
+from panestria.execution.worker_authority import WorkerAuthority, intersect_authorities
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.plan_lifecycle import PlanLifecycle
@@ -94,7 +95,29 @@ class NativePlanRunner:
         return None
 
     def _integration_authority(self, job: Scheduled) -> WorkerAuthority | None:
-        return None
+        if self.owner.settings.native_connection is None:
+            return None
+        with self.owner.connect() as c:
+            row = c.execute(
+                "SELECT c.body FROM panestria.task t JOIN panestria.goal_contract c ON c.id=t.contract_id"
+                " WHERE t.id=%s",
+                (job.lease.task_id,),
+            ).fetchone()
+            assert row is not None
+            contract = load_contract(row[0])
+        return selected_authority(
+            self.owner,
+            ToolScope(
+                owner_id=self.owner.settings.owner_id,
+                project_id=self.owner.settings.project_id,
+                task_id=UUID(job.lease.task_id),
+                attempt_id=UUID(job.lease.attempt_id),
+                lease_epoch=job.lease.epoch,
+                contract_sha256=contract_sha256(contract),
+                policy_ref=contract.autonomy_profile_ref,
+            ),
+            None,
+        )
 
     def _storage_allows_new_work(self) -> bool:
         observation = build_storage_admission(self.owner.settings)
@@ -138,6 +161,7 @@ class NativePlanRunner:
 
     def _preflight(self, plan_id: str) -> StoredPlan:
         owner = self.owner
+        preflight_connection(owner)
         with owner.connect() as c:
             uow = UnitOfWork(c)
             plan = PlanStore().get(uow, owner.actor, plan_id)
@@ -249,7 +273,15 @@ class NativePlanRunner:
         adapter = ClaudeScopedBashAdapter(
             ClaudeProposalAdapter(BinaryPin(s.native_binary, PINNED_BINARY_SHA256), s.native_config, s.skills_archive)
         )
-        outcome = AdmittedNativeBuild(controller, selected).run(
+        admitted = AdmittedNativeBuild(controller, selected)
+        try:
+            controller.authority = intersect_authorities(
+                controller.authority, selected_authority(owner, scope, admitted.context)
+            )
+        except KernelDenied:
+            admitted._stop_attempt()
+            return NativeBuildOutcome("UNAVAILABLE", "native_connection_unavailable", admitted.context_sha256, None)
+        outcome = admitted.run(
             adapter,
             s.protected,
             s.repository,

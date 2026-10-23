@@ -26,7 +26,21 @@ def review_lines(source: ConnectionReviewView, width: int) -> list[str]:
         + ", ".join(f"{a}={'YES' if a in m.actions else 'NO'}" for a in ("read", "write", "send", "delete", "spend")),
         "Data classes: " + ", ".join(m.data_classes),
         "Origins: " + (", ".join(m.origins) or "NONE"),
-        "Opaque root references (not live enrollment): " + (", ".join(m.root_refs) or "NONE"),
+        *(["Provider route: " + m.provider_route, "Budget scope: " + str(m.budget_scope)] if m.provider_route else []),
+        (
+            "Pinned private profile reference (no folder-read grant): "
+            if m.schema_version == 2
+            else "Opaque root references (not live enrollment): "
+        )
+        + (", ".join(m.root_refs) or "NONE"),
+        *(
+            [
+                "Native calls count process launches; bytes count selected PUBLIC context only. "
+                "Wire traffic and billing are not measured or certified by this declaration."
+            ]
+            if m.schema_version == 2
+            else []
+        ),
         f"Declared limits: {m.budget.max_calls} calls, {m.budget.max_bytes} bytes, "
         f"{m.budget.max_wall_seconds}s, USD {m.budget.max_cash_microusd / 1_000_000:.6f} cash cap",
         "Declaration expiry: " + m.expires_at.isoformat(),
