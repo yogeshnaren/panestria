@@ -1,5 +1,20 @@
 # Implementation progress
 
+## Current background editing authority
+
+[Background worker authority](testing/BACKGROUND_WORKER_AUTHORITY.md) now carries
+the exact immutable queue run and worker claim through native launch, tools,
+read-only monitoring, independent evidence publication and handoff/completion.
+A fresh pinned scoped account observation is compared before disclosure and after
+return. Withdrawal, expired original eligibility and foreground work stop future
+effects; uncertain claims stay held. [Evidence](../evidence/background-worker-authority-2026-10-23/report.json)
+retains original failures and six passing connected checks using actual disposable
+PG/Git/MCP/Docker with explicit native/auth/hardware fixtures. The new guard did
+not perform live inference, renew billing or enable background work. Trusted
+final integration still needs its queue lifecycle intersection; full connection/
+secret boundaries, host/resource qualification, original gates and owner trial
+remain pending. AOS-012-S5 and R3 stay IN_PROGRESS.
+
 Updated 2026-10-23 UTC. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
 The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.

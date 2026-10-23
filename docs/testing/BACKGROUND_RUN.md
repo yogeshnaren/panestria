@@ -15,6 +15,11 @@ setting. Queue/link metadata, a dollar cap and synthetic test results do not
 prove it. This implementation neither reads nor changes the billing setting.
 An unstarted item's policy can be renewed only by withdrawal and fresh review.
 
+Native editing workers now carry that same queue/run intersection into launch,
+tools, monitoring and publication. Fresh scoped account metadata is compared
+immediately before disclosure and after return. See the exact
+[worker authority checks and limits](BACKGROUND_WORKER_AUTHORITY.md).
+
 Existing Build configuration, current runtime/source qualification, independent
 checks, privacy/permission and exact plan acceptance remain mandatory. The owner
 reported the dedicated account's extra usage disabled on2026-10-21. This is
