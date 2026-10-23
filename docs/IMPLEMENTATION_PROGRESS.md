@@ -1,5 +1,10 @@
 # Implementation progress
 
+Updated 2026-10-23 UTC. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
+The owner authorizes implementation, focused PRs and verified sequential merge
+commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
+An implemented component or passing CI is not a release-gate pass.
+
 ## Current background editing authority
 
 [Background worker authority](testing/BACKGROUND_WORKER_AUTHORITY.md) now carries
@@ -15,10 +20,6 @@ final integration still needs its queue lifecycle intersection; full connection/
 secret boundaries, host/resource qualification, original gates and owner trial
 remain pending. AOS-012-S5 and R3 stay IN_PROGRESS.
 
-Updated 2026-10-23 UTC. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
-The owner authorizes implementation, focused PRs and verified sequential merge
-commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
-An implemented component or passing CI is not a release-gate pass.
 
 ## Current delivery checkpoint
 

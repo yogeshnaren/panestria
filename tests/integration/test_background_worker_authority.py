@@ -65,9 +65,9 @@ def test_change_after_invocation_claim_stops_context_disclosure(prepared_plan, n
 
     monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", launch)
     result = BackgroundPlanRunner(owner, request.item_id).run_item(allow_background_subscription_run=True)
-    assert result["status"] == "STOPPED", result
     assert changed == [change]  # The requested change actually reached the disclosure boundary.
     assert state["launches"] == 0
+    assert result["status"] == "STOPPED", result
     with owner.connect() as c:
         assert c.execute(
             "SELECT count(*) FROM panestria.task_event WHERE goal_id=%s AND kind='native_build.context_disclosure'",
