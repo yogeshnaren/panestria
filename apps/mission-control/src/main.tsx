@@ -134,11 +134,12 @@ function Dashboard() {
     catch {setNotice('Logout unconfirmed. Server session may still be active; retry.');}
     finally {setBusy(false);}
   }
-  return <main>
+  return <main className={phoneMode?'phone-observer':undefined}>
     <header><p className="eyebrow">PANESTRIA · {phoneMode?'PRIVATE PHONE OBSERVER':storageMode?'OWNER HOST STORAGE':buildRunMode?'EXPLICIT PUBLIC BUILD':askMode?'OFFLINE ASK':researchMode?'PUBLIC DELEGATE STAGING':planAcceptanceMode?'PUBLIC PLAN REVIEW':buildIntakeMode?'PUBLIC BUILD PLAN STAGING':'LOCAL OBSERVER'}</p><h1>Mission Control</h1>
       <p>Canonical project activity and goal timelines. {buildRunMode?'Explicit PUBLIC plan review and finite subscription execution':askMode?'Explicit offline Ask input':researchMode?'Explicit PUBLIC question staging':planAcceptanceMode?'Explicit PUBLIC plan review and acceptance':buildIntakeMode?'Explicit PUBLIC Build plan staging':reviewMode?'Explicit PUBLIC Build review and consent records':'Read-only metadata'} · release acceptance authority: NONE.</p></header>
     <section aria-label="Connection"><p role="status">{notice}</p>
       {phoneMode && <p className="muted" data-testid="last-observed">Workstation last confirmed: {lastObserved??'not yet observed'}. This time describes the last successful read, not current availability.</p>}
+      {phoneMode && <p className="muted">Swipe tables sideways to inspect all columns. Decisions and work stay on the workstation.</p>}
       {(!authenticated || !csrf) && <form onSubmit={pair}><label htmlFor="pair">One-use pairing code from your terminal</label>
         <div className="actions"><input id="pair" value={code} onChange={e=>setCode(e.target.value.toUpperCase())}
           className={phoneMode?'phone-code':undefined} pattern={phoneMode?'[0-9A-F]{32}':'[0-9A-F]{8}'} maxLength={phoneMode?32:8} minLength={phoneMode?32:8} required autoComplete="off" autoCapitalize="characters" spellCheck={false}/>

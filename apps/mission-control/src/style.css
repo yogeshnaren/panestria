@@ -10,3 +10,4 @@ input.receipt-id { max-width: 100%; width: 27em; }
 
 input[type=file] { display: block; max-width: 100%; width: 100%; margin: 8px 0 16px; }
 input.phone-code { width: 100%; max-width: 24em; min-width: 0; }
+@media(max-width:600px) { .phone-observer .scroll table { min-width: 36rem; } }
