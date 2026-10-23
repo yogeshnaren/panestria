@@ -1,4 +1,4 @@
-"""Closed requested model choices for the pinned subscription Build profile.
+"""Closed requested model choices for the pinned subscription profiles.
 
 These are request identifiers, not evidence of account availability, billing,
 provider weights or quality. Floating aliases and hybrid/credit routes are absent.
