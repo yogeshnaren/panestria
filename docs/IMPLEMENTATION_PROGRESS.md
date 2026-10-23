@@ -1,6 +1,6 @@
 # Implementation progress
 
-Updated 2026-10-22 UTC. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
+Updated 2026-10-23 UTC. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
 The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
@@ -151,6 +151,20 @@ explicitly synthetic fixtures**. They do not prove installed SearXNG/upstreams,
 public TLS, OS qualification or verified factual support. Search setup was
 explicitly deferred by the owner. No service, engine, credential, provider/model,
 download or paid call is silently selected by this work.
+
+## Guided owner research review
+
+The [claim-review terminal](testing/RESEARCH_CLAIM_REVIEW_TUI.md) now shows the
+exact retained question/passages/claims and lets the owner enter verdicts,
+controller-source citations and bounded rationales. Full scroll review, validation
+and a separate exact-digest confirmation reuse the existing private immutable
+review service; cancellation/source changes fence saving and uncertain writes
+cannot retry from that view. It starts no model/search request. Judgments remain
+OWNER_REPORTED / NOT_QUALIFIED, with no task/training authority. [Physical PTY and
+canonical evidence](../evidence/research-review-terminal-2026-10-23/report.json)
+uses real disposable PG/CAS/reader and declared synthetic model/fetch setup.
+This closes the manual-JSON review interaction gap; qualified automatic support,
+planning/runtime/search and the complete Delegate/release gates remain open.
 
 ## Current Build integration
 
