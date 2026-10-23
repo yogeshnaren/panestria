@@ -27,6 +27,7 @@ from panestria.contracts.native_command import RegisteredCheckReceipt
 from panestria.contracts.native_tools import ToolRequest, ToolScope
 from panestria.contracts.policy import PolicyRequest
 from panestria.execution.tool_authority import DurableToolAuthority, tool_binding
+from panestria.execution.worker_authority import WorkerAuthority
 from panestria.kernel.approvals import ApprovalView
 from panestria.kernel.build import BuildEvidenceService, BuildEvidenceStore
 from panestria.kernel.errors import KernelDenied
@@ -98,6 +99,8 @@ class ScopedBashController:
         workspace: Path,
         certificates: CertificateStore,
         reports: BuildEvidenceStore,
+        *,
+        authority: WorkerAuthority | None = None,
     ) -> None:
         try:
             self.scope = ToolScope.model_validate_json(scope.model_dump_json())
@@ -140,6 +143,7 @@ class ScopedBashController:
             self.registry = NativeCommandRegistry((self.command,))
             self.workspace, self.snapshot, self.session_id = workspace, snapshot, session_id
             self.actor, self.dsn, self.certificates, self.reports = actor, dsn, certificates, reports
+            self.authority = authority
             self.job_ref = (
                 "build:"
                 + hashlib.sha256((scope.sha256() + snapshot.manifest_sha256 + str(session_id)).encode()).hexdigest()
@@ -194,6 +198,8 @@ class ScopedBashController:
         )
         if decision.outcome != "PERMIT":
             raise KernelDenied("scoped_bash_edit_denied")
+        if self.authority is not None:
+            self.authority.authorize(connection)
 
     def session(self) -> ScopedBashSession:
         return ScopedBashSession(self.job_ref, self.execute)

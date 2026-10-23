@@ -242,6 +242,11 @@ class AdmittedNativeBuild:
                             {"path": str(config), "device": info.st_dev, "inode": info.st_ino}
                         ),
                         "job_ref": controller.job_ref,
+                        **(
+                            {"additional_authority_sha256": controller.authority.binding_sha256}
+                            if controller.authority is not None
+                            else {}
+                        ),
                     }
                 ),
             )
@@ -297,6 +302,8 @@ class AdmittedNativeBuild:
             def launch() -> None:
                 if stop.is_set() or time.monotonic() >= deadline or (cancel is not None and cancel.is_set()):
                     raise KernelDenied("native_build_cancelled_or_deadline")
+                if controller.authority is not None:
+                    controller.authority.refresh()
                 with controller.connect() as connection:
                     self.authorize(connection)
                     assert binding is not None and identity is not None
@@ -324,6 +331,8 @@ class AdmittedNativeBuild:
                 cancel=stop,
                 before_launch=launch,
             )
+            if controller.authority is not None:
+                controller.authority.refresh()
             done.set()
             watchdog.join(timeout=2)
             if (
