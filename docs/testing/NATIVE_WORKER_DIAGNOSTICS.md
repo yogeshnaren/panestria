@@ -36,3 +36,12 @@ A [later four-case closed-cause check](../../evidence/native-worker-diagnostics-
 adds known authority-code detail while redacting unknown authority text. It
 overlaps two earlier cases and remains separately source-bound; the counts are
 not pooled. Other malformed/unrecognized errors stay conservatively generic.
+
+The original diagnostic CI40040656545 retained both workers returning
+`scoped_gateway_unknown` before final verification; it does not prove a database
+error. A [separate gateway-phase observation](../../evidence/native-worker-diagnostics-2026-10-23/gateway-phases-report.json)
+now distinguishes observation deadline, watchdog shutdown and sandbox-return
+uncertainty using existing state flags. The same bounds/outcomes remain. The
+shared fixture records complete results across native-plan journeys. Its57
+focused checks and10 excluded live cases remain a separate source cohort.
+Root-cause investigation is still open; no changed timeout or retry is introduced.
