@@ -16,9 +16,15 @@ Desktop modes remain loopback-only; no owner listener, certificate or database
 has been configured by this work. Migration0040 is required when deliberately
 adopting this source. [Component evidence](../evidence/private-phone-ingress-2026-10-23/report.json)
 distinguishes actual CLI/PG/TLS/cookies from synthetic CA/peer/clock fixtures and
-records a detected remote-bearer mutation. Responsive mobile qualification,
-reconnect/offline behavior and actual target-phone/network TC08 remain pending;
-no whole S4–S6/TC05–08/G3 acceptance is claimed.
+records a detected remote-bearer mutation. The [phone observer view](testing/PHONE_OBSERVER_VIEWS.md) now supplies explicit
+mobile labels, last-seen status, the canonical attention inbox/task timeline and
+optional read-only PUBLIC Build evidence. A connected mobile-viewport journey
+passed across actual test-server stop/restart, device offline/reconnect,
+background-event clearing and canonical revocation. Its [source-bound evidence](../evidence/phone-observer-views-2026-10-23/report.json)
+retains the initial unsafe agent-checkout permission failures and their correction;
+native/auth/capacity and visibility are explicit fixtures. Actual target-phone/
+private-network trust, remaining adversarial/resource integration and TC08/G3
+remain pending. No whole S4-S6 or owner acceptance is claimed.
 
 ## Current separately reviewed owner examples
 
