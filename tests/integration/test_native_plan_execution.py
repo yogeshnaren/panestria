@@ -84,7 +84,7 @@ def prepared_plan(owner_cli, r1_migration_task, monkeypatch, request):
 
 
 @pytest.fixture
-def native_plan(prepared_plan, monkeypatch):
+def native_plan(prepared_plan, monkeypatch, record_property):
     _f, owner, runner, proposal = prepared_plan
     state = {
         "launches": 0,
@@ -197,13 +197,20 @@ def native_plan(prepared_plan, monkeypatch):
         )
 
     monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", native)
+    original_run = NativePlanRunner.run
+
+    def observed_run(controller, *args, **kwargs):
+        result = original_run(controller, *args, **kwargs)
+        record_property("native_plan_result", json.dumps(result, sort_keys=True))
+        return result
+
+    monkeypatch.setattr(NativePlanRunner, "run", observed_run)
     return owner, runner, proposal, state
 
 
-def test_two_scoped_workers_and_create_only_node_reach_exact_owner_review(native_plan, record_property):
+def test_two_scoped_workers_and_create_only_node_reach_exact_owner_review(native_plan):
     owner, runner, plan, state = native_plan
     result = runner.run(plan.plan_id, public_subscription_run=True)
-    record_property("native_plan_result", json.dumps(result, sort_keys=True))
     assert result["status"] == "WAITING_APPROVAL", result
     assert state["launches"] == 2 and state["peak"] == 2
     assert any(not context["files"] for context in state["contexts"])  # New file has no invented source contents.

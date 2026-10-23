@@ -164,12 +164,9 @@ def reservations(owner):
         ).fetchall()
 
 
-def test_two_actual_scoped_workers_consume_exact_context_capacity_and_reach_final_review(
-    native_plan, monkeypatch, record_property
-):
+def test_two_actual_scoped_workers_consume_exact_context_capacity_and_reach_final_review(native_plan, monkeypatch):
     owner, runner, plan, state, anchor, _, _ = setup(native_plan, monkeypatch)
     result = runner.run(plan.plan_id, public_subscription_run=True)
-    record_property("native_plan_result", json.dumps(result, sort_keys=True))
     assert result["status"] == "WAITING_APPROVAL", result
     assert state["launches"] == 2 and state["peak"] == 2
     rows = reservations(owner)
@@ -256,9 +253,7 @@ def test_shared_capacity_stops_concurrent_excess_without_fallback(native_plan, m
         assert c.execute("SELECT count(*) FROM panestria.approval_request").fetchone() == (0,)
 
 
-def test_revoke_during_final_checks_keeps_returned_worker_evidence_but_no_final_review(
-    native_plan, monkeypatch, record_property
-):
+def test_revoke_during_final_checks_keeps_returned_worker_evidence_but_no_final_review(native_plan, monkeypatch):
     owner, runner, plan, state, _, revoke, _ = setup(native_plan, monkeypatch)
     original = BuildIntegrator._authorize
     changed = []
@@ -271,8 +266,7 @@ def test_revoke_during_final_checks_keeps_returned_worker_evidence_but_no_final_
 
     monkeypatch.setattr(BuildIntegrator, "_authorize", guarded)
     with pytest.raises(KernelDenied, match="native_connection_not_current"):
-        result = runner.run(plan.plan_id, public_subscription_run=True)
-        record_property("native_plan_result", json.dumps(result, sort_keys=True))
+        runner.run(plan.plan_id, public_subscription_run=True)
     assert changed and state["launches"] == 2
     with owner.connect() as c:
         assert c.execute("SELECT count(*) FROM panestria.build_handoff").fetchone() == (2,)

@@ -393,7 +393,9 @@ class ScopedBashController:
                 or cancel.is_set()
                 or len(sandbox.output) > 8192
             ):
-                self.last_failure_code = self.last_failure_code or "scoped_gateway_" + result.outcome
+                self.last_failure_code = self.last_failure_code or "scoped_gateway_" + (
+                    result.unconfirmed_reason or "receipt_unconfirmed"
+                )
                 raise ScopedBashUnavailable("unconfirmed_bash_execution")
             report = json.dumps(
                 {
