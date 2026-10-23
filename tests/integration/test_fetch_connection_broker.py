@@ -3,6 +3,7 @@
 # ruff: noqa: F811 -- imported pytest fixtures are injected by name
 
 import json
+from dataclasses import replace
 from uuid import uuid4
 
 import psycopg
@@ -54,7 +55,7 @@ def approved(f, manifest=None, *, revoke=False):
 
 
 @pytest.mark.parametrize("admitted_search", [{"fetch_runtime": True}], indirect=True)
-def test_only_exact_supported_declaration_can_reach_fetch_and_reservations_are_immutable(synthetic_https):
+def test_only_exact_supported_declaration_can_reach_fetch_and_reservations_are_immutable(synthetic_https, monkeypatch):
     f, calls, _ = synthetic_https
     valid = f.plan
     with psycopg.connect(f.dsn) as c:
@@ -82,6 +83,22 @@ def test_only_exact_supported_declaration_can_reach_fetch_and_reservations_are_i
         assert c.execute("SELECT count(*) FROM panestria.fetch_dispatch").fetchone() == (0,)
         assert c.execute("SELECT count(*) FROM panestria.connection_fetch_reservation").fetchone() == (0,)
     assert calls == []
+    reserve = f.controller.service.grants.reserve
+
+    def inconsistent_capacity(uow, actor, plan, dispatch_id, capacity):
+        reserve(uow, actor, plan, dispatch_id, replace(capacity, application_bytes=capacity.application_bytes + 1))
+
+    monkeypatch.setattr(f.controller.service.grants, "reserve", inconsistent_capacity)
+    with pytest.raises(psycopg.Error, match="fetch connection capacity mismatch"):
+        f.controller.collect(SecretStr("https://example.org/allowed"))
+    with psycopg.connect(f.dsn) as c:
+        assert c.execute("SELECT count(*) FROM panestria.fetch_dispatch").fetchone() == (0,)
+        assert c.execute("SELECT count(*) FROM panestria.connection_fetch_reservation").fetchone() == (0,)
+        assert c.execute("SELECT count(*) FROM panestria.task_event WHERE kind='fetch.body.reserved'").fetchone() == (
+            0,
+        )
+    assert calls == []
+    monkeypatch.setattr(f.controller.service.grants, "reserve", reserve)
     result = f.controller.collect(SecretStr("https://example.org/allowed"))
     assert result.status == "RETAINED" and calls == ["https://example.org/allowed"]
     with psycopg.connect(f.dsn) as c:
