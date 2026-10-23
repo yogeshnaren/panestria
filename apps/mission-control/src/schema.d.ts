@@ -1393,6 +1393,11 @@ export interface components {
              * @default false
              */
             research_intake_enabled: boolean;
+            /**
+             * Storage Status Enabled
+             * @default false
+             */
+            storage_status_enabled: boolean;
         };
         /** ModelManifest */
         ModelManifest: {
