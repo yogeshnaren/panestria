@@ -1,5 +1,13 @@
 # Implementation progress
 
+The [phone pairing browser timing correction](../evidence/phone-pair-response-body-2026-10-23/report.json)
+preserves the real response body before awaiting completion of the UI click.
+This fixes an existing CI response-lifetime race while retaining valid-CSRF
+authenticated denial, restart/offline and device-revocation assertions. The
+original failed CI and corrected physical Chromium/TLS/PG/Git result remain
+source-bound. No runtime change, retry, skipped case or real-phone qualification
+is introduced.
+
 Updated 2026-10-23 UTC. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
 The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
