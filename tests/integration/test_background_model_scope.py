@@ -3,6 +3,7 @@
 import pytest
 from test_background_queue import cli, record
 from test_background_run import setup as background_setup
+from test_background_selection import another
 from test_native_connection_grants import setup as connection_setup
 from test_native_plan_execution import native_plan as native_plan  # noqa: F401
 from test_native_plan_execution import prepared_plan as prepared_plan  # noqa: F401
@@ -20,6 +21,11 @@ def test_selected_model_background_run_keeps_serial_workers_and_exact_final_revi
 ):
     f, owner, plan, state, request, view = background_setup(prepared_plan, native_plan, monkeypatch)
     connection_setup(native_plan, monkeypatch, observation_sha256=view["observation_sha256"])
+    legacy, _ = another(f, owner, plan, request, priority=3)
+    preview = cli(f, "next")
+    assert preview["selected"]["item_id"] == request.item_id != legacy.item_id
+    assert preview["candidate_count"] == 1
+    assert preview["skipped_reasons"]["background_requested_model_changed"] == 1
     runner = BackgroundPlanRunner(owner, request.item_id)
     result = runner.run_item(allow_background_subscription_run=True)
     assert result["status"] == "WAITING_APPROVAL", result

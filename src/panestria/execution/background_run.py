@@ -179,7 +179,7 @@ def reconcile_run(owner: OwnerBuild, item_id: str, run_sha256: str) -> dict[str,
 def select_next(owner: OwnerBuild) -> dict[str, Any]:
     with owner.connect() as c:
         return BackgroundRunService(account_reports(owner), BuildEvidenceService(owner.reports)).next_candidate(
-            UnitOfWork(c), owner.actor
+            UnitOfWork(c), owner.actor, requested_model=owner.settings.native_model
         )
 
 

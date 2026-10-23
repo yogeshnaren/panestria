@@ -14,6 +14,7 @@ from panestria.contracts.background_run import BackgroundRun
 from panestria.contracts.build import canonical_sha256
 from panestria.contracts.hardware import HardwareManifest
 from panestria.contracts.native_account import BackgroundAccountLink
+from panestria.contracts.native_model import NativeModel
 from panestria.contracts.native_tools import ToolScope
 from panestria.kernel.background import BackgroundWorkService
 from panestria.kernel.background_account import BackgroundAccountService
@@ -39,7 +40,9 @@ class BackgroundRunService:
         uow.execute("SELECT pg_advisory_xact_lock(%s,%s)", FLEET_LOCK)
         lock_project(uow, actor)
 
-    def next_candidate(self, uow: UnitOfWork, actor: Actor) -> dict[str, Any]:
+    def next_candidate(
+        self, uow: UnitOfWork, actor: Actor, *, requested_model: NativeModel | None = None
+    ) -> dict[str, Any]:
         """Read one unstarted reviewed candidate; the runner must re-admit it.
 
         Scan the bounded full queue, not just the most recent display page.
@@ -52,6 +55,8 @@ class BackgroundRunService:
         for row in rows:
             binding = queue._binding(row, actor)
             try:
+                if binding.request.policy.model_ref != requested_model:
+                    raise KernelDenied("background_requested_model_changed")
                 if self._history(uow, binding):
                     raise KernelDenied("started_job_requires_explicit_inspection_or_resume")
                 view = self._eligibility(uow, actor, binding)
