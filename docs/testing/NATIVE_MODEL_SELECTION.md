@@ -45,8 +45,8 @@ Expect `selected_model_requires_reviewed_native_connection` without a matching
 selection. Different displayed models, certificate, inventory, grant, account,
 policy or expired authority refuse further work. Native model mismatch stops
 transport; permission to select a model does not accept its output. Background
-commands return `background_selected_model_not_supported` with these foreground
-settings until separate model-scoped queue support exists.
+commands require a separately reviewed [model-scoped policy/run](BACKGROUND_MODEL_SCOPE.md)
+matching these settings; legacy queue items cannot adopt a selected model.
 
 Provider-free developer checks:
 

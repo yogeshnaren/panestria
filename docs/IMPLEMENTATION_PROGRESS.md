@@ -5,6 +5,20 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+## Current model-scoped background integration
+
+[Preferred-model queue/controller integration](testing/BACKGROUND_MODEL_SCOPE.md)
+now carries the exact selected model through original immutable policy/run and
+current worker/final authority. Account-wide and exact-model quota windows remain
+independent; available account quota cannot override a model reserve. Drafts keep
+billing UNKNOWN and require separate exact review. Legacy records retain their
+original bytes/hashes. [Component evidence](../evidence/background-model-scope-2026-10-23/report.json)
+records actual disposable PG/Git/MCP/Docker with synthetic native/account/billing/
+certificates, including serial two-node execution and model-change publication
+refusal. This does not enable owner inference or qualify a model. Billing remains
+stale/background OFF; actual model/quality/resource evidence, qualified Delegate,
+other original acceptance gaps and the real owner trial still prevent R3 completion.
+
 ## Current reviewed foreground model selection
 
 [Explicit native model selection](testing/NATIVE_MODEL_SELECTION.md) removes the
@@ -16,8 +30,8 @@ account/certificates; two actual empty-auth zero-turn checks cover pinned startu
 only. No inference, owner setup or certificate was performed by this delivery.
 [Evidence](../evidence/native-model-selection-2026-10-23/report.json) preserves initial
 permission/fixture, startup metadata and test-module failures with corrections.
-Model-scoped background policy/window/run integration remains next; current queue
-policies refuse explicit foreground model settings. Fresh no-extra-spend consent,
+The separate model-scoped integration above now supplies new reviewed policies;
+legacy items still cannot adopt a foreground setting. Fresh no-extra-spend consent,
 model qualification, original gates and R3 acceptance remain required. Search
 and real-phone setup remain owner-deferred.
 

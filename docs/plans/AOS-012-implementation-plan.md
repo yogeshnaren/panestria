@@ -196,3 +196,7 @@ reissued or source evidence relabeled by these component checks.
 ## Reviewed foreground model component — 2026-10-23
 
 See [design115](../design/115-REVIEWED-NATIVE-MODELS.md) and [test/setup guide](../testing/NATIVE_MODEL_SELECTION.md). Explicit request IDs now bind separate visible connection consent, model-specific runtime qualification/inventory, launcher and protected receipts. Legacy defaults remain unchanged. Synthetic connected checks and actual empty-auth zero-turn metadata do not establish provider inference, billing, model quality or an original release-case pass. Model-scoped background queue integration remains a separate ready task.
+
+## Model-scoped queue component — 2026-10-23
+
+[Design116](../design/116-BACKGROUND-MODEL-SCOPE.md) and [setup/evidence](../testing/BACKGROUND_MODEL_SCOPE.md) add immutable exact-model policies/runs, independent account/model quota windows, review-only drafts and current worker/final model matching. Existing fixed-model records remain original. Synthetic billing/native fixtures do not qualify owner no-extra-spend or model access; original cases/gates stay open.
