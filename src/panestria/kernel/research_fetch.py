@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from panestria.contracts.build import canonical_sha256
 from panestria.contracts.research_admission import FetchDiagnostic, FetchPlan
+from panestria.kernel.connection_broker import GrantBroker
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.tasks import append_event, lock_task
@@ -28,11 +29,13 @@ class FetchAdmissionService:
         if type(certificates) is not PublicFetchCertificateStore:
             raise KernelDenied("public_fetch_certificate_store_required")
         self.certificates = certificates
+        self.grants = GrantBroker()
 
     def current(self, uow: UnitOfWork, actor: Actor, plan: FetchPlan, attempt_id: str, epoch: int) -> float:
-        return require_public_research(
+        remaining = require_public_research(
             uow, actor, FetchPlan.model_validate(plan), attempt_id, epoch, self.certificates, "public-fetch"
         )
+        return min(remaining, self.grants.authorize(uow, actor, plan).remaining_seconds)
 
     def prepare(self, uow: UnitOfWork, actor: Actor, plan: FetchPlan, attempt_id: str, epoch: int) -> None:
         self.current(uow, actor, plan, attempt_id, epoch)
@@ -46,7 +49,8 @@ class FetchAdmissionService:
             return
         uow.execute(
             "INSERT INTO panestria.fetch_plan(task_id,request_id,plan_sha256,request_sha256,contract_sha256,"
-            "policy_sha256,configuration_sha256) VALUES(%s,%s,%s,%s,%s,%s,%s)",
+            "policy_sha256,configuration_sha256,connection_grant_id,connection_grant_version) "
+            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
             (
                 plan.scope.task_id,
                 plan.request_id,
@@ -55,6 +59,8 @@ class FetchAdmissionService:
                 plan.contract_sha256,
                 plan.policy_sha256,
                 plan.configuration_sha256,
+                plan.connection.grant_id if plan.connection else None,
+                plan.connection.version if plan.connection else None,
             ),
         )
         append_event(
@@ -67,9 +73,20 @@ class FetchAdmissionService:
         )
 
     def claim(
-        self, uow: UnitOfWork, actor: Actor, plan: FetchPlan, attempt_id: str, epoch: int, url_sha256: str
+        self,
+        uow: UnitOfWork,
+        actor: Actor,
+        plan: FetchPlan,
+        attempt_id: str,
+        epoch: int,
+        url_sha256: str,
+        *,
+        url: str,
+        host: str,
     ) -> FetchDispatch:
         self.current(uow, actor, plan, attempt_id, epoch)
+        if hashlib.sha256(url.encode()).hexdigest() != url_sha256:
+            raise KernelDenied("fetch_url_unconfirmed")
         old = uow.execute(
             "SELECT plan_sha256 FROM panestria.fetch_plan WHERE task_id=%s", (plan.scope.task_id,)
         ).fetchone()
@@ -97,7 +114,8 @@ class FetchAdmissionService:
         cap = min(int(limits[1]), int(limits[2]) - int(consumed[1]) - 1)
         if int(consumed[0]) >= int(limits[0]) or cap < 1:
             raise KernelDenied("fetch_budget_exhausted")
-        dispatch = FetchDispatch(str(uuid4()), int(consumed[0]) + 1, cap, int(limits[3]))
+        capacity = self.grants.capacity(uow, actor, plan, cap, int(limits[3]) + 1, url=url, host=host)
+        dispatch = FetchDispatch(str(uuid4()), int(consumed[0]) + 1, capacity.body_cap, capacity.hops - 1)
         uow.execute(
             "INSERT INTO panestria.fetch_dispatch(id,task_id,request_id,attempt_id,lease_epoch,ordinal,"
             "url_sha256,reserved_body_bytes) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
@@ -109,9 +127,10 @@ class FetchAdmissionService:
                 epoch,
                 dispatch.ordinal,
                 url_sha256,
-                cap + 1,
+                dispatch.body_cap + 1,
             ),
         )
+        self.grants.reserve(uow, actor, plan, dispatch.dispatch_id, capacity)
         append_event(
             uow,
             goal_id=plan.scope.goal_id,
@@ -122,7 +141,11 @@ class FetchAdmissionService:
                 "dispatch_id": dispatch.dispatch_id,
                 "ordinal": dispatch.ordinal,
                 "url_sha256": url_sha256,
-                "reserved_body_bytes": cap + 1,
+                "reserved_body_bytes": dispatch.body_cap + 1,
+                "connection_grant_id": plan.connection.grant_id if plan.connection else None,
+                "connection_grant_version": plan.connection.version if plan.connection else None,
+                "reserved_application_bytes": capacity.application_bytes,
+                "reserved_http_hops": capacity.hops,
                 "observed": "UNKNOWN",
             },
         )
@@ -160,6 +183,7 @@ class FetchAdmissionService:
             or (ordinal == 0 and digest != str(dispatch[0]).strip())
         ):
             raise KernelDenied("fetch_hop_not_current")
+        self.grants.hop(uow, actor, plan, dispatch_id, ordinal, url, host)
         host_sha = hashlib.sha256(host.encode()).hexdigest()
         uow.execute(
             "INSERT INTO panestria.fetch_hop(dispatch_id,ordinal,url_sha256,host_sha256,url_bytes) "

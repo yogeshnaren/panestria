@@ -21,9 +21,11 @@ from panestria.execution.research_claims import ClaimStore
 from panestria.execution.research_fetch import AdmittedFetch
 from panestria.execution.research_runtime import research_runtime_versions
 from panestria.execution.search import AdmittedSearch
+from panestria.kernel.connection_broker import GrantBroker
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.leases import AttemptLease
+from panestria.kernel.policy import PolicyService
 from panestria.kernel.research_collection import CollectionBinding, CollectionLifecycle, CollectionStop
 from panestria.kernel.research_sources import SourceRecordService
 from panestria.kernel.uow import UnitOfWork
@@ -68,6 +70,13 @@ class OwnerCollection:
         )
         if brief.request_sha256 != initial.request_sha256 or brief.claims:
             raise KernelDenied("research_collection_existing_or_unconfirmed_evidence")
+        preflight = self._fetch_plan(initial)
+        # A missing/stale declaration must stop before even the first search
+        # query is sent. This preflight grants no lease or I/O; actual fetch
+        # admission checks certificate/policy/lease/grant again before effects.
+        with self.connect() as c:
+            PolicyService(self.lifecycle.fetch).get(UnitOfWork(c), self.actor)
+            GrantBroker().available(UnitOfWork(c), self.actor, preflight)
         planned = tuple(
             SearchQuery(request_id=UUID(request_id), scope=initial.request.scope, query=query, privacy_class="PUBLIC")
             for query in queries
@@ -111,7 +120,7 @@ class OwnerCollection:
             fetch = AdmittedFetch(
                 self.dsn,
                 self.actor,
-                FetchPlan(**common, configuration_sha256=versions["fetch_configuration_sha256"]),
+                self._fetch_plan(binding),
                 lease.attempt_id,
                 lease.epoch,
                 self.lifecycle.fetch,
@@ -139,6 +148,9 @@ class OwnerCollection:
                         if error.code == "fetch_budget_exhausted":
                             reason = self._capacity_stop(binding) or "body_limit"
                             break
+                        if error.code == "fetch_connection_budget_exhausted":
+                            reason = "connection_limit"
+                            break
                         raise
                     if collected.snapshot_id is not None:
                         self._excerpt(binding, fetch, collected.snapshot_id)
@@ -146,7 +158,7 @@ class OwnerCollection:
                     if exhausted is not None:
                         reason = exhausted
                         break  # Do not send more queries when no source/body capacity remains.
-                if reason in {"source_limit", "body_limit"}:
+                if reason in {"source_limit", "body_limit", "connection_limit"}:
                     break
             with self.connect() as c:
                 self.lifecycle.load(UnitOfWork(c), self.actor, request_id)  # Project -> goal -> task.
@@ -165,6 +177,19 @@ class OwnerCollection:
                     pass  # Never overwrite a replaced/cancelled/completed epoch or hide the original error.
             raise
 
+    def _fetch_plan(self, binding: CollectionBinding) -> FetchPlan:
+        if self.settings.fetch_connection is None:
+            raise KernelDenied("fetch_connection_required")
+        return FetchPlan(
+            scope=binding.request.scope,
+            request_id=binding.request.request_id,
+            request_sha256=binding.request_sha256,
+            contract_sha256=binding.contract_sha256,
+            policy_sha256=binding.contract.autonomy_profile_ref.rsplit(":", 1)[1],
+            configuration_sha256=self.lifecycle.fetch.runtime_versions["fetch_configuration_sha256"],
+            connection=self.settings.fetch_connection,
+        )
+
     def _capacity_stop(self, binding: CollectionBinding) -> CollectionStop | None:
         with self.connect() as c:
             consumed = c.execute(
@@ -174,7 +199,16 @@ class OwnerCollection:
         assert consumed is not None
         if consumed[0] >= binding.request.limits.max_sources:
             return "source_limit"
-        return "body_limit" if binding.request.limits.max_total_bytes - int(consumed[1]) < 2 else None
+        if binding.request.limits.max_total_bytes - int(consumed[1]) < 2:
+            return "body_limit"
+        with self.connect() as c:
+            try:
+                GrantBroker().available(UnitOfWork(c), self.actor, self._fetch_plan(binding))
+            except KernelDenied as error:
+                if error.code == "fetch_connection_budget_exhausted":
+                    return "connection_limit"
+                raise
+        return None
 
     def _excerpt(self, binding: CollectionBinding, fetch: AdmittedFetch, snapshot_id: str) -> None:
         with self.connect() as c:

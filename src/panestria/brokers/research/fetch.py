@@ -20,10 +20,11 @@ from urllib.parse import quote, urljoin, urlsplit
 
 from pydantic import SecretStr
 
+from panestria.contracts.fetch_connection import HTTP_FRAMING_BYTES, HTTP_READ_BUFFER_BYTES, HTTP_REQUEST_BYTES
 from panestria.contracts.research import ResearchLimits
 from panestria.sandbox.egress import EgressDenied, _public_unicast, _verify_peer
 
-_FRAMING_BYTES = 32 * 1024
+_FRAMING_BYTES = HTTP_FRAMING_BYTES
 
 
 class FetchDenied(ValueError):
@@ -129,7 +130,7 @@ class _DeadlineRead(io.RawIOBase):
 
 class _FramingRead(io.BufferedReader):
     def __init__(self, connection: socket.socket, deadline: float, cancel: threading.Event) -> None:
-        super().__init__(_DeadlineRead(connection, deadline, cancel), buffer_size=4096)
+        super().__init__(_DeadlineRead(connection, deadline, cancel), buffer_size=HTTP_READ_BUFFER_BYTES)
         self.framing_bytes = 0
 
     def readline(self, size: int | None = -1) -> bytes:
@@ -225,6 +226,8 @@ class PublicHttpsFetcher:
                     + "\r\nUser-Agent: Panestria-Research/0.6.1\r\nAccept: text/plain,text/html,application/pdf"
                     + "\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n"
                 ).encode("ascii")
+                if len(request) > HTTP_REQUEST_BYTES:
+                    raise FetchDenied("request_byte_limit")
                 connection.settimeout(min(5.0, _remaining(deadline, cancel)))
                 connection.sendall(request)
                 # HTTPResponse only needs makefile(). Its reader checks every underlying receive,

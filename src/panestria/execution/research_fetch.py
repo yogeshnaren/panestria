@@ -90,7 +90,7 @@ class AdmittedFetch:
         if type(url) is not SecretStr:
             raise KernelDenied("explicit_public_url_required")
         target_url = url.get_secret_value()
-        https_target(target_url)  # Syntax before reservation; DNS only after the committed hop.
+        target = https_target(target_url)  # Syntax before reservation; DNS only after the committed hop.
         stopped, done = threading.Event(), threading.Event()
 
         def check() -> float:
@@ -109,6 +109,8 @@ class AdmittedFetch:
                 self.attempt_id,
                 self.epoch,
                 hashlib.sha256(target_url.encode()).hexdigest(),
+                url=target_url,
+                host=target.host,
             )
         # The acknowledged reservation is permanently consumed, even if setup/cancel/lost ACK stops all I/O.
         result: CollectedSource | None = None

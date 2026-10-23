@@ -27,6 +27,13 @@ from test_configured_search import search_server  # noqa: F401
 from test_memory_restore import _fixture_container
 
 from panestria.brokers.research.search import SearchUnavailable
+from panestria.contracts.connections import ConnectionManifest, ConnectionReviewRequest
+from panestria.contracts.fetch_connection import (
+    FETCH_CONNECTOR,
+    FETCH_CONNECTOR_VERSION,
+    FetchConnectionBinding,
+    anonymous_fetch_account,
+)
 from panestria.contracts.goal import contract_sha256, load_contract
 from panestria.contracts.policy import AutonomyAxis, PrivacyAxis, TrustAxis
 from panestria.contracts.research import ResearchArtifactRef, ResearchLimits, ResearchRequestRecord, ResearchScope
@@ -38,6 +45,7 @@ from panestria.execution.research_runtime import research_runtime_versions
 from panestria.execution.search import AdmittedSearch, search_runtime_versions
 from panestria.kernel.build import BuildEvidenceStore
 from panestria.kernel.cancellation import CancellationService
+from panestria.kernel.connections import ConnectionReviewService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor, GoalService
 from panestria.kernel.leases import LeaseService
@@ -217,6 +225,45 @@ def admitted_search(r1_migration_task, search_server, tmp_path, request):  # noq
             "fetch_configuration_sha256" if combined else "configuration_sha256"
         ],
     )
+    if is_fetch:
+        # Explicit scripted test-owner consent, not a runtime/live certificate.
+        grant_body = {
+            "owner_id": actor.owner_id,
+            "project_id": actor.project_id,
+            "connector_ref": FETCH_CONNECTOR,
+            "connector_version": FETCH_CONNECTOR_VERSION,
+            "configuration_sha256": binding["configuration_sha256"],
+            "account_ref": anonymous_fetch_account(actor.owner_id, actor.project_id, binding["configuration_sha256"]),
+            "actions": ["read", "send"],
+            "data_classes": ["PUBLIC"],
+            "origins": ["https://example.org", "https://example.net"],
+            "budget": {
+                "max_calls": 100,
+                "max_bytes": 64 * 1024 * 1024,
+                "max_wall_seconds": 3600,
+                **changes.get("connection_budget", {}),
+            },
+            "expires_at": (datetime.now(UTC) + timedelta(hours=1)).isoformat(),
+            "conformance_sha256": digest,
+            **changes.get("connection_manifest", {}),
+        }
+        grants = ConnectionReviewService()
+        with psycopg.connect(dsn) as c:
+            declared = grants.propose(
+                UnitOfWork(c),
+                actor,
+                scope.task_id,
+                ConnectionReviewRequest(
+                    proposal_id=str(uuid4()),
+                    policy_ref=document["autonomy_profile_ref"],
+                    expected_version=0,
+                    operation="REPLACE",
+                    manifest=ConnectionManifest.model_validate_json(json.dumps(grant_body)),
+                ),
+            )
+        with psycopg.connect(dsn) as c:
+            decided = grants.decide(UnitOfWork(c), actor, declared.proposal_id, declared.effect_digest, "approve")
+        binding["connection"] = FetchConnectionBinding(grant_id=declared.grant_id, version=decided.granted_version)
     plan = FetchPlan(**binding) if is_fetch else SearchPlan(**binding, max_queries=2)
     controller = (
         AdmittedFetch(

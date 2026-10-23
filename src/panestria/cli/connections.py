@@ -115,3 +115,77 @@ def review(
         run_connection_terminal(config, str(proposal_id))
     except (LocalApplicationRejected, TerminalUnavailable, ValueError, TypeError) as error:
         failed(error)
+
+
+@connections_app.command("prepare-public-fetch")
+def prepare_public_fetch(
+    config: Annotated[Path, typer.Option("--config")],
+    research_config: Annotated[Path, typer.Option("--research-config")],
+    task_id: Annotated[UUID, typer.Option("--task-id")],
+    proposal_id: Annotated[UUID, typer.Option("--proposal-id")],
+    origin: Annotated[list[str], typer.Option("--origin")],
+    output: Annotated[Path, typer.Option("--output")],
+    max_calls: Annotated[int, typer.Option(min=1, max=10000)] = 16,
+    max_bytes: Annotated[int, typer.Option(min=49155, max=64 * 1024 * 1024)] = 8 * 1024 * 1024,
+    max_wall_seconds: Annotated[int, typer.Option(min=1, max=3600)] = 3600,
+    expires_seconds: Annotated[int, typer.Option(min=1, max=30 * 86400)] = 3600,
+) -> None:
+    """Write one unverified anonymous GET declaration for separate exact owner review."""
+    from datetime import UTC, datetime, timedelta
+
+    from panestria.cli.research import _write_private
+    from panestria.config_research import load_research_settings
+    from panestria.contracts.connections import ConnectionBudget, ConnectionManifest
+    from panestria.contracts.fetch_connection import (
+        FETCH_CONFIGURATION_SHA256,
+        FETCH_CONNECTOR,
+        FETCH_CONNECTOR_VERSION,
+        HTTP_HOP_RESERVED_BYTES,
+        anonymous_fetch_account,
+    )
+
+    try:
+        settings = load_research_settings(research_config)
+        scope = ConnectionClient(config).scope()
+        if (scope.owner_id, scope.project_id) != (str(settings.owner_id), str(settings.project_id)):
+            raise LocalApplicationRejected("connection_scope_mismatch")
+        manifest = ConnectionManifest(
+            owner_id=scope.owner_id,
+            project_id=scope.project_id,
+            connector_ref=FETCH_CONNECTOR,
+            connector_version=FETCH_CONNECTOR_VERSION,
+            configuration_sha256=FETCH_CONFIGURATION_SHA256,
+            account_ref=anonymous_fetch_account(scope.owner_id, scope.project_id, FETCH_CONFIGURATION_SHA256),
+            actions=("read", "send"),
+            data_classes=("PUBLIC",),
+            origins=tuple(origin),
+            budget=ConnectionBudget(max_calls=max_calls, max_bytes=max_bytes, max_wall_seconds=max_wall_seconds),
+            expires_at=datetime.now(UTC) + timedelta(seconds=expires_seconds),
+            conformance_sha256=settings.certificate_sha256,
+        )
+        request = SubmitReview(
+            schema_version=1,
+            task_id=str(task_id),
+            change=ConnectionReviewRequest(
+                proposal_id=str(proposal_id),
+                policy_ref=scope.policy_ref,
+                expected_version=0,
+                operation="REPLACE",
+                manifest=manifest,
+            ),
+        )
+        _write_private(output, request.model_dump_json().encode() + b"\n")
+        typer.echo(
+            json.dumps(
+                {
+                    "status": "TEMPLATE_CREATED_UNVERIFIED",
+                    "proposal_id": str(proposal_id),
+                    "runtime_available": False,
+                    "http_hop_capacity_reservation_bytes": HTTP_HOP_RESERVED_BYTES,
+                    "actual_wire_usage": "NOT_MEASURED",
+                    "account_identity": "ANONYMOUS_SERVICE_NOT_AUTHENTICATED_ACCOUNT",
+                }
+            )
+        )
+    except (Exception, KeyboardInterrupt):
+        failed(LocalApplicationRejected("public_fetch_declaration_template_unavailable"))
