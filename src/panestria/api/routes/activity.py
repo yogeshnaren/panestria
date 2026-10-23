@@ -90,7 +90,11 @@ async def storage_status(request: Request) -> JSONResponse:
     try:
         api = _api(request)
         actor = authorize(request, api)
-        if getattr(request.app.state, "browser_access", None) is not None:
+        browser = getattr(request.app.state, "browser_access", None)
+        if browser is not None and not (
+            getattr(request.app.state, "mission_storage_mode", False) is True
+            and getattr(browser, "namespace", None) == "mission-storage"
+        ):
             raise LoopbackDenied("storage_terminal_mode_only", 403)
         observer = getattr(request.app.state, "storage_observer", None)
         if isinstance(observer, StorageObserver):

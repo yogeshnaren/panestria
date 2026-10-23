@@ -1,0 +1,32 @@
+import {readFileSync} from 'node:fs';
+import {createInterface} from 'node:readline';
+import {chromium,expect} from '@playwright/test';
+const f=JSON.parse(readFileSync(process.env.PANESTRIA_BROWSER_FIXTURE,'utf8'));
+const input=createInterface({input:process.stdin});
+const wait=()=>new Promise(resolve=>input.once('line',resolve));
+const browser=await chromium.launch({headless:true});
+try {
+  const page=await browser.newPage({viewport:{width:1100,height:950}});
+  const requests=[];page.on('request',r=>requests.push(r.url()));
+  await page.goto(f.origin);
+  await page.getByLabel('One-use pairing code from your terminal').fill(f.code);
+  await page.getByRole('button',{name:'Pair',exact:true}).click();
+  const notices=page.getByRole('region',{name:'Storage notices'});
+  await expect(notices).toContainText('Storage OBSERVED');
+  await expect(notices).toContainText('free_reserve_at_risk');
+  await expect(notices).toContainText('No deletion, pruning');
+  await expect(notices).toContainText('not project ownership totals');
+  await expect(notices.getByRole('button')).toHaveCount(0);
+  await expect(page.getByText('PRIVATE_STORAGE_SELECTION')).toHaveCount(0);
+  await page.screenshot({path:process.env.PANESTRIA_BROWSER_SCREENSHOT,fullPage:true});
+  console.log('OBSERVED');await wait();
+  await page.reload();
+  await expect(notices).toContainText('Storage DISABLED');
+  await expect(notices).not.toContainText('free_reserve_at_risk');
+  await expect(notices).not.toContainText('owner available:');
+  console.log('DISABLED');await wait();
+  await page.reload();
+  await expect(notices).toHaveCount(0);
+  if(requests.some(url=>!url.startsWith(f.origin+'/')))throw new Error('Nonlocal application request');
+  console.log('PASS');
+} finally {await browser.close();input.close();}

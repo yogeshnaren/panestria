@@ -32,6 +32,7 @@ def capability(request: Request) -> JSONResponse:
                 getattr(request.app.state, "build_intake", None), "allow_acceptance", False
             ),
             build_run_enabled=getattr(request.app.state, "mission_run", None) is not None,
+            storage_status_enabled=getattr(request.app.state, "mission_storage_mode", False) is True,
             dispatch_authority="EXPLICIT_FOREGROUND_BUILD"
             if getattr(request.app.state, "mission_run", None) is not None
             else "NONE",

@@ -21,8 +21,10 @@ already delivered components.
 | Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build/research metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
 | Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |
 
-The opt-in storage terminal integration is now merged; desktop/mobile resource
-inbox and host qualification remain open. The merged
+The opt-in storage terminal integration is merged. A separate explicit local
+[Mission Control storage mode](testing/MISSION_STORAGE_NOTICES.md) now supplies
+owner host warnings/recommendations with fresh pairing and no cleanup authority.
+Phone/device integration, broader resource inbox and host qualification remain open. The merged
 [CI reduction](testing/CI_REQUIRED_COVERAGE.md) retains functional/security and
 mutation-witness checks, conditions repeated legacy/restore regressions and avoids
 rerunning an already-proven merge tree. The [connection declaration terminal](testing/CONNECTION_DECLARATION_TERMINAL.md)

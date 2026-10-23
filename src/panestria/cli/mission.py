@@ -39,6 +39,10 @@ def serve(
         Path | None,
         typer.Option("--build-run", help="Existing private Build config: explicit finite PUBLIC subscription runs."),
     ] = None,
+    storage_config: Annotated[
+        Path | None,
+        typer.Option("--storage-config", help="Explicit read-only owner host storage notices; separate pairing."),
+    ] = None,
 ) -> None:
     """Serve an explicit production dashboard build on the configured exclusive port."""
     from panestria.api.activity_server import serve_activity
@@ -54,6 +58,7 @@ def serve(
             build_intake=build_intake,
             build_plan_review=build_plan_review,
             build_run=build_run,
+            storage_config=storage_config,
         )
         return
     except (LocalApplicationRejected, ProfileRejected, KernelDenied) as exc:

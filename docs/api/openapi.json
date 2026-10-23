@@ -1698,6 +1698,11 @@
             "default": false,
             "title": "Research Intake Enabled",
             "type": "boolean"
+          },
+          "storage_status_enabled": {
+            "default": false,
+            "title": "Storage Status Enabled",
+            "type": "boolean"
           }
         },
         "required": [

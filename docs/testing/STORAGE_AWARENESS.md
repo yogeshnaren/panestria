@@ -150,3 +150,8 @@ admissions, growth attribution, local inbox and full Mission Control integration
 remain pending R3 work; this does not complete TC05–TC08 or G3.
 
 A separately enabled runtime-metrics capture can still save small bounded derived metadata for a WAIT/outcome; this is not a worker/workspace admission or a physical disk reservation. If saving fails, the canonical storage deferral is unchanged. The combined component follow-up checks both opt-in features together and the actual CLI notification channel.
+
+
+For separately paired owner host metadata in the browser, use the explicit
+[Mission Control storage mode](MISSION_STORAGE_NOTICES.md). The ordinary browser
+keeps its denial; this selected mode does not provide cleanup or phone access.
