@@ -94,12 +94,34 @@ def capture_reference(owner: "OwnerBuild", goal: str) -> dict[str, Any]:
             ) != (owner.actor.owner_id, owner.actor.project_id, progress.contract_sha256, task, attempt):
                 raise KernelDenied("offline_reference_binding_mismatch")
             source = None
+            requested_model = reported_init_model = None
             if receipt:
                 body = json.loads(owner.reports.read_blob(str(receipt).strip()))
                 versions = body.get("runtime_versions", {}) if isinstance(body, dict) else {}
                 candidate = versions.get("source_sha256") if isinstance(versions, dict) else None
                 if isinstance(candidate, str) and re.fullmatch(r"[a-f0-9]{64}", candidate):
                     source = candidate
+                # Only the original protected native-Build receipt carries this
+                # observation. Never infer it from today's launcher or profile.
+                if isinstance(body, dict) and body.get("kind") == "admitted-native-build":
+                    if (
+                        binding.kind != "native-proposal"
+                        or body.get("context_sha256") != binding.request_sha256
+                        or body.get("scope_sha256") != binding.scope.sha256()
+                    ):
+                        raise KernelDenied("offline_reference_receipt_binding_mismatch")
+                    observation = body.get("observation", {})
+                    if not isinstance(observation, dict):
+                        raise KernelDenied("offline_reference_invalid_model_metadata")
+                    requested_model = observation.get("requested_model")
+                    process = observation.get("process")
+                    result = process.get("result") if isinstance(process, dict) else None
+                    reported_init_model = result.get("reported_init_model") if isinstance(result, dict) else None
+                    for value in (requested_model, reported_init_model):
+                        if value is not None and (
+                            type(value) is not str or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}", value) is None
+                        ):
+                            raise KernelDenied("offline_reference_invalid_model_metadata")
             provenance.append(
                 InvocationProvenance(
                     invocation_id=identity,
@@ -107,6 +129,10 @@ def capture_reference(owner: "OwnerBuild", goal: str) -> dict[str, Any]:
                     receipt_sha256=str(receipt).strip() if receipt else None,
                     kind=binding.kind,
                     controller_source_sha256=source,
+                    request_sha256=binding.request_sha256,
+                    configuration_sha256=binding.configuration_sha256,
+                    requested_model=requested_model,
+                    reported_init_model=reported_init_model,
                 )
             )
     payloads["diff"] = protected_git(
@@ -136,6 +162,7 @@ def capture_reference(owner: "OwnerBuild", goal: str) -> dict[str, Any]:
             refs.append(digest)
         parts[name] = RetainedPart(sha256=hashlib.sha256(raw).hexdigest(), size_bytes=len(raw), chunks=tuple(refs))
     manifest = OfflineBuildReference(
+        schema_version=2,
         owner_id=UUID(owner.actor.owner_id),
         project_id=UUID(owner.actor.project_id),
         goal_id=UUID(goal),
