@@ -169,10 +169,13 @@ def serve_phone(path: Path, assets: Path) -> None:
     try:
         runtime = tls_server_config(app, config)
         try:
+            # Permit a stopped listener's TIME_WAIT sockets to retire without
+            # delaying restart. No SO_REUSEPORT or competing active listener.
+            listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             listener.bind((config.bind_address, config.bind_port))
+            listener.listen(16)
         except OSError:
             raise LocalApplicationRejected("phone_bind_unavailable") from None
-        listener.listen(16)
         listener.setblocking(False)
         server = uvicorn.Server(runtime)
         print(

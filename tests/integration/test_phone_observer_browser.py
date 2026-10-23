@@ -96,7 +96,11 @@ def test_mobile_observer_build_attention_stop_restart_offline_background_and_rev
         ) as client:
             deadline = time.monotonic() + 20
             while True:
-                assert process.poll() is None and time.monotonic() < deadline
+                if process.poll() is not None:
+                    out, err = process.communicate(timeout=3)
+                    assert token.encode() not in out + err
+                    raise AssertionError("phone startup failed: " + (out + err).decode()[-2048:])
+                assert time.monotonic() < deadline
                 try:
                     if client.get(config.origin + "/").status_code == 200:
                         return process
@@ -116,6 +120,26 @@ def test_mobile_observer_build_attention_stop_restart_offline_background_and_rev
 
     try:
         server = start()
+        # A rapid restart must work, but a live listener must stay exclusive.
+        competing = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "from panestria.cli.main import app;app()",
+                "phone",
+                "serve",
+                "--config",
+                str(path),
+                "--assets",
+                str(ASSETS),
+            ],
+            cwd=ROOT,
+            env=env,
+            capture_output=True,
+            timeout=10,
+        )
+        assert competing.returncode == 2 and b"phone_bind_unavailable" in competing.stderr
+        assert token.encode() not in competing.stdout + competing.stderr
         screenshot = tmp_path / "phone-observer.png"
         browser = subprocess.Popen(
             [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/phone-observer.mjs"],
