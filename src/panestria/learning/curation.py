@@ -162,7 +162,13 @@ class ExampleCuration:
     def prepare(self, candidate: Path, proofs: tuple[Path, ...], days: int = 7) -> dict[str, Any]:
         with self.connect() as c:
             preview = self._prepare(c, candidate, proofs, days)
-        return {"status": "REVIEW_ONLY", "preview": preview.model_dump(mode="json"), "review_sha256": preview.sha256()}
+        return {
+            "status": "REVIEW_ONLY",
+            "preview": preview.model_dump(mode="json"),
+            "review_sha256": preview.sha256(),
+            "example_sha256": preview.example.sha256(),
+            "content_sha256": preview.example.content_sha256,
+        }
 
     def record(
         self,
