@@ -95,5 +95,17 @@
     "Trusted final integration still needs its own queue lifecycle intersection. No full connection/secret/grant integration, foreground/resource/TC06/07/10/G3/trial pass.",
     "Current owner billing observation remains stale and background OFF. No owner configuration/service/database/backup/storage deletion.",
     "Initial failed and diagnostic observations remain distinct source-bound originals; diagnostics are not qualification."
-  ]
+  ],
+  "mutation_witness": {
+    "source_commit": "07c997bc59713821b27f6ae2361a10e057d73742",
+    "source_tree": "819de78f2cd6fdb174378771acc2bf845ee44c1f",
+    "worktree": "CLEAN",
+    "file": "guard-removed-mutant.xml",
+    "sha256": "e651e38cd1148be9939ebe361cb7250f0a34d4f3e10606a84af65dd207703b13",
+    "plugin": "guard-removal-plugin.txt",
+    "plugin_sha256": "c74362018a95af20d30112a50a2202bcb91c83035c05a0532abe81ca4e1eedfa",
+    "result": "KILLED",
+    "expected_pytest_exit_code": 1,
+    "scope": "Explicit external plugin removes only BackgroundPlanRunner worker-authority wiring. One actual post-claim withdrawal case fails at launches==0 with observed launches=1. This expected mutant failure is not a production test pass, broad mutation score or live provider qualification."
+  }
 }

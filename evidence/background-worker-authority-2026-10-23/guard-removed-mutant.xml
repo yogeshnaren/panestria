@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="8.959" timestamp="2026-10-22T22:52:58.648176-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_background_worker_authority" name="test_change_after_invocation_claim_stops_context_disclosure[withdraw]" file="tests/integration/test_background_worker_authority.py" line="39" time="8.589"><failure message="assert 1 == 0">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-150/test_change_after_invocation_c0/build.json...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x7df01382a900&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7df01396a9c0&gt;
+change = 'withdraw'
+
+    @pytest.mark.parametrize("change", ["withdraw", "account"])
+    def test_change_after_invocation_claim_stops_context_disclosure(prepared_plan, native_plan, monkeypatch, change):
+        f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
+        native = ClaudeScopedBashAdapter.build_public
+        changed = []
+    
+        def launch(adapter, session, **kwargs):
+            before = kwargs["before_launch"]
+    
+            def change_before_launch():
+                with owner.connect() as c:
+                    # This is after the durable native invocation, not merely before claim.
+                    assert c.execute(
+                        "SELECT count(*) FROM panestria.worker_invocation i JOIN panestria.task t ON t.id=i.task_id "
+                        "WHERE t.goal_id=%s AND i.state='CLAIMED'",
+                        (plan.goal_id,),
+                    ).fetchone() == (1,)
+                if change == "withdraw":
+                    cli(f, "withdraw", request.item_id, cli(f, "show", request.item_id)["binding_sha256"])
+                else:
+                    change_account(monkeypatch)
+                changed.append(change)
+                before()
+    
+            return native(adapter, session, **{**kwargs, "before_launch": change_before_launch})
+    
+        monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", launch)
+        result = BackgroundPlanRunner(owner, request.item_id).run_item(allow_background_subscription_run=True)
+        assert changed == [change]  # The requested change actually reached the disclosure boundary.
+&gt;       assert state["launches"] == 0
+E       assert 1 == 0
+
+tests/integration/test_background_worker_authority.py:69: AssertionError</failure></testcase></testsuite></testsuites>
