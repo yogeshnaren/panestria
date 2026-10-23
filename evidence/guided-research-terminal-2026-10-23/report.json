@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "component": "GUIDED_SAME_REQUEST_RESEARCH_TERMINAL",
+  "implementation_status": "IMPLEMENTED_MANUAL_COMPONENT_ONLY",
+  "design": "docs/design/117-GUIDED-RESEARCH-TERMINAL.md",
+  "guide": "docs/testing/GUIDED_RESEARCH_TUI.md",
+  "original_runs": [
+    {
+      "name": "initial",
+      "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/guided-research-terminal-2026-10-23/initial.xml",
+      "sha256": "92b224354937f206ecb3873e4b4affe4e824e5da00e758f2d11cf2edb287a650",
+      "source_commit": "0f9af5e83da73aa6ccb0c3d6f29b667e1b93e0d6",
+      "source_tree": "1387c862248fa32cb35c08e5ba11e17f9bd3a669",
+      "totals": {
+        "tests": 7,
+        "failures": 3,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 37.208,
+      "scope_note": "Initial helper rename defects and incremental curses transcript expectation; originals preserved."
+    },
+    {
+      "name": "corrected",
+      "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/guided-research-terminal-2026-10-23/corrected.xml",
+      "sha256": "f90593bb2da85af061c480fa92e17ac3a88c2feeac7ce04d6c5c612a437d1f46",
+      "source_commit": "cacfdde239f4bff72b9d8a5539c53fcfc5033ab4",
+      "source_tree": "a42c190068f5cf3549f7553fa6e509201a76a4d4",
+      "totals": {
+        "tests": 7,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 44.928,
+      "scope_note": "Six pass, one fixture assertion incorrectly counted the pre-existing project request. Docs-only untracked additions present; original code source retained."
+    },
+    {
+      "name": "final-connected-and-legacy",
+      "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/guided-research-terminal-2026-10-23/final-connected-and-legacy.xml",
+      "sha256": "d34d911e83e18b57e13c4c778a5189cc0394261cad062b632896e1f14f7aee07",
+      "source_commit": "e4de0dfcecad3c3acca7849f9f8caca9ce5a76ed",
+      "source_tree": "f20bc2805fe17e40a91eaa5a49a3a067a986561e",
+      "totals": {
+        "tests": 31,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 123.252,
+      "scope_note": "Clean committed source. New seven connected/PTY checks plus original planning, collection and synthesis regressions. One live case deselected, not passed."
+    },
+    {
+      "name": "removed-planning-guard-mutant",
+      "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/guided-research-terminal-2026-10-23/removed-planning-guard-mutant.xml",
+      "sha256": "d2d66db546cf0369acb255c72a27d415e2f6e167671373ad3eb21de92970c05d",
+      "source_commit": "e4de0dfcecad3c3acca7849f9f8caca9ce5a76ed",
+      "source_tree": "f20bc2805fe17e40a91eaa5a49a3a067a986561e",
+      "totals": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 7.854,
+      "scope_note": "Deliberately dirty isolated mutant. One selected witness fails DID NOT RAISE: DETECTED. No global mutation score."
+    }
+  ],
+  "observed": [
+    "Same staged request moves through original local proposal, explicit query disclosure/collection, retained local draft and separate owner-review opening without replacement request or task PASS.",
+    "Actual disposable PG, loopback HTTP, isolated reader, CAS and physical PTY; model/HTTPS/certificates explicitly fixtures, no provider inference or actual search qualification.",
+    "Every stage is separately reviewed; stale original planning/draft inputs and collection version review fail before new effects. Lost committed reply stops the current view; reopening reads original retained plan without duplicate inference.",
+    "Missing collection configuration, cancelled state, redirected terminal and cancelled exact confirmation produce no new collection. Existing original service commands remain compatible."
+  ],
+  "mutation": {
+    "result": "DETECTED_ONE_WITNESS",
+    "baseline": "final-connected-and-legacy includes the unchanged PLAN witness passing",
+    "mutant_base": "e4de0dfcecad3c3acca7849f9f8caca9ce5a76ed",
+    "patch": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/guided-research-terminal-2026-10-23/removed-planning-guard.patch",
+    "patch_sha256": "6b6486c6abf466227c4b18ffc2338fe51ea6d5c013e4bca98a4b902b142d19ea",
+    "failure": "DID NOT RAISE KernelDenied after removing the exact planning input comparison",
+    "global_score": "NOT_MEASURED"
+  },
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS_358_SOURCE_FILES",
+    "import_boundaries": "11_KEPT_0_BROKEN",
+    "secret_scan": "PASS",
+    "scope": "Local observed command results; exact-head CI and complete tested merge tree remain required before merge."
+  },
+  "limits": [
+    "Manual stage navigation is not a qualified autonomous aggregate Delegate workflow/budget. No canonical acceptance verifier is added.",
+    "Automatic semantic support remains NOT_QUALIFIED, task/training authority NONE, original semantic heldout failures unchanged.",
+    "Actual search and real-phone setup owner-deferred; paid SDK TC04 DEFERRED, stale billing/background OFF unchanged.",
+    "No owner setup/service/DB/cache/credential, provider inference, download, storage deletion, backup/driver change or fabricated 14-day trial."
+  ],
+  "release_gates": {
+    "G1": "NOT_PASSED",
+    "G2": "NOT_PASSED",
+    "G3": "NOT_PASSED",
+    "owner_trial": "NOT_STARTED"
+  }
+}

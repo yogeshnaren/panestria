@@ -14,6 +14,9 @@ and confirmation; reviewed inputs are rechecked under the original service locks
 Reopening reads canonical receipts instead of repeating work. Interrupted or
 unconfirmed stages stop; no replacement goal, epoch reset, shadow queue or new
 grant is created. Missing collection setup leaves proposals available locally.
+The [component evidence](../evidence/guided-research-terminal-2026-10-23/report.json)
+retains 31 connected/compatibility passes with explicit model/HTTPS/certificate
+fixtures, original failures/corrections and one detected removed-input-guard mutation.
 This is manual navigation of existing bounded components. Qualified semantic
 support, the autonomous aggregate Delegate budget/workflow, original live D-1
 evidence and release acceptance remain open. Actual search and real-phone setup
