@@ -5,6 +5,20 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+## Current guided research terminal
+
+The [same-request research TUI](testing/GUIDED_RESEARCH_TUI.md) now connects the
+existing local query proposal, exact disclosure/collection review, local draft
+and owner claim-review terminal. Each stage needs a separate full-page review
+and confirmation; reviewed inputs are rechecked under the original service locks.
+Reopening reads canonical receipts instead of repeating work. Interrupted or
+unconfirmed stages stop; no replacement goal, epoch reset, shadow queue or new
+grant is created. Missing collection setup leaves proposals available locally.
+This is manual navigation of existing bounded components. Qualified semantic
+support, the autonomous aggregate Delegate budget/workflow, original live D-1
+evidence and release acceptance remain open. Actual search and real-phone setup
+are owner-deferred; stale billing/background OFF is unchanged.
+
 ## Current model-scoped background integration
 
 [Preferred-model queue/controller integration](testing/BACKGROUND_MODEL_SCOPE.md)
