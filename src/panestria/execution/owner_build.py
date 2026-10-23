@@ -21,6 +21,7 @@ from panestria.contracts.native_tools import ToolScope
 from panestria.contracts.policy import AutonomyAxis, PrivacyAxis, TrustAxis
 from panestria.execution.build_merge import VerifiedGitTarget, prepare_merge
 from panestria.execution.native_build import AdmittedNativeBuild, runtime_versions
+from panestria.execution.native_connection import preflight_connection, selected_authority
 from panestria.execution.outbox import EffectExecutor
 from panestria.execution.proposal_demo import _lock, _private
 from panestria.execution.scoped_bash import ScopedBashController
@@ -200,6 +201,7 @@ class OwnerBuild:
         task = str(UUID(bytes=uuid5(UUID(contract.goal_id), "owner-native-build").bytes, version=4))
         s = self.settings
         with _lock(s.root / "operation.lock"):
+            preflight_connection(self)
             if s.repository.is_symlink() or s.repository.resolve() != s.repository:
                 raise KernelDenied("build_repository_scope_mismatch")
             # Read Git before taking database/event-counter locks. The final
@@ -295,7 +297,9 @@ class OwnerBuild:
         )
         cancel = threading.Event()
         try:
-            outcome = AdmittedNativeBuild(controller, selected).run(
+            admitted = AdmittedNativeBuild(controller, selected)
+            controller.authority = selected_authority(self, scope, admitted.context)
+            outcome = admitted.run(
                 native,
                 s.protected,
                 s.repository,

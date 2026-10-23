@@ -1,0 +1,212 @@
+{
+  "kind": "selected_native_connection_grants_component",
+  "base_commit": "b80ecd54d5a6f9c4d12c31e74e5ddcd85f556316",
+  "reports": [
+    {
+      "file": "initial.xml",
+      "sha256": "5a6b3d2ef8bbc2e5e574465628196c991386cbf93a62822a791d6df4502116aa",
+      "log_sha256": "9170b250e7e879272c74c3b3f6f475c25c3951a41cc8b2cfd17f28aaee79a7a3",
+      "source_commit": "6a2fe2d1398e0f036115d008834eced64085f2d2",
+      "source_tree": "28b174c38f3f8820cab45b31cdd9fe3fa36d9527",
+      "worktree_state": "clean",
+      "result": {
+        "tests": "59",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "38.011"
+      },
+      "failing_cases": [
+        "test_native_cli_template_and_terminal_expose_exact_route_and_units_without_enabling"
+      ]
+    },
+    {
+      "file": "setup-and-composition.xml",
+      "sha256": "193f9f46e48940cbbb7bc0a28ee1c002f4a4859924ca3c77140cb14864e52b19",
+      "log_sha256": "fa3327a6f3427b27a300305d08bcd15bf0a60d2a7a3d8748dc19e93c8b278540",
+      "source_commit": "445cfea70835384b26a16bec77085006bf4cd745",
+      "source_tree": "9aea662005ae5a5df2b0cf3f1605a7117f37c0f3",
+      "worktree_state": "clean",
+      "result": {
+        "tests": "5",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "47.506"
+      },
+      "failing_cases": [
+        "test_native_cli_template_and_terminal_expose_exact_route_and_units_without_enabling"
+      ]
+    },
+    {
+      "file": "regression.xml",
+      "sha256": "c3fdc0ace0fe225d1a57a2fe4cfed1bdf9ecd509ac84604d4bcb5ec490b1550d",
+      "log_sha256": "b5b47a5b1ed251c2e1fcb2cac45038f50e88f73d54dbc68ef55115e47c6ebb8b",
+      "source_commit": "6c416d6fa6e7b198297ff8d61ff4a9330c8aaebf",
+      "source_tree": "bb64a052c85165ae1fc8af3f60990c5be0206b20",
+      "worktree_state": "clean",
+      "result": {
+        "tests": "124",
+        "failures": "5",
+        "errors": "0",
+        "skipped": "0",
+        "time": "96.983"
+      },
+      "failing_cases": [
+        "test_audit_actual_dump_restore_and_downgrade_refusal",
+        "test_empty_migration_downgrade_and_reupgrade_preserve_existing_schema",
+        "test_terminal_exact_review_and_fresh_policy_revocation_never_connect",
+        "test_postcommit_error_never_retries_or_optimistically_reports_approval",
+        "test_actual_foreground_server_has_only_metadata_and_declaration_authority"
+      ]
+    },
+    {
+      "file": "local-launchers.xml",
+      "sha256": "a7e24a6524dd107759dae1f0bb171a3f47192eed41b65896bdc16476e7a5ad42",
+      "log_sha256": "5cca282bed247b0f1d71c61f3cf679e0fd10fe392ca2f8ccda2dfedade876698",
+      "source_commit": "6c416d6fa6e7b198297ff8d61ff4a9330c8aaebf",
+      "source_tree": "bb64a052c85165ae1fc8af3f60990c5be0206b20",
+      "worktree_state": "clean",
+      "result": {
+        "tests": "5",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "28.514"
+      },
+      "failing_cases": []
+    },
+    {
+      "file": "current-guard-mutant.xml",
+      "sha256": "dce859cca6cab47dc01acd97b73b4bee986785359d1d516530d9ccd0739adc50",
+      "log_sha256": "4fba57f2c93d48931671f16d14bde2ee3bba0d4ce704fd1782d7c00597bfe044",
+      "source_commit": "6c416d6fa6e7b198297ff8d61ff4a9330c8aaebf",
+      "source_tree": "bb64a052c85165ae1fc8af3f60990c5be0206b20",
+      "worktree_state": "dirty_mutant_only",
+      "result": {
+        "tests": "1",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "11.283"
+      },
+      "failing_cases": [
+        "test_revoke_during_final_checks_keeps_returned_worker_evidence_but_no_final_review"
+      ]
+    },
+    {
+      "file": "current-guard-baseline.xml",
+      "sha256": "406d6fe6e2d445401f9dacc726949c5ee064da2a0a24e49aa173e06ffb202fd2",
+      "log_sha256": "b78b75e8495bb7ff55de26a63a80f010d40cee7d08b5bd428e4ddfdd7e817c9d",
+      "source_commit": "6c416d6fa6e7b198297ff8d61ff4a9330c8aaebf",
+      "source_tree": "bb64a052c85165ae1fc8af3f60990c5be0206b20",
+      "worktree_state": "clean",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "13.031"
+      },
+      "failing_cases": []
+    }
+  ],
+  "failure_analysis": [
+    "Initial native-template test supplied a nonexistent connection config. ConnectionClient correctly refused before its mocked scope method; the test now uses real private connections init. No production guard was weakened.",
+    "Setup/composition run passed single-worker and all three combined background-authority checks. Template creation worked; only a terminal assertion expected text across a fixed-cell line boundary. The assertion now rejoins wrapped characters; the terminal also explains selected-native revocation.",
+    "Regression run passed119 cases, failed5 before behavior because legacy subprocess tests require ROOT/.venv/bin/python or alembic. Two ignored scratch-only executable wrappers delegate to the existing cached Python and python -m alembic with the task PYTHONPATH; no dependency install or venv symlink. All5 then passed. CI creates its real frozen venv; these local results do not qualify installation.",
+    "An unpublished terminal wording commit had a Ruff E501; the following documentation commit split the literal. Final clean-source Ruff/mypy/import/secret checks pass."
+  ],
+  "observed_component_outcomes": [
+    "Actual disposable PG/canonical review, immutable reservation events and concurrent shared calls/selected-context bytes; no new table or credentials.",
+    "Two scoped native transport fixtures edit real isolated Git/Docker workspaces through MCP, independently verify and retain handoffs/final review; single-owner Build also consumes one selected call.",
+    "Pre-run revoke denies before claims/dispatch; changed account before launch prevents context disclosure; active revocation cancels supervised fixtures while conservative claims/reservations remain.",
+    "Revoke during final verification retains returned worker handoffs but prevents final publication/review.",
+    "Selected native authority composes with real canonical background queue/account-link/claim machinery; synthetic CLI account metadata is processed by the existing protected observation helper. Positive final review succeeds; either connection revoke or queue withdrawal independently denies publication.",
+    "Actual private init/CLI proposal and terminal display exact native route/units with separate review, no worker launch and runtime_available false."
+  ],
+  "negative_control": {
+    "scope": "ONE_REVIEWABLE_GUARD_MUTATION_NOT_A_MUTATION_SCORE",
+    "base_commit": "6c416d6fa6e7b198297ff8d61ff4a9330c8aaebf",
+    "patch_file": "current-guard-mutant.patch",
+    "patch_sha256": "aafb71d91e9ef5ada044ca0cb8356dedcf7dd768f701bc0b2f2c0f5924a94a63",
+    "change": "Remove current version/state/policy intersection from NativeConnectionBroker.authorize in a separate disposable worktree only.",
+    "witness": "tests/integration/test_native_connection_grants.py::test_revoke_during_final_checks_keeps_returned_worker_evidence_but_no_final_review",
+    "outcome": "DETECTED: DID NOT RAISE KernelDenied; unchanged matching source passes.",
+    "promotion": "Witness is an ordinary required new integration case in CI; no duplicate lane, coverage waiver or broad mutation sweep."
+  },
+  "quality": {
+    "source_commit": "6c416d6fa6e7b198297ff8d61ff4a9330c8aaebf",
+    "source_tree": "bb64a052c85165ae1fc8af3f60990c5be0206b20",
+    "worktree_state": "clean",
+    "checks": [
+      {
+        "argv": [
+          "/tmp/panestria-mission-storage-work/.venv/bin/ruff",
+          "check",
+          "."
+        ],
+        "file": "quality-final-0.txt",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "/tmp/panestria-mission-storage-work/.venv/bin/mypy",
+          "src/panestria"
+        ],
+        "file": "quality-final-1.txt",
+        "sha256": "8a2432e62177ce7669c0b75a7f23570afdbdf39bedc9e22db83185621e322303",
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "/tmp/panestria-mission-storage-work/.venv/bin/lint-imports",
+          "--config",
+          ".importlinter"
+        ],
+        "file": "quality-final-2.txt",
+        "sha256": "2274a90186b2b766adac0f15b579def97729dcf70cc790b9718dd94e99c016cf",
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "/tmp/panestria-mission-storage-work/.venv/bin/python",
+          "tools/secret_scan.py"
+        ],
+        "file": "quality-final-3.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit_code": 0
+      }
+    ]
+  },
+  "frontend": {
+    "source_commit": "6c416d6fa6e7b198297ff8d61ff4a9330c8aaebf",
+    "observation": "Cached OpenAPI regeneration and TypeScript generation unchanged; typed Vite production build PASS. Main OpenAPI regression passes. Original observation is tool output; no separate raw npm log retained.",
+    "downloads": "NONE"
+  },
+  "actual_infrastructure": [
+    "disposable PostgreSQL55439",
+    "Git/worktree/final-tree checks",
+    "MCP scoped tool boundary",
+    "pinned existing Docker sandbox and independent checks",
+    "private filesystem CAS/init/CLI/PTY/loopback HTTP and migration/dump/restore regressions"
+  ],
+  "synthetic_or_unqualified": [
+    "native inference/transport",
+    "account/auth metadata and billing/capacity reports",
+    "runtime certificate fixture",
+    "provider OS/network/secret conformance and actual physical origins",
+    "owner account/phone/trial acceptance"
+  ],
+  "limits": [
+    "Version2 application authority is selected explicitly; old unselected settings retain policy-only behavior. Declaration responses remain UNVERIFIED/runtime unavailable.",
+    "Calls mean native process invocations and bytes selected PUBLIC context; no physical network/auth/output/wire/cash/subscription-quota measurement is claimed.",
+    "No owner login, runtime/service/profile configuration, database migration, network/CA setup, API prompt or model download was performed.",
+    "Real-phone and search setup are owner-deferred; original billing observation is stale/background off. This component cannot enable or renew background policy.",
+    "General enrollment/root/secret lifecycle and OS/adapter/runtime qualification remain open; TC05-TC08/S4/S5/G1/G2/G3 and R3 trial are not passed.",
+    "Historical source certificates, strict-format CPU recall failure and held-out entailment failures remain unchanged."
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "ci": "Separate exact-head GitHub CI is required before merge; original workflow artifacts are retained outside Git."
+}

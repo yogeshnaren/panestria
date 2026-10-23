@@ -5,6 +5,23 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+## Current selected native account/context grants
+
+[Native connection selection](testing/NATIVE_CONNECTION_GRANTS.md) now intersects
+an exact reviewed version with existing PUBLIC single/two-worker Build and
+background controllers. Current account/profile/configuration, policy/certificate,
+expiry, shared selected-context/native-call capacity and canonical revocation
+fence launch, tools, supervision, handoff and final verification/publication.
+Existing immutable events retain conservative reservations; no secret registry,
+new credential, generic folder access or automatic background permission is added.
+Budget units and logical route are explicit, not wire/cash/quota measurements.
+The [source-bound component evidence](../evidence/native-connection-grants-2026-10-23/report.json)
+preserves initial setup/wrapped-terminal assertion failures and actual disposable
+PG/Git/MCP/Docker results with synthetic native/account/auth/capacity. Declaration
+views remain UNVERIFIED and unselected configurations retain policy-only behavior.
+No owner runtime/service/config was changed. General enrollment/root/secret/OS
+conformance and full S4/S5/TC05-TC08/G3 remain open. Real-phone setup is owner-deferred.
+
 ## Current private phone component
 
 [Private phone ingress](testing/PRIVATE_PHONE_INGRESS.md) now provides an explicit,
@@ -102,7 +119,7 @@ already delivered components.
 | Ask | Offline terminal, approved encrypted profile/style/private examples, optional pinned local identity | Full quality/latency corpus and cumulative runtime qualification |
 | Build | Canonical plans, scoped one/two-worker execution, conflicts/final-tree checks, finite repairs, exact owner review/merge | Broader adapter/DAG compatibility and complete B-1/gates |
 | Delegate | Question/query staging, explicit collection, retained excerpts, local draft and owner claim review | Actual search is owner-deferred; qualified support/iterative planning and complete D-1/G2 remain |
-| Personal platform | Reviewed quota queue, finite runner/controller, offline confirmed-result references, local profile/context and exact connection declaration review/revoke terminal | General authenticated account/root/secret lifecycle and actual conformance, remaining context/capture/rights integration and qualification |
+| Personal platform | Reviewed quota queue, finite runner/controller, offline confirmed-result references, local profile/context, exact connection reviews and selected native account/context enforcement | General account/root/secret lifecycle and actual conformance, remaining context/capture/rights integration and qualification |
 | Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build/research metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
 | Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |
 

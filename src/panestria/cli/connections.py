@@ -17,6 +17,90 @@ connections_app = typer.Typer(no_args_is_help=True)
 connections_app.command("init")(initialize)  # Same private owner/project format; no duplicate setup implementation.
 
 
+@connections_app.command("native-template")
+def native_template(
+    config: Annotated[Path, typer.Option("--config")],
+    build_config: Annotated[Path, typer.Option("--build-config")],
+    task_id: Annotated[UUID, typer.Option("--task-id")],
+    proposal_id: Annotated[UUID, typer.Option("--proposal-id")],
+    account_ref: Annotated[UUID, typer.Option("--account-ref")],
+    output: Annotated[Path, typer.Option("--output")],
+    max_calls: Annotated[int, typer.Option(min=1, max=64)] = 2,
+    max_bytes: Annotated[int, typer.Option(min=1, max=64 * 1024 * 1024)] = 32768,
+    max_wall_seconds: Annotated[int, typer.Option(min=1, max=3600)] = 900,
+    expires_seconds: Annotated[int, typer.Option(min=1, max=30 * 86400)] = 3600,
+) -> None:
+    """Probe existing private account metadata and draft a separate native declaration."""
+    from datetime import UTC, datetime, timedelta
+
+    from panestria.brokers.harness.claude_check import REQUESTED_MODEL
+    from panestria.cli.build import _service
+    from panestria.cli.research import _write_private
+    from panestria.contracts.connections import ConnectionBudget, ConnectionManifest
+    from panestria.contracts.native_connection import native_configuration
+    from panestria.execution.background_account import account_reports, collect_account
+    from panestria.execution.native_build import runtime_versions
+    from panestria.kernel.background_account import BackgroundAccountService
+
+    try:
+        owner = _service(build_config)
+        scope = ConnectionClient(config).scope()
+        if (scope.owner_id, scope.project_id) != (owner.actor.owner_id, owner.actor.project_id):
+            raise LocalApplicationRejected("connection_scope_mismatch")
+        digest = collect_account(owner, str(account_ref))
+        account = BackgroundAccountService(account_reports(owner)).observation(digest)
+        manifest = ConnectionManifest(
+            schema_version=2,
+            owner_id=scope.owner_id,
+            project_id=scope.project_id,
+            connector_ref="claude-public-bash",
+            connector_version="account-context-v1",
+            provider_route="claude-subscription",
+            budget_scope="SELECTED_PUBLIC_CONTEXT_AND_NATIVE_LAUNCHES",
+            configuration_sha256=native_configuration(account, runtime_versions(), REQUESTED_MODEL),
+            account_ref=account.account_ref,
+            root_refs=(account.profile_sha256,),
+            actions=("read", "write", "send"),
+            data_classes=("PUBLIC",),
+            budget=ConnectionBudget(max_calls=max_calls, max_bytes=max_bytes, max_wall_seconds=max_wall_seconds),
+            expires_at=datetime.now(UTC) + timedelta(seconds=expires_seconds),
+            conformance_sha256=owner.settings.certificate_sha256,
+        )
+        request = SubmitReview(
+            schema_version=1,
+            task_id=str(task_id),
+            change=ConnectionReviewRequest(
+                proposal_id=str(proposal_id),
+                policy_ref=scope.policy_ref,
+                expected_version=0,
+                operation="REPLACE",
+                manifest=manifest,
+            ),
+        )
+        _write_private(output, request.model_dump_json().encode() + b"\n")
+        typer.echo(
+            json.dumps(
+                {
+                    "status": "TEMPLATE_CREATED_UNVERIFIED",
+                    "proposal_id": str(proposal_id),
+                    "account_observation_sha256": digest,
+                    "configuration_sha256": manifest.configuration_sha256,
+                    "selection_after_separate_approval": {
+                        "grant_id": "USE_RECORDED_GRANT_ID",
+                        "version": 1,
+                        "account_observation_sha256": digest,
+                    },
+                    "budget_scope": manifest.budget_scope,
+                    "billing_verified": False,
+                    "physical_network_scope": "NOT_QUALIFIED_BY_THIS_DECLARATION",
+                    "runtime_available": False,
+                }
+            )
+        )
+    except (Exception, KeyboardInterrupt):
+        failed(LocalApplicationRejected("native_declaration_template_unavailable"))
+
+
 @connections_app.command("serve")
 def serve(config: Annotated[Path, typer.Option("--config")]) -> None:
     """Run a foreground metadata/declaration API only; no model, worker or connector."""

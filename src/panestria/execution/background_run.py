@@ -13,7 +13,7 @@ from panestria.execution.background_account import account_reports, collect_acco
 from panestria.execution.native_plan import NativePlanRunner
 from panestria.execution.owner_build import OwnerBuild
 from panestria.execution.proposal_demo import _lock
-from panestria.execution.worker_authority import WorkerAuthority
+from panestria.execution.worker_authority import WorkerAuthority, intersect_authorities
 from panestria.kernel.background_run import BACKGROUND_SESSION_LOCK, BackgroundRunService
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
@@ -97,18 +97,23 @@ class BackgroundPlanRunner(NativePlanRunner):
             if row is None:
                 raise KernelDenied("background_worker_binding_required")
             contract = load_contract(row[0])
-        return self._worker_authority(
-            job,
-            ToolScope(
-                owner_id=UUID(self.owner.actor.owner_id),
-                project_id=UUID(self.owner.actor.project_id),
-                task_id=UUID(job.lease.task_id),
-                attempt_id=UUID(job.lease.attempt_id),
-                lease_epoch=job.lease.epoch,
-                contract_sha256=contract_sha256(contract),
-                policy_ref=contract.autonomy_profile_ref,
+        result = intersect_authorities(
+            super()._integration_authority(job),
+            self._worker_authority(
+                job,
+                ToolScope(
+                    owner_id=UUID(self.owner.actor.owner_id),
+                    project_id=UUID(self.owner.actor.project_id),
+                    task_id=UUID(job.lease.task_id),
+                    attempt_id=UUID(job.lease.attempt_id),
+                    lease_epoch=job.lease.epoch,
+                    contract_sha256=contract_sha256(contract),
+                    policy_ref=contract.autonomy_profile_ref,
+                ),
             ),
         )
+        assert result is not None
+        return result
 
     def run_item(self, *, allow_background_subscription_run: bool) -> dict[str, Any]:
         if allow_background_subscription_run is not True:

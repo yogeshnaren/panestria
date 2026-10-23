@@ -263,3 +263,22 @@ unbound, old certificates cannot qualify the new configuration, and evidence is
 never backfilled. General authenticated account/root/native connector and narrow
 secret-envelope lifecycle remain open. S4/S5 are partial IN_PROGRESS; full
 TC05–TC08 and cumulative gates are not passed.
+
+## Selected native account/context intersection (2026-10-23)
+
+[Design113](../design/113-NATIVE-CONNECTION-GRANTS.md) and the
+[private owner guide](../testing/NATIVE_CONNECTION_GRANTS.md) connect a separately
+reviewed version2 declaration to single/two-worker PUBLIC native Build and
+background authority. Supported existing private-profile metadata binds an exact
+pseudonymous account, runtime/configuration and requested model. Current policy,
+certificate, original expiry, call/selected-context reservations and revocation
+are checked through execution and final verification/publication. Existing queue
+guards compose; no billing freshness, runtime certificate or release pass is
+created. A logical subscription route is distinct from physical network scope.
+
+[Component evidence](../../evidence/native-connection-grants-2026-10-23/report.json)
+retains original failures and actual disposable PG/Git/MCP/Docker observations;
+native/auth/account/capacity are explicit fixtures. Declaration responses remain
+UNVERIFIED, unselected legacy configs remain policy-only, and owner services or
+profiles are not configured. General enrollment/root/secret/OS qualification and
+full TC05-TC08/S4/S5/G3 remain unfinished. Phone setup is owner-deferred.

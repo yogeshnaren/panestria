@@ -36,6 +36,38 @@ def test_canonical_frozen_roundtrip_and_independent_actions():
     assert ConnectionManifest.model_validate(shifted).sha256() == first.sha256()
 
 
+def test_native_v2_route_and_budget_units_are_explicit_without_changing_v1_bytes():
+    original = manifest(OWNER, PROJECT)
+    assert "provider_route" not in original.model_dump(mode="json")
+    assert "budget_scope" not in original.model_dump(mode="json")
+    document = original.model_dump(mode="json") | {
+        "schema_version": 2,
+        "connector_ref": "claude-public-bash",
+        "connector_version": "account-context-v1",
+        "provider_route": "claude-subscription",
+        "budget_scope": "SELECTED_PUBLIC_CONTEXT_AND_NATIVE_LAUNCHES",
+        "origins": [],
+        "root_refs": ["12" * 32],
+        "actions": ["read", "write", "send"],
+    }
+    native = ConnectionManifest.model_validate_json(json.dumps(document))
+    assert native.schema_version == 2 and native.origins == ()
+    for changes in (
+        {"schema_version": 1},
+        {"provider_route": None},
+        {"budget_scope": None},
+        {"origins": ["https://example.com"]},
+        {"root_refs": []},
+        {"actions": ["read", "send"]},
+        {"actions": ["read", "write", "send", "delete"]},
+        {"data_classes": ["INTERNAL"]},
+        {"connector_ref": "public-web"},
+        {"budget": {"max_calls": 65, "max_bytes": 1024, "max_wall_seconds": 30}},
+    ):
+        with pytest.raises(ValidationError):
+            ConnectionManifest.model_validate_json(json.dumps(document | changes))
+
+
 @pytest.mark.parametrize(
     "field,value",
     [
