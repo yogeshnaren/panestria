@@ -164,3 +164,15 @@ are supported; evidence remains OWNER_ATTESTED, not automatic legal/semantic pro
 Original failures, detected withdrawal mutation and exact source observations are
 linked. This is partial S6; broader capture/private/provider eligibility, full
 TC08/TC09 and actual training/qualification remain separate. No R6 work starts.
+
+## Original invocation identity component
+
+[Design110](../design/110-OFFLINE-INVOCATION-IDENTITY.md) adds schema2 Build
+capture with original canonical request/configuration hashes and separately
+recorded requested alias / CLI-reported startup model when present in the
+protected receipt. Legacy receipts stay unknown; schema1 archives remain intact
+and readable. [Checks](../../evidence/offline-invocation-identity-2026-10-23/report.json)
+distinguish actual PG/Git/Docker/process/archive behavior from synthetic native
+identity frames. This is a capture metadata outcome; full manifests/context
+reconstruction, other capture modes, broader data rights and S6/TC08/TC09/G3 remain
+in progress. No provider call, database migration or historical evidence relabeling.

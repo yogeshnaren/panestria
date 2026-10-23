@@ -1,0 +1,82 @@
+{
+  "kind": "offline_invocation_identity_component",
+  "base_commit": "32fbab8e8bfc70c0bacf3a62c9d895f148725323",
+  "reports": [
+    {
+      "file": "connected.xml",
+      "sha256": "70b7d7c0751ffa7e60ee96033e57c9ddc0d5f1f18dee02d3a8467bb2be665cab",
+      "original_path": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/offline-invocation-identity-2026-10-23/connected.xml",
+      "result": {
+        "tests": "7",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "33.523"
+      },
+      "source_commits": [
+        "bd2b028ff8b5485c9961c6e1e87dfbee7400ad15"
+      ],
+      "source_trees": [
+        "2ee4bb97faac166a6cfdba932f98ae2797955fea"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "transport-binding.xml",
+      "sha256": "7d4be2b00fc47eb588c4c718b093ba2ff8aed222841c5a35a83a0ae3cd88eb93",
+      "original_path": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/offline-invocation-identity-2026-10-23/transport-binding.xml",
+      "result": {
+        "tests": "106",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "12.908"
+      },
+      "source_commits": [
+        "7891228387e0cc6e8b4f3d901a9712880bafd9ed"
+      ],
+      "source_trees": [
+        "00cbf51842e2a7b407b99a10aa53d4c1f8731195"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    },
+    {
+      "file": "capture-binding-corrected.xml",
+      "sha256": "f603c60d26afa402b694246589c7f4688ac2178ac40841fdbe569e77ab4c68c8",
+      "original_path": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/offline-invocation-identity-2026-10-23/capture-binding-corrected.xml",
+      "result": {
+        "tests": "3",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "23.177"
+      },
+      "source_commits": [
+        "850a2b7dda01012eb91183c61329d57f017a909a"
+      ],
+      "source_trees": [
+        "aa7fe4c136abc5c513e9ab72cd257c8d5ab1a1d5"
+      ],
+      "worktree_states": [
+        "clean"
+      ]
+    }
+  ],
+  "scope": "Actual subprocess/parser and isolated PG/Git/Docker/canonical return/confirmed merge/private capture/copied CLI/recall; native/auth/capacity and model identity are synthetic fixtures, not live inference.",
+  "observations": [
+    "Schema2 retains original canonical request/configuration hashes, requested alias and separately CLI-reported startup model when present. Mixed legacy/new receipts retain unknowns without current-default lookup.",
+    "Schema1 remains readable with absent metadata and unchanged archive bytes. Explicit recapture deduplicates schema2 bytes; training remains UNKNOWN/export DENIED.",
+    "Wrong-context receipt injected at original protected creation gets a valid CAS hash and immutable PG return, yet capture is refused without changing the completed Build or invoking another worker.",
+    "Original transport-binding run: 105 passed; one attempted negative fixture failed at the existing terminal-invocation immutability guard before the intended capture assertion. The production guard was not weakened. Fixture corrected to inject the defect before immutable return; final three capture checks pass.",
+    "Ruff, mypy (346 source files), all eleven import boundaries and secret scan passed; final exact-head CI remains a separate PR requirement."
+  ],
+  "limits": [
+    "Reported startup identity is CLI metadata, not proof of every response model, fallback absence, provider billing, model internals or complete context.",
+    "No raw prompt/stream/credential export, database migration, live provider call, historical certificate relabeling or owner service/database change.",
+    "No full S6/TC08/TC09/G3 or R3 acceptance claim. Broader capture, model manifests/context reconstruction, private/provider rights and cumulative qualification remain pending."
+  ]
+}

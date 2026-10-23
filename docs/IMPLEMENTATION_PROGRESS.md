@@ -809,6 +809,14 @@ knowledge promotion, provider/model identity invention or training. This is part
 of AOS-012-S6; the useful-work queue, other capture modes, rights-reviewed eligible
 examples, retention/retrieval integration and G3 remain pending.
 
+New [schema2 captures](testing/OFFLINE_BUILD_REFERENCES.md) retain the original
+canonical request/configuration hashes and distinguish recorded requested model
+alias from CLI-reported startup model. Missing original observations stay unknown;
+old archives are unchanged and readable. [Source-bound checks](../evidence/offline-invocation-identity-2026-10-23/report.json)
+cover actual process/PG/Git/Docker/archive/recall behavior with synthetic native
+identity frames. This is one S6 metadata outcome, not full model-context
+reconstruction, live model qualification or R3 completion.
+
 ## Quota-aware queue intent without implicit dispatch
 
 [Background queue review](testing/BACKGROUND_WORK_QUEUE.md) now drafts private
