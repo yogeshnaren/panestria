@@ -1346,6 +1346,57 @@
         "title": "CancelResult",
         "type": "object"
       },
+      "ConnectionScopeView": {
+        "additionalProperties": false,
+        "properties": {
+          "authority": {
+            "const": "DECLARATION_ONLY",
+            "default": "DECLARATION_ONLY",
+            "title": "Authority",
+            "type": "string"
+          },
+          "conformance_status": {
+            "const": "UNVERIFIED",
+            "default": "UNVERIFIED",
+            "title": "Conformance Status",
+            "type": "string"
+          },
+          "owner_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "policy_ref": {
+            "pattern": "^project-policy:[1-9][0-9]{0,18}:[0-9a-f]{64}$",
+            "title": "Policy Ref",
+            "type": "string"
+          },
+          "project_id": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "runtime_available": {
+            "const": false,
+            "default": false,
+            "title": "Runtime Available",
+            "type": "boolean"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "owner_id",
+          "project_id",
+          "policy_ref"
+        ],
+        "title": "ConnectionScopeView",
+        "type": "object"
+      },
       "DecisionReceipt": {
         "additionalProperties": false,
         "properties": {
@@ -5139,6 +5190,24 @@
           }
         },
         "summary": "Decide Connection"
+      }
+    },
+    "/v2/connections/scope": {
+      "get": {
+        "operationId": "connection_scope_v2_connections_scope_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectionScopeView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Connection Scope"
       }
     },
     "/v2/quota/current": {

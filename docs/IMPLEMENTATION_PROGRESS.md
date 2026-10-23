@@ -17,17 +17,18 @@ already delivered components.
 | Ask | Offline terminal, approved encrypted profile/style/private examples, optional pinned local identity | Full quality/latency corpus and cumulative runtime qualification |
 | Build | Canonical plans, scoped one/two-worker execution, conflicts/final-tree checks, finite repairs, exact owner review/merge | Broader adapter/DAG compatibility and complete B-1/gates |
 | Delegate | Question/query staging, explicit collection, retained excerpts, local draft and owner claim review | Actual search is owner-deferred; qualified support/iterative planning and complete D-1/G2 remain |
-| Personal platform | Reviewed quota queue, finite runner/controller, offline confirmed-result references, local profile/context components | Actual connection broker/onboarding, remaining context/capture/rights integration and qualification |
+| Personal platform | Reviewed quota queue, finite runner/controller, offline confirmed-result references, local profile/context and exact connection declaration review/revoke terminal | Actual connection broker/account/enrollment/conformance, remaining context/capture/rights integration and qualification |
 | Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
 | Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |
 
 The opt-in storage terminal integration is now merged; desktop/mobile resource
-inbox and host qualification remain open. The owner's current priority is the
-[CI reduction](testing/CI_REQUIRED_COVERAGE.md): retain functional/security and
-mutation-witness checks, condition repeated legacy/restore regressions and avoid
-rerunning an already-proven merge tree. Connection declaration review/onboarding
-is the next unfinished independent integration, followed by outstanding broker,
-phone, qualified Delegate and cumulative evidence work. Saved metrics are descriptive; unknown
+inbox and host qualification remain open. The merged
+[CI reduction](testing/CI_REQUIRED_COVERAGE.md) retains functional/security and
+mutation-witness checks, conditions repeated legacy/restore regressions and avoids
+rerunning an already-proven merge tree. The [connection declaration terminal](testing/CONNECTION_DECLARATION_TERMINAL.md)
+now supplies private setup/serving, exact owner review/recovery and fresh-policy
+revocation. It connects no account/folder/tool; actual broker, verified enrollment,
+phone, qualified Delegate and cumulative evidence work remain. Saved metrics are descriptive; unknown
 accuracy/cost/time/source never becomes a passing gate.
 
 The latest Mission Control delivery now provides distinct explicit offline Ask,

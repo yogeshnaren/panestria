@@ -2801,10 +2801,17 @@
       "evidence_refs": [
         "evidence/connection-reviews-2026-10-16/report.json",
         "evidence/connection-root-sessions-2026-10-18/report.json",
-        "evidence/r1-runtime-qualification-2026-10-18/report.json"
+        "evidence/r1-runtime-qualification-2026-10-18/report.json",
+        "evidence/connection-terminal-2026-10-22/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3. Owner-reviewed declarations and process-local protected root resolution are implemented components (PR88/PR98); refs cite their original observations, not full case passes. Actual GrantBroker/current authority, verified account/capability/source-purpose, budget/approval/lifecycle/secret boundary and onboarding remain pending. AOS-008-S4/S5 and TC05-TC08 are incomplete; no release is promoted."
+      "scope_note": "Extension delivered in R3. Original declaration/root/runtime observations remain source-bound. The owner declaration setup/review/revoke terminal and isolated foreground mode now provide a usable metadata/review prerequisite, with conformance UNVERIFIED/runtime unavailable. Actual GrantBroker, verified account/capability/enrollment/source-purpose, current lease/budget/approval/secret/lifecycle remain pending. Full S4/S5/TC05-TC08 and release remain incomplete.",
+      "implemented_component_files": [
+        "src/panestria/cli/connections.py",
+        "src/panestria/cli/connection_client.py",
+        "src/panestria/cli/connection_terminal.py",
+        "docs/testing/CONNECTION_DECLARATION_TERMINAL.md"
+      ]
     },
     {
       "id": "AOS-008-S5",
@@ -2835,7 +2842,7 @@
         "evidence/r1-runtime-qualification-2026-10-18/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+      "scope_note": "Extension delivered in R3; original parent evidence remains unchanged. S4 supplies the declaration review/revoke UI prerequisite, but this runtime revocation/secret-boundary/broker slice remains NOT_STARTED; no live connector or full-case pass is inferred."
     },
     {
       "id": "AOS-025-S4",

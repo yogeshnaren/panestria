@@ -19,8 +19,15 @@ from panestria.config_local import LocalApplicationRejected
 
 
 def build_activity_app(
-    config: ActivitySettings, settings: ValidatedSettings, token: str, *, storage_config: Path | None = None
+    config: ActivitySettings,
+    settings: ValidatedSettings,
+    token: str,
+    *,
+    storage_config: Path | None = None,
+    connection_reviews: bool = False,
 ) -> FastAPI:
+    if connection_reviews and storage_config is not None:
+        raise LocalApplicationRejected("connection_terminal_mode_only")
     app = create_app(settings, default_readiness_probe)
     app.state.goal_api = GoalApi(
         token, str(config.owner_id), str(config.project_id), settings.database_url.get_secret_value()
@@ -46,6 +53,11 @@ def build_activity_app(
 
         app.include_router(APIRouter(lifespan=storage_lifecycle))
     mount_activity_api(app)
+    if connection_reviews:
+        from panestria.api.routes.connections import router as connection_router
+
+        app.state.connection_terminal_only = True
+        app.include_router(connection_router)
     return app
 
 
@@ -60,6 +72,7 @@ def serve_activity(
     build_plan_review: bool = False,
     build_run: Path | None = None,
     storage_config: Path | None = None,
+    connection_reviews: bool = False,
 ) -> None:
     config, token = load_activity_settings(path)
     settings = Settings(
@@ -76,10 +89,25 @@ def serve_activity(
             listener.setblocking(False)
         except OSError:
             raise LocalApplicationRejected("local_bind_unavailable") from None
+        if connection_reviews and any(
+            (
+                dashboard_assets,
+                build_evidence_store,
+                build_review_root,
+                research_intake,
+                build_intake,
+                build_plan_review,
+                build_run,
+                storage_config,
+            )
+        ):
+            raise LocalApplicationRejected("connection_terminal_mode_only")
         if storage_config is not None and dashboard_assets is not None:
             # Browser/phone host-data consent needs its own namespace integration.
             raise LocalApplicationRejected("storage_terminal_mode_only")
-        if storage_config is None:
+        if connection_reviews:
+            app = build_activity_app(config, settings, token.get_secret_value(), connection_reviews=True)
+        elif storage_config is None:
             app = build_activity_app(config, settings, token.get_secret_value())
         else:
             app = build_activity_app(config, settings, token.get_secret_value(), storage_config=storage_config)
@@ -104,7 +132,9 @@ def serve_activity(
                 {
                     "status": "STARTING",
                     "origin": config.origin,
-                    "authority": "EXPLICIT_FOREGROUND_BUILD"
+                    "authority": "CONNECTION_DECLARATION_REVIEW_ONLY"
+                    if connection_reviews
+                    else "EXPLICIT_FOREGROUND_BUILD"
                     if build_run is not None
                     else "PUBLIC_PLAN_ACCEPTANCE_ONLY"
                     if build_plan_review

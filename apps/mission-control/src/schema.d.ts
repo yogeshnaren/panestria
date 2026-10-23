@@ -603,6 +603,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/connections/scope": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Connection Scope */
+        get: operations["connection_scope_v2_connections_scope_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/quota/current": {
         parameters: {
             query?: never;
@@ -1194,6 +1211,39 @@ export interface components {
             task_state: string;
             /** Task Version */
             task_version: number;
+        };
+        /** ConnectionScopeView */
+        ConnectionScopeView: {
+            /**
+             * Authority
+             * @default DECLARATION_ONLY
+             * @constant
+             */
+            authority: "DECLARATION_ONLY";
+            /**
+             * Conformance Status
+             * @default UNVERIFIED
+             * @constant
+             */
+            conformance_status: "UNVERIFIED";
+            /** Owner Id */
+            owner_id: string;
+            /** Policy Ref */
+            policy_ref: string;
+            /** Project Id */
+            project_id: string;
+            /**
+             * Runtime Available
+             * @default false
+             * @constant
+             */
+            runtime_available: false;
+            /**
+             * Schema Version
+             * @default 1
+             * @constant
+             */
+            schema_version: 1;
         };
         /** DecisionReceipt */
         DecisionReceipt: {
@@ -3333,6 +3383,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    connection_scope_v2_connections_scope_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectionScopeView"];
                 };
             };
         };

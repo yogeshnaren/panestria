@@ -125,6 +125,17 @@ approval bindings, future-effect revocation/reconciliation, narrow secret/OS
 boundary and onboarding UI remain required. No connector, credential, runtime
 permission, network/provider call or release is enabled by these declarations.
 
+## Owner declaration terminal component (2026-10-22)
+
+The [owner declaration terminal](../testing/CONNECTION_DECLARATION_TERMINAL.md)
+now connects private setup, isolated foreground serving, exact scope/proposal
+review, one-attempt decision/recovery and current-policy revocation to this
+ledger. It displays UNVERIFIED/runtime unavailable and calls no root/account/
+connector. [Source-bound observations](../../evidence/connection-terminal-2026-10-22/report.json)
+cover actual PG/HTTP/CLI/PTY and foreground behavior. This supplies the declaration
+review UI prerequisite only; actual broker/enrollment/capability/account/purpose/
+lease/budget/approval/secret/lifecycle conformance and full TC05–TC08 remain open.
+
 ## Process-local root resolution component (2026-10-18)
 
 [Scoped descriptor roots](../design/47-CONNECTION-ROOT-SESSIONS.md) implement a
