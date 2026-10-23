@@ -5,6 +5,21 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+## Current private phone component
+
+[Private phone ingress](testing/PRIVATE_PHONE_INGRESS.md) now provides an explicit,
+disabled-by-default TLS metadata observer with exact private peer/Host/Origin
+checks, separate one-use pairing, canonical read-only device roles, one-hour
+sessions and local owner device listing/revocation. A closed server-side allowlist
+denies task/data mutation and raw artifacts despite a valid cookie or CSRF.
+Desktop modes remain loopback-only; no owner listener, certificate or database
+has been configured by this work. Migration0040 is required when deliberately
+adopting this source. [Component evidence](../evidence/private-phone-ingress-2026-10-23/report.json)
+distinguishes actual CLI/PG/TLS/cookies from synthetic CA/peer/clock fixtures and
+records a detected remote-bearer mutation. Responsive mobile qualification,
+reconnect/offline behavior and actual target-phone/network TC08 remain pending;
+no whole S4–S6/TC05–08/G3 acceptance is claimed.
+
 ## Current separately reviewed owner examples
 
 The [curation workflow](testing/CURATED_EXAMPLES.md) now records exact separate

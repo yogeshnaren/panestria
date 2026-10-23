@@ -3088,10 +3088,12 @@
         "AOS-028-TC08"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "evidence_refs": [],
+      "status": "IN_PROGRESS",
+      "evidence_refs": [
+        "evidence/private-phone-ingress-2026-10-23/report.json"
+      ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+      "scope_note": "Disabled-by-default private TLS metadata observer, exact peer/Host/Origin checks, 128-bit scoped one-use pairing, canonical immutable phone session roles, one-hour expiry and local project-wide device revocation delivered as a component. Closed server route/method allowlist denies remote bearer auth, task/data mutation and raw/private artifacts. Actual CLI/PG/TLS/cookies and synthetic CA/peer/clock checks; one bearer-rejection mutation detected. Owner databases/services preserved. Full phone/private-network, responsive/reconnect and TC05\u2013TC08/G3 qualification remain pending."
     },
     {
       "id": "AOS-028-S5",

@@ -1,8 +1,8 @@
 # Private read-only phone ingress
 
-Status: PROPOSED implementation design for AOS-028-S4 / MVP-X12. No ingress,
-device enrollment, certificate, database migration or phone qualification has
-been enabled by this document. Original TC05–TC08/G3 requirements stay intact.
+Status: implemented component for AOS-028-S4 / MVP-X12, pending exact-head CI and
+separate target-phone qualification. No owner ingress, enrollment, certificate or
+database migration has been enabled. Original TC05–TC08/G3 requirements stay intact.
 
 ## Outcome and boundary
 
@@ -48,8 +48,11 @@ and the default desktop behavior. Issue/invalidate challenges only within their
 scope so phone pairing cannot consume a desktop challenge.
 
 Derive a distinct session HMAC purpose from the existing private token and exact
-phone configuration/certificate identity. A configuration change or token rotation
-requires new pairing; old session records remain historical. Phone pairing uses
+phone configuration/certificate identity. Different profiles cannot exchange
+codes/cookies. Restoring the identical profile can use its still-unexpired,
+unrevoked original session; this never renews its original expiry. Explicitly
+revoke retired devices. Local owner administration lists/revokes phone sessions
+across all profiles in the configured project, including inactive profiles. Phone pairing uses
 128 bits of one-use code entropy, the existing short bounded TTL plus a global
 attempt limit, and no code/token URLs or persistent browser token storage. Limit
 phone sessions to one hour. Cookies are HttpOnly/Secure/SameSite=Strict and use a

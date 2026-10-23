@@ -99,6 +99,21 @@ Use the [revision-3 slice handoff](../cursor/prompts/MVP-REV3-SLICE.md) with the
 
 These nodes and scenarios are planned, not observed tests. Register real assertion/node/lane/evidence mappings while implementing; missing required evidence blocks G3. Rollout begins disabled, uses synthetic content until its boundary is certified, stops admissions on failure and preserves audit/receipts. R4-R7 work is not authorized by completing this extension.
 
+### Private TLS/device component, 2026-10-23
+
+[Design111](../design/111-PRIVATE-PHONE-INGRESS.md) and the
+[setup guide](../testing/PRIVATE_PHONE_INGRESS.md) connect explicit private TLS
+ingress to existing metadata projections, canonical scoped browser sessions and
+immutable phone roles. Local owner administration lists/revokes devices across
+project profiles; remote sessions have only closed metadata routes plus their
+pair/logout lifecycle. Schema0040 keeps legacy challenges in their original
+default scope and refuses audit-bearing downgrade. Owner databases were preserved.
+[Actual connected evidence](../../evidence/private-phone-ingress-2026-10-23/report.json)
+uses CLI/PG/TLS/cookies with a temporary synthetic CA, separate peer/clock fixtures,
+desktop compatibility and one detected remote-bearer mutation. This is partial
+S4 implementation, not actual phone/private-network qualification or completed
+TC05–TC08/G3. S5 responsive/stale/reconnect behavior and S6 target evidence remain.
+
 ## Observed backend/terminal component, 2026-10-21
 
 The owner prioritizes TUI workflows before GUI work. The [project overview](../design/75-PROJECT-ACTIVITY-TERMINAL.md) supplies canonical, content-free actor/project snapshots and a standalone model-free loopback terminal. It uses actual Ask and goal tables; no shadow task state or approval authority. [35 connected checks](../../evidence/project-activity-2026-10-21/report.json) exercise real PG/HTTP/CLI/PTY and explicit inference fixtures. S1 is partial; React/generated clients/intake, SSE replay, timeline/artifact/approval integration, original browser cases and phone/device qualification remain pending. No release case is marked passed by these new tests.
