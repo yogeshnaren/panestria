@@ -16,7 +16,7 @@ release it with an immutable NO_DISPATCH proof. Do not free claims manually.
 
 ```bash
 panestria background runs --config /absolute/private/build.json ITEM_UUID
-panestria plan claims --config /absolute/private/build.json PLAN_UUID
+panestria plan claims OWNER_UUID PROJECT_UUID PLAN_UUID
 panestria build status --config /absolute/private/build.json GOAL_UUID
 ```
 
