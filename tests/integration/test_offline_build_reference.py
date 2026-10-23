@@ -136,18 +136,6 @@ def test_actual_confirmed_build_reference_is_portable_offline_and_not_training_c
         x.reported_init_model is None and x.request_sha256 is None for x in old.invocations
     )
     assert store.read_blob(legacy_digest) == legacy_raw
-    # A protected receipt from different input cannot label this invocation.
-    selected = observed_models[0]
-    receipt = json.loads(owner.reports.read_blob(selected.receipt_sha256))
-    receipt["context_sha256"] = "00" * 32
-    mismatched = owner.reports.write_report(json.dumps(receipt).encode())
-    with owner.connect() as c:
-        c.execute(
-            "UPDATE panestria.worker_invocation SET receipt_sha256=%s WHERE id=%s", (mismatched, selected.invocation_id)
-        )
-    with pytest.raises(KernelDenied, match="offline_reference_receipt_binding_mismatch"):
-        owner.capture_reference(plan.goal_id)
-    assert state["launches"] == 2
     diff = manifest.parts["diff"]
     raw = b"".join(store.read_blob(key) for key in diff.chunks)
     assert b"+value = 43" in raw and b"bounded Bash build" in raw
@@ -176,3 +164,30 @@ def test_actual_archive_budget_failure_preserves_confirmed_merge_without_new_nat
     with pytest.raises(KernelDenied, match="history_budget_reached"):
         owner.capture_reference(plan.goal_id)
     assert len(list(blobs.iterdir())) == 1
+
+
+def test_wrong_input_receipt_cannot_label_confirmed_capture(native_plan, prepared_plan, monkeypatch):
+    f, owner, _, plan = prepared_plan
+    _, runner, _, state = native_plan
+    enable_capture(owner, f)
+    original = BuildEvidenceStore.write_report
+
+    def faulty_receipt(store, raw):
+        # Fault at original receipt creation: real CAS hash and immutable PG
+        # return remain intact. Do not edit a completed invocation's record.
+        try:
+            body = json.loads(raw)
+        except ValueError:
+            body = None
+        if isinstance(body, dict) and body.get("kind") == "admitted-native-build":
+            body["context_sha256"] = "00" * 32
+            raw = json.dumps(body).encode()
+        return original(store, raw)
+
+    monkeypatch.setattr(BuildEvidenceStore, "write_report", faulty_receipt)
+    assert runner.run(plan.plan_id, public_subscription_run=True)["status"] == "WAITING_APPROVAL"
+    result = approve(owner, plan.goal_id)
+    assert result["task_state"] == "COMPLETED" and result["offline_reference"]["status"] == "UNAVAILABLE"
+    with pytest.raises(KernelDenied, match="offline_reference_receipt_binding_mismatch"):
+        owner.capture_reference(plan.goal_id)
+    assert state["launches"] == 2 and not (f.root / "offline-results").exists()
