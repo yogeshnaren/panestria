@@ -152,3 +152,15 @@ run serially; actual tasks/claims/invocations/checks/approval remain canonical.
 labels synthetic native/auth/capacity/billing fixtures and preserves initial failures.
 This does not qualify live billing/runtime, all TC06/07/10 parameters, S5/S7 or G3.
 No actual background inference while the owner setting is unconfirmed.
+
+## Separate owner-original example component
+
+[Design109](../design/109-CURATED-EXAMPLE-RIGHTS.md) and the
+[owner guide](../testing/CURATED_EXAMPLES.md) add canonical same-PG independent
+owner evidence/purpose decisions and withdrawal, with private bounded local data
+packaging and copied-file revalidation. Current reference rights are not promoted.
+Only separately PUBLIC owner originals with explicit no-model/provider attestation
+are supported; evidence remains OWNER_ATTESTED, not automatic legal/semantic proof.
+Original failures, detected withdrawal mutation and exact source observations are
+linked. This is partial S6; broader capture/private/provider eligibility, full
+TC08/TC09 and actual training/qualification remain separate. No R6 work starts.

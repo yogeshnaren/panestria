@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "outcome": "EXPLICIT_OWNER_ORIGINAL_RIGHTS_AND_LOCAL_DATA_PACKET_COMPONENT_NOT_TRAINING_OR_RELEASE_QUALIFICATION",
+  "observations": [
+    {
+      "file": "connected.xml",
+      "sha256": "098c1ba05c6aa66e5a928c65bc01ac9a20e49b5d1587a04732bc679116c323b6",
+      "source_commit": "c745f9fc578207486c633eac6e32096a07ad3a84",
+      "source_tree": "cbfba3d0ab1332d43eee262281cb1538ede972de",
+      "worktree": "CLEAN",
+      "scope": "Initial4PASS actual isolated PG/CLI/files; synthetic PUBLIC owner evidence and initial permission fixtures, no model/provider/trainer.",
+      "result": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "15.289"
+      }
+    },
+    {
+      "file": "explicit-basis.xml",
+      "sha256": "94c7604abf63170637efc1f7da4ffe75542255ad9ba94e04400c72efd75bf6b6",
+      "source_commit": "aeca8005c8bfd6a0e1ad13f824c98366b5bd933b",
+      "source_tree": "8bbd58e2be481172dc151d51b0b3fd628be9ee98",
+      "worktree": "CLEAN",
+      "scope": "4PASS after explicit provider/purpose/validation basis and isolated withdrawal/consent-expiry guards; before later classification/origin/recovery refinements.",
+      "result": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "14.435"
+      }
+    },
+    {
+      "file": "withdrawal-mutant.xml",
+      "sha256": "d0c4eed884c4fb1dd31c8a8f42acd5655b1b4012d7189a2271b7bbcfef182469",
+      "source_commit": "aeca8005c8bfd6a0e1ad13f824c98366b5bd933b",
+      "source_tree": "8bbd58e2be481172dc151d51b0b3fd628be9ee98",
+      "worktree": "DIRTY_ONE_EXPLICIT_GUARD_REMOVAL",
+      "scope": "EXPECTED1FAIL: removing only the export withdrawal condition made the unchanged functional test fail because the same packet was accepted after canonical withdrawal. KILLED, not a production pass or broad mutation score. Exact original source restored.",
+      "result": {
+        "tests": "1",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "7.241"
+      }
+    },
+    {
+      "file": "schema-startup.xml",
+      "sha256": "a545d25514f016355a32860f958f781a75a53b0c2e8f463a2b186950648c8df5",
+      "source_commit": "aeca8005c8bfd6a0e1ad13f824c98366b5bd933b",
+      "source_tree": "8bbd58e2be481172dc151d51b0b3fd628be9ee98",
+      "worktree": "CLEAN_RESTORED_AFTER_MUTATION",
+      "scope": "20PASS1FAIL: startup guards passed; existing migration guard detected stale docs/contracts/schema-snapshot.txt. No schema assertion weakened.",
+      "result": {
+        "tests": "21",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "14.109"
+      }
+    },
+    {
+      "file": "schema-contract-corrected.xml",
+      "sha256": "ec094f5f317b182b1dc7bbe131316292f66757377a80e4d3801c97b503b6e08b",
+      "source_commit": "2d4c08b0a0767515572e1b4806808ec414803925",
+      "source_tree": "ac5eaf2e78817e0314a12f57f4d769b36d9fae79",
+      "worktree": "CLEAN",
+      "scope": "2PASS affected actual migration guard and connected CLI after synchronizing both observed schema pins; eligibility period label clarified.",
+      "result": {
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "17.526"
+      }
+    },
+    {
+      "file": "public-evidence.xml",
+      "sha256": "46551be9f16df73c907e7730ec0fa38295ccd36afed47066ea08367bebb425dc",
+      "source_commit": "a693b1a01b997a9259efd88d7e4afb2b9b344094",
+      "source_tree": "e6d4a13b3c9e195f6ec0810aa558bee1f825993d",
+      "worktree": "CLEAN",
+      "scope": "1affectedPASS explicit PUBLIC class on every evidence document; incomplete provider basis remains UNKNOWN, connected exact consent/export/copy/withdrawal.",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "6.728"
+      }
+    },
+    {
+      "file": "origin-distinction.xml",
+      "sha256": "0ed5853d95056e2cf4ac84ddb371fd8f660e065ba60c913c5dc4a5457b61deb2",
+      "source_commit": "07b22e93ff41c821577f20bcd5694c8c1e6228cc",
+      "source_tree": "525becc1e7e224f4373d7ca5d251d1b3f1643ced",
+      "worktree": "CLEAN",
+      "scope": "1affectedPASS UNKNOWN origin is not fabricated nonowner proof; previously recorded model output remains denied on exact-content relabel; conflicting input and expiry refusal.",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "7.809"
+      }
+    },
+    {
+      "file": "expired-replay.xml",
+      "sha256": "668efe3df532f8add0a03923afc9c3f68dce215b85e6a42696206e59eb33cc34",
+      "source_commit": "5f3582e11ae9dd544be9601f9a59898b89568dbe",
+      "source_tree": "3631254ed415db61be102e9ff374a45adfc555c3",
+      "worktree": "CLEAN",
+      "scope": "1affectedPASS original one-day consent expires before two-day evidence; exact replay stays historical/current false without renewal.",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "6.462"
+      }
+    },
+    {
+      "file": "final-connected.xml",
+      "sha256": "63fc2b0626cf3b22cd828c81113fdc2fe8b72cf97a7556b9850bb2abb85f80d2",
+      "source_commit": "c8d4ca7476380398074601805c9bca3f36fcf511",
+      "source_tree": "4550351119942db23b914fd63598fced0b27ee59",
+      "worktree": "CLEAN",
+      "scope": "4PASS completed connected source with canonical read-only recovery, consent/currentness/withdrawal/provenance/expiry and migration roundtrip/audit downgrade refusal. Later10e8a3 adds only returned subject/content hashes for constructing evidence; exact-head CI validates final PR tree.",
+      "result": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "17.084"
+      }
+    }
+  ],
+  "artifacts": {
+    "withdrawal-mutant.json": "ad4f998d4fd72d61d9e45a8e89c5d215cf9bb8c1d51e7b6b33b306ce7ce7d83b",
+    "withdrawal-mutant.txt": "acf94bf5fe5fb4ce6b11e4f86e2529d60a8d9ba184f457bc6ddaf026637e8044"
+  },
+  "delivered": [
+    "Separate exact owner/project/current-policy review of PUBLIC example and three role-bound owner attestations, plus independent training-data-purpose consent. Missing or unclassified basis cannot silently grant export.",
+    "Canonical immutable same-PG rights/withdrawal records; latest denial, original expiry and permanent same-content withdrawal fence export and restored-file validation. Old replay neither renews nor supersedes.",
+    "Known recorded model provenance for exact content in this project cannot be cleared with an owner-origin flag; unknown origin remains distinct. Deterministic exact-input folds and duplicate/conflicting-input refusal.",
+    "Read-only canonical recovery and bounded exclusive private local packet export/validation with original hashes/expiry, no trainer/model/provider or owner database migration."
+  ],
+  "limits": [
+    "Every evidence/validation fact is explicitly OWNER_ATTESTED with synthetic test documents and a synthetic current policy fixture. This is not legal/authorship/semantic certification or actual provider agreement verification.",
+    "Only PUBLIC owner originals with explicit no provider/model inputs are supported. Existing Build/reference/provider artifacts retain UNKNOWN/export DENIED; no consumer-purpose workaround, local model training or R6 promotion.",
+    "Exact-byte dedup and project-local recorded provenance do not detect semantic/near duplicates, false owner attestations or cross-project content laundering. No qualified corpus claim.",
+    "Copied packet validation uses current canonical PG authority; full database backup/restore qualification and real rights/corpus review remain pending. Expiry/withdrawal deletes neither audit nor prior packets.",
+    "4096reviews/8MiB logical JSON-preview budget is not physical Postgres/WAL/backup footprint; each explicitly selected output is capped128KiB, with no automatic aggregate pruning.",
+    "AOS012S6/TC08/TC09/G1/G2/G3 remain open; broader capture, provider eligibility, encryption/private-example purpose flow and real owner trial are not established."
+  ],
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS (346 source files)",
+    "import_boundaries": "11 KEPT",
+    "secret_scan": "PASS"
+  },
+  "schema_observation": {
+    "sha256": "bb38e22f57f4fe41fd5f511edbe27871d09480b33fc2de6f3b19e2b72f7c93ca",
+    "original_preserved": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/curated-example-rights-2026-10-23/observed-schema-fingerprint.txt",
+    "duplicate_copy_preserved": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/curated-example-rights-2026-10-23/repository-schema-copy.txt",
+    "identical_immutable_pin": "https://github.com/yogeshnaren/panestria/blob/aeca8005c8bfd6a0e1ad13f824c98366b5bd933b/migrations/schema_fingerprint.txt",
+    "scope": "Observed empty downgrade/upgrade schema; full duplicate snapshot omitted from task diff, original retained."
+  }
+}
