@@ -54,7 +54,8 @@ def review_lines(source: ConnectionReviewView, width: int) -> list[str]:
             "A REVOKE approval fences future selected native work; its supervisor checks revocation. "
             "Already sent data cannot be recalled. This review launches no worker."
             if m.schema_version == 2
-            else "A REVOKE approval records disconnection intent/state; this component starts/stops no external process."
+            else "A REVOKE approval records disconnection intent/state; "
+            "this component starts/stops no external process."
         ),
         "END OF EXACT DECLARATION",
     ]

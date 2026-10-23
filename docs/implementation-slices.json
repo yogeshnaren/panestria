@@ -2812,10 +2812,11 @@
         "evidence/connection-root-sessions-2026-10-18/report.json",
         "evidence/r1-runtime-qualification-2026-10-18/report.json",
         "evidence/connection-terminal-2026-10-22/report.json",
-        "evidence/fetch-connection-grants-2026-10-23/report.json"
+        "evidence/fetch-connection-grants-2026-10-23/report.json",
+        "evidence/native-connection-grants-2026-10-23/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3. Exact declaration setup/review/revoke is now connected to an initial anonymous PUBLIC HTTPS GET broker: current grant/configuration/scoped anonymous identity, policy/certificate/lease, cross-goal application capacity and per-hop revoke/origin fences. No authenticated account, private root/native connector or secret injection is enabled. Connected HTTPS/certificates are explicit fixtures. General enrollment/secret/OS lifecycle, full TC05-TC08/S4/S5 and release qualification remain incomplete.",
+      "scope_note": "Extension delivered in R3. Exact declaration setup/review/revoke is now connected to an initial anonymous PUBLIC HTTPS GET broker: current grant/configuration/scoped anonymous identity, policy/certificate/lease, cross-goal application capacity and per-hop revoke/origin fences. No authenticated account, private root/native connector or secret injection is enabled. Connected HTTPS/certificates are explicit fixtures. General enrollment/secret/OS lifecycle, full TC05-TC08/S4/S5 and release qualification remain incomplete. Selected native application account/context enforcement now intersects current reviewed version, pseudonymous private-profile/configuration/runtime identity, policy/certificate, original expiry, shared invocation/selected-context capacity and revocation through single/two-worker Build and final verification. Background queue guards compose. Native/auth qualification remains synthetic; unselected legacy configs stay policy-only. General enrollment/root/secret/OS conformance and full TC05-TC08/S4/S5 remain incomplete.",
       "implemented_component_files": [
         "src/panestria/cli/connections.py",
         "src/panestria/cli/connection_client.py",
@@ -2824,7 +2825,11 @@
         "src/panestria/kernel/connection_broker.py",
         "src/panestria/contracts/fetch_connection.py",
         "migrations/versions/0038_fetch_connection_grants.py",
-        "docs/testing/PUBLIC_FETCH_CONNECTION.md"
+        "docs/testing/PUBLIC_FETCH_CONNECTION.md",
+        "src/panestria/contracts/native_connection.py",
+        "src/panestria/kernel/native_connection.py",
+        "src/panestria/execution/native_connection.py",
+        "docs/testing/NATIVE_CONNECTION_GRANTS.md"
       ]
     },
     {
@@ -2854,15 +2859,20 @@
       "status": "IN_PROGRESS",
       "evidence_refs": [
         "evidence/r1-runtime-qualification-2026-10-18/report.json",
-        "evidence/fetch-connection-grants-2026-10-23/report.json"
+        "evidence/fetch-connection-grants-2026-10-23/report.json",
+        "evidence/native-connection-grants-2026-10-23/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3. Exact declaration setup/review/revoke is now connected to an initial anonymous PUBLIC HTTPS GET broker: current grant/configuration/scoped anonymous identity, policy/certificate/lease, cross-goal application capacity and per-hop revoke/origin fences. No authenticated account, private root/native connector or secret injection is enabled. Connected HTTPS/certificates are explicit fixtures. General enrollment/secret/OS lifecycle, full TC05-TC08/S4/S5 and release qualification remain incomplete.",
+      "scope_note": "Extension delivered in R3. Exact declaration setup/review/revoke is now connected to an initial anonymous PUBLIC HTTPS GET broker: current grant/configuration/scoped anonymous identity, policy/certificate/lease, cross-goal application capacity and per-hop revoke/origin fences. No authenticated account, private root/native connector or secret injection is enabled. Connected HTTPS/certificates are explicit fixtures. General enrollment/secret/OS lifecycle, full TC05-TC08/S4/S5 and release qualification remain incomplete. Selected native application account/context enforcement now intersects current reviewed version, pseudonymous private-profile/configuration/runtime identity, policy/certificate, original expiry, shared invocation/selected-context capacity and revocation through single/two-worker Build and final verification. Background queue guards compose. Native/auth qualification remains synthetic; unselected legacy configs stay policy-only. General enrollment/root/secret/OS conformance and full TC05-TC08/S4/S5 remain incomplete.",
       "implemented_component_files": [
         "src/panestria/kernel/connection_broker.py",
         "src/panestria/contracts/fetch_connection.py",
         "migrations/versions/0038_fetch_connection_grants.py",
-        "docs/testing/PUBLIC_FETCH_CONNECTION.md"
+        "docs/testing/PUBLIC_FETCH_CONNECTION.md",
+        "src/panestria/contracts/native_connection.py",
+        "src/panestria/kernel/native_connection.py",
+        "src/panestria/execution/native_connection.py",
+        "docs/testing/NATIVE_CONNECTION_GRANTS.md"
       ]
     },
     {
