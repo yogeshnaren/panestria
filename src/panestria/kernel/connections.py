@@ -12,7 +12,12 @@ from uuid import uuid4
 from psycopg.pq import TransactionStatus
 from pydantic import TypeAdapter, ValidationError
 
-from panestria.contracts.connections import ConnectionId, ConnectionManifest, ConnectionReviewRequest
+from panestria.contracts.connections import (
+    ConnectionId,
+    ConnectionManifest,
+    ConnectionReviewRequest,
+    ConnectionScopeView,
+)
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.policy import current_policy, lock_project
@@ -104,6 +109,15 @@ class ConnectionReviewService:
         if type(review_seconds) is not int or not 1 <= review_seconds <= 900:
             raise ValueError("invalid_connection_review_deadline")
         self.review_seconds = review_seconds
+
+    def scope(self, uow: UnitOfWork, actor: Actor) -> ConnectionScopeView:
+        self._transaction(uow)
+        policy = current_policy(uow, actor)
+        return ConnectionScopeView(
+            owner_id=actor.owner_id,
+            project_id=actor.project_id,
+            policy_ref=f"project-policy:{policy.version}:{policy.sha256()}",
+        )
 
     @staticmethod
     def _transaction(uow: UnitOfWork) -> None:

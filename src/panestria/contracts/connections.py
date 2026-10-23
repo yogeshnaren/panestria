@@ -7,7 +7,7 @@ import ipaddress
 import json
 import re
 from datetime import UTC
-from typing import Annotated, Literal, Self
+from typing import Annotated, Any, Literal, Self, TypeVar
 from urllib.parse import urlsplit
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, StrictInt, field_validator, model_validator
@@ -141,3 +141,97 @@ class ConnectionReviewRequest(ConnectionContract):
         if self.operation == "REVOKE" and (self.grant_id is None or self.expected_version == 0):
             raise ValueError("invalid_connection_revoke")
         return self
+
+
+class SubmitReview(ConnectionContract):
+    schema_version: StrictInt = Field(ge=1, le=1)
+    task_id: ConnectionId
+    change: ConnectionReviewRequest
+
+
+class DecideReview(ConnectionContract):
+    schema_version: StrictInt = Field(ge=1, le=1)
+    effect_digest: Digest
+    decision: Literal["approve", "deny"]
+
+
+class ConnectionReviewView(ConnectionContract):
+    schema_version: Literal[1]
+    proposal_id: ConnectionId
+    grant_id: ConnectionId
+    expected_version: StrictInt = Field(ge=0, le=1_000_000)
+    effect_digest: Digest
+    operation: Literal["REPLACE", "REVOKE"]
+    policy_ref: PolicyRef
+    review_expires_at: AwareDatetime
+    manifest: ConnectionManifest
+    state: Literal["PENDING", "EXPIRED", "APPROVED", "DENIED"]
+    replayed: bool
+    authority: Literal["DECLARATION_ONLY"]
+    conformance_status: Literal["UNVERIFIED"]
+    runtime_available: Literal[False]
+
+
+class ConnectionScopeView(ConnectionContract):
+    schema_version: Literal[1] = 1
+    owner_id: ConnectionId
+    project_id: ConnectionId
+    policy_ref: PolicyRef
+    authority: Literal["DECLARATION_ONLY"] = "DECLARATION_ONLY"
+    conformance_status: Literal["UNVERIFIED"] = "UNVERIFIED"
+    runtime_available: Literal[False] = False
+
+
+class ConnectionGrantView(ConnectionContract):
+    schema_version: Literal[1]
+    grant_id: ConnectionId
+    version: StrictInt = Field(ge=1, le=1_000_001)
+    state: Literal["DECLARED_ACTIVE", "DECLARED_REVOKED", "EXPIRED"]
+    policy_ref: PolicyRef
+    policy_status: Literal["CURRENT", "STALE"]
+    manifest: ConnectionManifest
+    authority: Literal["DECLARATION_ONLY"]
+    conformance_status: Literal["UNVERIFIED"]
+    runtime_available: Literal[False]
+
+
+class ConnectionDecisionView(ConnectionContract):
+    schema_version: Literal[1]
+    proposal_id: ConnectionId
+    grant_id: ConnectionId
+    decision: Literal["APPROVED", "DENIED"]
+    granted_version: StrictInt | None = Field(ge=1, le=1_000_001)
+    effect_digest: Digest
+    replayed: bool
+    authority: Literal["DECLARATION_ONLY"]
+    conformance_status: Literal["UNVERIFIED"]
+    runtime_available: Literal[False]
+
+    @model_validator(mode="after")
+    def version_binding(self) -> Self:
+        if (self.decision == "APPROVED") != (self.granted_version is not None):
+            raise ValueError("connection_decision_version_invalid")
+        return self
+
+
+M = TypeVar("M", bound=ConnectionContract)
+
+
+def parse_connection_contract(model: type[M], raw: bytes) -> M:
+    """JSON-mode strict validation without duplicate keys or nonfinite values."""
+
+    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for name, value in pairs:
+            if name in result:
+                raise ValueError("duplicate_connection_key")
+            result[name] = value
+        return result
+
+    def constant(_: str) -> None:
+        raise ValueError("nonfinite_connection_value")
+
+    if not 0 < len(raw) <= 65536:
+        raise ValueError("connection_document_size_limit")
+    json.loads(raw, object_pairs_hook=unique, parse_constant=constant)
+    return model.model_validate_json(raw)
