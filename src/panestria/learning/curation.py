@@ -43,6 +43,8 @@ def eligibility(
 ) -> tuple[Eligibility, tuple[str, ...]]:
     if len({e.role for e in evidence}) != len(evidence) or any(e.subject_sha256 != example.sha256() for e in evidence):
         raise KernelDenied("curation_evidence_subject_or_role_mismatch")
+    if example.origin == "UNKNOWN":
+        return "UNKNOWN", ("origin_requires_separate_owner_evidence",)
     if example.origin != "OWNER_AUTHORED":
         return "DENIED", ("provider_model_or_unknown_origin_not_supported",)
     if any(e.assessment == "DENIED" for e in evidence):
@@ -125,7 +127,8 @@ class ExampleCuration:
         return (
             c.execute(
                 "SELECT 1 FROM panestria.curated_example_review WHERE owner_id=%s AND project_id=%s "
-                "AND content_sha256=%s AND preview->'example'->>'origin'<>'OWNER_AUTHORED' LIMIT 1",
+                "AND content_sha256=%s AND preview->'example'->>'origin' "
+                "IN ('PROVIDER_OUTPUT','LOCAL_MODEL_OUTPUT') LIMIT 1",
                 (self.actor.owner_id, self.actor.project_id, example.content_sha256),
             ).fetchone()
             is not None

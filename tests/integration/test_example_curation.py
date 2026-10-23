@@ -224,6 +224,12 @@ def test_new_denial_old_replay_and_canonical_withdrawal_cannot_be_overridden_by_
 
 def test_known_model_lineage_duplicate_inputs_and_expiry_stay_ineligible(curation, monkeypatch):
     f = curation
+    unknown, unknown_proofs = files(f, origin="UNKNOWN", question="Original synthetic example?")
+    pending = f.service.prepare(unknown, unknown_proofs)
+    assert pending["preview"]["proposed_eligibility"] == "UNKNOWN"
+    f.service.record(unknown, unknown_proofs, pending["review_sha256"], confirm_owner_review=True)
+    corrected, corrected_proofs = files(f, question="Original synthetic example?")
+    assert f.service.prepare(corrected, corrected_proofs)["preview"]["proposed_eligibility"] == "ALLOWED"
     candidate, proofs = files(f, origin="PROVIDER_OUTPUT")
     review = f.service.prepare(candidate, proofs)
     assert review["preview"]["proposed_eligibility"] == "DENIED"
