@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -32,6 +33,7 @@ class NativeResult:
     accepted: bool
     reason: str
     result_sha256: str
+    reported_init_model: str | None = None
 
 
 def _pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -129,6 +131,7 @@ class ClaudeEventParser:
             if allowed_tools == frozenset({tool}) and allowed_mcp_servers == frozenset({"panestria"}):
                 self._mcp_display_names.add(label)
         self.session: str | None = None
+        self.reported_init_model: str | None = None
         self.result: NativeResult | None = None
         self._pending = bytearray()
         self._tool_ids: set[str] = set()
@@ -277,6 +280,12 @@ class ClaudeEventParser:
                     or body.get("agents") != ["claude", "Explore", "general-purpose", "Plan", "statusline-setup"]
                 ):
                     raise ProtocolRejected("unexpected_mcp_profile_metadata")
+            model = body.get("model")
+            if model is not None and (
+                type(model) is not str or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}", model) is None
+            ):
+                raise ProtocolRejected("invalid_model_metadata")
+            self.reported_init_model = model
             self.session = session
             return NativeEvent("started", digest)
         if kind == "rate_limit_event":
@@ -413,7 +422,9 @@ class ClaudeEventParser:
                 elif subtype == "error_max_turns":
                     reason = "turns_exhausted"
                 status = "UNAVAILABLE" if reason in {"quota_unavailable", "auth_required"} else "FAILED"
-            self.result = NativeResult(status, False, reason, hashlib.sha256(text.encode()).hexdigest())
+            self.result = NativeResult(
+                status, False, reason, hashlib.sha256(text.encode()).hexdigest(), self.reported_init_model
+            )
             return NativeEvent("candidate" if status == "CANDIDATE" else "unavailable", digest, reason)
         raise ProtocolRejected("unknown_event_type")
 

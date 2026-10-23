@@ -27,6 +27,7 @@ from panestria.brokers.harness.event_parser import ClaudeEventParser
 from panestria.brokers.harness.process_runner import ProcessReceipt, collect_native
 
 PROFILE = "claude-subscription-public-check-v1"
+REQUESTED_MODEL = "haiku"
 TOOL = "mcp__panestria__run_registered_check"
 SETTINGS = {
     "disableAllHooks": True,
@@ -43,6 +44,7 @@ class CheckProfileObservation:
     hostile_configuration_ignored: bool
     stdout_sha256: str
     profile: str = PROFILE
+    requested_model: str | None = None
 
 
 def _write(path: Path, body: object) -> str:
@@ -236,7 +238,7 @@ class ClaudeRegisteredCheckAdapter:
                         "--max-budget-usd",
                         "0.25",
                         "--model",
-                        "haiku",
+                        REQUESTED_MODEL,
                         "--system-prompt-file",
                         str(prompt),
                         instruction,
@@ -280,7 +282,9 @@ class ClaudeRegisteredCheckAdapter:
                 clean = not any(path.exists() or path.is_symlink() for path in markers)
                 if not clean:
                     raise ProposalUnavailable("untrusted_native_configuration_executed")
-                return CheckProfileObservation(process, parser.session is not None, clean, digest, profile)
+                return CheckProfileObservation(
+                    process, parser.session is not None, clean, digest, profile, REQUESTED_MODEL
+                )
         except OSError:
             raise ProposalUnavailable("native_check_launch_unavailable") from None
         finally:

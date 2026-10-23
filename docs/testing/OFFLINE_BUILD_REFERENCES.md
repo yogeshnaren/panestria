@@ -56,6 +56,22 @@ Model identity stays UNKNOWN when not present in the original evidence. Native
 logs/responses are not copied or guessed. The capture copies the independently
 checked final code diff rather than treating raw model advice as verified truth.
 
+New schema2 captures also show each invocation's original `request_sha256` and
+`configuration_sha256`. For admitted native Build, the request hash identifies
+the selected context JSON. `requested_model` is the recorded launcher alias;
+`reported_init_model` is the CLI startup report retained in its original receipt.
+They do not prove the model serving every response, hidden context, weights,
+fallback, usage or billing. The legacy generic `model` remains null. Missing
+original metadata stays null even when today's model selection is known.
+Old schema1 archives remain readable without rewriting. Explicit recapture can
+create a separate schema2 reference from original canonical records; it never
+updates an old reference hash. No migration or new inference is needed.
+
+[Identity design](../design/110-OFFLINE-INVOCATION-IDENTITY.md) and
+[source-bound checks](../../evidence/offline-invocation-identity-2026-10-23/report.json)
+cover new and legacy receipt transport, offline copied-archive reads and recall
+regressions. Native identity frames are synthetic fixtures, not live qualification.
+
 Only **OWNER_LOCAL_REFERENCE** is permitted here. Training eligibility remains
 **UNKNOWN** and training export is **DENIED** until a separate provider/agreement,
 data-rights, consent, validation and purpose review exists. Ownership/approval of

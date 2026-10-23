@@ -3,9 +3,10 @@
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
 
 Digest = Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
+ModelName = Annotated[str, Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$")]
 
 
 class Closed(BaseModel):
@@ -25,10 +26,14 @@ class InvocationProvenance(Closed):
     kind: Literal["native-proposal", "native-tool", "build-integration"]
     controller_source_sha256: Digest | None
     model: None = None
+    request_sha256: Digest | None = None
+    configuration_sha256: Digest | None = None
+    requested_model: ModelName | None = None
+    reported_init_model: ModelName | None = None
 
 
 class OfflineBuildReference(Closed):
-    schema_version: Literal[1] = 1
+    schema_version: Literal[1, 2] = 1
     kind: Literal["offline-build-reference"] = "offline-build-reference"
     owner_id: UUID
     project_id: UUID
@@ -57,3 +62,22 @@ class OfflineBuildReference(Closed):
     )
     retention: Literal["OWNER_MANAGED_NO_AUTOMATIC_DELETION"] = "OWNER_MANAGED_NO_AUTOMATIC_DELETION"
     authority: Literal["DERIVED_REFERENCE_ONLY"] = "DERIVED_REFERENCE_ONLY"
+
+    @model_validator(mode="after")
+    def versioned_identity(self) -> "OfflineBuildReference":
+        for invocation in self.invocations:
+            if self.schema_version == 1 and any(
+                value is not None
+                for value in (
+                    invocation.request_sha256,
+                    invocation.configuration_sha256,
+                    invocation.requested_model,
+                    invocation.reported_init_model,
+                )
+            ):
+                raise ValueError("legacy_reference_identity_must_remain_unknown")
+            if self.schema_version == 2 and (
+                invocation.request_sha256 is None or invocation.configuration_sha256 is None
+            ):
+                raise ValueError("reference_invocation_hashes_required")
+        return self
