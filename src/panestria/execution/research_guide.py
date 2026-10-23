@@ -124,14 +124,15 @@ class OwnerResearchGuide:
                         lines += ["No retained passages. Inspect collection errors; no repeat collection offered."]
                     else:
                         draft_packet = self.review._current(c, request_id)
-                        input_sha = _sha(draft_packet_json(draft_packet))
+                        input_sha = _sha(packet_json(draft_packet))
                         action = "DRAFT"
                         lines += [
                             "Next: retain ONE unverified local CPU draft from these exact PUBLIC inputs.",
                             f"Pinned local model {MODEL} | bundle {MODEL_DIGEST}",
                             "At most 768 output tokens / 4096 context / 60s model request; startup is separate.",
                             "No search/fetch/tools or automatic support check occurs in this stage.",
-                            "Exact question excerpt (JSON): " + json.dumps(draft_packet.question_excerpt.get_secret_value()),
+                            "Exact question excerpt (JSON): "
+                            + json.dumps(draft_packet.question_excerpt.get_secret_value()),
                             f"Question shortened {draft_packet.question_shortened}; "
                             f"omitted passages {draft_packet.omitted_passages}.",
                         ]
@@ -144,7 +145,7 @@ class OwnerResearchGuide:
                             ]
                         lines += [f"Exact draft input SHA256 {input_sha}"]
                 else:
-                    draft_receipt = self.review._draft_receipt(c, current.scope.task_id, request_id, prior["synthesis_id"])
+                    draft_receipt = self.review._receipt(c, current.scope.task_id, request_id, prior["synthesis_id"])
                     if draft_receipt.status != "DRAFT_RETAINED":
                         lines += [f"Draft {draft_receipt.status}. Inspect original intent; no redispatch offered."]
                     else:

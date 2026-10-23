@@ -181,7 +181,7 @@ def test_real_cli_pty_exact_query_preview_cancel_confirmation_and_terminal_resto
     with terminal(config, entry=("research", "guide"), arguments=args) as t:
         t.until(b"GUIDED RESEARCH")
         os.write(t.master, b"vy")
-        t.until(b"Read to the end first")
+        t.until(b"No action attempted")  # Curses can retain the unchanged leading words from the prior notice.
         curses.setupterm(term="xterm-256color")
         start = len(t.transcript)
         os.write(t.master, curses.tigetstr("knp") * 30)
