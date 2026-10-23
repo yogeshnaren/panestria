@@ -47,9 +47,14 @@ def authorize(request: Request, api: GoalApi) -> Actor:
         host = urlsplit("http://" + request.headers.get("host", "")).hostname
     except ValueError:
         raise LoopbackDenied("invalid_host", 403) from None
-    if host not in _LOOPBACK_HOSTS:
-        raise LoopbackDenied("invalid_host", 403)
     access = getattr(request.app.state, "browser_access", None)
+    phone = isinstance(access, BrowserAccess) and access.private_read_only
+    if phone:
+        assert isinstance(access, BrowserAccess)
+        if request.url.scheme != "https" or request.headers.get("host", "").lower() != access.host:
+            raise LoopbackDenied("invalid_host", 403)
+    elif host not in _LOOPBACK_HOSTS:
+        raise LoopbackDenied("invalid_host", 403)
     if isinstance(access, BrowserAccess) and request.cookies.get(access.cookie_name):
         actor = Actor(api.owner_id, api.project_id)
         try:
@@ -59,6 +64,8 @@ def authorize(request: Request, api: GoalApi) -> Actor:
         except (DatabaseUnavailable, psycopg.Error):
             raise LoopbackDenied("database_unavailable", 503) from None
         return actor
+    if phone:
+        raise LoopbackDenied("unauthorized", 401)
     if "origin" in request.headers:
         raise LoopbackDenied("origin_denied", 403)
     header = request.headers.get("authorization", "")

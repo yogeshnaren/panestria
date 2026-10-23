@@ -35,13 +35,14 @@ class BrowserAccess:
             "mission-plan-review",
             "mission-build-run",
             "mission-storage",
+            "mission-phone",
         ] = "default",
     ) -> None:
         parts = urlsplit(origin)
         if (
             parts.scheme not in {"http", "https"}
-            or parts.hostname not in {"127.0.0.1", "localhost", "::1"}
-            or parts.port is None
+            or not self._origin_host_allowed(parts.hostname, parts.scheme)
+            or (parts.port is None and not (self.private_read_only and parts.scheme == "https"))
             or parts.path
             or parts.query
             or parts.fragment
@@ -58,6 +59,7 @@ class BrowserAccess:
             "mission-plan-review",
             "mission-build-run",
             "mission-storage",
+            "mission-phone",
         }:
             raise ValueError("invalid_browser_namespace")
         self.cookie_name = (
@@ -71,6 +73,15 @@ class BrowserAccess:
         self.secure = parts.scheme == "https"
         self.service = service
         self.database_url = database_url
+        self.session_seconds = 8 * 3600
+
+    @staticmethod
+    def _origin_host_allowed(host: str | None, scheme: str) -> bool:
+        return host in {"127.0.0.1", "localhost", "::1"}
+
+    @property
+    def private_read_only(self) -> bool:
+        return False
 
     def validate_origin(self, request: Request, *, mutation: bool) -> None:
         supplied = request.headers.get("origin")

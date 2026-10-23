@@ -122,7 +122,7 @@ function Dashboard() {
     <section aria-label="Connection"><p role="status">{notice}</p>
       {(!authenticated || !csrf) && <form onSubmit={pair}><label htmlFor="pair">One-use pairing code from your terminal</label>
         <div className="actions"><input id="pair" value={code} onChange={e=>setCode(e.target.value.toUpperCase())}
-          pattern="[0-9A-F]{8}" maxLength={8} minLength={8} required autoComplete="off" spellCheck={false}/>
+          pattern="([0-9A-F]{8}|[0-9A-F]{32})" maxLength={32} minLength={8} required autoComplete="off" spellCheck={false}/>
           <button disabled={busy}>Pair</button></div></form>}
       {csrf && <button onClick={()=>void logout()} disabled={busy}>Log out</button>}
       <p className="muted">{askMode?'Enter questions only in Offline Ask below. Never enter credentials or bearer tokens.':researchMode?'Only explicitly PUBLIC questions belong in Delegate staging. Never enter credentials or private information.':buildIntakeMode?'Only explicitly PUBLIC zero-cash plan bundles belong here. Never include credentials or private information.':reviewMode?'Never enter credentials or private content. Protected PUBLIC evidence is displayed only below.':'No bearer token, private question, diff or source text belongs in this view.'}</p>

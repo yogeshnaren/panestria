@@ -24,10 +24,15 @@ class SessionTokens:
 
 
 class SessionService:
-    def __init__(self, secret: bytes) -> None:
+    def __init__(self, secret: bytes, *, pairing_bytes: int = 4, challenge_scope: str | None = None) -> None:
         if len(secret) < 32:
             raise ValueError("session_secret_too_short")
+        if pairing_bytes not in {4, 16} or (
+            challenge_scope is not None and re.fullmatch(r"[0-9a-f]{64}", challenge_scope) is None
+        ):
+            raise ValueError("invalid_session_scope")
         self._secret = secret
+        self.pairing_bytes, self.challenge_scope = pairing_bytes, challenge_scope
 
     def _hash(self, kind: str, value: str) -> str:
         return hmac.new(self._secret, f"{kind}:{value}".encode(), hashlib.sha256).hexdigest()
@@ -44,24 +49,28 @@ class SessionService:
         # Issuing a new code invalidates earlier outstanding codes for this project.
         uow.execute(
             "UPDATE panestria.pairing_challenge SET used_at=clock_timestamp()"
-            " WHERE owner_id=%s AND project_id=%s AND used_at IS NULL",
-            (actor.owner_id, actor.project_id),
+            " WHERE owner_id=%s AND project_id=%s AND used_at IS NULL AND scope_ref IS NOT DISTINCT FROM %s",
+            (actor.owner_id, actor.project_id, self.challenge_scope),
         )
-        code = secrets.token_hex(4).upper()
+        code = secrets.token_hex(self.pairing_bytes).upper()
         uow.execute(
-            "INSERT INTO panestria.pairing_challenge(code_hash,owner_id,project_id,expires_at)"
-            " VALUES (%s,%s,%s,clock_timestamp()+make_interval(secs => %s))",
-            (self._hash("pair", code), actor.owner_id, actor.project_id, ttl_seconds),
+            "INSERT INTO panestria.pairing_challenge(code_hash,owner_id,project_id,expires_at,scope_ref)"
+            " VALUES (%s,%s,%s,clock_timestamp()+make_interval(secs => %s),%s)",
+            (self._hash("pair", code), actor.owner_id, actor.project_id, ttl_seconds, self.challenge_scope),
         )
         return code
 
     def pair(self, uow: UnitOfWork, actor: Actor, code: str, *, session_seconds: int = 8 * 3600) -> SessionTokens:
-        if not 1 <= session_seconds <= 8 * 3600 or re.fullmatch(r"[0-9A-F]{8}", code) is None:
+        if (
+            not 1 <= session_seconds <= 8 * 3600
+            or re.fullmatch(r"[0-9A-F]{%d}" % (self.pairing_bytes * 2), code) is None
+        ):
             raise KernelDenied("invalid_pairing_code")
         row = uow.execute(
             "SELECT used_at IS NULL AND expires_at>clock_timestamp()"
-            " FROM panestria.pairing_challenge WHERE code_hash=%s AND owner_id=%s AND project_id=%s FOR UPDATE",
-            (self._hash("pair", code), actor.owner_id, actor.project_id),
+            " FROM panestria.pairing_challenge WHERE code_hash=%s AND owner_id=%s AND project_id=%s"
+            " AND scope_ref IS NOT DISTINCT FROM %s FOR UPDATE",
+            (self._hash("pair", code), actor.owner_id, actor.project_id, self.challenge_scope),
         ).fetchone()
         if row is None or row[0] is not True:
             raise KernelDenied("invalid_pairing_code")

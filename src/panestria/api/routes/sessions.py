@@ -22,7 +22,7 @@ router = APIRouter()
 
 class PairBody(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid")
-    code: str = Field(pattern=r"^[0-9A-F]{8}$")
+    code: str = Field(pattern=r"^([0-9A-F]{8}|[0-9A-F]{32})$")
 
 
 def _access(request: Request) -> BrowserAccess:
@@ -71,7 +71,7 @@ async def pair(request: Request) -> JSONResponse:
 def _pair(access: BrowserAccess, actor: Actor, code: str) -> JSONResponse:
     try:
         with open_database(access.database_url) as connection:
-            tokens = access.service.pair(UnitOfWork(connection), actor, code)
+            tokens = access.service.pair(UnitOfWork(connection), actor, code, session_seconds=access.session_seconds)
     except KernelDenied as exc:
         return JSONResponse(status_code=401, content=error_body(exc.code))
     except (DatabaseUnavailable, psycopg.Error):
@@ -88,7 +88,7 @@ def _pair(access: BrowserAccess, actor: Actor, code: str) -> JSONResponse:
     response.set_cookie(
         access.cookie_name,
         tokens.token,
-        max_age=8 * 3600,
+        max_age=access.session_seconds,
         httponly=True,
         secure=access.secure,
         samesite="strict",

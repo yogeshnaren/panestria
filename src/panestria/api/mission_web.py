@@ -32,7 +32,24 @@ def mount_mission_control(
     build_plan_review: bool = False,
     build_run: Path | None = None,
     storage_mode: bool = False,
+    phone_access: BrowserAccess | None = None,
 ) -> None:
+    if phone_access is not None and (
+        not phone_access.private_read_only
+        or any(
+            (
+                storage_mode,
+                offline_ask,
+                research_intake,
+                build_evidence_store,
+                build_review_root,
+                build_intake,
+                build_plan_review,
+                build_run,
+            )
+        )
+    ):
+        raise LocalApplicationRejected("phone_observer_only")
     if storage_mode:
         from panestria.resources.storage_status import StorageObserver
 
@@ -168,7 +185,8 @@ def mount_mission_control(
     secret = hmac.digest(token.encode(), purpose + config.origin.encode(), "sha256")
     mount_browser_api(
         app,
-        BrowserAccess(
+        phone_access
+        or BrowserAccess(
             config.origin,
             SessionService(secret),
             app.state.goal_api.database_url,

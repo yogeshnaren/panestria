@@ -1,0 +1,114 @@
+{
+  "kind": "private_phone_ingress_component",
+  "base_commit": "40fe636c05dc44f30d82cbc36727a36cc7e342d1",
+  "reports": [
+    {
+      "file": "initial.xml",
+      "sha256": "6e84ab0d5d3d18e998996340a1dbe234115a40fbf90da5485c2988d25deb7e02",
+      "result": {
+        "tests": "5",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "14.248"
+      },
+      "source_commit": "4875b3e77957d8bb0f0b0c916660ea49888028cf",
+      "source_tree": "08e9abff6458469ae7c5bd983630d0c389f87996",
+      "worktree_state": "clean",
+      "source_binding": "Git commit/status in execution command; XML may not contain per-case source properties"
+    },
+    {
+      "file": "scoped-final.xml",
+      "sha256": "c4ff9e478e2834b9844fda1ca172cb04e11783c2abc955d5fae793aa19f5de48",
+      "result": {
+        "tests": "25",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "19.077"
+      },
+      "source_commit": "60a7e47a985605fdc00dd8f23516791ba86a1769",
+      "source_tree": "d2617ea5131a716ff27c058a54734c9d862b3b5b",
+      "worktree_state": "clean",
+      "source_binding": "Git commit/status in execution command; XML may not contain per-case source properties"
+    },
+    {
+      "file": "final-phone.xml",
+      "sha256": "9fc417608406963044ea40da79328a22f579e82edb50324fb4d795a080b40cf7",
+      "result": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "16.455"
+      },
+      "source_commit": "ce5dcf50b9270cb3b845d47e6ef86ac21693fedb",
+      "source_tree": "825c868e804158ec66a383640084070ed28a92c1",
+      "worktree_state": "docs_dirty",
+      "source_binding": "Git commit/status in execution command; XML may not contain per-case source properties"
+    },
+    {
+      "file": "origin.xml",
+      "sha256": "3cf2d87c85875c6db87b59276b9bb12713fbb8985c6cfd467bfd1b4f5bfc35fc",
+      "result": {
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "6.895"
+      },
+      "source_commit": "04da24b89b07a6e3dd5c8bb359e11a393223b822",
+      "source_tree": "0f382db7292cd493447560f253fb2cffcf5a0711",
+      "worktree_state": "clean",
+      "source_binding": "Git commit/status in execution command; XML may not contain per-case source properties"
+    },
+    {
+      "file": "bearer-mutant.xml",
+      "sha256": "affcca442740f52e6f4a60c7890feb53c25367b1e7a500dc395837aa5ba43c46",
+      "result": {
+        "tests": "1",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "7.522"
+      },
+      "source_commit": "ce5dcf50b9270cb3b845d47e6ef86ac21693fedb",
+      "source_tree": "825c868e804158ec66a383640084070ed28a92c1",
+      "worktree_state": "controlled_mutant_with_docs_dirty",
+      "source_binding": "Git commit/status in execution command; XML may not contain per-case source properties"
+    }
+  ],
+  "originals_subdirectory": "outputs/private-phone-ingress-2026-10-23",
+  "scope": "Actual isolated PG and subprocess CLI/TLS/cookies on loopback with a temporary synthetic CA. Peer/clock/configuration failure cases use explicit ASGI/database fixtures. No actual target phone/private-network qualification.",
+  "migration": {
+    "revision": "0040_phone_devices",
+    "source_commit": "4875b3e77957d8bb0f0b0c916660ea49888028cf",
+    "observed_empty_roundtrip_sha256": "53f8c976ed27a8b4bee9d38e31178d35fea770b9f1460a54b6b847cff6d7a2ad",
+    "fingerprints": "Both current repository snapshots copied from actual observed identical empty down/up schema; populated phone history refuses downgrade"
+  },
+  "observations": [
+    "Private profile is disabled by default, uses existing token/certificate/key, exact private peer/Host/Origin, direct TLS, one-use scoped 128-bit pairing and one-hour canonical sessions. No owner profile, certificate, network or database was enabled/migrated.",
+    "Actual TLS CLI journey rejects bearer auth, code replay, proxy/Host/Origin spoofing, task/data mutation and raw artifacts despite a valid phone cookie/CSRF. Canonical owner revocation takes effect and preserves device history; desktop challenges/sessions remain separate.",
+    "Clock, missing-role, different-profile and peer fixtures deny access. The local owner can list/revoke inactive project profiles. Standard HTTPS default-origin serialization is checked without claiming actual port443 deployment.",
+    "The last phone-only run had documentation edits/untracked guide pending; production code matched its recorded source commit. Source bytes for the targeted mutation were restored exactly. Final exact-head CI validates the complete submitted tree."
+  ],
+  "mutation": {
+    "source_commit": "ce5dcf50b9270cb3b845d47e6ef86ac21693fedb",
+    "condition": "Disable the phone-specific rejection of remote bearer authentication",
+    "original_sha256": "6bc7532b825510b2f6063998ff586c8ae0691113fc7a8a43ddf97b30a910e36f",
+    "mutant_sha256": "f515b1efb6e5b75465eb55b3ac1d8628c9a84b996b6587553af06513f92243d9",
+    "exit_code": 1,
+    "source_bytes_restored": true,
+    "qualification": "ONE_TARGETED_MUTANT_NOT_A_BROAD_SCORE"
+  },
+  "quality": {
+    "source_commit": "c9e8bc9591b1903a0132d1d016b0a47c304ee1b8",
+    "sha256": "afe6722f602ce593b84d6e364ce9849cd922afaa3e81361ab1eb8c6d8cbfc787",
+    "result": "Ruff/mypy350/all11importboundaries/secrets PASS; cached production TypeScript/Vite build PASS, no dependency downloads"
+  },
+  "limits": [
+    "One targeted killed authentication mutant, not a broad mutation score or production failure. Original failed mutation output preserved separately.",
+    "Protected Build evidence-store/mobile responsive/stale/reconnect integration and actual selected phone/network/certificate trust remain pending.",
+    "S4/TC05\u2013TC08/G3 are not promoted to full acceptance. No model/provider/API/paid calls, owner service change, storage deletion or public ingress."
+  ]
+}
