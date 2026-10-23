@@ -39,13 +39,30 @@ def draft(config: Config, plan_id: str, account_ref: str, output: Annotated[Path
                         "plan_id": plan_id,
                         "expected_plan_sha256": plan.proposal.sha256(),
                         "policy": {
+                            **(
+                                {"schema_version": 2, "model_ref": owner.settings.native_model}
+                                if owner.settings.native_model is not None
+                                else {}
+                            ),
                             "policy_id": str(uuid4()),
                             "owner_id": owner.actor.owner_id,
                             "project_id": owner.actor.project_id,
                             "quota_windows": [
                                 {"provider": "claude-subscription", "account_ref": account_ref, "window_ref": window}
                                 for window in ("session", "weekly")
-                            ],
+                            ]
+                            + (
+                                [
+                                    {
+                                        "provider": "claude-subscription",
+                                        "account_ref": account_ref,
+                                        "window_ref": "selected-model",
+                                        "model_ref": owner.settings.native_model,
+                                    }
+                                ]
+                                if owner.settings.native_model is not None
+                                else []
+                            ),
                             "maximum_job_wall_seconds": min(
                                 900, sum(n.attempts * n.wall_seconds_per_attempt for n in plan.proposal.nodes)
                             ),
