@@ -11,6 +11,7 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 import pytest
+import psycopg
 from test_owner_build_cli import contract, invoke, prepare
 from test_owner_build_cli import owner_cli as owner_cli  # noqa: F401
 from test_registered_check_authority import git
@@ -199,9 +200,10 @@ def native_plan(prepared_plan, monkeypatch):
     return owner, runner, proposal, state
 
 
-def test_two_scoped_workers_and_create_only_node_reach_exact_owner_review(native_plan):
+def test_two_scoped_workers_and_create_only_node_reach_exact_owner_review(native_plan, record_property):
     owner, runner, plan, state = native_plan
     result = runner.run(plan.plan_id, public_subscription_run=True)
+    record_property("native_plan_result", json.dumps(result, sort_keys=True))
     assert result["status"] == "WAITING_APPROVAL", result
     assert state["launches"] == 2 and state["peak"] == 2
     assert any(not context["files"] for context in state["contexts"])  # New file has no invented source contents.
@@ -219,6 +221,30 @@ def test_two_scoped_workers_and_create_only_node_reach_exact_owner_review(native
             "SELECT count(*) FROM panestria.build_handoff WHERE plan_id=%s", (plan.plan_id,)
         ).fetchone() == (2,)
         assert c.execute("SELECT status FROM panestria.goal WHERE id=%s", (plan.goal_id,)).fetchone() == ("ACTIVE",)
+
+
+@pytest.mark.parametrize(
+    "error,code",
+    [(psycopg.errors.QueryCanceled("PRIVATE_SQL_SENTINEL"), "database_statement_timeout"),
+     (RuntimeError("PRIVATE_EXCEPTION_SENTINEL"), "worker_execution_unconfirmed")],
+)
+def test_stopped_native_worker_retains_safe_cause_and_unknown_claim(native_plan, monkeypatch, error, code):
+    owner, runner, plan, state = native_plan
+
+    def unavailable(_self, session, *, before_launch, **kwargs):
+        before_launch()
+        raise error
+
+    monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", unavailable)
+    result = runner.run(plan.plan_id, public_subscription_run=True)
+    assert result["status"] == "STOPPED" and state["launches"] == 0
+    assert result["worker_observations"] and all(r["reason"] == code for r in result["worker_observations"])
+    assert "PRIVATE_" not in json.dumps(result)
+    with owner.connect() as c:
+        assert c.execute("SELECT count(*) FROM panestria.build_handoff").fetchone() == (0,)
+        assert c.execute("SELECT count(*) FROM panestria.approval_request").fetchone() == (0,)
+        assert c.execute("SELECT count(*) FROM panestria.worker_invocation WHERE state='UNKNOWN'").fetchone()[0] > 0
+        assert c.execute("SELECT count(*) FROM panestria.build_active_worker_claim").fetchone()[0] > 0
 
 
 def test_explicit_run_intent_and_changed_worker_declaration_refuse_before_claim(native_plan):

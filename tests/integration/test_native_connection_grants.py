@@ -164,9 +164,12 @@ def reservations(owner):
         ).fetchall()
 
 
-def test_two_actual_scoped_workers_consume_exact_context_capacity_and_reach_final_review(native_plan, monkeypatch):
+def test_two_actual_scoped_workers_consume_exact_context_capacity_and_reach_final_review(
+    native_plan, monkeypatch, record_property
+):
     owner, runner, plan, state, anchor, _, _ = setup(native_plan, monkeypatch)
     result = runner.run(plan.plan_id, public_subscription_run=True)
+    record_property("native_plan_result", json.dumps(result, sort_keys=True))
     assert result["status"] == "WAITING_APPROVAL", result
     assert state["launches"] == 2 and state["peak"] == 2
     rows = reservations(owner)
