@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="39.519" timestamp="2026-10-23T02:46:09.394086-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_offline_build_recall" name="test_confirmed_archive_exact_review_concurrent_import_and_offline_ask_without_runtime_auth" file="tests/integration/test_offline_build_recall.py" line="37" time="9.754" /><testcase classname="tests.integration.test_offline_build_recall" name="test_actual_cached_cpu_retrieves_the_reviewed_build_excerpt[owner_cli0]" file="tests/integration/test_offline_build_recall.py" line="151" time="29.087"><properties><property name="mode" value="ACTUAL_CACHED_CPU_PG_ARCHIVE_RECALL__NATIVE_BUILD_GENERATION_FIXTURE" /><property name="source_commit" value="acf57549d0d2429b5fa3575ac5096b3656738579" /><property name="runtime_identity" value="acf5618f3f90487c966aa0237ab55d37" /><property name="input_tokens" value="799" /><property name="output_tokens" value="13" /><property name="generation_seconds" value="19.549222724017454" /><property name="first_token_seconds" value="18.985499818023527" /><property name="expected_answer" value="43" /><property name="observed_answer" value="The calculator Build changed to `value = 43`." /><property name="quality_scope" value="ONE_SYNTHETIC_RECALL_SAMPLE_NOT_MODEL_OR_RELEASE_QUALIFICATION" /></properties><failure message="AssertionError: assert ('The calculat...`value = 43`.' == '43'&#10;  &#10;  - 43&#10;  + The calculator Build changed to `value = 43`.)">prepared_plan = (namespace(actual=False, config=PosixPath('/tmp/pytest-of-yogesh/pytest-155/test_actual_cached_cpu_retriev0/build.json...aths', 'merge'), expected_artifacts=('patch',), attempts=1, wall_seconds_per_attempt=90, api_microusd_per_attempt=0))))
+native_plan = (&lt;panestria.execution.owner_build.OwnerBuild object at 0x7a80681ee5d0&gt;, &lt;panestria.execution.native_plan.NativePlanRun...ow. The goal intent is shared reference; other workers perform its requirements outside this assignment.', ...}], ...})
+tmp_path = PosixPath('/tmp/pytest-of-yogesh/pytest-155/test_actual_cached_cpu_retriev0')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x7a8068170720&gt;
+
+    @pytest.mark.live
+    @pytest.mark.parametrize("owner_cli", [{"live_native": False}], indirect=True)
+    def test_actual_cached_cpu_retrieves_the_reviewed_build_excerpt(prepared_plan, native_plan, tmp_path, record_property):
+        from panestria.inference.runtime import ModelRuntime
+        from panestria.resources.admission import admit
+        from panestria.resources.hardware import HardwareProbe
+    
+        cache = os.environ.get("PANESTRIA_RECALL_TEST_MODEL_CACHE")
+        if not cache:
+            pytest.skip("Explicit existing cache required; no model download")
+        assert not subprocess.check_output(
+            ["docker", "ps", "-a", "-q", "--filter", "label=panestria.purpose=local-model"], text=True
+        ).strip(), "Existing owner model preserved; probe not run"
+        archive = Path(__file__).resolve().parents[2] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
+        assert admit(HardwareProbe(archive).collect_cpu(), gpu=False).decision == "PERMIT"
+        _, owner, state, digest = confirmed(prepared_plan, native_plan)
+        recall = OfflineBuildRecall(owner.settings, owner.dsn)
+        preview = recall.prepare(digest)
+        saved = recall.remember(digest, preview["review_sha256"], accept_local_recall=True)
+        ask = AskService()
+        question = AskSubmission(
+            request_id=str(uuid4()),
+            project_id=owner.actor.project_id,
+            context_tokens=4096,
+            max_output_tokens=16,
+            deadline_seconds=60.0,
+            question="What number did the calculator Build change to? Reply with only the number.",
+        )
+        with owner.connect() as c:
+            ready = ask.prepare(UnitOfWork(c), owner.actor, question)
+            assert len(ready.context.sources) == 1 and ready.context.sources[0].item_id == saved["item_id"]
+        runtime = ModelRuntime(Path(cache), tmp_path / "owned-cpu", preserve_existing=True)
+        try:
+            runtime.start()
+            with owner.connect() as c:
+                inference = ask.claim(UnitOfWork(c), owner.actor, ready)
+            result = LocalProvider(runtime.socket_path).generate(inference)
+            with owner.connect() as c:
+                ask.finish(UnitOfWork(c), owner.actor, question.request_id, result)
+            record_property("mode", "ACTUAL_CACHED_CPU_PG_ARCHIVE_RECALL__NATIVE_BUILD_GENERATION_FIXTURE")
+            record_property("source_commit", subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip())
+            record_property("runtime_identity", runtime.identity)
+            record_property("input_tokens", result.usage.input_tokens)
+            record_property("output_tokens", result.usage.output_tokens)
+            record_property("generation_seconds", result.elapsed_seconds)
+            record_property("first_token_seconds", result.first_token_seconds)
+            record_property("expected_answer", "43")
+            record_property("observed_answer", result.text.strip())
+            record_property("quality_scope", "ONE_SYNTHETIC_RECALL_SAMPLE_NOT_MODEL_OR_RELEASE_QUALIFICATION")
+&gt;           assert result.text.strip() == "43" and result.finish_reason == "stop"
+E           AssertionError: assert ('The calculat...`value = 43`.' == '43'
+E             
+E             - 43
+E             + The calculator Build changed to `value = 43`.)
+
+tests/integration/test_offline_build_recall.py:201: AssertionError</failure></testcase></testsuite></testsuites>
