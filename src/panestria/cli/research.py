@@ -365,6 +365,25 @@ def prepare_draft_review(
     _owner_review("prepare", request_id, config, output=output)
 
 
+@research_app.command("review-draft")
+def review_draft_terminal(
+    request_id: str,
+    config: Annotated[Path, typer.Option("--config")],
+) -> None:
+    """Review retained claims/passages and separately confirm exact owner judgments."""
+    from panestria.cli.research_review_terminal import run_research_review_terminal
+    from panestria.config_synthesis import load_synthesis_settings
+    from panestria.execution.research_review import OwnerResearchReview
+
+    try:
+        settings = load_synthesis_settings(config, need_model=False)
+        dsn = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
+        run_research_review_terminal(OwnerResearchReview(dsn.get_secret_value(), settings), request_id)
+    except (Exception, KeyboardInterrupt):
+        typer.echo('{"status":"UNAVAILABLE","reason":"owner_review_unavailable_inspect_state"}', err=True)
+        raise typer.Exit(1) from None
+
+
 @research_app.command("check-draft-review")
 def check_draft_review(
     request_id: str,
