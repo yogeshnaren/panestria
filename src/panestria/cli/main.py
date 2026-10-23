@@ -27,6 +27,7 @@ from panestria.cli.local import local_app
 from panestria.cli.metrics import metrics_app
 from panestria.cli.mission import mission_app
 from panestria.cli.native import native_app
+from panestria.cli.phone import phone_app
 from panestria.cli.plan import plan_app
 from panestria.cli.profile import profile_app
 from panestria.cli.quota import quota_app
@@ -46,6 +47,7 @@ app.add_typer(examples_app, name="examples")
 app.add_typer(background_app, name="background")
 app.add_typer(profile_app, name="profile")
 app.add_typer(plan_app, name="plan")
+app.add_typer(phone_app, name="phone")
 app.add_typer(quota_app, name="quota")
 app.add_typer(research_app, name="research")
 app.add_typer(local_app, name="local")
