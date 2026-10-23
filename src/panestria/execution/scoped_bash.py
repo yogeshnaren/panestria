@@ -81,7 +81,9 @@ class _EditAuthority(DurableToolAuthority):
                 if operation == "observe":
                     connection.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
                 self.controller.authorize(connection, observation=operation == "observe")
-                getattr(self.service, operation)(UnitOfWork(connection), self.actor, tool_binding(permit), self.identity)
+                getattr(self.service, operation)(
+                    UnitOfWork(connection), self.actor, tool_binding(permit), self.identity
+                )
         except Exception as error:
             self.controller.last_failure_code = self.controller.last_failure_code or worker_failure_code(error)
             raise

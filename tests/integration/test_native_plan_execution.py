@@ -10,8 +10,8 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from uuid import uuid4
 
-import pytest
 import psycopg
+import pytest
 from test_owner_build_cli import contract, invoke, prepare
 from test_owner_build_cli import owner_cli as owner_cli  # noqa: F401
 from test_registered_check_authority import git
