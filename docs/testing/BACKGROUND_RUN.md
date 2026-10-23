@@ -19,6 +19,8 @@ Native editing workers now carry that same queue/run intersection into launch,
 tools, monitoring and publication. Fresh scoped account metadata is compared
 immediately before disclosure and after return. See the exact
 [worker authority checks and limits](BACKGROUND_WORKER_AUTHORITY.md).
+The same current queue/run intersection now also guards
+[trusted final assembly, independent checks and review creation](BACKGROUND_FINAL_AUTHORITY.md).
 
 Existing Build configuration, current runtime/source qualification, independent
 checks, privacy/permission and exact plan acceptance remain mandatory. The owner

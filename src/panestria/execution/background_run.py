@@ -1,10 +1,11 @@
 """One explicit finite preferred-provider job, no daemon, fallback or auto-merge."""
 
 from typing import Any
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from panestria.contracts.background_run import BackgroundRun
 from panestria.contracts.build import canonical_sha256
+from panestria.contracts.goal import contract_sha256, load_contract
 from panestria.contracts.hardware import HardwareManifest
 from panestria.contracts.native_tools import ToolScope
 from panestria.contracts.plan import StoredPlan
@@ -85,6 +86,29 @@ class BackgroundPlanRunner(NativePlanRunner):
                 self.service.authorize_worker(UnitOfWork(c), self.owner.actor, run, scope, observation_sha256=digest)
 
         return WorkerAuthority(canonical_sha256({"run": run.sha256(), "scope": scope.sha256()}), authorize, refresh)
+
+    def _integration_authority(self, job: Scheduled) -> WorkerAuthority:
+        with self.owner.connect() as c:
+            row = c.execute(
+                "SELECT c.body FROM panestria.task t JOIN panestria.goal_contract c ON c.id=t.contract_id "
+                "WHERE t.id=%s",
+                (job.lease.task_id,),
+            ).fetchone()
+            if row is None:
+                raise KernelDenied("background_worker_binding_required")
+            contract = load_contract(row[0])
+        return self._worker_authority(
+            job,
+            ToolScope(
+                owner_id=UUID(self.owner.actor.owner_id),
+                project_id=UUID(self.owner.actor.project_id),
+                task_id=UUID(job.lease.task_id),
+                attempt_id=UUID(job.lease.attempt_id),
+                lease_epoch=job.lease.epoch,
+                contract_sha256=contract_sha256(contract),
+                policy_ref=contract.autonomy_profile_ref,
+            ),
+        )
 
     def run_item(self, *, allow_background_subscription_run: bool) -> dict[str, Any]:
         if allow_background_subscription_run is not True:
