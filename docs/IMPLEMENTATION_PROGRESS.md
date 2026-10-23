@@ -18,7 +18,7 @@ already delivered components.
 | Build | Canonical plans, scoped one/two-worker execution, conflicts/final-tree checks, finite repairs, exact owner review/merge | Broader adapter/DAG compatibility and complete B-1/gates |
 | Delegate | Question/query staging, explicit collection, retained excerpts, local draft and owner claim review | Actual search is owner-deferred; qualified support/iterative planning and complete D-1/G2 remain |
 | Personal platform | Reviewed quota queue, finite runner/controller, offline confirmed-result references, local profile/context and exact connection declaration review/revoke terminal | Actual connection broker/account/enrollment/conformance, remaining context/capture/rights integration and qualification |
-| Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
+| Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build/research metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
 | Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |
 
 The opt-in storage terminal integration is now merged; desktop/mobile resource
@@ -30,6 +30,14 @@ now supplies private setup/serving, exact owner review/recovery and fresh-policy
 revocation. It connects no account/folder/tool; actual broker, verified enrollment,
 phone, qualified Delegate and cumulative evidence work remain. Saved metrics are descriptive; unknown
 accuracy/cost/time/source never becomes a passing gate.
+
+[Research capture](testing/RESEARCH_RUNTIME_METRICS.md) now saves existing retained
+draft lifecycle/token measurements and canonical collection receipt counts, with
+latest exact owner judgments in a separate OWNER_REPORTED scope. It starts no
+model/search request and changes no database state; missing semantic accuracy,
+cash, model-only timing and runtime build source remain UNKNOWN. Source-bound
+component checks and original collection errors stay preserved. Full tracing,
+exposure, resources and domain/release qualification remain open.
 
 The latest Mission Control delivery now provides distinct explicit offline Ask,
 PUBLIC Delegate question staging, PUBLIC Build plan staging and separate exact

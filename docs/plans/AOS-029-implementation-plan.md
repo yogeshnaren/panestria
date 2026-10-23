@@ -123,3 +123,15 @@ reads, reported numeric values, unknown quality/source/time and no inference.
 [Actual PG/HTTP/CLI component evidence](../../evidence/ask-runtime-metrics-2026-10-22/report.json)
 uses declared synthetic keys/model/capacity. This is partial S2; automatic
 instrumentation, exposure/React/OTel and original cases/gates remain pending.
+
+## Canonical research measurements and owner-reported judgments
+
+[Research runtime metrics](../testing/RESEARCH_RUNTIME_METRICS.md) now connects
+existing validated retained drafts, canonical event intervals/receipt outcomes
+and latest exact owner-review counts to the same private history. It preserves
+OWNER_REPORTED scope and undefined/missing denominators; semantic accuracy,
+actual cash and model-only timing remain unknown. The command creates no model,
+search, state write, judgment or training right. [Original component evidence](../../evidence/research-runtime-metrics-2026-10-23/report.json)
+uses actual PG/CAS/reader/CLI with explicit model/transport/dispatch fixtures.
+S2 remains partial; tracing/exposure/UI, resource samples, domain baselines and
+original gates/owner acceptance above remain open.

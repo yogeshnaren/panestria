@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "outcome": "RESEARCH_DERIVED_METRICS_COMPONENT_NOT_DOMAIN_QUALITY_OR_RELEASE",
+  "observations": [
+    {
+      "file": "connected.xml",
+      "sha256": "d253206eacdd570b098a348acce4487982f69b4928a544668beab2f484fc1f9a",
+      "source_commit": "63acd4d7662926c844b0d04d52e30a647830cbf2",
+      "source_tree": "91d8c15c549aff9a6f4c1420bb796d95febaf11d",
+      "worktree": "CLEAN",
+      "scope": "Collection error: nonexistent history test filename; zero cases executed, not PASS.",
+      "result": {
+        "tests": "0",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "0.002"
+      }
+    },
+    {
+      "file": "connected-history.xml",
+      "sha256": "dcecb37e7cea4591d0c0ca5cd739c634423ffe2fda01cace11e1a3512afcbf25",
+      "source_commit": "63acd4d7662926c844b0d04d52e30a647830cbf2",
+      "source_tree": "91d8c15c549aff9a6f4c1420bb796d95febaf11d",
+      "worktree": "CLEAN",
+      "scope": "14PASS: two focused actual PG/CAS/reader/CLI metrics journeys, two unchanged owner-review checks and ten existing performance-history cases. Explicit synthetic model/transport and dispatch-metadata fixtures; no live provider/model/search inference.",
+      "result": {
+        "tests": "14",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "19.238"
+      }
+    }
+  ],
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS (334 source files before PR189 merge)",
+    "import_boundaries": "11 KEPT",
+    "secret_scan": "PASS"
+  },
+  "limits": [
+    "Completed current validated retained drafts only; stale/cancelled/unavailable inputs refuse; existing project/task locks but no database writes.",
+    "Lifecycle event timestamps include controller/startup/inference/validation/retention, are wall-clock based and are not model-only/end-to-end latency or p95.",
+    "Canonical receipt counts/reserved bytes are not source truth, actual received bytes, upstream usage or retrieval recall.",
+    "Owner verdicts remain OWNER_REPORTED; absent or all-NOT_FACTUAL judgments have no defined supported/contradicted score. Semantic accuracy and actual cash stay unmeasured.",
+    "Private bounded history; no prompt/question/URL/passage/answer/rationale/credential/private text fingerprint copied, no storage deletion.",
+    "No live model/search/provider call, new credential, owner service/database/cache change, full tracing/exposure/domain baselines, training permission, G1/G2/G3 or owner trial promotion."
+  ]
+}

@@ -109,8 +109,8 @@ this same provenance discipline before calling it qualified:
 Keep provider/hardware/model/runtime/contract/corpus/policy settings as cohort
 keys, with numerator/denominator and missing-data reasons. Compare compatible
 cohorts; preserve failed observations and original evidence. Full release gates
-and the real owner trial remain separate. Broader scheduled MVP work is paused;
-these explicit metrics and mutation tasks do not restart it.
+and the real owner trial remain separate. Capturing observations enables no
+background inference or new provider permission.
 
 ## Measurements from existing Ask receipts
 
@@ -118,5 +118,13 @@ these explicit metrics and mutation tasks do not restart it.
 ordinary/profile receipt and retains reported generation/first-content/decode/
 token/cash values in this same private history without another inference. Missing
 accuracy/cash/source/time remain unknown, and one case is not a distribution.
+
+## Measurements from retained research drafts
+
+[Explicit research capture](RESEARCH_RUNTIME_METRICS.md) now saves canonical
+synthesis lifecycle/token measurements and collection receipt counts, with
+latest owner-reported claim judgments in a separate scope. It performs no new
+inference/search or database mutation. Missing quality/cash remains UNKNOWN;
+owner judgments are not a measured accuracy score or automatic qualification.
 No private content or output/input hash is copied. Automatic instrumentation,
 latency distributions, quality, OTel/exposure and original gates remain open.
