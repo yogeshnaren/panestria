@@ -18,6 +18,7 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.plan_revisions import PlanRevisionService
 from panestria.kernel.repair_intents import repair_ledger
 from panestria.kernel.uow import UnitOfWork
+from schema_support import current_schema_revision
 
 
 @pytest.mark.parametrize("prepared_plan", [{"wall_seconds": 1800}], indirect=True)
@@ -316,7 +317,7 @@ def test_unknown_repair_backup_restore_preserves_charges_unique_slots_and_refuse
             )
             assert refused.returncode != 0 and b"repair I/O audit exists" in refused.stderr
             with psycopg.connect(restored) as c:
-                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == ("0037_repair_draft_intents",)
+                assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (current_schema_revision(),)
                 assert repair_ledger(UnitOfWork(c), owner.actor, parent.proposal.goal_id) == ledger
         finally:
             admin.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name)))
