@@ -3005,7 +3005,10 @@
         "src/panestria/contracts/entitlement.py",
         "src/panestria/kernel/background.py",
         "src/panestria/learning/recorder.py",
-        "src/panestria/memory/offline_results.py"
+        "src/panestria/memory/offline_results.py",
+        "src/panestria/contracts/curation.py",
+        "src/panestria/learning/curation.py",
+        "src/panestria/cli/examples.py"
       ],
       "planned_test_file": "tests/e2e/test_mvp_x11.py",
       "case_ids": [
@@ -3020,10 +3023,11 @@
       "status": "IN_PROGRESS",
       "evidence_refs": [
         "evidence/offline-build-reference-2026-10-21/report.json",
-        "evidence/offline-build-recall-2026-10-23/report.json"
+        "evidence/offline-build-recall-2026-10-23/report.json",
+        "evidence/curated-example-rights-2026-10-23/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Confirmed PUBLIC Build offline archive capture/restore plus separately reviewed bounded local MemoryService recall/suppression delivered as components; no automatic memory or training promotion. Ordinary Ask retrieval/dedup/policy/correction fences pass. Actual cached CPU recalled the correct value but failed number-only formatting; original failure preserved, no quality/release pass. Broader candidate/Ask/Delegate capture, model identity and separately ALLOWED training-purpose examples/rights remain pending. S5 unfinished; no whole TC08/TC09 promotion."
+      "scope_note": "Confirmed PUBLIC Build offline archive capture/restore plus separately reviewed bounded local MemoryService recall/suppression delivered as components; no automatic memory or training promotion. Ordinary Ask retrieval/dedup/policy/correction fences pass. Actual cached CPU recalled the correct value but failed number-only formatting; original failure preserved, no quality/release pass. Broader candidate/Ask/Delegate capture, model identity and separately ALLOWED training-purpose examples/rights remain pending. S5 unfinished; no whole TC08/TC09 promotion. Separate canonical PG owner-original example rights/validation/purpose review, withdrawal, bounded local export and copied-file validation delivered. Evidence is OWNER_ATTESTED, not automatic legal/semantic certification. PUBLIC-only no-provider/model lane; old reference rights unchanged. Broader private/provider data, capture and full TC08/TC09 remain pending."
     },
     {
       "id": "AOS-012-S7",

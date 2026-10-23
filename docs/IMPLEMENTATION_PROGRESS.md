@@ -5,6 +5,22 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+## Current separately reviewed owner examples
+
+The [curation workflow](testing/CURATED_EXAMPLES.md) now records exact separate
+PUBLIC owner-origin, rights and validation attestations, with independent local
+training-data-purpose consent. Same-Postgres immutable decisions, current policy,
+original expiry, latest denials and withdrawal fence local packet export and
+copied-file validation. Read-only inspection supports recovery. UNKNOWN origin
+stays distinct; recorded exact-content model provenance cannot be cleared by
+relabeling it in this project. No trainer/provider/reference-rights promotion.
+[Evidence](../evidence/curated-example-rights-2026-10-23/report.json) preserves actual
+PG/CLI/files with synthetic attestations, a detected withdrawal-guard mutation,
+the stale schema snapshot failure/correction and four final connected passes.
+Owner attestations are not legal/semantic certification. Existing Build archives
+stay UNKNOWN/export DENIED; private/provider examples, broader capture and full
+TC08/TC09/S6/G3/trial qualification remain open. Owner review DBs were not migrated.
+
 ## Current saved performance overview
 
 The [runtime overview](testing/PERFORMANCE_OVERVIEW.md) now combines explicitly

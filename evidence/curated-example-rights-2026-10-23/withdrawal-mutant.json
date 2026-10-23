@@ -1,0 +1,11 @@
+{
+  "kind": "ONE_EXPLICIT_WITHDRAWAL_GUARD_REMOVAL",
+  "source_commit": "aeca8005c8bfd6a0e1ad13f824c98366b5bd933b",
+  "source_tree": "8bbd58e2be481172dc151d51b0b3fd628be9ee98",
+  "file": "src/panestria/learning/curation.py",
+  "original_sha256": "24fdec84d2a59544fd44a7d8a051fd5afcbcca9d1af4c1cda134de4396d8dcef",
+  "mutant_sha256": "b74c873b1d7738504c677af6618b5d42b30f0a9dd51c92fbeedd89685f242d9f",
+  "expected": "FUNCTIONAL_TEST_FAILURE_NOT_PRODUCTION_PASS",
+  "exit_code": 1,
+  "source_restored_exactly": true
+}

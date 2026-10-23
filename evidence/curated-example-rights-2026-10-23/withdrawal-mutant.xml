@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="7.241" timestamp="2026-10-23T03:36:44.295047-07:00" hostname="yogesh-verisim"><testcase classname="tests.integration.test_example_curation" name="test_exact_separate_consent_concurrent_replay_and_offline_export_restore_cli" file="tests/integration/test_example_curation.py" line="107" time="6.619"><failure message="Failed: DID NOT RAISE KernelDenied">curation = namespace(actor=&lt;panestria.kernel.goals.Actor object at 0x7d9ecae460f0&gt;, service=&lt;panestria.learning.curation.ExampleC...nestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_lease_migration_a28a33833e114f22af39c5a07a40051b')
+
+    def test_exact_separate_consent_concurrent_replay_and_offline_export_restore_cli(curation):
+        f = curation
+        candidate, proofs = files(f)
+        assert f.service.prepare(candidate, ())["preview"]["proposed_eligibility"] == "UNKNOWN"
+        args = [str(candidate)]
+        for path in proofs:
+            args += ["--evidence", str(path)]
+        review = cli(f, "prepare", *args)
+        digest = review["review_sha256"]
+        assert review["preview"]["training_export"] == "DENIED_UNTIL_SEPARATE_OWNER_CONFIRMATION"
+        cli(f, "record", str(candidate), digest, expected=1)
+        record_args = [str(candidate), digest, *args[1:], "--confirm-owner-review"]
+        cli(f, "record", *record_args, expected=1)  # Ordinary owner review is not training-purpose consent.
+        with pytest.raises(KernelDenied, match="exact_review"):
+            f.service.record(candidate, proofs, "ff" * 32, confirm_owner_review=True, accept_training_data_purpose=True)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            results = list(
+                pool.map(
+                    lambda _: f.service.record(
+                        candidate, proofs, digest, confirm_owner_review=True, accept_training_data_purpose=True
+                    ),
+                    range(2),
+                )
+            )
+        assert sorted(r["replayed"] for r in results) == [False, True]
+        assert all(r["current"] and r["eligibility"] == "ALLOWED" for r in results)
+        with f.service.connect() as c:
+            saved = c.execute("SELECT expires_at,seq FROM panestria.curated_example_review").fetchall()
+            assert len(saved) == 1
+        cli(f, "record", *record_args, "--accept-training-data-purpose")
+        with f.service.connect() as c:
+            assert c.execute("SELECT expires_at,seq FROM panestria.curated_example_review").fetchall() == saved
+        output = f.directory / "examples.json"
+        assert cli(f, "export", "--review", digest, str(output))["examples"] == 1
+        original = output.read_bytes()
+        assert output.stat().st_mode &amp; 0o777 == 0o600
+        copy = f.directory / "restored.json"
+        copy.write_bytes(original)
+        copy.chmod(0o600)
+        assert cli(f, "validate-export", str(copy))["status"] == "CURRENT_ELIGIBILITY_CONFIRMED"
+        assert json.loads(original)["entries"][0]["example"]["response"] == "Three."
+        cli(f, "export", "--review", digest, str(output), expected=1)
+        assert output.read_bytes() == original
+        tampered = json.loads(original)
+        e = tampered["entries"][0]
+        e["fold"] = "development" if e["fold"] == "holdout" else "holdout"
+        private(copy, tampered)
+        cli(f, "validate-export", str(copy), expected=1)
+        with pytest.raises(KernelDenied, match="not_found"):
+            ExampleCuration(Actor(f.actor.owner_id, str(uuid4())), f.dsn).withdraw(digest, confirm=True)
+        # Isolate withdrawal itself while policy and the positive review still permit use.
+        assert f.service.validate_export(output)["status"] == "CURRENT_ELIGIBILITY_CONFIRMED"
+        f.service.withdraw(digest, confirm=True)
+&gt;       with pytest.raises(KernelDenied, match="current_eligibility"):
+E       Failed: DID NOT RAISE KernelDenied
+
+tests/integration/test_example_curation.py:161: Failed</failure></testcase></testsuite></testsuites>
