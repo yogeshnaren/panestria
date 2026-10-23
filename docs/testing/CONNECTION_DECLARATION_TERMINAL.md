@@ -5,6 +5,13 @@ an account/folder, import chats or enable a tool. Every result explicitly says
 DECLARATION_ONLY, conformance UNVERIFIED and `runtime_available: false`.
 Actual account/broker/conformance integration remains required for R3.
 
+Explicit runtime integrations now use this same ledger: [anonymous PUBLIC fetch](PUBLIC_FETCH_CONNECTION.md)
+and [selected native account/context Build](NATIVE_CONNECTION_GRANTS.md). Their
+separate runtime selection/current-policy checks can refuse future work after a
+revocation. This review service itself launches no connector, and an UNVERIFIED
+declaration remains distinct from qualified runtime authority. Read the selected
+integration's scope, budget units, limits and setup before using it.
+
 Use current main with locked dependencies installed. The database must already
 be migrated and contain an existing owner, project, task and initialized project
 policy, such as your existing [Build project](OWNER_BUILD_CLI.md). Use its unchanged
