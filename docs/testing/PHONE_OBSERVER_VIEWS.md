@@ -60,3 +60,8 @@ self-signed test certificate. Its browser bypass is solely for UX emulation;
 the same server's TLS is separately checked with the fixture CA. This is not a
 real-phone trust/private-network test. AOS-028-TC08, remaining adversarial/device
 qualification and cumulative G3/owner trial remain open.
+
+Rapid restart permits a stopped socket's TIME_WAIT state to retire without
+waiting for its natural timeout, using [Python's documented SO_REUSEADDR behavior](https://docs.python.org/3/library/socket.html#example).
+A competing live listener is still refused; no port sharing or service termination
+is enabled.

@@ -22,7 +22,9 @@ optional read-only PUBLIC Build evidence. A connected mobile-viewport journey
 passed across actual test-server stop/restart, device offline/reconnect,
 background-event clearing and canonical revocation. Its [source-bound evidence](../evidence/phone-observer-views-2026-10-23/report.json)
 retains the initial unsafe agent-checkout permission failures and their correction;
-native/auth/capacity and visibility are explicit fixtures. Actual target-phone/
+native/auth/capacity and visibility are explicit fixtures. Initial CI also caught
+a same-port server restart failure; stopped-socket reuse now preserves exclusive
+live binding and the corrected five-case phone batch passes. Actual target-phone/
 private-network trust, remaining adversarial/resource integration and TC08/G3
 remain pending. No whole S4-S6 or owner acceptance is claimed.
 
