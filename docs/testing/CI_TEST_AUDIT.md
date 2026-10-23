@@ -187,3 +187,16 @@ Run lanes sequentially on one workstation because fixtures use fixed disposable
 ports. `--list` prints the full partition; `--collect-only` checks a lane without
 starting its fixtures. Required live tests must still run separately under their
 existing authorization and environment requirements.
+
+## Framed-input SIGKILL observation correction (2026-10-23)
+
+PR189's original platform run39876295510 exposed a default-test assumption:
+Docker retained ExitCode137/OOMKilled=false after bounded metadata settlement,
+and production truthfully returned process_failed. The existing pressure case
+now requires stopped exit137, daemon-consistent reason/flag, bounded output/time
+and exact cleanup for both confirmed and unconfirmed OOM observations. No test
+is added, deferred or removed. It cannot turn an unconfirmed cause into a proven
+memory-limit result. The separate live AOS-008-TC03 memory assertion still
+requires memory_limit unchanged; neither default CI nor injected metadata passes
+that gate. [Original failure and affected checks](../../evidence/sandbox-oom-observation-2026-10-23/report.json)
+retain their source hashes. Production behavior and settlement bounds are unchanged.
