@@ -41,7 +41,6 @@ def mount_mission_control(
                 storage_mode,
                 offline_ask,
                 research_intake,
-                build_evidence_store,
                 build_review_root,
                 build_intake,
                 build_plan_review,
@@ -117,6 +116,13 @@ def mount_mission_control(
             if not data or len(data) > maximum:
                 raise LocalApplicationRejected("mission_build_required")
             assets[name] = data
+        if phone_access is not None:
+            marker = b'<div id="root"></div>'
+            if assets["index.html"].count(marker) != 1:
+                raise LocalApplicationRejected("phone_observer_build_required")
+            assets["index.html"] = assets["index.html"].replace(
+                marker, b'<div id="root" data-phone-observer="true"></div>'
+            )
     except OSError:
         raise LocalApplicationRejected("mission_build_required") from None
     if run_service is not None:
@@ -206,6 +212,7 @@ def mount_mission_control(
         ),
     )
     app.state.mission_build_sha256 = hashlib.sha256(b"".join(assets.values())).hexdigest()
+    app.state.private_phone_enabled = phone_access is not None
 
     @app.get("/", include_in_schema=False)
     def index() -> Response:

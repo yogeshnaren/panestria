@@ -3119,10 +3119,12 @@
         "AOS-028-TC08"
       ],
       "target_developer_days": 1,
-      "status": "NOT_STARTED",
-      "evidence_refs": [],
+      "status": "IN_PROGRESS",
+      "evidence_refs": [
+        "evidence/phone-observer-views-2026-10-23/report.json"
+      ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code."
+      "scope_note": "Responsive private observer labels, canonical attention inbox/task timeline, optional existing read-only PUBLIC Build metadata and monotonic last-seen/stale/offline/reconnect/background clearing delivered as a component. Actual mobile-viewport CLI/TLS/PG/Chromium journey passes after correcting unsafe agent-checkout script permissions; original failures retained. Native/auth/capacity and visibility are fixtures. No owner phone/network trust configured. Unified resource views, full adversarial/device and actual TC08/G3/owner trial remain pending."
     },
     {
       "id": "AOS-028-S6",

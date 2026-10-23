@@ -1694,6 +1694,11 @@
             "title": "Plan Acceptance Enabled",
             "type": "boolean"
           },
+          "private_phone_enabled": {
+            "default": false,
+            "title": "Private Phone Enabled",
+            "type": "boolean"
+          },
           "research_intake_enabled": {
             "default": false,
             "title": "Research Intake Enabled",

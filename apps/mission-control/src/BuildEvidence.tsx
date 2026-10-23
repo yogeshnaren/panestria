@@ -6,9 +6,9 @@ export function BuildEvidence({goal,owner,project,deny}:{goal:string,owner:strin
   const [open,setOpen] = useState(false);
   const [view,setView] = useState<Evidence|null>(null);
   const [fresh,setFresh] = useState(false);
-  const [now,setNow] = useState(Date.now());
+  const [now,setNow] = useState(performance.now());
   const [validatedAt,setValidatedAt] = useState(0);
-  useEffect(()=>{if(!open)return; const timer=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(timer);},[open]);
+  useEffect(()=>{if(!open)return; const timer=setInterval(()=>setNow(performance.now()),1000);return()=>clearInterval(timer);},[open]);
   const [notice,setNotice] = useState('');
   useEffect(()=> {
     setOpen(false);setView(null);setFresh(false);setNotice('');
@@ -27,7 +27,7 @@ export function BuildEvidence({goal,owner,project,deny}:{goal:string,owner:strin
           !Number.isSafeInteger(page.required_checks_total) || !Number.isSafeInteger(page.required_checks_passed) ||
           page.required_checks_passed<0 || page.required_checks_total<page.required_checks_passed)
           throw new Error('Unconfirmed progress.');
-        setView(page);setFresh(true);setValidatedAt(Date.now());setNotice('Protected evidence rechecked.');
+        setView(page);setFresh(true);setValidatedAt(performance.now());setNotice('Protected evidence rechecked.');
       } catch(error) {
         if(stop.signal.aborted) return;
         setFresh(false);setView(null);

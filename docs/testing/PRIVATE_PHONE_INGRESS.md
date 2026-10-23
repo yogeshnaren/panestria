@@ -88,5 +88,7 @@ and never automatically deleted.
 use real CLI/PG/TLS/cookies and a temporary synthetic test CA on loopback. They do
 not establish compatibility with your phone, certificate trust store or private
 network. The peer/clock/configuration failure checks include explicit fixtures.
-Protected Build evidence-store integration, full responsive/stale/offline/reconnect/device qualification and TC05–TC08/G3
+The separate [observer view guide](PHONE_OBSERVER_VIEWS.md) covers an optional
+existing PUBLIC Build evidence store and mobile last-seen/stale/offline/reconnect
+behavior. Actual target-device/private-network qualification and TC05–TC08/G3
 acceptance remain separate. No browser background-push delivery is claimed.

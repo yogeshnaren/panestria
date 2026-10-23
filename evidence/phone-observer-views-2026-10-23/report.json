@@ -1,0 +1,169 @@
+{
+  "kind": "private_phone_observer_views_component",
+  "base_commit": "bd509152cba72b55a00cacaf77ec2c3d42f855fb",
+  "reports": [
+    {
+      "file": "initial.xml",
+      "sha256": "5deee810086399bac51dc26d94fdeb1993afd88681b93a84b54955873980b300",
+      "source_commit": "84b00754beee49e55103ee2fc9b9b8003bc3286e",
+      "source_tree": "1592e943e625faa53daf49aecd52fe6a8638838f",
+      "worktree_state": "clean",
+      "result": {
+        "tests": "6",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "22.402"
+      },
+      "diagnostic_instrumentation": false
+    },
+    {
+      "file": "diagnostic.xml",
+      "sha256": "0ae981db2faec35bf001768f1f5b70565be3d6b02501ac8b31da4ba51b04ea69",
+      "source_commit": "84b00754beee49e55103ee2fc9b9b8003bc3286e",
+      "source_tree": "1592e943e625faa53daf49aecd52fe6a8638838f",
+      "worktree_state": "clean",
+      "result": {
+        "tests": "1",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "9.525"
+      },
+      "diagnostic_instrumentation": true
+    },
+    {
+      "file": "tool-diagnostic.xml",
+      "sha256": "bab0f85325d75d356594cc1499853a60fa95967240544bf06044089f400ad02e",
+      "source_commit": "84b00754beee49e55103ee2fc9b9b8003bc3286e",
+      "source_tree": "1592e943e625faa53daf49aecd52fe6a8638838f",
+      "worktree_state": "clean",
+      "result": {
+        "tests": "1",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "9.993"
+      },
+      "diagnostic_instrumentation": true
+    },
+    {
+      "file": "corrected-permissions.xml",
+      "sha256": "ee249385a0cadd11e79252e37ccba6d5ed9184e7723981084437aaf6951e426b",
+      "source_commit": "84b00754beee49e55103ee2fc9b9b8003bc3286e",
+      "source_tree": "1592e943e625faa53daf49aecd52fe6a8638838f",
+      "worktree_state": "dirty",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "39.998"
+      },
+      "diagnostic_instrumentation": false
+    },
+    {
+      "file": "readable-layout.xml",
+      "sha256": "5c238a64aacb9a6c8d13a30a3a699fd8e97249f602446acba9d9434e665e4d0e",
+      "source_commit": "dc9cef076f159d069e8b9c800c39b6be4b30971d",
+      "source_tree": "b7694098470e7c592a10aad7b4edcf7c96dac478",
+      "worktree_state": "clean",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "39.849"
+      },
+      "diagnostic_instrumentation": false
+    },
+    {
+      "file": "actual-viewport.xml",
+      "sha256": "0826136affd941fe279352cc45e014eefd0985873f151ebec18d0d54e1dae38b",
+      "source_commit": "0c6970f7b4a19825cee173a6bf861b0ccf8cf27c",
+      "source_tree": "bd5dade08c871b47b5f880d2933f5cb2ffb2dad2",
+      "worktree_state": "clean",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "40.247"
+      },
+      "diagnostic_instrumentation": false
+    },
+    {
+      "file": "restart-fix.xml",
+      "sha256": "eb02c27081b743f07707ed040d999025b893adfaaf29269383ac35465908077b",
+      "source_commit": "f121fb29cc31c7175e7d90fe75a5229bce00638c",
+      "source_tree": "9728c48f8ff739593dffa168b72dcef049712e40",
+      "worktree_states_observed": [
+        "clean"
+      ],
+      "result": {
+        "tests": "5",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "52.866"
+      },
+      "diagnostic_instrumentation": false
+    }
+  ],
+  "originals_subdirectory": "outputs/phone-observer-views-2026-10-23",
+  "fixture_sources": {
+    "tests/integration/test_phone_observer_browser.py": "ae28119e28e6fc169b042479674670b06607da679165e0cc3c5795c5c5089ead",
+    "apps/mission-control/tests/phone-observer.mjs": "2af81bc7221801c000fff4b8d8e7874f704a5d43203e00b20ce8b56c7956480b",
+    "src/panestria/config_phone.py": "bef846e4264423a81ec86b90cd5964deadb40618cdebdf29f1b69b8314d312d6",
+    "src/panestria/api/phone.py": "55220c3de7d5a20e9449285139917777c94b9e0ffa3769b124828d4f57a97e95",
+    "src/panestria/api/mission_web.py": "e03cc5f86726c3ff16884bc60d7ec88c1e72f121d9603a4cdb01722826bdcb94",
+    "apps/mission-control/src/main.tsx": "0f3b451c5f36c4246ae93c62f9a4b71cd176378e39354569e4ed45dd4ccdfb0b",
+    "apps/mission-control/src/BuildEvidence.tsx": "05d6f9ae4d66c891864dcb7fd2e6958ca685ec2da4f226df4cdd9976dcba2d42",
+    "apps/mission-control/src/ReviewInbox.tsx": "bc97ee15b2b43d5a5b3af7c2ec219aa7cc56dfe78b7a087d4676d9055b38af30",
+    "uv.lock": "7292da3d0efcea78cda08efe5b2888cfcbc71653c1ce41f360af3c5af9d1fb25",
+    "apps/mission-control/package-lock.json": "377abc70c29d26e435c0a1aacada5c9259cc4ddbcc5fbc6ba3c59a183f43d026"
+  },
+  "observations": [
+    "Actual disposable CLI/TLS/PG/canonical device pairing and protected Build evidence with a 390px mobile touch Chromium viewport. Native/auth/capacity are explicit fixtures; two tools and independent final checks execute through real MCP/Git/Docker.",
+    "Initial 6-case run: 5 PASS, 1 failed because agent-owned checkout runtime scripts were group-writable. Two diagnostic runs preserve the same failure; the traced cause was GatewayRejected unsafe_command_script. Production refused the unsafe script correctly. Only agent-owned tracked runtime group/other-write bits were removed; source bytes and guards did not change.",
+    "Corrected environment: one complete connected browser journey PASS in39.998s. Pair -> inspect -> fixture workers/protected final checks -> pending action inbox; actual foreground server stop/stale/hidden evidence, restart with original grant, device offline/online, explicit visibility clear/recheck, local canonical revocation/cleared views. No task events added by observation/revocation.",
+    "Corrected browser run had only tracked/untracked guide edits pending; production/test code matched84b0075. Initial and diagnostic source were Git-clean but included unsafe local permission bits not represented by Git. Original XML/source identities retained, not relabeled for later commits.",
+    "Browser self-signed TLS bypass is an explicit UX fixture; HTTPX independently verifies the same loopback server with the temporary synthetic CA. No OS/phone CA trust installed. No raw source/store/private intent, persistent project browser storage or service worker. The initial layout predicate compared mobile-expanded innerWidth and did not establish actual viewport fit; physical screenshot review caught cramped columns and overflowing long metadata.",
+    "Phone-only horizontal table scrolling and arbitrary long metadata wrapping correct the physical screenshot defects. At clean0c6970f the complete connected journey passes40.25s with document scrollWidth bounded by the selected390px viewport, independently of expanded mobile innerWidth. Screenshot mobile-viewport.png was visually reviewed. Earlier dc9cef0 browser PASS39.85s retained separately; it did not yet include the corrected viewport assertion.",
+    "First exact-head CI39981578894 at4407ac6: quality/fast/kernel/research PASS; platform had one failure on restarted phone server exit2, so overall FAIL. Original4XML/run/PR/selection saved under outputs/r3-build-ci-2026-10-20/pr202/attempt-1. The original assertion did not retain the startup diagnostic; TCP TIME_WAIT is an inferred cause, not a logged finding. The repair uses SO_REUSEADDR with exclusive bind/listen, no SO_REUSEPORT, and adds a competing-live-listener refusal plus bounded startup error reporting. Passing replacement CI is required before merge.",
+    "Restart repair f121fb2: all5 connected phone/browser/desktop/TLS/schema cases PASS52.87s. The journey explicitly refuses a competing live listener then stops/restarts the original port and recovers under the original canonical grant. Only this report was edited during the batch; production/test bytes remained f121fb2. Actual viewport visual evidence remains separately bound to0c6970f; no new screenshot/qualification is invented for the socket-only repair."
+  ],
+  "quality": {
+    "source_commit": "84b00754beee49e55103ee2fc9b9b8003bc3286e",
+    "ruff": "PASS",
+    "mypy_source_files": 350,
+    "import_boundaries_kept": 11,
+    "secret_scan": "PASS",
+    "typescript_and_vite": "PASS_CACHED_DEPENDENCIES_NO_DOWNLOAD",
+    "log_sha256": "6ca04dae11977ac2241d602fbdec9e913f2d7674e5cea73984f1426ece985466"
+  },
+  "limits": [
+    "No actual target phone/private-network/certificate trust or real OS-background suspension qualification; TC08 NOT_RUN. Visibility is an explicit document event fixture.",
+    "One-hour grant/closed server route policy from S4 remains. Optional read-only store selection changes config identity and needs separate pairing. No owner database/service/configuration/network/certificate/profile was changed.",
+    "No provider/API/model inference, paid usage, storage deletion, backup/driver changes or background enablement. Billing consent remains stale/background OFF and SDKTC04 DEFERRED.",
+    "Unified resource/other review families and cumulative G1/G2/G3/real owner trial remain pending. No whole S4-S6 or release case pass inferred from components."
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "actual_phone_qualification": "NOT_RUN",
+  "fixture_sources_commit": "84b00754beee49e55103ee2fc9b9b8003bc3286e",
+  "screenshots": [
+    {
+      "file": "mobile.png",
+      "sha256": "17a8580214ff3453fff8ac7de1f52ed63d06425894050329b0207423bd5b9d16"
+    },
+    {
+      "file": "mobile-readable.png",
+      "sha256": "c94992760980ddd5d72d20d73cfcb3e2d5821e75a60848f46f623adf2ce3436d"
+    },
+    {
+      "file": "mobile-viewport.png",
+      "sha256": "11f5071ba4cdb6b40ca142e4683661955fa8bd38752478bd6abdd1d499999a2c"
+    }
+  ],
+  "reference": "https://docs.python.org/3/library/socket.html#example"
+}

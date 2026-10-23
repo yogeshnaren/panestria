@@ -29,6 +29,7 @@ class PhoneSettings(ActivitySettings):
     allowed_clients: tuple[str, ...] = Field(min_length=1, max_length=8)
     certificate_file: Path
     key_file: Path
+    build_evidence_store: Path | None = None
 
     @field_validator("bind_address")
     @classmethod
@@ -70,6 +71,13 @@ def load_phone_settings(path: Path) -> tuple[PhoneSettings, SecretStr]:
             if not selected.is_absolute() or selected.resolve() != selected:
                 raise LocalApplicationRejected("phone_tls_path_invalid")
             read_private(selected, 65536)
+        if config.build_evidence_store is not None:
+            from panestria.config_build import _directory
+
+            try:
+                _directory(config.build_evidence_store)
+            except ValueError:
+                raise LocalApplicationRejected("phone_evidence_store_invalid") from None
         return config, SecretStr(token)
     except (ValidationError, UnicodeError, OSError):
         raise LocalApplicationRejected("invalid_phone_configuration") from None

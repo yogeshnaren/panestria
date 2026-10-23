@@ -140,7 +140,9 @@ def test_production_cli_tls_pairing_read_only_roles_revoke_and_desktop_scope(
             result = client.get("/v1/activity")
             assert result.status_code == 200 and result.json()["project_id"] == f["project"]
             assert result.json()["view_authority"] == "READ_ONLY_METADATA"
-            assert all(v is False or v == "NONE" for v in client.get("/v1/mission/capabilities").json().values())
+            capabilities = client.get("/v1/mission/capabilities").json()
+            assert capabilities.pop("private_phone_enabled") is True
+            assert all(v is False or v == "NONE" for v in capabilities.values())
             for target in ("/v1/goals", "/v1/session/code", "/v1/mission/build/plans", "/v1/profiles", "/v1/approvals"):
                 assert (
                     client.post(

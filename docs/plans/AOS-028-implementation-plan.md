@@ -112,7 +112,13 @@ default scope and refuses audit-bearing downgrade. Owner databases were preserve
 uses CLI/PG/TLS/cookies with a temporary synthetic CA, separate peer/clock fixtures,
 desktop compatibility and one detected remote-bearer mutation. This is partial
 S4 implementation, not actual phone/private-network qualification or completed
-TC05–TC08/G3. S5 responsive/stale/reconnect behavior and S6 target evidence remain.
+TC05–TC08/G3. S5 now connects [responsive observer views](../testing/PHONE_OBSERVER_VIEWS.md),
+canonical attention/task metadata and optional protected PUBLIC Build checks.
+[Mobile-viewport evidence](../../evidence/phone-observer-views-2026-10-23/report.json)
+covers actual test-server outage/restart, offline/background clearing and
+revocation, with fixture native/auth/capacity/visibility. Original unsafe local
+script-permission failures remain retained. Actual target-device/private-network
+qualification, remaining resource views and full S5/S6/TC08/G3 remain open.
 
 ## Observed backend/terminal component, 2026-10-21
 
