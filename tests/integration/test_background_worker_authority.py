@@ -108,7 +108,7 @@ def test_account_change_on_tool_return_cannot_publish_verified_result(prepared_p
     with owner.connect() as c:
         assert c.execute(
             "SELECT count(*) FROM panestria.worker_invocation i JOIN panestria.task t ON t.id=i.task_id "
-            "WHERE t.goal_id=%s AND i.kind='native-tool' AND i.state='RETURNED'",
+            "WHERE t.goal_id=%s AND i.binding->>'kind'='native-tool' AND i.state='RETURNED'",
             (plan.goal_id,),
         ).fetchone() == (1,)
     no_acceptance(owner, plan, f.base)
