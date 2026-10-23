@@ -66,7 +66,7 @@ def test_only_exact_supported_declaration_can_reach_fetch_and_reservations_are_i
         {"conformance_sha256": "de" * 32},
         {"root_refs": ("ab" * 32,)},
         {"actions": ("read",)},
-        {"data_classes": ("PERSONAL",)},
+        {"data_classes": ("INTERNAL",)},
     ):
         body = ConnectionManifest.model_validate_json(base.model_copy(update=change).model_dump_json())
         candidates.append((approved(f, body), "fetch_connection_"))
@@ -228,3 +228,18 @@ def test_cli_private_fetch_template_is_separate_from_proposal_consent_and_accoun
     args[args.index(str(output))] = str(other)
     assert runner.invoke(app, args).exit_code != 0 and not other.exists()
     assert f.state.proposals == 1 and f.state.decisions == 0
+
+
+@pytest.mark.parametrize(
+    "admitted_search",
+    [{"combined_runtime": True, "connection_budget": {"max_calls": 1, "max_bytes": HTTP_HOP_RESERVED_BYTES + 128}}],
+    indirect=True,
+)
+def test_collection_stops_before_more_queries_when_shared_connection_capacity_is_consumed(owner_question):
+    q = owner_question
+    receipt = stage(q)
+    result = collected(q, receipt, queries=("PUBLIC synthetic question", "must not send second PUBLIC query"))
+    assert result.stop_reason == "connection_limit" and task(q, receipt) == "VERIFYING"
+    assert len(q.f.server["requests"]) == len(q.calls) == 1
+    with psycopg.connect(q.f.dsn) as c:
+        assert c.execute("SELECT status FROM panestria.fetch_outcome").fetchone() == ("RETAINED",)

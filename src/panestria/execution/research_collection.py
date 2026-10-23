@@ -21,6 +21,7 @@ from panestria.execution.research_claims import ClaimStore
 from panestria.execution.research_fetch import AdmittedFetch
 from panestria.execution.research_runtime import research_runtime_versions
 from panestria.execution.search import AdmittedSearch
+from panestria.kernel.connection_broker import GrantBroker
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.leases import AttemptLease
@@ -75,8 +76,6 @@ class OwnerCollection:
         # admission checks certificate/policy/lease/grant again before effects.
         with self.connect() as c:
             PolicyService(self.lifecycle.fetch).get(UnitOfWork(c), self.actor)
-            from panestria.kernel.connection_broker import GrantBroker
-
             GrantBroker().available(UnitOfWork(c), self.actor, preflight)
         planned = tuple(
             SearchQuery(request_id=UUID(request_id), scope=initial.request.scope, query=query, privacy_class="PUBLIC")
@@ -200,7 +199,16 @@ class OwnerCollection:
         assert consumed is not None
         if consumed[0] >= binding.request.limits.max_sources:
             return "source_limit"
-        return "body_limit" if binding.request.limits.max_total_bytes - int(consumed[1]) < 2 else None
+        if binding.request.limits.max_total_bytes - int(consumed[1]) < 2:
+            return "body_limit"
+        with self.connect() as c:
+            try:
+                GrantBroker().available(UnitOfWork(c), self.actor, self._fetch_plan(binding))
+            except KernelDenied as error:
+                if error.code == "fetch_connection_budget_exhausted":
+                    return "connection_limit"
+                raise
+        return None
 
     def _excerpt(self, binding: CollectionBinding, fetch: AdmittedFetch, snapshot_id: str) -> None:
         with self.connect() as c:
