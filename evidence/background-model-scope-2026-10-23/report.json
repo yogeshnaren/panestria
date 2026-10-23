@@ -39,13 +39,28 @@
         "skipped": 0
       },
       "seconds": 0.091
+    },
+    {
+      "name": "matching-model-selection",
+      "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/background-model-scope-2026-10-23/matching-model-selection.xml",
+      "sha256": "6a1cdf52f6e5c832aff4a021fb9390cfd1516570560076ed45df82bcb2d886f0",
+      "source_commit": "121a444fd7b44702f476b8a5a57de297f5c05587",
+      "source_tree": "60eef3604e0dd56a086f71a06b1a7f2e4bb4a1ba",
+      "totals": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 48.988
     }
   ],
   "observed": [
     "Actual disposable PG/Git/MCP/Docker serial two-node selected Sonnet Build to independent final-tree checks and WAITING_APPROVAL, preserving one foreground slot. Native/model/account/billing/hardware/certificates explicitly synthetic. No owner merge or inference.",
     "Independent exact-model reserve10percent stops despite account windows40percent. Model change before admission and after two returned handoffs refuses final publication; original handoffs preserved and no approval created.",
     "Selected-model draft remains REVIEW_ONLY with UNKNOWN billing and no unknown-quota permission. Six existing finite background run regressions pass in the same batch.",
-    "Legacy policy/run bytes/hashes match serialization produced by original source8b6aef8; legacy null policy and absent run model remain unchanged. Wrong policy/run versions, aliases, other-model and missing independent window scope refuse."
+    "Legacy policy/run bytes/hashes match serialization produced by original source8b6aef8; legacy null policy and absent run model remain unchanged. Wrong policy/run versions, aliases, other-model and missing independent window scope refuse.",
+    "The selector skips a higher-priority legacy-model item and chooses the explicitly reviewed selected-model item; it neither switches models nor stalls matching work. Eight selected-scope/legacy-selection checks pass after that integration."
   ],
   "legacy_fixture": {
     "path": "tests/fixtures/background-model-legacy.json",
@@ -57,7 +72,8 @@
     "mypy": "PASS_356_SOURCE_FILES",
     "import_boundaries": "11_KEPT_0_BROKEN",
     "secret_scan": "PASS",
-    "record_basis": "Local command results; all six exact-head CI checks and final tree review required before merge."
+    "record_basis": "Local command results; all six exact-head CI checks and final tree review required before merge.",
+    "source_commit_for_final_ruff_mypy": "121a444"
   },
   "restrictions_preserved": [
     "No billing/usage observation refreshed or owner background setting enabled. Actual owner billing remains stale/background OFF.",

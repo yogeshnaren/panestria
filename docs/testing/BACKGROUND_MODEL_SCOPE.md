@@ -34,6 +34,7 @@ Unknown/stale billing, withdrawal, current foreground work, model/configuration
 change, mismatched connection/certificate/inventory/account or observed exhaustion
 stops new effects. `background_requested_model_changed` means the configured
 model and immutable item/run differ; inspect that item rather than changing it.
+The selector skips items for other models without changing settings.
 Original handoffs/receipts survive a stop; existing held-claim reconciliation
 still applies. `runs` exposes schema2/model separately from execution authority NONE.
 

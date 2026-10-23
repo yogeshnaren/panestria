@@ -27,7 +27,9 @@ percent-to-token conversion, savings claim or credit authorization is invented.
 Bounded explicitly authorized unknown best effort remains possible under existing
 rules. The shared foreground reserve, serial background worker, original wall
 budget, freshness, withdrawal, ambiguous-effect reconciliation and observed-limit
-fences are unchanged. No fallback or automatic retry is added.
+fences are unchanged. No fallback or automatic retry is added. The read-only selector filters to the
+configured model before priority/reset ordering, so an unmatched higher-priority
+item neither changes routing nor starves eligible matching work.
 
 `background draft` derives only a review request from private settings: schema2,
 exact model, account session/weekly windows plus `selected-model`. Billing stays
