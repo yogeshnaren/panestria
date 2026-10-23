@@ -181,7 +181,7 @@ already delivered components.
 | --- | --- | --- |
 | Ask | Offline terminal, approved encrypted profile/style/private examples, optional pinned local identity | Full quality/latency corpus and cumulative runtime qualification |
 | Build | Canonical plans, scoped one/two-worker execution, conflicts/final-tree checks, finite repairs, exact owner review/merge | Broader adapter/DAG compatibility and complete B-1/gates |
-| Delegate | Question/query staging, explicit collection, retained excerpts, local draft and owner claim review | Actual search is owner-deferred; qualified support/iterative planning and complete D-1/G2 remain |
+| Delegate | Question/query staging, guided manual collection/draft stages, retained excerpts and owner claim review | Actual search is owner-deferred; qualified bounded planning/support, aggregate workflow and complete D-1/G2 remain |
 | Personal platform | Reviewed quota queue, finite runner/controller, offline confirmed-result references, local profile/context, exact connection reviews and selected native account/context enforcement | General account/root/secret lifecycle and actual conformance, remaining context/capture/rights integration and qualification |
 | Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build/research metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
 | Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |
