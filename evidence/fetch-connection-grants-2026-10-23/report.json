@@ -46,6 +46,36 @@
         "skipped": "0",
         "time": "9.220"
       }
+    },
+    {
+      "file": "joint-journeys.xml",
+      "sha256": "bcc7ec8326787b9816d4384088c9ff484d4417548f8cb8ff3347c08678d50da3",
+      "source_commit": "cb8743b7c5e77e102f0fd5a6c181cf6151ee801e",
+      "source_tree": "f54539f79e978182f257af901708e045b8ac81fb",
+      "worktree": "CLEAN",
+      "scope": "12PASS: affected existing shared runtime and dedicated owner policy journeys; explicit search-only field projection and new project reviewed grant, unchanged assertions. No guard/certificate/consent bypass.",
+      "result": {
+        "tests": "12",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "48.709"
+      }
+    },
+    {
+      "file": "current-schema-startup.xml",
+      "sha256": "183a0a4993f6859ca9a316b50ee3e8fba0cf2c508eb7366ea27f671656d77bdd",
+      "source_commit": "b20a6d26e99c29c082117a2b41ff2c38a902378c",
+      "source_tree": "2c678757827b389a874e5b8dbfec0739e21db5bb",
+      "worktree": "CLEAN",
+      "scope": "30PASS: exact new schema pin at local startup; affected actual server/setup/physical Ask terminal and connection/repair audit restore/refused downgrade. Wrong-schema refusal stays strict; current revision expectation replaces stale literal. Existing model/capacity fixtures remain explicit.",
+      "result": {
+        "tests": "30",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "24.470"
+      }
     }
   ],
   "schema_generation": {
@@ -80,5 +110,16 @@
     "Declarations remain DECLARATION_ONLY/UNVERIFIED/runtime unavailable as lifecycle metadata. Current independent runtime qualification is mandatory; old configuration certificates cannot be adopted.",
     "Owner search setup remains deferred. No owner database/config/service/credential/cache/model/provider changed, downloaded or called.",
     "Full AOS-008-S4/S5/TC05-TC08, G1/G2/G3 and owner trial remain open. No source observation was relabeled for another commit."
-  ]
+  ],
+  "hosted_ci_original_failure": {
+    "pr": 192,
+    "run_id": 39902354994,
+    "source_commit": "6d7f07497e2e90b8523a732685623e1a8fd5829b",
+    "tested_preview": "1efa6838464ed14de1e90c3f3738dc21019d17d2",
+    "all_six_result": "FAILURE_NOT_MERGED",
+    "executed_cases": 2309,
+    "failed_or_errored_cases": 30,
+    "original_summary_sha256": "66bc6314e8d429628cf10801813643aadcb59a593f715fb994410cb1f2a3db58",
+    "scope": "Original four lane XML/run/selection artifacts retained. Three search projections copied fetch-only connection; one dedicated project lacked new consent. New schema pin omitted at local startup caused remaining startup/restore failures, plus one stale literal repair-schema expectation. Corrected explicit consent/projections and actual strict schema pin; no timeout, certificate, admission or assertion weakened. No blind rerun or failed merge."
+  }
 }

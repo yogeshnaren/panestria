@@ -50,6 +50,9 @@ onboarding. The [component evidence](../evidence/fetch-connection-grants-2026-10
 uses actual disposable PG/HTTP/CLI/CAS/reader with synthetic HTTPS/certificates;
 actual search/runtime qualification, general accounts/roots/secrets and full
 S4/S5/TC05–TC08/G2/G3 remain open. Historical plans/certificates are not upgraded.
+The first full task CI caught missed joint fixtures and the local startup schema
+pin; originals remain retained. The correction preserves exact wrong-schema
+refusal and adds no timeout or permission bypass.
 
 The latest Mission Control delivery now provides distinct explicit offline Ask,
 PUBLIC Delegate question staging, PUBLIC Build plan staging and separate exact
