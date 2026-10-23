@@ -192,7 +192,7 @@ class ExampleCuration:
             if preview.proposed_eligibility == "ALLOWED" and accept_training_data_purpose is not True:
                 raise KernelDenied("curation_separate_training_data_purpose_required")
             prior = c.execute(
-                "SELECT seq FROM panestria.curated_example_review WHERE review_sha256=%s "
+                "SELECT seq,expires_at FROM panestria.curated_example_review WHERE review_sha256=%s "
                 "AND owner_id=%s AND project_id=%s",
                 (digest, self.actor.owner_id, self.actor.project_id),
             ).fetchone()
@@ -216,7 +216,8 @@ class ExampleCuration:
                 row = c.execute(
                     "INSERT INTO panestria.curated_example_review "
                     "(review_sha256,owner_id,project_id,example_sha256,content_sha256,preview,eligibility,"
-                    "purpose_consent,decided_by,expires_at) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING seq",
+                    "purpose_consent,decided_by,expires_at) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
+                    "RETURNING seq,expires_at",
                     (
                         digest,
                         self.actor.owner_id,
@@ -231,6 +232,9 @@ class ExampleCuration:
                     ),
                 ).fetchone()
                 assert row is not None
+                stored_expiry = row[1]
+            else:
+                stored_expiry = prior[1]
             latest = c.execute(
                 "SELECT review_sha256 FROM panestria.curated_example_review "
                 "WHERE owner_id=%s AND project_id=%s AND content_sha256=%s ORDER BY seq DESC LIMIT 1",
@@ -243,7 +247,8 @@ class ExampleCuration:
                 "review_sha256": digest,
                 "example_sha256": subject,
                 "eligibility": preview.proposed_eligibility,
-                "current": str(latest[0]).strip() == digest,
+                "current": str(latest[0]).strip() == digest and stored_expiry > self._now(c),
+                "expires_at": stored_expiry.isoformat(),
                 "replayed": prior is not None,
                 "assessment_source": "OWNER_ATTESTED",
                 "training_started": False,

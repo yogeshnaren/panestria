@@ -245,6 +245,8 @@ def test_known_model_lineage_duplicate_inputs_and_expiry_stay_ineligible(curatio
     real_now = f.service._now
     # Consent expired, but the original two-day evidence period remains valid.
     monkeypatch.setattr(f.service, "_now", lambda c: real_now(c) + timedelta(hours=36))
+    replay = f.service.record(a, ap, first, days=1, confirm_owner_review=True, accept_training_data_purpose=True)
+    assert replay["replayed"] is True and replay["current"] is False
     with pytest.raises(KernelDenied, match="current_eligibility"):
         f.service.validate_export(f.directory / "current.json")
     assert not (f.directory / "conflict.json").exists()
