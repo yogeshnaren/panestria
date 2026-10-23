@@ -31,3 +31,8 @@ claims cannot create handoff/approval or release capacity. Existing success,
 revocation, cancellation, quota, read-only observation and grant limits remain.
 This improves diagnostics; the original intermittent cause remains unresolved
 until actual failure evidence identifies it. No live/provider/release pass.
+
+A [later four-case closed-cause check](../../evidence/native-worker-diagnostics-2026-10-23/closed-causes-report.json)
+adds known authority-code detail while redacting unknown authority text. It
+overlaps two earlier cases and remains separately source-bound; the counts are
+not pooled. Other malformed/unrecognized errors stay conservatively generic.
