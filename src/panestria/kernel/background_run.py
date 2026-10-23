@@ -128,6 +128,8 @@ class BackgroundRunService:
                 run.binding_sha256,
             ) != (binding.owner_id, binding.project_id, binding.request.item_id, binding.sha256()):
                 raise ValueError
+            if run.model_ref != binding.request.policy.model_ref:
+                raise ValueError
             return run
         except (ValueError, KeyError, TypeError):
             raise KernelDenied("background_run_record_invalid") from None
@@ -339,6 +341,8 @@ class BackgroundRunService:
         if remaining < 30:
             raise KernelDenied("background_original_job_wall_budget_exhausted")
         run = BackgroundRun(
+            schema_version=2 if binding.request.policy.model_ref is not None else 1,
+            model_ref=binding.request.policy.model_ref,
             run_id=run_id,
             owner_id=actor.owner_id,
             project_id=actor.project_id,

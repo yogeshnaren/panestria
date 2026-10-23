@@ -4,6 +4,7 @@ from typing import Literal, Self
 
 from pydantic import AwareDatetime, Field, StrictInt, model_validator
 
+from panestria.contracts.native_model import NativeModel
 from panestria.contracts.plan import PlanContract, PlanId, PlanSha
 from panestria.contracts.quota import QuotaId, QuotaScope
 
@@ -20,13 +21,13 @@ class BillingBoundary(PlanContract):
 
 
 class BackgroundWorkPolicy(PlanContract):
-    schema_version: StrictInt = Field(default=1, ge=1, le=1)
+    schema_version: StrictInt = Field(default=1, ge=1, le=2)
     policy_id: PlanId
     owner_id: PlanId
     project_id: PlanId
     version: StrictInt = Field(default=1, ge=1, le=1)
     provider: Literal["claude-subscription"] = "claude-subscription"
-    model_ref: None = None  # Existing configured harness; no invented model pin.
+    model_ref: NativeModel | None = None  # Legacy null bytes remain part of the original policy hash.
     quota_windows: tuple[QuotaScope, ...] = Field(min_length=1, max_length=4)
     billing: BillingBoundary | None = None
     allow_unknown_quota: bool = False
@@ -45,10 +46,17 @@ class BackgroundWorkPolicy(PlanContract):
     @model_validator(mode="after")
     def scope(self) -> Self:
         accounts = {s.account_ref for s in self.quota_windows}
+        if (self.schema_version == 1) != (self.model_ref is None):
+            raise ValueError("background_model_policy_version")
         if len(accounts) != 1 or any(
-            s.provider != self.provider or s.model_ref is not None for s in self.quota_windows
+            s.provider != self.provider or s.model_ref not in {None, self.model_ref} for s in self.quota_windows
         ):
             raise ValueError("background_account_or_model_scope")
+        if self.model_ref is not None and (
+            not any(s.model_ref == self.model_ref for s in self.quota_windows)
+            or not any(s.model_ref is None for s in self.quota_windows)
+        ):
+            raise ValueError("background_account_and_model_windows_required")
         if len({s.sha256() for s in self.quota_windows}) != len(self.quota_windows):
             raise ValueError("background_duplicate_windows")
         if self.billing is not None and (

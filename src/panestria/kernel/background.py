@@ -232,6 +232,7 @@ class BackgroundWorkService:
                         "effective_remaining": view.effective_remaining,
                         "unit": o.unit,
                         "window_ref": window.window_ref,
+                        "model_ref": window.model_ref,
                     }
                 )
                 amount = Decimal(o.remaining) if o.remaining is not None else None
@@ -272,6 +273,7 @@ class BackgroundWorkService:
             "seconds_to_reported_reset": min(resets) if resets else None,
             "value_priority": binding.request.value_priority,
             "model_identity": "UNKNOWN",
+            "requested_model": policy.model_ref,
             "execution_authority": "NONE",
             "runtime_qualification": "NOT_ASSESSED",
         }

@@ -36,10 +36,7 @@ class BackgroundPlanRunner(NativePlanRunner):
         return _lock(self.owner.settings.root / "background-operation.lock")
 
     def _preflight(self, plan_id: str) -> StoredPlan:
-        # Existing queued policies bind the legacy fixed model. A foreground
-        # model setting is never permission to reinterpret that immutable work.
-        if self.owner.settings.native_model is not None:
-            raise KernelDenied("background_selected_model_not_supported")
+        self._require_model()
         # Existing current-policy, source/runtime certificate, exact inventory,
         # Git base and pinned adapter checks remain mandatory before admission.
         plan = super()._preflight(plan_id)
@@ -55,6 +52,7 @@ class BackgroundPlanRunner(NativePlanRunner):
 
     def _claim(self, plan: StoredPlan, capacity: HardwareManifest) -> Scheduled | Queued:
         assert self.run_record is not None
+        self._require_model()
         with self.owner.connect() as c:
             binding = self.service.accounts.binding(UnitOfWork(c), self.owner.actor, self.item_id)
         try:
@@ -77,6 +75,8 @@ class BackgroundPlanRunner(NativePlanRunner):
             raise KernelDenied("background_worker_binding_required")
 
         def authorize(connection: Any) -> None:
+            if self.owner.settings.native_model != run.model_ref:
+                raise KernelDenied("background_requested_model_changed")
             self.service.authorize_worker(UnitOfWork(connection), self.owner.actor, run, scope)
 
         def refresh() -> None:
@@ -90,6 +90,14 @@ class BackgroundPlanRunner(NativePlanRunner):
                 self.service.authorize_worker(UnitOfWork(c), self.owner.actor, run, scope, observation_sha256=digest)
 
         return WorkerAuthority(canonical_sha256({"run": run.sha256(), "scope": scope.sha256()}), authorize, refresh)
+
+    def _require_model(self) -> None:
+        with self.owner.connect() as c:
+            binding = self.service.accounts.binding(UnitOfWork(c), self.owner.actor, self.item_id)
+        if binding.request.policy.model_ref != self.owner.settings.native_model or (
+            self.run_record is not None and self.run_record.model_ref != binding.request.policy.model_ref
+        ):
+            raise KernelDenied("background_requested_model_changed")
 
     def _integration_authority(self, job: Scheduled) -> WorkerAuthority:
         with self.owner.connect() as c:
