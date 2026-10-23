@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "outcome": "OPT_IN_OWNER_HOST_STORAGE_BROWSER_COMPONENT_NOT_RESOURCE_OR_RELEASE_QUALIFICATION",
+  "observations": [
+    {
+      "file": "connected.xml",
+      "sha256": "53e238827d0b135ff7eb057371caac13ef896b8fb8e0d6fda5d03185eb9e7d84",
+      "source_commit": "53afb117231823f3f81ac7800daf1fcbb72be346",
+      "source_tree": "28082478802f84c5ee95d817192b9fd16228da44",
+      "worktree": "CLEAN",
+      "scope": "4PASS/1FAIL: existing terminal/default browser/OpenAPI pass; new actual namespace/statvfs case reaches correct read-only data, then missing test JSON content type gets415 before expected405. No production guard weakened.",
+      "result": {
+        "tests": "5",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "15.270"
+      }
+    },
+    {
+      "file": "connected-corrected.xml",
+      "sha256": "f2233ed9afd5bb609fae9fc62e32b5bd9f1b160a568af5087a4afe292183c393",
+      "source_commit": "25348c551e096719d43a482aec930f7890e0fe50",
+      "source_tree": "e807823d6ae5a49c516c6a369d768964005a7a03",
+      "worktree": "CLEAN",
+      "scope": "1PASS: corrected normal JSON envelope proves absent mutations, separate fresh cookie purpose, current scope/origin auth, no private path/content/token disclosure and unchanged selected files/canonical events.",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "7.651"
+      }
+    },
+    {
+      "file": "browser.xml",
+      "sha256": "8be53df00b1e34a4834982a36d60ce10a637d760b45eafa4b8e7cd709ff786a1",
+      "source_commit": "c0dbc3c4cbb969295fac43104632935bc4194390",
+      "source_tree": "2bbd3c9ca02b0fd622872953b65a4538c53eb45d",
+      "worktree": "CLEAN",
+      "scope": "1PASS: actual Chromium/PG/HTTP/statvfs displays warning/recommendations; real private opt-out clears observations and real session revocation clears view. Synthetic warning threshold and forced due-settings tick explicit; app requests stay same-origin.",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "10.379"
+      }
+    }
+  ],
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS (343 source files after ordinary verified main merge)",
+    "import_boundaries": "11 KEPT",
+    "secret_scan": "PASS",
+    "typed_production_build": "PASS, cached supported Node/dependencies; generated OpenAPI/TypeScript",
+    "visual_review": "Actual retained Chromium screenshot inspected; no overlap/clipping in desktop layout."
+  },
+  "delivered": [
+    "Explicit private storage config selects read-only local host-data browser mode; incompatible mutation modes refuse.",
+    "Separate cookie/HMAC purpose and fresh terminal pairing; default browser/old sessions retain denial, before/after auth checks preserved.",
+    "Existing coalesced read-only observer, selected private settings, unknown/estimate/source/authority semantics reused; no new storage/data store.",
+    "Warnings and owner recommendations, owner available vs reserved capacity, component overlap/Timeshift uncertainty; no cleanup/backup-setting action.",
+    "Stale/disabled/failure/revocation handling clears current observations, no browser persistent storage or content telemetry."
+  ],
+  "limits": [
+    "Actual statvfs numbers describe the shared host filesystem at test time, not project attribution or an exclusive cost of this work.",
+    "Synthetic reserve threshold guarantees warning and due-settings tick is a test seam; no sustained pressure/resource-budget qualification is claimed.",
+    "No Docker/Timeshift/component scan, owner private settings, service, data, backup policy, model/provider, install or cleanup was enabled or modified by these tests.",
+    "Independent private host consent is desktop loopback only. Phone TLS/device, cumulative resource gates, full TC05-TC08/G1/G3 and owner trial remain open.",
+    "Original failed/pass sources and screenshot remain immutable private outputs; no evidence is relabeled for later merges."
+  ]
+}

@@ -3166,10 +3166,11 @@
       "status": "IN_PROGRESS",
       "evidence_refs": [
         "evidence/storage-awareness-2026-10-18/report.json",
-        "evidence/storage-status-terminal-2026-10-22/report.json"
+        "evidence/storage-status-terminal-2026-10-22/report.json",
+        "evidence/mission-storage-notices-2026-10-23/report.json"
       ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Extension delivered in R3; original parent release/evidence remains unchanged. Narrow this slice after inspecting existing code. Initial read-only storage/opt-in terminal component; host budgets, admission and unified notification qualification remain pending. Opt-in owner activity terminal now shows paced/coalesced storage warnings and read-only recommendations; browser/phone host scope, persistence and host qualification remain pending."
+      "scope_note": "Opt-in storage inspect/watch/native admission/activity terminal and separate owner host Mission Control notices are component outcomes. Browser host data needs distinct explicit mode/fresh pairing; stale/disabled/revoked observations clear, unknown attribution and no cleanup authority persist. Full resource/host/phone qualification and TC05-TC08/G3 remain open."
     },
     {
       "id": "AOS-018-S5",
