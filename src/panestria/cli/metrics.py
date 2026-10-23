@@ -69,6 +69,40 @@ def capture_ask(
         raise typer.Exit(1) from None
 
 
+@metrics_app.command("capture-research")
+def capture_research(
+    config: Annotated[Path, typer.Option()],
+    request_id: Annotated[str, typer.Option()],
+    directory: Annotated[Path, typer.Option()] = DEFAULT,
+) -> None:
+    """Save an existing validated draft's measurements and separate owner-reported judgments."""
+    import os
+
+    from panestria.config import Settings
+    from panestria.config_synthesis import load_synthesis_settings
+    from panestria.execution.research_metrics import capture_research_metrics
+    from panestria.execution.research_review import OwnerResearchReview
+
+    try:
+        settings = load_synthesis_settings(config, need_model=False)
+        dsn = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
+        result = capture_research_metrics(OwnerResearchReview(dsn.get_secret_value(), settings), request_id, directory)
+        typer.echo(json.dumps(result))
+    except Exception as error:
+        reason = "research_receipt_or_private_metrics_invalid"
+        if type(error) is ValueError and str(error) in {
+            "research_metrics_history_budget_reached",
+            "metrics_history_budget_reached",
+            "metrics_directory_must_be_private",
+            "metrics_path_invalid",
+        }:
+            reason = str(error)
+        elif isinstance(error, BlockingIOError):
+            reason = "metrics_capture_busy"
+        typer.echo(json.dumps({"status": "UNAVAILABLE", "reason": reason}), err=True)
+        raise typer.Exit(1) from None
+
+
 @metrics_app.command("show")
 def show(
     directory: Annotated[Path, typer.Option()] = DEFAULT,
