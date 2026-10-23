@@ -411,7 +411,13 @@ column pairing_challenge code_hash bpchar NO
 column pairing_challenge expires_at timestamptz NO
 column pairing_challenge owner_id uuid NO
 column pairing_challenge project_id uuid NO
+column pairing_challenge scope_ref bpchar YES
 column pairing_challenge used_at timestamptz YES
+column phone_device owner_id uuid NO
+column phone_device project_id uuid NO
+column phone_device role text NO
+column phone_device scope_ref bpchar NO
+column phone_device session_id uuid NO
 column policy_review decided_at timestamptz YES
 column policy_review decided_by uuid YES
 column policy_review effect_digest bpchar NO
@@ -738,6 +744,7 @@ constraint panestria.browser_session c CHECK ((csrf_hash ~ '^[0-9a-f]{64}$'::tex
 constraint panestria.browser_session c CHECK ((token_hash ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.browser_session f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.browser_session p PRIMARY KEY (id)
+constraint panestria.browser_session u UNIQUE (id, owner_id, project_id)
 constraint panestria.browser_session u UNIQUE (token_hash)
 constraint panestria.budget_reservation c CHECK (((state = 'SETTLED'::text) = (actual_microusd IS NOT NULL)))
 constraint panestria.budget_reservation c CHECK ((actual_microusd >= 0))
@@ -1021,8 +1028,14 @@ constraint panestria.memory_use_event f FOREIGN KEY (context_pack_id, owner_id, 
 constraint panestria.memory_use_event f FOREIGN KEY (revision_id, item_id, owner_id, project_id) REFERENCES panestria.memory_revision(id, item_id, owner_id, project_id)
 constraint panestria.memory_use_event p PRIMARY KEY (id)
 constraint panestria.pairing_challenge c CHECK ((code_hash ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.pairing_challenge c CHECK ((scope_ref ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.pairing_challenge f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
 constraint panestria.pairing_challenge p PRIMARY KEY (code_hash)
+constraint panestria.phone_device c CHECK ((role = 'READ_ONLY_METADATA'::text))
+constraint panestria.phone_device c CHECK ((scope_ref ~ '^[0-9a-f]{64}$'::text))
+constraint panestria.phone_device f FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id)
+constraint panestria.phone_device f FOREIGN KEY (session_id, owner_id, project_id) REFERENCES panestria.browser_session(id, owner_id, project_id)
+constraint panestria.phone_device p PRIMARY KEY (session_id)
 constraint panestria.policy_review c CHECK (((state = 'PENDING'::text) OR (decided_at IS NOT NULL)))
 constraint panestria.policy_review c CHECK ((effect_digest ~ '^[0-9a-f]{64}$'::text))
 constraint panestria.policy_review c CHECK ((expected_version > 0))
@@ -1326,6 +1339,7 @@ index CREATE UNIQUE INDEX artifact_pkey ON panestria.artifact USING btree (id)
 index CREATE UNIQUE INDEX ask_profile_context_pkey ON panestria.ask_profile_context USING btree (request_id, owner_id, project_id)
 index CREATE UNIQUE INDEX ask_request_pkey ON panestria.ask_request USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX browser_session_pkey ON panestria.browser_session USING btree (id)
+index CREATE UNIQUE INDEX browser_session_scope_identity ON panestria.browser_session USING btree (id, owner_id, project_id)
 index CREATE UNIQUE INDEX browser_session_token_hash_key ON panestria.browser_session USING btree (token_hash)
 index CREATE UNIQUE INDEX budget_reservation_goal_id_request_key_key ON panestria.budget_reservation USING btree (goal_id, request_key)
 index CREATE UNIQUE INDEX budget_reservation_pkey ON panestria.budget_reservation USING btree (id)
@@ -1405,6 +1419,7 @@ index CREATE UNIQUE INDEX memory_source_id_owner_id_project_id_key ON panestria.
 index CREATE UNIQUE INDEX memory_source_pkey ON panestria.memory_source USING btree (id)
 index CREATE UNIQUE INDEX memory_use_event_pkey ON panestria.memory_use_event USING btree (id)
 index CREATE UNIQUE INDEX pairing_challenge_pkey ON panestria.pairing_challenge USING btree (code_hash)
+index CREATE UNIQUE INDEX phone_device_pkey ON panestria.phone_device USING btree (session_id)
 index CREATE UNIQUE INDEX policy_review_pkey ON panestria.policy_review USING btree (id)
 index CREATE UNIQUE INDEX principal_pkey ON panestria.principal USING btree (id)
 index CREATE UNIQUE INDEX profile_event_pkey ON panestria.profile_event USING btree (id)

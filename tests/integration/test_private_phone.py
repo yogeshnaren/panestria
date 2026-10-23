@@ -171,6 +171,23 @@ def test_production_cli_tls_pairing_read_only_roles_revoke_and_desktop_scope(
             assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == before
             with pytest.raises(psycopg.Error), c.transaction():
                 c.execute("UPDATE panestria.phone_device SET role='ADMIN'")
+        refused = subprocess.run(
+            [
+                "uv",
+                "run",
+                "--frozen",
+                "alembic",
+                "-c",
+                "migrations/alembic.ini",
+                "downgrade",
+                "0039_curated_example_rights",
+            ],
+            cwd=ROOT,
+            env={**os.environ, "PANESTRIA_DATABASE_URL": f["dsn"]},
+            capture_output=True,
+            text=True,
+        )
+        assert refused.returncode != 0 and "phone audit prevents downgrade" in refused.stderr
     finally:
         os.killpg(process.pid, signal.SIGTERM)
         try:
@@ -228,3 +245,59 @@ def test_empty_phone_schema_roundtrip_and_original_observation(r1_migration_task
     selected = os.environ.get("PANESTRIA_PHONE_SCHEMA_OBSERVATION")
     if selected:
         Path(selected).write_text(after)
+
+
+def test_role_expiry_configuration_change_and_certificate_pin(r1_migration_task, tmp_path):
+    from fastapi.testclient import TestClient
+
+    from panestria.api.phone import build_phone_app, phone_service, tls_server_config
+    from panestria.config import Settings
+    from panestria.kernel.errors import KernelDenied
+
+    f = r1_migration_task
+    _, config, token = configuration(f, tmp_path)
+    actor = Actor(f["owner"], f["project"])
+    service = phone_service(config, token)
+    settings = Settings(database_url=f["dsn"]).validate_profile()
+    observer = build_phone_app(config, settings, token, ASSETS)
+    changed = build_phone_app(
+        config.model_copy(update={"allowed_clients": ("127.0.0.1", "127.0.0.2")}), settings, token, ASSETS
+    )
+    try:
+        with psycopg.connect(f["dsn"]) as c:
+            code = service.issue_pairing_code(UnitOfWork(c), actor)
+            paired = service.pair(UnitOfWork(c), actor, code)
+            # Same HMAC key but absent phone role: base sessions cannot grant data access.
+            bare = SessionService(service._secret, pairing_bytes=16, challenge_scope=service.challenge_scope)
+            othercode = bare.issue_pairing_code(UnitOfWork(c), actor)
+            unscoped = bare.pair(UnitOfWork(c), actor, othercode)
+        with TestClient(observer, base_url=config.origin, client=("127.0.0.1", 1000)) as client:
+            name = observer.state.browser_access.cookie_name
+            client.cookies.set(name, unscoped.token)
+            assert client.get("/v1/activity").status_code == 401
+            client.cookies.set(name, paired.token)
+            assert client.get("/v1/activity").status_code == 200
+            with TestClient(changed, base_url=config.origin, client=("127.0.0.1", 1000)) as other:
+                other.cookies.set(name, paired.token)
+                assert other.get("/v1/activity").status_code == 401
+            with psycopg.connect(f["dsn"]) as c:
+                c.execute(
+                    "UPDATE panestria.browser_session SET expires_at=clock_timestamp()-interval '1 second' WHERE id=%s",
+                    (paired.session_id,),
+                )
+            assert client.get("/v1/activity").status_code == 401
+        with psycopg.connect(f["dsn"]) as c:
+            with pytest.raises(KernelDenied, match="not_found"):
+                service.revoke_device(
+                    UnitOfWork(c), Actor(f["owner"], "00000000-0000-4000-8000-000000000099"), paired.session_id
+                )
+        original = config.certificate_file.read_bytes()
+        try:
+            config.certificate_file.write_bytes(b"synthetic replaced certificate")
+            with pytest.raises(LocalApplicationRejected, match="phone_certificate_changed"):
+                tls_server_config(observer, config)
+        finally:
+            config.certificate_file.write_bytes(original)
+    finally:
+        observer.state.health.shutdown()
+        changed.state.health.shutdown()
