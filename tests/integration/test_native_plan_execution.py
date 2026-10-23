@@ -226,7 +226,9 @@ def test_two_scoped_workers_and_create_only_node_reach_exact_owner_review(native
 @pytest.mark.parametrize(
     "error,code",
     [(psycopg.errors.QueryCanceled("PRIVATE_SQL_SENTINEL"), "database_statement_timeout"),
-     (RuntimeError("PRIVATE_EXCEPTION_SENTINEL"), "worker_execution_unconfirmed")],
+     (RuntimeError("PRIVATE_EXCEPTION_SENTINEL"), "worker_execution_unconfirmed"),
+     (KernelDenied("invocation_inactive"), "invocation_inactive"),
+     (KernelDenied("PRIVATE_AUTHORITY_SENTINEL"), "controller_authority_denied")],
 )
 def test_stopped_native_worker_retains_safe_cause_and_unknown_claim(native_plan, monkeypatch, error, code):
     owner, runner, plan, state = native_plan
