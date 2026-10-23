@@ -50,7 +50,12 @@ def review_lines(source: ConnectionReviewView, width: int) -> list[str]:
         "Claimed conformance hash (UNVERIFIED): " + (m.conformance_sha256 or "NONE"),
         "Effect digest: " + source.effect_digest,
         "Approval records a declaration only. It imports no chats, credentials or application permissions.",
-        "A REVOKE approval records disconnection intent/state; this component starts/stops no external process.",
+        (
+            "A REVOKE approval fences future selected native work; its supervisor checks revocation. "
+            "Already sent data cannot be recalled. This review launches no worker."
+            if m.schema_version == 2
+            else "A REVOKE approval records disconnection intent/state; this component starts/stops no external process."
+        ),
         "END OF EXACT DECLARATION",
     ]
     return [part for value in fields for part in wrapped(value, max(1, width - 2))]

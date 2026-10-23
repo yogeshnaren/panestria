@@ -390,6 +390,7 @@ def test_native_cli_template_and_terminal_expose_exact_route_and_units_without_e
         conformance_status="UNVERIFIED",
         runtime_available=False,
     )
-    displayed = "\n".join(review_lines(view, 100))
+    displayed = "".join(review_lines(view, 100))  # Fixed-cell wrapping can split a word across rows.
     assert "claude-subscription" in displayed and "selected PUBLIC context only" in displayed
     assert "Wire traffic and billing are not measured" in displayed
+    assert "fences future selected native work" in displayed
