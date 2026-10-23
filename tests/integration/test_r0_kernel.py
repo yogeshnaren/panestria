@@ -40,9 +40,27 @@ FOREIGN = "00000000-0000-4000-8000-0000000000d4"
 
 
 def _database() -> None:
+    global DATABASE_URL
     subprocess.run([*COMPOSE, "down", "-v"], check=False)
-    up = subprocess.run([*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, text=True, capture_output=True, check=False)
+    # A fixed test listener can collide with another service or client port.
+    # Docker reserves an available loopback endpoint atomically; discover that
+    # actual endpoint, rather than probing/closing a host socket before bind.
+    env = {**os.environ, "PANESTRIA_R0_TEST_PORT": "0"}
+    up = subprocess.run(
+        [*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, env=env, text=True, capture_output=True, check=False
+    )
     assert up.returncode == 0, up.stderr
+    published = subprocess.run(
+        [*COMPOSE, "port", "postgres", "5432"],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=True,
+    ).stdout.strip()
+    host, port = published.rsplit(":", 1)
+    assert host == "127.0.0.1" and port.isdecimal() and 0 < int(port) <= 65535
+    DATABASE_URL = f"postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:{port}/panestria_synthetic"
     upgraded = subprocess.run(
         ["uv", "run", "--frozen", "alembic", "-c", "migrations/alembic.ini", "upgrade", "head"],
         cwd=ROOT,
