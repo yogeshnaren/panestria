@@ -35,7 +35,9 @@ try{
  assert.equal((await page.request.get(`${f.origin}/v1/artifacts/${f.goal}`)).status(),403);
  assert.equal((await page.request.get(`${f.origin}/v1/activity/goals/${f.privateGoal}/build-progress`)).status(),404);
  const content=await page.content();for(const secret of [f.store,f.privateDescription,'PHONE_PRIVATE_CONTENT_SENTINEL'])assert(!content.includes(secret));
- assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ // Mobile browsers can expand innerWidth to fit overflowing content. Compare
+ // against the selected physical CSS viewport, not that expanded layout width.
+ assert((await page.evaluate(()=>document.documentElement.scrollWidth))<=page.viewportSize().width);
  assert.equal(await page.evaluate(()=>localStorage.length+sessionStorage.length),0);
  assert.equal(context.serviceWorkers().length,0);
  await page.screenshot({path:process.env.PANESTRIA_BROWSER_SCREENSHOT,fullPage:true});
