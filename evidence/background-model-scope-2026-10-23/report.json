@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "component": "IMMUTABLE_PREFERRED_MODEL_BACKGROUND_POLICY_RUN",
+  "implementation_status": "IMPLEMENTED_COMPONENT_ONLY",
+  "prerequisite": {
+    "pr": 205,
+    "task_head": "042d2ee3bf378b80193646dec5d74137c4cd0f8c",
+    "verified_main": "bc28a533d78b2e99acf670099314c1d6618c8688",
+    "branch_workflow": "Started from explicit prerequisite after fresh main fetch; verified merged main integrated without history rewrite."
+  },
+  "design": "docs/design/116-BACKGROUND-MODEL-SCOPE.md",
+  "guide": "docs/testing/BACKGROUND_MODEL_SCOPE.md",
+  "original_runs": [
+    {
+      "name": "connected-and-legacy",
+      "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/background-model-scope-2026-10-23/connected-and-legacy.xml",
+      "sha256": "7bc227bce7484bae856cc4dde0db8a43b6cee44b22a6f8531a62b6f3e7496ee7",
+      "source_commit": "17bba7ed7ac54689b605e25130e9bf7a5025a03d",
+      "source_tree": "40c0dc0d0b767af89c0df25cfaadf49128782d12",
+      "totals": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 73.487
+    },
+    {
+      "name": "original-serialization",
+      "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/background-model-scope-2026-10-23/original-serialization.xml",
+      "sha256": "a180db9908940017001af3a9291c8aadbcf3a3991746728b3775626336bd38cc",
+      "source_commit": "765ffb47d38734a6b072c5227c8961112e37af6e",
+      "source_tree": "172f024764d62adf84b4e6ae9d89e60b953b0fc4",
+      "totals": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 0.091
+    }
+  ],
+  "observed": [
+    "Actual disposable PG/Git/MCP/Docker serial two-node selected Sonnet Build to independent final-tree checks and WAITING_APPROVAL, preserving one foreground slot. Native/model/account/billing/hardware/certificates explicitly synthetic. No owner merge or inference.",
+    "Independent exact-model reserve10percent stops despite account windows40percent. Model change before admission and after two returned handoffs refuses final publication; original handoffs preserved and no approval created.",
+    "Selected-model draft remains REVIEW_ONLY with UNKNOWN billing and no unknown-quota permission. Six existing finite background run regressions pass in the same batch.",
+    "Legacy policy/run bytes/hashes match serialization produced by original source8b6aef8; legacy null policy and absent run model remain unchanged. Wrong policy/run versions, aliases, other-model and missing independent window scope refuse."
+  ],
+  "legacy_fixture": {
+    "path": "tests/fixtures/background-model-legacy.json",
+    "sha256": "ee38dfbece0d6018274f6f4198b6b45bb44bfbe402b316204c14a270a8d7edd6",
+    "scope": "SYNTHETIC_SERIALIZATION_ONLY_NOT_RUNTIME_EVIDENCE"
+  },
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS_356_SOURCE_FILES",
+    "import_boundaries": "11_KEPT_0_BROKEN",
+    "secret_scan": "PASS",
+    "record_basis": "Local command results; all six exact-head CI checks and final tree review required before merge."
+  },
+  "restrictions_preserved": [
+    "No billing/usage observation refreshed or owner background setting enabled. Actual owner billing remains stale/background OFF.",
+    "No API/provider inference, model/CLI/package download, new credential, spend, automatic fallback, owner setup/service/DB change, storage deletion or backup/driver change.",
+    "Actual selected-model account availability/no-extra-spend/inference/quality/resource qualification remain open; no original gate or extension case promoted.",
+    "Search/real-phone/paidSDKTC04 remain deferred; no fabricated14-day owner trial or R4-R7 implementation."
+  ],
+  "release_gates": {
+    "G1": "NOT_PASSED",
+    "G2": "NOT_PASSED",
+    "G3": "NOT_PASSED",
+    "owner_trial": "NOT_STARTED"
+  }
+}

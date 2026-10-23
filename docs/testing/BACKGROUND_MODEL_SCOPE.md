@@ -7,7 +7,7 @@ settings or automatically adopt a model.
 
 First complete [model selection and qualification](NATIVE_MODEL_SELECTION.md),
 the separate exact native connection review and a fresh accepted PUBLIC plan.
-Use [the background controller guide](BACKGROUND_CONTROLLER.md) for the existing
+Use [the background controller guide](BACKGROUND_QUEUE_CONTROLLER.md) for the existing
 account-link, exact-policy decision, finite controller and reconciliation steps.
 
 1. Run existing `background draft --config PRIVATE_BUILD_CONFIG PLAN_ID ACCOUNT_ID
