@@ -120,6 +120,33 @@ def test_selected_model_and_legacy_runtime_identities_are_distinct():
             validate_native_model(bad)
 
 
+def test_selected_transport_accepts_observed_disabled_mode_reason_but_refuses_fast_mode():
+    selected = "claude-sonnet-5"
+    for state, reason in (("off", "model_not_allowed"), ("on", "model_not_allowed"), ("off", "unrecognized")):
+        parser = ClaudeEventParser(
+            frozenset({TOOL}), allowed_mcp_servers=frozenset({"panestria"}), expected_model=selected
+        )
+        body = {**init(selected), "fast_mode_state": state, "fast_mode_disabled_reason": reason}
+        if state == "off" and reason == "model_not_allowed":
+            parser.feed(frame(body))
+            parser.feed(
+                frame(
+                    {
+                        "type": "result",
+                        "subtype": "success",
+                        "is_error": False,
+                        "modelUsage": {selected: {}},
+                        "fast_mode_state": state,
+                        "fast_mode_disabled_reason": reason,
+                    }
+                )
+            )
+            assert parser.finish(0).status == "CANDIDATE"
+        else:
+            with pytest.raises(ProtocolRejected, match="unexpected_fast_mode"):
+                parser.feed(frame(body))
+
+
 def test_model_specific_qualification_requires_original_requested_and_reported_models():
     selected = "claude-sonnet-5"
     root, suite = report()

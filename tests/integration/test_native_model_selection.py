@@ -98,11 +98,12 @@ def test_selected_model_requires_explicit_grant_and_matching_certificate(native_
 
 @pytest.mark.live
 @pytest.mark.parametrize("model", ["claude-sonnet-5", "claude-opus-5"])
-def test_pinned_selected_model_zero_turn_empty_auth_startup(model, record_property):
+def test_pinned_selected_model_zero_turn_empty_auth_startup(model, record_property, monkeypatch):
     """Native metadata only: no owner auth, provider inference, edits or qualification."""
     import subprocess
     from dataclasses import asdict
 
+    from panestria.brokers.harness import claude_check
     from panestria.brokers.harness.bash_protocol import ScopedBashSession
     from panestria.brokers.harness.claude_build import ClaudeScopedBashAdapter
     from panestria.brokers.harness.claude_proposal import PINNED_BINARY_SHA256, ClaudeProposalAdapter
@@ -110,6 +111,14 @@ def test_pinned_selected_model_zero_turn_empty_auth_startup(model, record_proper
     from panestria.contracts.native_command import RegisteredCheckReceipt
 
     root = Path(__file__).resolve().parents[2]
+    original = claude_check.run_metadata
+
+    def observed_metadata(*args):
+        output = original(*args)
+        record_property("startup_stdout", output.stdout.decode("utf-8"))
+        return output
+
+    monkeypatch.setattr(claude_check, "run_metadata", observed_metadata)
     calls = []
     session = ScopedBashSession(
         "scoped-bash:" + "ab" * 32, lambda *a: calls.append(a) or RegisteredCheckReceipt(outcome="DENIED")
