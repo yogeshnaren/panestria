@@ -136,6 +136,18 @@ def test_actual_confirmed_build_reference_is_portable_offline_and_not_training_c
         x.reported_init_model is None and x.request_sha256 is None for x in old.invocations
     )
     assert store.read_blob(legacy_digest) == legacy_raw
+    # A protected receipt from different input cannot label this invocation.
+    selected = observed_models[0]
+    receipt = json.loads(owner.reports.read_blob(selected.receipt_sha256))
+    receipt["context_sha256"] = "00" * 32
+    mismatched = owner.reports.write_report(json.dumps(receipt).encode())
+    with owner.connect() as c:
+        c.execute(
+            "UPDATE panestria.worker_invocation SET receipt_sha256=%s WHERE id=%s", (mismatched, selected.invocation_id)
+        )
+    with pytest.raises(KernelDenied, match="offline_reference_receipt_binding_mismatch"):
+        owner.capture_reference(plan.goal_id)
+    assert state["launches"] == 2
     diff = manifest.parts["diff"]
     raw = b"".join(store.read_blob(key) for key in diff.chunks)
     assert b"+value = 43" in raw and b"bounded Bash build" in raw
