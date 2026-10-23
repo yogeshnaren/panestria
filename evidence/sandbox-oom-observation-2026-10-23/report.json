@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "outcome": "DEFAULT_CI_TRUTHFUL_SIGKILL_OBSERVATION_NOT_LIVE_RESOURCE_QUALIFICATION",
+  "source_commit": "34ec2a15aeccb01f9fefa3c46e02dd6983eec622",
+  "source_tree": "0ecd85742bebc6f13db4c01fca65cd93cc42c700",
+  "worktree": "CLEAN",
+  "original_failure": {
+    "pr": 189,
+    "run_id": 39876295510,
+    "source_commit": "34a59d045edafed9af0969ae14efbaf883971142",
+    "tested_preview": "4681c3b03420cb271a246ceb3127760d62aaec35",
+    "case": "tests/integration/test_sandbox_framed_stdin.py::test_actual_input_adverse_cases_terminate_and_remove[memory-pressure-memory_limit]",
+    "observed": {
+      "exit_code": 137,
+      "OOMKilled": false,
+      "reason": "process_failed"
+    },
+    "original_reports_preserved": true,
+    "release_authority": "NONE"
+  },
+  "report": {
+    "file": "affected.xml",
+    "sha256": "dcacfb0aee721dded04d78384b6a29c859d13d01d53adaf28bf84d9771bc0dce",
+    "result": {
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "5.041"
+    },
+    "memory_metadata": [
+      {
+        "case": "test_actual_input_adverse_cases_terminate_and_remove[memory-pressure-memory_limit]",
+        "properties": {
+          "exit_metadata": "{\"after\": {\"ExitCode\": 137, \"OOMKilled\": true, \"Running\": false}, \"before\": {\"ExitCode\": 137, \"OOMKilled\": true, \"Running\": false}}",
+          "oom_observation": "CONFIRMED"
+        }
+      }
+    ]
+  },
+  "limits": [
+    "No production code, test count, timeout, CI selector, live resource assertion, gate requirement or historical evidence changed.",
+    "Default real framed-input pressure requires stopped exit137, daemon-consistent reason/flag, bounded output/time and exact container removal. SIGKILL with absent daemon OOM confirmation cannot be reported as proven memory_limit.",
+    "Existing two explicit OS-pipe/daemon-metadata cases verify both truthful outcomes and bounded settlement; injected metadata is not a real OOM certificate.",
+    "Separate live tests/integration/test_aos_008.py::test_resource_pressure_is_contained still requires memory_limit for memory pressure; NOT RUN by this component. No gate/release pass."
+  ]
+}

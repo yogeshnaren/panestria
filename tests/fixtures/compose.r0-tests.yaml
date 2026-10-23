@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: placeholder-not-a-secret
       POSTGRES_DB: panestria_synthetic
     ports:
-      - "127.0.0.1:55440:5432"
+      - "127.0.0.1:${PANESTRIA_R0_TEST_PORT:-55440}:5432"
     volumes:
       - regression_data:/var/lib/postgresql/data
     healthcheck:

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "outcome": "DOCKER_ASSIGNED_KERNEL_FIXTURE_PORT_NOT_NEW_KERNEL_OR_RELEASE_QUALIFICATION",
+  "observation": {
+    "source_commit": "2808f36ca65e1fb8a1ce0e21e3d9fafb4556f29b",
+    "source_tree": "6f8ba04fe4a14d8821001441ca759a6ba45cb4d2",
+    "worktree": "CLEAN",
+    "fixed_port_55440": "AGENT_OWNED_LISTENER_HELD_THROUGHOUT",
+    "owned_listener_still_bound": true,
+    "exit_code": 0,
+    "no_owner_listener_modified": true
+  },
+  "report": {
+    "file": "occupied-port.xml",
+    "sha256": "f059140ae1a132801cb55b80e5bb0c15c9b00af5a15ea43ae84bb28767b738d6",
+    "result": {
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "7.032"
+    }
+  },
+  "original_failure": {
+    "pr": 190,
+    "run_id": 39877566589,
+    "head_commit": "0390364144bf653aa74964679adf0cd417417118",
+    "tested_preview": "73879955a6ee8604e229e99aa957e8dddc579795",
+    "kernel_report_sha256": "995738d4458c8c6da27c027e00cbbd568828f8a23eb209b9ddc466b91e184562",
+    "reason": "Fixed127.0.0.1:55440 was already in use; regression Compose startup refused. Original four lane reports/run/job log preserved."
+  },
+  "change": "Only the failing kernel fixture selects host port0, discovers and validates its actual Docker loopback publication, and uses that DSN for unchanged migration/acceptance assertions. Compose has an explicit test-port override; other historical fixtures retain their original default. No probe-close host-port race, occupied listener termination, new test or production/gate change.",
+  "limits": [
+    "Manual check holds an agent-owned55440 listener for the entire original kernel acceptance case and verifies it remains bound; no owner listener changed.",
+    "Other historical fixtures retain the original55440 default; this is not a claim of whole-suite port portability or parallel pytest support.",
+    "Existing test-owned Compose project/volume cleanup is unchanged; owner projects/databases/services are preserved.",
+    "No original R0 evidence relabeled, release acceptance reopened, live resource qualification or G1/G2/G3 promotion."
+  ]
+}
