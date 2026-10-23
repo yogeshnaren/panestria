@@ -2,6 +2,7 @@
 
 import json
 from dataclasses import replace
+from pathlib import Path
 
 import pytest
 from test_native_connection_grants import reservations, setup
@@ -52,11 +53,14 @@ def test_selected_two_worker_model_reaches_exact_review_with_retained_grant_and_
     assert len(recorded) == 2 and all(r.requested_model == selected for r in recorded)
     with owner.connect() as c:
         rows = c.execute(
-            "SELECT binding FROM panestria.worker_invocation WHERE binding->>'kind'='native-proposal'"
+            "SELECT binding,receipt_sha256 FROM panestria.worker_invocation WHERE binding->>'kind'='native-proposal'"
         ).fetchall()
     assert len(rows) == 2
     for row in rows:
-        assert row[0]["configuration_sha256"]
+        receipt = json.loads(owner.reports.read_blob(str(row[1]).strip()))
+        assert receipt["runtime_versions"]["requested_model"] == selected
+        assert receipt["observation"]["requested_model"] == selected
+        assert receipt["observation"]["process"]["result"]["reported_init_model"] == selected
     # Foreground selection cannot reinterpret a legacy reviewed background policy.
     with pytest.raises(KernelDenied, match="background_selected_model_not_supported"):
         BackgroundPlanRunner(owner, plan.plan_id)._preflight(plan.plan_id)
@@ -90,3 +94,38 @@ def test_selected_model_requires_explicit_grant_and_matching_certificate(native_
     with pytest.raises(KernelDenied, match="public_native_plan_not_eligible"):
         runner._preflight(plan.plan_id)
     assert state["launches"] == 0
+
+
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["claude-sonnet-5", "claude-opus-5"])
+def test_pinned_selected_model_zero_turn_empty_auth_startup(model, record_property):
+    """Native metadata only: no owner auth, provider inference, edits or qualification."""
+    import subprocess
+    from dataclasses import asdict
+
+    from panestria.brokers.harness.bash_protocol import ScopedBashSession
+    from panestria.brokers.harness.claude_build import ClaudeScopedBashAdapter
+    from panestria.brokers.harness.claude_proposal import PINNED_BINARY_SHA256, ClaudeProposalAdapter
+    from panestria.brokers.harness.cli_profile import BinaryPin
+    from panestria.contracts.native_command import RegisteredCheckReceipt
+
+    root = Path(__file__).resolve().parents[2]
+    calls = []
+    session = ScopedBashSession(
+        "scoped-bash:" + "ab" * 32, lambda *a: calls.append(a) or RegisteredCheckReceipt(outcome="DENIED")
+    )
+    native = ClaudeProposalAdapter(
+        BinaryPin(Path.home() / ".local/share/claude/versions/2.1.273", PINNED_BINARY_SHA256),
+        Path("/tmp/panestria-no-owner-login-used"),
+        root / "docs/specification/attachments/agentos-skills-v0.1.0.zip",
+    )
+    observed = ClaudeScopedBashAdapter(native, native_model=model).build_public(
+        session, public_context="PUBLIC synthetic startup only; no tool or inference.", startup_only=True
+    )
+    record_property(
+        "candidate_commit", subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+    )
+    record_property("observation", json.dumps(asdict(observed), sort_keys=True))
+    record_property("scope", "ACTUAL_PINNED_ZERO_TURN_EMPTY_AUTH_METADATA_ONLY_NOT_INFERENCE_OR_QUALIFICATION")
+    assert observed.process is None and observed.startup_observed and observed.hostile_configuration_ignored
+    assert observed.requested_model == model and not calls
