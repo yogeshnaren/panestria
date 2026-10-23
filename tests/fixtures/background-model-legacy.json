@@ -1,0 +1,65 @@
+{
+  "scope": "SYNTHETIC_SERIALIZATION_ONLY_NOT_RUNTIME_EVIDENCE",
+  "original_source_commit": "8b6aef8eff15a93784bdcd0fe2f4099f072b2c82",
+  "original_source_sha256": {
+    "background.py": "7bcd67697303c0fbd15a9255ee1ebe4cdc3608b6328fda4dd9b100b5bcd2b411",
+    "background_run.py": "833a0f69ed6abd62880105ddf6672e77561043f2ad6ca2febee5be323295c1f4"
+  },
+  "policy": {
+    "body": {
+      "schema_version": 1,
+      "policy_id": "12af9731-4271-40f9-a207-92d66f346559",
+      "owner_id": "6993cb33-0940-474d-8783-8a91f83ff41a",
+      "project_id": "081d2d09-4c31-4ba5-b34c-dedba2cb9a4c",
+      "version": 1,
+      "provider": "claude-subscription",
+      "model_ref": null,
+      "quota_windows": [
+        {
+          "provider": "claude-subscription",
+          "account_ref": "c2e610ca-af24-46dd-a831-c908af54bf6f",
+          "model_ref": null,
+          "window_ref": "weekly"
+        }
+      ],
+      "billing": null,
+      "allow_unknown_quota": false,
+      "allow_estimated_quota": false,
+      "regular_use_reserve_percent": 20,
+      "regular_use_reserve_tokens": 10000,
+      "regular_use_reserve_requests": 2,
+      "maximum_job_wall_seconds": 300,
+      "maximum_background_workers": 1,
+      "foreground_reserve_slots": 1,
+      "api_microusd": 0,
+      "privacy_class": "PUBLIC",
+      "categories": [
+        "PUBLIC_BUILD"
+      ],
+      "expires_at": "2030-01-01T01:00:00Z"
+    },
+    "sha256": "21efc1524ee99f973d0a7a9dfcf9b78ae20d6b864daaba0a8fa06d36f76103fe"
+  },
+  "run": {
+    "body": {
+      "schema_version": 1,
+      "run_id": "12af9731-4271-40f9-a207-92d66f346559",
+      "owner_id": "6993cb33-0940-474d-8783-8a91f83ff41a",
+      "project_id": "081d2d09-4c31-4ba5-b34c-dedba2cb9a4c",
+      "item_id": "e73f3a0d-22fa-483c-8309-57519c5be798",
+      "binding_sha256": "abababababababababababababababababababababababababababababababab",
+      "link_sha256": "abababababababababababababababababababababababababababababababab",
+      "account_observation_sha256": "abababababababababababababababababababababababababababababababab",
+      "identity_sha256": "abababababababababababababababababababababababababababababababab",
+      "profile_sha256": "abababababababababababababababababababababababababababababababab",
+      "binary_sha256": "abababababababababababababababababababababababababababababababab",
+      "quota_basis_sha256": "abababababababababababababababababababababababababababababababab",
+      "started_at": "2030-01-01T00:00:00Z",
+      "deadline": "2030-01-01T00:00:30Z",
+      "maximum_parallel": 1,
+      "billing_evidence": "FRESH_OWNER_REPORT_DISABLED_SAME_LINKED_ACCOUNT",
+      "dispatch_authority": "NONE"
+    },
+    "sha256": "fcd392a86b3b871cc07b05823ac9998d5b35a1e41463d38b1f205e414abf3d04"
+  }
+}
