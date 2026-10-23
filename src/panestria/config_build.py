@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from panestria.config_local import read_private
 from panestria.contracts.native_connection import NativeConnectionSelection
+from panestria.contracts.native_model import NativeModel
 from panestria.verification.registry import CommandRegistry, RegisteredCommand
 
 
@@ -39,6 +40,7 @@ class BuildSettings(BaseModel):
     record_runtime_metrics: bool = False
     capture_verified_results: bool = False
     native_connection: NativeConnectionSelection | None = Field(default=None, exclude_if=lambda value: value is None)
+    native_model: NativeModel | None = Field(default=None, exclude_if=lambda value: value is None)
 
     @property
     def protected(self) -> Path:

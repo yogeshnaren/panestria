@@ -24,17 +24,21 @@ if TYPE_CHECKING:
 
 def preflight_connection(owner: "OwnerBuild") -> None:
     selection = owner.settings.native_connection
+    model = owner.settings.native_model
     if selection is None:
+        if model is not None:
+            raise KernelDenied("selected_model_requires_reviewed_native_connection")
         return
     anchor = BackgroundAccountService(account_reports(owner)).observation(selection.account_observation_sha256)
-    configuration = native_configuration(anchor, runtime_versions(), REQUESTED_MODEL)
+    configuration = native_configuration(anchor, runtime_versions(model), model or REQUESTED_MODEL)
     with owner.connect() as c:
         grant = ConnectionReviewService().current(UnitOfWork(c), owner.actor, selection.grant_id)
         if (
             grant.version != selection.version
             or grant.state != "DECLARED_ACTIVE"
             or grant.policy_status != "CURRENT"
-            or grant.manifest.schema_version != 2
+            or grant.manifest.schema_version != (3 if model is not None else 2)
+            or grant.manifest.requested_model != model
             or grant.manifest.configuration_sha256 != configuration
         ):
             raise KernelDenied("native_connection_not_current")
@@ -42,12 +46,15 @@ def preflight_connection(owner: "OwnerBuild") -> None:
 
 def selected_authority(owner: "OwnerBuild", scope: ToolScope, context: str | None) -> WorkerAuthority | None:
     selection = owner.settings.native_connection
+    model = owner.settings.native_model
     if selection is None:
+        if model is not None:
+            raise KernelDenied("selected_model_requires_reviewed_native_connection")
         return None  # Legacy policy-only configurations acquire no connection claim.
     accounts, broker = BackgroundAccountService(account_reports(owner)), NativeConnectionBroker()
     anchor = accounts.observation(selection.account_observation_sha256)
-    versions = runtime_versions()
-    configuration = native_configuration(anchor, versions, REQUESTED_MODEL)
+    versions = runtime_versions(model)
+    configuration = native_configuration(anchor, versions, model or REQUESTED_MODEL)
     current = accounts.observation(collect_account(owner, anchor.account_ref))
     reservation = (
         None
@@ -58,14 +65,22 @@ def selected_authority(owner: "OwnerBuild", scope: ToolScope, context: str | Non
             configuration_sha256=configuration,
             context_sha256=hashlib.sha256(context.encode()).hexdigest(),
             context_bytes=len(context.encode()),
+            requested_model=model,
         )
     )
 
     def authorize(connection: psycopg.Connection[Any]) -> None:
-        if runtime_versions() != versions or native_configuration(current, versions, REQUESTED_MODEL) != configuration:
+        if (
+            owner.settings.native_model != model
+            or owner.settings.native_connection != selection
+            or runtime_versions(model) != versions
+            or native_configuration(current, versions, model or REQUESTED_MODEL) != configuration
+        ):
             raise KernelDenied("native_connection_account_or_configuration_changed")
         if reservation is None:
-            broker.authorize(UnitOfWork(connection), owner.actor, selection, configuration, current, scope)
+            broker.authorize(
+                UnitOfWork(connection), owner.actor, selection, configuration, current, scope, requested_model=model
+            )
         else:
             broker.require_reserved(UnitOfWork(connection), owner.actor, reservation, current)
 
@@ -74,13 +89,13 @@ def selected_authority(owner: "OwnerBuild", scope: ToolScope, context: str | Non
         with owner.connect() as c:
             authorize(c)
         fresh = accounts.observation(collect_account(owner, anchor.account_ref))
-        if native_configuration(fresh, versions, REQUESTED_MODEL) != configuration:
+        if native_configuration(fresh, versions, model or REQUESTED_MODEL) != configuration:
             raise KernelDenied("native_connection_account_or_configuration_changed")
         current = fresh
         with owner.connect() as c:
             authorize(c)
 
-    if native_configuration(current, versions, REQUESTED_MODEL) != configuration:
+    if native_configuration(current, versions, model or REQUESTED_MODEL) != configuration:
         raise KernelDenied("native_connection_account_or_configuration_changed")
     with owner.connect() as c:
         if reservation is not None:

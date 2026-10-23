@@ -49,15 +49,17 @@ def native_template(
             raise LocalApplicationRejected("connection_scope_mismatch")
         digest = collect_account(owner, str(account_ref))
         account = BackgroundAccountService(account_reports(owner)).observation(digest)
+        model = owner.settings.native_model
         manifest = ConnectionManifest(
-            schema_version=2,
+            schema_version=3 if model is not None else 2,
             owner_id=scope.owner_id,
             project_id=scope.project_id,
             connector_ref="claude-public-bash",
-            connector_version="account-context-v1",
+            connector_version="model-context-v2" if model is not None else "account-context-v1",
+            requested_model=model,
             provider_route="claude-subscription",
             budget_scope="SELECTED_PUBLIC_CONTEXT_AND_NATIVE_LAUNCHES",
-            configuration_sha256=native_configuration(account, runtime_versions(), REQUESTED_MODEL),
+            configuration_sha256=native_configuration(account, runtime_versions(model), model or REQUESTED_MODEL),
             account_ref=account.account_ref,
             root_refs=(account.profile_sha256,),
             actions=("read", "write", "send"),
@@ -85,6 +87,7 @@ def native_template(
                     "proposal_id": str(proposal_id),
                     "account_observation_sha256": digest,
                     "configuration_sha256": manifest.configuration_sha256,
+                    "requested_model": model or REQUESTED_MODEL,
                     "selection_after_separate_approval": {
                         "grant_id": "USE_RECORDED_GRANT_ID",
                         "version": 1,

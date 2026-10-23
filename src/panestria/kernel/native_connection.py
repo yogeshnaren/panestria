@@ -11,6 +11,7 @@ from typing import Any
 
 from panestria.contracts.native_account import NativeAccountObservation
 from panestria.contracts.native_connection import NativeConnectionReservation, NativeConnectionSelection
+from panestria.contracts.native_model import NativeModel
 from panestria.contracts.native_tools import ToolScope
 from panestria.kernel.connections import ConnectionDeclaration, ConnectionReviewService
 from panestria.kernel.errors import KernelDenied
@@ -56,6 +57,8 @@ class NativeConnectionBroker:
         configuration_sha256: str,
         observation: NativeAccountObservation,
         scope: ToolScope | None = None,
+        *,
+        requested_model: NativeModel | None = None,
     ) -> ConnectionDeclaration:
         declaration = ConnectionReviewService().current(uow, actor, selection.grant_id)
         manifest = declaration.manifest
@@ -68,7 +71,8 @@ class NativeConnectionBroker:
         ):
             raise KernelDenied("native_connection_not_current")
         if (
-            manifest.schema_version != 2
+            manifest.schema_version != (3 if requested_model is not None else 2)
+            or manifest.requested_model != requested_model
             or manifest.conformance_sha256 != policy.trust.runtime_certificate_sha256
             or manifest.configuration_sha256 != configuration_sha256
             or manifest.account_ref != observation.account_ref
@@ -82,7 +86,7 @@ class NativeConnectionBroker:
             raise KernelDenied("native_connection_account_observation_stale_or_future")
         rows = self._rows(uow, actor, selection)
         records = [self._record(row, actor) for row in rows]
-        if any(r.configuration_sha256 != configuration_sha256 for r in records):
+        if any(r.configuration_sha256 != configuration_sha256 or r.requested_model != requested_model for r in records):
             raise KernelDenied("native_connection_reservation_invalid")
         if len(rows) > manifest.budget.max_calls or sum(r.context_bytes for r in records) > manifest.budget.max_bytes:
             raise KernelDenied("native_connection_budget_unconfirmed")
@@ -102,7 +106,15 @@ class NativeConnectionBroker:
         scope, selection = reservation.scope, reservation.selection
         if (str(scope.owner_id), str(scope.project_id)) != (actor.owner_id, actor.project_id):
             raise KernelDenied("not_found")
-        declaration = self.authorize(uow, actor, selection, reservation.configuration_sha256, observation, scope)
+        declaration = self.authorize(
+            uow,
+            actor,
+            selection,
+            reservation.configuration_sha256,
+            observation,
+            scope,
+            requested_model=reservation.requested_model,
+        )
         rows = self._rows(uow, actor, selection)
         records = [self._record(row, actor) for row in rows]
         for old in records:
@@ -148,7 +160,13 @@ class NativeConnectionBroker:
         observation: NativeAccountObservation,
     ) -> None:
         self.authorize(
-            uow, actor, reservation.selection, reservation.configuration_sha256, observation, reservation.scope
+            uow,
+            actor,
+            reservation.selection,
+            reservation.configuration_sha256,
+            observation,
+            reservation.scope,
+            requested_model=reservation.requested_model,
         )
         if reservation not in [self._record(r, actor) for r in self._rows(uow, actor, reservation.selection)]:
             raise KernelDenied("native_connection_reservation_required")

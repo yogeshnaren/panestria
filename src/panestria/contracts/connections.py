@@ -13,6 +13,7 @@ from urllib.parse import urlsplit
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, StrictInt, field_validator, model_validator
 
 from panestria.contracts.classification import CanonicalClass, classification_rank
+from panestria.contracts.native_model import NativeModel
 
 ConnectionId = Annotated[str, Field(pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")]
 Digest = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
@@ -34,7 +35,7 @@ class ConnectionBudget(ConnectionContract):
 
 
 class ConnectionManifest(ConnectionContract):
-    schema_version: StrictInt = Field(default=1, ge=1, le=2)
+    schema_version: StrictInt = Field(default=1, ge=1, le=3)
     owner_id: ConnectionId
     project_id: ConnectionId
     connector_ref: str = Field(pattern=r"^[a-z][a-z0-9-]{0,63}$")
@@ -54,6 +55,7 @@ class ConnectionManifest(ConnectionContract):
     budget_scope: Literal["SELECTED_PUBLIC_CONTEXT_AND_NATIVE_LAUNCHES"] | None = Field(
         default=None, exclude_if=lambda value: value is None
     )
+    requested_model: NativeModel | None = Field(default=None, exclude_if=lambda value: value is None)
 
     @field_validator("actions", "root_refs")
     @classmethod
@@ -108,10 +110,17 @@ class ConnectionManifest(ConnectionContract):
 
     @model_validator(mode="after")
     def bounded_scope(self) -> Self:
-        if self.schema_version == 2:
+        if self.schema_version in {2, 3}:
             if (
                 self.connector_ref != "claude-public-bash"
-                or self.connector_version != "account-context-v1"
+                or (
+                    self.schema_version == 2
+                    and (self.connector_version != "account-context-v1" or self.requested_model)
+                )
+                or (
+                    self.schema_version == 3
+                    and (self.connector_version != "model-context-v2" or self.requested_model is None)
+                )
                 or self.provider_route != "claude-subscription"
                 or self.budget_scope != "SELECTED_PUBLIC_CONTEXT_AND_NATIVE_LAUNCHES"
                 or len(self.root_refs) != 1
@@ -123,7 +132,7 @@ class ConnectionManifest(ConnectionContract):
             ):
                 raise ValueError("native_connection_scope_invalid")
             return self
-        if self.provider_route is not None or self.budget_scope is not None:
+        if self.provider_route is not None or self.budget_scope is not None or self.requested_model is not None:
             raise ValueError("connection_v1_route_invalid")
         if not self.root_refs and not self.origins:
             raise ValueError("unbounded_connection_scope")

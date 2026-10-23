@@ -10,13 +10,18 @@ from collections.abc import Callable
 
 from panestria.brokers.harness.bash_protocol import ScopedBashSession
 from panestria.brokers.harness.claude_check import CheckProfileObservation, ClaudeRegisteredCheckAdapter
-from panestria.brokers.harness.claude_proposal import ProposalUnavailable
+from panestria.brokers.harness.claude_proposal import ClaudeProposalAdapter, ProposalUnavailable
+from panestria.contracts.native_model import NativeModel, validate_native_model
 
 PROFILE = "claude-subscription-public-bash-v1"
 TOOL = "mcp__panestria__run_scoped_bash"
 
 
 class ClaudeScopedBashAdapter(ClaudeRegisteredCheckAdapter):
+    def __init__(self, native: ClaudeProposalAdapter, *, native_model: NativeModel | None = None) -> None:
+        super().__init__(native)
+        self.native_model = validate_native_model(native_model)
+
     def build_public(
         self,
         session: ScopedBashSession,
@@ -72,4 +77,5 @@ class ClaudeScopedBashAdapter(ClaudeRegisteredCheckAdapter):
             startup_only=startup_only,
             cancel=cancel,
             before_launch=before_launch,
+            native_model=self.native_model,
         )

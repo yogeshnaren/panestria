@@ -17,12 +17,18 @@ native_app = typer.Typer(no_args_is_help=True)
 def qualify_build_command(
     evidence_directory: Annotated[Path, typer.Option("--evidence-directory")],
     public_subscription_smoke: Annotated[bool, typer.Option("--public-subscription-smoke")] = False,
+    model: Annotated[str | None, typer.Option("--model")] = None,
 ) -> None:
     """Run fixed PUBLIC conformance and issue an expiring runtime-only certificate."""
+    from panestria.contracts.native_model import validate_native_model
     from panestria.execution.native_qualification import QualificationUnavailable, qualify
 
     try:
-        result = qualify(evidence_directory, public_subscription_smoke=public_subscription_smoke)
+        result = qualify(
+            evidence_directory,
+            public_subscription_smoke=public_subscription_smoke,
+            native_model=validate_native_model(model),
+        )
     except (QualificationUnavailable, OSError, ValueError):
         result = {"status": "UNAVAILABLE", "reason": "qualification_prerequisite_unavailable"}
     typer.echo(json.dumps(result, sort_keys=True))

@@ -36,6 +36,10 @@ class BackgroundPlanRunner(NativePlanRunner):
         return _lock(self.owner.settings.root / "background-operation.lock")
 
     def _preflight(self, plan_id: str) -> StoredPlan:
+        # Existing queued policies bind the legacy fixed model. A foreground
+        # model setting is never permission to reinterpret that immutable work.
+        if self.owner.settings.native_model is not None:
+            raise KernelDenied("background_selected_model_not_supported")
         # Existing current-policy, source/runtime certificate, exact inventory,
         # Git base and pinned adapter checks remain mandatory before admission.
         plan = super()._preflight(plan_id)

@@ -20,6 +20,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 
+from panestria.contracts.native_model import NativeModel, validate_native_model
 from panestria.contracts.policy import Action, TrustAxis
 from panestria.execution.native_build import runtime_versions
 from panestria.execution.proposal_demo import DemoUnavailable, _atomic, _lock, _private
@@ -60,7 +61,7 @@ class QualificationUnavailable(ValueError):
     pass
 
 
-def validate_report(raw: bytes, candidate: str) -> list[dict[str, str]]:
+def validate_report(raw: bytes, candidate: str, native_model: NativeModel | None = None) -> list[dict[str, str]]:
     try:
         if type(raw) is not bytes or len(raw) > 1024 * 1024 or b"<!DOCTYPE" in raw or b"<!ENTITY" in raw:
             raise ValueError
@@ -81,11 +82,21 @@ def validate_report(raw: bytes, candidate: str) -> list[dict[str, str]]:
                 raise ValueError
             if "TEST_FIXTURE_NOT_LIVE" in json.dumps(props):
                 raise ValueError
+            if native_model is not None and identity == (
+                "tests.integration.test_scoped_bash",
+                "test_actual_claude_subscription_bash_build_and_exact_review",
+            ):
+                observation = json.loads(props.get("native_observation") or "null")
+                if (
+                    observation["requested_model"] != native_model
+                    or observation["process"]["result"]["reported_init_model"] != native_model
+                ):
+                    raise ValueError
             observed.append({"module": str(identity[0]), "test": str(identity[1])})
         if seen != EXPECTED:
             raise ValueError
         return sorted(observed, key=lambda row: (row["module"], row["test"]))
-    except (ValueError, TypeError, ET.ParseError):
+    except (ValueError, TypeError, KeyError, ET.ParseError):
         raise QualificationUnavailable("qualification_evidence_incomplete") from None
 
 
@@ -132,20 +143,26 @@ def _stop(process: subprocess.Popen[bytes]) -> None:
         raise QualificationUnavailable("qualification_cleanup_unconfirmed") from None
 
 
-def qualify(directory: Path, *, public_subscription_smoke: bool) -> dict[str, object]:
+def qualify(
+    directory: Path, *, public_subscription_smoke: bool, native_model: NativeModel | None = None
+) -> dict[str, object]:
     try:
-        return _qualify(directory, public_subscription_smoke=public_subscription_smoke)
+        return _qualify(directory, public_subscription_smoke=public_subscription_smoke, native_model=native_model)
     except DemoUnavailable:
         raise QualificationUnavailable("private_qualification_directory_unavailable") from None
 
 
-def _qualify(directory: Path, *, public_subscription_smoke: bool) -> dict[str, object]:
+def _qualify(
+    directory: Path, *, public_subscription_smoke: bool, native_model: NativeModel | None = None
+) -> dict[str, object]:
     if public_subscription_smoke is not True:
         raise QualificationUnavailable("explicit_public_subscription_smoke_required")
+    validate_native_model(native_model)
     root = Path(__file__).resolve().parents[3]
     if (root / "src/panestria").resolve() != Path(__file__).resolve().parents[1] or not (root / "uv.lock").is_file():
         raise QualificationUnavailable("qualification_source_checkout_required")
-    candidate, versions = _state(root), runtime_versions()
+    candidate = _state(root)
+    versions = runtime_versions(native_model) if native_model is not None else runtime_versions()
     uv = shutil.which("uv")
     if uv is None:
         raise QualificationUnavailable("frozen_qualification_runtime_required")
@@ -164,6 +181,7 @@ def _qualify(directory: Path, *, public_subscription_smoke: bool) -> dict[str, o
             "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
             "PYTHONNOUSERSITE": "1",
             "PYTHONDONTWRITEBYTECODE": "1",
+            **({"PANESTRIA_QUALIFICATION_NATIVE_MODEL": native_model} if native_model is not None else {}),
         }
         command = [sys.executable, "-I", "-m", "pytest", *NODES, "-q", "--maxfail=1", "--junitxml=" + str(xml)]
         process = None
@@ -188,8 +206,9 @@ def _qualify(directory: Path, *, public_subscription_smoke: bool) -> dict[str, o
             if process.returncode:
                 raise QualificationUnavailable("qualification_cases_failed")
             raw = xml.read_bytes()
-            observations = validate_report(raw, candidate)
-            if _state(root) != candidate or runtime_versions() != versions:
+            observations = validate_report(raw, candidate, native_model)
+            current = runtime_versions(native_model) if native_model is not None else runtime_versions()
+            if _state(root) != candidate or current != versions:
                 raise QualificationUnavailable("qualification_source_changed")
             blobs = BuildEvidenceStore(destination / "certificates")
             # Raw XML remains in the private run directory. The protected report

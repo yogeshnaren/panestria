@@ -25,6 +25,7 @@ from panestria.brokers.harness.command_protocol import RegisteredCheckSession
 from panestria.brokers.harness.command_transport import RegisteredCheckSocket
 from panestria.brokers.harness.event_parser import ClaudeEventParser
 from panestria.brokers.harness.process_runner import ProcessReceipt, collect_native
+from panestria.contracts.native_model import NativeModel, validate_native_model
 
 PROFILE = "claude-subscription-public-check-v1"
 REQUESTED_MODEL = "haiku"
@@ -134,7 +135,10 @@ class ClaudeRegisteredCheckAdapter:
         startup_only: bool,
         cancel: threading.Event | None,
         before_launch: Callable[[], None] | None = None,
+        native_model: NativeModel | None = None,
     ) -> CheckProfileObservation:
+        validate_native_model(native_model)
+        requested_model = native_model or REQUESTED_MODEL
         if not startup_only:
             self.native.inspect()  # Official redacted subscription metadata, no credential reads.
         elif self.native.pin.sha256 != PINNED_BINARY_SHA256:
@@ -163,7 +167,17 @@ class ClaudeRegisteredCheckAdapter:
                 prompt.chmod(0o400)
                 pins = {prompt: hashlib.sha256(prompt.read_bytes()).hexdigest()}
                 settings = root / "settings.json"
-                pins[settings] = _write(settings, SETTINGS)
+                pins[settings] = _write(
+                    settings,
+                    {
+                        **SETTINGS,
+                        **(
+                            {"availableModels": [native_model], "fallbackModel": [], "switchModelsOnFlag": False}
+                            if native_model is not None
+                            else {}
+                        ),
+                    },
+                )
                 env = {
                     "PATH": "/usr/bin:/bin",
                     "HOME": folder,
@@ -238,12 +252,16 @@ class ClaudeRegisteredCheckAdapter:
                         "--max-budget-usd",
                         "0.25",
                         "--model",
-                        REQUESTED_MODEL,
+                        requested_model,
                         "--system-prompt-file",
                         str(prompt),
                         instruction,
                     )
-                    parser = ClaudeEventParser(frozenset({tool}), allowed_mcp_servers=frozenset({"panestria"}))
+                    parser = ClaudeEventParser(
+                        frozenset({tool}),
+                        allowed_mcp_servers=frozenset({"panestria"}),
+                        expected_model=native_model,
+                    )
                     process: ProcessReceipt | None
                     if cancel is not None and cancel.is_set():
                         raise ProposalUnavailable("native_check_cancelled_before_launch")
@@ -283,7 +301,7 @@ class ClaudeRegisteredCheckAdapter:
                 if not clean:
                     raise ProposalUnavailable("untrusted_native_configuration_executed")
                 return CheckProfileObservation(
-                    process, parser.session is not None, clean, digest, profile, REQUESTED_MODEL
+                    process, parser.session is not None, clean, digest, profile, requested_model
                 )
         except OSError:
             raise ProposalUnavailable("native_check_launch_unavailable") from None

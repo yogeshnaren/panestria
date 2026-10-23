@@ -47,7 +47,7 @@ class OwnerBuild:
     def __init__(self, settings: BuildSettings, dsn: str) -> None:
         self.settings, self.dsn = settings, dsn
         self.actor = Actor(str(settings.owner_id), str(settings.project_id))
-        self.certificates = CertificateStore(settings.certificates, runtime_versions())
+        self.certificates = CertificateStore(settings.certificates, runtime_versions(settings.native_model))
         self.reports = BuildEvidenceStore(settings.root / "reports")
         self.registry = settings.registry()
 
@@ -293,11 +293,12 @@ class OwnerBuild:
             self.reports,
         )
         native = ClaudeScopedBashAdapter(
-            ClaudeProposalAdapter(BinaryPin(s.native_binary, PINNED_BINARY_SHA256), s.native_config, s.skills_archive)
+            ClaudeProposalAdapter(BinaryPin(s.native_binary, PINNED_BINARY_SHA256), s.native_config, s.skills_archive),
+            native_model=s.native_model,
         )
         cancel = threading.Event()
         try:
-            admitted = AdmittedNativeBuild(controller, selected)
+            admitted = AdmittedNativeBuild(controller, selected, native_model=s.native_model)
             controller.authority = selected_authority(self, scope, admitted.context)
             outcome = admitted.run(
                 native,
