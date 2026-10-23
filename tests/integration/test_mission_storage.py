@@ -82,10 +82,12 @@ def test_explicit_host_storage_mode_requires_fresh_pairing_and_preserves_owner_d
                 and token not in response.text
                 and "PRIVATE_CONTENT" not in response.text
             )
-            for method in (client.post, client.delete):
+            for method in ("POST", "DELETE"):
                 assert (
-                    method(
+                    client.request(
+                        method,
                         "/v1/activity/storage",
+                        json={},
                         headers={"Origin": config.origin, "X-Panestria-CSRF": session["csrf_token"]},
                     ).status_code
                     == 405
