@@ -126,3 +126,39 @@ def show(
     except Exception:
         typer.echo('{"status":"UNAVAILABLE","reason":"metrics_history_unavailable_or_invalid"}', err=True)
         raise typer.Exit(1) from None
+
+
+@metrics_app.command("overview")
+def overview(
+    directory: Annotated[list[Path] | None, typer.Option()] = None,
+    output: Annotated[Path | None, typer.Option()] = None,
+    as_json: Annotated[bool, typer.Option("--json")] = False,
+) -> None:
+    """Read latest runtime measurements by cohort; optionally save a separate private report."""
+    from panestria.telemetry.overview import runtime_overview, save_overview
+
+    try:
+        histories = tuple(directory or [DEFAULT])
+        if output is not None and any(output == path or output.resolve() == path.resolve() for path in histories):
+            raise ValueError("metrics_overview_requires_separate_directory")
+        report = runtime_overview(histories)
+        saved = save_overview(output, report) if output is not None else None
+        if as_json:
+            typer.echo(report.model_dump_json(indent=2))
+        else:
+            typer.echo("Latest saved runtime observations by cohort; no pooled benchmark or release authority")
+            for entry in report.entries:
+                item = entry.measurement
+                value = "UNKNOWN" if item.value is None else f"{item.value:.4g} {item.unit}"
+                typer.echo(
+                    f"{entry.mode} | {entry.owner_id}/{entry.project_id} | {item.scope} | {item.metric}: {value} | "
+                    f"model={item.model or 'UNKNOWN'} | original n={item.samples} | "
+                    f"distinct records={entry.distinct_records} | capture={entry.latest_capture_at.isoformat()}"
+                )
+            typer.echo("NOT MEASURED: " + ", ".join(report.missing_areas))
+            typer.echo(f"Historical non-runtime observations omitted: {report.historical_observations_omitted}")
+        if saved is not None:
+            typer.echo(json.dumps({"status": "SAVED", "path": str(saved)}), err=as_json)
+    except Exception:
+        typer.echo('{"status":"UNAVAILABLE","reason":"metrics_overview_history_or_storage_invalid"}', err=True)
+        raise typer.Exit(1) from None

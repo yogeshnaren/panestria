@@ -2461,7 +2461,8 @@
         "src/panestria/telemetry/ask_metrics.py",
         "src/panestria/telemetry/performance.py",
         "src/panestria/cli/metrics.py",
-        "src/panestria/execution/research_metrics.py"
+        "src/panestria/execution/research_metrics.py",
+        "src/panestria/telemetry/overview.py"
       ],
       "planned_test_file": "tests/integration/test_aos_029.py",
       "case_ids": [
@@ -2470,10 +2471,11 @@
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
       "prompt_ref": "cursor/prompts/AOS-029-S2.md",
-      "scope_note": "Opt-in canonical Build lifecycle/receipt/final-check metrics, ordinary/profile Ask receipt capture and retained research lifecycle/token/receipt/owner-review metrics delivered. Owner-reported judgments stay separate from unknown semantic accuracy and cash. S2 remains partial: full automatic cross-mode usage, tracing/exposure/UI, resources and qualification pending. Opt-in storage activity warnings are delivered; browser/phone host scope, persistence and host qualification pending.",
+      "scope_note": "Opt-in canonical Build lifecycle/receipt/final-check metrics, ordinary/profile Ask receipt capture and retained research lifecycle/token/receipt/owner-review metrics delivered. Owner-reported judgments stay separate from unknown semantic accuracy and cash. S2 remains partial: full automatic cross-mode usage, tracing/exposure/UI, resources and qualification pending. Opt-in storage activity warnings are delivered; browser/phone host scope, persistence and host qualification pending. A saved runtime overview now preserves latest owner/project/model/source cohorts and original denominators; repeated captures do not inflate record inventory. No pooled benchmark or fresh measurement is claimed.",
       "evidence_refs": [
         "evidence/storage-status-terminal-2026-10-22/report.json",
-        "evidence/research-runtime-metrics-2026-10-23/report.json"
+        "evidence/research-runtime-metrics-2026-10-23/report.json",
+        "evidence/performance-overview-2026-10-23/report.json"
       ]
     },
     {

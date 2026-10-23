@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "outcome": "SAVED_RUNTIME_OVERVIEW_COMPONENT_NOT_POOLED_QUALITY_OR_RELEASE_QUALIFICATION",
+  "observations": [
+    {
+      "file": "history.xml",
+      "sha256": "e5b19acf24a04ae7d4c338834d93fd575f8c0c88216fb0349f20ec7103099ee6",
+      "source_commit": "e47f1ed1d3ef4e217839459002d6ebf19f721561",
+      "source_tree": "b0adbbedeaee86d9366e335774e7191cd7428017",
+      "worktree": "CLEAN",
+      "scope": "22PASS actual private filesystem/CLI and synthetic retained measurements plus existing historical performance/Ask capture guards; no actual model/network/database or new benchmark.",
+      "result": {
+        "tests": "22",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "1.245"
+      }
+    },
+    {
+      "file": "versioned-history.xml",
+      "sha256": "48ec34147a562fe33baef147b39a8642559e33f5e54d21cf1b52760aaa884603",
+      "source_commit": "3141c50e20e3690f06e6c4a86dce62f95ad17c98",
+      "source_tree": "de43880ded9cee56a5958abd58848c3b652fba92",
+      "worktree": "COMMITTED_PYTHON_AND_TESTS__UNCOMMITTED_RUNBOOKS_AND_EVIDENCE",
+      "scope": "3affected cases PASS after requiring exact retained source version and bounding missing metadata; actual private filesystem/CLI, synthetic measurements. Documentation/evidence was pending; no frozen whole-tree assertion.",
+      "result": {
+        "tests": "3",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "0.857"
+      }
+    }
+  ],
+  "delivered": [
+    "Single explicit saved runtime overview across Ask/Build/Delegate histories with source-byte hash validation and scoped latest observations.",
+    "Repeated captures count original records once, preserve latest UNKNOWN and original sample denominators; no pooled percentiles or accuracy.",
+    "Bounded private append-only optional reports, separate from collector histories, with corruption/unsafe metadata/storage refusal and no deletion."
+  ],
+  "limits": [
+    "Synthetic retained runtime metadata fixtures are not actual Build/research/model qualification. Existing historical model observations remain bound to their original sources.",
+    "Saved capture time never refreshes actual measurement, rights, consent, billing or runtime qualification. Source byte integrity is not truth or certification.",
+    "No new collection/inference/DB/provider access; existing source hashes refer to selected original histories, not standalone complete archive export.",
+    "AOS029S2/R3 remain IN_PROGRESS; tracing/exposure/resources/phone, semantic quality and cumulative gates/real owner trial remain open."
+  ],
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS (342 source files before ordinary main merge)",
+    "import_boundaries": "11 KEPT",
+    "secret_scan": "PASS"
+  }
+}
