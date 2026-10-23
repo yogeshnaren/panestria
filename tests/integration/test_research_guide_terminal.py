@@ -67,6 +67,10 @@ def confirm(view):
 @pytest.mark.parametrize("admitted_search", [JOINT], indirect=True)
 def test_same_request_guided_plan_disclosure_collection_draft_and_separate_review(guided):
     q, receipt, _, service, calls = guided
+    with service.review.connect() as c:
+        original_requests = c.execute(
+            "SELECT id FROM panestria.research_request WHERE project_id=%s ORDER BY id", (q.f.actor.project_id,)
+        ).fetchall()
     view = ResearchGuideTerminal(service, receipt.request_id)
     assert view.step.action == "PLAN" and not calls and not q.f.server["requests"]
     view.key("v", 16)
@@ -91,8 +95,8 @@ def test_same_request_guided_plan_disclosure_collection_draft_and_separate_revie
     draft = service.review.inspect(receipt.request_id)
     assert draft.semantic_support == "NOT_ASSESSED" and draft.task_completion_authority == "NONE"
     with service.review.connect() as c:
-        assert c.execute("SELECT count(*) FROM panestria.research_request WHERE project_id=%s",
-                         (q.f.actor.project_id,)).fetchone() == (1,)
+        assert c.execute("SELECT id FROM panestria.research_request WHERE project_id=%s ORDER BY id",
+                         (q.f.actor.project_id,)).fetchall() == original_requests
         assert c.execute("SELECT state,lease_epoch FROM panestria.task WHERE id=%s",
                          (receipt.task_id,)).fetchone() == ("VERIFYING", 2)
         assert c.execute("SELECT count(*) FROM panestria.check_run WHERE task_id=%s",
