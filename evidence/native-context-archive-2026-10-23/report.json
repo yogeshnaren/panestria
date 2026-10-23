@@ -1,0 +1,110 @@
+{
+  "kind": "original_selected_build_context_archive_component",
+  "base_commit": "2293aae5d0b8af9ac1b1fda741e2a128ec20e386",
+  "reports": [
+    {
+      "file": "initial.xml",
+      "sha256": "4accce890430252a0344da0c8e599de283a387030b88ab4e500911f8629b395f",
+      "log_sha256": "1198fa378739fb7b2b35f41c8fa2cad9e0c5c37492c7f60f1a083fd14198b762",
+      "source_commit": "bc7ca71c59b46326664c7287cd3c5a131702705a",
+      "source_tree": "8ced85603ed47c56910a6ba24bf35b986aee89c1",
+      "worktree_state": "clean",
+      "same_clean_source_at_end": true,
+      "result": {
+        "tests": "18",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "55.383"
+      },
+      "live_cases_deselected": 1
+    }
+  ],
+  "quality": {
+    "source_commit": "98f7a5adf873148b0015df06f934e133e4b83488",
+    "source_tree": "df7c3a74fe3dfdb6a0addec5f3a09e09a8942d60",
+    "worktree_state": "clean",
+    "checks": [
+      {
+        "argv": [
+          "/tmp/panestria-mission-storage-work/.venv/bin/ruff",
+          "check",
+          "."
+        ],
+        "file": "quality-0.txt",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "/tmp/panestria-mission-storage-work/.venv/bin/mypy",
+          "src/panestria"
+        ],
+        "file": "quality-1.txt",
+        "sha256": "f789f6883d3d5537a67c4817cb7aa87858ad0bc4d98d20a77349fefafb937d1e",
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "/tmp/panestria-mission-storage-work/.venv/bin/lint-imports",
+          "--config",
+          ".importlinter"
+        ],
+        "file": "quality-2.txt",
+        "sha256": "cd6d6904e9fd1732f6b7a404c75e38e3d99e2180a0e1f3a074aa52bc7cc95088",
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "/tmp/panestria-mission-storage-work/.venv/bin/python",
+          "tools/secret_scan.py"
+        ],
+        "file": "quality-3.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit_code": 0
+      }
+    ]
+  },
+  "observed_outcomes": [
+    "Original controller records bounded typed task/header/file metadata in protected native return receipts, without file content. Exact canonical selected input is independently reconstructable from its immutable protected Git tree and verified against the original invocation/request hash.",
+    "Actual two-worker PG/Git/MCP/Docker independent checks, scripted exact test-owner merge, opt-in private archive and standalone copied-archive CLI input inspection passed. The original calculator input is value42 while the confirmed output is43; the new-file assignment has no selected file bytes and still retains an exact original context.",
+    "Copied offline inspection with unavailable DB/auth/certificate and absent Git needs none of them. Default view remains metadata-only; an explicit invocation selection exposes one selected PUBLIC input, at most16KiB.",
+    "Original file-hash, task-assignment or missing-tree faults leave the independently confirmed merge intact but refuse archive publication. No new worker or inference is requested by recapture.",
+    "Forged model provenance cannot replace the original copied receipt observation. Schema1/2 compatibility packets remain UNKNOWN for absent inputs and are read without rewriting; these packets are generated compatibility fixtures, not relabeled historical evidence.",
+    "Existing archive capacity failure, deduplication, wrong-owner/integrity refusal and ordinary local recall remain passing. UTF8/empty input, unsafe/ambiguous paths, changed content, noncanonical/oversize contexts are exercised without I/O."
+  ],
+  "storage_and_privacy": {
+    "existing_capture_payload_cap_bytes": 1048576,
+    "existing_history_cap_bytes": 8388608,
+    "existing_report_cap_bytes": 32768,
+    "existing_manifest_cap_bytes": 32768,
+    "selected_context_cap_bytes": 16384,
+    "automatic_deletion": "NONE",
+    "default_raw_view": "OFF",
+    "purpose": "OWNER_LOCAL_REFERENCE",
+    "training_eligibility": "UNKNOWN",
+    "training_export": "DENIED"
+  },
+  "actual_infrastructure": [
+    "disposable PostgreSQL55439",
+    "Git immutable source blobs and final tree",
+    "MCP/Docker scoped tools and independent verification",
+    "private CAS/archive files",
+    "CLI and copied offline reader"
+  ],
+  "synthetic_or_unqualified": [
+    "native generation/transport",
+    "authentication/account metadata and hardware capacity",
+    "runtime certificates",
+    "scripted test-owner acceptance, not the human owner trial"
+  ],
+  "limits": [
+    "Only selected native Build input is retained; fixed prompts, later tool conversation, raw native/model output and physical traffic are not captured or inferred.",
+    "Original absent input metadata stays UNKNOWN; current source code/model defaults cannot backfill old inputs or change an original archive digest.",
+    "Archive schema3 proves retained byte lineage, not model quality, true remote receipt, entitlement or independent provider/training-purpose rights.",
+    "No owner DB/service/profile/configuration, provider call, model download, driver/backup setting or original evidence/certificate was changed.",
+    "Broader Ask/Delegate/raw-candidate capture, rights and full TC08/TC09/S6/G1/G2/G3/R3 trial remain open. Search/real phone are owner-deferred; stale billing remains background OFF."
+  ],
+  "release_gate": "NOT_EVALUATED",
+  "ci": "Exact-head all-six-check GitHub CI remains required before merge; original workflow artifacts are retained outside Git."
+}
