@@ -1389,6 +1389,11 @@ export interface components {
              */
             plan_acceptance_enabled: boolean;
             /**
+             * Private Phone Enabled
+             * @default false
+             */
+            private_phone_enabled: boolean;
+            /**
              * Research Intake Enabled
              * @default false
              */

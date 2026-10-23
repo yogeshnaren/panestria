@@ -37,7 +37,10 @@ def _phone_service(config: PhoneSettings, token: str, certificate_hash: str) -> 
         raise LocalApplicationRejected("phone_disabled")
     scope = hashlib.sha256(
         json.dumps(
-            {"configuration": config.model_dump(mode="json"), "certificate_sha256": certificate_hash},
+            {
+                "configuration": config.model_dump(mode="json", exclude_none=True),
+                "certificate_sha256": certificate_hash,
+            },
             sort_keys=True,
             separators=(",", ":"),
         ).encode()
@@ -111,7 +114,9 @@ def build_phone_app(config: PhoneSettings, settings: ValidatedSettings, token: s
     )
     access.session_seconds = 3600
     try:
-        mount_mission_control(app, config, token, assets, phone_access=access)
+        mount_mission_control(
+            app, config, token, assets, phone_access=access, build_evidence_store=config.build_evidence_store
+        )
         app.add_middleware(PhoneBoundary, clients=config.allowed_clients)
         app.state.phone_certificate_sha256 = certificate_hash
         return app

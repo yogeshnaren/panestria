@@ -8,7 +8,7 @@ export function ReviewInbox({owner,project,now,canInspectPlan,onPlan,onGoal,deny
   useEffect(()=>{const controller=new AbortController();setView(null);setAt(0);
     const read=async()=>{try{const value=await json<Inbox>(`/v1/activity/reviews?limit=16${after?`&after=${after}`:''}`,controller.signal);
       if(value.owner_id!==owner || value.project_id!==project || value.view_authority!=='READ_ONLY_METADATA' || value.decision_authority!=='NONE' || !Array.isArray(value.entries) || value.entries.length>16)throw new Error('Unconfirmed inbox');
-      if(controller.signal.aborted)return;setView(value);setAt(Date.now());setNotice('Canonical pending records observed. Exact current review is required before any decision.');
+      if(controller.signal.aborted)return;setView(value);setAt(performance.now());setNotice('Canonical pending records observed. Exact current review is required before any decision.');
     }catch(error){if(controller.signal.aborted)return;setView(null);setAt(0);if(error instanceof Denied)denyRef.current();else setNotice('Pending reviews UNCONFIRMED. Entries hidden; retry or return to first page.');}};
     void read();const timer=setInterval(()=>void read(),10000);return()=>{controller.abort();clearInterval(timer);};
   },[owner,project,after,version]);
@@ -21,7 +21,7 @@ export function ReviewInbox({owner,project,now,canInspectPlan,onPlan,onGoal,deny
         {view.entries.map(entry=><tr key={`${entry.kind}:${entry.id}`} data-review-id={entry.id}>
           <td>{entry.kind==='PLAN'?'Plan consent':'Action approval'}<br/><code>{entry.id}</code><br/>Goal <code>{entry.goal_id}</code></td>
           <td>{entry.canonical_state}<br/>Goal {entry.goal_status}</td><td>{entry.expires_at}<br/>{entry.expired?'EXPIRED · inspect before deciding':'Expiry not yet reached; other guards still apply'}</td>
-          <td>{entry.kind==='PLAN'?(canInspectPlan?<button onClick={()=>onPlan(entry.id)}>Select plan for inspection</button>:<span>Use explicit Build intake or plan review mode and this plan ID.</span>):<button onClick={()=>onGoal(entry.goal_id)}>Open approval goal</button>}</td>
+          <td>{entry.kind==='PLAN'?(canInspectPlan?<button onClick={()=>onPlan(entry.id)}>Select plan for inspection</button>:<span>Review this plan on the workstation using its ID.</span>):<button onClick={()=>onGoal(entry.goal_id)}>Open approval goal</button>}</td>
         </tr>)}
       </tbody></table></div></>}
     <div className="actions"><button onClick={()=>{setAfter(null);setVersion(v=>v+1);}}>First page / refresh reviews</button>

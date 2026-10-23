@@ -9,6 +9,8 @@ import {ResearchIntake} from './ResearchIntake';
 import {BuildIntake} from './BuildIntake';
 import {ReviewInbox} from './ReviewInbox';
 import {StorageNotices} from './StorageNotices';
+// Fixed server mode label; authenticated capabilities must independently agree.
+const phoneMode = document.getElementById('root')?.dataset.phoneObserver === 'true';
 
 function useGoal(goal: string | null, scope: Activity | null, denied: () => void) {
   const [view, setView] = useState<{page: Timeline | null, events: Event[], notice: string, fresh: boolean, observedAt: number}>(
@@ -24,7 +26,7 @@ function useGoal(goal: string | null, scope: Activity | null, denied: () => void
         try {
           const page = validateTimeline(await json<Timeline>(`${path}?after=${after}`, controller.signal), goal, scope);
           if (controller.signal.aborted) return;
-          setView(prior => ({page,events:mergeEvents(prior.events,page),fresh:true,observedAt:Date.now(),
+          setView(prior => ({page,events:mergeEvents(prior.events,page),fresh:true,observedAt:performance.now(),
             notice:page.resync ? 'History resynchronized. Older retained events are unavailable.' : 'Canonical snapshot confirmed.'}));
           const previous = after; after = page.next_cursor; backoff = 1000;
           if (!page.resync && page.events.length === 50 && after !== previous) continue;
@@ -47,8 +49,11 @@ function useGoal(goal: string | null, scope: Activity | null, denied: () => void
 }
 function Dashboard() {
   const [now,setNow] = useState(Date.now());
+  const [monotonicNow,setMonotonicNow] = useState(performance.now());
+  const [readEpoch,setReadEpoch] = useState(0);
   const [listAt,setListAt] = useState(0);
-  useEffect(() => {const timer = setInterval(()=>setNow(Date.now()),1000);return ()=>clearInterval(timer);},[]);
+  const [lastObserved,setLastObserved] = useState<string|null>(null);
+  useEffect(() => {const timer = setInterval(()=>{setNow(Date.now());setMonotonicNow(performance.now());},1000);return ()=>clearInterval(timer);},[]);
   const [activity,setActivity] = useState<Activity|null>(null);
   const [goal,setGoal] = useState<string|null>(null);
   const [notice,setNotice] = useState('Pair to inspect this project.');
@@ -67,17 +72,30 @@ function Dashboard() {
   const [buildRunMode,setBuildRunMode] = useState(false);
   const [storageMode,setStorageMode] = useState(false);
   const [planSelection,setPlanSelection]=useState<{id:string,version:number}|null>(null);
-  const denied = () => {setMayRead(false); setAuthenticated(false); setActivity(null); setGoal(null); setCsrf(null); setListFresh(false);setPlanSelection(null);};
+  const denied = () => {setMayRead(false); setAuthenticated(false); setActivity(null); setGoal(null); setCsrf(null); setListFresh(false);setPlanSelection(null);setLastObserved(null);};
   const timeline = useGoal(goal, activity, denied);
+  useEffect(()=>{
+    if(!phoneMode)return;
+    const reset=()=>{setActivity(null);setListFresh(false);setReadEpoch(value=>value+1);
+      setNotice(document.visibilityState==='hidden'?'View paused in the background.':!navigator.onLine?'This device is offline. Workstation state is unconfirmed.':'Rechecking current workstation state…');};
+    document.addEventListener('visibilitychange',reset);
+    window.addEventListener('pageshow',reset);window.addEventListener('online',reset);window.addEventListener('offline',reset);
+    return()=>{document.removeEventListener('visibilitychange',reset);window.removeEventListener('pageshow',reset);window.removeEventListener('online',reset);window.removeEventListener('offline',reset);};
+  },[]);
   async function load(cursor: string|null, signal: AbortSignal) {
     const data = await json<Activity>(`/v1/activity?limit=16${cursor ? `&before=${cursor}` : ''}`,AbortSignal.any([signal,AbortSignal.timeout(5000)]));
     if (data.view_authority !== 'READ_ONLY_METADATA' || data.acceptance_authority !== 'NONE' ||
-        !Array.isArray(data.entries) || data.entries.length > 16) throw new Error('Unconfirmed project response.');
+        !Array.isArray(data.entries) || data.entries.length > 16 || typeof data.observed_at!=='string' ||
+        !Number.isFinite(Date.parse(data.observed_at))) throw new Error('Unconfirmed project response.');
     if (signal.aborted) return;
-    const capabilities = await json<{build_review_enabled:boolean,offline_ask_enabled:boolean,research_intake_enabled:boolean,build_intake_enabled:boolean,plan_acceptance_enabled:boolean,build_run_enabled:boolean,storage_status_enabled?:boolean,dispatch_authority:string}>('/v1/mission/capabilities',signal);
+    const capabilities = await json<{build_review_enabled:boolean,offline_ask_enabled:boolean,research_intake_enabled:boolean,build_intake_enabled:boolean,plan_acceptance_enabled:boolean,build_run_enabled:boolean,storage_status_enabled?:boolean,private_phone_enabled?:boolean,dispatch_authority:string}>('/v1/mission/capabilities',signal);
     if (signal.aborted) return;
     if(typeof capabilities.build_review_enabled!=='boolean' || typeof capabilities.offline_ask_enabled!=='boolean' || typeof capabilities.research_intake_enabled!=='boolean' || typeof capabilities.build_intake_enabled!=='boolean' || typeof capabilities.plan_acceptance_enabled!=='boolean' || typeof capabilities.build_run_enabled!=='boolean' || capabilities.dispatch_authority!==(capabilities.build_run_enabled?'EXPLICIT_FOREGROUND_BUILD':'NONE')) throw new Error('Unconfirmed mode.');
     if(capabilities.storage_status_enabled!==undefined && typeof capabilities.storage_status_enabled!=='boolean') throw new Error('Unconfirmed host-data mode.');
+    if((capabilities.private_phone_enabled??false)!==phoneMode || (phoneMode &&
+      (capabilities.build_review_enabled || capabilities.offline_ask_enabled || capabilities.research_intake_enabled ||
+       capabilities.build_intake_enabled || capabilities.plan_acceptance_enabled || capabilities.build_run_enabled || capabilities.storage_status_enabled)))
+      throw new Error('Unconfirmed phone observer mode.');
     if(capabilities.storage_status_enabled && (capabilities.build_review_enabled || capabilities.offline_ask_enabled || capabilities.research_intake_enabled || capabilities.build_intake_enabled || capabilities.plan_acceptance_enabled || capabilities.build_run_enabled)) throw new Error('Unconfirmed mode combination.');
     setStorageMode(capabilities.storage_status_enabled===true);
     setReviewMode(capabilities.build_review_enabled);
@@ -86,11 +104,11 @@ function Dashboard() {
     setBuildIntakeMode(capabilities.build_intake_enabled);
     setPlanAcceptanceMode(capabilities.plan_acceptance_enabled);
     setBuildRunMode(capabilities.build_run_enabled);
-    setMayRead(true); setActivity(data); setListAt(Date.now()); setListFresh(true); setAuthenticated(true); setNotice('Project snapshot confirmed.');
+    setMayRead(true); setActivity(data); setLastObserved(data.observed_at); setListAt(performance.now()); setListFresh(true); setAuthenticated(true); setNotice('Project snapshot confirmed.');
   }
   useEffect(() => {
     const controller = new AbortController();
-    if (!mayRead) return () => controller.abort();
+    if (!mayRead || (phoneMode && (document.visibilityState==='hidden' || !navigator.onLine))) return () => controller.abort();
     // Cookie can survive a reload; CSRF stays memory-only, so logout requires
     // re-pairing after reload. Read-only metadata still authenticates normally.
     const read = async () => {try {await load(before,controller.signal);} catch (error) {
@@ -100,7 +118,7 @@ function Dashboard() {
     }};
     void read(); const timer = setInterval(() => void read(),10000);
     return () => {controller.abort();clearInterval(timer);};
-  },[before,mayRead]);
+  },[before,mayRead,readEpoch]);
   async function pair(event: FormEvent) {
     event.preventDefault(); if (busy) return; setBusy(true);
     try {
@@ -117,12 +135,13 @@ function Dashboard() {
     finally {setBusy(false);}
   }
   return <main>
-    <header><p className="eyebrow">PANESTRIA · {storageMode?'OWNER HOST STORAGE':buildRunMode?'EXPLICIT PUBLIC BUILD':askMode?'OFFLINE ASK':researchMode?'PUBLIC DELEGATE STAGING':planAcceptanceMode?'PUBLIC PLAN REVIEW':buildIntakeMode?'PUBLIC BUILD PLAN STAGING':'LOCAL OBSERVER'}</p><h1>Mission Control</h1>
+    <header><p className="eyebrow">PANESTRIA · {phoneMode?'PRIVATE PHONE OBSERVER':storageMode?'OWNER HOST STORAGE':buildRunMode?'EXPLICIT PUBLIC BUILD':askMode?'OFFLINE ASK':researchMode?'PUBLIC DELEGATE STAGING':planAcceptanceMode?'PUBLIC PLAN REVIEW':buildIntakeMode?'PUBLIC BUILD PLAN STAGING':'LOCAL OBSERVER'}</p><h1>Mission Control</h1>
       <p>Canonical project activity and goal timelines. {buildRunMode?'Explicit PUBLIC plan review and finite subscription execution':askMode?'Explicit offline Ask input':researchMode?'Explicit PUBLIC question staging':planAcceptanceMode?'Explicit PUBLIC plan review and acceptance':buildIntakeMode?'Explicit PUBLIC Build plan staging':reviewMode?'Explicit PUBLIC Build review and consent records':'Read-only metadata'} · release acceptance authority: NONE.</p></header>
     <section aria-label="Connection"><p role="status">{notice}</p>
+      {phoneMode && <p className="muted" data-testid="last-observed">Workstation last confirmed: {lastObserved??'not yet observed'}. This time describes the last successful read, not current availability.</p>}
       {(!authenticated || !csrf) && <form onSubmit={pair}><label htmlFor="pair">One-use pairing code from your terminal</label>
         <div className="actions"><input id="pair" value={code} onChange={e=>setCode(e.target.value.toUpperCase())}
-          pattern="([0-9A-F]{8}|[0-9A-F]{32})" maxLength={32} minLength={8} required autoComplete="off" spellCheck={false}/>
+          className={phoneMode?'phone-code':undefined} pattern={phoneMode?'[0-9A-F]{32}':'[0-9A-F]{8}'} maxLength={phoneMode?32:8} minLength={phoneMode?32:8} required autoComplete="off" autoCapitalize="characters" spellCheck={false}/>
           <button disabled={busy}>Pair</button></div></form>}
       {csrf && <button onClick={()=>void logout()} disabled={busy}>Log out</button>}
       <p className="muted">{askMode?'Enter questions only in Offline Ask below. Never enter credentials or bearer tokens.':researchMode?'Only explicitly PUBLIC questions belong in Delegate staging. Never enter credentials or private information.':buildIntakeMode?'Only explicitly PUBLIC zero-cash plan bundles belong here. Never include credentials or private information.':reviewMode?'Never enter credentials or private content. Protected PUBLIC evidence is displayed only below.':'No bearer token, private question, diff or source text belongs in this view.'}</p>
@@ -132,9 +151,9 @@ function Dashboard() {
       {askMode && <OfflineAsk key={activity.project_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
       {researchMode && <ResearchIntake key={activity.project_id} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
       {buildIntakeMode && <BuildIntake key={activity.project_id} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied} allowAcceptance={planAcceptanceMode} allowRun={buildRunMode} selection={planSelection}/>}
-      <ReviewInbox owner={activity.owner_id} project={activity.project_id} now={now} canInspectPlan={buildIntakeMode} onPlan={id=>setPlanSelection(prior=>({id,version:(prior?.version??0)+1}))} onGoal={setGoal} deny={denied}/>
+      <ReviewInbox owner={activity.owner_id} project={activity.project_id} now={monotonicNow} canInspectPlan={buildIntakeMode} onPlan={id=>setPlanSelection(prior=>({id,version:(prior?.version??0)+1}))} onGoal={setGoal} deny={denied}/>
       <section aria-label="Project activity"><h2>Project activity</h2>
-        <p>Project <code>{activity.project_id}</code> · {listFresh && now-listAt < 15000 ? 'Confirmed' : 'STALE / UNCONFIRMED'}</p>
+        <p data-testid="project-freshness">Project <code>{activity.project_id}</code> · {listFresh && monotonicNow-listAt < 15000 ? 'Confirmed' : 'STALE / UNCONFIRMED'}</p>
         <p className="muted">Observed {activity.observed_at}. Statuses are canonical observations, not release acceptance.</p>
         {!activity.entries.length && <p>No activity in this project yet.</p>}
         <div className="scroll"><table><thead><tr><th>Work</th><th>State</th><th>Tasks / reviews</th><th>Inspect</th></tr></thead><tbody>
@@ -147,7 +166,7 @@ function Dashboard() {
           <button disabled={!activity.next_cursor} onClick={()=>{setBefore(activity.next_cursor ?? null);setGoal(null);}}>Older activity</button></div>
       </section>
       {goal && <section aria-label="Goal timeline"><h2>Goal timeline</h2><code>{goal}</code>
-        <p role="status">{timeline.fresh && now-timeline.observedAt < 15000 ? 'Confirmed' : 'STALE / UNCONFIRMED'} · {timeline.notice}</p>
+        <p role="status">{timeline.fresh && monotonicNow-timeline.observedAt < 15000 ? 'Confirmed' : 'STALE / UNCONFIRMED'} · {timeline.notice}</p>
         {timeline.page && <><p>Canonical goal: <strong data-testid="goal-state">{timeline.page.snapshot.status}</strong></p>
           <h3>Tasks</h3><ul>{timeline.page.snapshot.tasks.map(task=><li key={task.id}><code>{task.id}</code> · {task.state} · version {task.row_version} · epoch {task.lease_epoch}</li>)}</ul>
           <h3>Events</h3><p className="muted">Latest 200 observed metadata entries, oldest first. A resync drops unverifiable history. Event names never change the displayed canonical status.</p>
@@ -157,7 +176,7 @@ function Dashboard() {
       {goal && reviewMode && <BuildReview key={`review:${goal}`} goal={goal} owner={activity.owner_id} project={activity.project_id} csrf={csrf} deny={denied}/>}
       {goal && <BuildEvidence key={`evidence:${goal}`} goal={goal} owner={activity.owner_id} project={activity.project_id} deny={denied}/>}
     </>}
-    <footer>Local desktop only. {buildRunMode?'Exact PUBLIC plans can be staged, accepted and explicitly run once. Final merge uses the existing separate owner CLI. Phone access and full R3 acceptance remain unfinished.':askMode?'Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.':researchMode?'PUBLIC questions can be staged here. Delegate execution, Build intake and phone access remain separate R3 work.':planAcceptanceMode?'Plans can be staged, reviewed and explicitly accepted here. Worker execution, final merge and phone access remain separate workflows.':buildIntakeMode?'PUBLIC plans can be staged here. Plan acceptance, execution, effect dispatch and phone access remain separate workflows.':reviewMode?'Consent records do not execute a merge. Job intake, effect dispatch and phone access remain separate R3 work.':'Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'}</footer>
+    <footer>{phoneMode?'Private read-only status. Work runs on the workstation. Background views are cleared and rechecked on return. No background push or remote approvals.':<>Local desktop only. {buildRunMode?'Exact PUBLIC plans can be staged, accepted and explicitly run once. Final merge uses the existing separate owner CLI. Phone access and full R3 acceptance remain unfinished.':askMode?'Offline Ask is available here. Delegate, Build intake and phone access remain separate R3 work.':researchMode?'PUBLIC questions can be staged here. Delegate execution, Build intake and phone access remain separate R3 work.':planAcceptanceMode?'Plans can be staged, reviewed and explicitly accepted here. Worker execution, final merge and phone access remain separate workflows.':buildIntakeMode?'PUBLIC plans can be staged here. Plan acceptance, execution, effect dispatch and phone access remain separate workflows.':reviewMode?'Consent records do not execute a merge. Job intake, effect dispatch and phone access remain separate R3 work.':'Job submission, approvals, evidence content and phone access remain separate unfinished R3 work.'}</>}</footer>
   </main>;
 }
 class Boundary extends Component<{children: ReactNode},{failed:boolean}> {
