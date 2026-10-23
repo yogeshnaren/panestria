@@ -68,8 +68,15 @@ def test_withdrawn_final_claim_or_confirmed_checks_cannot_publish_approval(
         ).fetchall()
         if boundary == "claimed":
             assert invocations == []
+            assert c.execute(
+                "SELECT r.reason FROM panestria.build_claim_release r "
+                "JOIN panestria.build_worker_claim c ON c.attempt_id=r.attempt_id WHERE c.task_id=%s",
+                (final_task,),
+            ).fetchone() == ("NO_DISPATCH",)
         else:
             assert len(invocations) == 1 and invocations[0][0] == "RETURNED" and invocations[0][1] is not None
         assert c.execute(
             "SELECT count(*) FROM panestria.build_active_worker_claim WHERE task_id=%s", (final_task,)
-        ).fetchone() == (1,)  # Neither withdrawal nor a historical return is claim release.
+        ).fetchone() == ((0,) if boundary == "claimed" else (1,))
+        # Canonical NO_DISPATCH proof releases only the never-invoked final claim.
+        # A historical physical return after execution does not release its claim.
