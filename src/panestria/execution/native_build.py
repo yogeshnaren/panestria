@@ -304,6 +304,8 @@ class AdmittedNativeBuild:
                     raise KernelDenied("native_build_cancelled_or_deadline")
                 if controller.authority is not None:
                     controller.authority.refresh()
+                if stop.is_set() or time.monotonic() >= deadline or (cancel is not None and cancel.is_set()):
+                    raise KernelDenied("native_build_cancelled_or_deadline")
                 with controller.connect() as connection:
                     self.authorize(connection)
                     assert binding is not None and identity is not None
