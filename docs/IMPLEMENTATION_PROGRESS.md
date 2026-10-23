@@ -1,12 +1,13 @@
 # Implementation progress
 
-The [phone pairing browser timing correction](../evidence/phone-pair-response-body-2026-10-23/report.json)
-preserves the real response body before awaiting completion of the UI click.
-This fixes an existing CI response-lifetime race while retaining valid-CSRF
-authenticated denial, restart/offline and device-revocation assertions. The
-original failed CI and corrected physical Chromium/TLS/PG/Git result remain
-source-bound. No runtime change, retry, skipped case or real-phone qualification
-is introduced.
+The [phone pairing renderer observation](../evidence/phone-pair-response-body-2026-10-23/renderer-report.json)
+reads a clone of the actual browser fetch response before Chromium can discard
+its no-store body from CDP. The first eager-CDP correction passed locally but
+failed again in CI; both original attempts remain preserved. Existing UI pairing,
+real CSRF, authenticated denial and restart/offline/revocation assertions remain.
+There is no response mock, retry, skipped case or runtime change. The separate
+intermittent native-worker stop is under investigation; no release/real-phone
+qualification or universal flake resolution is claimed.
 
 Updated 2026-10-23 UTC. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
 The owner authorizes implementation, focused PRs and verified sequential merge
