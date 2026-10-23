@@ -5,6 +5,22 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+## Current original selected Build inputs
+
+Confirmed [offline Build references](testing/OFFLINE_BUILD_REFERENCES.md) now
+retain exact selected native input when its original protected return receipt
+contains the new bounded metadata manifest. Capture reconstructs only the pinned
+original Git blobs and verifies original context/binding/receipt identities.
+Schema3 travels offline with those proofs; one explicit invocation selection
+shows its pre-edit input without DB/Git/auth/model access. Default viewing stays
+metadata only, original schema1/2 inputs remain UNKNOWN, training stays DENIED and
+existing capture/history caps and no automatic deletion remain. Missing/tampered
+input refuses capture while retaining the confirmed merge. The [component evidence](../evidence/native-context-archive-2026-10-23/report.json)
+records18 focused passes, actual disposable PG/Git/MCP/Docker/CLI and explicit
+native/auth/certificate fixtures. This fills selected-input lineage, not all model
+traffic, Ask/Delegate/raw-candidate capture or training-purpose rights. S6/G3/R3
+remain IN_PROGRESS; no owner runtime or services were configured.
+
 ## Current selected native account/context grants
 
 [Native connection selection](testing/NATIVE_CONNECTION_GRANTS.md) now intersects

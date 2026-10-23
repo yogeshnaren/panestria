@@ -176,3 +176,19 @@ distinguish actual PG/Git/Docker/process/archive behavior from synthetic native
 identity frames. This is a capture metadata outcome; full manifests/context
 reconstruction, other capture modes, broader data rights and S6/TC08/TC09/G3 remain
 in progress. No provider call, database migration or historical evidence relabeling.
+
+## Original selected Build context component
+
+[Design114](../design/114-ORIGINAL-BUILD-CONTEXT.md) records bounded original
+header/file metadata in the protected native return receipt. Confirmed capture
+can reconstruct exact selected input from the original protected Git tree,
+verify its original binding/request hash and copy it with receipt/binding proof
+into a bounded schema3 reference. Copied offline inspection needs no database,
+Git, credentials, model or runtime certificate. Schema1/2 and missing originals
+remain UNKNOWN and immutable; no raw traffic, native outputs or training rights
+are inferred. [Checks](../../evidence/native-context-archive-2026-10-23/report.json)
+cover actual disposable PG/Git/MCP/Docker/final checks/scripted test-owner merge,
+offline view, legacy/refusal/capacity/recall with synthetic native/auth fixtures.
+This advances S6 selected-input lineage; Ask/Delegate/raw candidate capture,
+broader rights and full TC08/TC09/G3 remain open. No original certificate is
+reissued or source evidence relabeled by these component checks.
