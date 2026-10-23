@@ -72,6 +72,9 @@ def test_confirmed_archive_exact_review_concurrent_import_and_offline_ask_withou
             pool.map(lambda _: service.remember(digest, review["review_sha256"], accept_local_recall=True), range(2))
         )
     assert sorted(v["replayed"] for v in results) == [False, True]
+    assert {k: v for k, v in results[0].items() if k != "replayed"} == {
+        k: v for k, v in results[1].items() if k != "replayed"
+    }
     item = results[0]["item_id"]
     assert results[1]["item_id"] == item and state["launches"] == 2
     assert invoke(f, "remember-reference", digest, review["review_sha256"], "--accept-local-recall")["replayed"]
@@ -147,6 +150,7 @@ def test_suppression_and_correction_fence_prepared_ask_and_cannot_be_bypassed_by
 
 
 @pytest.mark.live
+@pytest.mark.parametrize("owner_cli", [{"live_native": False}], indirect=True)
 def test_actual_cached_cpu_retrieves_the_reviewed_build_excerpt(prepared_plan, native_plan, tmp_path, record_property):
     from panestria.inference.runtime import ModelRuntime
     from panestria.resources.admission import admit

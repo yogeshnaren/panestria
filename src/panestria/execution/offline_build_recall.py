@@ -167,7 +167,8 @@ class OfflineBuildRecall:
                     "SELECT i.status,i.row_version,i.kind,i.pinned,i.valid_from<=clock_timestamp(),"
                     "(i.valid_until IS NULL OR i.valid_until>clock_timestamp()),"
                     "(i.retain_until IS NULL OR i.retain_until>clock_timestamp()),"
-                    "r.id::text,r.version,r.source_id::text,r.sha256,s.privacy_label,r.body,s.source_uri "
+                    "r.id::text,r.version,r.source_id::text,r.sha256,s.privacy_label,r.body,"
+                    "s.source_uri,i.retain_until "
                     "FROM panestria.memory_item i JOIN panestria.memory_revision r "
                     "ON r.item_id=i.id AND r.version=i.current_revision "
                     "JOIN panestria.memory_source s ON s.id=r.source_id WHERE i.id=%s FOR UPDATE OF i",
@@ -188,10 +189,14 @@ class OfflineBuildRecall:
                 return {
                     "status": "REMEMBERED",
                     "item_id": rows[0][0],
+                    "revision_id": row[7],
+                    "revision": row[8],
                     "row_version": row[1],
                     "source_id": row[9],
+                    "sha256": str(row[10]).strip(),
                     "source_sha256": str(row[10]).strip(),
                     "replayed": True,
+                    "retain_until": row[14].isoformat() if row[14] else None,
                     "training_export": "DENIED",
                 }
             now = connection.execute("SELECT clock_timestamp()").fetchone()

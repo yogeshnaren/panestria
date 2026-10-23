@@ -36,7 +36,11 @@ def owner_cli(tmp_path, r1_database, monkeypatch, request):
         "assert Path('/workspace/notes/build.txt').read_text() == 'bounded Bash build\\n'\n"
     )
     check.chmod(0o600)
-    actual = request.node.get_closest_marker("live") is not None
+    # An actual local-model journey can explicitly use synthetic native Build
+    # setup. Existing live-native qualification keeps its default actual path.
+    actual = request.node.get_closest_marker("live") is not None and getattr(request, "param", {}).get(
+        "live_native", True
+    )
     if actual:
         directory = Path(os.environ["PANESTRIA_NATIVE_QUALIFICATION_DIRECTORY"])
         result = json.loads(read_private(directory / "latest.json", 4096))
