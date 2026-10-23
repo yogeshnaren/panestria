@@ -1,5 +1,6 @@
 """Actual canonical merge/private archive/offline restore; native/auth are fixtures."""
 
+import hashlib
 import json
 import shutil
 from dataclasses import replace
@@ -76,7 +77,7 @@ def test_actual_confirmed_build_reference_is_portable_offline_and_not_training_c
     manifest = read_reference(f.root, owner.actor.owner_id, owner.actor.project_id, digest)
     assert manifest.permitted_purpose == "OWNER_LOCAL_REFERENCE" and manifest.training_eligibility == "UNKNOWN"
     assert manifest.training_export == "DENIED" and all(x.model is None for x in manifest.invocations)
-    assert manifest.schema_version == 2
+    assert manifest.schema_version == 3
     assert all(x.request_sha256 and x.configuration_sha256 for x in manifest.invocations)
     observed_models = [x for x in manifest.invocations if x.reported_init_model is not None]
     assert len(observed_models) == 1
@@ -93,6 +94,22 @@ def test_actual_confirmed_build_reference_is_portable_offline_and_not_training_c
     assert {x.request_sha256 for x in manifest.invocations} == {r[0]["request_sha256"] for r in rows}
     assert {x.configuration_sha256 for x in manifest.invocations} == {r[0]["configuration_sha256"] for r in rows}
     assert len(manifest.invocations) == 5 and manifest.candidate_commit == git(f.bare, "rev-parse", "HEAD")
+    store = BuildEvidenceStore(f.root / "offline-results/blobs")
+    inputs = []
+    for invocation in manifest.invocations:
+        if invocation.selected_context_part is None:
+            continue
+        part = manifest.parts[invocation.selected_context_part]
+        raw = b"".join(store.read_blob(key) for key in part.chunks)
+        assert hashlib.sha256(raw).hexdigest() == invocation.request_sha256 == part.sha256
+        inputs.append((invocation, json.loads(raw)))
+    assert len(inputs) == 2 and all(p.kind == "native-proposal" for p, _ in inputs)
+    assert sorted((body for _, body in inputs), key=lambda x: x["assignment"]["task_id"]) == sorted(
+        state["contexts"], key=lambda x: x["assignment"]["task_id"]
+    )
+    original_with_file = next((p, body) for p, body in inputs if body["files"])
+    assert original_with_file[1]["files"][0]["content"] == "value = 42\n"  # Exact pre-edit input, not output43.
+    assert any(body["files"] == [] for _, body in inputs)  # New-file assignment still has exact original input.
     assert manifest.validation == "INDEPENDENT_CHECKS_AND_CONFIRMED_MERGE"
     with owner.connect() as c:
         before = c.execute("SELECT count(*) FROM panestria.task_event").fetchone()
@@ -118,11 +135,34 @@ def test_actual_confirmed_build_reference_is_portable_offline_and_not_training_c
     assert viewed.exit_code == 0 and json.loads(viewed.stdout)["candidate_commit"] == manifest.candidate_commit
     assert "+value = 43" in json.loads(viewed.stdout)["diff"]
     assert "NO_DATABASE_OR_CREDENTIAL_AVAILABLE" not in viewed.stdout
+    assert "selected_context" not in json.loads(viewed.stdout)
+    input_view = CliRunner().invoke(
+        app,
+        ["build", "reference", "--config", str(config), digest, "--input", str(original_with_file[0].invocation_id)],
+    )
+    assert input_view.exit_code == 0, input_view.output
+    assert json.loads(input_view.output)["selected_context"]["payload"] == original_with_file[1]
     store = BuildEvidenceStore(restored / "offline-results/blobs")
     assert json.loads(viewed.stdout)["invocations"] == manifest.model_dump(mode="json")["invocations"]
     # Original v1 archives still read offline with UNKNOWN metadata. No repair,
     # current model/default lookup, DB connection or provider retry is involved.
     legacy = manifest.model_dump(mode="json")
+    legacy["schema_version"] = 2
+    with pytest.raises(ValidationError, match="legacy_reference_context_must_remain_unknown"):
+        OfflineBuildReference.model_validate_json(json.dumps(legacy))
+    for invocation in legacy["invocations"]:
+        invocation.pop("selected_context_part", None)
+    legacy["parts"] = {k: v for k, v in legacy["parts"].items() if not k.startswith("native-")}
+    v2_raw = json.dumps(legacy).encode()
+    v2_digest = store.write_report(v2_raw)
+    old2 = read_reference(restored, owner.actor.owner_id, owner.actor.project_id, v2_digest)
+    assert old2.schema_version == 2 and all(p.selected_context_part is None for p in old2.invocations)
+    missing = CliRunner().invoke(
+        app,
+        ["build", "reference", "--config", str(config), v2_digest, "--input", str(original_with_file[0].invocation_id)],
+    )
+    assert missing.exit_code == 1 and json.loads(missing.output)["reason"] == "offline_context_not_retained"
+    assert store.read_blob(v2_digest) == v2_raw
     legacy["schema_version"] = 1
     with pytest.raises(ValidationError, match="legacy_reference_identity_must_remain_unknown"):
         OfflineBuildReference.model_validate_json(json.dumps(legacy))
@@ -136,6 +176,11 @@ def test_actual_confirmed_build_reference_is_portable_offline_and_not_training_c
         x.reported_init_model is None and x.request_sha256 is None for x in old.invocations
     )
     assert store.read_blob(legacy_digest) == legacy_raw
+    forged = manifest.model_dump(mode="json")
+    next(p for p in forged["invocations"] if p.get("selected_context_part"))["requested_model"] = "forged-model"
+    forged_digest = store.write_report(json.dumps(forged).encode())
+    with pytest.raises(KernelDenied, match="offline_context_unavailable_or_mismatched"):
+        read_reference(restored, owner.actor.owner_id, owner.actor.project_id, forged_digest)
     diff = manifest.parts["diff"]
     raw = b"".join(store.read_blob(key) for key in diff.chunks)
     assert b"+value = 43" in raw and b"bounded Bash build" in raw
@@ -191,3 +236,42 @@ def test_wrong_input_receipt_cannot_label_confirmed_capture(native_plan, prepare
     with pytest.raises(KernelDenied, match="offline_reference_receipt_binding_mismatch"):
         owner.capture_reference(plan.goal_id)
     assert state["launches"] == 2 and not (f.root / "offline-results").exists()
+
+
+@pytest.mark.parametrize("fault", ["file_hash", "assignment", "missing_tree"])
+def test_wrong_original_context_metadata_preserves_merge_but_refuses_archive(
+    native_plan, prepared_plan, monkeypatch, fault
+):
+    f, owner, _, plan = prepared_plan
+    _, runner, _, state = native_plan
+    enable_capture(owner, f)
+    original = BuildEvidenceStore.write_report
+    changed = []
+
+    def faulty_receipt(store, raw):
+        try:
+            body = json.loads(raw)
+        except ValueError:
+            body = None
+        if isinstance(body, dict) and body.get("kind") == "admitted-native-build":
+            manifest = body["selected_context_manifest"]
+            if manifest["files"]:
+                if fault == "file_hash":
+                    manifest["files"][0]["sha256"] = "00" * 32
+                elif fault == "assignment":
+                    manifest["header"]["assignment"]["task_id"] = str(uuid4())
+                else:
+                    manifest["header"]["source_tree"] = "00" * 20
+                changed.append(fault)
+                raw = json.dumps(body).encode()
+        return original(store, raw)
+
+    monkeypatch.setattr(BuildEvidenceStore, "write_report", faulty_receipt)
+    assert runner.run(plan.plan_id, public_subscription_run=True)["status"] == "WAITING_APPROVAL"
+    result = approve(owner, plan.goal_id)
+    assert changed == [fault] and result["task_state"] == "COMPLETED"
+    assert result["offline_reference"]["status"] == "UNAVAILABLE" and state["launches"] == 2
+    assert git(f.bare, "rev-parse", "HEAD") == result["candidate_commit"]
+    with pytest.raises(KernelDenied, match="offline_context"):
+        owner.capture_reference(plan.goal_id)
+    assert not (f.root / "offline-results").exists()
