@@ -71,5 +71,16 @@
     "Included existing activity regression uses its explicitly labeled MODEL_FIXTURE; the new declaration commands create no model/provider request.",
     "Actual GrantBroker/current capability/account/configuration/lease/budget/approval/purpose/revocation/secret/OS lifecycle and complete onboarding remain required.",
     "No full AOS-008-TC05-TC08/S4/S5 or G1/G2/G3/trial promotion; all historical evidence remains bound to original sources."
-  ]
+  ],
+  "hosted_ci_original_failure": {
+    "pr": 189,
+    "run_id": 39876295510,
+    "source_commit": "34a59d045edafed9af0969ae14efbaf883971142",
+    "tested_preview": "4681c3b03420cb271a246ceb3127760d62aaec35",
+    "all_six_result": "FAILURE_NOT_MERGED",
+    "executed_cases": 2281,
+    "failed_cases": 1,
+    "platform_report_sha256": "b89d90da9b57bec157e028b314d101d4bfbcf6bcdd20ea5dfa86c5e4f0a06cd1",
+    "scope": "Connection cases and other selected cases passed; original existing framed-input memory-pressure assertion demanded confirmed memory_limit while the stopped worker reported exit137/OOMKilled=false and truthful process_failed. Original four lane XML/run/log retained. Separate focused PR190 corrects the default-test assumption; production and strict live TC03/gates remain unchanged."
+  }
 }

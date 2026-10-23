@@ -22,9 +22,9 @@ already delivered components.
 | Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |
 
 The opt-in storage terminal integration is now merged; desktop/mobile resource
-inbox and host qualification remain open. The owner's current priority is the
-[CI reduction](testing/CI_REQUIRED_COVERAGE.md): retain functional/security and
-mutation-witness checks, condition repeated legacy/restore regressions and avoid
+inbox and host qualification remain open. The merged
+[CI reduction](testing/CI_REQUIRED_COVERAGE.md) retains functional/security and
+mutation-witness checks, conditions repeated legacy/restore regressions and avoids
 rerunning an already-proven merge tree. The [connection declaration terminal](testing/CONNECTION_DECLARATION_TERMINAL.md)
 now supplies private setup/serving, exact owner review/recovery and fresh-policy
 revocation. It connects no account/folder/tool; actual broker, verified enrollment,
