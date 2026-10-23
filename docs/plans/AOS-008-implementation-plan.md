@@ -242,3 +242,24 @@ Clean86db525 passes120 focused HTTP/real PostgreSQL/contract/session checks
 source-bound evidence. This is a metadata review component, not full onboarding,
 runtime GrantBroker or TC05–TC08 acceptance; current-authority/budget/purpose/
 capability/secret/effect lifecycle and UI still remain required.
+
+
+## Initial anonymous PUBLIC fetch broker (2026-10-23)
+
+[Design102](../design/102-PUBLIC-FETCH-CONNECTION.md) connects exact reviewed
+declarations to the existing admitted fetch/reader path. Current policy,
+certificate-purpose/runtime, contract, lease, scoped anonymous service identity,
+configuration, actions, PUBLIC class, origins, expiry and shared application
+capacity intersect before effects. Dispatch/reservation/event commit together;
+unknown transfers do not refund, and actual owner revocation prevents later hops
+and publication. [Private setup instructions](../testing/PUBLIC_FETCH_CONNECTION.md)
+keep template, proposal, consent and runtime qualification separate.
+
+[Source-bound connected observations](../../evidence/fetch-connection-grants-2026-10-23/report.json)
+retain the original invalid-class fixture failure and corrected real PG/HTTP/CLI/
+CAS/reader checks. HTTPS and certificates are explicit fixtures; no actual search,
+public TLS or OS/runtime qualification is inferred. Historical plans remain
+unbound, old certificates cannot qualify the new configuration, and evidence is
+never backfilled. General authenticated account/root/native connector and narrow
+secret-envelope lifecycle remain open. S4/S5 are partial IN_PROGRESS; full
+TC05–TC08 and cumulative gates are not passed.

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "outcome": "ANONYMOUS_PUBLIC_HTTPS_GRANT_COMPONENT_NOT_LIVE_QUALIFICATION_OR_RELEASE",
+  "observations": [
+    {
+      "file": "connected-attempt-1.xml",
+      "sha256": "5d589e2352a2a01d333ea8a516ac5288c68be7b0368f866ef7806c810df282af",
+      "source_commit": "8b7b653aa5dd99b6fbed90a6c2c0afb72eadc0ac",
+      "source_tree": "2c5a9780db1f62a7cbc266126cf49a78b36c7aa6",
+      "worktree": "CLEAN",
+      "scope": "23PASS/1FAIL: new invalid PERSONAL classification fixture refused before broker scenario; existing fetch/restore/owner collection/migration/OpenAPI and three other new grant checks passed. No runtime guard weakened.",
+      "result": {
+        "tests": "24",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "109.541"
+      }
+    },
+    {
+      "file": "connected-attempt-2.xml",
+      "sha256": "2100a09d083acfd4b95074de77d60ad29ac11a73d6f72476cb8caa0e2a45ba58",
+      "source_commit": "fb9b4dbc4595e2c2a325726da15a2e242509d4e9",
+      "source_tree": "035fcaf64a1a890cbd066f2c1bb68b4519bbb062",
+      "worktree": "CLEAN",
+      "scope": "14PASS: corrected canonical INTERNAL fixture, exact capability/origin denial, actual reviewed revocation before redirect, shared commit-ack-lost capacity before new-goal search, private CLI template/propose and immediate connection-limit stop, plus nine unchanged owner collection cases.",
+      "result": {
+        "tests": "14",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "58.441"
+      }
+    },
+    {
+      "file": "atomic-capacity.xml",
+      "sha256": "3c98f916ff110b5e40508f76760ff55e0a11662d0d68508bb68ea7f4c51ba70f",
+      "source_commit": "3dfb13e738ba182210bbe446a53d5ea71712f74e",
+      "source_tree": "af740de2c39b22a4e529e3a9cb77af85a9d0b360",
+      "worktree": "CLEAN",
+      "scope": "1PASS: affected connected case additionally proves a mismatched reservation fails its actual deferred constraint and rolls back dispatch/reservation/event before I/O, then valid fetch succeeds; immutable reservation/plan checks retained.",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "9.220"
+      }
+    }
+  ],
+  "schema_generation": {
+    "scope": "DISPOSABLE_POSTGRES_SCHEMA_GENERATION_NOT_RELEASE_TEST",
+    "source_commit": "e51a62ba09c712cedf33b96c3a8473e988d82f51",
+    "source_worktree_before_generation": "CLEAN",
+    "project": "panestria-fetch-schema-agent-af1186496710",
+    "assigned_loopback_port": 32769,
+    "version": "0038_fetch_connection_grants",
+    "upgrade_exit_code": 0,
+    "schema_sha256": "f414bc8a7fe26b0ed61ae5ef0288118d585340d1bf6d33da02b95db05e7808bf",
+    "no_owner_database_or_service_modified": true
+  },
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS (342 source files)",
+    "import_boundaries": "11 KEPT",
+    "secret_scan": "PASS",
+    "openapi": "Exact mounted routes PASS in original connected-attempt-1; no API shape change inferred from optional local runtime setting."
+  },
+  "delivered": [
+    "Exact current reviewed grant/version/configuration/conformance/scoped anonymous identity and read+send/PUBLIC/no-root/zero-cash intersection with existing current runtime/contract/policy/lease authority.",
+    "First-origin and every-redirect checks before DNS/transport; actual owner revoke prevents next hop/publication and retains UNKNOWN outcome.",
+    "Same-transaction dispatch/reservation/event with immutable cross-goal calls/application-byte capacity; commit-ack loss does not refund or permit a new goal to search.",
+    "Private setup template is separate from submission, consent and runtime qualification; missing binding refuses collection; immediate connection-limit stop avoids further queries.",
+    "Additive nullable historical bindings with no grant backfill/evidence relabel; audit downgrade refusal and actual existing fetch dump/restore retained."
+  ],
+  "limits": [
+    "Initial anonymous PUBLIC HTTPS GET only. Anonymous service identity is not authenticated account enrollment. No native/private root/account/secret connector enabled.",
+    "Transport HTTPS and qualification certificates in these connected tests are explicit synthetic fixtures. Actual PG/HTTP/CLI/private CAS and reader run in disposable projects. No installed search/public TLS/OS qualification is inferred.",
+    "Per-hop49153 conservative application request/framing/buffer bytes plus body cap+1 are reservations, not actual DNS/TLS/TCP/physical-wire usage. No refunds, even for unused hops.",
+    "Declarations remain DECLARATION_ONLY/UNVERIFIED/runtime unavailable as lifecycle metadata. Current independent runtime qualification is mandatory; old configuration certificates cannot be adopted.",
+    "Owner search setup remains deferred. No owner database/config/service/credential/cache/model/provider changed, downloaded or called.",
+    "Full AOS-008-S4/S5/TC05-TC08, G1/G2/G3 and owner trial remain open. No source observation was relabeled for another commit."
+  ]
+}

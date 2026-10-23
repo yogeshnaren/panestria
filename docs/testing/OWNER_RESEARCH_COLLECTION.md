@@ -29,7 +29,8 @@ Create a private `research.json` (mode0600) with this shape, using actual values
   "root": "/absolute/private-research-cas",
   "certificates": "/absolute/separate-private-research-certificates",
   "certificate_sha256": "QUALIFIED_JOINT_CERTIFICATE_SHA256",
-  "search": {"provider": "searxng-local", "origin": "http://127.0.0.1:CONFIGURED_PORT"}
+  "search": {"provider": "searxng-local", "origin": "http://127.0.0.1:CONFIGURED_PORT"},
+  "fetch_connection": {"grant_id": "EXACT_REVIEWED_GRANT_UUID", "version": 1}
 }
 ```
 
@@ -44,6 +45,12 @@ policy and a compatible canonical contract: PUBLIC class, cloud_egress allow,
 public-search and public-fetch capabilities, max_api_usd `"0"`, bounded attempts
 and wall time. Other actor capabilities are refused by collection. Keep the
 stored required checks; unadmitted citation/rubric runners remain refused.
+
+[Prepare and separately review the public fetch declaration](PUBLIC_FETCH_CONNECTION.md),
+then explicitly pin its exact grant UUID/version in these private settings.
+Old settings without this binding cannot collect; declaration metadata alone
+does not certify the runtime. Origins and cumulative application capacity apply
+to all tasks sharing that version; revocation fences further hops/publication.
 
 Create a private `queries.json` containing 1–16 selected PUBLIC query strings,
 each at most512 UTF-8 bytes, without control characters or `!` engine selectors.
