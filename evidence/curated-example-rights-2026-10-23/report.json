@@ -140,8 +140,7 @@
   ],
   "artifacts": {
     "withdrawal-mutant.json": "ad4f998d4fd72d61d9e45a8e89c5d215cf9bb8c1d51e7b6b33b306ce7ce7d83b",
-    "withdrawal-mutant.txt": "acf94bf5fe5fb4ce6b11e4f86e2529d60a8d9ba184f457bc6ddaf026637e8044",
-    "observed-schema-fingerprint.txt": "bb38e22f57f4fe41fd5f511edbe27871d09480b33fc2de6f3b19e2b72f7c93ca"
+    "withdrawal-mutant.txt": "acf94bf5fe5fb4ce6b11e4f86e2529d60a8d9ba184f457bc6ddaf026637e8044"
   },
   "delivered": [
     "Separate exact owner/project/current-policy review of PUBLIC example and three role-bound owner attestations, plus independent training-data-purpose consent. Missing or unclassified basis cannot silently grant export.",
@@ -162,5 +161,12 @@
     "mypy": "PASS (346 source files)",
     "import_boundaries": "11 KEPT",
     "secret_scan": "PASS"
+  },
+  "schema_observation": {
+    "sha256": "bb38e22f57f4fe41fd5f511edbe27871d09480b33fc2de6f3b19e2b72f7c93ca",
+    "original_preserved": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/curated-example-rights-2026-10-23/observed-schema-fingerprint.txt",
+    "duplicate_copy_preserved": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/curated-example-rights-2026-10-23/repository-schema-copy.txt",
+    "identical_immutable_pin": "https://github.com/yogeshnaren/panestria/blob/aeca8005c8bfd6a0e1ad13f824c98366b5bd933b/migrations/schema_fingerprint.txt",
+    "scope": "Observed empty downgrade/upgrade schema; full duplicate snapshot omitted from task diff, original retained."
   }
 }
