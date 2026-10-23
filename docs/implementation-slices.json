@@ -3018,9 +3018,12 @@
       ],
       "target_developer_days": 1,
       "status": "IN_PROGRESS",
-      "evidence_refs": [],
+      "evidence_refs": [
+        "evidence/offline-build-reference-2026-10-21/report.json",
+        "evidence/offline-build-recall-2026-10-23/report.json"
+      ],
       "prompt_ref": "cursor/prompts/MVP-REV3-SLICE.md",
-      "scope_note": "Canonical confirmed PUBLIC Build offline reference capture/restore delivered as a component, disabled by default; candidate/Ask/Delegate/retrieval/model identity and separately ALLOWED training-purpose exports remain pending. Queue S5 remains unfinished; no whole TC08/TC09 promotion."
+      "scope_note": "Confirmed PUBLIC Build offline archive capture/restore plus separately reviewed bounded local MemoryService recall/suppression delivered as components; no automatic memory or training promotion. Ordinary Ask retrieval/dedup/policy/correction fences pass. Actual cached CPU recalled the correct value but failed number-only formatting; original failure preserved, no quality/release pass. Broader candidate/Ask/Delegate capture, model identity and separately ALLOWED training-purpose examples/rights remain pending. S5 unfinished; no whole TC08/TC09 promotion."
     },
     {
       "id": "AOS-012-S7",

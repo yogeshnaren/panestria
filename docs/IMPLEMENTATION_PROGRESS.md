@@ -16,6 +16,21 @@ is invented. [22 focused checks](../evidence/performance-overview-2026-10-23/rep
 pass using actual filesystem/CLI and synthetic measurements, with no new inference.
 Full tracing/exposure/resources/phone and cumulative acceptance stay open.
 
+## Current confirmed Build recall integration
+
+[Explicit local Build recall](testing/OFFLINE_BUILD_RECALL.md) now previews a
+bounded confirmed PUBLIC archive note and requires exact owner/policy/duration
+consent before adding ordinary unpinned memory. Existing offline Ask source,
+privacy, retention and suppression rules apply. Concurrent import deduplicates;
+stale review, suppression, expiry and owner correction refuse reimport. This
+runs no provider/model and grants no training or task authority. The
+[source-bound evidence](../evidence/offline-build-recall-2026-10-23/report.json)
+retains three passing connected component checks and the first optional fixture
+setup error. A subsequent actual cached CPU run retrieved the correct value43
+but answered in a sentence despite a number-only request: its strict test FAILED
+and is preserved. Default boundary checks pass; quality/latency qualification,
+broader capture/rights and cumulative gates remain open. S6 and R3 stay IN_PROGRESS.
+
 ## Current background editing authority
 
 [Background worker authority](testing/BACKGROUND_WORKER_AUTHORITY.md) now carries

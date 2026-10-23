@@ -135,6 +135,52 @@ def show_reference(config: Config, reference_sha256: str, diff: bool = False) ->
     _finish(read)
 
 
+def _recall(config: Path) -> Any:
+    from panestria.execution.offline_build_recall import OfflineBuildRecall
+
+    # Historical recall must not initialize certificates, Git, native auth or a
+    # model merely to read a copied archive and review local memory consent.
+    settings = BuildSettings.model_validate_json(read_private(config, 16 * 1024))
+    url = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
+    return OfflineBuildRecall(settings, url.get_secret_value())
+
+
+@build_app.command("prepare-recall")
+def prepare_recall(config: Config, reference_sha256: str, retain_days: int = 30) -> None:
+    """Preview a bounded confirmed-result note for separate local-memory consent."""
+    _finish(lambda: _recall(config).prepare(reference_sha256, retain_days=retain_days))
+
+
+@build_app.command("remember-reference")
+def remember_reference(
+    config: Config,
+    reference_sha256: str,
+    review_sha256: str,
+    retain_days: int = 30,
+    accept_local_recall: bool = False,
+) -> None:
+    """Confirm exact local recall; no training, inference or task authority."""
+    _finish(
+        lambda: _recall(config).remember(
+            reference_sha256, review_sha256, retain_days=retain_days, accept_local_recall=accept_local_recall
+        )
+    )
+
+
+@build_app.command("suppress-recall")
+def suppress_recall(
+    config: Config,
+    reference_sha256: str,
+    item_id: str,
+    expected_version: int,
+    confirm_local_suppression: bool = False,
+) -> None:
+    """Stop future recall without deleting archive, memory history or storage."""
+    _finish(
+        lambda: _recall(config).suppress(reference_sha256, item_id, expected_version, confirm=confirm_local_suppression)
+    )
+
+
 @build_app.command("metrics")
 def metrics(config: Config, goal_id: str) -> None:
     """Explicitly save a private derived runtime snapshot for a canonical Build goal."""

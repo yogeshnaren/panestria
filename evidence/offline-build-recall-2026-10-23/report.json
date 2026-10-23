@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "outcome": "EXPLICIT_CONFIRMED_BUILD_LOCAL_RECALL_COMPONENT__ACTUAL_CPU_STRICT_FORMATTING_FAILED",
+  "observations": [
+    {
+      "file": "connected.xml",
+      "sha256": "1f4c6c2d3ea1a430d07d6aef446b31edf20a75c39dd03349c75b0d5163597209",
+      "source_commit": "1b4a7457d2283b5557fa45398371475617a2d714",
+      "source_tree": "069dd079b9481460e3e83b35fc17239276e52d4a",
+      "worktree": "CLEAN",
+      "scope": "3PASS: actual confirmed Build/archive/scoped memory/CLI/PG/Git/Docker; native and local model transports are fixtures. Concurrent replay, exact policy/duration/consent, suppression/correction, Ask revalidation and existing receipt.",
+      "result": {
+        "tests": "3",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "19.959"
+      },
+      "properties": [
+        {
+          "test": "test_ask_identity_receipt_no_retention",
+          "properties": {
+            "candidate_commit": "1b4a7457d2283b5557fa45398371475617a2d714",
+            "fixture_digest": "30ca7b62b4f96507cd5533d98aea1142f3bd7ee9e11df5f82ec10dfdf859645e",
+            "worktree_state": "clean",
+            "lane": "integration"
+          }
+        }
+      ]
+    },
+    {
+      "file": "actual-cpu.xml",
+      "sha256": "d4d5edbe4c599d3097ab1639ec9bd6f987bb2720eb5414c321b9afdb7e142f74",
+      "source_commit": "873955c5fd62949758825d72e0c64d43af998324",
+      "source_tree": "5db75bc14d9684b227a7b0468d34ca934db725c9",
+      "worktree": "CLEAN",
+      "scope": "1ERROR in fixture setup: live marker selected actual native qualification without its env. No model launched or inference; corrected by explicitly requesting synthetic native fixture for this local CPU test only.",
+      "result": {
+        "tests": "1",
+        "failures": "0",
+        "errors": "1",
+        "skipped": "0",
+        "time": "4.383"
+      },
+      "properties": []
+    },
+    {
+      "file": "actual-cpu-corrected.xml",
+      "sha256": "ef25cc5e0e519f2a0f427a1b86da03acfc48688364e0f6a72aae6a1f55e64b58",
+      "source_commit": "acf57549d0d2429b5fa3575ac5096b3656738579",
+      "source_tree": "1872a1d24fa005b8f5af4392f2788254e2e2f0b5",
+      "worktree": "CLEAN",
+      "scope": "1default boundary PASS,1actual CPU FAIL: existing cached local model retrieved correct43 but returned a sentence despite number-only instruction. Strict assertion and original failure preserved; no favorable retry or quality/latency/release pass.",
+      "result": {
+        "tests": "2",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "39.519"
+      },
+      "properties": [
+        {
+          "test": "test_actual_cached_cpu_retrieves_the_reviewed_build_excerpt[owner_cli0]",
+          "properties": {
+            "mode": "ACTUAL_CACHED_CPU_PG_ARCHIVE_RECALL__NATIVE_BUILD_GENERATION_FIXTURE",
+            "source_commit": "acf57549d0d2429b5fa3575ac5096b3656738579",
+            "runtime_identity": "acf5618f3f90487c966aa0237ab55d37",
+            "input_tokens": "799",
+            "output_tokens": "13",
+            "generation_seconds": "19.549222724017454",
+            "first_token_seconds": "18.985499818023527",
+            "expected_answer": "43",
+            "observed_answer": "The calculator Build changed to `value = 43`.",
+            "quality_scope": "ONE_SYNTHETIC_RECALL_SAMPLE_NOT_MODEL_OR_RELEASE_QUALIFICATION"
+          }
+        }
+      ]
+    }
+  ],
+  "delivered": [
+    "Exact owner/project/current read+edit policy, complete archive and duration-bound preview/confirmation to ordinary unpinned memory.",
+    "Concurrent deduplication with identical metadata and original expiry; suppression/correction/expiry cannot be bypassed by reimport.",
+    "Existing offline Ask source/retention/privacy/usage and stale-source fences, no new model/native initialization for recall."
+  ],
+  "limits": [
+    "Actual disposable PG/Git/Docker/checks and scripted exact test-owner merge; native Build generation/auth/hardware use explicit fixtures, not actual Claude qualification.",
+    "Actual CPU run used existing cache,799input/13output tokens,19.549222724017454s generation,18.985499818023527s first token; one synthetic sample, FAILED number-only instruction. No accuracy aggregate or latency gate.",
+    "Training export DENIED, no automatic memory/learning/export or tool/approval/verification authority. Ordinary memory is untrusted, not fresh qualification or signed provenance.",
+    "Recall default30days1..365 prevents future retrieval after expiry, never deletes archive/history or renews on replay. Future destinations require independent rights/purpose controls.",
+    "AOS012S6/R3 IN_PROGRESS; broader capture, eligible examples/rights, runtime/quality/cumulative G1/G2/G3 and real owner trial remain open."
+  ],
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS (342 source files)",
+    "import_boundaries": "11 KEPT",
+    "secret_scan": "PASS"
+  }
+}
