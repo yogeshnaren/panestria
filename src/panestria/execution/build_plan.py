@@ -24,6 +24,7 @@ from panestria.contracts.goal import load_contract
 from panestria.contracts.invocation import InvocationBinding
 from panestria.contracts.native_tools import ToolScope
 from panestria.execution.scoped_bash import BuildReview
+from panestria.execution.worker_authority import WorkerAuthority
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -56,8 +57,16 @@ class BuildIntegrator:
         actor: Actor,
         evidence: BuildEvidenceService,
         certificates: CertificateStore,
+        *,
+        authority: WorkerAuthority | None = None,
     ) -> None:
         self.connect, self.actor, self.evidence, self.certificates = connect, actor, evidence, certificates
+        self.authority = authority
+
+    def _authorize(self) -> None:
+        if self.authority is not None:
+            with self.connect() as connection:
+                self.authority.authorize(connection)
 
     def _inputs(self, uow: UnitOfWork, plan_id: str, attempt_id: str, epoch: int) -> dict[str, Any]:
         plan = Scheduler()._plan(uow, self.actor, plan_id)
@@ -72,6 +81,8 @@ class BuildIntegrator:
         ).fetchone()
         if claim is None:
             raise KernelDenied("integration_claim_missing")
+        if self.authority is not None:
+            self.authority.authorize(uow.connection)
         policy = PolicyService(self.certificates).get(uow, self.actor)
         handoffs = []
         for node in plan.proposal.nodes:
@@ -170,7 +181,16 @@ class BuildIntegrator:
                 ),
                 kind="build-integration",
                 request_sha256=self._fingerprint(inputs),
-                configuration_sha256=verifier_bundle_digest(inputs["contract"], registry),
+                configuration_sha256=(
+                    canonical_sha256(
+                        {
+                            "verifier_bundle_sha256": verifier_bundle_digest(inputs["contract"], registry),
+                            "additional_authority_sha256": self.authority.binding_sha256,
+                        }
+                    )
+                    if self.authority is not None
+                    else verifier_bundle_digest(inputs["contract"], registry)
+                ),
             )
             identity = InvocationService().prepare(
                 UnitOfWork(c),
@@ -267,6 +287,7 @@ class BuildIntegrator:
         workers = []
         nodes = {n.task_id: n for n in plan.proposal.nodes}
         for handoff in inputs["handoffs"]:
+            self._authorize()
             task = handoff.submission.task_id
             snapshot = materialize(repository, base, handoff.candidate_commit, staging / task, deadline=deadline)
             if (
@@ -276,6 +297,7 @@ class BuildIntegrator:
             ):
                 raise KernelDenied("integration_handoff_tree_changed")
             workers.append((task, snapshot))
+        self._authorize()
         combined = integrate(repository, base, base_snapshot, tuple(workers), staging / "combined", deadline=deadline)
         report = {
             "kind": "plan-integrated-candidate",
@@ -322,6 +344,7 @@ class BuildIntegrator:
         assert combined.candidate is not None
         if time.monotonic() >= deadline:
             raise KernelDenied("integration_deadline")
+        self._authorize()
         final = materialize(repository, base, combined.candidate, staging / "final", deadline=deadline)
         verified = verify_build(
             inputs["contract"],
@@ -337,6 +360,7 @@ class BuildIntegrator:
             policy=inputs["policy"],
             deadline=deadline,
             plan_scope=scope,
+            before_check=self._authorize if self.authority is not None else None,
         )
         for raw in verified.reports:
             self.evidence.store.write_report(raw)
@@ -366,6 +390,8 @@ class BuildIntegrator:
         approval = None
         if verified.bundle.passed():
             with self.connect() as c:
+                if self.authority is not None:
+                    self.authority.authorize(c)
                 approval = self.evidence.request_merge(
                     UnitOfWork(c), self.actor, scope.node.task_id, evidence_sha, "refs/heads/main"
                 )

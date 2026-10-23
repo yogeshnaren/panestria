@@ -93,6 +93,9 @@ class NativePlanRunner:
     def _worker_authority(self, job: Scheduled, scope: ToolScope) -> WorkerAuthority | None:
         return None
 
+    def _integration_authority(self, job: Scheduled) -> WorkerAuthority | None:
+        return None
+
     def _storage_allows_new_work(self) -> bool:
         observation = build_storage_admission(self.owner.settings)
         self.storage_observation = observation
@@ -328,7 +331,11 @@ class NativePlanRunner:
                             if node.worker_ref == "trusted-integrator":
                                 parent = _private(owner.settings.root / "plan-integration")
                                 outcome = BuildIntegrator(
-                                    owner.connect, owner.actor, self.evidence, owner.certificates
+                                    owner.connect,
+                                    owner.actor,
+                                    self.evidence,
+                                    owner.certificates,
+                                    authority=self._integration_authority(job),
                                 ).verify_for_review(
                                     plan_id,
                                     job.lease.attempt_id,

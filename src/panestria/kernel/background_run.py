@@ -282,7 +282,7 @@ class BackgroundRunService:
             "SELECT 1 FROM panestria.build_active_worker_claim c "
             "JOIN panestria.task t ON t.id=c.task_id JOIN panestria.task_attempt a ON a.id=c.attempt_id "
             "WHERE c.plan_id=%s AND c.task_id=%s AND c.attempt_id=%s AND c.lease_epoch=%s "
-            "AND c.worker_ref='claude-public-bash' AND t.lease_epoch=c.lease_epoch "
+            "AND c.worker_ref IN ('claude-public-bash','trusted-integrator') AND t.lease_epoch=c.lease_epoch "
             "AND t.state IN ('RUNNING','VERIFYING') AND a.lease_expires_at>clock_timestamp()",
             (binding.request.plan_id, str(scope.task_id), str(scope.attempt_id), scope.lease_epoch),
         ).fetchone()

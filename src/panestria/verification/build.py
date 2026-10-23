@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Literal
 
@@ -41,6 +42,7 @@ def verify_build(
     policy: PolicyContext | None = None,
     deadline: float | None = None,
     plan_scope: PlanTaskScope | None = None,
+    before_check: Callable[[], None] | None = None,
 ) -> VerifiedBuild:
     verify_snapshot(snapshot)
     runner = SandboxedCheckRunner(registry, snapshot.directory.parent)
@@ -58,6 +60,8 @@ def verify_build(
     for check in sorted(contract.acceptance, key=lambda check: check.id):
         if plan_scope is not None and check.id not in plan_scope.node.acceptance_keys:
             continue
+        if before_check is not None:
+            before_check()
         spec = check.verifier
         if denied_paths:
             verdict, reason, output_digest = "FAIL", "plan_path_denied", ""
