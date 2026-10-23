@@ -200,3 +200,12 @@ memory-limit result. The separate live AOS-008-TC03 memory assertion still
 requires memory_limit unchanged; neither default CI nor injected metadata passes
 that gate. [Original failure and affected checks](../../evidence/sandbox-oom-observation-2026-10-23/report.json)
 retain their source hashes. Production behavior and settlement bounds are unchanged.
+
+The first correction CI also exposed fixed-port55440 contention in the legacy
+kernel fixture. That fixture now requests a Docker-assigned loopback port and
+validates the actual published endpoint before migration; all kernel acceptance
+assertions stay unchanged. The original case passes with an agent-owned55440
+listener held throughout and still bound afterward. [Source-bound observation](../../evidence/kernel-port-isolation-2026-10-23/report.json)
+preserves that experiment and the failed hosted run. Other historical fixtures
+retain their original default; no owner listener, production service or accepted
+R0 evidence is changed, and no new test is added.
