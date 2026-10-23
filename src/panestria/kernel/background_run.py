@@ -165,7 +165,11 @@ class BackgroundRunService:
     def _eligibility(
         self, uow: UnitOfWork, actor: Actor, binding: BackgroundBinding, *, worker: ToolScope | None = None
     ) -> dict[str, Any]:
-        view = BackgroundWorkService().inspect(uow, actor, binding)
+        queue = BackgroundWorkService()
+        # Watchdogs use read-only snapshots. The ordinary admission path still
+        # reconstructs the full accepted plan/handoffs under its share guards;
+        # a worker guard intersects that existing claim, never creates one.
+        view = queue._conditions(uow, actor, binding) if worker is not None else queue.inspect(uow, actor, binding)
         withdrawn = uow.execute(
             "SELECT 1 FROM panestria.task_event WHERE goal_id=%s AND kind='background.withdrawn' "
             "AND payload->>'item_id'=%s LIMIT 1",
@@ -196,7 +200,8 @@ class BackgroundRunService:
                 ).fetchone()
                 if not handoff:
                     raise KernelDenied("background_dependency_not_verified")
-                PlanStore().read_handoff(uow, actor, handoff[0], self.evidence)
+                if worker is None:
+                    PlanStore().read_handoff(uow, actor, handoff[0], self.evidence)
             reasons.remove("goal_already_started_or_requires_owner_inspection")
         if worker is not None and "foreground_or_held_capacity_reserved" in reasons:
             other = uow.execute(
@@ -251,6 +256,12 @@ class BackgroundRunService:
         ) != (actor.owner_id, actor.project_id):
             raise KernelDenied("not_found")
         binding = self.accounts.binding(uow, actor, run.item_id)
+        latest = uow.execute(
+            "SELECT id::text FROM panestria.build_plan WHERE goal_id=%s ORDER BY version DESC LIMIT 1",
+            (binding.goal_id,),
+        ).fetchone()
+        if latest != (binding.request.plan_id,):
+            raise KernelDenied("background_plan_superseded")
         rows = self._history(uow, binding)
         if not rows or self._run(rows[-1], binding) != run or binding.sha256() != run.binding_sha256:
             raise KernelDenied("background_run_not_current")

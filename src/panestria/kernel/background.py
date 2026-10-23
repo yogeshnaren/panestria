@@ -165,6 +165,10 @@ class BackgroundWorkService:
         current = self.prepare(uow, actor, binding.request)
         if current != binding:
             raise KernelDenied("background_binding_changed")
+        return self._conditions(uow, actor, binding)
+
+    def _conditions(self, uow: UnitOfWork, actor: Actor, binding: BackgroundBinding) -> dict[str, Any]:
+        """Current scheduling observations over a separately validated immutable binding."""
         clock = uow.execute("SELECT clock_timestamp()").fetchone()
         assert clock is not None
         now = clock[0]

@@ -41,6 +41,7 @@ def change_account(monkeypatch):
 def test_change_after_invocation_claim_stops_context_disclosure(prepared_plan, native_plan, monkeypatch, change):
     f, owner, plan, state, request, _ = setup(prepared_plan, native_plan, monkeypatch)
     native = ClaudeScopedBashAdapter.build_public
+    changed = []
 
     def launch(adapter, session, **kwargs):
         before = kwargs["before_launch"]
@@ -57,6 +58,7 @@ def test_change_after_invocation_claim_stops_context_disclosure(prepared_plan, n
                 cli(f, "withdraw", request.item_id, cli(f, "show", request.item_id)["binding_sha256"])
             else:
                 change_account(monkeypatch)
+            changed.append(change)
             before()
 
         return native(adapter, session, **{**kwargs, "before_launch": change_before_launch})
@@ -64,6 +66,7 @@ def test_change_after_invocation_claim_stops_context_disclosure(prepared_plan, n
     monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", launch)
     result = BackgroundPlanRunner(owner, request.item_id).run_item(allow_background_subscription_run=True)
     assert result["status"] == "STOPPED", result
+    assert changed == [change]  # The requested change actually reached the disclosure boundary.
     assert state["launches"] == 0
     with owner.connect() as c:
         assert c.execute(
