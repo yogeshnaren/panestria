@@ -21,7 +21,7 @@ prepares and confirms an exact dedicated PUBLIC-web grant without widening Ask.
 adds one explicitly retained local CPU draft from bounded PUBLIC passages, typed
 controller-owned citations and immutable input/output receipts. It leaves support
 NOT_ASSESSED and task completion authority NONE. It is not qualified synthesis.
-S1/S2 remain IN_PROGRESS; automatic planning, qualified synthesis/support, a guided TUI,
+S1/S2 remain IN_PROGRESS; automatic planning, qualified synthesis/support, broader guided intake/collection,
 qualified semantic support, real runtime/live cases and full
 Delegate/G2 are pending. Canonical citation/rubric acceptance runners remain
 refused until independently admitted. No artifact export or collected quote
@@ -105,3 +105,16 @@ collector; planning itself creates no web grant, task attempt or acceptance verd
 include actual PG/CAS/CLI fixtures and a separate real cached CPU synthetic-question
 journey. Failed/uncertain intents are not silently repeated. Broader iterative
 planning, qualified support, actual service/runtime and full D-1/G2 remain pending.
+
+
+## Exact owner claim review terminal (2026-10-23)
+
+[Design103](../design/103-RESEARCH-CLAIM-REVIEW-TERMINAL.md) and the
+[owner guide](../testing/RESEARCH_CLAIM_REVIEW_TUI.md) connect retained claims and
+passages to bounded keyboard owner judgments and separate exact confirmation.
+Existing canonical draft/source/policy/task checks and immutable RESTRICTED notes
+remain authoritative; no model/search call or automatic support/task/training
+authority is introduced. The physical PTY/PG/CAS/reader checks retain explicit
+model/fetch fixtures in [source-bound evidence](../../evidence/research-review-terminal-2026-10-23/report.json).
+S1/S2 remain IN_PROGRESS: broader guided intake/collection, qualified automatic
+support/planning, actual search/runtime and complete D-1/G2 remain required.

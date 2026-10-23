@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "outcome": "EXACT_OWNER_RESEARCH_CLAIM_TERMINAL_COMPONENT_NOT_AUTOMATIC_SUPPORT_OR_RELEASE",
+  "observations": [
+    {
+      "file": "connected.xml",
+      "sha256": "81dc137d946d191ce6627a3e80bdc597923d37700efb242105d81fac7d73c0f2",
+      "source_commit": "be9b15d6e699d7304662f7cc34cfce47d223c293",
+      "source_tree": "9b73cb0091b812dc6d102a68d796cdd3464243ed",
+      "worktree": "CLEAN",
+      "scope": "6PASS: actual PG/CAS/reader/PTY normal keyboard consent and cancellation between validate/confirm, literal control/bidi rendering, non-TTY refusal, actual committed review followed by explicit synthetic lost reply without retry; two existing review cases and exact mounted OpenAPI. Retained draft model/fetch setup are declared fixtures.",
+      "result": {
+        "tests": "6",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "27.032"
+      }
+    }
+  ],
+  "quality": {
+    "ruff": "PASS",
+    "mypy": "PASS (341 source files at this source, before other task merge)",
+    "import_boundaries": "11 KEPT",
+    "secret_scan": "PASS"
+  },
+  "delivered": [
+    "Model-free private exact retained source/question/claim/limitations terminal snapshot.",
+    "Bounded keyboard verdict, exact retained citation toggles and owner rationale; every claim required, no default consent.",
+    "Read-to-end then v validation plus complete digest then separate one-attempt y; fresh current-source/task/policy fences.",
+    "RESTRICTED canonical owner notes remain separate from automatic support, task completion and training rights."
+  ],
+  "limits": [
+    "One explicit synthetic model/fetch fixture creates retained setup; the terminal performs no model/search/provider request or cache initialization.",
+    "No live semantic accuracy, public search/TLS or OS/runtime qualification is claimed.",
+    "No fresh API, account/credential, grant, schema, owner service/config/database or permission change.",
+    "Private terminal explicitly displays owner notes; no transcript/autosave/export or secure-memory-erasure promise.",
+    "Snapshot is revalidated at validate/save, not an automatically refreshed live view. Existing historical reviews are not silently adopted.",
+    "No complete AOS-023/D-1/G1/G2/G3/trial/owner acceptance; historical evidence remains source-bound."
+  ]
+}
