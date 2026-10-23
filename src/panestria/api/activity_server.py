@@ -103,8 +103,10 @@ def serve_activity(
         ):
             raise LocalApplicationRejected("connection_terminal_mode_only")
         if storage_config is not None and dashboard_assets is not None:
-            # Browser/phone host-data consent needs its own namespace integration.
-            raise LocalApplicationRejected("storage_terminal_mode_only")
+            if any(
+                (build_evidence_store, build_review_root, research_intake, build_intake, build_plan_review, build_run)
+            ):
+                raise LocalApplicationRejected("mission_storage_select_one_mode")
         if connection_reviews:
             app = build_activity_app(config, settings, token.get_secret_value(), connection_reviews=True)
         elif storage_config is None:
@@ -125,6 +127,7 @@ def serve_activity(
                 build_intake=build_intake,
                 build_plan_review=build_plan_review,
                 build_run=build_run,
+                storage_mode=storage_config is not None,
             )
         server = uvicorn.Server(server_config(app))
         print(

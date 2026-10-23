@@ -34,6 +34,7 @@ class BrowserAccess:
             "mission-build-intake",
             "mission-plan-review",
             "mission-build-run",
+            "mission-storage",
         ] = "default",
     ) -> None:
         parts = urlsplit(origin)
@@ -56,6 +57,7 @@ class BrowserAccess:
             "mission-build-intake",
             "mission-plan-review",
             "mission-build-run",
+            "mission-storage",
         }:
             raise ValueError("invalid_browser_namespace")
         self.cookie_name = (
@@ -64,6 +66,7 @@ class BrowserAccess:
             else "panestria_" + namespace.replace("-", "_") + "_" + hashlib.sha256(origin.encode()).hexdigest()[:12]
         )
         self.origin = origin
+        self.namespace = namespace
         self.host = parts.netloc.lower()
         self.secure = parts.scheme == "https"
         self.service = service

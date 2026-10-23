@@ -31,7 +31,23 @@ def mount_mission_control(
     build_intake: bool = False,
     build_plan_review: bool = False,
     build_run: Path | None = None,
+    storage_mode: bool = False,
 ) -> None:
+    if storage_mode:
+        from panestria.resources.storage_status import StorageObserver
+
+        if not isinstance(getattr(app.state, "storage_observer", None), StorageObserver) or any(
+            (
+                offline_ask,
+                research_intake,
+                build_evidence_store,
+                build_review_root,
+                build_intake,
+                build_plan_review,
+                build_run,
+            )
+        ):
+            raise LocalApplicationRejected("mission_storage_select_one_mode")
     run_service = None
     if build_run is not None:
         from panestria.execution.mission_run import MissionRunService
@@ -143,6 +159,12 @@ def mount_mission_control(
 
         app.include_router(APIRouter(lifespan=run_lifecycle))
         purpose = b"panestria.mission-build-run-session.v1\0" + run_service.configuration.encode() + b"\0"
+    app.state.mission_storage_mode = storage_mode
+    if storage_mode:
+        # Explicit host-data mode has a separate cookie and key purpose; an old
+        # observer/Ask/Build session cannot gain access by reopening the URL.
+        observer = app.state.storage_observer
+        purpose = b"panestria.mission-storage-session.v1\0" + hashlib.sha256(str(observer.path).encode()).digest()
     secret = hmac.digest(token.encode(), purpose + config.origin.encode(), "sha256")
     mount_browser_api(
         app,
@@ -150,7 +172,9 @@ def mount_mission_control(
             config.origin,
             SessionService(secret),
             app.state.goal_api.database_url,
-            namespace="mission-build-run"
+            namespace="mission-storage"
+            if storage_mode
+            else "mission-build-run"
             if run_service is not None
             else "mission-plan-review"
             if build_plan_review

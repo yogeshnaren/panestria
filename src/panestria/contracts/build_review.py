@@ -69,4 +69,5 @@ class MissionCapabilities(BaseModel):
     build_intake_enabled: bool = False
     plan_acceptance_enabled: bool = False
     build_run_enabled: bool = False
+    storage_status_enabled: bool = Field(default=False, exclude_if=lambda value: not value)
     dispatch_authority: Literal["NONE", "EXPLICIT_FOREGROUND_BUILD"] = "NONE"
