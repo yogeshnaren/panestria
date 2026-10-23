@@ -13,10 +13,16 @@ try{
  await page.goto(f.origin);
  await expect(page.locator('header')).toContainText('PRIVATE PHONE OBSERVER');
  await expect(page.locator('footer')).toContainText('No background push or remote approvals');
- const paired=page.waitForResponse(r=>r.url().endsWith('/v1/session/pair'));
+ // Consume the authenticated response as soon as it arrives. Waiting for the
+ // click to settle first can leave Chromium's transient no-store body unavailable.
+ const paired=page.waitForResponse(r=>r.url().endsWith('/v1/session/pair')).then(async response=>{
+  assert.equal(response.status(),200);
+  return response.json();
+ });
  await page.getByLabel('One-use pairing code from your terminal').fill(f.code);
  await page.getByRole('button',{name:'Pair',exact:true}).click();
- const csrf=(await (await paired).json()).csrf_token;
+ const csrf=(await paired).csrf_token;
+ assert.equal(typeof csrf,'string');assert(csrf.length>0);
  const project=page.getByRole('region',{name:'Project activity'});
  const inbox=page.getByRole('region',{name:'Pending review inbox'});
  await expect(project).toBeVisible();await expect(page.getByTestId('project-freshness')).toContainText('Confirmed');
