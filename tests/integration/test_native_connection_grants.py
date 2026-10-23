@@ -8,9 +8,13 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
+from test_admitted_native_build import NativeTransportFixture
+from test_background_queue import cli as background_cli
+from test_background_run import setup as setup_background
 from test_native_plan_execution import native_plan as native_plan  # noqa: F401
 from test_native_plan_execution import owner_cli as owner_cli  # noqa: F401
 from test_native_plan_execution import prepared_plan as prepared_plan  # noqa: F401
+from test_owner_build_cli import contract as owner_contract
 from typer.testing import CliRunner
 
 from panestria.brokers.harness.claude_build import ClaudeScopedBashAdapter
@@ -33,6 +37,7 @@ from panestria.contracts.native_connection import (
     native_configuration,
 )
 from panestria.execution import background_account, native_connection
+from panestria.execution.background_run import BackgroundPlanRunner
 from panestria.execution.build_plan import BuildIntegrator
 from panestria.execution.native_build import runtime_versions
 from panestria.kernel.connections import ConnectionReviewService
@@ -55,7 +60,7 @@ def source(record_property):
     record_property("scope", "ACTUAL_PG_GIT_MCP_DOCKER__SYNTHETIC_NATIVE_ACCOUNT_AUTH_CAPACITY_NOT_LIVE_QUALIFICATION")
 
 
-def setup(native_plan, monkeypatch, *, max_calls=2, max_bytes=32768):
+def setup(native_plan, monkeypatch, *, max_calls=2, max_bytes=32768, observation_sha256=None):
     owner, runner, plan, state = native_plan
     state["identity"] = "12" * 32
     reports = background_account.account_reports(owner)
@@ -80,9 +85,14 @@ def setup(native_plan, monkeypatch, *, max_calls=2, max_bytes=32768):
             json.dumps(observed.model_dump(mode="json"), sort_keys=True, separators=(",", ":")).encode()
         )
 
-    monkeypatch.setattr(native_connection, "collect_account", collect)
-    monkeypatch.setattr(background_account, "collect_account", collect)
-    digest = collect(owner, account)
+    if observation_sha256 is None:
+        monkeypatch.setattr(native_connection, "collect_account", collect)
+        monkeypatch.setattr(background_account, "collect_account", collect)
+        digest = collect(owner, account)
+    else:
+        # Background's supported probe and native selection inspect the same
+        # synthetic CLI metadata through the actual private observation helper.
+        digest = observation_sha256
     anchor = NativeAccountObservation.model_validate_json(reports.read_blob(digest))
     with owner.connect() as c:
         scope = ConnectionReviewService().scope(UnitOfWork(c), owner.actor)
@@ -94,7 +104,7 @@ def setup(native_plan, monkeypatch, *, max_calls=2, max_bytes=32768):
         connector_version="account-context-v1",
         provider_route="claude-subscription",
         budget_scope="SELECTED_PUBLIC_CONTEXT_AND_NATIVE_LAUNCHES",
-        account_ref=account,
+        account_ref=anchor.account_ref,
         root_refs=(anchor.profile_sha256,),
         configuration_sha256=native_configuration(anchor, runtime_versions(), REQUESTED_MODEL),
         actions=("read", "write", "send"),
@@ -261,6 +271,59 @@ def test_revoke_during_final_checks_keeps_returned_worker_evidence_but_no_final_
         assert c.execute("SELECT count(*) FROM panestria.approval_request").fetchone() == (0,)
 
 
+@pytest.mark.parametrize("withdraw", [None, "connection", "queue"])
+def test_native_and_background_authorities_both_fence_final_publication(
+    prepared_plan, native_plan, monkeypatch, withdraw
+):
+    f, owner, plan, state, request, view = setup_background(prepared_plan, native_plan, monkeypatch)
+    _, _, _, _, _, revoke, _ = setup(native_plan, monkeypatch, observation_sha256=view["observation_sha256"])
+    original = BuildIntegrator._authorize
+    reached = []
+
+    def guarded(controller):
+        if not reached:
+            reached.append(withdraw)
+            if withdraw == "connection":
+                revoke()
+            elif withdraw == "queue":
+                current = background_cli(f, "show", request.item_id)
+                background_cli(f, "withdraw", request.item_id, current["binding_sha256"])
+        return original(controller)
+
+    monkeypatch.setattr(BuildIntegrator, "_authorize", guarded)
+    result = BackgroundPlanRunner(owner, request.item_id).run_item(allow_background_subscription_run=True)
+    assert reached == [withdraw] and state["launches"] == 2
+    assert len(reservations(owner)) == 2
+    if withdraw is None:
+        assert result["status"] == "WAITING_APPROVAL", result
+    else:
+        assert result["status"] == "WAIT", result
+        assert result["reason"] == (
+            "native_connection_not_current" if withdraw == "connection" else "background_item_withdrawn"
+        )
+    with owner.connect() as c:
+        assert c.execute("SELECT count(*) FROM panestria.build_handoff").fetchone() == (2,)
+        assert c.execute("SELECT count(*) FROM panestria.approval_request").fetchone() == (
+            (1,) if withdraw is None else (0,)
+        )
+
+
+def test_single_owner_build_also_reserves_the_selected_connection(prepared_plan, native_plan, monkeypatch):
+    owner, _, _, _, _, _, _ = setup(native_plan, monkeypatch, max_calls=1)
+    f = prepared_plan[0]
+
+    def native(adapter, *args, **kwargs):
+        return NativeTransportFixture.build_public(f.transport, *args, **kwargs)
+
+    monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", native)
+    with owner.connect() as c:
+        policy_ref = ConnectionReviewService().scope(UnitOfWork(c), owner.actor).policy_ref
+    document = owner_contract(f, policy_ref)
+    result = owner.submit(document, ("calculator.py",), f.base, document["goal_id"], public_subscription_run=True)
+    assert result["task_state"] == "WAITING_APPROVAL", result
+    assert f.transport.launches == 1 and len(reservations(owner)) == 1
+
+
 def test_native_cli_template_and_terminal_expose_exact_route_and_units_without_enabling(
     native_plan, monkeypatch, tmp_path
 ):
@@ -269,6 +332,21 @@ def test_native_cli_template_and_terminal_expose_exact_route_and_units_without_e
         scope = ConnectionReviewService().scope(UnitOfWork(c), owner.actor)
     monkeypatch.setattr("panestria.cli.build._service", lambda _: owner)
     monkeypatch.setattr("panestria.cli.connection_client.ConnectionClient.scope", lambda _: scope)
+    directory = tmp_path / "connections"
+    configured = CliRunner().invoke(
+        app,
+        [
+            "connections",
+            "init",
+            "--directory",
+            str(directory),
+            "--owner-id",
+            owner.actor.owner_id,
+            "--project-id",
+            owner.actor.project_id,
+        ],
+    )
+    assert configured.exit_code == 0, configured.output
     output = tmp_path / "native-proposal.json"
     result = CliRunner().invoke(
         app,
@@ -276,7 +354,7 @@ def test_native_cli_template_and_terminal_expose_exact_route_and_units_without_e
             "connections",
             "native-template",
             "--config",
-            str(tmp_path / "scope.json"),
+            str(directory / "activity.json"),
             "--build-config",
             str(tmp_path / "build.json"),
             "--task-id",
