@@ -49,6 +49,7 @@ class CuratedExample(Closed):
 
 class OwnerEvidence(Closed):
     schema_version: StrictInt = Field(default=1, ge=1, le=1)
+    privacy_class: Literal["PUBLIC"]
     role: Role
     subject_sha256: Digest
     assessment: Eligibility = "UNKNOWN"

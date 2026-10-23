@@ -66,6 +66,7 @@ def files(
             {
                 "schema_version": 1,
                 "role": role,
+                "privacy_class": "PUBLIC",
                 "subject_sha256": example.sha256(),
                 "assessment": decision,
                 "basis": "SYNTHETIC OWNER EVIDENCE: "
@@ -115,6 +116,18 @@ def test_exact_separate_consent_concurrent_replay_and_offline_export_restore_cli
     review = cli(f, "prepare", *args)
     digest = review["review_sha256"]
     assert review["preview"]["training_export"] == "DENIED_UNTIL_SEPARATE_OWNER_CONFIRMATION"
+    origin = json.loads(proofs[0].read_bytes())
+    missing_basis = origin.copy()
+    missing_basis.pop("provider_basis")
+    private(proofs[0], missing_basis)
+    assert f.service.prepare(candidate, proofs)["preview"]["proposed_eligibility"] == "UNKNOWN"
+    private(proofs[0], origin)
+    rights = json.loads(proofs[1].read_bytes())
+    unclassified = rights.copy()
+    unclassified.pop("privacy_class")
+    private(proofs[1], unclassified)
+    cli(f, "prepare", *args, expected=1)
+    private(proofs[1], rights)
     cli(f, "record", str(candidate), digest, expected=1)
     record_args = [str(candidate), digest, *args[1:], "--confirm-owner-review"]
     cli(f, "record", *record_args, expected=1)  # Ordinary owner review is not training-purpose consent.
