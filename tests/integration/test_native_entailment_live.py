@@ -1,6 +1,7 @@
 """Opted-in PUBLIC synthetic corpus only; no private claim or support/release promotion."""
 
 import os
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -16,6 +17,13 @@ def test_actual_public_fixture_subscription_observation(fold, record_property):
     if os.environ.get("PANESTRIA_RUN_NATIVE_ENTAILMENT") != "1":
         pytest.skip("explicit existing-login PUBLIC fixture opt-in absent; actual observation not run")
     root = Path(__file__).resolve().parents[2]
+    record_property(
+        "candidate_commit", subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+    )
+    dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=root).strip())
+    record_property(
+        "worktree_state", "dirty" if dirty else "clean"
+    )
     probe = NativeEntailmentProbe(
         BinaryPin(Path.home() / ".local/share/claude/versions/2.1.273", PINNED_BINARY_SHA256),
         Path.home() / ".panestria-native-claude",
