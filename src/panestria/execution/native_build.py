@@ -26,6 +26,7 @@ from panestria.contracts.native_context import NativeContextManifest
 from panestria.contracts.native_model import NativeModel, validate_native_model
 from panestria.contracts.policy import Action, PolicyRequest
 from panestria.execution.scoped_bash import BuildReview, ScopedBashController
+from panestria.execution.worker_authority import worker_failure_code
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.invocations import InvocationService
 from panestria.kernel.leases import LeaseService
@@ -227,6 +228,7 @@ class AdmittedNativeBuild:
         claimed = False
         watchdog: threading.Thread | None = None
         digest = None
+        monitor_failure: str | None = None
         try:
             context = self.context
             if hashlib.sha256(context.encode()).hexdigest() != self.context_sha256:
@@ -302,6 +304,7 @@ class AdmittedNativeBuild:
             claimed = True  # Provider launch happens only after an acknowledged commit.
 
             def monitor() -> None:
+                nonlocal monitor_failure
                 while not done.wait(0.2):
                     try:
                         if time.monotonic() >= deadline or (cancel is not None and cancel.is_set()):
@@ -311,7 +314,8 @@ class AdmittedNativeBuild:
                             self.authorize(connection, observation=True)
                             assert binding is not None and identity is not None
                             InvocationService().observe(UnitOfWork(connection), controller.actor, binding, identity)
-                    except Exception:
+                    except Exception as error:
+                        monitor_failure = worker_failure_code(error)
                         stop.set()
                         return
 
@@ -422,7 +426,7 @@ class AdmittedNativeBuild:
                 digest,
                 review,
             )
-        except Exception:
+        except Exception as error:
             if claimed and binding is not None and identity is not None:
                 try:
                     with controller.connect() as connection:
@@ -433,7 +437,8 @@ class AdmittedNativeBuild:
             self._stop_attempt()
             return NativeBuildOutcome(
                 "CANCELLED" if cancelled else "UNAVAILABLE",
-                "native_build_cancelled" if cancelled else "native_build_not_confirmed",
+                "native_build_cancelled" if cancel is not None and cancel.is_set()
+                else controller.last_failure_code or monitor_failure or worker_failure_code(error),
                 self.context_sha256,
                 digest,
             )

@@ -31,7 +31,7 @@ from panestria.execution.native_connection import preflight_connection, selected
 from panestria.execution.owner_build import OwnerBuild
 from panestria.execution.proposal_demo import _lock, _private
 from panestria.execution.scoped_bash import ScopedBashController
-from panestria.execution.worker_authority import WorkerAuthority, intersect_authorities
+from panestria.execution.worker_authority import WorkerAuthority, intersect_authorities, worker_failure_code
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.plan_lifecycle import PlanLifecycle
@@ -413,10 +413,13 @@ class NativePlanRunner:
                                     {"task_id": job.lease.task_id, "status": result.status, "reason": result.reason}
                                 )
                                 stop_new |= result.status != "NODE_VERIFIED"
-                            except Exception:
+                            except Exception as error:
                                 # A claimed slot is deliberately retained until
                                 # a real outcome/reconciliation proves release safe.
-                                results.append({"task_id": job.lease.task_id, "status": "UNCONFIRMED"})
+                                results.append({
+                                    "task_id": job.lease.task_id, "status": "UNCONFIRMED",
+                                    "reason": worker_failure_code(error),
+                                })
                                 stop_new = True
                 except BaseException:
                     self.cancel.set()

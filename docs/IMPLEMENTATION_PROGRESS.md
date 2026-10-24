@@ -162,6 +162,17 @@ connection/secret boundaries, host/resource qualification, original gates and
 owner trial remain pending. AOS-012-S5 and R3 stay IN_PROGRESS.
 
 
+## Current native-worker failure visibility
+
+[Redacted stop diagnostics](testing/NATIVE_WORKER_DIAGNOSTICS.md) now distinguish
+closed database, authority and unconfirmed-execution causes while preserving
+all original fencing, deadlines and held UNKNOWN claims. The two existing CI
+journeys retain complete synthetic outcomes in their original JUnit artifacts.
+[42 affected connected checks](../evidence/native-worker-diagnostics-2026-10-23/report.json)
+pass with3 live cases excluded and explicit native/account/capacity/fault fixtures.
+The original intermittent CI stop remains unexplained; these diagnostics do not
+waive it, release a claim, authorize retry or establish R3/runtime qualification.
+
 ## Current delivery checkpoint
 
 **R3 is building; the MVP has not reached candidate acceptance.** Historical

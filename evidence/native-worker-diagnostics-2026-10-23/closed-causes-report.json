@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "component": "CLOSED_AUTHORITY_AND_PRIVATE_ERROR_DIAGNOSTICS",
+  "source_commit": "3ed3cb9de7ff7584727380b78b0b8401114fa6d0",
+  "source_tree": "39dbd318c10dd213e8690ede7de6c0b893e79bab",
+  "source_state": "CLEAN",
+  "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/native-worker-diagnostics-2026-10-23/closed-causes.xml",
+  "sha256": "8614cff8c01d0d107036bd75f09991639a87962ec5597049124aa230ae32162b",
+  "result": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "4",
+    "time": "20.421",
+    "timestamp": "2026-10-23T16:28:43.427118-07:00",
+    "hostname": "yogesh-verisim"
+  },
+  "scope": "Four real disposable PG/native-controller failure injections: statement timeout, private arbitrary exception, known closed authority code and unknown authority text; UNKNOWN invocations/capacity held, no handoff/approval or message leak. Five unrelated/live cases deselected, not passed.",
+  "previous_report": "report.json",
+  "denominators": "This four-case observation overlaps two cases in the previous42-case source. Do not sum as46 cases or relabel the earlier source.",
+  "root_cause_of_original_ci_stop": "UNKNOWN",
+  "native_account_model_certificates": "SYNTHETIC_FIXTURES_NOT_LIVE",
+  "release_gate": "NOT_EVALUATED"
+}
