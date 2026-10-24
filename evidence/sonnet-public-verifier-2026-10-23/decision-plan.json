@@ -1,0 +1,27 @@
+{
+  "api_credentials_allowed": false,
+  "background_enabled": false,
+  "billing_eligibility": "Fresh OWNER_REPORTED extra usage disabled for this bounded evaluation only; no background policy renewed",
+  "calibration_decision": "Run at most one calibration batch. Continue to one untouched qualification batch only if COMPLETE, zero false SUPPORTED, at least31/36 correct, no overage/profile/identity refusal. Otherwise stop, no retry/fallback/rubric changes.",
+  "human_research_labels": "UNREVIEWED; not used in this observation",
+  "limits_per_fold": {
+    "actual_cash": null,
+    "cli_estimate_usd": "0.25",
+    "output_bytes": 262144,
+    "processes": 1,
+    "turns": 2,
+    "wall_seconds": 120
+  },
+  "past_local_and_haiku_failures": "Preserved unchanged; scores not pooled",
+  "private_original_plan_sha256": "6a48ed2d1405244be0f60b0a98dc508ff97d1b7cc40f6b40506caf01f047f193",
+  "purpose": "ONE selected model on original frozen PUBLIC SNLI calibration, conditional one qualification; no production role qualification",
+  "qualification_decision": "Retain original predictions and metrics regardless of score. No public preflight outcome alone can qualify research/private semantic support, task acceptance or any release.",
+  "recorded_at": "2026-10-24T04:59:10.189467+00:00",
+  "schema_version": 1,
+  "selected_model": "claude-sonnet-5",
+  "source_commit": "4e0f66b2dc87ee0d964ecb261f973456e3dbb938",
+  "source_tree": "f4dce7e154693b29a03ee30f023a0bf76eb091ad",
+  "training_authority": false,
+  "unchanged_corpus_sha256": "5f9c0ac087ebcb1cedea91275ccf497cf9f5a8dec51e112cb597a277e93e7f1c",
+  "worktree_state": "clean"
+}
