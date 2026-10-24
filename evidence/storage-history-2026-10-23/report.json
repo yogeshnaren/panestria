@@ -1,0 +1,96 @@
+{
+  "acceptance_authority": "NONE",
+  "artifacts": {
+    "corrected-uncommitted.xml": "bbad86473e5c9f720602524f9e7240b26137eb02d3eef797977fc6d91eec31ab",
+    "final-original.xml": "41a80f6201b0dfc9c51c478a6380d166ad18c8f3de02315531d47f4819401094",
+    "initial-uncommitted.xml": "744a5bff74f2adfdb2ac6716e53a5ded408f7fe8112db66fc54072f55e1b096e",
+    "settings-binding-mutant.diff": "d08b3b81c5db41dd2fe70f0fd14367c69f4c7b01a8a52cb43894c8cddc45370b",
+    "source-before-final.json": "0c8a0ebbdeb8e973c8a2dac2bb6797c114535b61be76d6768c5cdb93df252775"
+  },
+  "cleanup_authority": "NONE",
+  "corrections": [
+    "Initial Ruff line-length findings corrected before final source",
+    "Initial cached-Node helper used wrong relative path, corrected without download/install; ignored scratch launcher preserved",
+    "Retention explicitly binds the returned filesystem/device to the selected identity; original core implementation commit retained"
+  ],
+  "default_history_enabled": false,
+  "earlier_observations": [
+    {
+      "artifact": "initial-uncommitted.xml",
+      "state": "uncommitted intermediate code; exact candidate UNKNOWN, not a certificate",
+      "tests": 39
+    },
+    {
+      "artifact": "corrected-uncommitted.xml",
+      "state": "uncommitted intermediate code; exact candidate UNKNOWN, not a certificate",
+      "tests": 41
+    }
+  ],
+  "limitations": [
+    "Not general unified CPU/RAM/VRAM/battery/resource inbox or all write-path admission",
+    "No actual host pressure/foreground qualification, owner listener/configuration/Timeshift change, model/provider call or download",
+    "Private metadata history is diagnostic; source/settings/fsid/hash checks are not an authenticated kernel proof or runtime/role/release certificate",
+    "A genuinely stalled OS read/write remains STALLED; no replacement collector or guaranteed fresh reading while I/O is hung",
+    "Full history is preserved; owner must deliberately review capacity or select another private directory. No deletion/relabel/automatic rotation.",
+    "Counts overlap earlier intermediate checks; do not add39+41+45 or infer G1/G2/G3 PASS"
+  ],
+  "limits": {
+    "automatic_deletion": false,
+    "automatic_new_history": false,
+    "max_baseline_age_seconds": 86400,
+    "max_directory_entries_including_lock": 512,
+    "max_logical_directory_bytes": 4194304,
+    "max_record_bytes": 16384,
+    "max_samples": 511,
+    "physical_filesystem_overhead": "ADDITIONAL_NOT_A_PHYSICAL_ALLOCATION_CAP"
+  },
+  "local_validation": {
+    "checks": [
+      "Original sample bytes/timestamps retained across restart; compatible prior sample yields growth and changed-backup warnings",
+      "History absent/off does not create samples; opt-out/shutdown during collection withholds late retention",
+      "Old/future/different collector/settings/filesystem samples cannot become current baselines",
+      "Busy lock, file-count and logical byte limits, malformed hash, unsafe/replaced/public directory all preserve history and current capacity when I/O returns",
+      "Existing authenticated content-free terminal and separately paired Chromium storage journey display saved history/budget; opt-out clears notices and revocation refuses host data",
+      "Fresh capacity, no-path/device browser metadata and no canonical task events/cleanup authority remain"
+    ],
+    "elapsed_seconds": 21.363,
+    "errors": 0,
+    "failures": 0,
+    "scope": "Actual private files/locks/statvfs, two collector lifecycles, disposable PG/HTTP/CLI/PTY and Chromium. Disk/backup change inputs and warning reserve thresholds are fixtures, not actual pressure/Timeshift changes.",
+    "skipped": 0,
+    "tests": 45
+  },
+  "mutation": {
+    "base_source_commit": "0c3a0f1dbc5a3ea3933858a092520714e1df47f2",
+    "fault": "Removed previous-sample settings hash comparison only",
+    "mutants_run": 1,
+    "observed_result": "1 expected assertion failure,0 errors; incompatible sample was incorrectly returned",
+    "outcome": "DETECTED",
+    "raw_original_location": "Retained privately; not published because the failure includes local diagnostic capacity metadata",
+    "raw_original_xml_sha256": "fc4c44df1feab9bb3b21d2923ff5e696632b07b7764f1b0b589b9dcff69f1118",
+    "scope": "One targeted functional fault only; no whole-system mutation score or general guarantee",
+    "witness": "tests/unit/test_storage_history.py::test_incompatible_or_stale_history_does_not_become_a_current_baseline[settings]",
+    "worktree_state": "deliberately_dirty_disposable_mutant"
+  },
+  "other_validation": [
+    "Affected Ruff and mypy3files PASS",
+    "Cached TypeScript/production build PASS,280.60KB JS before compression",
+    "Original XML and8 source hashes verified after execution"
+  ],
+  "outcome": "Optional bounded private restart history connected to existing storage watch and activity/Mission Control observers",
+  "release_gate_authority": false,
+  "schema_version": 1,
+  "source_commit": "0c3a0f1dbc5a3ea3933858a092520714e1df47f2",
+  "source_sha256": {
+    "apps/mission-control/tests/storage.mjs": "e2c10efbcc6875397db14488c67fda9c40db8e102bc5755663ed66cac298548b",
+    "src/panestria/cli/storage.py": "e365d28203e1e81fb65fb79e445f885df5afb10c5eaca6088c2f181a552e65e8",
+    "src/panestria/resources/storage.py": "91166071e882f5dddf711458035ec7805393a4cb4c944804effd1bd3dfb85bbf",
+    "src/panestria/resources/storage_history.py": "278f1003df4f10936941b3870f31aaddf5ecf268e7e8aa3695597e181ce71d33",
+    "src/panestria/resources/storage_status.py": "60f12f749934ebbde938ecaf59620a27af157206410f76b3c1d24d740c107d53",
+    "tests/integration/test_mission_storage.py": "b4ed8633874229d2082b7fc5376425ce1a910a5ad8e4eb7b586bfebf6b41d104",
+    "tests/integration/test_storage_status_terminal.py": "413051df2dd84765b8988fc07ca7256b9da3dd8be85a60d812c4587bd37064f6",
+    "tests/unit/test_storage_history.py": "4345e664664e334eb1e50da9a0ab185852f4e6110d237ed473c20d881dd04699"
+  },
+  "source_state_at_execution": "clean",
+  "source_tree": "b13f4ab17d54ccffd1ad29cbf4671260dee3759d"
+}

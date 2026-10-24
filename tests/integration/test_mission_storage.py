@@ -134,7 +134,10 @@ def test_actual_chromium_storage_notices_optout_and_revoke_clear_host_view(
     private = tmp_path / "PRIVATE_STORAGE_SELECTION"
     private.mkdir(mode=0o700)
     storage = tmp_path / "config/storage.json"
-    settings = StorageSettings(notifications_enabled=True, filesystem=private, minimum_free_bytes=2**63 - 1)
+    settings = StorageSettings(
+        notifications_enabled=True, filesystem=private, minimum_free_bytes=2**63 - 1,
+        history_directory=tmp_path / "retained-history",
+    )
     storage.write_text(settings.model_dump_json())
     storage.chmod(0o600)
     app = build_activity_app(config, Settings(database_url=f["dsn"]).validate_profile(), token, storage_config=storage)
@@ -189,6 +192,7 @@ def test_actual_chromium_storage_notices_optout_and_revoke_clear_host_view(
             browser.stdin.flush()
 
         wait("OBSERVED")
+        assert len(list(settings.history_directory.glob("*.json"))) == 1
         storage.write_text(settings.model_copy(update={"notifications_enabled": False}).model_dump_json())
         observer = app.state.storage_observer
         with observer.lock:

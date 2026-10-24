@@ -1,0 +1,12 @@
+diff --git a/src/panestria/resources/storage_history.py b/src/panestria/resources/storage_history.py
+index 60a4afc..474b67e 100644
+--- a/src/panestria/resources/storage_history.py
++++ b/src/panestria/resources/storage_history.py
+@@ -147,7 +147,6 @@ class StorageHistory:
+                 if (
+                     0 <= age <= MAX_AGE_SECONDS
+                     and saved.collector_sha256 == self.collector_sha
+-                    and saved.settings_sha256 == self.settings_sha
+                     and saved.filesystem_sha256 == self.filesystem_sha
+                     and saved.report.filesystem == str(self.settings.filesystem)
+                 ):
