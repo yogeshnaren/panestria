@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "component": "PHONE_PAIR_RENDERER_OBSERVATION",
+  "source_commit": "fb0e69b8a9c8b31c92d2e079edfcb3cdb8033e7b",
+  "source_tree": "b703f139a8a57fb2a6a64e84a56d2b59c82586ef",
+  "source_state": "CLEAN",
+  "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/phone-pair-response-body-2026-10-23/renderer-original.xml",
+  "sha256": "8573e4577c70b8eed28da3b631a958fcd62ae138666fa25f4086942350f35490",
+  "result": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "1",
+    "time": "40.917",
+    "timestamp": "2026-10-23T16:19:25.845602-07:00",
+    "hostname": "yogesh-verisim"
+  },
+  "earlier_correction": {
+    "source": "3d7ec4010f2e0444c48d26e11d31e655ac12a61d",
+    "local_journey": "PASS41.668s",
+    "ci_40012690070_attempt_1": "phonePASS but native-planSTOPPED, overallFAIL",
+    "ci_40012690070_attempt_2": "phoneCDPgetResponseBodyFAIL recurred, separate native-connectionSTOPPED, overallFAIL",
+    "conclusion": "Eager CDP response-event read is INSUFFICIENT, not a completed fix."
+  },
+  "change": "Observe a clone of the real browser fetch response within its renderer. The original request, TLS, response headers/cookie/body and application fetch remain intact. No request interception, mock response, retries, skips, timeout increase, API or application changes. Extract the real CSRF and clear the test-only observation reference.",
+  "actual_validation": [
+    "Existing physical Chromium mobile viewport, actual disposable TLS/PG/Git/server restart/offline/revocation journey",
+    "Actual UI pairing and authenticated read-only denials with real returned CSRF",
+    "Native/account/capacity/CA/peer/visibility are explicit fixtures, not live phone/native qualification"
+  ],
+  "limits": [
+    "CI failures remain preserved; no claim of root cause for the separate native stop or global flake absence.",
+    "Real phone/private TLS setup remains owner-deferred; no owner services/data/credentials/billing/storage/backup changed."
+  ],
+  "release_gate": "NOT_EVALUATED"
+}

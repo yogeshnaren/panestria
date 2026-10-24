@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "component": "UNCONFIRMED_GATEWAY_PHASE_METADATA",
+  "source_commit": "51e4c1cb7635da44f679a050556ac80596868f2a",
+  "source_tree": "c5bf3741df3b9c0be9268cae43aa8292037e0b40",
+  "source_state": "CLEAN",
+  "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/native-worker-diagnostics-2026-10-23/gateway-phases.xml",
+  "sha256": "1850d607993fcb630c7cfaed1813df9083164a6b67c30560c5f5c4e140e7ae2b",
+  "result": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "57",
+    "time": "44.995",
+    "timestamp": "2026-10-23T16:51:25.241463-07:00",
+    "hostname": "yogesh-verisim"
+  },
+  "live_deselected": 10,
+  "change": "Closed distinction among observation deadline, watchdog shutdown and sandbox return uncertainty; shared native-plan test fixture records original results for all journeys. No limits/status/claim/authority changes.",
+  "validation": [
+    "Existing bounded-stall and private runtime-exception gateway checks distinguish observation deadline from sandbox return without raw diagnostic text",
+    "Actual PG/Git/MCP/Docker native-plan/model-selection control flow and held-claim negative paths; native/account/capacity/certificate fixtures are synthetic",
+    "Default gateway tests use explicit synthetic authorities/runners; no provider call or real native qualification"
+  ],
+  "original_ci": {
+    "run": 40040656545,
+    "head": "91dfb57e3ab1f1be3ddb01c440dffd7c46bdea2d",
+    "preview": "3cc8c53c98456ba96762fee724a92ebe48951889",
+    "status": "FAIL",
+    "observation": "Both workers returned scoped_gateway_unknown before final verification in native_connection_grants final-revocation case; separate selected-model journey also stopped. Not a confirmed SQL timeout or identified root cause.",
+    "archive": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/r3-build-ci-2026-10-20/pr209/failed-40040656545"
+  },
+  "denominators": "Separate source-bound57-case observation overlaps earlier42/4-case reports; do not sum or relabel.",
+  "root_cause": "UNDER_INVESTIGATION",
+  "release_gate": "NOT_EVALUATED"
+}

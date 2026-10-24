@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "component": "PHONE_BROWSER_PAIR_RESPONSE_BODY_ORDER",
+  "source_commit": "3d7ec4010f2e0444c48d26e11d31e655ac12a61d",
+  "source_tree": "8519b1a364a6ccf44c031b94816368cab49ce717",
+  "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/phone-pair-response-body-2026-10-23/original.xml",
+  "sha256": "aa99920fbe4908b1d283b871efd9f29dca4e2a16523708148b915cdb62615c99",
+  "result": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "1",
+    "time": "41.668",
+    "timestamp": "2026-10-23T12:34:11.828097-07:00",
+    "hostname": "yogesh-verisim"
+  },
+  "original_failure": {
+    "run": 40010402853,
+    "pr": 207,
+    "head": "ad8c7c32497946e2dfd95adb386acacf4dadafd3",
+    "archive": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/r3-build-ci-2026-10-20/pr207/failed-40010402853",
+    "diagnostic": "Network.getResponseBody: No data found for resource while reading pair JSON after awaiting UI click",
+    "failing_helper_identical_to_main_sha256": "bd56d3ab675c0dc91cb94a08424713d4e1f784c338ad13d972d91fe8741bffae",
+    "status": "PRESERVED_FAIL_NOT_MERGED"
+  },
+  "change": "Read the actual no-store pairing response in the response callback registered before clicking; require200 and a nonempty real CSRF token. No retries, skips, new tests, increased timeouts, fake response or application change.",
+  "actual_validation": [
+    "Physical Chromium mobile-emulation pairing and existing valid-CSRF read-only mutation denials",
+    "Disposable real TLS/PG/Git, test-server stop/restart, offline/visibility fixtures and canonical device revocation",
+    "Existing two-worker Build uses explicit native/account/hardware fixtures; no inference",
+    "Cached TypeScript check and production dashboard build pass; no installs/downloads"
+  ],
+  "limits": [
+    "Intermittent original CI failure preserved; not claimed to reproduce on every run or prove global flake absence.",
+    "Mobile emulation and fixture CA/peer/native observations are not real-phone/TLS/network/native qualification.",
+    "Owner services, databases, backup, storage, billing and credentials unchanged; search/phone/SDK deferrals and original gates remain."
+  ],
+  "release_gate": "NOT_EVALUATED"
+}
