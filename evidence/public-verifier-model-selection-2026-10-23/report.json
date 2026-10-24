@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "component": "EXPLICIT_PUBLIC_VERIFIER_OBSERVATION_MODEL",
+  "source_commit": "e9c0c7bdea4b6e2820cce7ce5cb69c24cb7425a9",
+  "source_tree": "efbd98be2dec23efc32581f345379abcaaca5d50",
+  "source_state": "CLEAN",
+  "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/public-verifier-model-selection-2026-10-23/final.xml",
+  "sha256": "8b1b2ae695a131f578b8f6b4033b06bfad8c087732c5fd60cdabdb6693849bf6",
+  "result": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "26",
+    "time": "0.269",
+    "timestamp": "2026-10-23T16:10:32.321319-07:00",
+    "hostname": "yogesh-verisim"
+  },
+  "live_cases_deselected": 2,
+  "initial": {
+    "path": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/public-verifier-model-selection-2026-10-23/initial.xml",
+    "source_state": "UNCOMMITTED_BEFORE_EXPLICIT_USAGE_GUARD",
+    "result": "24 unit cases passed; not a source certificate"
+  },
+  "actual_validation": [
+    "Actual controlled temporary files, parser streams, fixed public corpus projection and exact single launch argv/settings via injected collector",
+    "Legacy model/serialization/profile compatibility; selected init/assistant/usage model mismatch refusal",
+    "Wrong model alias refused before auth/process access; changed/private corpus refused before launch",
+    "Ruff, mypy356 and11 import boundaries pass; secret scan passes"
+  ],
+  "fixtures": [
+    "Native process, login, metadata and inference are injected, not executed",
+    "Predictions are deliberately UNKNOWN; this is protocol/component evidence, not model accuracy"
+  ],
+  "scope": [
+    "Same original public corpus and frozen rubric; original Haiku/local failures unchanged",
+    "One explicitly selected model only, no fallback/switch, no API key/tools/MCP/private input",
+    "No actual provider calls, owner setup or credentials/billing changes",
+    "Missing human research-domain labels, current eligible consent and actual calibration/qualification remain pending; background stays OFF"
+  ],
+  "release_gate": "NOT_EVALUATED"
+}

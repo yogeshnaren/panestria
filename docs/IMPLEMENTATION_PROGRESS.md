@@ -179,6 +179,19 @@ connection/secret boundaries, host/resource qualification, original gates and
 owner trial remain pending. AOS-012-S5 and R3 stay IN_PROGRESS.
 
 
+## Current public verifier model prerequisite
+
+[Explicit public verifier selection](testing/RESEARCH_VERIFIER_MODEL_SELECTION.md)
+allows one deliberately selected exact subscription model in the original frozen
+PUBLIC entailment preflight. Default legacy observations remain unchanged;
+selected init/assistant/usage identities must agree and fallback stays disabled.
+[Component evidence](../evidence/public-verifier-model-selection-2026-10-23/report.json)
+records26 passing file/transport fixtures and2 live cases deselected. No provider
+call or model qualification was performed. Original local/Haiku quality failures,
+actual research-domain human calibration, eligible current consent and canonical
+semantic acceptance remain open. This is an evaluation prerequisite, not an
+AOS-022/G2/R3 pass; private claim judging and background work remain disabled.
+
 ## Current native-worker failure visibility
 
 [Redacted stop diagnostics](testing/NATIVE_WORKER_DIAGNOSTICS.md) now distinguish

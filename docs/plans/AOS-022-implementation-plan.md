@@ -137,3 +137,12 @@ semantic qualification, task completion or training authority. The retained
 draft remains unchanged. [Connected evidence](../../evidence/owner-claim-review-2026-10-21/report.json)
 records real PG/CAS/reader/CLI checks with an explicit model fixture; actual
 research-domain calibration, independent-role conditions and full G2 remain open.
+
+## Explicit public model preflight selection (2026-10-23)
+
+The [selected-model prerequisite](../testing/RESEARCH_VERIFIER_MODEL_SELECTION.md)
+removes the fixed legacy model request while preserving the original public
+corpus/rubric, per-fold bounds and default observations. Exact requested model,
+init, assistant and successful usage identity are checked, with no fallback.
+Component transport fixtures are not inference or qualification; all original
+quality failures and human research-domain/role/admission obligations remain.

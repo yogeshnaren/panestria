@@ -24,6 +24,7 @@ from panestria.brokers.harness.event_parser import (
     _pairs,
 )
 from panestria.brokers.harness.process_runner import collect_native
+from panestria.contracts.native_model import NativeModel, validate_native_model
 from panestria.execution.entailment_probe import ENTAILMENT_RULES
 from panestria.verification.entailment import (
     SNLI_SUBSET_SHA256,
@@ -42,8 +43,8 @@ BATCH_RUBRIC_SHA256 = hashlib.sha256(BATCH_RUBRIC.encode()).hexdigest()
 
 
 class _PublicFixtureParser(ClaudeEventParser):
-    def __init__(self) -> None:
-        super().__init__(capture_candidate=True)
+    def __init__(self, native_model: NativeModel | None = None) -> None:
+        super().__init__(capture_candidate=True, expected_model=validate_native_model(native_model))
         self.model: str | None = None
         self.subscription_overage: bool | None = None
         self.profile_flags: tuple[tuple[str, int | bool], ...] = ()
@@ -53,13 +54,13 @@ class _PublicFixtureParser(ClaudeEventParser):
         if isinstance(body, dict) and body.get("type") == "system" and body.get("subtype") == "init":
             arrays = ("tools", "mcp_servers", "skills", "plugins", "slash_commands")
             self.profile_flags = (
-                ("expected_model", body.get("model") == "claude-haiku-4-5-20251001"),
+                ("expected_model", body.get("model") == (self.expected_model or "claude-haiku-4-5-20251001")),
                 ("no_api_key", body.get("apiKeySource") == "none"),
                 ("default_permissions", body.get("permissionMode") == "default"),
                 *((key + "_count", len(body[key]) if type(body.get(key)) is list else -1) for key in arrays),
             )
             if (
-                body.get("model") != "claude-haiku-4-5-20251001"
+                body.get("model") != (self.expected_model or "claude-haiku-4-5-20251001")
                 or body.get("apiKeySource") != "none"
                 or body.get("permissionMode") != "default"
                 or any(body.get(key) != [] for key in ("tools", "mcp_servers", "skills", "plugins", "slash_commands"))
@@ -72,6 +73,12 @@ class _PublicFixtureParser(ClaudeEventParser):
                 if type(value) is not bool or value is not False:
                     raise ProtocolRejected("unapproved_overage")
                 self.subscription_overage = False
+        if (
+            self.expected_model is not None
+            and isinstance(body, dict) and body.get("type") == "result" and body.get("is_error") is False
+            and (type(body.get("modelUsage")) is not dict or set(body["modelUsage"]) != {self.expected_model})
+        ):
+            raise ProtocolRejected("native_model_usage_unconfirmed")
         return super()._frame(raw)
 
 
@@ -91,10 +98,13 @@ class NativeEntailmentObservation:
     cash_actual_microusd: None = None
     authority: Literal["PUBLIC_NATIVE_OBSERVATION_ONLY"] = "PUBLIC_NATIVE_OBSERVATION_ONLY"
     profile_flags: tuple[tuple[str, int | bool], ...] = ()
+    requested_model: NativeModel | None = None
 
 
 def native_observation_json(observation: NativeEntailmentObservation) -> str:
     body = asdict(observation)
+    if observation.requested_model is None:
+        body.pop("requested_model")  # Preserve the original legacy observation shape.
     body["predictions"] = [p.model_dump(mode="json") for p in observation.predictions]
     return json.dumps(body, sort_keys=True, allow_nan=False)
 
@@ -115,8 +125,11 @@ def _decode(text: str, requested: set[str]) -> tuple[EntailmentPrediction, ...]:
 
 
 class NativeEntailmentProbe:
-    def __init__(self, pin: BinaryPin, config_directory: Path, archive: Path) -> None:
+    def __init__(
+        self, pin: BinaryPin, config_directory: Path, archive: Path, *, native_model: NativeModel | None = None
+    ) -> None:
         self.pin, self.config, self.archive = pin, config_directory, archive
+        self.native_model = validate_native_model(native_model)
 
     def run(
         self,
@@ -126,6 +139,7 @@ class NativeEntailmentProbe:
         cancel: threading.Event | None = None,
         wall_seconds: float = 120.0,
     ) -> NativeEntailmentObservation:
+        selected_model = validate_native_model(self.native_model)
         corpus = load_snli_subset(corpus_path)  # Public immutable bytes ONLY, before auth/process access.
         inputs = corpus.model_inputs(fold)
         payload = json.dumps(
@@ -134,7 +148,7 @@ class NativeEntailmentProbe:
         if len(payload.encode()) > 12 * 1024 or type(wall_seconds) not in {int, float} or not 1 <= wall_seconds <= 120:
             raise ValueError("invalid_public_fixture_batch")
         digest = hashlib.sha256((BATCH_RUBRIC + payload).encode()).hexdigest()
-        parser = _PublicFixtureParser()
+        parser = _PublicFixtureParser(selected_model)
 
         def stopped(
             status: Literal["UNAVAILABLE", "REJECTED"],
@@ -152,6 +166,7 @@ class NativeEntailmentProbe:
                 result,
                 parser.subscription_overage,
                 profile_flags=parser.profile_flags,
+                requested_model=selected_model,
             )
 
         if cancel is not None and cancel.is_set():
@@ -180,7 +195,15 @@ class NativeEntailmentProbe:
                 markers = _hostile_fixture(root)
                 settings, mcp = root / "settings.json", root / "mcp.json"
                 pins = {prompt: BATCH_RUBRIC_SHA256}
-                for path, body in ((settings, SETTINGS), (mcp, {"mcpServers": {}})):
+                selected_settings = {
+                    **SETTINGS,
+                    **(
+                        {"availableModels": [selected_model], "fallbackModel": [], "switchModelsOnFlag": False}
+                        if selected_model is not None
+                        else {}
+                    ),
+                }
+                for path, body in ((settings, selected_settings), (mcp, {"mcpServers": {}})):
                     raw = json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
                     path.write_bytes(raw)
                     path.chmod(0o400)
@@ -227,7 +250,7 @@ class NativeEntailmentProbe:
                     "--max-budget-usd",
                     "0.25",
                     "--model",
-                    "haiku",
+                    selected_model or "haiku",
                     "--system-prompt-file",
                     str(prompt),
                     payload,
@@ -269,6 +292,7 @@ class NativeEntailmentProbe:
                     result_sha,
                     parser.subscription_overage,
                     profile_flags=parser.profile_flags,
+                    requested_model=selected_model,
                 )
         except (ProposalUnavailable, NativeProbeUnavailable, OSError):
             return stopped("UNAVAILABLE", "native_profile_or_launch_unavailable")
