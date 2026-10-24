@@ -24,6 +24,9 @@ At4MiB logical data/512 entries it stops saving with a visible warning, keeps th
 fresh observation and deletes nothing. This closes a storage-history integration
 gap, while unified resource notifications, other write paths and real host budgets
 remain open. No whole AOS-018/G3 or Timeshift-change attribution is claimed.
+[Evidence](../evidence/storage-history-2026-10-23/report.json) retains45 affected
+checks with actual private files/locks/PG/HTTP/PTY/Chromium, explicit capacity/
+policy-change fixtures and one detected removed-settings-binding mutation.
 
 ## Current guided research terminal
 

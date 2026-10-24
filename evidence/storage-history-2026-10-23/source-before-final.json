@@ -1,0 +1,15 @@
+{
+  "source_commit": "0c3a0f1dbc5a3ea3933858a092520714e1df47f2",
+  "source_tree": "b13f4ab17d54ccffd1ad29cbf4671260dee3759d",
+  "state": "clean",
+  "source_sha256": {
+    "src/panestria/resources/storage.py": "91166071e882f5dddf711458035ec7805393a4cb4c944804effd1bd3dfb85bbf",
+    "src/panestria/resources/storage_history.py": "278f1003df4f10936941b3870f31aaddf5ecf268e7e8aa3695597e181ce71d33",
+    "src/panestria/resources/storage_status.py": "60f12f749934ebbde938ecaf59620a27af157206410f76b3c1d24d740c107d53",
+    "src/panestria/cli/storage.py": "e365d28203e1e81fb65fb79e445f885df5afb10c5eaca6088c2f181a552e65e8",
+    "tests/unit/test_storage_history.py": "4345e664664e334eb1e50da9a0ab185852f4e6110d237ed473c20d881dd04699",
+    "tests/integration/test_storage_status_terminal.py": "413051df2dd84765b8988fc07ca7256b9da3dd8be85a60d812c4587bd37064f6",
+    "tests/integration/test_mission_storage.py": "b4ed8633874229d2082b7fc5376425ce1a910a5ad8e4eb7b586bfebf6b41d104",
+    "apps/mission-control/tests/storage.mjs": "e2c10efbcc6875397db14488c67fda9c40db8e102bc5755663ed66cac298548b"
+  }
+}

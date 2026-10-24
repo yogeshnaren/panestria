@@ -63,3 +63,9 @@ the existing settings poll. Removing the history field stops retention while
 leaving ordinary notifications enabled. Preserve the original files; opt-out
 does not delete them. `storage inspect` remains a fresh read without saving history.
 See [the design](../design/118-BOUNDED-STORAGE-HISTORY.md) for scope and bounds.
+
+[Source-bound observations](../../evidence/storage-history-2026-10-23/report.json)
+record45 connected/compatibility passes, with explicit capacity/policy-change
+fixtures, and one detected removed-settings-binding mutation. Earlier uncommitted
+checks remain separate. These results do not qualify actual pressure/host budgets
+or the full AOS-018/R3 release gate.
