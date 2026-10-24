@@ -1,0 +1,222 @@
+{
+  "actual_public_batch_processes": 2,
+  "api_sdk_calls": 0,
+  "artifacts": {
+    "calibration-observation.json": "012e9e24075b804c46a43fdc2ac8bc22493878755e33ccffd7b1aac36fd2676f",
+    "calibration-original.xml": "f7406ce3c65d51076a6d483403d25a2e08c0e5650c8d120b0cfe270f1a09a119",
+    "decision-plan.json": "b32ff527a02292bf4a98a8926f27917ff554e2cd400af1bca7a836f622766320",
+    "qualification-observation.json": "e23d3c411491dd84489b30895b671fb956ef3ed315abc710592cb8cde4b8661f",
+    "qualification-original.xml": "0da5ff72182e649a4ff9560adc5887fb79fecbc617eb4eee28b6b645eb75c334",
+    "source-identity.json": "14a81fa088c6916533e5b5c24fe3e244359932b90091d58ef089481e0351f924"
+  },
+  "automatic_support_authority": false,
+  "background_enabled": false,
+  "binary_sha256": "6c752e2cc7c110c9df15f26d8d134d438c5ae95dbd610efc1a308bf7f9c5f6c1",
+  "binary_version": "2.1.273",
+  "calibration_selected_by_predeclared_condition": true,
+  "cash_actual_microusd": null,
+  "configured_limits_per_fold": {
+    "actual_cash": null,
+    "cli_estimate_usd": "0.25",
+    "output_bytes": 262144,
+    "processes": 1,
+    "turns": 2,
+    "wall_seconds": 120
+  },
+  "corpus_sha256": "5f9c0ac087ebcb1cedea91275ccf497cf9f5a8dec51e112cb597a277e93e7f1c",
+  "historical_comparison": {
+    "interpretation": "Same33/36 label accuracy; this Sonnet observation has0false-supported/10supported predictions but only10/12 true-supported recalled. Separate dates/sources, no repeated trial or general model-superiority claim; do not pool.",
+    "model": "claude-haiku-4-5-20251001",
+    "qualification_correct": 33,
+    "qualification_false_supported_count": 1,
+    "qualification_supported_predictions": 13,
+    "qualification_total": 36,
+    "qualification_true_supported": 12,
+    "report": "../native-entailment-2026-10-16/report.json",
+    "source_commit": "98927690d37bd0b73a07278957db6e142fb14389"
+  },
+  "inference_call_count": null,
+  "latency_basis": "One process per fold; test elapsed includes original profile inspection/process/protocol/scoring. Not inference-only latency, p95 or a host resource qualification.",
+  "limitations": [
+    "Small balanced caption-domain corpus: only36 qualification cases,12 human SUPPORTED cases and10 model supported predictions. Zero observed false support does not prove zero error or100% correctness.",
+    "Annotation artifacts and possible pretraining contamination remain; no research-domain partial/opinion/correlated-conflict/injection qualification.",
+    "Human12-case research packet is still UNREVIEWED. No invented labels, held-out tuning, prompt change, repeated model call or fallback.",
+    "Existing public corpus only; no arbitrary/private claims, model-family independence certification, semantic-purpose policy grant, task completion or role/runtime certificate.",
+    "Fresh setting observation is OWNER_REPORTED for this evaluation only. Existing background policy remains off; overage false is client metadata, actual cash/quota unknown.",
+    "Default CI and these retained observations do not pass AOS022/G1/G2/G3 or replace deferred SDK/search/real-phone evidence.",
+    "Original local/Haiku failures and oldsource certificates unchanged. No new code/test cases or package/model download."
+  ],
+  "observation_date_local": "2026-10-23",
+  "observation_timezone": "America/Los_Angeles",
+  "observed_model": "claude-sonnet-5",
+  "observed_overage": {
+    "calibration": false,
+    "qualification": false
+  },
+  "production_role_qualified": false,
+  "quality_authority": "PUBLIC_NLI_PREFLIGHT_ONLY",
+  "recorded_case_predictions": 72,
+  "release_gate_authority": false,
+  "remaining_subscription_quota": null,
+  "rubric_sha256": "d96ec8d8f8b11b44a71f2fff60911f2b1ff3c4f8748a7abcf78cbf9e4bb73121",
+  "schema_version": 1,
+  "scores": {
+    "calibration": {
+      "accuracy_on_answered": 0.8611111111111112,
+      "answered": 36,
+      "authority": "PREDICTION_METRICS_ONLY",
+      "confusion": [
+        {
+          "count": 10,
+          "expected": "SUPPORTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 2,
+          "expected": "SUPPORTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 12,
+          "expected": "INSUFFICIENT",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 3,
+          "expected": "CONTRADICTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 9,
+          "expected": "CONTRADICTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "UNKNOWN"
+        }
+      ],
+      "correct": 31,
+      "correct_fraction": 0.8611111111111112,
+      "coverage": 1.0,
+      "false_supported_count": 0,
+      "supported_precision": 1.0,
+      "supported_predictions": 10,
+      "total": 36
+    },
+    "qualification": {
+      "accuracy_on_answered": 0.9166666666666666,
+      "answered": 36,
+      "authority": "PREDICTION_METRICS_ONLY",
+      "confusion": [
+        {
+          "count": 10,
+          "expected": "SUPPORTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 2,
+          "expected": "SUPPORTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "SUPPORTED",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 12,
+          "expected": "INSUFFICIENT",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "INSUFFICIENT",
+          "predicted": "UNKNOWN"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "SUPPORTED"
+        },
+        {
+          "count": 1,
+          "expected": "CONTRADICTED",
+          "predicted": "INSUFFICIENT"
+        },
+        {
+          "count": 11,
+          "expected": "CONTRADICTED",
+          "predicted": "CONTRADICTED"
+        },
+        {
+          "count": 0,
+          "expected": "CONTRADICTED",
+          "predicted": "UNKNOWN"
+        }
+      ],
+      "correct": 33,
+      "correct_fraction": 0.9166666666666666,
+      "coverage": 1.0,
+      "false_supported_count": 0,
+      "supported_precision": 1.0,
+      "supported_predictions": 10,
+      "total": 36
+    }
+  },
+  "selected_model": "claude-sonnet-5",
+  "source_commit": "4e0f66b2dc87ee0d964ecb261f973456e3dbb938",
+  "source_state_at_execution": "clean",
+  "source_tree": "f4dce7e154693b29a03ee30f023a0bf76eb091ad",
+  "test_elapsed_seconds": {
+    "calibration": 41.621,
+    "qualification": 46.092
+  },
+  "training_authority": false
+}

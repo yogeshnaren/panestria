@@ -146,3 +146,25 @@ corpus/rubric, per-fold bounds and default observations. Exact requested model,
 init, assistant and successful usage identity are checked, with no fallback.
 Component transport fixtures are not inference or qualification; all original
 quality failures and human research-domain/role/admission obligations remain.
+
+## Actual selected-model preflight (2026-10-23 America/Los_Angeles)
+
+At clean `4e0f66b2dc87ee0d964ecb261f973456e3dbb938`, one explicitly selected
+`claude-sonnet-5` ran the original PUBLIC calibration and, after meeting the
+predeclared calibration condition, one unchanged qualification batch. Fresh
+OWNER_REPORTED extra usage disabled was scoped to this evaluation; existing
+background policy stayed off. [Original XML, predictions and metrics](../../evidence/sonnet-public-verifier-2026-10-23/report.json)
+retain31/36 calibration and33/36 qualification label matches. Qualification had
+0 false-supported judgments among10 supported predictions, with10/12 true-supported
+cases recalled. Haiku's original33/36 with1 false support among13 supported
+predictions and12/12 recall remains a separate source-bound result. These small
+observations do not prove a superior model, zero error or complete support quality.
+
+Both bounded process observations completed, exact requested/reported model
+identity agreed, tools/MCP/skills/plugins/slash commands were empty and client
+overage was false. Actual inference-call count/cash/quota remain unknown; test
+elapsed times are not inference-only latency or a resource qualification.
+No corpus/rubric/holdout tuning, private claims, API credentials, fallback,
+runtime/role certificate, task/training authority or release pass was introduced.
+Human research-specific partial/opinion/conflict/injection calibration and the
+independently admitted semantic role/canonical acceptance remain pending.

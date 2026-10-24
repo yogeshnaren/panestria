@@ -56,5 +56,10 @@ behavior, independence from the drafting model or production/private eligibility
 Actual human research labels and calibrated role/acceptance integration remain
 required. No task PASS, runtime certificate or training grant is minted here.
 
+The [separate actual Sonnet observation](../../evidence/sonnet-public-verifier-2026-10-23/report.json)
+retains the later source-bound calibration/qualification results and their
+predeclared decision. It does not change these eligibility requirements or qualify
+private/production support. Do not repeat it merely because a scheduled check runs.
+
 [Component evidence](../../evidence/public-verifier-model-selection-2026-10-23/report.json)
 records controlled files/transport fixtures and explicitly excluded live cases.

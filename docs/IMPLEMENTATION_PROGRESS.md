@@ -179,6 +179,23 @@ connection/secret boundaries, host/resource qualification, original gates and
 owner trial remain pending. AOS-012-S5 and R3 stay IN_PROGRESS.
 
 
+## Actual selected-model public verifier observation
+
+The [separately retained Sonnet observation](../evidence/sonnet-public-verifier-2026-10-23/report.json)
+used the unchanged public corpus/rubric at clean `4e0f66b`, after a fresh
+OWNER_REPORTED extra-usage-disabled confirmation for this bounded evaluation.
+One calibration batch scored31/36 with0 false-supported judgments; it met the
+recorded condition for one untouched qualification batch. Qualification scored
+33/36, with0 false-supported judgments among10 supported predictions and10/12
+true-supported cases recalled. Historical Haiku also scored33/36, with1 false
+support among13 supported predictions and12/12 true-supported cases recalled.
+These separate small observations show a precision/recall tradeoff, not general
+model superiority or100% correctness. Original observations remain unchanged.
+No research-domain human labels, semantic role certificate or canonical acceptance
+were supplied by this preflight. Background remains OFF; the current confirmation
+does not renew a queue policy. Actual cash/quota remain UNKNOWN. AOS-022, qualified
+Delegate and the release gates remain open; the12-case human review is pending.
+
 ## Current public verifier model prerequisite
 
 [Explicit public verifier selection](testing/RESEARCH_VERIFIER_MODEL_SELECTION.md)

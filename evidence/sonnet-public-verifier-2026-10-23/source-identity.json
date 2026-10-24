@@ -1,0 +1,18 @@
+{
+  "sha256": {
+    "src/panestria/brokers/harness/claude_check.py": "d05dc5861388121bb2e145eb86585229c431d2d7fad1a880a7effca284816ad0",
+    "src/panestria/brokers/harness/claude_proposal.py": "e668014944af7d197eaee8e36fd93fca5c26a6200812ae0b12b751792aa49203",
+    "src/panestria/brokers/harness/cli_profile.py": "ee2c27d57aefd25dd7789d33cd13b050892d77f4dc405ef674e538507be45711",
+    "src/panestria/brokers/harness/event_parser.py": "f727a8fe983e300dd7079b7ff556be7f2d7c0ae72b8f60d2d033d74d4c2dcf63",
+    "src/panestria/brokers/harness/process_runner.py": "9701734a0afbc330cdac26157bf93df946dc682b28cd59d2b8f84455b1bd8146",
+    "src/panestria/contracts/native_model.py": "a443922e3e3bb58d3ae811c05171fe35044cbc6fd01b4a4294927a9876d4f45f",
+    "src/panestria/execution/entailment_probe.py": "fbc4ae3b8cc744e181bda92fd01c67a1449e86122cbfeea0d66760278ea47eee",
+    "src/panestria/execution/native_entailment_probe.py": "6265d9ca15f2e1b873882965b4ea20f3c7e649a06b77dc628aaddfc1676db9c0",
+    "src/panestria/verification/entailment.py": "3835de572770089ad04a22fb1577c6e7b1fe6391dae2d5793e3926ed1aca7a71",
+    "tests/fixtures/research/snli-v1/corpus.json": "5f9c0ac087ebcb1cedea91275ccf497cf9f5a8dec51e112cb597a277e93e7f1c",
+    "tests/integration/test_native_entailment_live.py": "af0f8a0608713ac074056593152fc3d82d05dae0893da1e53a2e52b3de93386b"
+  },
+  "source_commit": "4e0f66b2dc87ee0d964ecb261f973456e3dbb938",
+  "source_tree": "f4dce7e154693b29a03ee30f023a0bf76eb091ad",
+  "worktree_state": "clean"
+}

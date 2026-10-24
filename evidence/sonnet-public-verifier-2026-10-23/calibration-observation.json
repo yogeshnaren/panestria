@@ -1,0 +1,268 @@
+{
+  "authority": "PUBLIC_NATIVE_OBSERVATION_ONLY",
+  "cash_actual_microusd": null,
+  "corpus_sha256": "5f9c0ac087ebcb1cedea91275ccf497cf9f5a8dec51e112cb597a277e93e7f1c",
+  "fold": "calibration",
+  "model": "claude-sonnet-5",
+  "observed_overage": false,
+  "predictions": [
+    {
+      "case_id": "07d85fd5aede920798c492fe",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "case_id": "0ae530c43ec4179839efe784",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "103e0f0d849209b18f8af726",
+      "verdict": "CONTRADICTED"
+    },
+    {
+      "case_id": "153746907df561b393c5fdcf",
+      "verdict": "CONTRADICTED"
+    },
+    {
+      "case_id": "19d3ab7de950a53f09308f28",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "296b06333bab3f2f5a0dd752",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "case_id": "2f2a60054feec925e0423e21",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "36ee8d0c10bff58ec2eb10af",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "3a72e6a2d6e3644690bfc2c1",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "494d359045c3c38988c52ef7",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "case_id": "4c5d14360c69901b8ff7dd8a",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "case_id": "4d2f483ae5c60a8c0a192782",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "543d41f0a92e49a6364e614a",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "55cc2eb24148ec546a600f7c",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "case_id": "5b9425491a4c74e5c203bd97",
+      "verdict": "CONTRADICTED"
+    },
+    {
+      "case_id": "5dbe1bb3719070fd18469ca1",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "5f1404b42362f229ab49c3cd",
+      "verdict": "CONTRADICTED"
+    },
+    {
+      "case_id": "645d321a54caf81134bb640b",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "6b31aa2f79a4bff1561acde3",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "83e6d7b8726803c1728db32d",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "8dc34ab21720fc6f2b6e5db2",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "9166cd3a9eb2635936fc8aba",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "92831c1f5f28a7910a025f5b",
+      "verdict": "CONTRADICTED"
+    },
+    {
+      "case_id": "9b26ebdea15382852ffcd4b3",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "9ba4f51f0acc6147ada02fa2",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "case_id": "9ecce13654083a2980b2d4c4",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "case_id": "a5397aed25d28cc4f3f5f009",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "a85f37b05477248f9dcdac63",
+      "verdict": "CONTRADICTED"
+    },
+    {
+      "case_id": "b1caede23f76d14f70bffce1",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "b8709279ba24aff0322bff79",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "case_id": "c286b668a32549703f2aac94",
+      "verdict": "CONTRADICTED"
+    },
+    {
+      "case_id": "cbf0c0956ee7864dc42e94ba",
+      "verdict": "CONTRADICTED"
+    },
+    {
+      "case_id": "cc7043bd616b51057c6e76db",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "case_id": "d074d02413e03b86ea91b889",
+      "verdict": "INSUFFICIENT"
+    },
+    {
+      "case_id": "d7cbf9c4044e3cb620d93fbc",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "case_id": "f3e4693649a67facb4029d89",
+      "verdict": "CONTRADICTED"
+    }
+  ],
+  "profile_flags": [
+    [
+      "expected_model",
+      true
+    ],
+    [
+      "no_api_key",
+      true
+    ],
+    [
+      "default_permissions",
+      true
+    ],
+    [
+      "tools_count",
+      0
+    ],
+    [
+      "mcp_servers_count",
+      0
+    ],
+    [
+      "skills_count",
+      0
+    ],
+    [
+      "plugins_count",
+      0
+    ],
+    [
+      "slash_commands_count",
+      0
+    ]
+  ],
+  "prompt_sha256": "110b440ef5273d27dfce459cd068eacdcb7cdde75588b56e5cd0dbce23a941ec",
+  "reason": "batch_observed",
+  "requested_model": "claude-sonnet-5",
+  "result_sha256": "6e3df6e486c8bf02805951e5dea833101d6c14081e77d365c2a2c21dc85e2fe3",
+  "rubric_sha256": "d96ec8d8f8b11b44a71f2fff60911f2b1ff3c4f8748a7abcf78cbf9e4bb73121",
+  "score": {
+    "accuracy_on_answered": 0.8611111111111112,
+    "answered": 36,
+    "authority": "PREDICTION_METRICS_ONLY",
+    "confusion": [
+      {
+        "count": 10,
+        "expected": "SUPPORTED",
+        "predicted": "SUPPORTED"
+      },
+      {
+        "count": 2,
+        "expected": "SUPPORTED",
+        "predicted": "INSUFFICIENT"
+      },
+      {
+        "count": 0,
+        "expected": "SUPPORTED",
+        "predicted": "CONTRADICTED"
+      },
+      {
+        "count": 0,
+        "expected": "SUPPORTED",
+        "predicted": "UNKNOWN"
+      },
+      {
+        "count": 0,
+        "expected": "INSUFFICIENT",
+        "predicted": "SUPPORTED"
+      },
+      {
+        "count": 12,
+        "expected": "INSUFFICIENT",
+        "predicted": "INSUFFICIENT"
+      },
+      {
+        "count": 0,
+        "expected": "INSUFFICIENT",
+        "predicted": "CONTRADICTED"
+      },
+      {
+        "count": 0,
+        "expected": "INSUFFICIENT",
+        "predicted": "UNKNOWN"
+      },
+      {
+        "count": 0,
+        "expected": "CONTRADICTED",
+        "predicted": "SUPPORTED"
+      },
+      {
+        "count": 3,
+        "expected": "CONTRADICTED",
+        "predicted": "INSUFFICIENT"
+      },
+      {
+        "count": 9,
+        "expected": "CONTRADICTED",
+        "predicted": "CONTRADICTED"
+      },
+      {
+        "count": 0,
+        "expected": "CONTRADICTED",
+        "predicted": "UNKNOWN"
+      }
+    ],
+    "correct": 31,
+    "correct_fraction": 0.8611111111111112,
+    "coverage": 1.0,
+    "false_supported_count": 0,
+    "supported_precision": 1.0,
+    "supported_predictions": 10,
+    "total": 36
+  },
+  "status": "COMPLETE"
+}
