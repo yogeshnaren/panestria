@@ -14,6 +14,17 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+## Current optional storage restart history
+
+[Bounded private diagnostic history](testing/STORAGE_HISTORY.md) lets an explicitly
+selected storage watcher/observer compare growth and backup-policy changes after
+a process restart. It preserves original timestamps and collector/settings/
+filesystem bindings; fresh capacity is still required. Default history stays off.
+At4MiB logical data/512 entries it stops saving with a visible warning, keeps the
+fresh observation and deletes nothing. This closes a storage-history integration
+gap, while unified resource notifications, other write paths and real host budgets
+remain open. No whole AOS-018/G3 or Timeshift-change attribution is claimed.
+
 ## Current guided research terminal
 
 The [same-request research TUI](testing/GUIDED_RESEARCH_TUI.md) now connects the

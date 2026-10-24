@@ -38,6 +38,7 @@ class StorageSettings(BaseModel):
     include_docker: bool = False
     include_timeshift: bool = False
     components: tuple[StorageComponent, ...] = Field(default=(), max_length=8)
+    history_directory: Path | None = Field(default=None, exclude_if=lambda value: value is None)
 
     @model_validator(mode="after")
     def validate_scope(self) -> StorageSettings:
@@ -47,6 +48,8 @@ class StorageSettings(BaseModel):
             raise ValueError("absolute_storage_paths_required")
         if len({item.label for item in self.components}) != len(self.components):
             raise ValueError("duplicate_component_label")
+        if self.history_directory is not None and not self.history_directory.is_absolute():
+            raise ValueError("absolute_storage_history_path_required")
         return self
 
 

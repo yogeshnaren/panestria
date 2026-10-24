@@ -14,6 +14,8 @@ try {
   const notices=page.getByRole('region',{name:'Storage notices'});
   await expect(notices).toContainText('Storage OBSERVED');
   await expect(notices).toContainText('free_reserve_at_risk');
+  await expect(notices).toContainText('storage_history_saved');
+  await expect(notices).toContainText('4MiB logical data/512-entry');
   await expect(notices).toContainText('No deletion, pruning');
   await expect(notices).toContainText('not project ownership totals');
   await expect(notices.getByRole('button')).toHaveCount(0);
@@ -23,6 +25,7 @@ try {
   await page.reload();
   await expect(notices).toContainText('Storage DISABLED');
   await expect(notices).not.toContainText('free_reserve_at_risk');
+  await expect(notices).not.toContainText('storage_history_saved');
   await expect(notices).not.toContainText('owner available:');
   console.log('DISABLED');await wait();
   await page.reload();

@@ -100,6 +100,7 @@ def test_owner_terminal_delivers_read_only_storage_warnings_and_disabled_setting
         notifications_enabled=True,
         filesystem=data,
         minimum_free_bytes=2**63 - 1,  # Synthetic threshold, NOT real pressure.
+        history_directory=tmp_path / "retained-history",
     )
     storage.write_text(settings.model_dump_json())
     storage.chmod(0o600)
@@ -127,7 +128,7 @@ def test_owner_terminal_delivers_read_only_storage_warnings_and_disabled_setting
             assert time.monotonic() < deadline
             time.sleep(0.02)
         assert body["state"] == "OBSERVED" and body["capacity"]["available_bytes"] > 0
-        assert {v["code"] for v in body["warnings"]} >= {"free_reserve_at_risk"}
+        assert {v["code"] for v in body["warnings"]} >= {"free_reserve_at_risk", "storage_history_saved"}
         assert body["components"] == [] and body["timeshift_status"] == "NOT_REQUESTED"
         assert body["cleanup_authority"] == body["acceptance_authority"] == "NONE"
         assert str(data) not in status.text and "filesystem" not in body["capacity"]
@@ -164,6 +165,7 @@ def test_owner_terminal_delivers_read_only_storage_warnings_and_disabled_setting
             time.sleep(0.02)
         assert body["state"] == "DISABLED" and body["capacity"] is None and body["observed_at"] is None
     assert payload.read_bytes() == b"private payload is never read by the capacity probe"
+    assert len(list(settings.history_directory.glob("*.json"))) == 1  # Off restart retained no new sample.
     with psycopg.connect(f["dsn"]) as c:
         assert c.execute("SELECT count(*) FROM panestria.task_event").fetchone() == before
 

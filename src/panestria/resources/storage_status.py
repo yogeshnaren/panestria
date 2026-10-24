@@ -13,6 +13,7 @@ from panestria.contracts.storage_status import StorageStatus
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.resources.storage import StorageReport, StorageSettings, inspect_storage
+from panestria.resources.storage_history import StorageHistory
 
 
 class StorageObserver:
@@ -99,17 +100,38 @@ class StorageObserver:
                         if self.closed:
                             return
                         self.last_probe = self.clock()
-                    report = self.probe(settings, previous=previous)
-                    current = load_storage_settings(self.path)
-                    if current != settings:
-                        result = (
-                            self._empty("DISABLED", "disabled", False)
-                            if not current.notifications_enabled
-                            else self._empty("UNAVAILABLE", "configuration_changed", True)
-                        )
-                    elif self.clock() - self.started >= 35:
-                        result = self._empty("UNAVAILABLE", "probe_deadline_exceeded", True)
-                    else:
+                    accepted = False
+                    with StorageHistory(settings) as history:
+                        retained_previous = history.previous()
+                        previous = previous or retained_previous
+                        report = self.probe(settings, previous=previous)
+                        current = load_storage_settings(self.path)
+                        with self.lock:
+                            closed = self.closed
+                        if current != settings or closed:
+                            result = (
+                                self._empty("DISABLED", "disabled", False)
+                                if not current.notifications_enabled
+                                else self._empty("UNAVAILABLE", "configuration_changed", True)
+                            )
+                        elif self.clock() - self.started >= 35:
+                            result = self._empty("UNAVAILABLE", "probe_deadline_exceeded", True)
+                        else:
+                            report = history.retain(report)
+                            accepted = True
+                    if accepted:
+                        current = load_storage_settings(self.path)
+                        if current != settings:
+                            accepted = False
+                            result = (
+                                self._empty("DISABLED", "disabled", False)
+                                if not current.notifications_enabled
+                                else self._empty("UNAVAILABLE", "configuration_changed", True)
+                            )
+                        elif self.clock() - self.started >= 35:
+                            accepted = False
+                            result = self._empty("UNAVAILABLE", "probe_deadline_exceeded", True)
+                    if accepted:
                         capacity = asdict(report.capacity)
                         capacity.pop("device")  # No private path/device identity in the view.
                         result = StorageStatus.model_validate_json(

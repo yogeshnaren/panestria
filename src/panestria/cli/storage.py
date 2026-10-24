@@ -10,6 +10,7 @@ import typer
 
 from panestria.config_local import read_private
 from panestria.resources.storage import StorageReport, StorageSettings, inspect_storage
+from panestria.resources.storage_history import StorageHistory
 
 storage_app = typer.Typer(no_args_is_help=True)
 
@@ -42,6 +43,7 @@ def watch_command(config: Annotated[Path, typer.Option("--config")]) -> None:
         typer.echo('{"status":"UNAVAILABLE","reason":"enable_storage_notifications_in_private_config"}', err=True)
         raise typer.Exit(1) from None
     previous: StorageReport | None = None
+    previous_settings: StorageSettings | None = None
     signature: tuple[tuple[str, str], ...] | None = None
     try:
         while True:
@@ -49,12 +51,21 @@ def watch_command(config: Annotated[Path, typer.Option("--config")]) -> None:
             if not settings.notifications_enabled:
                 typer.echo('{"status":"STOPPED","reason":"storage_notifications_disabled"}')
                 return
-            report = inspect_storage(settings, previous=previous)
+            if previous_settings != settings:
+                previous, signature = None, None
+            with StorageHistory(settings) as history:
+                retained_previous = history.previous()
+                report = inspect_storage(settings, previous=previous or retained_previous)
+                current_settings = _settings(config)
+                if current_settings != settings:
+                    typer.echo('{"status":"STOPPED","reason":"storage_configuration_changed"}')
+                    return
+                report = history.retain(report)
             current = tuple((item.code, item.severity) for item in report.warnings)
             if current != signature:
                 typer.echo(report.to_json())  # Initial state, changed warnings, and recovery; no repeated spam.
                 signature = current
-            previous = report
+            previous, previous_settings = report, settings
             time.sleep(settings.interval_seconds)
     except KeyboardInterrupt:
         return

@@ -128,3 +128,15 @@ in-flight outcomes/UNKNOWN holds remain intact. The owner-configured write value
 is an estimate, not a physical reservation. Source-bound connected checks are
 linked in that guide. Other write paths, persistent growth attribution, inbox and
 actual host/foreground qualification remain pending; no whole TC/gate promotion.
+
+### Optional bounded restart history
+
+[Explicit private storage history](../testing/STORAGE_HISTORY.md) now connects
+the existing watch/terminal/Mission Control storage observer to immutable bounded
+diagnostic samples. Compatible recent original observations survive a process
+restart for growth/backup-policy comparison; fresh capacity remains mandatory.
+Default history is off, and full/corrupt/busy history warns without hiding the new
+capacity reading. No record is deleted, sample relabeled, backup changed or
+canonical task/resource qualification inferred. This narrows the retained-growth
+part of S4; unified resource inbox, other write paths and actual host/foreground
+budgets/pressure qualification remain open.
