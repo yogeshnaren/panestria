@@ -175,6 +175,11 @@ class StorageHistory:
                 or _filesystem_hash(self.settings.filesystem) != self.filesystem_sha
             ):
                 raise ValueError
+            if report.filesystem != str(self.settings.filesystem) or (
+                report.capacity.device is not None
+                and report.capacity.device != self.settings.filesystem.stat().st_dev
+            ):
+                raise ValueError
             sample = _Snapshot(
                 captured_at=datetime.now(UTC), collector_sha256=self.collector_sha,
                 settings_sha256=self.settings_sha, filesystem_sha256=self.filesystem_sha, report=report,
