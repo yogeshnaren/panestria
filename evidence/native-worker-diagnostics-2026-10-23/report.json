@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "component": "REDACTED_NATIVE_WORKER_FAILURE_CAUSES",
+  "source_commit": "dd6070a0c982418a37fa4e5f156c972bb48d16b4",
+  "source_tree": "80b52e69c7015df2d3c482d58ef4a373520b7187",
+  "source_state": "CLEAN",
+  "original_xml": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/native-worker-diagnostics-2026-10-23/original.xml",
+  "sha256": "fd6ef60748d3407ee5fb4a11ae41f6b022ae5e45e8710ccea223e597a0862d04",
+  "result": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "42",
+    "time": "127.620",
+    "timestamp": "2026-10-23T16:23:28.633762-07:00",
+    "hostname": "yogesh-verisim"
+  },
+  "live_deselected": 3,
+  "actual": [
+    "Real disposable PostgreSQL/Git/MCP/Docker through affected native plan, selected connection, admission and scoped Bash paths",
+    "Injected statement-timeout/private exception faults retain closed cause and UNKNOWN held claims; no handoff/approval or exception text disclosure",
+    "Existing two-worker success, grant capacity/current authority, cancellation/revocation/quota and scoped-edit checks"
+  ],
+  "fixtures": [
+    "Native process, account, hardware capacity and certificates are synthetic, not qualification",
+    "Database timeout and private exception are deliberate failure injections, not asserted causes of original CI failures"
+  ],
+  "quality": {
+    "ruff": "PASS after line/import formatting corrections",
+    "mypy": "356 files PASS",
+    "import_boundaries": "11 KEPT",
+    "secret_scan": "PASS"
+  },
+  "original_failures": {
+    "ci_run": 40012690070,
+    "attempts": [
+      1,
+      2
+    ],
+    "scope": "Existing native-plan/native-connection journeys STOPPED in CI; complete underlying cause absent in original assertions",
+    "root_cause": "UNKNOWN_NOT_REPRODUCED_LOCALLY",
+    "archive": "/home/yogesh/Documents/ChatGPT/Panestria/outputs/r3-build-ci-2026-10-20/pr208"
+  },
+  "limits": [
+    "Diagnostics do not repair or waive the original unexplained CI stop.",
+    "No timeouts/retries/fallback/authority/capacity-release or kernel schema change.",
+    "No provider call, owner service/DB/credential/billing/storage/backup change.",
+    "Separate phone pairing correction and all required exact-head CI remain necessary."
+  ],
+  "release_gate": "NOT_EVALUATED"
+}

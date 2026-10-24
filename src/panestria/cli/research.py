@@ -25,6 +25,27 @@ from panestria.kernel.goals import Actor
 research_app = typer.Typer(no_args_is_help=True)
 
 
+@research_app.command("guide")
+def guided_research(
+    request_id: str,
+    synthesis_config: Annotated[Path, typer.Option("--synthesis-config", "--config")],
+    collection_config: Annotated[Path | None, typer.Option("--collection-config")] = None,
+) -> None:
+    """Review each existing stage of the SAME staged PUBLIC request in a terminal."""
+    from panestria.cli.research_guide_terminal import run_research_guide_terminal
+    from panestria.config_synthesis import load_synthesis_settings
+    from panestria.execution.research_guide import OwnerResearchGuide
+
+    try:
+        settings = load_synthesis_settings(synthesis_config, need_model=False)
+        collection = load_research_settings(collection_config) if collection_config is not None else None
+        dsn = Settings(database_url=os.environ.get("PANESTRIA_DATABASE_URL", "")).validate_profile().database_url
+        run_research_guide_terminal(OwnerResearchGuide(dsn.get_secret_value(), settings, collection), request_id)
+    except (Exception, KeyboardInterrupt):
+        typer.echo('{"status":"UNAVAILABLE","reason":"research_guide_unavailable_inspect_state"}', err=True)
+        raise typer.Exit(1) from None
+
+
 @research_app.command("plan-queries")
 def plan_queries(
     request_id: str,

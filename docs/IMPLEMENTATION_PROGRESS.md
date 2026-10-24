@@ -1,9 +1,35 @@
 # Implementation progress
 
+The [phone pairing renderer observation](../evidence/phone-pair-response-body-2026-10-23/renderer-report.json)
+reads a clone of the actual browser fetch response before Chromium can discard
+its no-store body from CDP. The first eager-CDP correction passed locally but
+failed again in CI; both original attempts remain preserved. Existing UI pairing,
+real CSRF, authenticated denial and restart/offline/revocation assertions remain.
+There is no response mock, retry, skipped case or runtime change. The separate
+intermittent native-worker stop is under investigation; no release/real-phone
+qualification or universal flake resolution is claimed.
+
 Updated 2026-10-23 UTC. Build from the revision-3 [phased plan](PANESTRIA_PHASED_IMPLEMENTATION_PLAN.md).
 The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
+
+## Current guided research terminal
+
+The [same-request research TUI](testing/GUIDED_RESEARCH_TUI.md) now connects the
+existing local query proposal, exact disclosure/collection review, local draft
+and owner claim-review terminal. Each stage needs a separate full-page review
+and confirmation; reviewed inputs are rechecked under the original service locks.
+Reopening reads canonical receipts instead of repeating work. Interrupted or
+unconfirmed stages stop; no replacement goal, epoch reset, shadow queue or new
+grant is created. Missing collection setup leaves proposals available locally.
+The [component evidence](../evidence/guided-research-terminal-2026-10-23/report.json)
+retains 31 connected/compatibility passes with explicit model/HTTPS/certificate
+fixtures, original failures/corrections and one detected removed-input-guard mutation.
+This is manual navigation of existing bounded components. Qualified semantic
+support, the autonomous aggregate Delegate budget/workflow, original live D-1
+evidence and release acceptance remain open. Actual search and real-phone setup
+are owner-deferred; stale billing/background OFF is unchanged.
 
 ## Current model-scoped background integration
 
@@ -166,6 +192,17 @@ actual research-domain human calibration, eligible current consent and canonical
 semantic acceptance remain open. This is an evaluation prerequisite, not an
 AOS-022/G2/R3 pass; private claim judging and background work remain disabled.
 
+## Current native-worker failure visibility
+
+[Redacted stop diagnostics](testing/NATIVE_WORKER_DIAGNOSTICS.md) now distinguish
+closed database, authority and unconfirmed-execution causes while preserving
+all original fencing, deadlines and held UNKNOWN claims. The two existing CI
+journeys retain complete synthetic outcomes in their original JUnit artifacts.
+[42 affected connected checks](../evidence/native-worker-diagnostics-2026-10-23/report.json)
+pass with3 live cases excluded and explicit native/account/capacity/fault fixtures.
+The original intermittent CI stop remains unexplained; these diagnostics do not
+waive it, release a claim, authorize retry or establish R3/runtime qualification.
+
 ## Current delivery checkpoint
 
 **R3 is building; the MVP has not reached candidate acceptance.** Historical
@@ -177,7 +214,7 @@ already delivered components.
 | --- | --- | --- |
 | Ask | Offline terminal, approved encrypted profile/style/private examples, optional pinned local identity | Full quality/latency corpus and cumulative runtime qualification |
 | Build | Canonical plans, scoped one/two-worker execution, conflicts/final-tree checks, finite repairs, exact owner review/merge | Broader adapter/DAG compatibility and complete B-1/gates |
-| Delegate | Question/query staging, explicit collection, retained excerpts, local draft and owner claim review | Actual search is owner-deferred; qualified support/iterative planning and complete D-1/G2 remain |
+| Delegate | Question/query staging, guided manual collection/draft stages, retained excerpts and owner claim review | Actual search is owner-deferred; qualified bounded planning/support, aggregate workflow and complete D-1/G2 remain |
 | Personal platform | Reviewed quota queue, finite runner/controller, offline confirmed-result references, local profile/context, exact connection reviews and selected native account/context enforcement | General account/root/secret lifecycle and actual conformance, remaining context/capture/rights integration and qualification |
 | Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build/research metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
 | Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |

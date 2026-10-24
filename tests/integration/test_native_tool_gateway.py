@@ -314,6 +314,7 @@ def test_runtime_exception_is_unknown_and_has_no_raw_diagnostic(tmp_path: Path, 
         request, permit
     )
     assert receipt.outcome == "unknown" and receipt.sandbox is None
+    assert receipt.unconfirmed_reason == "sandbox_return_unconfirmed"
     assert "SYNTHETIC_PRIVATE_DATA" not in repr(receipt)
 
 
@@ -335,6 +336,7 @@ def test_stalled_authority_check_does_not_start_or_authorize_a_worker(tmp_path: 
             permit.workspace.parent, registry, StalledAuthority(permit), runner_factory=FakeRunner
         ).execute(request, permit)
         assert receipt.outcome == "unknown" and receipt.sandbox is None
+        assert receipt.unconfirmed_reason == "authority_observation_deadline"
         assert time.monotonic() - started < 2
     finally:
         release.set()

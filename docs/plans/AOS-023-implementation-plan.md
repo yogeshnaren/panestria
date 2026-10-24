@@ -21,7 +21,7 @@ prepares and confirms an exact dedicated PUBLIC-web grant without widening Ask.
 adds one explicitly retained local CPU draft from bounded PUBLIC passages, typed
 controller-owned citations and immutable input/output receipts. It leaves support
 NOT_ASSESSED and task completion authority NONE. It is not qualified synthesis.
-S1/S2 remain IN_PROGRESS; automatic planning, qualified synthesis/support, broader guided intake/collection,
+S1/S2 remain IN_PROGRESS; automatic planning, qualified synthesis/support, full guided intake/collection,
 qualified semantic support, real runtime/live cases and full
 Delegate/G2 are pending. Canonical citation/rubric acceptance runners remain
 refused until independently admitted. No artifact export or collected quote
@@ -103,8 +103,9 @@ the existing cached CPU model path. The export feeds the separately admitted
 collector; planning itself creates no web grant, task attempt or acceptance verdict.
 [Source-bound observations](../../evidence/research-query-plan-2026-10-21/report.json)
 include actual PG/CAS/CLI fixtures and a separate real cached CPU synthetic-question
-journey. Failed/uncertain intents are not silently repeated. Broader iterative
-planning, qualified support, actual service/runtime and full D-1/G2 remain pending.
+journey. Failed/uncertain intents are not silently repeated. Qualified bounded
+planning/support, actual service/runtime and full D-1/G2 remain pending. The
+original AOS-023 scope does not require arbitrary multi-epoch web research.
 
 
 ## Exact owner claim review terminal (2026-10-23)
@@ -116,5 +117,18 @@ Existing canonical draft/source/policy/task checks and immutable RESTRICTED note
 remain authoritative; no model/search call or automatic support/task/training
 authority is introduced. The physical PTY/PG/CAS/reader checks retain explicit
 model/fetch fixtures in [source-bound evidence](../../evidence/research-review-terminal-2026-10-23/report.json).
-S1/S2 remain IN_PROGRESS: broader guided intake/collection, qualified automatic
+S1/S2 remain IN_PROGRESS: complete guided intake/collection, qualified automatic
 support/planning, actual search/runtime and complete D-1/G2 remain required.
+
+## Guided same-request terminal component (2026-10-23)
+
+[Design117](../design/117-GUIDED-RESEARCH-TERMINAL.md) and the
+[run guide](../testing/GUIDED_RESEARCH_TUI.md) connect the existing immutable
+query-plan, one collection epoch, retained local draft and owner review stages.
+Every action requires separate exact terminal review/confirmation and original
+locked input checks. No new canonical task store, lifecycle reset, query-proposed
+grant, automatic repair/retry or qualified semantic verdict is added. Missing
+collection setup and uncertain/failed original intents stop. Existing commands
+remain available for explicit inspection/private exports. Manual component
+navigation does not complete S1/S2, autonomous aggregate budget qualification,
+AOS-022 support, the authorized live public brief or D-1/G2.
