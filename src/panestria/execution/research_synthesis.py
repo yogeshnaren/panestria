@@ -265,11 +265,15 @@ class OwnerSynthesis:
         ).fetchone()
         return row[0] if row else None
 
-    def synthesize(self, request_id: str, key: str, *, retain_local_draft: bool) -> SynthesisReceipt:
+    def synthesize(
+        self, request_id: str, key: str, *, retain_local_draft: bool, expected_input_sha256: str | None = None
+    ) -> SynthesisReceipt:
         if retain_local_draft is not True or not 1 <= len(key) <= 128 or str(UUID(request_id)) != request_id:
             raise KernelDenied("explicit_retained_local_draft_required")
         with self.connect() as c:
             packet = self._current(c, request_id)
+            if expected_input_sha256 is not None and _sha(packet_json(packet)) != expected_input_sha256:
+                raise KernelDenied("synthesis_review_changed")
             prior = self._prior(c, packet.scope.task_id, request_id)
             if prior is not None:
                 if prior["key_sha256"] != _sha(key.encode()):

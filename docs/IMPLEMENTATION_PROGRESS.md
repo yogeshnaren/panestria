@@ -14,6 +14,23 @@ The owner authorizes implementation, focused PRs and verified sequential merge
 commits through R3. Stop at the real 14-day owner trial/acceptance; no R4–R7 work.
 An implemented component or passing CI is not a release-gate pass.
 
+## Current guided research terminal
+
+The [same-request research TUI](testing/GUIDED_RESEARCH_TUI.md) now connects the
+existing local query proposal, exact disclosure/collection review, local draft
+and owner claim-review terminal. Each stage needs a separate full-page review
+and confirmation; reviewed inputs are rechecked under the original service locks.
+Reopening reads canonical receipts instead of repeating work. Interrupted or
+unconfirmed stages stop; no replacement goal, epoch reset, shadow queue or new
+grant is created. Missing collection setup leaves proposals available locally.
+The [component evidence](../evidence/guided-research-terminal-2026-10-23/report.json)
+retains 31 connected/compatibility passes with explicit model/HTTPS/certificate
+fixtures, original failures/corrections and one detected removed-input-guard mutation.
+This is manual navigation of existing bounded components. Qualified semantic
+support, the autonomous aggregate Delegate budget/workflow, original live D-1
+evidence and release acceptance remain open. Actual search and real-phone setup
+are owner-deferred; stale billing/background OFF is unchanged.
+
 ## Current model-scoped background integration
 
 [Preferred-model queue/controller integration](testing/BACKGROUND_MODEL_SCOPE.md)
@@ -184,7 +201,7 @@ already delivered components.
 | --- | --- | --- |
 | Ask | Offline terminal, approved encrypted profile/style/private examples, optional pinned local identity | Full quality/latency corpus and cumulative runtime qualification |
 | Build | Canonical plans, scoped one/two-worker execution, conflicts/final-tree checks, finite repairs, exact owner review/merge | Broader adapter/DAG compatibility and complete B-1/gates |
-| Delegate | Question/query staging, explicit collection, retained excerpts, local draft and owner claim review | Actual search is owner-deferred; qualified support/iterative planning and complete D-1/G2 remain |
+| Delegate | Question/query staging, guided manual collection/draft stages, retained excerpts and owner claim review | Actual search is owner-deferred; qualified bounded planning/support, aggregate workflow and complete D-1/G2 remain |
 | Personal platform | Reviewed quota queue, finite runner/controller, offline confirmed-result references, local profile/context, exact connection reviews and selected native account/context enforcement | General account/root/secret lifecycle and actual conformance, remaining context/capture/rights integration and qualification |
 | Visibility/resources | Activity/Build terminals, selected Mission Control modes, opt-in storage admission, saved Ask/Build/research metrics | Unified storage/resource notifications and remaining review/fleet/phone TLS/device integration |
 | Release | Original source-bound observations and failures preserved | G1/G2/G3 not passed; paid SDKTC04 deferred, no14-day trial or owner acceptance |

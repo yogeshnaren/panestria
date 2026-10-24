@@ -141,11 +141,15 @@ class OwnerQueryPlan:
             "task_completion_authority": "NONE",
         }
 
-    def plan(self, request_id: str, key: str, *, retain_local_plan: bool) -> dict[str, Any]:
+    def plan(
+        self, request_id: str, key: str, *, retain_local_plan: bool, expected_input_sha256: str | None = None
+    ) -> dict[str, Any]:
         if retain_local_plan is not True or not 1 <= len(key) <= 128 or str(UUID(request_id)) != request_id:
             raise KernelDenied("explicit_retained_local_query_plan_required")
         with self.connect() as c:
             packet = self._current(c, request_id)
+            if expected_input_sha256 is not None and digest(packet_bytes(packet)) != expected_input_sha256:
+                raise KernelDenied("query_plan_review_changed")
             prior = self._prior(c, packet)
             if prior:
                 if prior["key_sha256"] != digest(key.encode()):

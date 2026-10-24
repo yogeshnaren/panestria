@@ -1,6 +1,7 @@
 """Explicit bounded collection, retained excerpts and a canonical verification wait."""
 
 import hashlib
+import json
 import threading
 from dataclasses import dataclass
 from typing import Any
@@ -57,7 +58,31 @@ class OwnerCollection:
     def connect(self) -> psycopg.Connection[Any]:
         return psycopg.connect(self.dsn, connect_timeout=2, options="-c statement_timeout=5000 -c lock_timeout=1000")
 
-    def collect(self, request_id: str, queries: tuple[SecretStr, ...], *, public_web: bool) -> CollectionReceipt:
+    def review(self, binding: CollectionBinding, queries: tuple[SecretStr, ...]) -> dict[str, Any]:
+        """Exact selected disclosure/limits, not permission or a runtime certificate."""
+        return {
+            "request_id": binding.request.request_id,
+            "request_sha256": binding.request_sha256,
+            "contract_sha256": binding.contract_sha256,
+            "task_state": binding.task_state,
+            "row_version": binding.row_version,
+            "epoch": binding.epoch,
+            "goal_status": binding.goal_status,
+            "queries": [q.get_secret_value() for q in queries],
+            "settings": self.settings.model_dump(mode="json"),
+            "runtime_versions": self.lifecycle.search.runtime_versions,
+            "limits": binding.request.limits.model_dump(mode="json"),
+            "contract_budget": binding.contract.budget.model_dump(mode="json"),
+        }
+
+    @staticmethod
+    def review_digest(review: dict[str, Any]) -> str:
+        return hashlib.sha256(json.dumps(review, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+    def collect(
+        self, request_id: str, queries: tuple[SecretStr, ...], *, public_web: bool,
+        expected_review_sha256: str | None = None,
+    ) -> CollectionReceipt:
         if public_web is not True or type(queries) is not tuple or not 1 <= len(queries) <= 16:
             raise KernelDenied("explicit_bounded_public_collection_required")
         if str(UUID(request_id)) != request_id or any(type(query) is not SecretStr for query in queries):
@@ -88,6 +113,11 @@ class OwnerCollection:
         # avoids writing entity rows after taking the global event-counter lock.
         with self.connect() as c:
             binding = self.lifecycle.load(UnitOfWork(c), self.actor, request_id)
+            if (
+                expected_review_sha256 is not None
+                and self.review_digest(self.review(binding, queries)) != expected_review_sha256
+            ):
+                raise KernelDenied("research_collection_review_changed")
             self.lifecycle.begin(UnitOfWork(c), self.actor, binding)
         with self.connect() as c:
             binding = self.lifecycle.load(UnitOfWork(c), self.actor, request_id)
