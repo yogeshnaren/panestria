@@ -15,7 +15,7 @@ import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID, uuid5
 
 import psycopg
@@ -27,7 +27,7 @@ from panestria.contracts.native_command import RegisteredCheckReceipt
 from panestria.contracts.native_tools import ToolRequest, ToolScope
 from panestria.contracts.policy import PolicyRequest
 from panestria.execution.tool_authority import DurableToolAuthority, tool_binding
-from panestria.execution.worker_authority import WorkerAuthority
+from panestria.execution.worker_authority import WorkerAuthority, worker_failure_code
 from panestria.kernel.approvals import ApprovalView
 from panestria.kernel.build import BuildEvidenceService, BuildEvidenceStore
 from panestria.kernel.errors import KernelDenied
@@ -66,25 +66,35 @@ class _EditAuthority(DurableToolAuthority):
         self.controller, self.claimed = controller, False
 
     def claim(self, permit: ToolPermit) -> None:
-        with self.connect() as connection:
-            self.controller.authorize(connection)
-            self.service.claim(UnitOfWork(connection), self.actor, tool_binding(permit), self.identity)
+        self._operation(permit, "claim")
         self.claimed = True
 
     def check(self, permit: ToolPermit) -> None:
-        with self.connect() as connection:
-            self.controller.authorize(connection)
-            self.service.check(UnitOfWork(connection), self.actor, tool_binding(permit), self.identity)
+        self._operation(permit, "check")
 
     def observe(self, permit: ToolPermit) -> None:
-        with self.connect() as connection:
-            connection.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
-            self.controller.authorize(connection, observation=True)
-            self.service.observe(UnitOfWork(connection), self.actor, tool_binding(permit), self.identity)
+        self._operation(permit, "observe")
+
+    def _operation(self, permit: ToolPermit, operation: Literal["claim", "check", "observe"]) -> None:
+        try:
+            with self.connect() as connection:
+                if operation == "observe":
+                    connection.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+                self.controller.authorize(connection, observation=operation == "observe")
+                getattr(self.service, operation)(
+                    UnitOfWork(connection), self.actor, tool_binding(permit), self.identity
+                )
+        except Exception as error:
+            self.controller.last_failure_code = self.controller.last_failure_code or worker_failure_code(error)
+            raise
 
     def _authorize_launch(self, connection: psycopg.Connection[Any], permit: ToolPermit) -> None:
-        self.controller.authorize(connection)
-        super()._authorize_launch(connection, permit)
+        try:
+            self.controller.authorize(connection)
+            super()._authorize_launch(connection, permit)
+        except Exception as error:
+            self.controller.last_failure_code = self.controller.last_failure_code or worker_failure_code(error)
+            raise
 
 
 class ScopedBashController:
@@ -102,6 +112,7 @@ class ScopedBashController:
         *,
         authority: WorkerAuthority | None = None,
     ) -> None:
+        self.last_failure_code: str | None = None
         try:
             self.scope = ToolScope.model_validate_json(scope.model_dump_json())
             self.contract = load_contract(contract.model_dump(mode="json"))
@@ -382,6 +393,9 @@ class ScopedBashController:
                 or cancel.is_set()
                 or len(sandbox.output) > 8192
             ):
+                self.last_failure_code = self.last_failure_code or "scoped_gateway_" + (
+                    result.unconfirmed_reason or "receipt_unconfirmed"
+                )
                 raise ScopedBashUnavailable("unconfirmed_bash_execution")
             report = json.dumps(
                 {
@@ -415,7 +429,8 @@ class ScopedBashController:
                     raise ScopedBashUnavailable("cancelled_before_receipt")
                 service.finish(UnitOfWork(connection), self.actor, binding, identity, digest)
             return RegisteredCheckReceipt(outcome="COMPLETED", exit_code=sandbox.exit_code, report_sha256=digest)
-        except Exception:
+        except Exception as error:
+            self.last_failure_code = self.last_failure_code or worker_failure_code(error)
             if authority is not None and authority.claimed and binding is not None and identity is not None:
                 try:
                     with self.connect() as connection:

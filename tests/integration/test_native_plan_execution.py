@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from uuid import uuid4
 
+import psycopg
 import pytest
 from test_owner_build_cli import contract, invoke, prepare
 from test_owner_build_cli import owner_cli as owner_cli  # noqa: F401
@@ -83,7 +84,7 @@ def prepared_plan(owner_cli, r1_migration_task, monkeypatch, request):
 
 
 @pytest.fixture
-def native_plan(prepared_plan, monkeypatch):
+def native_plan(prepared_plan, monkeypatch, record_property):
     _f, owner, runner, proposal = prepared_plan
     state = {
         "launches": 0,
@@ -196,6 +197,14 @@ def native_plan(prepared_plan, monkeypatch):
         )
 
     monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", native)
+    original_run = NativePlanRunner.run
+
+    def observed_run(controller, *args, **kwargs):
+        result = original_run(controller, *args, **kwargs)
+        record_property("native_plan_result", json.dumps(result, sort_keys=True))
+        return result
+
+    monkeypatch.setattr(NativePlanRunner, "run", observed_run)
     return owner, runner, proposal, state
 
 
@@ -219,6 +228,41 @@ def test_two_scoped_workers_and_create_only_node_reach_exact_owner_review(native
             "SELECT count(*) FROM panestria.build_handoff WHERE plan_id=%s", (plan.plan_id,)
         ).fetchone() == (2,)
         assert c.execute("SELECT status FROM panestria.goal WHERE id=%s", (plan.goal_id,)).fetchone() == ("ACTIVE",)
+
+
+@pytest.mark.parametrize(
+    "error,code",
+    [(psycopg.errors.QueryCanceled("PRIVATE_SQL_SENTINEL"), "database_statement_timeout"),
+     (RuntimeError("PRIVATE_EXCEPTION_SENTINEL"), "worker_execution_unconfirmed"),
+     (KernelDenied("invocation_inactive"), "invocation_inactive"),
+     (KernelDenied("PRIVATE_AUTHORITY_SENTINEL"), "controller_authority_denied")],
+)
+def test_stopped_native_worker_retains_safe_cause_and_unknown_claim(native_plan, monkeypatch, error, code):
+    owner, runner, plan, state = native_plan
+
+    def unavailable(_self, session, *, before_launch, **kwargs):
+        before_launch()
+        raise error
+
+    monkeypatch.setattr(ClaudeScopedBashAdapter, "build_public", unavailable)
+    result = runner.run(plan.plan_id, public_subscription_run=True)
+    assert result["status"] == "STOPPED" and state["launches"] == 0
+    assert result["worker_observations"] and all(r["reason"] == code for r in result["worker_observations"])
+    assert "PRIVATE_" not in json.dumps(result)
+    with owner.connect() as c:
+        assert c.execute(
+            "SELECT count(*) FROM panestria.build_handoff WHERE plan_id=%s", (plan.plan_id,)
+        ).fetchone() == (0,)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.approval_request WHERE goal_id=%s", (plan.goal_id,)
+        ).fetchone() == (0,)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.worker_invocation i JOIN panestria.task t ON t.id=i.task_id "
+            "WHERE t.goal_id=%s AND i.state='UNKNOWN'", (plan.goal_id,),
+        ).fetchone()[0] > 0
+        assert c.execute(
+            "SELECT count(*) FROM panestria.build_active_worker_claim WHERE plan_id=%s", (plan.plan_id,),
+        ).fetchone()[0] > 0
 
 
 def test_explicit_run_intent_and_changed_worker_declaration_refuse_before_claim(native_plan):

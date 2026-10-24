@@ -94,6 +94,9 @@ class ToolAuthority(Protocol):
 
 
 ToolOutcome = Literal["completed", "failed", "cancelled", "deadline_exceeded", "authority_revoked", "unknown"]
+UnconfirmedReason = Literal[
+    "authority_observation_deadline", "authority_watchdog_unconfirmed", "sandbox_return_unconfirmed"
+]
 
 
 @dataclass(frozen=True)
@@ -103,6 +106,7 @@ class ToolReceipt:
     registry_sha256: str
     outcome: ToolOutcome
     sandbox: SandboxReceipt | None
+    unconfirmed_reason: UnconfirmedReason | None = None
     # A tool result is never independent verification or kernel completion.
 
 
@@ -320,7 +324,8 @@ class NativeToolGateway:
         if not watchdog.is_alive():
             check()
         outcome: ToolOutcome
-        if watchdog.is_alive() or unavailable.is_set() or (dispatched and sandbox is None):
+        watchdog_unconfirmed = watchdog.is_alive()
+        if watchdog_unconfirmed or unavailable.is_set() or (dispatched and sandbox is None):
             outcome = "unknown"
         elif revoked.is_set():
             outcome = "authority_revoked"
@@ -336,4 +341,9 @@ class NativeToolGateway:
             outcome = "deadline_exceeded"
         else:
             outcome = "failed"
-        return ToolReceipt(request_hash, permit.scope.sha256(), registry_hash, outcome, sandbox)
+        diagnostic: UnconfirmedReason | None = (
+            "authority_watchdog_unconfirmed" if watchdog_unconfirmed else
+            "authority_observation_deadline" if unavailable.is_set() else
+            "sandbox_return_unconfirmed" if dispatched and sandbox is None else None
+        )
+        return ToolReceipt(request_hash, permit.scope.sha256(), registry_hash, outcome, sandbox, diagnostic)
