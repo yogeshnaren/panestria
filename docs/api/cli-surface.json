@@ -1,0 +1,4843 @@
+{
+  "hidden": false,
+  "params": [
+    {
+      "name": "version",
+      "opts": [
+        "--version"
+      ],
+      "kind": "option",
+      "required": false,
+      "type": "boolean"
+    }
+  ],
+  "commands": {
+    "activity": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "init": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "directory",
+              "opts": [
+                "--directory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "owner_id",
+              "opts": [
+                "--owner-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "--project-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "port",
+              "opts": [
+                "--port"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            }
+          ]
+        },
+        "serve": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "storage_config",
+              "opts": [
+                "--storage-config"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            }
+          ]
+        },
+        "tui": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        }
+      }
+    },
+    "approvals": {
+      "hidden": false,
+      "params": [
+        {
+          "name": "base_url",
+          "opts": [
+            "--base-url"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "str"
+        },
+        {
+          "name": "token",
+          "opts": [
+            "--token"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "str"
+        }
+      ]
+    },
+    "approve": {
+      "hidden": false,
+      "params": [
+        {
+          "name": "approval_id",
+          "opts": [
+            "approval_id"
+          ],
+          "kind": "argument",
+          "required": true,
+          "type": "str"
+        },
+        {
+          "name": "effect_digest",
+          "opts": [
+            "--effect-digest"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "str"
+        },
+        {
+          "name": "expected_version",
+          "opts": [
+            "--expected-version"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "int"
+        },
+        {
+          "name": "idempotency_key",
+          "opts": [
+            "--idempotency-key"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "str"
+        },
+        {
+          "name": "base_url",
+          "opts": [
+            "--base-url"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "str"
+        },
+        {
+          "name": "token",
+          "opts": [
+            "--token"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "str"
+        }
+      ]
+    },
+    "artifact": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "show": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "artifact_id",
+              "opts": [
+                "artifact_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "base_url",
+              "opts": [
+                "--base-url"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "token",
+              "opts": [
+                "--token"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        }
+      }
+    },
+    "ask": {
+      "hidden": false,
+      "params": [
+        {
+          "name": "question",
+          "opts": [
+            "question"
+          ],
+          "kind": "argument",
+          "required": false,
+          "type": "str"
+        },
+        {
+          "name": "project",
+          "opts": [
+            "--project"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "str"
+        },
+        {
+          "name": "base_url",
+          "opts": [
+            "--base-url"
+          ],
+          "kind": "option",
+          "required": false,
+          "type": "str"
+        },
+        {
+          "name": "token_file",
+          "opts": [
+            "--token-file"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "file"
+        },
+        {
+          "name": "question_file",
+          "opts": [
+            "--question-file"
+          ],
+          "kind": "option",
+          "required": false,
+          "type": "file"
+        },
+        {
+          "name": "privacy",
+          "opts": [
+            "--privacy"
+          ],
+          "kind": "option",
+          "required": false,
+          "type": "str"
+        },
+        {
+          "name": "json_output",
+          "opts": [
+            "--json"
+          ],
+          "kind": "option",
+          "required": false,
+          "type": "boolean"
+        }
+      ]
+    },
+    "background": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "account": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "item_id",
+              "opts": [
+                "item_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "draft": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "account_ref",
+              "opts": [
+                "account_ref"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "enqueue": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "request",
+              "opts": [
+                "--request"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "policy_sha256",
+              "opts": [
+                "policy_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "accept_background_policy",
+              "opts": [
+                "--accept-background-policy"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "link-account": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "item_id",
+              "opts": [
+                "item_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "observation_sha256",
+              "opts": [
+                "observation_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "link_sha256",
+              "opts": [
+                "link_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "accept_account_link",
+              "opts": [
+                "--accept-account-link"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "list": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "next": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "prepare": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "request",
+              "opts": [
+                "--request"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "probe-account": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "item_id",
+              "opts": [
+                "item_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "reconcile-run": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "item_id",
+              "opts": [
+                "item_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "run_sha256",
+              "opts": [
+                "run_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "run": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "item_id",
+              "opts": [
+                "item_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "allow_background_subscription_run",
+              "opts": [
+                "--allow-background-subscription-run"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "run-next": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "allow_background_subscription_run",
+              "opts": [
+                "--allow-background-subscription-run"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "runs": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "item_id",
+              "opts": [
+                "item_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "show": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "item_id",
+              "opts": [
+                "item_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "withdraw": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "item_id",
+              "opts": [
+                "item_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "binding_sha256",
+              "opts": [
+                "binding_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "work": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "ticks",
+              "opts": [
+                "--ticks"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            },
+            {
+              "name": "poll_seconds",
+              "opts": [
+                "--poll-seconds"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            },
+            {
+              "name": "jobs",
+              "opts": [
+                "--jobs"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            },
+            {
+              "name": "allow_background_subscription_run",
+              "opts": [
+                "--allow-background-subscription-run"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    "build": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "approve": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "approval_id",
+              "opts": [
+                "approval_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "effect_digest",
+              "opts": [
+                "effect_digest"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "expected_version",
+              "opts": [
+                "expected_version"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "int"
+            },
+            {
+              "name": "idempotency_key",
+              "opts": [
+                "idempotency_key"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "cancel": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "goal_id",
+              "opts": [
+                "goal_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "expected_version",
+              "opts": [
+                "expected_version"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "int"
+            }
+          ]
+        },
+        "capture-reference": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "goal_id",
+              "opts": [
+                "goal_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "confirm-policy": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "review_id",
+              "opts": [
+                "review_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "effect_digest",
+              "opts": [
+                "effect_digest"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "goals": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "metrics": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "goal_id",
+              "opts": [
+                "goal_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "prepare-policy": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "allow_public_native_build",
+              "opts": [
+                "--allow-public-native-build"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "prepare-recall": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "reference_sha256",
+              "opts": [
+                "reference_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "retain_days",
+              "opts": [
+                "--retain-days"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int"
+            }
+          ]
+        },
+        "progress": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "goal_id",
+              "opts": [
+                "goal_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "reference": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "reference_sha256",
+              "opts": [
+                "reference_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "diff",
+              "opts": [
+                "--diff"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            },
+            {
+              "name": "input_invocation",
+              "opts": [
+                "--input"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "uuid"
+            }
+          ]
+        },
+        "remember-reference": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "reference_sha256",
+              "opts": [
+                "reference_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "review_sha256",
+              "opts": [
+                "review_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "retain_days",
+              "opts": [
+                "--retain-days"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int"
+            },
+            {
+              "name": "accept_local_recall",
+              "opts": [
+                "--accept-local-recall"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "status": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "goal_id",
+              "opts": [
+                "goal_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "diff",
+              "opts": [
+                "--diff"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "storage-preview": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "submit": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "contract",
+              "opts": [
+                "--contract"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "selected_path",
+              "opts": [
+                "--select"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "expected_base",
+              "opts": [
+                "--expected-base"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "idempotency_key",
+              "opts": [
+                "--idempotency-key"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "public_subscription_run",
+              "opts": [
+                "--public-subscription-run"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "suppress-recall": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "reference_sha256",
+              "opts": [
+                "reference_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "item_id",
+              "opts": [
+                "item_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "expected_version",
+              "opts": [
+                "expected_version"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "int"
+            },
+            {
+              "name": "confirm_local_suppression",
+              "opts": [
+                "--confirm-local-suppression"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "tui": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "goal_id",
+              "opts": [
+                "goal_id"
+              ],
+              "kind": "argument",
+              "required": false,
+              "type": "str"
+            }
+          ]
+        }
+      }
+    },
+    "connections": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "init": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "directory",
+              "opts": [
+                "--directory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "owner_id",
+              "opts": [
+                "--owner-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "--project-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "port",
+              "opts": [
+                "--port"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            }
+          ]
+        },
+        "native-template": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "build_config",
+              "opts": [
+                "--build-config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "task_id",
+              "opts": [
+                "--task-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "proposal_id",
+              "opts": [
+                "--proposal-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "account_ref",
+              "opts": [
+                "--account-ref"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "max_calls",
+              "opts": [
+                "--max-calls"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            },
+            {
+              "name": "max_bytes",
+              "opts": [
+                "--max-bytes"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            },
+            {
+              "name": "max_wall_seconds",
+              "opts": [
+                "--max-wall-seconds"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            },
+            {
+              "name": "expires_seconds",
+              "opts": [
+                "--expires-seconds"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            }
+          ]
+        },
+        "prepare-public-fetch": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "research_config",
+              "opts": [
+                "--research-config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "task_id",
+              "opts": [
+                "--task-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "proposal_id",
+              "opts": [
+                "--proposal-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "origin",
+              "opts": [
+                "--origin"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "max_calls",
+              "opts": [
+                "--max-calls"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            },
+            {
+              "name": "max_bytes",
+              "opts": [
+                "--max-bytes"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            },
+            {
+              "name": "max_wall_seconds",
+              "opts": [
+                "--max-wall-seconds"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            },
+            {
+              "name": "expires_seconds",
+              "opts": [
+                "--expires-seconds"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            }
+          ]
+        },
+        "propose": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "request_file",
+              "opts": [
+                "--request-file"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "review": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "proposal_id",
+              "opts": [
+                "--proposal-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            }
+          ]
+        },
+        "revoke": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "grant_id",
+              "opts": [
+                "--grant-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "task_id",
+              "opts": [
+                "--task-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "proposal_id",
+              "opts": [
+                "--proposal-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            }
+          ]
+        },
+        "scope": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "serve": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "show": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "grant_id",
+              "opts": [
+                "--grant-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "uuid"
+            }
+          ]
+        }
+      }
+    },
+    "deny": {
+      "hidden": false,
+      "params": [
+        {
+          "name": "approval_id",
+          "opts": [
+            "approval_id"
+          ],
+          "kind": "argument",
+          "required": true,
+          "type": "str"
+        },
+        {
+          "name": "effect_digest",
+          "opts": [
+            "--effect-digest"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "str"
+        },
+        {
+          "name": "expected_version",
+          "opts": [
+            "--expected-version"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "int"
+        },
+        {
+          "name": "idempotency_key",
+          "opts": [
+            "--idempotency-key"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "str"
+        },
+        {
+          "name": "base_url",
+          "opts": [
+            "--base-url"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "str"
+        },
+        {
+          "name": "token",
+          "opts": [
+            "--token"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "str"
+        }
+      ]
+    },
+    "examples": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "export": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "review",
+              "opts": [
+                "--review"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "output"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "inspect": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "review_sha256",
+              "opts": [
+                "review_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "prepare": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "candidate",
+              "opts": [
+                "candidate"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "evidence",
+              "opts": [
+                "--evidence"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "days",
+              "opts": [
+                "--days"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int"
+            }
+          ]
+        },
+        "record": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "candidate",
+              "opts": [
+                "candidate"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "review_sha256",
+              "opts": [
+                "review_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "evidence",
+              "opts": [
+                "--evidence"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "days",
+              "opts": [
+                "--days"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int"
+            },
+            {
+              "name": "confirm_owner_review",
+              "opts": [
+                "--confirm-owner-review"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            },
+            {
+              "name": "accept_training_data_purpose",
+              "opts": [
+                "--accept-training-data-purpose"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "validate-export": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "packet",
+              "opts": [
+                "packet"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "withdraw": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "review_sha256",
+              "opts": [
+                "review_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "confirm_withdrawal",
+              "opts": [
+                "--confirm-withdrawal"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    "goal": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "cancel": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "goal_id",
+              "opts": [
+                "goal_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "expected_version",
+              "opts": [
+                "--expected-version"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "int"
+            },
+            {
+              "name": "reason",
+              "opts": [
+                "--reason"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "base_url",
+              "opts": [
+                "--base-url"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "token",
+              "opts": [
+                "--token"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "events": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "goal_id",
+              "opts": [
+                "goal_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "after",
+              "opts": [
+                "--after"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            },
+            {
+              "name": "base_url",
+              "opts": [
+                "--base-url"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "token",
+              "opts": [
+                "--token"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "status": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "goal_id",
+              "opts": [
+                "goal_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "base_url",
+              "opts": [
+                "--base-url"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "token",
+              "opts": [
+                "--token"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "submit": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "contract",
+              "opts": [
+                "--contract"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "file"
+            },
+            {
+              "name": "idempotency_key",
+              "opts": [
+                "--idempotency-key"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "base_url",
+              "opts": [
+                "--base-url"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "token",
+              "opts": [
+                "--token"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        }
+      }
+    },
+    "health": {
+      "hidden": false,
+      "params": []
+    },
+    "local": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "init": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "directory",
+              "opts": [
+                "--directory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "model_cache",
+              "opts": [
+                "--model-cache"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "port",
+              "opts": [
+                "--port"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int"
+            },
+            {
+              "name": "offline_ask",
+              "opts": [
+                "--offline-ask"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "model-manifest": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "json_output",
+              "opts": [
+                "--json-output"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "pair-code": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "serve": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "mission_assets",
+              "opts": [
+                "--mission-assets"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            }
+          ]
+        },
+        "setup": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "--owner-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "--project-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "offline_ask",
+              "opts": [
+                "--offline-ask"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "token-create": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "token_file",
+              "opts": [
+                "--token-file"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        }
+      }
+    },
+    "metrics": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "capture": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "evidence_root",
+              "opts": [
+                "--evidence-root"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "directory",
+              "opts": [
+                "--directory"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "mutation_report",
+              "opts": [
+                "--mutation-report"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "ci_report",
+              "opts": [
+                "--ci-report"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            }
+          ]
+        },
+        "capture-ask": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "request_id",
+              "opts": [
+                "--request-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "directory",
+              "opts": [
+                "--directory"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            }
+          ]
+        },
+        "capture-research": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "request_id",
+              "opts": [
+                "--request-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "directory",
+              "opts": [
+                "--directory"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            }
+          ]
+        },
+        "overview": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "directory",
+              "opts": [
+                "--directory"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "as_json",
+              "opts": [
+                "--json"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "show": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "directory",
+              "opts": [
+                "--directory"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "as_json",
+              "opts": [
+                "--json"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    "mission-control": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "pair-code": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "serve": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "assets",
+              "opts": [
+                "--assets"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "build_evidence_store",
+              "opts": [
+                "--build-evidence-store"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "build_review_root",
+              "opts": [
+                "--build-review-root"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "research_intake",
+              "opts": [
+                "--research-intake"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "build_intake",
+              "opts": [
+                "--build-intake"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            },
+            {
+              "name": "build_plan_review",
+              "opts": [
+                "--build-plan-review"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            },
+            {
+              "name": "build_run",
+              "opts": [
+                "--build-run"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "storage_config",
+              "opts": [
+                "--storage-config"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            }
+          ]
+        }
+      }
+    },
+    "native": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "inspect": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "binary",
+              "opts": [
+                "--binary"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "expected_sha256",
+              "opts": [
+                "--expected-sha256"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config_dir",
+              "opts": [
+                "--config-dir"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "skills_archive",
+              "opts": [
+                "--skills-archive"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "qualify-build": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "evidence_directory",
+              "opts": [
+                "--evidence-directory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "public_subscription_smoke",
+              "opts": [
+                "--public-subscription-smoke"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            },
+            {
+              "name": "model",
+              "opts": [
+                "--model"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            }
+          ]
+        }
+      }
+    },
+    "phone": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "devices": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "pair-code": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "revoke": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "session_id",
+              "opts": [
+                "session_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "uuid"
+            },
+            {
+              "name": "confirm",
+              "opts": [
+                "--confirm-revocation"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "serve": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "assets",
+              "opts": [
+                "--assets"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        }
+      }
+    },
+    "plan": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "accept": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "effect_digest",
+              "opts": [
+                "effect_digest"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "accept_plan",
+              "opts": [
+                "--accept-plan"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "cancel": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "proposal_sha256",
+              "opts": [
+                "proposal_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "claim": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "evidence_store",
+              "opts": [
+                "--evidence-store"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "skills_archive",
+              "opts": [
+                "--skills-archive"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "claims": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "complete-node": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "handoff_id",
+              "opts": [
+                "handoff_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "evidence_store",
+              "opts": [
+                "--evidence-store"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "handoff": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "submission",
+              "opts": [
+                "--submission"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "evidence_store",
+              "opts": [
+                "--evidence-store"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "inspect": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "inspect-handoff": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "handoff_id",
+              "opts": [
+                "handoff_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "evidence_store",
+              "opts": [
+                "--evidence-store"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "integrate": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "attempt_id",
+              "opts": [
+                "attempt_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "epoch",
+              "opts": [
+                "epoch"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "int"
+            }
+          ]
+        },
+        "inventory": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "base",
+              "opts": [
+                "base"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "prepare": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "proposal",
+              "opts": [
+                "--proposal"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "inventory",
+              "opts": [
+                "--inventory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "progress": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "goal_id",
+              "opts": [
+                "goal_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "evidence_store",
+              "opts": [
+                "--evidence-store"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "propose": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "contract",
+              "opts": [
+                "--contract"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "inventory",
+              "opts": [
+                "--inventory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output_directory",
+              "opts": [
+                "--output-directory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "local_model_run",
+              "opts": [
+                "--local-model-run"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "propose-repair": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "parent_sha256",
+              "opts": [
+                "parent_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "return_proof_sha256",
+              "opts": [
+                "return_proof_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "build_config",
+              "opts": [
+                "--build-config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "model_config",
+              "opts": [
+                "--model-config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output_directory",
+              "opts": [
+                "--output-directory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "idempotency_key",
+              "opts": [
+                "--idempotency-key"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            },
+            {
+              "name": "maximum_versions",
+              "opts": [
+                "--maximum-versions"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int"
+            },
+            {
+              "name": "local_model_run",
+              "opts": [
+                "--local-model-run"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "queue": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "evidence_store",
+              "opts": [
+                "--evidence-store"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "release-final": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "task_id",
+              "opts": [
+                "task_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "evidence_sha256",
+              "opts": [
+                "evidence_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "effect_id",
+              "opts": [
+                "effect_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "evidence_store",
+              "opts": [
+                "--evidence-store"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "release-returned": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "attempt_id",
+              "opts": [
+                "attempt_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "evidence_store",
+              "opts": [
+                "--evidence-store"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "repair-turns": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "goal_id",
+              "opts": [
+                "goal_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "revise": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "parent_plan_id",
+              "opts": [
+                "parent_plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "parent_sha256",
+              "opts": [
+                "parent_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "return_proof_sha256",
+              "opts": [
+                "return_proof_sha256"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "proposal",
+              "opts": [
+                "--proposal"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "inventory",
+              "opts": [
+                "--inventory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "maximum_versions",
+              "opts": [
+                "--maximum-versions"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int"
+            }
+          ]
+        },
+        "run": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "plan_id",
+              "opts": [
+                "plan_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "public_subscription_run",
+              "opts": [
+                "--public-subscription-run"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "stage": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "contract",
+              "opts": [
+                "--contract"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "proposal",
+              "opts": [
+                "--proposal"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "inventory",
+              "opts": [
+                "--inventory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "idempotency_key",
+              "opts": [
+                "--idempotency-key"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "validate": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "proposal",
+              "opts": [
+                "--proposal"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "contract",
+              "opts": [
+                "--contract"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "inventory",
+              "opts": [
+                "--inventory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        }
+      }
+    },
+    "profile": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "ask-tui": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "selection",
+              "opts": [
+                "--selection"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "restricted_offline",
+              "opts": [
+                "--restricted-offline"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "key-check": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "--owner-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "--project-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "profile_id",
+              "opts": [
+                "--profile-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "key_id",
+              "opts": [
+                "--key-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            }
+          ]
+        },
+        "key-create": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "--owner-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "--project-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "profile_id",
+              "opts": [
+                "--profile-id"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            },
+            {
+              "name": "key_id",
+              "opts": [
+                "--key-id"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            }
+          ]
+        },
+        "qualify": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "directory",
+              "opts": [
+                "--directory"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "model_cache",
+              "opts": [
+                "--model-cache"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "synthetic_local_smoke",
+              "opts": [
+                "--synthetic-local-smoke"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "serve": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "restricted_offline",
+              "opts": [
+                "--restricted-offline"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "style-tui": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "profile_id",
+              "opts": [
+                "--profile-id"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "key_id",
+              "opts": [
+                "--key-id"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            },
+            {
+              "name": "expected_version",
+              "opts": [
+                "--expected-version"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            },
+            {
+              "name": "owner_review",
+              "opts": [
+                "--owner-review"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            },
+            {
+              "name": "examples_file",
+              "opts": [
+                "--examples-file"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            }
+          ]
+        }
+      }
+    },
+    "quota": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "current": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "account_ref",
+              "opts": [
+                "--account-ref"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "window_ref",
+              "opts": [
+                "--window"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "provider",
+              "opts": [
+                "--provider"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            },
+            {
+              "name": "model_ref",
+              "opts": [
+                "--model"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            },
+            {
+              "name": "token_file",
+              "opts": [
+                "--token-file"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "base_url",
+              "opts": [
+                "--base-url"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            }
+          ]
+        },
+        "report": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "input_file",
+              "opts": [
+                "--input-file"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "token_file",
+              "opts": [
+                "--token-file"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "base_url",
+              "opts": [
+                "--base-url"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            }
+          ]
+        },
+        "show": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "observation_id",
+              "opts": [
+                "observation_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "token_file",
+              "opts": [
+                "--token-file"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "base_url",
+              "opts": [
+                "--base-url"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            }
+          ]
+        }
+      }
+    },
+    "research": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "check-draft-review": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "review",
+              "opts": [
+                "--review"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "collect": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "queries",
+              "opts": [
+                "--queries"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "public_web",
+              "opts": [
+                "--public-web"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            },
+            {
+              "name": "output_format",
+              "opts": [
+                "--format"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "choice"
+            }
+          ]
+        },
+        "confirm-policy": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "review_id",
+              "opts": [
+                "review_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "effect_digest",
+              "opts": [
+                "effect_digest"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "public_web_policy",
+              "opts": [
+                "--public-web-policy"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "guide": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "synthesis_config",
+              "opts": [
+                "--config",
+                "--synthesis-config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "collection_config",
+              "opts": [
+                "--collection-config"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            }
+          ]
+        },
+        "inspect": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "task_id",
+              "opts": [
+                "task_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "store",
+              "opts": [
+                "--store"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output_format",
+              "opts": [
+                "--format"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "choice"
+            }
+          ]
+        },
+        "inspect-draft": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output_format",
+              "opts": [
+                "--format"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "choice"
+            }
+          ]
+        },
+        "inspect-draft-review": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "plan-queries": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "key",
+              "opts": [
+                "--key"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "retain_local_plan",
+              "opts": [
+                "--retain-local-plan"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "prepare-draft-review": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "prepare-policy": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "public_web_policy",
+              "opts": [
+                "--public-web-policy"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "query-plan": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "record-draft-review": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "review",
+              "opts": [
+                "--review"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "sha256",
+              "opts": [
+                "--sha256"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "accept_owner_review",
+              "opts": [
+                "--accept-owner-review"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "review-draft": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        },
+        "stage": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "owner_id",
+              "opts": [
+                "owner_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "project_id",
+              "opts": [
+                "project_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "contract",
+              "opts": [
+                "--contract"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "question",
+              "opts": [
+                "--question"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "limits",
+              "opts": [
+                "--limits"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "store",
+              "opts": [
+                "--store"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "key",
+              "opts": [
+                "--key"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "public_question",
+              "opts": [
+                "--public-question"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "synthesize": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "request_id",
+              "opts": [
+                "request_id"
+              ],
+              "kind": "argument",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "key",
+              "opts": [
+                "--key"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "str"
+            },
+            {
+              "name": "output",
+              "opts": [
+                "--output"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "retain_local_draft",
+              "opts": [
+                "--retain-local-draft"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "boolean"
+            },
+            {
+              "name": "output_format",
+              "opts": [
+                "--format"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "choice"
+            }
+          ]
+        }
+      }
+    },
+    "storage": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "inspect": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "path"
+            },
+            {
+              "name": "expected_write_bytes",
+              "opts": [
+                "--expected-write-bytes"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            }
+          ]
+        },
+        "watch": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "config",
+              "opts": [
+                "--config"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            }
+          ]
+        }
+      }
+    },
+    "tui": {
+      "hidden": false,
+      "params": [
+        {
+          "name": "config",
+          "opts": [
+            "--config"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "path"
+        }
+      ]
+    },
+    "version": {
+      "hidden": false,
+      "params": []
+    }
+  }
+}
