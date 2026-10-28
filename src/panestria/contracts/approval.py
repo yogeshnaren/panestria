@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from datetime import datetime, timedelta
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
@@ -56,6 +57,27 @@ def load_preview(data: object) -> ActionPreview:
         raise PreviewRejected("invalid_preview") from exc
     canonical = loaded.model_copy(update={"required_checks": sorted(loaded.required_checks)})
     return canonical
+
+
+# A new request may not outlive this; stored previews keep loading unchanged.
+MAX_REQUEST_TTL = timedelta(days=366)
+
+
+def require_request_bounds(preview: ActionPreview, now: datetime) -> None:
+    """Bounds checked when an approval is requested, not when a stored preview is read.
+
+    The owner reviews ``destination`` verbatim, so it must be printable ASCII with
+    no whitespace (no homoglyphs, line breaks or trailing spaces). ``expires_at``
+    must be a real instant no more than ``MAX_REQUEST_TTL`` ahead.
+    """
+    if re.fullmatch(r"[\x21-\x7e]+", preview.destination) is None:
+        raise PreviewRejected("invalid_preview_destination")
+    try:
+        expires = datetime.fromisoformat(preview.expires_at)
+    except ValueError:
+        raise PreviewRejected("invalid_preview_expiry") from None
+    if expires > now + MAX_REQUEST_TTL:
+        raise PreviewRejected("invalid_preview_expiry")
 
 
 def effect_digest(preview: ActionPreview) -> str:

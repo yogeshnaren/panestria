@@ -21,6 +21,7 @@ from urllib.parse import quote, urljoin, urlsplit
 from pydantic import SecretStr
 
 from panestria.contracts.fetch_connection import HTTP_FRAMING_BYTES, HTTP_READ_BUFFER_BYTES, HTTP_REQUEST_BYTES
+from panestria.contracts.hosts import ascii_host
 from panestria.contracts.research import ResearchLimits
 from panestria.sandbox.egress import EgressDenied, _public_unicast, _verify_peer
 
@@ -81,7 +82,7 @@ def https_target(url: str) -> HttpsTarget:
             or "%" in parts.hostname
         ):
             raise ValueError
-        host = parts.hostname.encode("idna").decode("ascii").lower()
+        host = ascii_host(parts.hostname)
         try:
             ipaddress.ip_address(host)
         except ValueError:
