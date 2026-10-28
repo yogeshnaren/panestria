@@ -2,5 +2,16 @@
   "schema_version": 1,
   "policy": "Intended surface changes since the recorded baseline. Each entry: match (prefix of a tools/compat.py difference line), reason, finding (review/plan id). Behavior-preserving PRs add nothing here.",
   "baseline": "evidence/regression-baseline-2026-10-28/snapshot.json",
-  "exceptions": []
+  "exceptions": [
+    {
+      "match": "added denial_codes[KernelDenied:memory_suppressed]",
+      "reason": "Correcting a suppressed memory item is refused; the owner must unsuppress explicitly.",
+      "finding": "R3-REMEDIATION-PLAN 1.2 / AI-P2b"
+    },
+    {
+      "match": "added denial_codes[KernelDenied:pinned_memory_conflict]",
+      "reason": "A pinned memory item superseded by a newer item with the same conflict_key is surfaced as a conflict instead of being dropped.",
+      "finding": "R3-REMEDIATION-PLAN 1.2 / AI-P2b"
+    }
+  ]
 }

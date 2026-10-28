@@ -124,7 +124,8 @@ class MemoryService:
         if review_id is not None:
             guard_review_policy(uow, actor, review_id)
         row = uow.execute(
-            "SELECT i.current_revision,i.row_version,s.privacy_label,i.kind,r.sha256 FROM panestria.memory_item i"
+            "SELECT i.current_revision,i.row_version,s.privacy_label,i.kind,r.sha256,i.status"
+            " FROM panestria.memory_item i"
             " JOIN panestria.memory_revision r ON r.item_id=i.id AND r.version=i.current_revision"
             " JOIN panestria.memory_source s ON s.id=r.source_id"
             " WHERE i.id=%s AND i.owner_id=%s AND i.project_id=%s FOR UPDATE OF i",
@@ -134,6 +135,9 @@ class MemoryService:
             raise KernelDenied("not_found")
         if row[1] != expected_version:
             raise KernelDenied("version_conflict")
+        if row[5] == "SUPPRESSED":
+            # Correction never reactivates; the owner must unsuppress explicitly.
+            raise KernelDenied("memory_suppressed")
         if classification_rank(document.label) < classification_rank(row[2]):
             if review_id is None:
                 raise KernelDenied("privacy_downgrade_requires_review")
@@ -144,7 +148,7 @@ class MemoryService:
             raise KernelDenied("memory_kind_conflict")
         ref = self._revision(uow, actor, item_id, int(row[0]) + 1, document, review_id)
         uow.execute(
-            "UPDATE panestria.memory_item SET current_revision=%s,row_version=row_version+1,status='ACTIVE',"
+            "UPDATE panestria.memory_item SET current_revision=%s,row_version=row_version+1,"
             " pinned=%s,conflict_key=%s,valid_from=COALESCE(%s,clock_timestamp()),valid_until=%s,retain_until=%s"
             " WHERE id=%s",
             (
@@ -160,6 +164,13 @@ class MemoryService:
         return MemoryRef(ref.item_id, ref.revision_id, ref.revision, expected_version + 1, ref.source_id, ref.sha256)
 
     def suppress(self, uow: UnitOfWork, actor: Actor, item_id: str, expected_version: int) -> int:
+        return self._set_status(uow, actor, item_id, expected_version, "SUPPRESSED")
+
+    def unsuppress(self, uow: UnitOfWork, actor: Actor, item_id: str, expected_version: int) -> int:
+        """Explicitly reactivate a suppressed item; correction never does."""
+        return self._set_status(uow, actor, item_id, expected_version, "ACTIVE")
+
+    def _set_status(self, uow: UnitOfWork, actor: Actor, item_id: str, expected_version: int, status: str) -> int:
         row = uow.execute(
             "SELECT row_version,status FROM panestria.memory_item"
             " WHERE id=%s AND owner_id=%s AND project_id=%s FOR UPDATE",
@@ -169,10 +180,10 @@ class MemoryService:
             raise KernelDenied("not_found")
         if row[0] != expected_version:
             raise KernelDenied("version_conflict")
-        if row[1] == "SUPPRESSED":
+        if row[1] == status:
             return int(row[0])
         uow.execute(
-            "UPDATE panestria.memory_item SET status='SUPPRESSED',row_version=row_version+1 WHERE id=%s", (item_id,)
+            "UPDATE panestria.memory_item SET status=%s,row_version=row_version+1 WHERE id=%s", (status, item_id)
         )
         return expected_version + 1
 
