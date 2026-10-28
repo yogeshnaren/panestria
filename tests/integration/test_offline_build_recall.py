@@ -138,11 +138,14 @@ def test_suppression_and_correction_fence_prepared_ask_and_cannot_be_bypassed_by
         assert new.context.sources == ()
     with pytest.raises(KernelDenied, match="suppressed_or_expired"):
         service.remember(digest, review["review_sha256"], accept_local_recall=True)
-    # Only an explicit ordinary owner correction can reactivate; the archive
-    # importer cannot overwrite that correction with its earlier excerpt.
+    # Only explicit owner actions reactivate and correct; the archive importer
+    # cannot overwrite that correction with its earlier excerpt.
     document = service._document(digest, 30).model_copy(update={"body": "Owner correction: calculator changed later"})
     with owner.connect() as c:
-        MemoryService().correct(UnitOfWork(c), owner.actor, saved["item_id"], 1, document)
+        with pytest.raises(KernelDenied, match="memory_suppressed"), c.transaction():
+            MemoryService().correct(UnitOfWork(c), owner.actor, saved["item_id"], 1, document)
+        assert MemoryService().unsuppress(UnitOfWork(c), owner.actor, saved["item_id"], 1) == 2
+        MemoryService().correct(UnitOfWork(c), owner.actor, saved["item_id"], 2, document)
     with pytest.raises(KernelDenied, match="memory_changed"):
         service.remember(digest, review["review_sha256"], accept_local_recall=True)
     assert files == {p.name: p.read_bytes() for p in (f.root / "offline-results/blobs").iterdir()}
