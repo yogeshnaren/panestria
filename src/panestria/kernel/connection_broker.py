@@ -18,6 +18,7 @@ from panestria.contracts.fetch_connection import (
     FetchConnectionBinding,
     anonymous_fetch_account,
 )
+from panestria.contracts.hosts import ascii_host
 from panestria.contracts.research_admission import FetchPlan
 from panestria.kernel.connections import ConnectionReviewService
 from panestria.kernel.errors import KernelDenied
@@ -201,7 +202,7 @@ class GrantBroker:
                 or parts.fragment
                 or parts.port not in (None, 443)
                 or parts.hostname is None
-                or parts.hostname.encode("idna").decode("ascii").lower() != host
+                or ascii_host(parts.hostname) != host
                 or "https://" + host not in grant.manifest.origins
             ):
                 raise ValueError

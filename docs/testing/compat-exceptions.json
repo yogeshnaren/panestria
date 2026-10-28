@@ -2,5 +2,16 @@
   "schema_version": 1,
   "policy": "Intended surface changes since the recorded baseline. Each entry: match (prefix of a tools/compat.py difference line), reason, finding (review/plan id). Behavior-preserving PRs add nothing here.",
   "baseline": "evidence/regression-baseline-2026-10-28/snapshot.json",
-  "exceptions": []
+  "exceptions": [
+    {
+      "match": "added denial_codes[PreviewRejected:invalid_preview_destination]",
+      "reason": "Approval requests now bound preview destination to printable ASCII and expiry to 366 days; new deny code, existing codes unchanged.",
+      "finding": "R3-REMEDIATION-PLAN 1.5 / SEC-L1"
+    },
+    {
+      "match": "added denial_codes[PreviewRejected:invalid_preview_expiry]",
+      "reason": "Approval requests now bound preview destination to printable ASCII and expiry to 366 days; new deny code, existing codes unchanged.",
+      "finding": "R3-REMEDIATION-PLAN 1.5 / SEC-L1"
+    }
+  ]
 }
