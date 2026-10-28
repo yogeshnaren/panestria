@@ -92,6 +92,10 @@ def deferred_nodes(profile: str, base: str | None) -> tuple[list[dict[str, str]]
         return [], "explicit_full", None
     if base is None or re.fullmatch(r"[0-9a-f]{40}", base) is None:
         return [], "unknown_base_full_fallback", None
+    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, timeout=5).strip()
+    if base == head:
+        # An empty diff would defer every regression (e.g. workflow_dispatch passes github.sha).
+        return [], "base_is_head_full_fallback", None
     try:
         changed = (
             subprocess.check_output(

@@ -32,7 +32,9 @@ behavioral lanes run [required coverage plus relevant regressions](testing/CI_RE
 CI-policy/migration/common changes use full coverage; local/full/manual release
 regressions remain available. The aggregate `test` check requires every PR job;
 JUnit and selection artifacts show the actual scope. A proven identical main
-merge may reuse that passing PR result; direct/unverified pushes still run full.
+merge may reuse that passing PR result only when no lane deferred a regression;
+otherwise, and for direct/unverified pushes, main runs the full profile. A
+nightly scheduled run repeats the full profile on main with deeper property tests.
 See the [test audit and lane commands](testing/CI_TEST_AUDIT.md). New pushes cancel
 obsolete runs for the same PR. Required live/GPU/provider cases remain separate
 and must be reported explicitly; default CI is not a release gate substitute.

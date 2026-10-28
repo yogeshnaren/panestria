@@ -5,6 +5,9 @@ on:
     branches-ignore:
       - "task/**"
   pull_request:
+  schedule:
+    # Nightly full regression on main: every lane, nothing deferred, deeper property tests.
+    - cron: "37 3 * * *"
   workflow_dispatch:
     inputs:
       profile:
@@ -150,7 +153,8 @@ jobs:
         run: uv run --frozen python -c 'from panestria.cli.review_demo import prepare_worker_image; prepare_worker_image()'
       - name: Tests
         env:
-          CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || github.event_name == 'push' && 'full' || 'required' }}
+          CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || (github.event_name == 'push' || github.event_name == 'schedule') && 'full' || 'required' }}
+          HYPOTHESIS_PROFILE: ${{ github.event_name == 'schedule' && 'nightly' || 'ci' }}
           CI_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
         run: uv run --frozen python tools/ci_tests.py ${{ matrix.suite }} --profile "$CI_PROFILE" --base "$CI_BASE" --coverage
       - name: Retain timings and failures
