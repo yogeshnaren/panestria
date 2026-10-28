@@ -145,7 +145,7 @@ jobs:
         env:
           CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || github.event_name == 'push' && 'full' || 'required' }}
           CI_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
-        run: uv run --frozen python tools/ci_tests.py ${{ matrix.suite }} --profile "$CI_PROFILE" --base "$CI_BASE"
+        run: uv run --frozen python tools/ci_tests.py ${{ matrix.suite }} --profile "$CI_PROFILE" --base "$CI_BASE" --coverage
       - name: Retain timings and failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -154,13 +154,47 @@ jobs:
           path: |
             evidence/ci-${{ matrix.suite }}.xml
             evidence/ci-${{ matrix.suite }}-selection.json
+            evidence/coverage-${{ matrix.suite }}
           if-no-files-found: error
+          retention-days: 7
+
+  # Whole-suite coverage across every lane; per-package floors only rise.
+  coverage:
+    needs: [quality, behavioral]
+    if: needs.quality.outputs.already_tested != 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.12.3"
+          python-version: "3.12"
+      - name: Install frozen dependencies
+        run: uv sync --frozen --group dev
+      - name: Collect lane coverage
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: ci-*-${{ github.sha }}
+          path: evidence
+          merge-multiple: true
+      - name: Enforce coverage floors
+        run: uv run --frozen python tools/coverage_floor.py evidence/coverage-fast evidence/coverage-kernel evidence/coverage-platform evidence/coverage-research
+      - name: Retain combined coverage
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: coverage-${{ github.sha }}
+          path: evidence/coverage.json
+          if-no-files-found: warn
           retention-days: 7
 
   # Preserve the existing required check name: partial matrix success is not green.
   test:
     if: always()
-    needs: [quality, behavioral]
+    needs: [quality, behavioral, coverage]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
@@ -168,11 +202,14 @@ jobs:
         env:
           QUALITY_RESULT: ${{ needs.quality.result }}
           BEHAVIORAL_RESULT: ${{ needs.behavioral.result }}
+          COVERAGE_RESULT: ${{ needs.coverage.result }}
           ALREADY_TESTED: ${{ needs.quality.outputs.already_tested }}
         run: |
           test "$QUALITY_RESULT" = success
           if test "$ALREADY_TESTED" = true; then
             test "$BEHAVIORAL_RESULT" = skipped
+            test "$COVERAGE_RESULT" = skipped
           else
             test "$BEHAVIORAL_RESULT" = success
+            test "$COVERAGE_RESULT" = success
           fi

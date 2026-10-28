@@ -6,6 +6,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
+from hypothesis import HealthCheck, settings
 
 from stack_support import COMPOSE, DATABASE_URL, TEST_DATABASE_PORT
 
@@ -17,6 +18,11 @@ assert "panestria-r0-tests-" in COMPOSE[-1] and f":{TEST_DATABASE_PORT}/" in DAT
 # this test session (`uv run` exports UV), not whatever uv is first on PATH.
 if os.environ.get("UV"):
     os.environ["PATH"] = f"{Path(os.environ['UV']).parent}{os.pathsep}{os.environ.get('PATH', '')}"
+
+# Property tests: deterministic in CI (reproducible failures), deeper nightly.
+settings.register_profile("ci", derandomize=True, max_examples=100, deadline=None)
+settings.register_profile("nightly", max_examples=2000, deadline=None, suppress_health_check=[HealthCheck.too_slow])
+settings.load_profile(os.environ.get("HYPOTHESIS_PROFILE", "ci"))
 
 _LAYER_MARKERS = {"unit": "unit", "contract": "contract"}
 
