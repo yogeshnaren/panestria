@@ -1,5 +1,71 @@
 {
   "schema_version": 1,
-  "policy": "Whole-suite (all non-live lanes) branch coverage per package. Floors only rise; update with tools/coverage_floor.py --write from a full CI run.",
-  "floors": {}
+  "policy": "Whole-suite (all non-live lanes) branch coverage per package. Enforced on full-profile runs (push to main, nightly, full dispatch); pull-request runs report only, because the required profile selects tests by changed files. Floors only rise; update with tools/coverage_floor.py --write from a full run.",
+  "floors": {
+    "(top-level)": {
+      "line": 75.6,
+      "branch": 62.1
+    },
+    "api": {
+      "line": 79.8,
+      "branch": 65.1
+    },
+    "brokers": {
+      "line": 84.1,
+      "branch": 73.6
+    },
+    "cli": {
+      "line": 60.4,
+      "branch": 35.2
+    },
+    "contracts": {
+      "line": 96.3,
+      "branch": 81.9
+    },
+    "execution": {
+      "line": 85.0,
+      "branch": 67.3
+    },
+    "inference": {
+      "line": 48.2,
+      "branch": 36.5
+    },
+    "kernel": {
+      "line": 88.1,
+      "branch": 73.2
+    },
+    "learning": {
+      "line": 88.1,
+      "branch": 70.6
+    },
+    "memory": {
+      "line": 89.0,
+      "branch": 74.7
+    },
+    "ops": {
+      "line": 91.3,
+      "branch": 82.3
+    },
+    "policy": {
+      "line": 91.4,
+      "branch": 80.4
+    },
+    "resources": {
+      "line": 91.6,
+      "branch": 78.5
+    },
+    "sandbox": {
+      "line": 83.2,
+      "branch": 75.1
+    },
+    "telemetry": {
+      "line": 88.5,
+      "branch": 71.6
+    },
+    "verification": {
+      "line": 88.5,
+      "branch": 80.5
+    }
+  },
+  "measured_from": "main d6035c1 push run 40656982993 (full profile) and PR #224 run 40657720203 (required profile); each floor is the lower measurement minus one point."
 }

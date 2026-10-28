@@ -3,7 +3,7 @@
 import json
 import os
 
-from panestria.brokers.research.pdf_bundle import stage_pdf_bundle, verify_pdf_bundle
+from panestria.brokers.research.pdf_bundle import PYPDF_VERSION, stage_pdf_bundle, verify_pdf_bundle
 from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile
 from panestria.sandbox.runner import DockerSandbox
 
@@ -29,14 +29,14 @@ def test_pinned_pdf_dependency_imports_only_from_readonly_runtime_bundle(tmp_pat
         ),
     ).run(workspace, ("/usr/local/bin/python", "-I", "-B", "/runtime/check.py"), profile)
     assert receipt.reason == "completed" and receipt.exit_code == 0
-    assert json.loads(receipt.output) == {"version": "6.20.1", "zlib_limit": 2097152, "external_decoder": None}
+    assert json.loads(receipt.output) == {"version": PYPDF_VERSION, "zlib_limit": 2097152, "external_decoder": None}
     verify_pdf_bundle(bundle)
     assert not list(bundle.directory.rglob("*.pyc"))
     record_property(
         "pdf_bundle_runtime",
         json.dumps(
             {
-                "version": "6.20.1",
+                "version": PYPDF_VERSION,
                 "bundle_sha256": bundle.manifest_sha256,
                 "profile_sha256": receipt.profile_sha256,
                 "effective_config_sha256": receipt.effective_config_sha256,

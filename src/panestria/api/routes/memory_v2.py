@@ -138,3 +138,17 @@ async def suppress_memory(item_id: UUID, request: Request) -> JSONResponse:
         },
         status=200,
     )
+
+
+@router.post("/memory/{item_id}/unsuppress")
+async def unsuppress_memory(item_id: UUID, request: Request) -> JSONResponse:
+    return await _write(
+        request,
+        Suppression,
+        lambda u, a, d: {
+            "item_id": str(item_id),
+            "row_version": _SERVICE.unsuppress(u, a, str(item_id), d.expected_version),
+            "state": "ACTIVE",
+        },
+        status=200,
+    )

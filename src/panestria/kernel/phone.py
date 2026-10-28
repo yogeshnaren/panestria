@@ -13,8 +13,9 @@ class PhoneSessionService(SessionService):
     def pair(self, uow: UnitOfWork, actor: Actor, code: str, *, session_seconds: int = 3600) -> SessionTokens:
         if not 1 <= session_seconds <= 3600:
             raise KernelDenied("invalid_phone_session_ttl")
-        # Serialize role admission within the project; retained history is bounded
-        # and never silently pruned. Failed pairing rolls back with its challenge.
+        # Serialize role admission within the project. Device history is retained,
+        # never pruned; only live (unrevoked, unexpired) devices count toward the
+        # cap, so revoked or expired history cannot lock out new pairings.
         row = uow.execute(
             "SELECT id FROM panestria.project WHERE id=%s AND owner_id=%s FOR UPDATE",
             (actor.project_id, actor.owner_id),
@@ -22,11 +23,12 @@ class PhoneSessionService(SessionService):
         if row is None:
             raise KernelDenied("not_found")
         count = uow.execute(
-            "SELECT count(*) FROM panestria.phone_device WHERE owner_id=%s AND project_id=%s",
+            "SELECT count(*) FROM panestria.phone_device p JOIN panestria.browser_session s ON s.id=p.session_id "
+            "WHERE p.owner_id=%s AND p.project_id=%s AND s.revoked_at IS NULL AND s.expires_at>clock_timestamp()",
             (actor.owner_id, actor.project_id),
         ).fetchone()
         if count is None or count[0] >= 256:
-            raise KernelDenied("phone_device_history_limit")
+            raise KernelDenied("phone_device_history_limit")  # Wire code kept; now counts live devices.
         tokens = super().pair(uow, actor, code, session_seconds=session_seconds)
         uow.execute(
             "INSERT INTO panestria.phone_device(session_id,owner_id,project_id,scope_ref) VALUES (%s,%s,%s,%s)",
@@ -53,7 +55,7 @@ class PhoneSessionService(SessionService):
             "CASE WHEN s.revoked_at IS NOT NULL THEN 'REVOKED' WHEN s.expires_at<=clock_timestamp() "
             "THEN 'EXPIRED' ELSE 'ACTIVE' END FROM panestria.phone_device p "
             "JOIN panestria.browser_session s ON s.id=p.session_id WHERE p.owner_id=%s AND p.project_id=%s "
-            "ORDER BY s.created_at,s.id LIMIT 256",
+            "ORDER BY s.created_at DESC,s.id DESC LIMIT 256",
             (actor.owner_id, actor.project_id),
         ).fetchall()
         return [

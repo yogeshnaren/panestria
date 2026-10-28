@@ -86,4 +86,5 @@ def test_review_does_not_apply_to_another_revision(r1_task: dict[str, str], tmp_
         c.commit()
         with pytest.raises(KernelDenied, match="memory_review_mismatch"), c.transaction():
             memory.correct(uow, actor, first.item_id, 1, proposed, review_id=review["review_id"])
-        assert memory.search(uow, actor, "preference")[0].label == "PRIVATE"
+        # The mismatched review applied nothing; restricted revisions stay unindexed (MVP-X07).
+        assert memory.search(uow, actor, "preference") == []

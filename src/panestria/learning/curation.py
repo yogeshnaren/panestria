@@ -5,6 +5,8 @@ opinion or semantic qualification. No trainer/provider/memory/task promotion.
 """
 
 import hashlib
+import re
+import unicodedata
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -25,6 +27,7 @@ from panestria.contracts.curation import (
     OwnerEvidence,
 )
 from panestria.contracts.policy import PolicyRequest
+from panestria.contracts.secret_rules import rules_matching
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.policy import current_policy, require_current_policy
@@ -36,6 +39,18 @@ def _input(path: Path, limit: int) -> bytes:
     if not path.is_absolute() or path.resolve() != path:
         raise KernelDenied("curation_private_absolute_input_required")
     return read_private(path, limit)
+
+
+def _shingles(text: str) -> frozenset[str]:
+    """Word 3-shingles of NFKC case-folded text; punctuation and spacing are ignored."""
+    words = re.findall(r"\w+", unicodedata.normalize("NFKC", text).casefold())
+    return frozenset(" ".join(words[i : i + 3]) for i in range(max(1, len(words) - 2)))
+
+
+def near_duplicate(left: str, right: str, threshold: float = 0.8) -> bool:
+    """True when the inputs normalize alike or share most of their 3-shingles."""
+    a, b = _shingles(left), _shingles(right)
+    return a == b or len(a & b) / len(a | b) >= threshold
 
 
 def eligibility(
@@ -134,6 +149,26 @@ class ExampleCuration:
             is not None
         )
 
+    def _recorded_model_output(self, c: psycopg.Connection[Any], example: CuratedExample) -> bool:
+        return (
+            c.execute(
+                "SELECT 1 FROM panestria.ask_request WHERE owner_id=%s AND project_id=%s AND response_sha256=%s "
+                "LIMIT 1",
+                (self.actor.owner_id, self.actor.project_id, hashlib.sha256(example.response.encode()).hexdigest()),
+            ).fetchone()
+            is not None
+        )
+
+    def _lineage_denial(self, c: psycopg.Connection[Any], example: CuratedExample) -> str | None:
+        """Checks owner attestation cannot override; reason names only, never content."""
+        if rules_matching(example.input) or rules_matching(example.response):
+            return "secret_material_in_example"
+        if self._known_nonowner(c, example):
+            return "known_nonowner_lineage"
+        if self._recorded_model_output(c, example):
+            return "recorded_model_output_lineage"
+        return None
+
     def _prepare(
         self, c: psycopg.Connection[Any], candidate: Path, proofs: tuple[Path, ...], days: int
     ) -> CurationPreview:
@@ -144,8 +179,9 @@ class ExampleCuration:
             sorted((OwnerEvidence.model_validate_json(_input(p, 8192)) for p in proofs), key=lambda e: e.role)
         )
         state, reasons = eligibility(example, evidence, self._now(c))
-        if self._known_nonowner(c, example):
-            state, reasons = "DENIED", ("known_nonowner_lineage",)
+        denial = self._lineage_denial(c, example)
+        if denial is not None:
+            state, reasons = "DENIED", (denial,)
         if self._withdrawn(c, example.content_sha256):
             state, reasons = "DENIED", ("example_withdrawn",)
         return CurationPreview(
@@ -191,7 +227,7 @@ class ExampleCuration:
             if self._withdrawn(c, preview.example.content_sha256):
                 raise KernelDenied("curation_withdrawn")
             current_state = eligibility(preview.example, preview.evidence, self._now(c))[0]
-            if self._known_nonowner(c, preview.example):
+            if self._lineage_denial(c, preview.example) is not None:
                 current_state = "DENIED"
             if current_state != preview.proposed_eligibility:
                 raise KernelDenied("curation_current_evidence_required")
@@ -347,7 +383,7 @@ class ExampleCuration:
         self._lock(c)
         found = {digest: self._get(c, digest) for digest in reviews}
         entries = []
-        inputs = {}
+        inputs: dict[str, str] = {}
         for digest, review in sorted(found.items()):
             p = review.preview
             subject = p.example.sha256()
@@ -366,11 +402,15 @@ class ExampleCuration:
                 or self._withdrawn(c, p.example.content_sha256)
                 or str(latest[0]).strip() != digest
                 or eligibility(p.example, p.evidence, now)[0] != "ALLOWED"
+                or self._lineage_denial(c, p.example) is not None
             ):
                 raise KernelDenied("curation_current_eligibility_required")
             if p.example.input_sha256 in inputs:
                 raise KernelDenied("curation_duplicate_or_conflicting_input")
-            inputs[p.example.input_sha256] = subject
+            # Folds come from exact input hashes; near-duplicates could straddle them.
+            if any(near_duplicate(p.example.input, other) for other in inputs.values()):
+                raise KernelDenied("curation_near_duplicate_input")
+            inputs[p.example.input_sha256] = p.example.input
             entries.append(
                 ExportEntry(
                     review_sha256=digest,

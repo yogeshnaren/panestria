@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import stat
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -15,6 +16,8 @@ from panestria.kernel.uow import UnitOfWork
 
 _OPEN = frozenset({"PENDING", "RUNNING"})
 _TERMINAL_TASK = frozenset({"COMPLETED", "FAILED", "CANCELLED", "REJECTED"})
+# A larger candidate is refused before it is buffered, not truncated.
+MAX_ARTIFACT_BYTES = 256 * 1024**2
 
 
 @dataclass(frozen=True)
@@ -26,9 +29,12 @@ class ArtifactRef:
 
 
 class ArtifactIngress:
-    def __init__(self, store: Path, worktree: Path) -> None:
+    def __init__(self, store: Path, worktree: Path, *, max_bytes: int = MAX_ARTIFACT_BYTES) -> None:
+        if type(max_bytes) is not int or not 1 <= max_bytes <= MAX_ARTIFACT_BYTES:
+            raise ValueError("invalid artifact size limit")
         self.store = store.resolve()
         self.worktree = worktree.resolve()
+        self.max_bytes = max_bytes
         if self.store.is_relative_to(self.worktree):
             raise ValueError("artifact store is inside the worker worktree")
         self.store.mkdir(parents=True, exist_ok=True)
@@ -158,5 +164,13 @@ class ArtifactIngress:
         resolved = source.resolve()
         if not resolved.is_relative_to(self.worktree):
             raise ValueError("source escapes the worktree")
-        data = resolved.read_bytes()
+        # O_NOFOLLOW closes the swap-to-symlink window after resolve().
+        descriptor = os.open(resolved, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            os.close(descriptor)
+            raise ValueError("source is not a regular file")
+        with os.fdopen(descriptor, "rb") as stream:
+            data = stream.read(self.max_bytes + 1)
+        if len(data) > self.max_bytes:
+            raise ValueError("artifact_too_large")
         return data, hashlib.sha256(data).hexdigest()

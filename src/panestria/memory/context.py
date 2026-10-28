@@ -114,8 +114,11 @@ class ContextCompiler:
         hits = self.memory.search(uow, actor, question, limit=20)
         for hit in hits:
             self._verify(uow, actor, hit)
+        superseded = self._superseded(uow, actor, hits)
         included: list[MemoryHit] = []
         for hit in hits:
+            if hit.ref.item_id in superseded:
+                continue
             reference_data.append(
                 {
                     "source_id": hit.ref.source_id,
@@ -147,6 +150,7 @@ class ContextCompiler:
                     "sha256": h.ref.sha256,
                     "label": h.label,
                     "included": h in included,
+                    **({"superseded": True} if h.ref.item_id in superseded else {}),
                 }
                 for h in hits
             ],
@@ -179,6 +183,35 @@ class ContextCompiler:
                     context_pack_id=pack_id,
                 )
         return ContextPack(pack_id, digest, label, prompt, tuple(h.ref for h in included), len(prompt.encode()))
+
+    @staticmethod
+    def _superseded(uow: UnitOfWork, actor: Actor, hits: list[MemoryHit]) -> set[str]:
+        """Items that share a conflict_key with a newer one; the latest fact wins.
+
+        A superseded pinned item is refused rather than silently dropped.
+        """
+        keyed = [hit for hit in hits if hit.conflict_key is not None]
+        if len({hit.conflict_key for hit in keyed}) == len(keyed):
+            return set()
+        rows = uow.execute(
+            "SELECT id::text,valid_from FROM panestria.memory_item WHERE id=ANY(%s::uuid[]) AND owner_id=%s"
+            " AND project_id=%s",
+            ([hit.ref.item_id for hit in keyed], actor.owner_id, actor.project_id),
+        ).fetchall()
+        valid_from = {str(row[0]): row[1] for row in rows}
+        newest: dict[str, MemoryHit] = {}
+        for hit in keyed:
+            key = str(hit.conflict_key)
+            current = newest.get(key)
+            if current is None or (valid_from[hit.ref.item_id], hit.ref.item_id) > (
+                valid_from[current.ref.item_id],
+                current.ref.item_id,
+            ):
+                newest[key] = hit
+        losers = [hit for hit in keyed if newest[str(hit.conflict_key)] is not hit]
+        if any(hit.pinned for hit in losers):
+            raise KernelDenied("pinned_memory_conflict")
+        return {hit.ref.item_id for hit in losers}
 
     def model_manifest(self, uow: UnitOfWork, actor: Actor, pack_id: str) -> ModelManifest | None:
         row = uow.execute(

@@ -23,11 +23,10 @@ class BackgroundAccountService:
 
     def binding(self, uow: UnitOfWork, actor: Actor, item_id: str) -> BackgroundBinding:
         service = BackgroundWorkService()
-        for row in service._rows(uow, actor):
-            binding = service._binding(row, actor)
-            if binding.request.item_id == item_id:
-                return binding
-        raise KernelDenied("not_found")
+        row = service._item(uow, actor, item_id)
+        if row is None:
+            raise KernelDenied("not_found")
+        return service._binding(row, actor)
 
     def observation(self, digest: str) -> NativeAccountObservation:
         raw = self.reports.read_blob(digest)
