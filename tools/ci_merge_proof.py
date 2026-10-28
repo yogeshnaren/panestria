@@ -23,12 +23,13 @@ REQUIRED = {
     "behavioral (kernel)",
     "behavioral (platform)",
     "behavioral (research)",
+    "behavioral (boundary)",
     "coverage",
     "test",
 }
 
 
-SUITES = ("fast", "kernel", "platform", "research")
+SUITES = ("fast", "kernel", "platform", "research", "boundary")
 _ARTIFACT_LIMIT = 4 * 1024 * 1024
 
 
@@ -141,7 +142,7 @@ def prove() -> dict[str, object]:
         artifacts = api(f"actions/runs/{run_id}/artifacts?per_page=100")["artifacts"]
         previews, suites, lane_artifacts = set(), set(), {}
         for artifact in artifacts:
-            match = re.fullmatch(r"ci-(fast|kernel|platform|research)-([0-9a-f]{40})", artifact["name"])
+            match = re.fullmatch(r"ci-(fast|kernel|platform|research|boundary)-([0-9a-f]{40})", artifact["name"])
             if match and not artifact.get("expired", True):
                 suites.add(match[1])
                 previews.add(match[2])

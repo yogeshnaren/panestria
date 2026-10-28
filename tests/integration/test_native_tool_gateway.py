@@ -378,6 +378,7 @@ def test_authority_changes_during_claim_never_start_the_worker(tmp_path: Path, c
     )
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 @pytest.mark.parametrize("edit", [False, True])
 def test_actual_gateway_boundary(
@@ -428,6 +429,7 @@ print('gateway-boundary-ok')
     record_property("effective_config_sha256", receipt.sandbox.effective_config_sha256)
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 @pytest.mark.parametrize("section", ["script", "request"])
 def test_actual_launcher_rechecks_snapshot_before_executing_code(tmp_path: Path, section: str) -> None:
@@ -456,6 +458,7 @@ def test_actual_launcher_rechecks_snapshot_before_executing_code(tmp_path: Path,
     assert subprocess.run(["docker", "inspect", receipt.sandbox.container_id], capture_output=True).returncode != 0
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 @pytest.mark.parametrize("condition", ["revoked", "cancelled", "deadline"])
 def test_actual_gateway_stops_on_authority_cancel_or_deadline(tmp_path: Path, condition: str) -> None:
