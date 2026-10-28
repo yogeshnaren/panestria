@@ -2260,6 +2260,38 @@
       "hidden": false,
       "params": [],
       "commands": {
+        "ask-eval": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "golden",
+              "opts": [
+                "--golden"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "results",
+              "opts": [
+                "--results"
+              ],
+              "kind": "option",
+              "required": true,
+              "type": "path"
+            },
+            {
+              "name": "k",
+              "opts": [
+                "--k"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "int range"
+            }
+          ]
+        },
         "capture": {
           "hidden": false,
           "params": [
