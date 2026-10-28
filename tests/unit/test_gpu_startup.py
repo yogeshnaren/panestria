@@ -56,6 +56,7 @@ def test_probe_never_inherits_credentials_proxy_or_loader_environment(monkeypatc
     runtime.require_gpu_driver()
 
 
+@pytest.mark.requires_nonroot
 def test_gpu_denial_preserves_containers_and_releases_primary(tmp_path, monkeypatch):
     model = runtime.ModelRuntime(tmp_path / "cache", tmp_path / "socket", gpu=True)
     model.primary = PrimaryLease(tmp_path / "primary")
@@ -78,6 +79,7 @@ def test_gpu_denial_preserves_containers_and_releases_primary(tmp_path, monkeypa
     another.release()
 
 
+@pytest.mark.requires_nonroot
 def test_explicit_cpu_runtime_does_not_require_cuda(tmp_path: Path, monkeypatch):
     model = runtime.ModelRuntime(tmp_path / "cache", tmp_path / "socket", gpu=False)
     model.primary = PrimaryLease(tmp_path / "primary")

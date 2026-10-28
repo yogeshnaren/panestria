@@ -22,7 +22,7 @@ from panestria.memory.classification import MemoryClassificationService
 from panestria.memory.service import MemoryService
 
 
-def _fixture_container() -> str:
+def _fixture_container(dsn: str) -> str:
     # Match the isolated fixture's purpose and exact bound port. Never address
     # the owner's R0 database or a generic compose service/container name.
     found = subprocess.check_output(
@@ -33,7 +33,7 @@ def _fixture_container() -> str:
         item["Id"]
         for item in inspected
         if any(
-            binding.get("HostIp") == "127.0.0.1" and binding.get("HostPort") == "55439"
+            binding.get("HostIp") == "127.0.0.1" and binding.get("HostPort") == dsn.rsplit(":", 1)[1].split("/", 1)[0]
             for binding in (item["NetworkSettings"]["Ports"].get("5432/tcp") or [])
         )
     ]
@@ -78,7 +78,7 @@ def test_revision_suppression_restore(
         hidden_before = memory.history(uow, actor, suppressed.item_id)
         classifier = MemoryClassificationService()
         classification_before = [classifier.get(uow, actor, ref.source_id) for ref in (original, corrected, suppressed)]
-    container = _fixture_container()
+    container = _fixture_container(r1_task["dsn"])
     dump = subprocess.run(
         [
             "docker",

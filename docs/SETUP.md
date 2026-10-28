@@ -56,10 +56,15 @@ make test
 `make test` excludes the live fresh-host test. Provider credentials are not required.
 
 Regression tests use `tests/fixtures/compose.r0-tests.yaml`, a process-specific
-`panestria-r0-tests-<pid>` Compose project, PostgreSQL on `127.0.0.1:55440`, and
-a project-scoped disposable volume. The suite cleans up that test project even
-after a failed test. These fixtures are separate from the review database on
-port 55432. Run one regression test process at a time; concurrent runs share
-the test port and fail if it is occupied.
+`panestria-r0-tests-<pid>` Compose project, PostgreSQL on a free loopback port
+chosen per test process (set `R0_TEST_DATABASE_PORT` to pin one), and a
+project-scoped disposable volume. The R1 integration database is a disposable
+container on a Docker-assigned loopback port. The suite cleans up its own
+containers even after a failed test. These fixtures are separate from the review
+database on port 55432, so several test processes can run side by side.
+
+Run tests as a normal user. Tests marked `requires_nonroot` skip with a reason
+when run as root locally and fail in CI, because several runtimes refuse euid 0.
+Subprocesses use the same pinned uv that started pytest.
 
 A killed workflow process is resumed with `PANESTRIA_MODE=recover` and `PANESTRIA_WORKFLOW_ID` set to the pinned id. It prints one JSON line containing `recovery_instance`, `goal_id`, `task_id`, `workflow_id`, `recovery_attempts`, `latency_ms`, and `status`. Success exits 0. A still-pending or failed workflow prints that line and exits 2. When the status is `MAX_RECOVERY_ATTEMPTS_EXCEEDED`, the linked task is recorded FAILED before that exit. DBOS is pinned at 3.2.0. That command is not a fresh-host result.

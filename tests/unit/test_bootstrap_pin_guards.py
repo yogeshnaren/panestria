@@ -75,6 +75,7 @@ def test_invalid_metadata_deadline_cannot_widen_execution(tmp_path, monkeypatch,
         bootstrap.NativeBootstrap().inspect(pin, wall_seconds=seconds)
 
 
+@pytest.mark.requires_nonroot
 def test_pre_cancel_and_unsupported_host_never_start_native_process(tmp_path, monkeypatch):
     pin = synthetic_pin(tmp_path, monkeypatch)
     cancel = threading.Event()
@@ -93,6 +94,7 @@ def test_api_accepts_no_prompt_environment_config_command_or_network(tmp_path, m
             bootstrap.NativeBootstrap().inspect(pin, **{keyword: "synthetic"})
 
 
+@pytest.mark.requires_nonroot
 def test_replaced_path_is_denied_even_while_original_descriptor_remains_open(tmp_path, monkeypatch):
     pin = synthetic_pin(tmp_path, monkeypatch)
     original = bootstrap._snapshot

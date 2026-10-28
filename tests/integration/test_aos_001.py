@@ -42,6 +42,7 @@ from panestria.api.health import (
 from panestria.api.main import create_app
 from panestria.cli.main import app as cli_app
 from panestria.config import PUBLIC_HEALTH_REASONS, ProfileRejected, Settings, ValidatedSettings, load_settings
+from stack_support import free_port
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE_PATH = ROOT / "tests" / "fixtures" / "aos001_synthetic_dev.json"
@@ -608,7 +609,7 @@ def test_cli_reports_safe_configuration_errors(monkeypatch: pytest.MonkeyPatch) 
 
 
 _PROVIDER_KEYS = ("OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GEMINI_API_KEY")
-_SMOKE_PORT = 8767
+_SMOKE_PORT = free_port()
 
 
 def _tcp_address(raw: str) -> tuple[str, int]:

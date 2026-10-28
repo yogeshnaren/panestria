@@ -15,7 +15,7 @@ import pytest
 from psycopg import sql
 
 ROOT = Path(__file__).resolve().parents[2]
-R1_DSN = "postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55439/panestria_synthetic"
+R1_DSN_TEMPLATE = "postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:{port}/panestria_synthetic"
 IMAGE = "postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d"
 
 
@@ -32,7 +32,8 @@ def r1_database() -> Iterator[str]:
             "--label",
             "panestria.purpose=r1-test",
             "--publish",
-            "127.0.0.1:55439:5432",
+            # Docker assigns a free loopback port atomically; read it back below.
+            "127.0.0.1::5432",
             "--env",
             "POSTGRES_USER=panestria_synthetic",
             "--env",
@@ -47,10 +48,14 @@ def r1_database() -> Iterator[str]:
     )
     try:
         assert created.returncode == 0, created.stderr
+        published = subprocess.run(
+            ["docker", "port", name, "5432/tcp"], text=True, capture_output=True, check=True
+        ).stdout.splitlines()[0]
+        dsn = R1_DSN_TEMPLATE.format(port=published.rsplit(":", 1)[1])
         deadline = time.monotonic() + 60
         while True:
             try:
-                with psycopg.connect(R1_DSN, connect_timeout=1):
+                with psycopg.connect(dsn, connect_timeout=1):
                     break
             except psycopg.OperationalError:
                 if time.monotonic() >= deadline:
@@ -59,13 +64,13 @@ def r1_database() -> Iterator[str]:
         upgraded = subprocess.run(
             ["uv", "run", "--frozen", "alembic", "-c", "migrations/alembic.ini", "upgrade", "head"],
             cwd=ROOT,
-            env={**os.environ, "PANESTRIA_DATABASE_URL": R1_DSN},
+            env={**os.environ, "PANESTRIA_DATABASE_URL": dsn},
             text=True,
             capture_output=True,
             check=False,
         )
         assert upgraded.returncode == 0, upgraded.stderr
-        yield R1_DSN
+        yield dsn
     finally:
         # Only remove the exact container created by this fixture. Anonymous volume included.
         subprocess.run(["docker", "rm", "--force", "--volumes", name], capture_output=True, check=False)

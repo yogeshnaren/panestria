@@ -51,6 +51,7 @@ def test_incomplete_measurements_are_unavailable_not_zero(tmp_path, failure):
         process_memory.observe(tmp_path)
 
 
+@pytest.mark.requires_nonroot
 @pytest.mark.parametrize("wrong", ["runtime", "pid-namespace", "stopped"])
 def test_runtime_probes_only_its_own_running_private_pid_namespace(tmp_path, monkeypatch, wrong):
     runtime = ModelRuntime(tmp_path / "models", tmp_path / "socket")
