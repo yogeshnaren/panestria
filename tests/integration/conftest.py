@@ -52,6 +52,8 @@ def r1_database() -> Iterator[str]:
             ["docker", "port", name, "5432/tcp"], text=True, capture_output=True, check=True
         ).stdout.splitlines()[0]
         dsn = R1_DSN_TEMPLATE.format(port=published.rsplit(":", 1)[1])
+        # Restore tests address this exact container (docker exec pg_dump/psql).
+        os.environ["R1_TEST_CONTAINER"] = name
         deadline = time.monotonic() + 60
         while True:
             try:
@@ -72,6 +74,7 @@ def r1_database() -> Iterator[str]:
         assert upgraded.returncode == 0, upgraded.stderr
         yield dsn
     finally:
+        os.environ.pop("R1_TEST_CONTAINER", None)
         # Only remove the exact container created by this fixture. Anonymous volume included.
         subprocess.run(["docker", "rm", "--force", "--volumes", name], capture_output=True, check=False)
 
