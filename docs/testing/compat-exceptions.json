@@ -32,6 +32,16 @@
       "match": "changed schema_snapshot_sha256",
       "reason": "Migration 0041 makes ix_memory_fts partial (search_document IS NOT NULL); restricted memory revisions carry no search document. Migration 0042 adds task_event (kind,goal_id,seq) and (task_id,kind,seq) indexes (plan 1.6 / ARCH-P1-4).",
       "finding": "R3-REMEDIATION-PLAN 1.2 / F-AI2 (MVP-X07)"
+    },
+    {
+      "match": "added denial_codes[KernelDenied:memory_suppressed]",
+      "reason": "Correcting a suppressed memory item is refused; the owner must unsuppress explicitly.",
+      "finding": "R3-REMEDIATION-PLAN 1.2 / AI-P2b"
+    },
+    {
+      "match": "added denial_codes[KernelDenied:pinned_memory_conflict]",
+      "reason": "A pinned memory item superseded by a newer item with the same conflict_key is surfaced as a conflict instead of being dropped.",
+      "finding": "R3-REMEDIATION-PLAN 1.2 / AI-P2b"
     }
   ]
 }
