@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "purpose": "Frozen digest vectors. A changed value means stored approvals, contracts, evidence or sandbox receipts would no longer verify; never regenerate to make a test pass.",
+  "canonical_sha256": [
+    {
+      "value": {
+        "b": 1,
+        "a": [
+          3,
+          2,
+          1
+        ]
+      },
+      "sha256": "3ce2bce0ad5f581d642ebf7b59c400e6f60fa4416e9fb08e3061bb0a35f6fb2b"
+    },
+    {
+      "value": {
+        "text": "café ☕ 𝔘",
+        "quote": "\"\\\n\t"
+      },
+      "sha256": "f897e5f9d32697b869034b11a77525fe19c5c18c376f47cfe1742eeaf7990179"
+    },
+    {
+      "value": {
+        "nested": {
+          "z": null,
+          "y": true,
+          "x": false
+        },
+        "floats": [
+          1.5,
+          0.1,
+          -0.0
+        ],
+        "big": 9223372036854775808
+      },
+      "sha256": "d87a4be8b5dacc628dd3f9d7b85e6a4ab59bc847f42b4f675381e97bf3327dc1"
+    },
+    {
+      "value": {
+        "A": 1,
+        "a": 2,
+        "_": 3,
+        "é": 4,
+        "": 5
+      },
+      "sha256": "aad8b28705c3ddb6485af4f1d8556d6791cdbf8b8d7ec76b8f2ead4712fe659e"
+    },
+    {
+      "value": [],
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "value": {},
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "value": "plain",
+      "sha256": "945603a8f587786b463c3f94fce115c0fae88fac2728cc96ddf5981cf7f61741"
+    }
+  ],
+  "effect_digest": [
+    {
+      "preview": {
+        "action_kind": "merge",
+        "owner_id": "00000000-0000-4000-8000-000000000002",
+        "project_id": "00000000-0000-4000-8000-000000000003",
+        "task_id": "00000000-0000-4000-8000-000000000004",
+        "contract_sha256": "abababababababababababababababababababababababababababababababab",
+        "contract_version": 1,
+        "policy_version": "project-policy:1:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+        "destination": "refs/heads/main",
+        "expected_base": "0123456789abcdef0123456789abcdef01234567",
+        "candidate_sha256": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+        "required_checks": [
+          "unit",
+          "lint",
+          "build"
+        ],
+        "minimum_actor_id": "00000000-0000-4000-8000-000000000002",
+        "expires_at": "2026-10-28T12:00:00+00:00"
+      },
+      "loaded": false,
+      "sha256": "c3f5608f71e617b02c36a9a4c98de6fd5dfd1d51e0e0c78891cb6a988cc8ef5c"
+    },
+    {
+      "preview": {
+        "action_kind": "merge",
+        "owner_id": "00000000-0000-4000-8000-000000000002",
+        "project_id": "00000000-0000-4000-8000-000000000003",
+        "task_id": "00000000-0000-4000-8000-000000000004",
+        "contract_sha256": "abababababababababababababababababababababababababababababababab",
+        "contract_version": 1,
+        "policy_version": "project-policy:1:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+        "destination": "refs/heads/main",
+        "expected_base": "0123456789abcdef0123456789abcdef01234567",
+        "candidate_sha256": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+        "required_checks": [
+          "unit",
+          "lint",
+          "build"
+        ],
+        "minimum_actor_id": "00000000-0000-4000-8000-000000000002",
+        "expires_at": "2026-10-28T12:00:00+00:00"
+      },
+      "loaded": true,
+      "sha256": "6206520c38bf07e0cf8001c1dbfb589fa58d5161a9d5ac71f9b410b75656840f"
+    }
+  ],
+  "contract_sha256": [
+    {
+      "path": "docs/fixtures/synthetic-goal-contract.json",
+      "sha256": "d3046a3da81afed52f90397a721fa3347c0939bde9190893e13303944ec8e539"
+    }
+  ],
+  "sandbox_profile_sha256": [
+    {
+      "fields": {},
+      "sha256": "19d9aa4d5afcae01b7fa66179cc4636e2587742b75734bb15007354ef443c6eb"
+    },
+    {
+      "fields": {
+        "name": "read-only-research",
+        "uid": 1001,
+        "gid": 1001,
+        "wall_seconds": 10,
+        "output_bytes": 1048576
+      },
+      "sha256": "f817a9482fb0c900db96c30034c14e6c20eb2b5a107e06157d624309b23add90"
+    },
+    {
+      "fields": {
+        "stdin_mode": "native-frame-v1"
+      },
+      "sha256": "f61810cd73781350ab79305e5be4a032d320bbe755d060a5628b984085aea7da"
+    }
+  ]
+}

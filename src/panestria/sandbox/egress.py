@@ -13,6 +13,8 @@ from collections import deque
 from pathlib import Path
 
 _DOCUMENTATION_V6 = ipaddress.IPv6Network("3fff::/20")  # RFC 9637; absent from older Python 3.12 registries.
+# Deprecated 6to4 relay anycast (RFC 7526); IANA lists it as not globally reachable.
+_RELAY_ANYCAST_V4 = ipaddress.IPv4Network("192.88.99.0/24")
 
 
 class EgressDenied(Exception):
@@ -29,6 +31,8 @@ def _public_unicast(value: str) -> ipaddress.IPv4Address | ipaddress.IPv6Address
     if not address.is_global or any(
         (address.is_multicast, address.is_reserved, address.is_unspecified, address.is_loopback, address.is_link_local)
     ):
+        return None
+    if isinstance(address, ipaddress.IPv4Address) and address in _RELAY_ANYCAST_V4:
         return None
     if isinstance(address, ipaddress.IPv6Address) and (
         address.is_site_local

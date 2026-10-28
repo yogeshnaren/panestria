@@ -16,8 +16,75 @@ from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
+from panestria.contracts.private_paths import folded_name
 from panestria.sandbox.native_tool_input import MAX_FRAME_BYTES
 from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile, SandboxRejected
+
+# Entries a writable workspace may hold; also bounds the cost of one usage scan.
+MAX_WORKSPACE_ENTRIES = 500_000
+
+
+def workspace_usage(root: Path) -> int | None:
+    """Apparent bytes of regular files under ``root``, without following links.
+
+    Returns None when the tree cannot be fully measured (an unreadable
+    directory or more than ``MAX_WORKSPACE_ENTRIES`` entries). Callers treat
+    an unmeasured workspace as over quota.
+    """
+    total = entries = 0
+    pending = [root]
+    while pending:
+        try:
+            with os.scandir(pending.pop()) as listing:
+                for entry in listing:
+                    entries += 1
+                    if entries > MAX_WORKSPACE_ENTRIES:
+                        return None
+                    try:
+                        if entry.is_dir(follow_symlinks=False):
+                            pending.append(Path(entry.path))
+                        elif entry.is_file(follow_symlinks=False):
+                            total += entry.stat(follow_symlinks=False).st_size
+                    except FileNotFoundError:
+                        continue  # Removed during the scan.
+        except (FileNotFoundError, NotADirectoryError):
+            continue
+        except OSError:
+            return None
+    return total
+
+
+class _WorkspaceWatch:
+    """Poll a writable workspace's size off the output loop; flag once over quota.
+
+    This is a watchdog, not a filesystem quota: a writer overshoots by its
+    throughput over one scan interval plus kill latency (hundreds of MiB on a
+    fast disk). The interval grows with scan cost; the per-file size limit
+    bounds any single file, and the runner rescans once after the worker stops.
+    A hard cap needs a quota-capable filesystem for the workspace root.
+    """
+
+    def __init__(self, root: Path, limit: int) -> None:
+        self.root, self.limit = root, limit
+        self.exceeded, self._stop = threading.Event(), threading.Event()
+        self._thread = threading.Thread(target=self._run, name="panestria-workspace-watch", daemon=True)
+        self._thread.start()
+
+    def over(self) -> bool:
+        usage = workspace_usage(self.root)
+        return usage is None or usage > self.limit
+
+    def _run(self) -> None:
+        while not self._stop.is_set():
+            began = time.monotonic()
+            if self.over():
+                self.exceeded.set()
+                return
+            self._stop.wait(max(0.25, 4 * (time.monotonic() - began)))
+
+    def stop(self) -> None:
+        self._stop.set()
+        self._thread.join(timeout=30)
 
 
 @dataclass(frozen=True)
@@ -127,14 +194,21 @@ class DockerSandbox:
         workspace = workspace.resolve()
         if workspace == self.root or not workspace.is_relative_to(self.root) or "," in str(workspace):
             raise SandboxRejected("workspace_scope_denied")
+        usage = 0
         for entry in workspace.rglob("*"):
             if entry.is_symlink():
                 if not entry.resolve().is_relative_to(workspace):
                     raise SandboxRejected("workspace_link_escape")
-            elif entry.is_file() and entry.stat().st_nlink > 1:
-                raise SandboxRejected("workspace_hardlink_denied")
-            if entry.name in {".ssh", ".aws", ".credentials.json", "secrets"} or entry.name.startswith(".env"):
+            elif entry.is_file():
+                status = entry.stat()
+                if status.st_nlink > 1:
+                    raise SandboxRejected("workspace_hardlink_denied")
+                usage += status.st_size
+            name = folded_name(entry.name)
+            if name in {".ssh", ".aws", ".credentials.json", "secrets"} or name.startswith(".env"):
                 raise SandboxRejected("private_workspace_path")
+        if usage > profile.workspace_bytes:
+            raise SandboxRejected("workspace_quota_exceeded")
         if not argv or any("\x00" in arg for arg in argv) or sum(map(len, argv)) > 256_000:
             raise SandboxRejected("invalid_command")
         allowed_executables = {
@@ -188,6 +262,8 @@ class DockerSandbox:
             "nofile=128:128",
             "--ulimit",
             "core=0:0",
+            "--ulimit",
+            f"fsize={profile.workspace_bytes}:{profile.workspace_bytes}",
             "--init",
             "--tmpfs",
             f"/tmp:rw,nosuid,nodev,size={profile.tmp_bytes},mode=1777",
@@ -238,7 +314,14 @@ class DockerSandbox:
             config_hash = hashlib.sha256(
                 json.dumps(effective, sort_keys=True, separators=(",", ":")).encode()
             ).hexdigest()
-            return self._execute(container_id, profile, config_hash, cancel=cancel, input_frame=input_frame)
+            return self._execute(
+                container_id,
+                profile,
+                config_hash,
+                cancel=cancel,
+                input_frame=input_frame,
+                workspace=None if profile.workspace_readonly else workspace,
+            )
         finally:
             observed = self.reconcile_launch(launch, expected_container_id=container_id)
             if observed.status != "REMOVED":
@@ -404,6 +487,9 @@ class DockerSandbox:
             )
         ):
             raise SandboxRejected("credential_inheritance_denied")
+        limits = {item.get("Name"): (item.get("Soft"), item.get("Hard")) for item in host.get("Ulimits") or []}
+        if limits.get("fsize") != (profile.workspace_bytes, profile.workspace_bytes):
+            raise SandboxRejected("effective_profile_mismatch")
         tmp = host["Tmpfs"].get("/tmp", "")
         if not all(option in tmp.split(",") for option in ("nosuid", "nodev", f"size={profile.tmp_bytes}")):
             raise SandboxRejected("effective_tmp_mismatch")
@@ -418,6 +504,7 @@ class DockerSandbox:
         *,
         cancel: threading.Event | None = None,
         input_frame: bytes | None = None,
+        workspace: Path | None = None,
     ) -> SandboxReceipt:
         started = time.monotonic()
         if cancel is not None and cancel.is_set():
@@ -447,6 +534,7 @@ class DockerSandbox:
         pending = memoryview(input_frame if input_frame is not None else b"")
         input_open = process.stdin is not None
         output_open = True
+        watch = _WorkspaceWatch(workspace, profile.workspace_bytes) if workspace is not None else None
 
         def close_input() -> None:
             nonlocal input_open
@@ -470,6 +558,9 @@ class DockerSandbox:
             while True:
                 if cancel is not None and cancel.is_set():
                     reason = "cancelled"
+                    break
+                if watch is not None and watch.exceeded.is_set():
+                    reason = "workspace_quota_exceeded"
                     break
                 remaining = profile.wall_seconds - (time.monotonic() - started)
                 if remaining <= 0:
@@ -548,6 +639,11 @@ class DockerSandbox:
             if reason == "completed":
                 state = self._settle_killed_state(container_id, state)
             exit_code = int(state["ExitCode"])
+            if watch is not None and reason in {"completed", "deadline_exceeded", "output_limit"}:
+                watch.stop()
+                if watch.exceeded.is_set() or watch.over():
+                    # A stopped worker's final tree decides; never report it completed.
+                    reason = "workspace_quota_exceeded"
             if state["OOMKilled"]:
                 reason = "memory_limit"
             elif reason == "completed" and exit_code != 0:
@@ -567,6 +663,8 @@ class DockerSandbox:
                 bool(state["OOMKilled"]),
             )
         finally:
+            if watch is not None:
+                watch.stop()
             close_input()
             selector.close()
             process.stdout.close()

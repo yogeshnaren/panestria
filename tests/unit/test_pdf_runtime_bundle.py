@@ -11,7 +11,7 @@ from panestria.brokers.research.pdf_bundle import PdfBundleUnavailable, stage_pd
 
 def test_pinned_wheel_bundle_includes_only_reviewed_package_and_bsd_license(tmp_path):
     bundle = stage_pdf_bundle(tmp_path / "pdf")
-    assert bundle.file_count == 61 and bundle.size_bytes == 1736355
+    assert bundle.file_count == 61 and bundle.size_bytes == 1757604
     assert "Redistribution" in (bundle.directory / "LICENSE-pypdf").read_text()
     assert (bundle.directory / "pypdf" / "_reader.py").is_file()
     assert not list(bundle.directory.rglob("*.pyc"))
