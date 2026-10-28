@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 from pathlib import Path
 from uuid import uuid4
@@ -22,20 +23,15 @@ from panestria.memory.classification import MemoryClassificationService
 from panestria.memory.service import MemoryService
 
 
-def _fixture_container(dsn: str) -> str:
-    # Match the isolated fixture's purpose and exact bound port. Never address
-    # the owner's R0 database or a generic compose service/container name.
-    found = subprocess.check_output(
-        ["docker", "ps", "--filter", "label=panestria.purpose=r1-test", "--format", "{{.ID}}"], text=True
-    ).splitlines()
-    inspected = json.loads(subprocess.check_output(["docker", "inspect", *found], text=True)) if found else []
+def _fixture_container() -> str:
+    # Address only the container this session's r1_database fixture created
+    # (labelled for its purpose); never the owner's R0 database or a guessed name.
+    name = os.environ.get("R1_TEST_CONTAINER", "")
+    inspected = json.loads(subprocess.check_output(["docker", "inspect", name], text=True)) if name else []
     matches = [
         item["Id"]
         for item in inspected
-        if any(
-            binding.get("HostIp") == "127.0.0.1" and binding.get("HostPort") == dsn.rsplit(":", 1)[1].split("/", 1)[0]
-            for binding in (item["NetworkSettings"]["Ports"].get("5432/tcp") or [])
-        )
+        if item["Config"]["Labels"].get("panestria.purpose") == "r1-test" and item["Name"] == f"/{name}"
     ]
     assert len(matches) == 1, "isolated_restore_fixture_not_identified"
     return matches[0]
@@ -78,7 +74,7 @@ def test_revision_suppression_restore(
         hidden_before = memory.history(uow, actor, suppressed.item_id)
         classifier = MemoryClassificationService()
         classification_before = [classifier.get(uow, actor, ref.source_id) for ref in (original, corrected, suppressed)]
-    container = _fixture_container(r1_task["dsn"])
+    container = _fixture_container()
     dump = subprocess.run(
         [
             "docker",

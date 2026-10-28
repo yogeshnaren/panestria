@@ -373,7 +373,7 @@ def test_server_smoke_records_its_own_loopback_socket(database: None, record_pro
     spec.loader.exec_module(module)
     listens, egress, rss, startup = module._measure_loopback_smoke()
     assert module.smoke_denial(listens, egress, rss, startup) is None
-    assert ("127.0.0.1", 8767) in listens
+    assert ("127.0.0.1", module._SMOKE_PORT) in listens
     assert rss.isdigit() and int(rss) > 0
     assert startup > 0
 
