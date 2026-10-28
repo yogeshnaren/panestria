@@ -196,11 +196,7 @@ def main() -> int:
     if args.coverage and not args.collect_only:
         # Data only; tools/coverage_floor.py combines lanes and enforces floors.
         command += ["--cov=panestria", "--cov-branch", "--cov-report="]
-        env = {
-            **os.environ,
-            "COVERAGE_FILE": str(ROOT / f"evidence/coverage-{args.suite}{suffix}"),
-            "COVERAGE_CORE": "sysmon",
-        }
+        env = {**os.environ, "COVERAGE_FILE": str(ROOT / f"evidence/coverage-{args.suite}{suffix}")}
     for item in deferred:
         command += ["--deselect", item["node"]]
     return subprocess.run(command, cwd=ROOT, env=env, check=False).returncode
