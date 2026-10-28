@@ -219,9 +219,7 @@ class LocalBuildPlanner:
         if local_model_run is not True:
             raise KernelDenied("explicit_local_plan_model_intent_required")
         manifest = expected_plan_manifest(self.settings)
-        if manifest is not None and (
-            manifest.model_ref != MODEL or manifest.model_bundle_sha256 != MODEL_DIGEST
-        ):
+        if manifest is not None and (manifest.model_ref != MODEL or manifest.model_bundle_sha256 != MODEL_DIGEST):
             raise KernelDenied("model_manifest_not_supported")
         contract = load_contract(contract.model_dump(mode="json"))
         inventory = ProjectInventory.model_validate(inventory)

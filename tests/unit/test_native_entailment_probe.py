@@ -78,8 +78,8 @@ def test_overage_signal_is_rejected_and_remaining_quota_not_invented():
 
 
 @pytest.mark.parametrize(
-    "native_model,tamper", [(None, value) for value in (None, "rubric", "mcp", "hostile-hook")]
-    + [(model, None) for model in NATIVE_MODELS],
+    "native_model,tamper",
+    [(None, value) for value in (None, "rubric", "mcp", "hostile-hook")] + [(model, None) for model in NATIVE_MODELS],
 )
 def test_injected_launch_uses_only_public_pinned_corpus_and_preserves_profile_controls(
     tmp_path, monkeypatch, native_model, tamper
@@ -106,7 +106,8 @@ def test_injected_launch_uses_only_public_pinned_corpus_and_preserves_profile_co
             **module.SETTINGS,
             **(
                 {"availableModels": [native_model], "fallbackModel": [], "switchModelsOnFlag": False}
-                if native_model is not None else {}
+                if native_model is not None
+                else {}
             ),
         }
         assert argv[argv.index("--model") + 1] == (native_model or "haiku")
@@ -132,9 +133,14 @@ def test_injected_launch_uses_only_public_pinned_corpus_and_preserves_profile_co
             startup["model"] = native_model
             result["modelUsage"] = {native_model: {}}
         parser.feed((json.dumps(startup) + "\n").encode())
-        parser.feed((json.dumps({
-            "type": "assistant", "message": {"role": "assistant", "model": startup["model"], "content": []}
-        }) + "\n").encode())
+        parser.feed(
+            (
+                json.dumps(
+                    {"type": "assistant", "message": {"role": "assistant", "model": startup["model"], "content": []}}
+                )
+                + "\n"
+            ).encode()
+        )
         parser.feed((json.dumps(result) + "\n").encode())
         parsed = parser.finish(0)
         if tamper == "rubric":
@@ -178,8 +184,8 @@ def test_selected_public_probe_refuses_changed_model_transport(where):
         parser.feed((json.dumps(startup) + "\n").encode())
         body = (
             {"type": "assistant", "message": {"role": "assistant", "model": other, "content": []}}
-            if where == "assistant" else
-            {"type": "result", "subtype": "success", "is_error": False, "modelUsage": {selected: {}, other: {}}}
+            if where == "assistant"
+            else {"type": "result", "subtype": "success", "is_error": False, "modelUsage": {selected: {}, other: {}}}
         )
         if where == "missing-usage":
             body.pop("modelUsage")
@@ -194,7 +200,9 @@ def test_model_alias_is_refused_before_any_auth_or_process_access(tmp_path):
     with pytest.raises(ValueError, match="unsupported_native_model"):
         module.NativeEntailmentProbe(
             BinaryPin(tmp_path / "absent-binary", PINNED_BINARY_SHA256),
-            tmp_path / "absent-auth", tmp_path / "absent-archive", native_model="opus",
+            tmp_path / "absent-auth",
+            tmp_path / "absent-archive",
+            native_model="opus",
         )
 
 

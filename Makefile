@@ -1,8 +1,8 @@
-.PHONY: help bootstrap lint typecheck test test-critical db-up db-down db-migrate dev-api r0-demo r0-review reset-synthetic-data
+.PHONY: help bootstrap lint typecheck test test-critical ci-full compat db-up db-down db-migrate dev-api r0-demo r0-review reset-synthetic-data
 
 SYNTHETIC_URL := postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:55432/panestria_synthetic
 COMPOSE := docker compose -f compose.yaml -p panestria-s3
-KNOWN := help bootstrap lint typecheck test test-critical db-up db-down db-migrate dev-api r0-demo r0-review reset-synthetic-data
+KNOWN := help bootstrap lint typecheck test test-critical ci-full compat db-up db-down db-migrate dev-api r0-demo r0-review reset-synthetic-data
 
 ifneq ($(filter-out $(KNOWN),$(MAKECMDGOALS)),)
 $(error unsupported_target)
@@ -16,7 +16,8 @@ bootstrap:
 	uv sync --frozen --group dev
 
 lint:
-	uv run --frozen ruff check src tests
+	uv run --frozen ruff check .
+	uv run --frozen ruff format --check src tests tools migrations
 
 typecheck:
 	uv run --frozen mypy
@@ -26,6 +27,16 @@ test:
 
 test-critical:
 	uv run --frozen python tools/ci_tests.py fast --critical
+
+# The no-breaking-change check: every non-live lane in the full profile, then
+# the public-surface diff against the recorded baseline.
+ci-full:
+	set -e; for suite in fast kernel platform research; do uv run --frozen python tools/ci_tests.py $$suite --profile full; done
+	$(MAKE) compat
+
+compat:
+	uv run --frozen python tools/compat.py cli-surface --check
+	uv run --frozen python tools/compat.py check --baseline evidence/regression-baseline-2026-10-28/snapshot.json
 
 db-up:
 	$(COMPOSE) up -d --wait

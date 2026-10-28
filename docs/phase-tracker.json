@@ -542,10 +542,13 @@
             "AOS-024",
             "AOS-025"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/plan-scheduler-2026-10-20/report.json",
+            "evidence/native-plan-execution-2026-10-20/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-026-implementation-plan.md"
         },
@@ -556,10 +559,13 @@
             "AOS-027a",
             "AOS-026"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/final-tree-integration-2026-10-20/report.json",
+            "evidence/final-integration-intent-2026-10-20/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-027b-implementation-plan.md"
         },
@@ -573,10 +579,15 @@
             "AOS-023",
             "AOS-027b"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/mission-control-observer-2026-10-21/report.json",
+            "evidence/mission-build-review-2026-10-22/report.json",
+            "evidence/phone-observer-views-2026-10-23/report.json",
+            "evidence/private-phone-ingress-2026-10-23/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-028-implementation-plan.md"
         },
@@ -588,10 +599,15 @@
             "AOS-014",
             "AOS-028"
           ],
-          "status": "NOT_STARTED",
+          "status": "IN_PROGRESS",
           "planning_format": "full",
           "slice_developer_days_target": 1,
-          "evidence_refs": [],
+          "evidence_refs": [
+            "evidence/performance-overview-2026-10-23/report.json",
+            "evidence/ask-runtime-metrics-2026-10-22/report.json",
+            "evidence/build-runtime-metrics-2026-10-21/report.json",
+            "evidence/research-runtime-metrics-2026-10-23/report.json"
+          ],
           "plan_status": "DETAILED_DESIGN_READY_FOR_REVIEW",
           "plan_ref": "plans/AOS-029-implementation-plan.md"
         },

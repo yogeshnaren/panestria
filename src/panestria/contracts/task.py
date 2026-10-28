@@ -55,13 +55,7 @@ ALLOWED_TRANSITIONS: frozenset[tuple[str, str]] = frozenset(
         ("WAITING_APPROVAL", "VERIFYING"),
         ("RETRY_WAIT", "READY"),
         ("CANCELLING", "CANCELLED"),
-        *(
-            (state, "CANCELLING")
-            for state in _ACTIVE
-        ),
-        *(
-            (state, "FAILED")
-            for state in _ACTIVE
-        ),
+        *((state, "CANCELLING") for state in _ACTIVE),
+        *((state, "FAILED") for state in _ACTIVE),
     }
 )

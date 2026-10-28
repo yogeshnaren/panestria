@@ -45,7 +45,7 @@ def _database() -> None:
     # A fixed test listener can collide with another service or client port.
     # Docker reserves an available loopback endpoint atomically; discover that
     # actual endpoint, rather than probing/closing a host socket before bind.
-    env = {**os.environ, "PANESTRIA_R0_TEST_PORT": "0"}
+    env = {**os.environ, "R0_TEST_DATABASE_PORT": "0"}
     up = subprocess.run(
         [*COMPOSE, "up", "-d", "--wait"], cwd=ROOT, env=env, text=True, capture_output=True, check=False
     )

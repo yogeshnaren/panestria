@@ -50,9 +50,9 @@ def test_first_run_creates_private_stable_scope_and_prints_start_instructions(fi
     with psycopg.connect(r1_database) as c:
         actor = Actor(receipt["owner_id"], receipt["project_id"])
         assert current_policy(UnitOfWork(c), actor) == offline_policy(actor)
-        assert c.execute(
-            "SELECT count(*) FROM panestria.goal WHERE project_id=%s", (actor.project_id,)
-        ).fetchone() == (0,)
+        assert c.execute("SELECT count(*) FROM panestria.goal WHERE project_id=%s", (actor.project_id,)).fetchone() == (
+            0,
+        )
         assert c.execute(
             "SELECT count(*) FROM panestria.local_project_setup WHERE project_id=%s", (actor.project_id,)
         ).fetchone() == (1,)

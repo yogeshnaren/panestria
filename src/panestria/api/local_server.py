@@ -187,7 +187,8 @@ def build_local_app(
                     "assistant_charter": "SHARED_DATA_FREE_V1" if config.assistant_charter else "LEGACY_CONTEXT",
                     "lossless_presentation": "STRUCTURED_PROFILE_ONLY" if config.lossless_presentation else "DISABLED",
                     "model_manifest": provider.model_manifest.model_dump(mode="json")
-                    if config.pin_model_manifest and provider.model_manifest is not None else None,
+                    if config.pin_model_manifest and provider.model_manifest is not None
+                    else None,
                     "cloud_routes": "UNMOUNTED",
                     "resource_headroom": "rechecked_per_inference",
                     "release_gate": "NOT_EVALUATED",

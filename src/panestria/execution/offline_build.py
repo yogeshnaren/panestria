@@ -249,17 +249,16 @@ def read_reference(root: Path, owner: str, project: str, digest: str) -> Offline
 
     contract = load_contract(json.loads(contents["contract"]))
     bundle = BuildEvidenceBundle.model_validate_json(contents["final_evidence"])
-    expected_parts = {"contract", "diff", "final_evidence"} | {
-        f"check-report-{i}" for i in range(len(bundle.checks))
-    }
+    expected_parts = {"contract", "diff", "final_evidence"} | {f"check-report-{i}" for i in range(len(bundle.checks))}
     for index, invocation in enumerate(manifest.invocations):
         if invocation.selected_context_part is None:
             continue
         context_part, binding_part, receipt_part = context_parts(index)
         try:
-            if invocation.selected_context_part != context_part or not {
-                context_part, binding_part, receipt_part
-            } <= contents.keys():
+            if (
+                invocation.selected_context_part != context_part
+                or not {context_part, binding_part, receipt_part} <= contents.keys()
+            ):
                 raise ValueError("context_parts_missing")
             binding = InvocationBinding.model_validate_json(contents[binding_part])
             receipt = json.loads(contents[receipt_part])

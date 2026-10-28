@@ -21,8 +21,7 @@ def context_path(value: str) -> str:
         or path.is_absolute()
         or path.as_posix() != value
         or any(
-            p in {".", "..", ".git", ".ssh", ".aws", ".claude", "secrets"} or p.startswith(".env")
-            for p in path.parts
+            p in {".", "..", ".git", ".ssh", ".aws", ".claude", "secrets"} or p.startswith(".env") for p in path.parts
         )
         or any(ord(c) < 32 for c in value)
         or "\\" in value

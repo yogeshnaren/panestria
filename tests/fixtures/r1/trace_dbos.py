@@ -28,8 +28,12 @@ trace_exporter.OTLPSpanExporter = deny_exporter
 _log_exporter.OTLPLogExporter = deny_exporter
 
 
+ids = json.loads(os.environ["PANESTRIA_SYNTHETIC_TRACE_IDS"])
+DATABASE_ENDPOINT = ("127.0.0.1", int(ids["dsn"].rsplit(":", 1)[1].split("/", 1)[0]))
+
+
 def restrict_python_connections(event: str, arguments: tuple[object, ...]) -> None:
-    if event == "socket.connect" and arguments[1] != ("127.0.0.1", 55439):
+    if event == "socket.connect" and arguments[1] != DATABASE_ENDPOINT:
         raise RuntimeError("non_database_network_connection_denied")
 
 
@@ -37,7 +41,6 @@ sys.addaudithook(restrict_python_connections)
 telemetry = Telemetry()
 telemetry.install_global()
 assert telemetry.processor.sink is None
-ids = json.loads(os.environ["PANESTRIA_SYNTHETIC_TRACE_IDS"])
 url = sqlalchemy_url(ids["dsn"])
 DBOS(
     config={

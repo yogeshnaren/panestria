@@ -75,7 +75,9 @@ class _PublicFixtureParser(ClaudeEventParser):
                 self.subscription_overage = False
         if (
             self.expected_model is not None
-            and isinstance(body, dict) and body.get("type") == "result" and body.get("is_error") is False
+            and isinstance(body, dict)
+            and body.get("type") == "result"
+            and body.get("is_error") is False
             and (type(body.get("modelUsage")) is not dict or set(body["modelUsage"]) != {self.expected_model})
         ):
             raise ProtocolRejected("native_model_usage_unconfirmed")

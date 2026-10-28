@@ -34,3 +34,7 @@ evidence/ci-merge-proof.json
 *.token
 *.p12
 *.pfx
+
+# Per-lane coverage data and combined reports are CI artifacts, not committed.
+evidence/coverage-*
+evidence/coverage.json

@@ -1,5 +1,7 @@
 # Current phase progress
 
+> **Historical log (2026-10-13 to 2026-10-14).** Statements below, such as "R2/R3/SOTA implementation has not begun", describe that period only. R2 and R3 component work has since started. Current status is in [phase-tracker.json](phase-tracker.json) and the [2026-10-28 readiness review](reviews/R3-READINESS-REVIEW-2026-10-28.md).
+
 R0 is COMPLETE and owner-accepted on 2026-10-13. Tested source: `f161193ed31918592015ec9e68163d31d77cb0ae`; evidence commit: `ecdb57412e5ab790c95e2e7f87574f1844f1419b`. G0 PASS: 160 non-live tests plus the fresh Ubuntu live case, all 20 case groups. The owner acceptance is recorded in [r0-phase.acceptance.json](../contracts/phase/r0-phase.acceptance.json).
 
 The owner authorized R1 implementation and requested separate, intuitive commits. First push the intact R0 branch under the owner's existing Git identity, then work on a separate R1 branch. R1 implementation is IN_PROGRESS on `r1-alpha`. Durable lease/effect/budget, policy, sandbox and browser-session foundations are committed separately. G1 is NOT_RUN; these foundation tests do not establish phase completion. R2/R3 and SOTA are not started by this instruction.
