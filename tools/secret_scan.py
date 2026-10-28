@@ -51,9 +51,18 @@ def rules_matching(text: str) -> list[str]:
     return found
 
 
+def _entries() -> list[dict[str, str]]:
+    return list(json.loads(ALLOWLIST.read_text())["allow"])
+
+
 def allowed() -> set[tuple[str, str]]:
-    """Return reviewed (path, rule) pairs from the allowlist."""
-    return {(entry["path"], entry["rule"]) for entry in json.loads(ALLOWLIST.read_text())["allow"]}
+    """Return reviewed (path, rule) pairs that apply to the current tree."""
+    return {(entry["path"], entry["rule"]) for entry in _entries() if "commit" not in entry}
+
+
+def allowed_history() -> set[tuple[str, str, str]]:
+    """Return reviewed (commit, path, rule) triples; tree-wide entries apply to every commit."""
+    return {(entry.get("commit", "*"), entry["path"], entry["rule"]) for entry in _entries()}
 
 
 def tracked_files() -> list[Path]:
@@ -85,7 +94,7 @@ def scan_history() -> list[tuple[str, str, str]]:
         capture_output=True,
     ).stdout.decode("utf-8", errors="replace")
     findings: set[tuple[str, str, str]] = set()
-    allow = allowed()
+    allow = allowed_history()
     commit = path = ""
     for line in log.splitlines():
         if line.startswith("commit "):
@@ -93,7 +102,11 @@ def scan_history() -> list[tuple[str, str, str]]:
         elif line.startswith("+++ "):
             path = line[6:] if line.startswith("+++ b/") else line[4:]
         elif line.startswith("+") and path != str(SENTINEL):
-            findings.update((commit, path, name) for name in rules_matching(line[1:]) if (path, name) not in allow)
+            findings.update(
+                (commit, path, name)
+                for name in rules_matching(line[1:])
+                if (commit, path, name) not in allow and ("*", path, name) not in allow
+            )
     return sorted(findings)
 
 

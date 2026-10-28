@@ -68,7 +68,16 @@ def test_placeholders_low_entropy_values_and_digests_are_not_findings(text: str)
     assert secret_scan.rules_matching(text) == []
 
 
-def test_allowlist_entries_are_exact_paths_with_reasons() -> None:
-    for path, rule in secret_scan.allowed():
-        assert (ROOT / path).is_file() and "*" not in path
-        assert rule == "high-entropy-assignment" or any(rule == name for name, _ in secret_scan.RULES)
+def test_allowlist_entries_are_exact_with_reasons() -> None:
+    rules = {name for name, _ in secret_scan.RULES} | {"high-entropy-assignment"}
+    for entry in secret_scan._entries():
+        assert entry["reason"] and "*" not in entry["path"] and entry["rule"] in rules
+        if "commit" in entry:
+            assert len(entry["commit"]) == 40
+        else:
+            assert (ROOT / entry["path"]).is_file()
+
+
+def test_commit_scoped_entries_never_excuse_the_current_tree() -> None:
+    history_only = {(e["path"], e["rule"]) for e in secret_scan._entries() if "commit" in e}
+    assert history_only and not history_only & secret_scan.allowed()
