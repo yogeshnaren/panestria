@@ -10,24 +10,17 @@ from pathlib import Path
 
 from panestria.contracts.fetch_connection import FETCH_CONFIGURATION_SHA256
 from panestria.contracts.search import LocalSearchSettings
+from panestria.execution.source_digest import source_sha256
 from panestria.policy.research import RESEARCH_PROFILE
 from panestria.policy.research_fetch import FETCH_PROFILE
 from panestria.policy.search import SEARCH_PROFILE
 from panestria.sandbox.profiles import DEFAULT_IMAGE
 
 
-def _source_sha256() -> str:
-    source = Path(__file__).resolve().parents[1]
-    digest = hashlib.sha256()
-    for path in sorted(source.rglob("*.py")):
-        digest.update(str(path.relative_to(source)).encode() + b"\0" + path.read_bytes())
-    return digest.hexdigest()
-
-
 def search_runtime_versions(settings: LocalSearchSettings) -> dict[str, str]:
     return {
         "profile": SEARCH_PROFILE,
-        "source_sha256": _source_sha256(),
+        "source_sha256": source_sha256(Path(__file__).resolve().parents[1]),
         "configuration_sha256": hashlib.sha256(settings.model_dump_json().encode()).hexdigest(),
     }
 
@@ -35,7 +28,7 @@ def search_runtime_versions(settings: LocalSearchSettings) -> dict[str, str]:
 def fetch_runtime_versions() -> dict[str, str]:
     return {
         "profile": FETCH_PROFILE,
-        "source_sha256": _source_sha256(),
+        "source_sha256": source_sha256(Path(__file__).resolve().parents[1]),
         "configuration_sha256": FETCH_CONFIGURATION_SHA256,
         "python": sys.version,
         "openssl": ssl.OPENSSL_VERSION,
