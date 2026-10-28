@@ -1,10 +1,10 @@
 # Setup
 
-R0 is not accepted. These steps start the synthetic kernel on a local Ubuntu machine. They do not record the fresh-host case.
+R0 was accepted on 2026-10-13 (G0 PASS). These steps start the synthetic R0 kernel on a local Ubuntu machine. They do not record the fresh-host case. Setup for the R1-R3 surfaces (Ask, Build, research, phone, background) is in the runbooks under [docs/testing](testing/); a consolidated operator guide is planned in the [remediation plan](project/R3-REMEDIATION-PLAN.md).
 
 ## Support
 
-The documented host is Ubuntu 22.04 with Python 3.12 and uv. Docker is used only for the disposable PostgreSQL service. macOS is not part of this setup. AOS-001-TC04 passed in a fresh Ubuntu 22.04 VM; measured startup and RSS plus frozen/offline bootstrap evidence are linked in [technical completion](reviews/R0-TECHNICAL-COMPLETION.md).
+The documented host is Ubuntu 22.04 with Python 3.12 and uv **0.12.3 exactly** (`[tool.uv] required-version` in `pyproject.toml`; other uv versions refuse to run `uv run`/`make`). Building Mission Control from source also needs Node `^20.19.0 || >=22.12.0`. Docker is used only for the disposable PostgreSQL service. macOS is not part of this setup. AOS-001-TC04 passed in a fresh Ubuntu 22.04 VM; measured startup and RSS plus frozen/offline bootstrap evidence are linked in [technical completion](reviews/R0-TECHNICAL-COMPLETION.md).
 
 ## Install
 

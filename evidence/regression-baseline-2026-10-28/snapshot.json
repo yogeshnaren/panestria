@@ -1,0 +1,6113 @@
+{
+  "schema_version": 1,
+  "source_commit": "33e61dc0bb254c158bed94f3677701d92d213a1e",
+  "openapi_sha256": "0072746559358d170ce52115f30c2ac33a263eb9a2f39135967350f1c7613ea3",
+  "cli": {
+    "hidden": false,
+    "params": [
+      {
+        "name": "version",
+        "opts": [
+          "--version"
+        ],
+        "kind": "option",
+        "required": false,
+        "type": "boolean"
+      }
+    ],
+    "commands": {
+      "activity": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "init": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "directory",
+                "opts": [
+                  "--directory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "owner_id",
+                "opts": [
+                  "--owner-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "--project-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "port",
+                "opts": [
+                  "--port"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              }
+            ]
+          },
+          "serve": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "storage_config",
+                "opts": [
+                  "--storage-config"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              }
+            ]
+          },
+          "tui": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          }
+        }
+      },
+      "approvals": {
+        "hidden": false,
+        "params": [
+          {
+            "name": "base_url",
+            "opts": [
+              "--base-url"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "str"
+          },
+          {
+            "name": "token",
+            "opts": [
+              "--token"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "str"
+          }
+        ]
+      },
+      "approve": {
+        "hidden": false,
+        "params": [
+          {
+            "name": "approval_id",
+            "opts": [
+              "approval_id"
+            ],
+            "kind": "argument",
+            "required": true,
+            "type": "str"
+          },
+          {
+            "name": "effect_digest",
+            "opts": [
+              "--effect-digest"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "str"
+          },
+          {
+            "name": "expected_version",
+            "opts": [
+              "--expected-version"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "int"
+          },
+          {
+            "name": "idempotency_key",
+            "opts": [
+              "--idempotency-key"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "str"
+          },
+          {
+            "name": "base_url",
+            "opts": [
+              "--base-url"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "str"
+          },
+          {
+            "name": "token",
+            "opts": [
+              "--token"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "str"
+          }
+        ]
+      },
+      "artifact": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "show": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "artifact_id",
+                "opts": [
+                  "artifact_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "base_url",
+                "opts": [
+                  "--base-url"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "token",
+                "opts": [
+                  "--token"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          }
+        }
+      },
+      "ask": {
+        "hidden": false,
+        "params": [
+          {
+            "name": "question",
+            "opts": [
+              "question"
+            ],
+            "kind": "argument",
+            "required": false,
+            "type": "str"
+          },
+          {
+            "name": "project",
+            "opts": [
+              "--project"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "str"
+          },
+          {
+            "name": "base_url",
+            "opts": [
+              "--base-url"
+            ],
+            "kind": "option",
+            "required": false,
+            "type": "str"
+          },
+          {
+            "name": "token_file",
+            "opts": [
+              "--token-file"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "file"
+          },
+          {
+            "name": "question_file",
+            "opts": [
+              "--question-file"
+            ],
+            "kind": "option",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "privacy",
+            "opts": [
+              "--privacy"
+            ],
+            "kind": "option",
+            "required": false,
+            "type": "str"
+          },
+          {
+            "name": "json_output",
+            "opts": [
+              "--json"
+            ],
+            "kind": "option",
+            "required": false,
+            "type": "boolean"
+          }
+        ]
+      },
+      "background": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "account": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "item_id",
+                "opts": [
+                  "item_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "draft": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "account_ref",
+                "opts": [
+                  "account_ref"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "enqueue": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "request",
+                "opts": [
+                  "--request"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "policy_sha256",
+                "opts": [
+                  "policy_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "accept_background_policy",
+                "opts": [
+                  "--accept-background-policy"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "link-account": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "item_id",
+                "opts": [
+                  "item_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "observation_sha256",
+                "opts": [
+                  "observation_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "link_sha256",
+                "opts": [
+                  "link_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "accept_account_link",
+                "opts": [
+                  "--accept-account-link"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "list": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "next": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "prepare": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "request",
+                "opts": [
+                  "--request"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "probe-account": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "item_id",
+                "opts": [
+                  "item_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "reconcile-run": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "item_id",
+                "opts": [
+                  "item_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "run_sha256",
+                "opts": [
+                  "run_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "run": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "item_id",
+                "opts": [
+                  "item_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "allow_background_subscription_run",
+                "opts": [
+                  "--allow-background-subscription-run"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "run-next": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "allow_background_subscription_run",
+                "opts": [
+                  "--allow-background-subscription-run"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "runs": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "item_id",
+                "opts": [
+                  "item_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "show": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "item_id",
+                "opts": [
+                  "item_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "withdraw": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "item_id",
+                "opts": [
+                  "item_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "binding_sha256",
+                "opts": [
+                  "binding_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "work": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "ticks",
+                "opts": [
+                  "--ticks"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              },
+              {
+                "name": "poll_seconds",
+                "opts": [
+                  "--poll-seconds"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              },
+              {
+                "name": "jobs",
+                "opts": [
+                  "--jobs"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              },
+              {
+                "name": "allow_background_subscription_run",
+                "opts": [
+                  "--allow-background-subscription-run"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          }
+        }
+      },
+      "build": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "approve": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "approval_id",
+                "opts": [
+                  "approval_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "effect_digest",
+                "opts": [
+                  "effect_digest"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "expected_version",
+                "opts": [
+                  "expected_version"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "int"
+              },
+              {
+                "name": "idempotency_key",
+                "opts": [
+                  "idempotency_key"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "cancel": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "goal_id",
+                "opts": [
+                  "goal_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "expected_version",
+                "opts": [
+                  "expected_version"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "int"
+              }
+            ]
+          },
+          "capture-reference": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "goal_id",
+                "opts": [
+                  "goal_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "confirm-policy": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "review_id",
+                "opts": [
+                  "review_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "effect_digest",
+                "opts": [
+                  "effect_digest"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "goals": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "metrics": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "goal_id",
+                "opts": [
+                  "goal_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "prepare-policy": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "allow_public_native_build",
+                "opts": [
+                  "--allow-public-native-build"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "prepare-recall": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "reference_sha256",
+                "opts": [
+                  "reference_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "retain_days",
+                "opts": [
+                  "--retain-days"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int"
+              }
+            ]
+          },
+          "progress": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "goal_id",
+                "opts": [
+                  "goal_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "reference": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "reference_sha256",
+                "opts": [
+                  "reference_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "diff",
+                "opts": [
+                  "--diff"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "name": "input_invocation",
+                "opts": [
+                  "--input"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "uuid"
+              }
+            ]
+          },
+          "remember-reference": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "reference_sha256",
+                "opts": [
+                  "reference_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "review_sha256",
+                "opts": [
+                  "review_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "retain_days",
+                "opts": [
+                  "--retain-days"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int"
+              },
+              {
+                "name": "accept_local_recall",
+                "opts": [
+                  "--accept-local-recall"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "status": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "goal_id",
+                "opts": [
+                  "goal_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "diff",
+                "opts": [
+                  "--diff"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "storage-preview": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "submit": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "contract",
+                "opts": [
+                  "--contract"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "selected_path",
+                "opts": [
+                  "--select"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "expected_base",
+                "opts": [
+                  "--expected-base"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "idempotency_key",
+                "opts": [
+                  "--idempotency-key"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "public_subscription_run",
+                "opts": [
+                  "--public-subscription-run"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "suppress-recall": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "reference_sha256",
+                "opts": [
+                  "reference_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "item_id",
+                "opts": [
+                  "item_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "expected_version",
+                "opts": [
+                  "expected_version"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "int"
+              },
+              {
+                "name": "confirm_local_suppression",
+                "opts": [
+                  "--confirm-local-suppression"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "tui": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "goal_id",
+                "opts": [
+                  "goal_id"
+                ],
+                "kind": "argument",
+                "required": false,
+                "type": "str"
+              }
+            ]
+          }
+        }
+      },
+      "connections": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "init": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "directory",
+                "opts": [
+                  "--directory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "owner_id",
+                "opts": [
+                  "--owner-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "--project-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "port",
+                "opts": [
+                  "--port"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              }
+            ]
+          },
+          "native-template": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "build_config",
+                "opts": [
+                  "--build-config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "task_id",
+                "opts": [
+                  "--task-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "proposal_id",
+                "opts": [
+                  "--proposal-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "account_ref",
+                "opts": [
+                  "--account-ref"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "max_calls",
+                "opts": [
+                  "--max-calls"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              },
+              {
+                "name": "max_bytes",
+                "opts": [
+                  "--max-bytes"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              },
+              {
+                "name": "max_wall_seconds",
+                "opts": [
+                  "--max-wall-seconds"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              },
+              {
+                "name": "expires_seconds",
+                "opts": [
+                  "--expires-seconds"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              }
+            ]
+          },
+          "prepare-public-fetch": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "research_config",
+                "opts": [
+                  "--research-config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "task_id",
+                "opts": [
+                  "--task-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "proposal_id",
+                "opts": [
+                  "--proposal-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "origin",
+                "opts": [
+                  "--origin"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "max_calls",
+                "opts": [
+                  "--max-calls"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              },
+              {
+                "name": "max_bytes",
+                "opts": [
+                  "--max-bytes"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              },
+              {
+                "name": "max_wall_seconds",
+                "opts": [
+                  "--max-wall-seconds"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              },
+              {
+                "name": "expires_seconds",
+                "opts": [
+                  "--expires-seconds"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              }
+            ]
+          },
+          "propose": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "request_file",
+                "opts": [
+                  "--request-file"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "review": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "proposal_id",
+                "opts": [
+                  "--proposal-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              }
+            ]
+          },
+          "revoke": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "grant_id",
+                "opts": [
+                  "--grant-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "task_id",
+                "opts": [
+                  "--task-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "proposal_id",
+                "opts": [
+                  "--proposal-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              }
+            ]
+          },
+          "scope": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "serve": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "show": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "grant_id",
+                "opts": [
+                  "--grant-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "uuid"
+              }
+            ]
+          }
+        }
+      },
+      "deny": {
+        "hidden": false,
+        "params": [
+          {
+            "name": "approval_id",
+            "opts": [
+              "approval_id"
+            ],
+            "kind": "argument",
+            "required": true,
+            "type": "str"
+          },
+          {
+            "name": "effect_digest",
+            "opts": [
+              "--effect-digest"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "str"
+          },
+          {
+            "name": "expected_version",
+            "opts": [
+              "--expected-version"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "int"
+          },
+          {
+            "name": "idempotency_key",
+            "opts": [
+              "--idempotency-key"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "str"
+          },
+          {
+            "name": "base_url",
+            "opts": [
+              "--base-url"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "str"
+          },
+          {
+            "name": "token",
+            "opts": [
+              "--token"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "str"
+          }
+        ]
+      },
+      "examples": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "export": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "review",
+                "opts": [
+                  "--review"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "output"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "inspect": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "review_sha256",
+                "opts": [
+                  "review_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "prepare": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "candidate",
+                "opts": [
+                  "candidate"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "evidence",
+                "opts": [
+                  "--evidence"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "days",
+                "opts": [
+                  "--days"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int"
+              }
+            ]
+          },
+          "record": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "candidate",
+                "opts": [
+                  "candidate"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "review_sha256",
+                "opts": [
+                  "review_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "evidence",
+                "opts": [
+                  "--evidence"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "days",
+                "opts": [
+                  "--days"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int"
+              },
+              {
+                "name": "confirm_owner_review",
+                "opts": [
+                  "--confirm-owner-review"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "name": "accept_training_data_purpose",
+                "opts": [
+                  "--accept-training-data-purpose"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "validate-export": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "packet",
+                "opts": [
+                  "packet"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "withdraw": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "review_sha256",
+                "opts": [
+                  "review_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "confirm_withdrawal",
+                "opts": [
+                  "--confirm-withdrawal"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          }
+        }
+      },
+      "goal": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "cancel": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "goal_id",
+                "opts": [
+                  "goal_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "expected_version",
+                "opts": [
+                  "--expected-version"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "int"
+              },
+              {
+                "name": "reason",
+                "opts": [
+                  "--reason"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "base_url",
+                "opts": [
+                  "--base-url"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "token",
+                "opts": [
+                  "--token"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "events": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "goal_id",
+                "opts": [
+                  "goal_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "after",
+                "opts": [
+                  "--after"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "str"
+              },
+              {
+                "name": "base_url",
+                "opts": [
+                  "--base-url"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "token",
+                "opts": [
+                  "--token"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "status": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "goal_id",
+                "opts": [
+                  "goal_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "base_url",
+                "opts": [
+                  "--base-url"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "token",
+                "opts": [
+                  "--token"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "submit": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "contract",
+                "opts": [
+                  "--contract"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "file"
+              },
+              {
+                "name": "idempotency_key",
+                "opts": [
+                  "--idempotency-key"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "base_url",
+                "opts": [
+                  "--base-url"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "token",
+                "opts": [
+                  "--token"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          }
+        }
+      },
+      "health": {
+        "hidden": false,
+        "params": []
+      },
+      "local": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "init": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "directory",
+                "opts": [
+                  "--directory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "model_cache",
+                "opts": [
+                  "--model-cache"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "port",
+                "opts": [
+                  "--port"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int"
+              },
+              {
+                "name": "offline_ask",
+                "opts": [
+                  "--offline-ask"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "model-manifest": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "json_output",
+                "opts": [
+                  "--json-output"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "pair-code": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "serve": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "mission_assets",
+                "opts": [
+                  "--mission-assets"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              }
+            ]
+          },
+          "setup": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "--owner-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "--project-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "offline_ask",
+                "opts": [
+                  "--offline-ask"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "token-create": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "token_file",
+                "opts": [
+                  "--token-file"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          }
+        }
+      },
+      "metrics": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "capture": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "evidence_root",
+                "opts": [
+                  "--evidence-root"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "directory",
+                "opts": [
+                  "--directory"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "mutation_report",
+                "opts": [
+                  "--mutation-report"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "ci_report",
+                "opts": [
+                  "--ci-report"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              }
+            ]
+          },
+          "capture-ask": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "request_id",
+                "opts": [
+                  "--request-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "directory",
+                "opts": [
+                  "--directory"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              }
+            ]
+          },
+          "capture-research": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "request_id",
+                "opts": [
+                  "--request-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "directory",
+                "opts": [
+                  "--directory"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              }
+            ]
+          },
+          "overview": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "directory",
+                "opts": [
+                  "--directory"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "as_json",
+                "opts": [
+                  "--json"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "show": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "directory",
+                "opts": [
+                  "--directory"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "as_json",
+                "opts": [
+                  "--json"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          }
+        }
+      },
+      "mission-control": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "pair-code": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "serve": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "assets",
+                "opts": [
+                  "--assets"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "build_evidence_store",
+                "opts": [
+                  "--build-evidence-store"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "build_review_root",
+                "opts": [
+                  "--build-review-root"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "research_intake",
+                "opts": [
+                  "--research-intake"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "build_intake",
+                "opts": [
+                  "--build-intake"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "name": "build_plan_review",
+                "opts": [
+                  "--build-plan-review"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "name": "build_run",
+                "opts": [
+                  "--build-run"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "storage_config",
+                "opts": [
+                  "--storage-config"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              }
+            ]
+          }
+        }
+      },
+      "native": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "inspect": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "binary",
+                "opts": [
+                  "--binary"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "expected_sha256",
+                "opts": [
+                  "--expected-sha256"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config_dir",
+                "opts": [
+                  "--config-dir"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "skills_archive",
+                "opts": [
+                  "--skills-archive"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "qualify-build": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "evidence_directory",
+                "opts": [
+                  "--evidence-directory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "public_subscription_smoke",
+                "opts": [
+                  "--public-subscription-smoke"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "name": "model",
+                "opts": [
+                  "--model"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "str"
+              }
+            ]
+          }
+        }
+      },
+      "phone": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "devices": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "pair-code": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "revoke": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "session_id",
+                "opts": [
+                  "session_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "uuid"
+              },
+              {
+                "name": "confirm",
+                "opts": [
+                  "--confirm-revocation"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "serve": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "assets",
+                "opts": [
+                  "--assets"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          }
+        }
+      },
+      "plan": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "accept": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "effect_digest",
+                "opts": [
+                  "effect_digest"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "accept_plan",
+                "opts": [
+                  "--accept-plan"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "cancel": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "proposal_sha256",
+                "opts": [
+                  "proposal_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "claim": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "evidence_store",
+                "opts": [
+                  "--evidence-store"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "skills_archive",
+                "opts": [
+                  "--skills-archive"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "claims": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "complete-node": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "handoff_id",
+                "opts": [
+                  "handoff_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "evidence_store",
+                "opts": [
+                  "--evidence-store"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "handoff": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "submission",
+                "opts": [
+                  "--submission"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "evidence_store",
+                "opts": [
+                  "--evidence-store"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "inspect": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "inspect-handoff": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "handoff_id",
+                "opts": [
+                  "handoff_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "evidence_store",
+                "opts": [
+                  "--evidence-store"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "integrate": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "attempt_id",
+                "opts": [
+                  "attempt_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "epoch",
+                "opts": [
+                  "epoch"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "int"
+              }
+            ]
+          },
+          "inventory": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "base",
+                "opts": [
+                  "base"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "prepare": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "proposal",
+                "opts": [
+                  "--proposal"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "inventory",
+                "opts": [
+                  "--inventory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "progress": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "goal_id",
+                "opts": [
+                  "goal_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "evidence_store",
+                "opts": [
+                  "--evidence-store"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "propose": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "contract",
+                "opts": [
+                  "--contract"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "inventory",
+                "opts": [
+                  "--inventory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output_directory",
+                "opts": [
+                  "--output-directory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "local_model_run",
+                "opts": [
+                  "--local-model-run"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "propose-repair": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "parent_sha256",
+                "opts": [
+                  "parent_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "return_proof_sha256",
+                "opts": [
+                  "return_proof_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "build_config",
+                "opts": [
+                  "--build-config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "model_config",
+                "opts": [
+                  "--model-config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output_directory",
+                "opts": [
+                  "--output-directory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "idempotency_key",
+                "opts": [
+                  "--idempotency-key"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "str"
+              },
+              {
+                "name": "maximum_versions",
+                "opts": [
+                  "--maximum-versions"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int"
+              },
+              {
+                "name": "local_model_run",
+                "opts": [
+                  "--local-model-run"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "queue": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "evidence_store",
+                "opts": [
+                  "--evidence-store"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "release-final": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "task_id",
+                "opts": [
+                  "task_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "evidence_sha256",
+                "opts": [
+                  "evidence_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "effect_id",
+                "opts": [
+                  "effect_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "evidence_store",
+                "opts": [
+                  "--evidence-store"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "release-returned": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "attempt_id",
+                "opts": [
+                  "attempt_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "evidence_store",
+                "opts": [
+                  "--evidence-store"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "repair-turns": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "goal_id",
+                "opts": [
+                  "goal_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "revise": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "parent_plan_id",
+                "opts": [
+                  "parent_plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "parent_sha256",
+                "opts": [
+                  "parent_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "return_proof_sha256",
+                "opts": [
+                  "return_proof_sha256"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "proposal",
+                "opts": [
+                  "--proposal"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "inventory",
+                "opts": [
+                  "--inventory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "maximum_versions",
+                "opts": [
+                  "--maximum-versions"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int"
+              }
+            ]
+          },
+          "run": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "plan_id",
+                "opts": [
+                  "plan_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "public_subscription_run",
+                "opts": [
+                  "--public-subscription-run"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "stage": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "contract",
+                "opts": [
+                  "--contract"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "proposal",
+                "opts": [
+                  "--proposal"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "inventory",
+                "opts": [
+                  "--inventory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "idempotency_key",
+                "opts": [
+                  "--idempotency-key"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "validate": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "proposal",
+                "opts": [
+                  "--proposal"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "contract",
+                "opts": [
+                  "--contract"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "inventory",
+                "opts": [
+                  "--inventory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          }
+        }
+      },
+      "profile": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "ask-tui": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "selection",
+                "opts": [
+                  "--selection"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "restricted_offline",
+                "opts": [
+                  "--restricted-offline"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "key-check": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "--owner-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "--project-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "profile_id",
+                "opts": [
+                  "--profile-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "key_id",
+                "opts": [
+                  "--key-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              }
+            ]
+          },
+          "key-create": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "--owner-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "--project-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "profile_id",
+                "opts": [
+                  "--profile-id"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "str"
+              },
+              {
+                "name": "key_id",
+                "opts": [
+                  "--key-id"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "str"
+              }
+            ]
+          },
+          "qualify": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "directory",
+                "opts": [
+                  "--directory"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "model_cache",
+                "opts": [
+                  "--model-cache"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "synthetic_local_smoke",
+                "opts": [
+                  "--synthetic-local-smoke"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "serve": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "restricted_offline",
+                "opts": [
+                  "--restricted-offline"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "style-tui": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "profile_id",
+                "opts": [
+                  "--profile-id"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "key_id",
+                "opts": [
+                  "--key-id"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "str"
+              },
+              {
+                "name": "expected_version",
+                "opts": [
+                  "--expected-version"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              },
+              {
+                "name": "owner_review",
+                "opts": [
+                  "--owner-review"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "name": "examples_file",
+                "opts": [
+                  "--examples-file"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              }
+            ]
+          }
+        }
+      },
+      "quota": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "current": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "account_ref",
+                "opts": [
+                  "--account-ref"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "window_ref",
+                "opts": [
+                  "--window"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "provider",
+                "opts": [
+                  "--provider"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "str"
+              },
+              {
+                "name": "model_ref",
+                "opts": [
+                  "--model"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "str"
+              },
+              {
+                "name": "token_file",
+                "opts": [
+                  "--token-file"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "base_url",
+                "opts": [
+                  "--base-url"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "str"
+              }
+            ]
+          },
+          "report": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "input_file",
+                "opts": [
+                  "--input-file"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "token_file",
+                "opts": [
+                  "--token-file"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "base_url",
+                "opts": [
+                  "--base-url"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "str"
+              }
+            ]
+          },
+          "show": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "observation_id",
+                "opts": [
+                  "observation_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "token_file",
+                "opts": [
+                  "--token-file"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "base_url",
+                "opts": [
+                  "--base-url"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "str"
+              }
+            ]
+          }
+        }
+      },
+      "research": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "check-draft-review": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "review",
+                "opts": [
+                  "--review"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "collect": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "queries",
+                "opts": [
+                  "--queries"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "public_web",
+                "opts": [
+                  "--public-web"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "name": "output_format",
+                "opts": [
+                  "--format"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "choice"
+              }
+            ]
+          },
+          "confirm-policy": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "review_id",
+                "opts": [
+                  "review_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "effect_digest",
+                "opts": [
+                  "effect_digest"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "public_web_policy",
+                "opts": [
+                  "--public-web-policy"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "guide": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "synthesis_config",
+                "opts": [
+                  "--config",
+                  "--synthesis-config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "collection_config",
+                "opts": [
+                  "--collection-config"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              }
+            ]
+          },
+          "inspect": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "task_id",
+                "opts": [
+                  "task_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "store",
+                "opts": [
+                  "--store"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output_format",
+                "opts": [
+                  "--format"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "choice"
+              }
+            ]
+          },
+          "inspect-draft": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output_format",
+                "opts": [
+                  "--format"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "choice"
+              }
+            ]
+          },
+          "inspect-draft-review": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "plan-queries": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "key",
+                "opts": [
+                  "--key"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "retain_local_plan",
+                "opts": [
+                  "--retain-local-plan"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "prepare-draft-review": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "prepare-policy": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "public_web_policy",
+                "opts": [
+                  "--public-web-policy"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "query-plan": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "record-draft-review": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "review",
+                "opts": [
+                  "--review"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "sha256",
+                "opts": [
+                  "--sha256"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "accept_owner_review",
+                "opts": [
+                  "--accept-owner-review"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "review-draft": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          },
+          "stage": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "owner_id",
+                "opts": [
+                  "owner_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "project_id",
+                "opts": [
+                  "project_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "contract",
+                "opts": [
+                  "--contract"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "question",
+                "opts": [
+                  "--question"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "limits",
+                "opts": [
+                  "--limits"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "store",
+                "opts": [
+                  "--store"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "key",
+                "opts": [
+                  "--key"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "public_question",
+                "opts": [
+                  "--public-question"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              }
+            ]
+          },
+          "synthesize": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "request_id",
+                "opts": [
+                  "request_id"
+                ],
+                "kind": "argument",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "key",
+                "opts": [
+                  "--key"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "str"
+              },
+              {
+                "name": "output",
+                "opts": [
+                  "--output"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              },
+              {
+                "name": "retain_local_draft",
+                "opts": [
+                  "--retain-local-draft"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "name": "output_format",
+                "opts": [
+                  "--format"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "choice"
+              }
+            ]
+          }
+        }
+      },
+      "storage": {
+        "hidden": false,
+        "params": [],
+        "commands": {
+          "inspect": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "path"
+              },
+              {
+                "name": "expected_write_bytes",
+                "opts": [
+                  "--expected-write-bytes"
+                ],
+                "kind": "option",
+                "required": false,
+                "type": "int range"
+              }
+            ]
+          },
+          "watch": {
+            "hidden": false,
+            "params": [
+              {
+                "name": "config",
+                "opts": [
+                  "--config"
+                ],
+                "kind": "option",
+                "required": true,
+                "type": "path"
+              }
+            ]
+          }
+        }
+      },
+      "tui": {
+        "hidden": false,
+        "params": [
+          {
+            "name": "config",
+            "opts": [
+              "--config"
+            ],
+            "kind": "option",
+            "required": true,
+            "type": "path"
+          }
+        ]
+      },
+      "version": {
+        "hidden": false,
+        "params": []
+      }
+    }
+  },
+  "denial_codes": [
+    "CertificateRejected:certificate_corrupt",
+    "CertificateRejected:certificate_invalid",
+    "CertificateRejected:certificate_mismatch",
+    "CertificateRejected:certificate_missing",
+    "CertificateRejected:certificate_not_live",
+    "CertificateRejected:certificate_report_corrupt",
+    "CertificateRejected:certificate_report_invalid",
+    "CertificateRejected:demo_attestation_invalid",
+    "CertificateRejected:demo_attestation_mismatch",
+    "CertificateRejected:demo_attestation_not_live",
+    "CertificateRejected:demo_runtime_restart_required",
+    "CertificateRejected:demo_scope_mismatch",
+    "CertificateRejected:demo_unqualified",
+    "CertificateRejected:private_public_fetch_certificate_store_required",
+    "CertificateRejected:private_public_search_certificate_store_required",
+    "CertificateRejected:public_fetch_certificate_invalid",
+    "CertificateRejected:public_fetch_report_invalid",
+    "CertificateRejected:public_fetch_runtime_uncertified",
+    "CertificateRejected:public_search_certificate_invalid",
+    "CertificateRejected:public_search_report_invalid",
+    "CertificateRejected:public_search_runtime_uncertified",
+    "CertificateRejected:runtime_uncertified",
+    "CertificateRejected:synthetic_capability_denied",
+    "CleanupDenied:not_a_directory",
+    "CleanupDenied:symlink_child",
+    "CleanupDenied:symlink_mount",
+    "CleanupDenied:wrong_volume",
+    "CommandTransportUnavailable:controller_identity_changed",
+    "CommandTransportUnavailable:endpoint_identity_changed",
+    "CommandTransportUnavailable:incomplete_controller_stream",
+    "CommandTransportUnavailable:incomplete_input_frame",
+    "CommandTransportUnavailable:invalid_controller_frame",
+    "CommandTransportUnavailable:invalid_message_frame",
+    "CommandTransportUnavailable:invalid_shim_configuration",
+    "CommandTransportUnavailable:invalid_transport_configuration",
+    "CommandTransportUnavailable:message_frame_limit",
+    "CommandTransportUnavailable:peer_identity_unavailable",
+    "CommandTransportUnavailable:peer_uid_denied",
+    "CommandTransportUnavailable:private_endpoint_unavailable",
+    "CommandTransportUnavailable:response_frame_limit",
+    "CommandTransportUnavailable:shim_buffer_limit",
+    "CommandTransportUnavailable:shim_deadline",
+    "CommandTransportUnavailable:transport_already_started",
+    "CommandTransportUnavailable:transport_shutdown_unconfirmed",
+    "CommandTransportUnavailable:transport_start_unavailable",
+    "CommandTransportUnavailable:unsafe_private_endpoint",
+    "CommandTransportUnavailable:unsafe_transport_directory",
+    "ContractRejected:identity_changed",
+    "ContractRejected:invalid_contract",
+    "ContractRejected:legacy_verifier",
+    "ContractRejected:version_conflict",
+    "DagRejected:cycle",
+    "DagRejected:duplicate_node",
+    "DagRejected:self_link",
+    "DagRejected:unknown_node",
+    "DemoUnavailable:another_demo_goal_active",
+    "DemoUnavailable:cancelled_before_publication",
+    "DemoUnavailable:cancelled_before_verification",
+    "DemoUnavailable:candidate_apply_not_confirmed",
+    "DemoUnavailable:candidate_path_mismatch",
+    "DemoUnavailable:container_runtime_not_prepared",
+    "DemoUnavailable:demo_deadline",
+    "DemoUnavailable:demo_operation_running",
+    "DemoUnavailable:exercise_already_merged_use_new_demo_root",
+    "DemoUnavailable:invalid_goal_id",
+    "DemoUnavailable:no_recorded_merge",
+    "DemoUnavailable:policy_changed",
+    "DemoUnavailable:policy_denied",
+    "DemoUnavailable:private_demo_identity_required",
+    "DemoUnavailable:private_demo_root_required",
+    "DemoUnavailable:probe_already_claimed",
+    "DemoUnavailable:probe_not_claimed",
+    "DemoUnavailable:qualification_apply_failed",
+    "DemoUnavailable:qualification_outcome_unknown_owner_resolution_required",
+    "DemoUnavailable:qualification_verifier_failed",
+    "DemoUnavailable:recorded_merge_requires_reconciliation",
+    "DemoUnavailable:reviewed_asset_changed",
+    "DemoUnavailable:reviewed_policy_changed_or_unavailable",
+    "DemoUnavailable:runtime_changed_during_qualification",
+    "DemoUnavailable:unsafe_demo_root",
+    "EgressDenied:connect_required",
+    "EgressDenied:destination_denied",
+    "EgressDenied:dns_unavailable",
+    "EgressDenied:gateway_closed",
+    "EgressDenied:invalid_connect",
+    "EgressDenied:invalid_tunnel",
+    "EgressDenied:private_destination_denied",
+    "EgressDenied:private_or_unpinned_peer_denied",
+    "EgressDenied:stream_socket_required",
+    "EgressDenied:unknown_provider_allowlist",
+    "FetchDenied:declared_body_limit",
+    "FetchDenied:dns_unavailable",
+    "FetchDenied:fetch_cancelled",
+    "FetchDenied:fetch_deadline",
+    "FetchDenied:framing_byte_limit",
+    "FetchDenied:incomplete_http_body",
+    "FetchDenied:invalid_content_type",
+    "FetchDenied:invalid_http_headers",
+    "FetchDenied:private_destination_denied",
+    "FetchDenied:redirect_cycle",
+    "FetchDenied:redirect_denied",
+    "FetchDenied:request_byte_limit",
+    "FetchDenied:resolver_busy",
+    "FetchDenied:resolver_unavailable",
+    "FetchDenied:tls_certificate_unavailable",
+    "FetchDenied:tls_verification_required",
+    "FetchDenied:unsupported_http_encoding",
+    "FetchDenied:unsupported_http_stream",
+    "FetchDenied:url_denied",
+    "GatewayRejected:cancelled_before_claim",
+    "GatewayRejected:command_access_mismatch",
+    "GatewayRejected:command_digest_mismatch",
+    "GatewayRejected:command_unavailable",
+    "GatewayRejected:dispatch_claim_denied",
+    "GatewayRejected:invalid_registry",
+    "GatewayRejected:invalid_tool_deadline",
+    "GatewayRejected:invalid_tool_profile",
+    "GatewayRejected:permit_binding_mismatch",
+    "GatewayRejected:tool_input_mode_denied",
+    "GatewayRejected:tool_request_limit",
+    "GatewayRejected:unregistered_command",
+    "GatewayRejected:unreviewed_script_path",
+    "GatewayRejected:unsafe_command_script",
+    "GatewayRejected:workspace_scope_denied",
+    "InferenceUnavailable:admissions_stopped",
+    "InferenceUnavailable:classification_required",
+    "InferenceUnavailable:cloud_privacy_denied",
+    "InferenceUnavailable:context_budget_exceeded",
+    "InferenceUnavailable:credential_missing",
+    "InferenceUnavailable:embedding_model_not_configured",
+    "InferenceUnavailable:existing_model_service_preserved",
+    "InferenceUnavailable:gpu_driver_library_missing",
+    "InferenceUnavailable:gpu_initialization_unavailable",
+    "InferenceUnavailable:gpu_runtime_unsupported",
+    "InferenceUnavailable:model_already_running",
+    "InferenceUnavailable:model_blob_invalid",
+    "InferenceUnavailable:model_busy",
+    "InferenceUnavailable:model_cache_link_denied",
+    "InferenceUnavailable:model_capacity",
+    "InferenceUnavailable:model_catalog_invalid",
+    "InferenceUnavailable:model_catalog_unavailable",
+    "InferenceUnavailable:model_cleanup_identity_mismatch",
+    "InferenceUnavailable:model_cold_start_unavailable",
+    "InferenceUnavailable:model_manifest_mismatch",
+    "InferenceUnavailable:model_manifest_not_supported",
+    "InferenceUnavailable:model_manifest_runtime_unavailable",
+    "InferenceUnavailable:model_manifest_unavailable",
+    "InferenceUnavailable:model_missing_or_digest_mismatch",
+    "InferenceUnavailable:model_not_pinned",
+    "InferenceUnavailable:model_orphan_identity_invalid",
+    "InferenceUnavailable:model_orphan_owner_unknown",
+    "InferenceUnavailable:model_orphan_socket_invalid",
+    "InferenceUnavailable:model_orphan_socket_not_private",
+    "InferenceUnavailable:model_output_incomplete",
+    "InferenceUnavailable:model_profile_not_enforced",
+    "InferenceUnavailable:model_request_rejected",
+    "InferenceUnavailable:model_runtime_operation_failed",
+    "InferenceUnavailable:model_runtime_unavailable",
+    "InferenceUnavailable:model_socket_directory_not_private_or_busy",
+    "InferenceUnavailable:model_status_unavailable",
+    "InferenceUnavailable:model_stream_invalid",
+    "InferenceUnavailable:model_timeout_or_response_unknown",
+    "InferenceUnavailable:model_token_limit_exceeded",
+    "InferenceUnavailable:model_unavailable",
+    "InferenceUnavailable:model_unload_failed",
+    "InferenceUnavailable:model_unload_unknown",
+    "InferenceUnavailable:model_usage_invalid",
+    "InferenceUnavailable:model_version_mismatch",
+    "InferenceUnavailable:nonroot_runtime_required",
+    "InferenceUnavailable:ollama_installation_missing",
+    "InferenceUnavailable:pricing_unknown",
+    "InferenceUnavailable:primary_already_owned",
+    "InferenceUnavailable:primary_controller_still_running",
+    "InferenceUnavailable:primary_in_use",
+    "InferenceUnavailable:primary_lock_directory_not_private",
+    "InferenceUnavailable:primary_lock_not_private",
+    "InferenceUnavailable:private_synthesis_runtime_required",
+    "InferenceUnavailable:process_memory_unavailable",
+    "InferenceUnavailable:provider_auth_required",
+    "InferenceUnavailable:provider_output_incomplete",
+    "InferenceUnavailable:provider_output_invalid",
+    "InferenceUnavailable:provider_quota_or_rate_limit",
+    "InferenceUnavailable:provider_request_rejected",
+    "InferenceUnavailable:provider_response_unknown",
+    "InferenceUnavailable:provider_token_limit_exceeded",
+    "InferenceUnavailable:provider_usage_exceeded_reservation",
+    "InferenceUnavailable:provider_usage_invalid",
+    "InferenceUnavailable:queue_capacity",
+    "InferenceUnavailable:queued_deadline_exceeded",
+    "InferenceUnavailable:runtime_path_invalid",
+    "InferenceUnavailable:synthesis_usage_unavailable",
+    "InputFrameRejected:native_input_invalid",
+    "KernelDenied:accepted_exact_plan_required",
+    "KernelDenied:actor_mismatch",
+    "KernelDenied:approval_consumed",
+    "KernelDenied:approval_mismatch",
+    "KernelDenied:approval_required",
+    "KernelDenied:ask_not_admissible",
+    "KernelDenied:ask_policy_denied",
+    "KernelDenied:attempts_exhausted",
+    "KernelDenied:axis_version_conflict",
+    "KernelDenied:background_account_archive_limit",
+    "KernelDenied:background_account_archive_limit_or_unexpected_entry",
+    "KernelDenied:background_account_changed_requires_new_reviewed_item",
+    "KernelDenied:background_account_history_limit",
+    "KernelDenied:background_account_link_invalid",
+    "KernelDenied:background_account_not_linked",
+    "KernelDenied:background_account_observation_invalid",
+    "KernelDenied:background_account_observation_noncanonical",
+    "KernelDenied:background_account_observation_stale_or_future",
+    "KernelDenied:background_account_scope_mismatch",
+    "KernelDenied:background_binding_changed",
+    "KernelDenied:background_category_or_privacy_denied",
+    "KernelDenied:background_controller_still_active",
+    "KernelDenied:background_current_accepted_plan_required",
+    "KernelDenied:background_current_auth_observation_required",
+    "KernelDenied:background_current_auth_principal_changed",
+    "KernelDenied:background_dependency_not_verified",
+    "KernelDenied:background_exact_account_review_required",
+    "KernelDenied:background_exact_owner_policy_review_required",
+    "KernelDenied:background_fresh_unstarted_goal_required",
+    "KernelDenied:background_goal_not_active",
+    "KernelDenied:background_item_changed",
+    "KernelDenied:background_item_replay_conflict",
+    "KernelDenied:background_item_withdrawn",
+    "KernelDenied:background_original_budget_limit",
+    "KernelDenied:background_original_job_wall_budget_exhausted",
+    "KernelDenied:background_plan_already_queued",
+    "KernelDenied:background_plan_binding_changed",
+    "KernelDenied:background_plan_superseded",
+    "KernelDenied:background_policy_expired",
+    "KernelDenied:background_previous_run_requires_reconciliation",
+    "KernelDenied:background_queue_binding_corrupt",
+    "KernelDenied:background_queue_history_limit",
+    "KernelDenied:background_quota_report_already_consumed_by_another_job",
+    "KernelDenied:background_requested_model_changed",
+    "KernelDenied:background_return_reason_invalid",
+    "KernelDenied:background_route_limit_requires_new_eligibility_evidence",
+    "KernelDenied:background_run_account_review_changed",
+    "KernelDenied:background_run_already_returned",
+    "KernelDenied:background_run_changed",
+    "KernelDenied:background_run_deadline",
+    "KernelDenied:background_run_history_limit",
+    "KernelDenied:background_run_not_current",
+    "KernelDenied:background_run_record_invalid",
+    "KernelDenied:background_task_requires_owner_inspection",
+    "KernelDenied:background_unconfirmed_invocation_or_claim_retained",
+    "KernelDenied:background_worker_binding_required",
+    "KernelDenied:background_worker_claim_not_current",
+    "KernelDenied:background_worker_not_supported",
+    "KernelDenied:bounded_public_queries_required",
+    "KernelDenied:brief_claim_limit",
+    "KernelDenied:brief_output_limit",
+    "KernelDenied:brief_passage_limit",
+    "KernelDenied:brief_question_limit",
+    "KernelDenied:brief_source_changed",
+    "KernelDenied:browser_controller_unconfirmed",
+    "KernelDenied:budget_not_authorized",
+    "KernelDenied:build_attempt_verdict_mismatch",
+    "KernelDenied:build_base_changed",
+    "KernelDenied:build_check_set_mismatch",
+    "KernelDenied:build_checks_not_passed",
+    "KernelDenied:build_contract_changed",
+    "KernelDenied:build_contract_mismatch",
+    "KernelDenied:build_evidence_scope_mismatch",
+    "KernelDenied:build_intake_view_limit",
+    "KernelDenied:build_plan_scope_mismatch",
+    "KernelDenied:build_report_limit",
+    "KernelDenied:build_report_mismatch",
+    "KernelDenied:build_repository_scope_mismatch",
+    "KernelDenied:build_return_binding_invalid",
+    "KernelDenied:build_return_contract_mismatch",
+    "KernelDenied:build_return_effect_or_attempt_unconfirmed",
+    "KernelDenied:build_return_invocations_unconfirmed",
+    "KernelDenied:build_return_profile_unconfirmed",
+    "KernelDenied:build_return_receipt_missing",
+    "KernelDenied:build_return_release_conflict",
+    "KernelDenied:build_return_report_invalid",
+    "KernelDenied:build_return_scope_mismatch",
+    "KernelDenied:build_review_changed",
+    "KernelDenied:build_review_limit",
+    "KernelDenied:build_review_not_current",
+    "KernelDenied:build_review_preview_mismatch",
+    "KernelDenied:build_review_report_limit",
+    "KernelDenied:build_review_repository_unavailable",
+    "KernelDenied:build_review_tree_mismatch",
+    "KernelDenied:build_scope_mismatch",
+    "KernelDenied:build_verification_read_denied",
+    "KernelDenied:candidate_rejected",
+    "KernelDenied:cap_below_exposure",
+    "KernelDenied:cash_cap_exceeded",
+    "KernelDenied:cash_cap_unknown",
+    "KernelDenied:check_contract_changed",
+    "KernelDenied:claim_classification_unknown",
+    "KernelDenied:claim_count_limit",
+    "KernelDenied:claim_evidence_unconfirmed",
+    "KernelDenied:claim_payload_limit",
+    "KernelDenied:claim_release_conflict",
+    "KernelDenied:claim_report_limit",
+    "KernelDenied:classification_corrupt",
+    "KernelDenied:confirmed_final_completion_required",
+    "KernelDenied:connection_already_revoked",
+    "KernelDenied:connection_caller_transaction_required",
+    "KernelDenied:connection_expiry_invalid",
+    "KernelDenied:connection_not_declared",
+    "KernelDenied:connection_proposal_conflict",
+    "KernelDenied:connection_review_corrupt",
+    "KernelDenied:connection_review_expired",
+    "KernelDenied:connection_revision_corrupt",
+    "KernelDenied:connection_root_busy",
+    "KernelDenied:connection_root_byte_limit",
+    "KernelDenied:connection_root_changed",
+    "KernelDenied:connection_root_kernel_unsupported",
+    "KernelDenied:connection_root_limit",
+    "KernelDenied:connection_root_path_invalid",
+    "KernelDenied:connection_root_unavailable",
+    "KernelDenied:connection_root_unsafe",
+    "KernelDenied:connection_version_conflict",
+    "KernelDenied:context_budget_exceeded",
+    "KernelDenied:context_classification_invalid",
+    "KernelDenied:context_integrity_failed",
+    "KernelDenied:context_invalid",
+    "KernelDenied:context_renderer_unavailable",
+    "KernelDenied:controller_executable_unavailable",
+    "KernelDenied:corrupt_artifact",
+    "KernelDenied:corrupt_build_evidence",
+    "KernelDenied:corrupt_build_report",
+    "KernelDenied:corrupt_source_metadata",
+    "KernelDenied:cost_unknown_approval_required",
+    "KernelDenied:csrf_denied",
+    "KernelDenied:curation_current_eligibility_required",
+    "KernelDenied:curation_current_evidence_required",
+    "KernelDenied:curation_duplicate_or_conflicting_input",
+    "KernelDenied:curation_evidence_limit",
+    "KernelDenied:curation_evidence_subject_or_role_mismatch",
+    "KernelDenied:curation_exact_review_required",
+    "KernelDenied:curation_explicit_owner_review_required",
+    "KernelDenied:curation_explicit_withdrawal_required",
+    "KernelDenied:curation_export_byte_limit",
+    "KernelDenied:curation_export_lineage_mismatch",
+    "KernelDenied:curation_export_selection_invalid",
+    "KernelDenied:curation_policy_denied",
+    "KernelDenied:curation_private_absolute_input_required",
+    "KernelDenied:curation_private_absolute_output_required",
+    "KernelDenied:curation_private_output_directory_required",
+    "KernelDenied:curation_registry_budget_reached",
+    "KernelDenied:curation_review_corrupt",
+    "KernelDenied:curation_review_missing",
+    "KernelDenied:curation_separate_training_data_purpose_required",
+    "KernelDenied:curation_withdrawn",
+    "KernelDenied:cursor_conflict",
+    "KernelDenied:decision_conflict",
+    "KernelDenied:dedicated_research_project_required",
+    "KernelDenied:digest_mismatch",
+    "KernelDenied:dispatch_active",
+    "KernelDenied:duplicate_public_query",
+    "KernelDenied:effect_history_mismatch",
+    "KernelDenied:effect_not_dispatchable",
+    "KernelDenied:effect_not_reconcilable",
+    "KernelDenied:effects_unconfirmed",
+    "KernelDenied:evidence_store_read_only",
+    "KernelDenied:existing_private_build_review_root_required",
+    "KernelDenied:existing_private_evidence_store_required",
+    "KernelDenied:expired",
+    "KernelDenied:explicit_background_subscription_run_required",
+    "KernelDenied:explicit_bounded_public_collection_required",
+    "KernelDenied:explicit_local_plan_model_intent_required",
+    "KernelDenied:explicit_local_recall_review_required",
+    "KernelDenied:explicit_local_recall_suppression_required",
+    "KernelDenied:explicit_owner_review_required",
+    "KernelDenied:explicit_plan_acceptance_required",
+    "KernelDenied:explicit_public_build_intent_required",
+    "KernelDenied:explicit_public_question_required",
+    "KernelDenied:explicit_public_url_required",
+    "KernelDenied:explicit_public_web_policy_required",
+    "KernelDenied:explicit_retained_local_draft_required",
+    "KernelDenied:explicit_retained_local_query_plan_required",
+    "KernelDenied:exposure_not_authorized",
+    "KernelDenied:failed_verifier_checks_unconfirmed",
+    "KernelDenied:failed_verifier_cleanup_unconfirmed",
+    "KernelDenied:failed_verifier_return_unconfirmed",
+    "KernelDenied:fenced_build_return_required",
+    "KernelDenied:fetch_already_dispatched",
+    "KernelDenied:fetch_budget_exhausted",
+    "KernelDenied:fetch_caller_transaction_required",
+    "KernelDenied:fetch_cancelled",
+    "KernelDenied:fetch_connection_action_or_class_denied",
+    "KernelDenied:fetch_connection_budget_exhausted",
+    "KernelDenied:fetch_connection_budget_unconfirmed",
+    "KernelDenied:fetch_connection_capability_mismatch",
+    "KernelDenied:fetch_connection_deadline",
+    "KernelDenied:fetch_connection_not_current",
+    "KernelDenied:fetch_connection_origin_denied",
+    "KernelDenied:fetch_connection_required",
+    "KernelDenied:fetch_connection_reservation_unconfirmed",
+    "KernelDenied:fetch_deadline",
+    "KernelDenied:fetch_hop_not_current",
+    "KernelDenied:fetch_outcome_conflict",
+    "KernelDenied:fetch_plan_conflict",
+    "KernelDenied:fetch_retained_source_mismatch",
+    "KernelDenied:fetch_url_unconfirmed",
+    "KernelDenied:final_release_evidence_unconfirmed",
+    "KernelDenied:fresh_actual_capacity_required",
+    "KernelDenied:fresh_private_plan_output_required",
+    "KernelDenied:future_cursor",
+    "KernelDenied:handoff_conflict",
+    "KernelDenied:handoff_record_unconfirmed",
+    "KernelDenied:handoff_scope_mismatch",
+    "KernelDenied:handoff_task_not_verified",
+    "KernelDenied:handoff_task_version_changed",
+    "KernelDenied:handoff_worker_or_base_changed",
+    "KernelDenied:idempotency_conflict",
+    "KernelDenied:illegal_transition",
+    "KernelDenied:integration_claim_missing",
+    "KernelDenied:integration_conflict_unconfirmed",
+    "KernelDenied:integration_deadline",
+    "KernelDenied:integration_dependency_not_verified",
+    "KernelDenied:integration_final_task_required",
+    "KernelDenied:integration_handoff_tree_changed",
+    "KernelDenied:integration_inputs_changed",
+    "KernelDenied:integration_inventory_changed",
+    "KernelDenied:integration_physical_return_unconfirmed",
+    "KernelDenied:integration_private_scope_required",
+    "KernelDenied:integration_return_inputs_changed",
+    "KernelDenied:intermediate_plan_node_required",
+    "KernelDenied:intermediate_verifier_return_unconfirmed",
+    "KernelDenied:invalid_activity_cursor",
+    "KernelDenied:invalid_activity_limit",
+    "KernelDenied:invalid_approval_expiry",
+    "KernelDenied:invalid_background_controller_bounds",
+    "KernelDenied:invalid_build_contract",
+    "KernelDenied:invalid_candidates",
+    "KernelDenied:invalid_claim",
+    "KernelDenied:invalid_claim_evidence",
+    "KernelDenied:invalid_classification",
+    "KernelDenied:invalid_connection_change",
+    "KernelDenied:invalid_connection_identifier",
+    "KernelDenied:invalid_contract",
+    "KernelDenied:invalid_correlation",
+    "KernelDenied:invalid_cursor",
+    "KernelDenied:invalid_cursor_or_limit",
+    "KernelDenied:invalid_decision",
+    "KernelDenied:invalid_destination_ref",
+    "KernelDenied:invalid_evidence_hash",
+    "KernelDenied:invalid_goal_id",
+    "KernelDenied:invalid_inbox_cursor",
+    "KernelDenied:invalid_inbox_limit",
+    "KernelDenied:invalid_invocation",
+    "KernelDenied:invalid_invocation_receipt",
+    "KernelDenied:invalid_launch_observation",
+    "KernelDenied:invalid_lease",
+    "KernelDenied:invalid_limit",
+    "KernelDenied:invalid_memory_query",
+    "KernelDenied:invalid_memory_review",
+    "KernelDenied:invalid_money",
+    "KernelDenied:invalid_pairing_code",
+    "KernelDenied:invalid_pairing_ttl",
+    "KernelDenied:invalid_phone_session_ttl",
+    "KernelDenied:invalid_policy",
+    "KernelDenied:invalid_preview",
+    "KernelDenied:invalid_profile",
+    "KernelDenied:invalid_profile_ask",
+    "KernelDenied:invalid_profile_selection",
+    "KernelDenied:invalid_quota_identifier",
+    "KernelDenied:invalid_quota_observation",
+    "KernelDenied:invalid_quota_scope",
+    "KernelDenied:invalid_receipt",
+    "KernelDenied:invalid_request_id",
+    "KernelDenied:invalid_research_request",
+    "KernelDenied:invalid_reservation",
+    "KernelDenied:invalid_retry",
+    "KernelDenied:invalid_revision",
+    "KernelDenied:invalid_sandbox_invocation",
+    "KernelDenied:invalid_settlement",
+    "KernelDenied:invalid_source_record",
+    "KernelDenied:invalid_source_role",
+    "KernelDenied:invocation_already_finished",
+    "KernelDenied:invocation_binding_mismatch",
+    "KernelDenied:invocation_contract_changed",
+    "KernelDenied:invocation_inactive",
+    "KernelDenied:invocation_not_dispatchable",
+    "KernelDenied:invocation_scope_mismatch",
+    "KernelDenied:invocations_unconfirmed",
+    "KernelDenied:joint_research_runtime_required",
+    "KernelDenied:key_material_invalid",
+    "KernelDenied:lease_active",
+    "KernelDenied:local_plan_context_limit",
+    "KernelDenied:local_plan_edit_worker_required",
+    "KernelDenied:local_plan_final_checks_incomplete",
+    "KernelDenied:local_plan_final_paths_incomplete",
+    "KernelDenied:local_plan_incomplete_response",
+    "KernelDenied:local_plan_integrator_unavailable",
+    "KernelDenied:local_plan_node_required_check_missing",
+    "KernelDenied:local_plan_remaining_budget_exceeded",
+    "KernelDenied:local_plan_remaining_budget_invalid",
+    "KernelDenied:local_plan_response_limit",
+    "KernelDenied:local_plan_scope_or_cash_invalid",
+    "KernelDenied:local_plan_task_references_invalid",
+    "KernelDenied:local_repair_evidence_unconfirmed",
+    "KernelDenied:local_repair_parent_not_current_stopped_plan",
+    "KernelDenied:local_repair_public_zero_cash_required",
+    "KernelDenied:local_repair_repeated_failure_owner_review_required",
+    "KernelDenied:local_repair_scope_mismatch",
+    "KernelDenied:local_repair_source_changed",
+    "KernelDenied:local_repair_stopped_failure_required",
+    "KernelDenied:local_schema_migration_required",
+    "KernelDenied:local_setup_policy_conflict",
+    "KernelDenied:memory_classification_invalid",
+    "KernelDenied:memory_integrity_failed",
+    "KernelDenied:memory_kind_conflict",
+    "KernelDenied:memory_review_mismatch",
+    "KernelDenied:memory_stale",
+    "KernelDenied:merge_not_authorized",
+    "KernelDenied:merge_not_confirmed",
+    "KernelDenied:merge_repository_scope_mismatch",
+    "KernelDenied:merge_target_mismatch",
+    "KernelDenied:missing_build_evidence",
+    "KernelDenied:missing_evidence",
+    "KernelDenied:missing_source_bytes",
+    "KernelDenied:mission_run_configuration_changed",
+    "KernelDenied:mission_run_scope_mismatch",
+    "KernelDenied:model_manifest_incompatible",
+    "KernelDenied:model_manifest_invalid",
+    "KernelDenied:model_manifest_mismatch",
+    "KernelDenied:model_manifest_not_supported",
+    "KernelDenied:native_build_cancelled",
+    "KernelDenied:native_build_cancelled_or_deadline",
+    "KernelDenied:native_build_context_changed",
+    "KernelDenied:native_build_context_encoding",
+    "KernelDenied:native_build_context_limit",
+    "KernelDenied:native_build_context_scope_denied",
+    "KernelDenied:native_build_deadline",
+    "KernelDenied:native_build_export_denied",
+    "KernelDenied:native_build_not_eligible",
+    "KernelDenied:native_build_runtime_changed",
+    "KernelDenied:native_build_runtime_uncertified",
+    "KernelDenied:native_build_transport_denied",
+    "KernelDenied:native_connection_account_observation_stale_or_future",
+    "KernelDenied:native_connection_account_or_configuration_changed",
+    "KernelDenied:native_connection_budget_exhausted",
+    "KernelDenied:native_connection_budget_unconfirmed",
+    "KernelDenied:native_connection_deadline",
+    "KernelDenied:native_connection_history_limit",
+    "KernelDenied:native_connection_not_current",
+    "KernelDenied:native_connection_reservation_conflict",
+    "KernelDenied:native_connection_reservation_invalid",
+    "KernelDenied:native_connection_reservation_required",
+    "KernelDenied:native_connection_scope_mismatch",
+    "KernelDenied:native_physical_return_unconfirmed",
+    "KernelDenied:native_plan_base_snapshot_changed",
+    "KernelDenied:native_plan_claim_missing",
+    "KernelDenied:native_plan_disclosure_not_permitted",
+    "KernelDenied:native_plan_inventory_changed",
+    "KernelDenied:native_plan_worker_scope_mismatch",
+    "KernelDenied:native_plan_worker_unavailable",
+    "KernelDenied:native_return_profile_unconfirmed",
+    "KernelDenied:new_private_query_export_required",
+    "KernelDenied:noncanonical_build_evidence",
+    "KernelDenied:not_approved",
+    "KernelDenied:not_found",
+    "KernelDenied:offline_ask_intent_required",
+    "KernelDenied:offline_cloud_denied",
+    "KernelDenied:offline_context_assignment_mismatch",
+    "KernelDenied:offline_context_not_retained",
+    "KernelDenied:offline_context_receipt_binding_mismatch",
+    "KernelDenied:offline_context_unavailable_or_mismatched",
+    "KernelDenied:offline_recall_exact_review_required",
+    "KernelDenied:offline_recall_history_ambiguous",
+    "KernelDenied:offline_recall_memory_changed_requires_owner_review",
+    "KernelDenied:offline_recall_note_budget",
+    "KernelDenied:offline_recall_parts_changed",
+    "KernelDenied:offline_recall_policy_denied",
+    "KernelDenied:offline_recall_reference_invalid",
+    "KernelDenied:offline_recall_retention_invalid",
+    "KernelDenied:offline_recall_suppressed_or_expired",
+    "KernelDenied:offline_recall_text_unavailable",
+    "KernelDenied:offline_reference_binding_mismatch",
+    "KernelDenied:offline_reference_contract_mismatch",
+    "KernelDenied:offline_reference_effect_unconfirmed",
+    "KernelDenied:offline_reference_history_budget_reached",
+    "KernelDenied:offline_reference_invalid_model_metadata",
+    "KernelDenied:offline_reference_lineage_mismatch",
+    "KernelDenied:offline_reference_manifest_limit",
+    "KernelDenied:offline_reference_missing_parts",
+    "KernelDenied:offline_reference_parts_mismatch",
+    "KernelDenied:offline_reference_payload_limit",
+    "KernelDenied:offline_reference_provenance_limit",
+    "KernelDenied:offline_reference_public_only",
+    "KernelDenied:offline_reference_receipt_binding_mismatch",
+    "KernelDenied:offline_reference_requires_confirmed_final_merge",
+    "KernelDenied:only_unstarted_plan_supported",
+    "KernelDenied:origin_denied",
+    "KernelDenied:origin_required",
+    "KernelDenied:original_run_request_required",
+    "KernelDenied:output_version_mismatch",
+    "KernelDenied:owner_build_contract_not_eligible",
+    "KernelDenied:owner_build_required_checks_incomplete",
+    "KernelDenied:owner_review_artifact_unconfirmed",
+    "KernelDenied:owner_review_binding_changed",
+    "KernelDenied:owner_review_count_limit",
+    "KernelDenied:owner_review_digest_mismatch",
+    "KernelDenied:owner_review_not_recorded",
+    "KernelDenied:owner_review_size_limit",
+    "KernelDenied:phone_device_history_limit",
+    "KernelDenied:phone_revocation_confirmation_required",
+    "KernelDenied:pinned_context_budget_exceeded",
+    "KernelDenied:pinned_memory_limit",
+    "KernelDenied:plan_acceptance_unconfirmed",
+    "KernelDenied:plan_attempt_limit",
+    "KernelDenied:plan_budget_exceeded",
+    "KernelDenied:plan_caller_transaction_required",
+    "KernelDenied:plan_capability_unavailable",
+    "KernelDenied:plan_check_unrecognized",
+    "KernelDenied:plan_claim_unconfirmed",
+    "KernelDenied:plan_completion_conflict",
+    "KernelDenied:plan_contract_missing",
+    "KernelDenied:plan_contract_unconfirmed",
+    "KernelDenied:plan_cycle",
+    "KernelDenied:plan_dependencies_changed",
+    "KernelDenied:plan_dependency_invalid",
+    "KernelDenied:plan_depth_limit",
+    "KernelDenied:plan_document_limit",
+    "KernelDenied:plan_duplicate_task",
+    "KernelDenied:plan_goal_not_active",
+    "KernelDenied:plan_input_binding_changed",
+    "KernelDenied:plan_integration_incomplete",
+    "KernelDenied:plan_integration_requires_full_checks",
+    "KernelDenied:plan_integration_unconfirmed",
+    "KernelDenied:plan_local_read_denied",
+    "KernelDenied:plan_node_cannot_merge_goal",
+    "KernelDenied:plan_node_limit",
+    "KernelDenied:plan_node_not_verified",
+    "KernelDenied:plan_node_required_check_missing",
+    "KernelDenied:plan_not_accepted",
+    "KernelDenied:plan_not_accepted_or_current",
+    "KernelDenied:plan_not_found",
+    "KernelDenied:plan_parent_superseded",
+    "KernelDenied:plan_parent_unconfirmed",
+    "KernelDenied:plan_path_out_of_scope",
+    "KernelDenied:plan_policy_changed",
+    "KernelDenied:plan_previous_work_unconfirmed",
+    "KernelDenied:plan_record_unconfirmed",
+    "KernelDenied:plan_repair_budget_exhausted",
+    "KernelDenied:plan_repair_limit_change_requires_authorization",
+    "KernelDenied:plan_repair_limit_exhausted",
+    "KernelDenied:plan_repair_limit_invalid",
+    "KernelDenied:plan_required_checks_missing",
+    "KernelDenied:plan_return_proof_unconfirmed",
+    "KernelDenied:plan_review_changed",
+    "KernelDenied:plan_review_expired_or_inactive",
+    "KernelDenied:plan_revision_consent_unconfirmed",
+    "KernelDenied:plan_revision_not_admitted",
+    "KernelDenied:plan_revision_replay_conflict",
+    "KernelDenied:plan_scope_change_requires_new_authorization",
+    "KernelDenied:plan_scope_mismatch",
+    "KernelDenied:plan_single_integration_required",
+    "KernelDenied:plan_submission_checks_changed",
+    "KernelDenied:plan_submission_conflict",
+    "KernelDenied:plan_task_id_conflict",
+    "KernelDenied:plan_task_membership_unconfirmed",
+    "KernelDenied:plan_validation_unconfirmed",
+    "KernelDenied:policy_already_configured",
+    "KernelDenied:policy_changed",
+    "KernelDenied:policy_corrupt",
+    "KernelDenied:policy_denied",
+    "KernelDenied:policy_mismatch",
+    "KernelDenied:policy_unconfigured",
+    "KernelDenied:privacy_downgrade_requires_review",
+    "KernelDenied:privacy_review_not_required",
+    "KernelDenied:private_native_profile_required",
+    "KernelDenied:private_research_directory_required",
+    "KernelDenied:profile_capacity_reached",
+    "KernelDenied:profile_context_budget_exceeded",
+    "KernelDenied:profile_context_integrity_failed",
+    "KernelDenied:profile_context_size_limit",
+    "KernelDenied:profile_context_stale",
+    "KernelDenied:profile_disabled",
+    "KernelDenied:profile_expired",
+    "KernelDenied:profile_fields_not_approved",
+    "KernelDenied:profile_integrity_failed",
+    "KernelDenied:profile_policy_denied",
+    "KernelDenied:profile_presentation_required",
+    "KernelDenied:profile_suppressed",
+    "KernelDenied:progress_consistent_transaction_required",
+    "KernelDenied:public_build_progress_required",
+    "KernelDenied:public_build_review_required",
+    "KernelDenied:public_fetch_certificate_store_required",
+    "KernelDenied:public_fetch_runtime_changed",
+    "KernelDenied:public_fetch_runtime_mismatch",
+    "KernelDenied:public_fetch_search_settings_mismatch",
+    "KernelDenied:public_native_plan_not_eligible",
+    "KernelDenied:public_research_submission_required",
+    "KernelDenied:public_run_scope_unconfirmed",
+    "KernelDenied:public_search_certificate_store_required",
+    "KernelDenied:public_search_export_denied",
+    "KernelDenied:public_search_runtime_changed",
+    "KernelDenied:public_search_runtime_mismatch",
+    "KernelDenied:public_zero_cash_plan_required",
+    "KernelDenied:query_plan_already_started",
+    "KernelDenied:query_plan_artifact_changed",
+    "KernelDenied:query_plan_artifact_scope_changed",
+    "KernelDenied:query_plan_binding_changed",
+    "KernelDenied:query_plan_incomplete_response",
+    "KernelDenied:query_plan_inputs_changed",
+    "KernelDenied:query_plan_local_read_denied",
+    "KernelDenied:query_plan_not_confirmed",
+    "KernelDenied:query_plan_not_started",
+    "KernelDenied:query_plan_outcome_unconfirmed",
+    "KernelDenied:query_plan_public_question_required",
+    "KernelDenied:query_plan_review_changed",
+    "KernelDenied:query_plan_unconfirmed_inspect_canonical_state",
+    "KernelDenied:query_plan_unstarted_request_required",
+    "KernelDenied:quota_caller_transaction_required",
+    "KernelDenied:quota_observation_conflict",
+    "KernelDenied:quota_observation_corrupt",
+    "KernelDenied:quota_observation_storage_limit",
+    "KernelDenied:quota_observed_in_future",
+    "KernelDenied:read_only_observation_required",
+    "KernelDenied:registered_check_read_denied",
+    "KernelDenied:repair_admission_read_committed_required",
+    "KernelDenied:repair_draft_files_unconfirmed",
+    "KernelDenied:repair_draft_key_invalid",
+    "KernelDenied:repair_draft_prior_unconfirmed",
+    "KernelDenied:repair_draft_receipt_unconfirmed",
+    "KernelDenied:repair_draft_replay_conflict",
+    "KernelDenied:repair_intent_audit_unconfirmed",
+    "KernelDenied:repair_intent_scope_unconfirmed",
+    "KernelDenied:repair_model_turn_limit_exhausted",
+    "KernelDenied:repair_outcome_not_confirmed",
+    "KernelDenied:repair_publication_guard_required",
+    "KernelDenied:repair_turn_limit_change_requires_authorization",
+    "KernelDenied:repair_wall_reservation_exceeded",
+    "KernelDenied:research_artifact_or_scope_mismatch",
+    "KernelDenied:research_brief_unavailable",
+    "KernelDenied:research_caller_transaction_required",
+    "KernelDenied:research_collection_already_started_inspect_state",
+    "KernelDenied:research_collection_binding_invalid",
+    "KernelDenied:research_collection_contract_or_policy_denied",
+    "KernelDenied:research_collection_existing_or_unconfirmed_evidence",
+    "KernelDenied:research_collection_export_denied",
+    "KernelDenied:research_collection_outcome_unknown",
+    "KernelDenied:research_collection_review_changed",
+    "KernelDenied:research_collection_start_interrupted",
+    "KernelDenied:research_excerpt_invalid_text",
+    "KernelDenied:research_excerpt_text_unavailable",
+    "KernelDenied:research_excerpt_unconfirmed",
+    "KernelDenied:research_guide_configuration_scope_mismatch",
+    "KernelDenied:research_guide_no_safe_action",
+    "KernelDenied:research_guide_review_changed",
+    "KernelDenied:research_intake_configuration_invalid",
+    "KernelDenied:research_intake_template_changed",
+    "KernelDenied:research_intake_template_limit",
+    "KernelDenied:research_policy_certificate_changed",
+    "KernelDenied:research_policy_marker_invalid",
+    "KernelDenied:research_policy_review_changed",
+    "KernelDenied:research_policy_runtime_changed",
+    "KernelDenied:research_policy_scope_changed",
+    "KernelDenied:research_question_size_or_content",
+    "KernelDenied:research_question_unconfirmed",
+    "KernelDenied:research_request_conflict",
+    "KernelDenied:research_request_unconfirmed",
+    "KernelDenied:research_submission_conflict",
+    "KernelDenied:reservation_exceeded",
+    "KernelDenied:retry_not_due",
+    "KernelDenied:review_mismatch",
+    "KernelDenied:route_context_mismatch",
+    "KernelDenied:run_history_unconfirmed",
+    "KernelDenied:run_not_claimable",
+    "KernelDenied:run_record_unconfirmed",
+    "KernelDenied:run_return_binding_changed",
+    "KernelDenied:run_return_unconfirmed",
+    "KernelDenied:run_storage_binding_changed",
+    "KernelDenied:sandbox_launch_already_recorded",
+    "KernelDenied:sandbox_launch_binding_mismatch",
+    "KernelDenied:sandbox_launch_invocation_inactive",
+    "KernelDenied:sandbox_launch_observation_unconfirmed",
+    "KernelDenied:sandbox_launch_recovery_unavailable",
+    "KernelDenied:sandbox_launch_reference_unconfirmed",
+    "KernelDenied:sandbox_launch_transaction_required",
+    "KernelDenied:scoped_bash_edit_denied",
+    "KernelDenied:search_already_dispatched",
+    "KernelDenied:search_caller_transaction_required",
+    "KernelDenied:search_cancelled",
+    "KernelDenied:search_contract_invalid",
+    "KernelDenied:search_contract_or_policy_mismatch",
+    "KernelDenied:search_deadline",
+    "KernelDenied:search_disclosure_mismatch",
+    "KernelDenied:search_outcome_conflict",
+    "KernelDenied:search_plan_conflict",
+    "KernelDenied:search_query_budget_exhausted",
+    "KernelDenied:search_request_inactive",
+    "KernelDenied:search_scope_mismatch",
+    "KernelDenied:selected_model_requires_reviewed_native_connection",
+    "KernelDenied:serialization_retry_limit",
+    "KernelDenied:settlement_conflict",
+    "KernelDenied:source_artifact_or_scope_mismatch",
+    "KernelDenied:source_bytes_unavailable",
+    "KernelDenied:source_capture_budget_exceeded",
+    "KernelDenied:source_capture_unconfirmed",
+    "KernelDenied:source_provenance_missing",
+    "KernelDenied:source_provenance_unconfirmed",
+    "KernelDenied:source_quote_mismatch",
+    "KernelDenied:source_record_conflict",
+    "KernelDenied:source_request_limits_or_label_mismatch",
+    "KernelDenied:source_request_mismatch",
+    "KernelDenied:stale_build_evidence",
+    "KernelDenied:stale_build_review",
+    "KernelDenied:stale_dispatch",
+    "KernelDenied:stale_lease",
+    "KernelDenied:started_job_requires_explicit_inspection_or_resume",
+    "KernelDenied:structured_style_invalid",
+    "KernelDenied:supported_bounded_fork_join_required",
+    "KernelDenied:synthesis_already_started",
+    "KernelDenied:synthesis_artifact_unconfirmed",
+    "KernelDenied:synthesis_context_limit",
+    "KernelDenied:synthesis_empty_passage",
+    "KernelDenied:synthesis_incomplete_response",
+    "KernelDenied:synthesis_input_binding_changed",
+    "KernelDenied:synthesis_inputs_changed",
+    "KernelDenied:synthesis_local_read_denied",
+    "KernelDenied:synthesis_not_started",
+    "KernelDenied:synthesis_outcome_unconfirmed",
+    "KernelDenied:synthesis_output_binding_changed",
+    "KernelDenied:synthesis_output_unconfirmed",
+    "KernelDenied:synthesis_requires_public_verifying_request",
+    "KernelDenied:synthesis_requires_retained_passages",
+    "KernelDenied:synthesis_review_changed",
+    "KernelDenied:synthesis_source_binding_changed",
+    "KernelDenied:synthesis_source_classification_changed",
+    "KernelDenied:synthesis_source_evidence_unavailable",
+    "KernelDenied:synthesis_source_scope_mismatch",
+    "KernelDenied:tool_physical_return_unconfirmed",
+    "KernelDenied:unauthorized",
+    "KernelDenied:unknown_check",
+    "KernelDenied:unsafe_build_evidence",
+    "KernelDenied:unsafe_evidence_store",
+    "KernelDenied:verifier_bundle_changed",
+    "KernelDenied:version_conflict",
+    "KeyStoreUnavailable:key_creation_unknown",
+    "KeyStoreUnavailable:key_handle_ambiguous",
+    "KeyStoreUnavailable:key_handle_missing",
+    "KeyStoreUnavailable:key_material_invalid",
+    "KeyStoreUnavailable:key_scope_mismatch",
+    "KeyStoreUnavailable:key_store_locked",
+    "KeyStoreUnavailable:key_store_temporary",
+    "KeyStoreUnavailable:key_store_timeout",
+    "KeyStoreUnavailable:key_store_transport_unqualified",
+    "KeyStoreUnavailable:key_store_unavailable",
+    "KeyStoreUnavailable:key_store_unsupported",
+    "KeyStoreUnavailable:profile_key_not_selected",
+    "KeyStoreUnavailable:profile_qualification_evidence_incomplete",
+    "KeyStoreUnavailable:profile_qualification_invalid_or_expired",
+    "KeyStoreUnavailable:profile_runtime_inputs_unavailable",
+    "LocalApplicationRejected:activity_configuration_conflict",
+    "LocalApplicationRejected:activity_configuration_path_invalid",
+    "LocalApplicationRejected:activity_startup_failed",
+    "LocalApplicationRejected:activity_token_path_invalid",
+    "LocalApplicationRejected:connection_request_path_invalid",
+    "LocalApplicationRejected:connection_scope_mismatch",
+    "LocalApplicationRejected:connection_terminal_mode_only",
+    "LocalApplicationRejected:database_schema_not_current",
+    "LocalApplicationRejected:database_unavailable",
+    "LocalApplicationRejected:dedicated_model_cache_required",
+    "LocalApplicationRejected:explicit_restricted_offline_intent_required",
+    "LocalApplicationRejected:explicit_style_create_or_exact_review_required",
+    "LocalApplicationRejected:interactive_terminal_required",
+    "LocalApplicationRejected:invalid_activity_configuration",
+    "LocalApplicationRejected:invalid_local_configuration",
+    "LocalApplicationRejected:invalid_local_token",
+    "LocalApplicationRejected:invalid_phone_configuration",
+    "LocalApplicationRejected:invalid_profile_client_configuration",
+    "LocalApplicationRejected:invalid_profile_service_configuration",
+    "LocalApplicationRejected:local_bind_unavailable",
+    "LocalApplicationRejected:local_directory_must_be_private",
+    "LocalApplicationRejected:local_file_must_be_private",
+    "LocalApplicationRejected:local_file_size_limit",
+    "LocalApplicationRejected:local_file_unavailable",
+    "LocalApplicationRejected:local_init_path_or_port_invalid",
+    "LocalApplicationRejected:local_initialization_busy",
+    "LocalApplicationRejected:local_initialization_configuration_conflict",
+    "LocalApplicationRejected:local_initialization_directory_not_empty",
+    "LocalApplicationRejected:local_pairing_unavailable",
+    "LocalApplicationRejected:local_path_invalid",
+    "LocalApplicationRejected:local_path_overlap",
+    "LocalApplicationRejected:local_runtime_directory_not_private",
+    "LocalApplicationRejected:local_runtime_unavailable",
+    "LocalApplicationRejected:local_startup_failed",
+    "LocalApplicationRejected:local_token_creation_denied",
+    "LocalApplicationRejected:mission_ask_scope_unavailable",
+    "LocalApplicationRejected:mission_build_required",
+    "LocalApplicationRejected:mission_build_select_one_mode",
+    "LocalApplicationRejected:mission_pairing_unavailable",
+    "LocalApplicationRejected:mission_research_select_one_mode",
+    "LocalApplicationRejected:mission_review_select_one_store",
+    "LocalApplicationRejected:mission_storage_select_one_mode",
+    "LocalApplicationRejected:native_declaration_template_unavailable",
+    "LocalApplicationRejected:phone_bind_unavailable",
+    "LocalApplicationRejected:phone_certificate_changed",
+    "LocalApplicationRejected:phone_configuration_path_invalid",
+    "LocalApplicationRejected:phone_disabled",
+    "LocalApplicationRejected:phone_evidence_store_invalid",
+    "LocalApplicationRejected:phone_observer_build_required",
+    "LocalApplicationRejected:phone_observer_only",
+    "LocalApplicationRejected:phone_startup_failed",
+    "LocalApplicationRejected:phone_tls_file_invalid",
+    "LocalApplicationRejected:phone_tls_path_invalid",
+    "LocalApplicationRejected:phone_tls_required",
+    "LocalApplicationRejected:phone_tls_unavailable",
+    "LocalApplicationRejected:profile_client_path_invalid",
+    "LocalApplicationRejected:public_fetch_declaration_template_unavailable",
+    "LocalApplicationRejected:storage_configuration_path_invalid",
+    "LocalApplicationRejected:style_examples_invalid",
+    "LocalApplicationRejected:style_examples_path_invalid",
+    "LoopbackDenied:ask_not_configured",
+    "LoopbackDenied:cli_auth_required",
+    "LoopbackDenied:connection_terminal_mode_only",
+    "LoopbackDenied:connections_not_configured",
+    "LoopbackDenied:database_unavailable",
+    "LoopbackDenied:invalid_host",
+    "LoopbackDenied:not_configured",
+    "LoopbackDenied:origin_denied",
+    "LoopbackDenied:profile_not_configured",
+    "LoopbackDenied:quota_not_configured",
+    "LoopbackDenied:storage_terminal_mode_only",
+    "LoopbackDenied:unauthorized",
+    "MemoryObservationUnavailable:process_memory_unavailable",
+    "NativeBootstrapUnavailable:invalid_native_bootstrap_reference",
+    "NativeBootstrapUnavailable:native_bootstrap_cancelled",
+    "NativeBootstrapUnavailable:native_bootstrap_controls_missing",
+    "NativeBootstrapUnavailable:native_bootstrap_pin_changed",
+    "NativeBootstrapUnavailable:native_bootstrap_platform_unavailable",
+    "NativeBootstrapUnavailable:native_bootstrap_snapshot_limit",
+    "NativeBootstrapUnavailable:native_bootstrap_unavailable",
+    "NativeBootstrapUnavailable:native_bootstrap_version_mismatch",
+    "NativeProbeUnavailable:advertised_controls_missing",
+    "NativeProbeUnavailable:auth_metadata_exit_mismatch",
+    "NativeProbeUnavailable:auth_metadata_invalid",
+    "NativeProbeUnavailable:binary_pin_changed",
+    "NativeProbeUnavailable:binary_reference_unsafe",
+    "NativeProbeUnavailable:binary_size_or_deadline",
+    "NativeProbeUnavailable:cli_version_mismatch",
+    "NativeProbeUnavailable:config_reference_changed",
+    "NativeProbeUnavailable:invalid_probe_reference",
+    "NativeProbeUnavailable:metadata_output_limit",
+    "NativeProbeUnavailable:metadata_timeout",
+    "NativeProbeUnavailable:metadata_unavailable",
+    "NativeProbeUnavailable:skill_archive_invalid",
+    "NativeProbeUnavailable:skill_archive_mismatch",
+    "NativeProbeUnavailable:skill_member_invalid",
+    "NativeProbeUnavailable:skill_member_mismatch",
+    "PdfBundleUnavailable:pdf_bundle_integrity_unconfirmed",
+    "PdfBundleUnavailable:pdf_bundle_unavailable",
+    "PreviewRejected:invalid_preview",
+    "ProbeUnavailable:cpu_probe_platform_unsupported",
+    "ProbeUnavailable:probe_archive_mismatch",
+    "ProbeUnavailable:probe_failed",
+    "ProbeUnavailable:probe_source_mismatch",
+    "ProbeUnavailable:probe_timeout_or_unsupported",
+    "ProbeUnavailable:unknown_preset",
+    "ProbeUnavailable:unprivileged_probe_required",
+    "ProfileRejected:invalid_bind",
+    "ProfileRejected:invalid_database_url",
+    "ProfileRejected:invalid_deadline",
+    "ProfileRejected:invalid_profile",
+    "ProfileRejected:invalid_schema_version",
+    "ProfileRejected:invalid_settings",
+    "ProposalUnavailable:invalid_native_deadline",
+    "ProposalUnavailable:invalid_public_build_context",
+    "ProposalUnavailable:invalid_public_check_profile",
+    "ProposalUnavailable:managed_configuration_present",
+    "ProposalUnavailable:native_check_cancelled_before_launch",
+    "ProposalUnavailable:native_check_configuration_changed",
+    "ProposalUnavailable:native_check_launch_unavailable",
+    "ProposalUnavailable:native_launch_reference_changed",
+    "ProposalUnavailable:native_login_unavailable",
+    "ProposalUnavailable:native_mcp_startup_unavailable",
+    "ProposalUnavailable:native_profile_changed",
+    "ProposalUnavailable:native_prompt_changed",
+    "ProposalUnavailable:native_reference_changed",
+    "ProposalUnavailable:private_native_profile_required",
+    "ProposalUnavailable:unsupported_native_pin",
+    "ProposalUnavailable:untrusted_native_configuration_executed",
+    "ProtocolRejected:cli_version_mismatch",
+    "ProtocolRejected:duplicate_field",
+    "ProtocolRejected:duplicate_tool",
+    "ProtocolRejected:event_after_result",
+    "ProtocolRejected:event_limit",
+    "ProtocolRejected:exit_result_mismatch",
+    "ProtocolRejected:frame_limit",
+    "ProtocolRejected:incomplete_execution",
+    "ProtocolRejected:invalid_block",
+    "ProtocolRejected:invalid_errors",
+    "ProtocolRejected:invalid_event",
+    "ProtocolRejected:invalid_message",
+    "ProtocolRejected:invalid_model_metadata",
+    "ProtocolRejected:invalid_narration_metadata",
+    "ProtocolRejected:invalid_number",
+    "ProtocolRejected:invalid_rate_limit",
+    "ProtocolRejected:invalid_registered_check_metadata",
+    "ProtocolRejected:invalid_result_metadata",
+    "ProtocolRejected:invalid_session",
+    "ProtocolRejected:invalid_text",
+    "ProtocolRejected:invalid_thinking_estimate",
+    "ProtocolRejected:invalid_tool_display_metadata",
+    "ProtocolRejected:invalid_tools",
+    "ProtocolRejected:malformed_json",
+    "ProtocolRejected:missing_init",
+    "ProtocolRejected:missing_profile_metadata",
+    "ProtocolRejected:missing_result",
+    "ProtocolRejected:native_model_changed",
+    "ProtocolRejected:native_model_usage_mismatch",
+    "ProtocolRejected:native_model_usage_unconfirmed",
+    "ProtocolRejected:native_tool_not_executed",
+    "ProtocolRejected:privilege_request_denied",
+    "ProtocolRejected:quota_unavailable",
+    "ProtocolRejected:session_mismatch",
+    "ProtocolRejected:telemetry_not_disabled",
+    "ProtocolRejected:truncated_stream",
+    "ProtocolRejected:unapproved_overage",
+    "ProtocolRejected:unapproved_tool",
+    "ProtocolRejected:unapproved_tool_caller",
+    "ProtocolRejected:unexpected_fast_mode",
+    "ProtocolRejected:unexpected_mcp_profile_metadata",
+    "ProtocolRejected:unexpected_mcp_server",
+    "ProtocolRejected:unexpected_native_background_work",
+    "ProtocolRejected:unexpected_native_subagents",
+    "ProtocolRejected:unexpected_public_fixture_profile",
+    "ProtocolRejected:unexpected_system_event",
+    "ProtocolRejected:unexpected_terminal_command",
+    "ProtocolRejected:unexpected_tool_capability",
+    "ProtocolRejected:unexpected_transport_capability",
+    "ProtocolRejected:unknown_content_type",
+    "ProtocolRejected:unknown_event_type",
+    "ProtocolRejected:unknown_field",
+    "ProtocolRejected:unknown_result_state",
+    "ProtocolRejected:unmatched_tool_result",
+    "QualificationUnavailable:clean_qualification_checkout_required",
+    "QualificationUnavailable:dedicated_model_cache_required",
+    "QualificationUnavailable:existing_absolute_model_cache_required",
+    "QualificationUnavailable:explicit_public_subscription_smoke_required",
+    "QualificationUnavailable:explicit_synthetic_local_smoke_required",
+    "QualificationUnavailable:frozen_qualification_runtime_required",
+    "QualificationUnavailable:private_absolute_qualification_directory_required",
+    "QualificationUnavailable:private_qualification_directory_unavailable",
+    "QualificationUnavailable:profile_qualification_cache_overlap",
+    "QualificationUnavailable:profile_qualification_cases_failed",
+    "QualificationUnavailable:profile_qualification_runtime_changed",
+    "QualificationUnavailable:profile_qualification_timeout_or_output_limit",
+    "QualificationUnavailable:profile_qualification_tools_ambiguous",
+    "QualificationUnavailable:profile_qualification_tools_unavailable",
+    "QualificationUnavailable:qualification_cases_failed",
+    "QualificationUnavailable:qualification_cleanup_unconfirmed",
+    "QualificationUnavailable:qualification_evidence_incomplete",
+    "QualificationUnavailable:qualification_source_changed",
+    "QualificationUnavailable:qualification_source_checkout_required",
+    "QualificationUnavailable:qualification_timeout_or_output_limit",
+    "RegisteredCheckUnavailable:cancelled_before_receipt",
+    "RegisteredCheckUnavailable:invalid_registered_check_binding",
+    "RegisteredCheckUnavailable:registered_check_report_unavailable",
+    "RegisteredCheckUnavailable:unconfirmed_registered_check",
+    "ResearchBlobUnavailable:ambiguous_research_pending",
+    "ResearchBlobUnavailable:invalid_research_blob_hash",
+    "ResearchBlobUnavailable:invalid_research_scope",
+    "ResearchBlobUnavailable:research_blob_byte_limit",
+    "ResearchBlobUnavailable:research_blob_changed",
+    "ResearchBlobUnavailable:research_blob_hash_or_size_mismatch",
+    "ResearchBlobUnavailable:research_blob_io_unavailable",
+    "ResearchBlobUnavailable:research_directory_unavailable",
+    "ResearchBlobUnavailable:research_store_busy",
+    "ResearchBlobUnavailable:research_store_closed",
+    "ResearchBlobUnavailable:unsafe_research_blob",
+    "ResearchBlobUnavailable:unsafe_research_directory",
+    "ResearchTextRejected:incomplete_source",
+    "ResearchTextRejected:invalid_raw_hash",
+    "ResearchTextRejected:invalid_research_record",
+    "ResearchTextRejected:invalid_utf8",
+    "ResearchTextRejected:noncanonical_text",
+    "ResearchTextRejected:passage_out_of_range",
+    "ResearchTextRejected:passage_splits_utf8_character",
+    "ResearchTextRejected:raw_hash_mismatch",
+    "ResearchTextRejected:research_reference_mismatch",
+    "ResearchTextRejected:research_text_byte_limit",
+    "ResearchTextRejected:text_hash_or_length_mismatch",
+    "ResearchTextRejected:unsupported_unicode_version",
+    "SandboxRejected:cancelled_before_start",
+    "SandboxRejected:container_operation_failed",
+    "SandboxRejected:container_runtime_unavailable",
+    "SandboxRejected:credential_inheritance_denied",
+    "SandboxRejected:effective_profile_mismatch",
+    "SandboxRejected:effective_tmp_mismatch",
+    "SandboxRejected:exit_state_unconfirmed",
+    "SandboxRejected:implicit_volume_denied",
+    "SandboxRejected:invalid_command",
+    "SandboxRejected:invalid_container_identity",
+    "SandboxRejected:invalid_launch_reference",
+    "SandboxRejected:invalid_memory_cap",
+    "SandboxRejected:invalid_output_deadline",
+    "SandboxRejected:invalid_process_cap",
+    "SandboxRejected:invalid_runtime_inspection",
+    "SandboxRejected:invalid_runtime_mount",
+    "SandboxRejected:invalid_tmp_cap",
+    "SandboxRejected:invalid_workspace",
+    "SandboxRejected:launch_identity_mismatch",
+    "SandboxRejected:launch_intent_unconfirmed",
+    "SandboxRejected:launch_start_authority_unconfirmed",
+    "SandboxRejected:private_workspace_path",
+    "SandboxRejected:root_user_denied",
+    "SandboxRejected:sandbox_input_binding_mismatch",
+    "SandboxRejected:termination_unconfirmed",
+    "SandboxRejected:unknown_profile",
+    "SandboxRejected:unknown_stdin_mode",
+    "SandboxRejected:unpinned_image",
+    "SandboxRejected:unregistered_executable",
+    "SandboxRejected:workspace_hardlink_denied",
+    "SandboxRejected:workspace_link_escape",
+    "SandboxRejected:workspace_scope_denied",
+    "ScopedBashUnavailable:bash_execution_not_confirmed",
+    "ScopedBashUnavailable:bash_report_unavailable",
+    "ScopedBashUnavailable:build_base_changed",
+    "ScopedBashUnavailable:build_repository_scope_mismatch",
+    "ScopedBashUnavailable:build_verification_cancelled_or_deadline",
+    "ScopedBashUnavailable:cancelled_before_receipt",
+    "ScopedBashUnavailable:invalid_scoped_bash_binding",
+    "ScopedBashUnavailable:unconfirmed_bash_execution",
+    "SearchUnavailable:configured_search_transport_unavailable",
+    "SearchUnavailable:configured_search_unavailable",
+    "SearchUnavailable:invalid_search_response_or_request",
+    "SearchUnavailable:search_cancelled_or_deadline",
+    "SearchUnavailable:search_json_disabled_or_denied",
+    "SearchUnavailable:search_json_response_required",
+    "SearchUnavailable:search_quota_unavailable",
+    "SearchUnavailable:search_response_byte_limit",
+    "SnapshotRejected:blob_size_mismatch",
+    "SnapshotRejected:candidate_capture_unavailable",
+    "SnapshotRejected:candidate_changed_during_capture",
+    "SnapshotRejected:candidate_entry_limit",
+    "SnapshotRejected:candidate_repository_not_bare",
+    "SnapshotRejected:candidate_size_limit",
+    "SnapshotRejected:git_input_limit",
+    "SnapshotRejected:git_output_limit",
+    "SnapshotRejected:git_timeout",
+    "SnapshotRejected:integration_base_diff_mismatch",
+    "SnapshotRejected:integration_input_limit",
+    "SnapshotRejected:invalid_candidate_commit",
+    "SnapshotRejected:invalid_candidate_object",
+    "SnapshotRejected:invalid_candidate_scope",
+    "SnapshotRejected:invalid_candidate_tree",
+    "SnapshotRejected:invalid_git_identity",
+    "SnapshotRejected:invalid_git_tree",
+    "SnapshotRejected:invalid_snapshot_scope",
+    "SnapshotRejected:private_integration_workspace_required",
+    "SnapshotRejected:protected_git_failed",
+    "SnapshotRejected:snapshot_changed",
+    "SnapshotRejected:snapshot_size_limit",
+    "SnapshotRejected:unsafe_candidate_path",
+    "SnapshotRejected:unsupported_candidate_entry",
+    "SnapshotRejected:unsupported_git_entry",
+    "SnapshotRejected:unsupported_path_encoding",
+    "TerminalUnavailable:activity_unconfirmed",
+    "TerminalUnavailable:authentication_lost",
+    "TerminalUnavailable:cancellation_unconfirmed_check_receipt",
+    "TerminalUnavailable:connection_decision_unconfirmed",
+    "TerminalUnavailable:connection_policy_changed_reopen",
+    "TerminalUnavailable:connection_response_unconfirmed",
+    "TerminalUnavailable:connection_review_changed_reopen",
+    "TerminalUnavailable:connection_scope_mismatch",
+    "TerminalUnavailable:connection_unconfirmed_check_receipt",
+    "TerminalUnavailable:explicit_restricted_profile_ask_required",
+    "TerminalUnavailable:interactive_terminal_required",
+    "TerminalUnavailable:invalid_response",
+    "TerminalUnavailable:invalid_timeline_cursor",
+    "TerminalUnavailable:model_not_ready",
+    "TerminalUnavailable:operation_unconfirmed_check_receipt",
+    "TerminalUnavailable:profile_receipt_unconfirmed",
+    "TerminalUnavailable:profile_request_size_limit",
+    "TerminalUnavailable:profile_response_size_limit",
+    "TerminalUnavailable:profile_response_unconfirmed",
+    "TerminalUnavailable:profile_save_unconfirmed",
+    "TerminalUnavailable:profile_scope_unconfirmed",
+    "TerminalUnavailable:profile_version_invalid",
+    "TerminalUnavailable:receipt_unconfirmed",
+    "TerminalUnavailable:response_size_limit",
+    "TerminalUnavailable:server_scope_mismatch",
+    "TerminalUnavailable:storage_status_unconfirmed",
+    "TerminalUnavailable:structured_style_not_available"
+  ],
+  "schema_fingerprint_sha256": "53f8c976ed27a8b4bee9d38e31178d35fea770b9f1460a54b6b847cff6d7a2ad",
+  "schema_snapshot_sha256": "53f8c976ed27a8b4bee9d38e31178d35fea770b9f1460a54b6b847cff6d7a2ad",
+  "contract_schemas": {
+    "acceptance-check.schema.json": "cddad5247c100aaea459eeb892ac2691e085fd78690f4ac9bce18a21f82dffb6",
+    "action-preview.schema.json": "e265291dec432111b309f81e5c95c8be6349d044a6a885f24ba62ce7e9ada368",
+    "goal-contract.schema.json": "ef5e69f9d45dd834447bc81b76af98e712b8e792b6c7cbcb2114a7c5b857446f"
+  },
+  "import_graph": [
+    "(top-level) -> api",
+    "(top-level) -> contracts",
+    "(top-level) -> memory",
+    "(top-level) -> resources",
+    "(top-level) -> verification",
+    "api -> (top-level)",
+    "api -> contracts",
+    "api -> execution",
+    "api -> inference",
+    "api -> kernel",
+    "api -> learning",
+    "api -> memory",
+    "api -> resources",
+    "api -> telemetry",
+    "brokers -> contracts",
+    "brokers -> sandbox",
+    "cli -> (top-level)",
+    "cli -> api",
+    "cli -> brokers",
+    "cli -> contracts",
+    "cli -> execution",
+    "cli -> kernel",
+    "cli -> learning",
+    "cli -> memory",
+    "cli -> resources",
+    "cli -> sandbox",
+    "cli -> telemetry",
+    "execution -> (top-level)",
+    "execution -> brokers",
+    "execution -> contracts",
+    "execution -> inference",
+    "execution -> kernel",
+    "execution -> memory",
+    "execution -> policy",
+    "execution -> resources",
+    "execution -> sandbox",
+    "execution -> telemetry",
+    "execution -> verification",
+    "inference -> contracts",
+    "inference -> resources",
+    "inference -> telemetry",
+    "kernel -> contracts",
+    "kernel -> learning",
+    "kernel -> memory",
+    "kernel -> policy",
+    "kernel -> resources",
+    "kernel -> telemetry",
+    "kernel -> verification",
+    "learning -> (top-level)",
+    "learning -> contracts",
+    "learning -> kernel",
+    "learning -> policy",
+    "memory -> (top-level)",
+    "memory -> contracts",
+    "memory -> inference",
+    "memory -> kernel",
+    "memory -> policy",
+    "policy -> contracts",
+    "resources -> (top-level)",
+    "resources -> contracts",
+    "resources -> kernel",
+    "sandbox -> contracts",
+    "sandbox -> kernel",
+    "telemetry -> (top-level)",
+    "telemetry -> contracts",
+    "verification -> contracts",
+    "verification -> policy",
+    "verification -> sandbox",
+    "verification -> telemetry"
+  ]
+}

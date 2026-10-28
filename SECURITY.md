@@ -12,8 +12,12 @@ The API binds loopback (127.0.0.1) by default with scoped authentication, Host/O
 
 Existing memory filtering/provenance is not application-level profile encryption. Sensitive profile enablement requires [revision-3 classification/vault evidence](docs/specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md#mvp-x07); [ADR 0003](adr/0003-personal-platform-classification.md) defines the planned compatibility transition. Do not treat legacy PRIVATE as an automatically exportable canonical label. Host administrator compromise is outside application-session isolation claims.
 
+## Private phone access
+
+An optional read-only phone observer exists (`panestria phone serve`, migration `0040_phone_devices`). It is off unless the owner enables it, serves TLS only on a literal private IPv4 address with an owner-supplied certificate, authenticates paired devices that can be revoked, and cannot start work, approve, merge or read raw/private artifacts. See [private phone ingress](docs/testing/PRIVATE_PHONE_INGRESS.md). It has not yet been verified on a real device (MVP-X12-TC08). Desktop APIs stay loopback-only and public ingress stays disabled.
+
 ## Planned boundaries
 
-The revision-3 MVP includes explicitly enabled private authenticated TLS read-only phone access; it is not implemented by this documentation. Keep the current API loopback-only and public ingress disabled. A private network is not sufficient authentication. Phone approvals, background push, general desktop actions and voice expand later with their own evidence.
+A private network is not sufficient authentication. Phone approvals, background push, general desktop actions and voice expand later with their own evidence.
 
 Quota-aware work uses scoped standing policy, reserves and no-extra-spend eligibility; stale/unknown measurements do not imply unlimited funds. Offline knowledge and training rights are separate. No documentation grants new account settings, provider spending, live inference or model-training authorization. API examples remain placeholders; health/errors must not disclose secrets. CI uses no real model credentials.
