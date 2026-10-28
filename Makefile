@@ -16,7 +16,8 @@ bootstrap:
 	uv sync --frozen --group dev
 
 lint:
-	uv run --frozen ruff check src tests
+	uv run --frozen ruff check .
+	uv run --frozen ruff format --check src tests tools migrations
 
 typecheck:
 	uv run --frozen mypy

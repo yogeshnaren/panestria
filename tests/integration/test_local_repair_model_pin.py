@@ -18,7 +18,9 @@ from panestria.kernel.uow import UnitOfWork
 
 @pytest.mark.parametrize("prepared_plan", [{"wall_seconds": 1800}], indirect=True)
 def test_manifest_pin_is_in_acknowledged_repair_intent_and_replay_keeps_original(
-    native_plan, tmp_path, record_property,
+    native_plan,
+    tmp_path,
+    record_property,
 ):
     owner, _, parent, _, claims = failed(native_plan)
     proof = returned(owner, parent, claims)
@@ -47,12 +49,16 @@ def test_manifest_pin_is_in_acknowledged_repair_intent_and_replay_keeps_original
     assert json.loads((output / "result.json").read_bytes())["model_manifest"] == selected.model_dump(mode="json")
     expected.write_text(model_manifest(template_sha256="9" * 64).for_json_output().model_dump_json())
     replay = LocalBuildRepair(owner, settings, BoundModel()).propose(
-        *args, local_model_run=True, idempotency_key="manifest",
+        *args,
+        local_model_run=True,
+        idempotency_key="manifest",
     )
     assert replay["replayed"] and replay["proposal_sha256"] == result["proposal_sha256"] and len(seen) == 1
     expected.rename(expected.with_name("preserved-new-work-model.json"))
     replay_missing = LocalBuildRepair(owner, settings, BoundModel()).propose(
-        *args, local_model_run=True, idempotency_key="manifest",
+        *args,
+        local_model_run=True,
+        idempotency_key="manifest",
     )
     assert replay_missing["replayed"] and len(seen) == 1
     assert json.loads((output / "result.json").read_bytes())["model_manifest"] == selected.model_dump(mode="json")

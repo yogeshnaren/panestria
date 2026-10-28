@@ -113,9 +113,7 @@ class WorktreeManager:
             names.update(child.name for child in attempts.iterdir())
         reports: list[CleanupReport] = []
         for attempt_id in sorted(names):
-            reports.append(
-                self._cleanup_one(base, attempt_id, records.get(attempt_id), now, live_attempts, store)
-            )
+            reports.append(self._cleanup_one(base, attempt_id, records.get(attempt_id), now, live_attempts, store))
         return tuple(reports)
 
     def _cleanup_one(
@@ -262,9 +260,7 @@ def _copy_outputs(worktree: Path, store: Path, root: Path) -> None:
         current = Path(dirpath)
         if not current.resolve().is_relative_to(root):
             raise ValueError("cleanup escapes the sandbox")
-        dirnames[:] = [
-            name for name in dirnames if name != ".git" and not (current / name).is_symlink()
-        ]
+        dirnames[:] = [name for name in dirnames if name != ".git" and not (current / name).is_symlink()]
         for name in filenames:
             child = current / name
             if name == ".git" or child.is_symlink():

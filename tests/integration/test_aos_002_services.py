@@ -123,8 +123,7 @@ def _wait_for_event_lock() -> None:
     with psycopg.connect(DATABASE_URL, autocommit=True) as watch:
         while time.monotonic() < deadline:
             waiting = watch.execute(
-                "SELECT count(*) FROM pg_stat_activity"
-                " WHERE wait_event_type = 'Lock' AND query LIKE %s",
+                "SELECT count(*) FROM pg_stat_activity WHERE wait_event_type = 'Lock' AND query LIKE %s",
                 ("%pg_advisory_xact_lock%",),
             ).fetchone()
             if waiting is not None and int(waiting[0]) >= 1:
@@ -328,9 +327,7 @@ def _assert_commit_order(database_url: str) -> None:
     thread.join(5)
     assert errors == []
     with _connect(database_url) as connection:
-        rows = connection.execute(
-            "SELECT seq, payload->>'writer' FROM panestria.task_event ORDER BY seq"
-        ).fetchall()
+        rows = connection.execute("SELECT seq, payload->>'writer' FROM panestria.task_event ORDER BY seq").fetchall()
     assert rows == [(1, "first"), (2, "second")]
 
 
@@ -383,9 +380,7 @@ def _assert_rollback_gap(database_url: str) -> None:
     thread.join(5)
     assert errors == []
     with _connect(database_url) as connection:
-        rows = connection.execute(
-            "SELECT seq, payload->>'writer' FROM panestria.task_event ORDER BY seq"
-        ).fetchall()
+        rows = connection.execute("SELECT seq, payload->>'writer' FROM panestria.task_event ORDER BY seq").fetchall()
     assert rows == [(2, "kept")]
 
 
@@ -450,9 +445,7 @@ def test_foreign_scope_and_mass_assignment(
                 goals.submit(UnitOfWork(connection), actor, payload, "rejected-" + code)
             assert denied.value.code == code
             connection.rollback()
-        rows = connection.execute(
-            "SELECT count(*), count(approved_by) FROM panestria.goal_contract"
-        ).fetchone()
+        rows = connection.execute("SELECT count(*), count(approved_by) FROM panestria.goal_contract").fetchone()
     assert rows == (1, 0)
 
 

@@ -15,9 +15,7 @@ from panestria.resources.primary import PrimaryLease
     [(1, b"", b""), (0, b"", b""), (0, b"CUDA_READY\n", b"synthetic-private-diagnostic")],
 )
 def test_failed_compute_probe_is_redacted(monkeypatch, code, out, err):
-    monkeypatch.setattr(
-        runtime.subprocess, "run", lambda *a, **kw: subprocess.CompletedProcess(a, code, out, err)
-    )
+    monkeypatch.setattr(runtime.subprocess, "run", lambda *a, **kw: subprocess.CompletedProcess(a, code, out, err))
     with pytest.raises(InferenceUnavailable, match="^gpu_initialization_unavailable$"):
         runtime.require_gpu_driver()
 

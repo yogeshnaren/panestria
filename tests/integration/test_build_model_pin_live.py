@@ -31,9 +31,14 @@ def test_actual_cached_cpu_json_uses_preselected_manifest(r1_database, tmp_path_
     root = tmp_path_factory.mktemp("jsonpin") / "owner-test"
     with first_run_files(root, Path(cache), 18763) as config:
         with psycopg.connect(r1_database) as c:
-            LocalSetupService().initialize(UnitOfWork(c), LocalSetupIntent(
-                owner_id=config.owner_id, project_id=config.project_id, intent="OFFLINE_ASK",
-            ))
+            LocalSetupService().initialize(
+                UnitOfWork(c),
+                LocalSetupIntent(
+                    owner_id=config.owner_id,
+                    project_id=config.project_id,
+                    intent="OFFLINE_ASK",
+                ),
+            )
     path = root / "local.json"
     path.write_text(json.dumps({**json.loads(path.read_text()), "pin_model_manifest": True}))
     config, token = load_local_settings(path)
@@ -50,14 +55,25 @@ def test_actual_cached_cpu_json_uses_preselected_manifest(r1_database, tmp_path_
     expected.write_text(selected.model_dump_json())
     expected.chmod(0o600)
     settings = PlanModelSettings(
-        schema_version=1, owner_id=config.owner_id, project_id=config.project_id, model_cache=Path(cache),
-        runtime_directory=root / "draft-runtime", model_manifest_file=expected,
+        schema_version=1,
+        owner_id=config.owner_id,
+        project_id=config.project_id,
+        model_cache=Path(cache),
+        runtime_directory=root / "draft-runtime",
+        model_manifest_file=expected,
     )
     assert expected_plan_manifest(settings) == selected
     request = InferenceRequest(
-        owner_id=str(config.owner_id), project_id=str(config.project_id), request_id=str(uuid4()),
-        model_ref=MODEL, prompt='Return ONLY the JSON object {"ready":true}.', label="PUBLIC",
-        trace_id=uuid4().hex, max_output_tokens=32, deadline_seconds=60.0, model_manifest_sha256=selected.sha256(),
+        owner_id=str(config.owner_id),
+        project_id=str(config.project_id),
+        request_id=str(uuid4()),
+        model_ref=MODEL,
+        prompt='Return ONLY the JSON object {"ready":true}.',
+        label="PUBLIC",
+        trace_id=uuid4().hex,
+        max_output_tokens=32,
+        deadline_seconds=60.0,
+        model_manifest_sha256=selected.sha256(),
     )
     result = LocalPlanModel(settings).generate(request)
     assert isinstance(json.loads(result.text), dict) and result.model_manifest_sha256 == selected.sha256()

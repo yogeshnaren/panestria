@@ -255,9 +255,7 @@ def test_policy_uses_the_action_not_the_requested_expectation(
     assert reports[1].required is False
 
 
-def test_missing_artifact_and_human_review_are_not_pass(
-    tmp_path: Path, record_property: pytest.RecordProperty
-) -> None:
+def test_missing_artifact_and_human_review_are_not_pass(tmp_path: Path, record_property: pytest.RecordProperty) -> None:
     record_property("gate_case_id", "AOS-004-TC02")
     digest = "cd" * 32
     contract = _contract(

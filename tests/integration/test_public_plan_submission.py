@@ -100,7 +100,7 @@ def test_concurrent_stage_creates_one_goal_checkset_and_proposal_before_separate
         assert c.execute("SELECT count(*) FROM panestria.task WHERE goal_id=%s", (proposal.goal_id,)).fetchone() == (0,)
         assert c.execute(
             "SELECT count(*) FROM panestria.acceptance_check a "
-                "JOIN panestria.goal_contract g ON g.id=a.contract_id WHERE g.goal_id=%s",
+            "JOIN panestria.goal_contract g ON g.id=a.contract_id WHERE g.goal_id=%s",
             (proposal.goal_id,),
         ).fetchone() == (3,)
         assert c.execute("SELECT status FROM panestria.goal WHERE id=%s", (proposal.goal_id,)).fetchone() == (

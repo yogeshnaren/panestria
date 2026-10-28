@@ -236,8 +236,7 @@ _UPGRADE = (
     " FOREIGN KEY (project_id, owner_id) REFERENCES panestria.project(id, owner_id))",
     "CREATE INDEX ix_task_goal ON panestria.task(goal_id)",
     "CREATE INDEX ix_event_goal_seq ON panestria.task_event(goal_id, seq)",
-    "CREATE INDEX ix_approvals_owner_pending"
-    " ON panestria.approval_request(owner_id, state, expires_at)",
+    "CREATE INDEX ix_approvals_owner_pending ON panestria.approval_request(owner_id, state, expires_at)",
 )
 
 _DOWNGRADE = (

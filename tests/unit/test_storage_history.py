@@ -24,8 +24,10 @@ pytestmark = pytest.mark.unit
 
 def config(tmp_path, **kwargs):
     settings = StorageSettings(
-        notifications_enabled=True, filesystem=tmp_path,
-        history_directory=tmp_path / "history", **kwargs,
+        notifications_enabled=True,
+        filesystem=tmp_path,
+        history_directory=tmp_path / "history",
+        **kwargs,
     )
     path = tmp_path / "settings.json"
     path.write_text(settings.model_dump_json())
@@ -50,8 +52,11 @@ def test_restart_preserves_original_sample_and_compares_growth_and_backup_policy
     path, settings = config(tmp_path, include_timeshift=True)
     actor = Actor(str(uuid4()), str(uuid4()))
     first = sample(settings)
-    first = replace(first, capacity=replace(first.capacity, available_bytes=20 * storage.GIB),
-                    timeshift={"status": "OBSERVED", "schedules": {"daily": False}})
+    first = replace(
+        first,
+        capacity=replace(first.capacity, available_bytes=20 * storage.GIB),
+        timeshift={"status": "OBSERVED", "schedules": {"daily": False}},
+    )
     old_disk = first.capacity
     monkeypatch.setattr(storage, "capacity", lambda _: replace(old_disk, available_bytes=10 * storage.GIB))
     monkeypatch.setattr(storage, "timeshift_settings", lambda: {"status": "OBSERVED", "schedules": {"daily": True}})

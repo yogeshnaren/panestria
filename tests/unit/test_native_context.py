@@ -18,9 +18,11 @@ def context(files):
 @pytest.mark.parametrize("content", [None, "original π\n"])
 def test_metadata_restores_exact_utf8_or_empty_selected_input_without_retaining_file_content(content):
     raw = b"" if content is None else content.encode()
-    files = [] if content is None else [
-        {"path": "notes/π.py", "sha256": hashlib.sha256(raw).hexdigest(), "content": content}
-    ]
+    files = (
+        []
+        if content is None
+        else [{"path": "notes/π.py", "sha256": hashlib.sha256(raw).hexdigest(), "content": content}]
+    )
     original = context(files)
     manifest = NativeContextManifest.from_context(original)
     assert '"content"' not in manifest.model_dump_json()

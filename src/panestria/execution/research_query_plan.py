@@ -161,7 +161,9 @@ class OwnerQueryPlan:
             identifier = str(uuid4())
             prompt = prompt_for(packet)
             selected = expected_json_manifest(
-                self.settings.model_manifest_file, self.settings.model_cache, self.settings.runtime_directory,
+                self.settings.model_manifest_file,
+                self.settings.model_cache,
+                self.settings.runtime_directory,
             )
             if selected is not None and (selected.model_ref != MODEL or selected.model_bundle_sha256 != MODEL_DIGEST):
                 raise KernelDenied("model_manifest_not_supported")

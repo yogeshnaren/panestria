@@ -79,7 +79,7 @@ def test_sse_reconnect_decimal_cursor(r1_task: dict[str, str], record_property: 
         f"/v1/activity/goals/{r1_task['goal']}/events",
         headers={"Authorization": "Bearer test-only-cli-token-at-least-16"},
     ).json()
-    assert [e["seq"] for e in metadata["events"]] == [str(9007199254740993+i) for i in range(3)]
+    assert [e["seq"] for e in metadata["events"]] == [str(9007199254740993 + i) for i in range(3)]
     assert metadata["next_cursor"] == "9007199254740995" and "sha256" not in str(metadata)
 
     def request(after: str | None = None) -> Request:
@@ -185,10 +185,11 @@ def test_sse_session_revocation_between_frames(
             await anext(stream.body_iterator)
 
     asyncio.run(scenario())
-    assert client.get(
-        f"/v1/goals/{r1_task['goal']}/events", headers={"Accept": "text/event-stream"}
-    ).status_code == 401
+    assert client.get(f"/v1/goals/{r1_task['goal']}/events", headers={"Accept": "text/event-stream"}).status_code == 401
     assert client.get(f"/v1/artifacts/{uuid4()}").status_code == 401
-    assert client.post(
-        "/v1/goals", json={}, headers={**origin, "X-Panestria-CSRF": paired.json()["csrf_token"]}
-    ).status_code == 401
+    assert (
+        client.post(
+            "/v1/goals", json={}, headers={**origin, "X-Panestria-CSRF": paired.json()["csrf_token"]}
+        ).status_code
+        == 401
+    )

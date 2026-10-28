@@ -24,12 +24,22 @@ def worker_failure_code(error: Exception) -> str:
         return "database_unavailable"
     if isinstance(error, KernelDenied):
         if error.code in {
-            "stale_lease", "policy_mismatch", "policy_changed", "read_only_observation_required",
-            "invocation_binding_mismatch", "invocation_inactive", "invocation_contract_changed",
-            "native_build_runtime_changed", "native_build_cancelled_or_deadline", "native_plan_claim_missing",
-            "native_connection_not_current", "native_connection_account_or_configuration_changed",
-            "native_connection_account_observation_stale_or_future", "native_connection_budget_unconfirmed",
-            "native_connection_reservation_required", "native_connection_deadline",
+            "stale_lease",
+            "policy_mismatch",
+            "policy_changed",
+            "read_only_observation_required",
+            "invocation_binding_mismatch",
+            "invocation_inactive",
+            "invocation_contract_changed",
+            "native_build_runtime_changed",
+            "native_build_cancelled_or_deadline",
+            "native_plan_claim_missing",
+            "native_connection_not_current",
+            "native_connection_account_or_configuration_changed",
+            "native_connection_account_observation_stale_or_future",
+            "native_connection_budget_unconfirmed",
+            "native_connection_reservation_required",
+            "native_connection_deadline",
         }:
             return error.code  # Only controller-owned literal codes, never arbitrary exception text.
         return "controller_authority_denied"

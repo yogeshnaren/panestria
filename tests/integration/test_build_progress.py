@@ -179,8 +179,11 @@ def test_failed_final_check_is_visible_but_has_no_merge_authority_and_scope_is_c
     repair, model = local(owner, tmp_path)
     with pytest.raises(KernelDenied, match="local_repair_repeated_failure_owner_review_required"):
         repair.propose(
-            revised.proposal.plan_id, revised.proposal.sha256(), current_proof,
-            tmp_path / "stalled-repair", local_model_run=True,
+            revised.proposal.plan_id,
+            revised.proposal.sha256(),
+            current_proof,
+            tmp_path / "stalled-repair",
+            local_model_run=True,
         )
     assert not model.calls and not (tmp_path / "stalled-repair").exists()
     with owner.connect() as c:

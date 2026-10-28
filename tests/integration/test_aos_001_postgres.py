@@ -21,8 +21,6 @@ from stack_support import COMPOSE, DATABASE_URL, TEST_DATABASE_PORT
 ROOT = Path(__file__).resolve().parents[2]
 
 
-
-
 @pytest.fixture(autouse=True)
 def _case_metadata(record_property: pytest.RecordProperty) -> None:
     commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False)

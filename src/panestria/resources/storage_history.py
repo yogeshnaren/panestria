@@ -96,7 +96,8 @@ class StorageHistory:
             held = os.fstat(self.directory_fd)
             if (
                 (held.st_dev, held.st_ino) != (info.st_dev, info.st_ino)
-                or held.st_uid != os.getuid() or held.st_mode & 0o077
+                or held.st_uid != os.getuid()
+                or held.st_mode & 0o077
             ):
                 raise ValueError
             self.directory = Path(f"/proc/self/fd/{self.directory_fd}")
@@ -171,18 +172,21 @@ class StorageHistory:
             if (
                 not stat.S_ISDIR(current.st_mode)
                 or (current.st_dev, current.st_ino) != (held.st_dev, held.st_ino)
-                or current.st_uid != os.getuid() or current.st_mode & 0o077
+                or current.st_uid != os.getuid()
+                or current.st_mode & 0o077
                 or _filesystem_hash(self.settings.filesystem) != self.filesystem_sha
             ):
                 raise ValueError
             if report.filesystem != str(self.settings.filesystem) or (
-                report.capacity.device is not None
-                and report.capacity.device != self.settings.filesystem.stat().st_dev
+                report.capacity.device is not None and report.capacity.device != self.settings.filesystem.stat().st_dev
             ):
                 raise ValueError
             sample = _Snapshot(
-                captured_at=datetime.now(UTC), collector_sha256=self.collector_sha,
-                settings_sha256=self.settings_sha, filesystem_sha256=self.filesystem_sha, report=report,
+                captured_at=datetime.now(UTC),
+                collector_sha256=self.collector_sha,
+                settings_sha256=self.settings_sha,
+                filesystem_sha256=self.filesystem_sha,
+                report=report,
             )
             raw = sample.model_dump_json().encode()
             if len(raw) > MAX_SAMPLE:
@@ -193,7 +197,8 @@ class StorageHistory:
             else:
                 fd = os.open(
                     self.directory / (_hash(raw) + ".json"),
-                    os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600,
+                    os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                    0o600,
                 )
                 with os.fdopen(fd, "wb") as stream:
                     stream.write(raw)
@@ -204,7 +209,8 @@ class StorageHistory:
             self.state = "UNAVAILABLE"
         code = "storage_history_" + self.state.lower()
         notice = StorageWarning(
-            code, "INFO" if self.state == "SAVED" else "WARNING",
+            code,
+            "INFO" if self.state == "SAVED" else "WARNING",
             "Private diagnostic history: " + self.state + ". Fixed4MiB logical data/512-entry budget "
             "(filesystem overhead extra); no automatic deletion. "
             "Previous compatible retained sample: " + (self.baseline_stamp or "UNKNOWN") + ". "

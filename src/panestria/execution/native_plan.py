@@ -416,10 +416,13 @@ class NativePlanRunner:
                             except Exception as error:
                                 # A claimed slot is deliberately retained until
                                 # a real outcome/reconciliation proves release safe.
-                                results.append({
-                                    "task_id": job.lease.task_id, "status": "UNCONFIRMED",
-                                    "reason": worker_failure_code(error),
-                                })
+                                results.append(
+                                    {
+                                        "task_id": job.lease.task_id,
+                                        "status": "UNCONFIRMED",
+                                        "reason": worker_failure_code(error),
+                                    }
+                                )
                                 stop_new = True
                 except BaseException:
                     self.cancel.set()

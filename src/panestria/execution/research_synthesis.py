@@ -142,17 +142,19 @@ class SynthesisReceipt:
 
 class LocalDraftModel:
     def __init__(
-        self, settings: SynthesisSettings, before_dispatch: Callable[[], None],
-        *, manifest: ModelManifest | None = None,
+        self,
+        settings: SynthesisSettings,
+        before_dispatch: Callable[[], None],
+        *,
+        manifest: ModelManifest | None = None,
     ):
         self.settings, self.before_dispatch = settings, before_dispatch
         self.manifest = manifest
 
     def generate(self, request: InferenceRequest) -> InferenceResult:
         settings = self.settings
-        if (
-            (settings.model_manifest_file is not None and self.manifest is None)
-            or request.model_manifest_sha256 != (self.manifest.sha256() if self.manifest is not None else None)
+        if (settings.model_manifest_file is not None and self.manifest is None) or request.model_manifest_sha256 != (
+            self.manifest.sha256() if self.manifest is not None else None
         ):
             raise InferenceUnavailable("model_manifest_mismatch")
         archive = Path(__file__).resolve().parents[3] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
@@ -284,7 +286,9 @@ class OwnerSynthesis:
                 return receipt
             prompt = prompt_for(packet)
             selected = expected_json_manifest(
-                self.settings.model_manifest_file, self.settings.model_cache, self.settings.runtime_directory,
+                self.settings.model_manifest_file,
+                self.settings.model_cache,
+                self.settings.runtime_directory,
             )
             if selected is not None and (selected.model_ref != MODEL or selected.model_bundle_sha256 != MODEL_DIGEST):
                 raise KernelDenied("model_manifest_not_supported")

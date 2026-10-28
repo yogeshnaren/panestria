@@ -269,8 +269,6 @@ def test_hung_process_and_output(record_property: pytest.RecordProperty, tmp_pat
     assert flooded.stdout_sha256 == hashlib.sha256(b"x" * OUTPUT_LIMIT).hexdigest()
 
 
-
-
 OWNER = "00000000-0000-4000-8000-000000000002"
 PROJECT = "00000000-0000-4000-8000-000000000003"
 GOAL = "00000000-0000-4000-8000-000000000001"
@@ -312,8 +310,7 @@ def _seed_store_task(connection: psycopg.Connection[object]) -> None:
         (GOAL, OWNER, PROJECT),
     )
     connection.execute(
-        "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
-        " VALUES (%s, %s, 1, %s::jsonb, %s)",
+        "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256) VALUES (%s, %s, 1, %s::jsonb, %s)",
         (CONTRACT, GOAL, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', digest),
     )
     connection.execute(
@@ -330,7 +327,7 @@ def _seed_store_task(connection: psycopg.Connection[object]) -> None:
         "INSERT INTO panestria.acceptance_check"
         " (id, contract_id, check_key, description, verifier_type, verifier_spec)"
         " VALUES (%s, %s, 'synthetic-required', 'required', 'trusted-command-ref',"
-        " '{\"type\":\"trusted-command-ref\"}'::jsonb)",
+        ' \'{"type":"trusted-command-ref"}\'::jsonb)',
         (CHECK, CONTRACT),
     )
 
@@ -527,15 +524,11 @@ def test_expired_worktree_cleanup_does_not_follow_symlinks(
     worktree = Path(manifest.worktree)
     (worktree / "escape").symlink_to(outside, target_is_directory=True)
     retained = manager.cleanup(root, now=1005, live_attempts={"attempt-live"})
-    assert retained == (
-        CleanupReport("attempt-live", "retained", "owner-a", manifest.disk_bytes, "live"),
-    )
+    assert retained == (CleanupReport("attempt-live", "retained", "owner-a", manifest.disk_bytes, "live"),)
     assert secret.read_text() == "stay\n"
     store = tmp_path / "store"
     removed = manager.cleanup(root, now=1010, live_attempts={"attempt-live"}, store=store)
-    assert removed == (
-        CleanupReport("attempt-live", "removed", "owner-a", manifest.disk_bytes, "expired"),
-    )
+    assert removed == (CleanupReport("attempt-live", "removed", "owner-a", manifest.disk_bytes, "expired"),)
     assert not worktree.exists()
     assert secret.read_text() == "stay\n"
     readme = b"base:alpha\n"
@@ -563,8 +556,7 @@ def test_expired_worktree_cleanup_does_not_follow_symlinks(
     live_dir.mkdir()
     (live_dir / "keep.txt").write_text("keep\n")
     reports = {
-        item.attempt_id: item
-        for item in manager.cleanup(root, now=2000, live_attempts={"still-live"}, store=store)
+        item.attempt_id: item for item in manager.cleanup(root, now=2000, live_attempts={"still-live"}, store=store)
     }
     assert reports["rogue-attempt"] == CleanupReport("rogue-attempt", "removed", "orphan", 7, "orphan")
     assert reports["linked-attempt"].reason == "unlinked-symlink"
@@ -624,9 +616,7 @@ def test_scripted_events_name_the_attempt_and_stay_unaccepted(
     assert [item.event_id for item in second.events()] == [item.event_id for item in recorded]
 
 
-def test_journey_publication_uses_the_stored_epoch(
-    record_property: pytest.RecordProperty, tmp_path: Path
-) -> None:
+def test_journey_publication_uses_the_stored_epoch(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
     _properties(record_property, "AOS-004-TC04", "chaos")
     _database()
     goal = "00000000-0000-4000-8000-000000000196"
@@ -1057,9 +1047,7 @@ def test_old_effect_does_not_stand_in_for_the_current_approval(record_property: 
         assert older_state is not None and older_state[0] == "PREPARED"
 
 
-def test_stored_pass_does_not_merge_a_different_commit(
-    record_property: pytest.RecordProperty, tmp_path: Path
-) -> None:
+def test_stored_pass_does_not_merge_a_different_commit(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
     _properties(record_property, "AOS-004-TC02", "security")
     _database()
     goal = "00000000-0000-4000-8000-000000000210"
@@ -1086,8 +1074,7 @@ def test_stored_pass_does_not_merge_a_different_commit(
             (contract_id, goal, json.dumps(body), digest),
         )
         connection.execute(
-            "INSERT INTO panestria.task (id, goal_id, contract_id, name, state)"
-            " VALUES (%s, %s, %s, 'commit', 'READY')",
+            "INSERT INTO panestria.task (id, goal_id, contract_id, name, state) VALUES (%s, %s, %s, 'commit', 'READY')",
             (task, goal, contract_id),
         )
         connection.commit()
@@ -1169,9 +1156,7 @@ def test_global_scope_denies_a_commit_without_a_path_check(
     actor = Actor(OWNER, PROJECT)
     body = json.loads((ROOT / "docs/fixtures/synthetic-goal-contract.json").read_text(encoding="utf-8"))
     body["goal_id"] = goal
-    body["acceptance"] = [
-        item for item in body["acceptance"] if item["verifier"]["type"] != "git-diff-path-check"
-    ]
+    body["acceptance"] = [item for item in body["acceptance"] if item["verifier"]["type"] != "git-diff-path-check"]
     sandbox = tmp_path / "global-scope"
     journey = SyntheticJourney()
     with psycopg.connect(DATABASE_URL) as connection:
@@ -1188,8 +1173,7 @@ def test_global_scope_denies_a_commit_without_a_path_check(
             (contract_id, goal, json.dumps(body), digest),
         )
         connection.execute(
-            "INSERT INTO panestria.task (id, goal_id, contract_id, name, state)"
-            " VALUES (%s, %s, %s, 'scope', 'READY')",
+            "INSERT INTO panestria.task (id, goal_id, contract_id, name, state) VALUES (%s, %s, %s, 'scope', 'READY')",
             (task, goal, contract_id),
         )
         connection.commit()
@@ -1227,8 +1211,7 @@ def test_global_scope_denies_a_commit_without_a_path_check(
             (evidence, task, attempt, file_hash, len(payload)),
         )
         checks = connection.execute(
-            "SELECT id::text FROM panestria.acceptance_check WHERE contract_id = %s AND required"
-            " ORDER BY check_key",
+            "SELECT id::text FROM panestria.acceptance_check WHERE contract_id = %s AND required ORDER BY check_key",
             (contract_id,),
         ).fetchall()
         assert len(checks) == 2

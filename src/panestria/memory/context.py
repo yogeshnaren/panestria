@@ -183,7 +183,8 @@ class ContextCompiler:
     def model_manifest(self, uow: UnitOfWork, actor: Actor, pack_id: str) -> ModelManifest | None:
         row = uow.execute(
             "SELECT metadata->'model_manifest' FROM panestria.context_pack"
-            " WHERE id=%s AND owner_id=%s AND project_id=%s", (pack_id, actor.owner_id, actor.project_id),
+            " WHERE id=%s AND owner_id=%s AND project_id=%s",
+            (pack_id, actor.owner_id, actor.project_id),
         ).fetchone()
         if row is None:
             raise KernelDenied("context_integrity_failed")

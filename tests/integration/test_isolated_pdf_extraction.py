@@ -19,13 +19,16 @@ def pdf(pages=(b"Hello static PDF",), *, feature=None, compressed=False):
     writer = PdfWriter()
     for text in pages:
         page = writer.add_blank_page(width=600, height=800)
-        font = DictionaryObject({
-            NameObject("/Type"): NameObject("/Font"), NameObject("/Subtype"): NameObject("/Type1"),
-            NameObject("/BaseFont"): NameObject("/Helvetica"),
-        })
-        page[NameObject("/Resources")] = DictionaryObject({
-            NameObject("/Font"): DictionaryObject({NameObject("/F1"): writer._add_object(font)})
-        })
+        font = DictionaryObject(
+            {
+                NameObject("/Type"): NameObject("/Font"),
+                NameObject("/Subtype"): NameObject("/Type1"),
+                NameObject("/BaseFont"): NameObject("/Helvetica"),
+            }
+        )
+        page[NameObject("/Resources")] = DictionaryObject(
+            {NameObject("/Font"): DictionaryObject({NameObject("/F1"): writer._add_object(font)})}
+        )
         content = DecodedStreamObject()
         escaped = text.replace(b"\\", b"\\\\").replace(b"(", b"\\(").replace(b")", b"\\)")
         content.set_data(b"BT /F1 12 Tf 72 720 Td (" + escaped + b") Tj ET")
@@ -36,9 +39,9 @@ def pdf(pages=(b"Hello static PDF",), *, feature=None, compressed=False):
     elif feature == "action":
         writer.add_js("app.alert('SYNTHETIC_NEVER_EXECUTE')")
     elif feature == "open-action":
-        root[NameObject("/OpenAction")] = DictionaryObject({
-            NameObject("/S"): NameObject("/Launch"), NameObject("/F"): TextStringObject("/tmp/never-execute")
-        })
+        root[NameObject("/OpenAction")] = DictionaryObject(
+            {NameObject("/S"): NameObject("/Launch"), NameObject("/F"): TextStringObject("/tmp/never-execute")}
+        )
     elif feature == "embedded":
         writer.add_attachment("synthetic.txt", b"NEVER_OPEN_ATTACHMENT")
     elif feature == "form":
@@ -52,9 +55,9 @@ def pdf(pages=(b"Hello static PDF",), *, feature=None, compressed=False):
             image[NameObject(name)] = NameObject(value)
         for name, value in {"/Width": 1, "/Height": 1, "/BitsPerComponent": 8}.items():
             image[NameObject(name)] = NumberObject(value)
-        writer.pages[0]["/Resources"][NameObject("/XObject")] = DictionaryObject({
-            NameObject("/Im1"): writer._add_object(image)
-        })
+        writer.pages[0]["/Resources"][NameObject("/XObject")] = DictionaryObject(
+            {NameObject("/Im1"): writer._add_object(image)}
+        )
     stream = io.BytesIO()
     writer.write(stream)
     return stream.getvalue()
@@ -77,12 +80,21 @@ def test_actual_pdf_static_text_has_exact_page_bytes_and_pinned_runtime(compress
     assert result.extractor_version == "pypdf-6.20.1-text-v1"
     assert result.pdf_bundle_sha256 == result.tokenizer_sha256 == PYPDF_BUNDLE_SHA256
     assert result.limitations == ("pdf-text-layer-only", "pdf-no-ocr", "pdf-layout-unverified")
-    record_property("pdf_reader_metadata", json.dumps({
-        "text_sha256": result.text_sha256, "page_spans": result.page_spans,
-        "bundle_sha256": result.pdf_bundle_sha256, "program_sha256": result.reader_program_sha256,
-        "profile_sha256": result.sandbox_profile_sha256, "effective_config_sha256": result.effective_config_sha256,
-        "limitations": result.limitations,
-    }, sort_keys=True))
+    record_property(
+        "pdf_reader_metadata",
+        json.dumps(
+            {
+                "text_sha256": result.text_sha256,
+                "page_spans": result.page_spans,
+                "bundle_sha256": result.pdf_bundle_sha256,
+                "program_sha256": result.reader_program_sha256,
+                "profile_sha256": result.sandbox_profile_sha256,
+                "effective_config_sha256": result.effective_config_sha256,
+                "limitations": result.limitations,
+            },
+            sort_keys=True,
+        ),
+    )
 
 
 def test_actual_pdf_instructions_are_text_not_actions_or_authority(tmp_path):
@@ -96,10 +108,15 @@ def test_actual_pdf_instructions_are_text_not_actions_or_authority(tmp_path):
 
 @pytest.mark.parametrize(
     "feature,reason",
-    [("encrypted", "pdf_encrypted"), ("action", "pdf_feature_unsupported"),
-     ("open-action", "pdf_feature_unsupported"), ("embedded", "pdf_feature_unsupported"),
-     ("form", "pdf_feature_unsupported"), ("annotation", "pdf_feature_unsupported"),
-     ("image", "pdf_feature_unsupported")],
+    [
+        ("encrypted", "pdf_encrypted"),
+        ("action", "pdf_feature_unsupported"),
+        ("open-action", "pdf_feature_unsupported"),
+        ("embedded", "pdf_feature_unsupported"),
+        ("form", "pdf_feature_unsupported"),
+        ("annotation", "pdf_feature_unsupported"),
+        ("image", "pdf_feature_unsupported"),
+    ],
 )
 def test_actual_pdf_unsupported_features_never_return_partial_complete_text(feature, reason):
     result = read(pdf(feature=feature))

@@ -69,7 +69,7 @@ def test_script_self_read_fails_without_file_staging_fallback(tmp_path):
 
 
 def test_actual_python_module_identity_supports_annotations_and_dataclasses(tmp_path):
-    code = '''from __future__ import annotations
+    code = """from __future__ import annotations
 import __main__,sys
 from dataclasses import dataclass,fields
 from typing import ClassVar
@@ -80,7 +80,7 @@ class Example:
 assert [item.name for item in fields(Example)] == ['value']
 assert __main__.Example is Example and sys.modules['__main__'].__dict__ is globals()
 print('memory-module-ok')
-'''
+"""
     registry, request, permit, authority = setup(tmp_path, code)
     result = NativeToolGateway(permit.workspace.parent, registry, authority).execute(request, permit)
     assert result.outcome == "completed" and result.sandbox.output == b"memory-module-ok\n"

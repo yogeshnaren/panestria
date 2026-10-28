@@ -80,7 +80,11 @@ class OwnerCollection:
         return hashlib.sha256(json.dumps(review, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
     def collect(
-        self, request_id: str, queries: tuple[SecretStr, ...], *, public_web: bool,
+        self,
+        request_id: str,
+        queries: tuple[SecretStr, ...],
+        *,
+        public_web: bool,
         expected_review_sha256: str | None = None,
     ) -> CollectionReceipt:
         if public_web is not True or type(queries) is not tuple or not 1 <= len(queries) <= 16:

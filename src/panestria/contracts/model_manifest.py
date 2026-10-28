@@ -61,7 +61,15 @@ class ModelManifest(BaseModel):
         binding. Unknown tokenizer equivalence is incompatible, not guessed.
         """
         names = (
-            "tokenizer_container_sha256", "tokenizer_identity", "template_sha256", "system_sha256",
-            "quantization", "runtime_profile", "modalities", "tools", "max_context_tokens", "token_bound",
+            "tokenizer_container_sha256",
+            "tokenizer_identity",
+            "template_sha256",
+            "system_sha256",
+            "quantization",
+            "runtime_profile",
+            "modalities",
+            "tools",
+            "max_context_tokens",
+            "token_bound",
         )
         return all(getattr(self, name) == getattr(other, name) for name in names)
