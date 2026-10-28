@@ -78,6 +78,11 @@ jobs:
       - name: Secret scan
         if: steps.proof.outputs.already_tested != 'true'
         run: uv run --frozen python tools/secret_scan.py
+      - name: Public surface compatibility
+        if: steps.proof.outputs.already_tested != 'true'
+        run: |
+          uv run --frozen python tools/compat.py cli-surface --check
+          uv run --frozen python tools/compat.py check --baseline evidence/regression-baseline-2026-10-28/snapshot.json
       - name: Retain source-equivalence decision
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

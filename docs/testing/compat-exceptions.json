@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "policy": "Intended surface changes since the recorded baseline. Each entry: match (prefix of a tools/compat.py difference line), reason, finding (review/plan id). Behavior-preserving PRs add nothing here.",
+  "baseline": "evidence/regression-baseline-2026-10-28/snapshot.json",
+  "exceptions": []
+}
