@@ -32,7 +32,7 @@ uv run --frozen alembic -c migrations/alembic.ini upgrade head
 docker compose -f compose.yaml -p panestria-s3 down -v
 ```
 
-`upgrade head` applies every migration in `migrations/versions` through the current head, `0041_memory_restricted_fts`; check with `uv run --frozen alembic -c migrations/alembic.ini heads`. Most downgrades refuse to discard data; take a backup before upgrading a database that holds real data. `down -v` removes only the Compose project volume `panestria_s3_pgdata`. The reset helper refuses any other volume name and refuses a symlink data directory.
+`upgrade head` applies every migration in `migrations/versions` through the current head, `0042_task_event_kind_indexes`; check with `uv run --frozen alembic -c migrations/alembic.ini heads`. Most downgrades refuse to discard data; take a backup before upgrading a database that holds real data. `down -v` removes only the Compose project volume `panestria_s3_pgdata`. The reset helper refuses any other volume name and refuses a symlink data directory.
 
 After `uv sync --frozen --group dev` has populated the cache, `UV_OFFLINE=1 uv sync --frozen --group dev` reinstalls without network. That check is not a fresh-machine bootstrap.
 
