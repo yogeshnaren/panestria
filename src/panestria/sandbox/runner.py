@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
+from panestria.contracts.private_paths import folded_name
 from panestria.sandbox.native_tool_input import MAX_FRAME_BYTES
 from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile, SandboxRejected
 
@@ -203,7 +204,8 @@ class DockerSandbox:
                 if status.st_nlink > 1:
                     raise SandboxRejected("workspace_hardlink_denied")
                 usage += status.st_size
-            if entry.name in {".ssh", ".aws", ".credentials.json", "secrets"} or entry.name.startswith(".env"):
+            name = folded_name(entry.name)
+            if name in {".ssh", ".aws", ".credentials.json", "secrets"} or name.startswith(".env"):
                 raise SandboxRejected("private_workspace_path")
         if usage > profile.workspace_bytes:
             raise SandboxRejected("workspace_quota_exceeded")

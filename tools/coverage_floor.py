@@ -4,6 +4,10 @@ Coverage is a floor, not a goal: each critical package may never drop below its
 recorded line and branch percentages. Floors only move up; `--write` proposes
 new floors from a measured run (measured minus one point, never below the old
 floor). Lanes record data with `tools/ci_tests.py SUITE --coverage`.
+
+Floors describe the whole non-live suite, so they are enforced only on full-profile
+runs (pushes to main, nightly, full dispatch). A pull request's required profile
+selects tests by the changed files; `--report-only` prints its measurement.
 """
 
 from __future__ import annotations
@@ -87,6 +91,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("data", nargs="+", type=Path, help="coverage data files from each lane")
     parser.add_argument("--write", action="store_true", help="raise floors from this measurement")
+    parser.add_argument("--report-only", action="store_true", help="print the measurement without enforcing floors")
     args = parser.parse_args()
     measured = measure(combine(args.data))
     document = json.loads(FLOORS.read_text())
@@ -99,8 +104,8 @@ def main() -> int:
         return 0
     problems = violations(measured, floors)
     for problem in problems:
-        print(f"coverage_floor_violation: {problem}")
-    return 1 if problems else 0
+        print(f"{'coverage_below_floor_not_enforced' if args.report_only else 'coverage_floor_violation'}: {problem}")
+    return 1 if problems and not args.report_only else 0
 
 
 if __name__ == "__main__":

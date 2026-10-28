@@ -3,11 +3,12 @@
 import base64
 import hashlib
 import json
+from pathlib import Path
 
 import pytest
 
 import panestria.brokers.research.reader as module
-from panestria.brokers.research.pdf_bundle import PYPDF_BUNDLE_SHA256, PdfBundleUnavailable
+from panestria.brokers.research.pdf_bundle import PDF_EXTRACTOR, PYPDF_BUNDLE_SHA256, PdfBundleUnavailable
 from panestria.brokers.research.reader import IsolatedTextReader
 from panestria.sandbox.runner import DockerSandbox, SandboxReceipt
 
@@ -39,7 +40,7 @@ def test_pdf_receipt_must_bind_bundle_limitations_and_exact_utf8_page_spans(monk
         "text_sha256": hashlib.sha256(encoded).hexdigest(),
         "text_size": len(encoded),
         "text_b64": base64.b64encode(encoded).decode(),
-        "extractor_version": "pypdf-6.20.1-text-v1",
+        "extractor_version": PDF_EXTRACTOR,
         "normalization_version": "nfc-utf8-v1",
         "unicode_version": "15.0.0",
         "tokenizer_sha256": PYPDF_BUNDLE_SHA256,
@@ -99,3 +100,21 @@ def test_pdf_bundle_unconfirmed_never_falls_back_to_unconfined_reader(monkeypatc
     )
     assert result.outcome == "UNKNOWN" and result.text is None
     assert len(calls) == (0 if when == "before" else 1)
+
+
+def test_in_container_worker_pins_match_the_host_bundle() -> None:
+    from panestria.brokers.research import pdf_bundle, pdf_worker
+
+    assert pdf_worker.BUNDLE_SHA256 == pdf_bundle.PYPDF_BUNDLE_SHA256
+    source = Path(pdf_worker.__file__).read_text(encoding="utf-8")
+    assert f'pypdf.__version__ != "{pdf_bundle.PYPDF_VERSION}"' in source
+    assert f'"extractor_version": "{PDF_EXTRACTOR}"' in source
+
+
+def test_receipts_from_the_previous_pinned_extractor_stay_verifiable() -> None:
+    from panestria.brokers.research.pdf_bundle import PDF_EXTRACTOR_BUNDLES
+
+    assert PDF_EXTRACTOR_BUNDLES["pypdf-6.20.1-text-v1"] == (
+        "ee7677af7c459d97f4d1ee9a715e5b4d19fecb3295d2d596b6d4a6ac076b6c5a"
+    )
+    assert PDF_EXTRACTOR_BUNDLES[PDF_EXTRACTOR] == PYPDF_BUNDLE_SHA256
