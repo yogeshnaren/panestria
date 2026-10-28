@@ -200,8 +200,15 @@ jobs:
           pattern: ci-*-${{ github.sha }}
           path: evidence
           merge-multiple: true
-      - name: Enforce coverage floors
-        run: uv run --frozen python tools/coverage_floor.py evidence/coverage-fast evidence/coverage-kernel evidence/coverage-platform evidence/coverage-research evidence/coverage-boundary
+      - name: Enforce coverage floors on full-profile runs
+        # Floors describe the whole suite; a pull request's required profile
+        # selects tests by changed files, so its measurement is reported only.
+        env:
+          CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || (github.event_name == 'push' || github.event_name == 'schedule') && 'full' || 'required' }}
+        run: |
+          mode=()
+          if [ "$CI_PROFILE" != full ]; then mode=(--report-only); fi
+          uv run --frozen python tools/coverage_floor.py "${mode[@]}" evidence/coverage-fast evidence/coverage-kernel evidence/coverage-platform evidence/coverage-research evidence/coverage-boundary
       - name: Retain combined coverage
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
