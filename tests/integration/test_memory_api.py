@@ -91,10 +91,8 @@ def test_http_privacy_review_is_separate_from_application(r1_task: dict[str, str
         headers=CLI,
     )
     assert decided.status_code == 200
-    assert (
-        client.get("/v1/memory/search", params={"q": "preference"}, headers=CLI).json()["hits"][0]["label"]
-        == "RESTRICTED"
-    )
+    # Approval alone applies nothing; the restricted original stays unindexed (MVP-X07).
+    assert client.get("/v1/memory/search", params={"q": "preference"}, headers=CLI).json()["hits"] == []
     applied = client.post(
         f"/v1/memory/{original['item_id']}/correct", json={**proposal, "review_id": record["review_id"]}, headers=CLI
     )

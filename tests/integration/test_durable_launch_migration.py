@@ -62,8 +62,18 @@ def test_actual_backup_restore_retains_immutable_intent_and_event_counter_after_
         service.record(UnitOfWork(c), actor, binding, identity, intent)
     with psycopg.connect(r1_task["dsn"]) as c:
         quota_history = c.execute("SELECT EXISTS(SELECT 1 FROM panestria.quota_observation)").fetchone()[0]
+        restricted_memory = c.execute(
+            "SELECT EXISTS(SELECT 1 FROM panestria.memory_classification WHERE effective_label='RESTRICTED')"
+        ).fetchone()[0]
     refused = migrate(r1_task["dsn"], "downgrade", "0027_connection_reviews")
-    expected_guard = b"quota observation audit exists" if quota_history else b"sandbox launch audit exists"
+    # The newest populated guard refuses first.
+    expected_guard = (
+        b"restricted memory exists"
+        if restricted_memory
+        else b"quota observation audit exists"
+        if quota_history
+        else b"sandbox launch audit exists"
+    )
     assert refused.returncode != 0 and expected_guard in refused.stderr
     with psycopg.connect(r1_task["dsn"]) as c:
         assert c.execute("SELECT version_num FROM alembic_version").fetchone() == (HEAD,)

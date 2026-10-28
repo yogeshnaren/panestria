@@ -423,6 +423,9 @@ def test_audit_actual_dump_restore_and_downgrade_refusal(configured, record_prop
     with psycopg.connect(task["dsn"]) as c:
         quota_history = c.execute("SELECT EXISTS(SELECT 1 FROM panestria.quota_observation)").fetchone()[0]
         launch_history = c.execute("SELECT EXISTS(SELECT 1 FROM panestria.worker_invocation_launch)").fetchone()[0]
+        restricted_memory = c.execute(
+            "SELECT EXISTS(SELECT 1 FROM panestria.memory_classification WHERE effective_label='RESTRICTED')"
+        ).fetchone()[0]
     refused = subprocess.run(
         [str(root / ".venv/bin/alembic"), "-c", "migrations/alembic.ini", "downgrade", "0026_claim_evidence"],
         cwd=root,
@@ -431,7 +434,9 @@ def test_audit_actual_dump_restore_and_downgrade_refusal(configured, record_prop
         timeout=30,
     )
     expected_guard = (
-        b"quota observation audit exists"
+        b"restricted memory exists"
+        if restricted_memory
+        else b"quota observation audit exists"
         if quota_history
         else b"sandbox launch audit exists"
         if launch_history

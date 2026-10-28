@@ -207,6 +207,9 @@ def test_setup_dump_restore_and_populated_downgrade_guard(r1_database):
                 launch_history = c.execute(
                     "SELECT EXISTS(SELECT 1 FROM panestria.worker_invocation_launch)"
                 ).fetchone()[0]
+                restricted_memory = c.execute(
+                    "SELECT EXISTS(SELECT 1 FROM panestria.memory_classification WHERE effective_label='RESTRICTED')"
+                ).fetchone()[0]
             # Use URI form for Alembic, never show credentials in assertion output.
             restored_url = r1_database.rsplit("/", 1)[0] + "/" + params["dbname"]
             guarded = subprocess.run(
@@ -219,7 +222,9 @@ def test_setup_dump_restore_and_populated_downgrade_guard(r1_database):
             # The newest populated audit layer must stop downgrade first.
             # Verify the exact expected guard and unchanged setup/head below.
             expected_guard = (
-                "quota observation audit exists"
+                "restricted memory exists"
+                if restricted_memory
+                else "quota observation audit exists"
                 if quota_history
                 else "sandbox launch audit exists"
                 if launch_history
