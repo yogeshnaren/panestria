@@ -22,7 +22,11 @@ def _worker(tmp_path: Path) -> tuple[Path, Path]:
 
 
 def _profile() -> SandboxProfile:
-    return SandboxProfile(uid=os.getuid(), gid=os.getgid(), wall_seconds=30, workspace_bytes=QUOTA)
+    # Ample memory: dirty page cache from the writer must not trip the memory
+    # limit (an OOM kill correctly reports memory_limit) before the quota does.
+    return SandboxProfile(
+        uid=os.getuid(), gid=os.getgid(), wall_seconds=30, workspace_bytes=QUOTA, memory_bytes=1024**3
+    )
 
 
 @pytest.mark.docker_boundary
