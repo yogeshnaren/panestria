@@ -44,6 +44,7 @@ class ReaderObservation:
     limitations: tuple[str, ...] = ()
     raw_sha256: str | None = None
     raw_size_bytes: int | None = None
+    hidden_bytes_dropped: int | None = None
 
 
 def _closed_pairs(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -168,7 +169,8 @@ class IsolatedTextReader:
                         effective_config_sha256=receipt.effective_config_sha256,
                     )
                 pdf_keys = {"pdf_bundle_sha256", "page_spans", "limitations"} if is_pdf else set()
-                if set(body) != pdf_keys | {
+                html_keys = {"hidden_bytes_dropped"} if content_type == "text/html" else set()
+                if set(body) != pdf_keys | html_keys | {
                     "outcome",
                     "reason",
                     "raw_sha256",
@@ -186,7 +188,7 @@ class IsolatedTextReader:
                 text = text_bytes.decode("utf-8", errors="strict")
                 extractor = {
                     "text/plain": "strict-utf8-v1",
-                    "text/html": "htmlparser-text-v1",
+                    "text/html": reader_worker.HTML_EXTRACTOR,
                     "application/pdf": PDF_EXTRACTOR,
                 }.get(content_type)
                 if extractor is None:
@@ -207,6 +209,13 @@ class IsolatedTextReader:
                     or unicodedata.normalize("NFC", text) != text
                     or type(body["tokenizer_sha256"]) is not str
                     or not re.fullmatch(r"[0-9a-f]{64}", body["tokenizer_sha256"])
+                    or (
+                        html_keys
+                        and (
+                            type(body["hidden_bytes_dropped"]) is not int
+                            or not 0 <= body["hidden_bytes_dropped"] <= len(raw)
+                        )
+                    )
                 ):
                     raise ValueError
                 spans: tuple[tuple[int, int], ...] = ()
@@ -251,6 +260,7 @@ class IsolatedTextReader:
                     limitations=pdf_worker.LIMITATIONS if is_pdf else (),
                     raw_sha256=expected_sha256,
                     raw_size_bytes=len(raw),
+                    hidden_bytes_dropped=body["hidden_bytes_dropped"] if html_keys else None,
                 )
         except Exception:
             return ReaderObservation("UNKNOWN", "reader_unavailable")

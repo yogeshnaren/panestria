@@ -216,7 +216,7 @@ class SourceStore:
                 )
                 expected_extractor = {
                     "text/plain": "strict-utf8-v1",
-                    "text/html": "htmlparser-text-v1",
+                    "text/html": reader_worker.HTML_EXTRACTOR,
                     "application/pdf": PDF_EXTRACTOR,
                 }.get(fetched.content_type or "")
                 if (

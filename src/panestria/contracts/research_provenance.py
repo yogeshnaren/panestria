@@ -39,7 +39,13 @@ class RetainedReaderReceipt(ResearchContract):
     request_id: ResearchId
     raw: ResearchArtifactRef
     text: ResearchArtifactRef
-    extractor_version: Literal["strict-utf8-v1", "htmlparser-text-v1", "pypdf-6.20.1-text-v1", "pypdf-6.21.2-text-v1"]
+    extractor_version: Literal[
+        "strict-utf8-v1",
+        "htmlparser-text-v1",
+        "htmlparser-visible-text-v2",
+        "pypdf-6.20.1-text-v1",
+        "pypdf-6.21.2-text-v1",
+    ]
     tokenizer_sha256: Sha256
     program_sha256: Sha256
     profile_sha256: Sha256
