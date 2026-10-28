@@ -12,6 +12,16 @@
       "match": "added denial_codes[PreviewRejected:invalid_preview_expiry]",
       "reason": "Approval requests now bound preview destination to printable ASCII and expiry to 366 days; new deny code, existing codes unchanged.",
       "finding": "R3-REMEDIATION-PLAN 1.5 / SEC-L1"
+    },
+    {
+      "match": "added denial_codes[SandboxRejected:invalid_workspace_cap]",
+      "reason": "SandboxProfile.workspace_bytes is validated to 1 MiB..16 GiB; new deny code.",
+      "finding": "R3-REMEDIATION-PLAN 1.4 / SEC-M1"
+    },
+    {
+      "match": "added denial_codes[SandboxRejected:workspace_quota_exceeded]",
+      "reason": "A workspace already over its quota is refused before launch; the same reason names a receipt stopped by the quota watchdog.",
+      "finding": "R3-REMEDIATION-PLAN 1.4 / SEC-M1"
     }
   ]
 }
