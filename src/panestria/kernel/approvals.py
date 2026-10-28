@@ -9,7 +9,13 @@ from uuid import uuid4
 
 from psycopg.errors import UniqueViolation
 
-from panestria.contracts.approval import ActionPreview, PreviewRejected, effect_digest, load_preview
+from panestria.contracts.approval import (
+    ActionPreview,
+    PreviewRejected,
+    effect_digest,
+    load_preview,
+    require_request_bounds,
+)
 from panestria.contracts.task import ALLOWED_TRANSITIONS
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
@@ -91,6 +97,9 @@ class ApprovalService:
     def request(self, uow: UnitOfWork, actor: Actor, document: dict[str, Any]) -> ApprovalView:
         try:
             preview = load_preview(document)
+            now = uow.execute("SELECT clock_timestamp()").fetchone()
+            assert now is not None
+            require_request_bounds(preview, now[0])
         except PreviewRejected as exc:
             raise KernelDenied(exc.code) from None
         if preview.owner_id != actor.owner_id or preview.project_id != actor.project_id:

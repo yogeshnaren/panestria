@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import Literal
 
 DEFAULT_IMAGE = "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9"
+# Total bytes a writable workspace may hold, and the per-file size limit.
+DEFAULT_WORKSPACE_BYTES = 1024**3
 
 
 class SandboxRejected(Exception):
@@ -31,6 +33,7 @@ class SandboxProfile:
     output_bytes: int = 128 * 1024
     tmp_bytes: int = 32 * 1024 * 1024
     stdin_mode: Literal["closed", "native-frame-v1"] = "closed"
+    workspace_bytes: int = DEFAULT_WORKSPACE_BYTES
 
     @property
     def workspace_readonly(self) -> bool:
@@ -53,6 +56,8 @@ class SandboxProfile:
             raise SandboxRejected("invalid_output_deadline")
         if not 1024**2 <= self.tmp_bytes <= 256 * 1024**2:
             raise SandboxRejected("invalid_tmp_cap")
+        if type(self.workspace_bytes) is not int or not 1024**2 <= self.workspace_bytes <= 16 * 1024**3:
+            raise SandboxRejected("invalid_workspace_cap")
 
     def sha256(self) -> str:
         body = asdict(self)
@@ -60,6 +65,9 @@ class SandboxProfile:
         # explicit new profile binding, never a widening under an old digest.
         if self.stdin_mode == "closed":
             del body["stdin_mode"]
+        # The default quota narrows, never widens, an existing identity.
+        if self.workspace_bytes == DEFAULT_WORKSPACE_BYTES:
+            del body["workspace_bytes"]
         return hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 

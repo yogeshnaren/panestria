@@ -320,3 +320,43 @@ def test_role_expiry_configuration_change_and_certificate_pin(r1_migration_task,
     finally:
         observer.state.health.shutdown()
         changed.state.health.shutdown()
+
+
+def test_sec_l1_phone_cap_counts_live_devices_and_lists_newest_first(r1_migration_task, tmp_path):
+    from panestria.api.phone import phone_service
+    from panestria.kernel.errors import KernelDenied
+
+    f = r1_migration_task
+    _, config, token = configuration(f, tmp_path)
+    actor = Actor(f["owner"], f["project"])
+    service = phone_service(config, token)
+
+    def seed(c, revoked):
+        c.execute(
+            "WITH s AS (INSERT INTO panestria.browser_session"
+            "(id,token_hash,csrf_hash,owner_id,project_id,created_at,expires_at,revoked_at) "
+            "SELECT gen_random_uuid(),md5(g::text||%(k)s)||md5(g::text||'t'||%(k)s),"
+            "md5(g::text||'c'||%(k)s)||md5(%(k)s||g::text),"
+            "%(o)s,%(p)s,clock_timestamp()-interval '1 day',clock_timestamp()+interval '1 hour',"
+            "CASE WHEN %(r)s THEN clock_timestamp() END FROM generate_series(1,256) g RETURNING id) "
+            "INSERT INTO panestria.phone_device(session_id,owner_id,project_id,scope_ref) "
+            "SELECT id,%(o)s,%(p)s,%(scope)s FROM s",
+            {
+                "k": str(revoked),
+                "o": actor.owner_id,
+                "p": actor.project_id,
+                "r": revoked,
+                "scope": service.challenge_scope,
+            },
+        )
+
+    with psycopg.connect(f["dsn"]) as c:
+        seed(c, True)
+        paired = service.pair(UnitOfWork(c), actor, service.issue_pairing_code(UnitOfWork(c), actor))
+        listed = service.devices(UnitOfWork(c), actor)
+        assert len(listed) == 256 and listed[0]["session_id"] == paired.session_id
+        assert listed[0]["state"] == "ACTIVE" and {item["state"] for item in listed[1:]} == {"REVOKED"}
+    with psycopg.connect(f["dsn"]) as c:
+        seed(c, False)
+        with pytest.raises(KernelDenied, match="phone_device_history_limit"):
+            service.pair(UnitOfWork(c), actor, service.issue_pairing_code(UnitOfWork(c), actor))
