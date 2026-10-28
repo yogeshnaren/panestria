@@ -128,6 +128,7 @@ were not touched.
 | Fast lane (`ci_tests.py fast --profile full`) | 940 pass, 11 fail. 3 failures come from the host `uv` 0.11.32 on PATH and pass with 0.12.3. The other 8 come from running as root without the required platform features. The product refuses euid 0 by design, but these "unit" tests do not skip. |
 | Kernel lane (Docker + PostgreSQL) | 331 pass, 32 fail, 1 error. **Environmental:** builds stop because the product refuses root and native-platform prerequisites are absent. |
 | Research lane | 165 pass, 46 fail, 77 error. **Environmental:** the reader sandbox reports `reader_unavailable`, raised from a broad `except Exception` (brokers/research/reader.py:251). |
+| Platform lane | 556 pass, 218 fail, 37 error. **Environmental:** the product refuses root (`root_user_denied`, `unprivileged_probe_required`), and the Mission Control dist was not built locally (`mission_build_required`). |
 | Authoritative CI for this code | PR run [40066439918](https://github.com/yogeshnaren/panestria/actions/runs/40066439918) passed all four lanes for the merged content. It ran the **required** profile, which defers named regressions. |
 | `main` CI for HEAD | Run [40067221126](https://github.com/yogeshnaren/panestria/actions/runs/40067221126) **skipped lint, typecheck and every behavioural lane**, reusing the PR's merge proof (see F-CI1). |
 | Hermetic coverage (unit + contract only) | 32.4% line, 18.9% branch. Whole-suite coverage is measured nowhere. |
