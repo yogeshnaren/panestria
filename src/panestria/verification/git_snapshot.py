@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from functools import partial
 from pathlib import Path, PurePosixPath
 
+from panestria.contracts.private_paths import folded_name
+
 
 class SnapshotRejected(Exception):
     pass
@@ -117,17 +119,16 @@ def _safe_path(raw: bytes) -> str:
     except UnicodeError:
         raise SnapshotRejected("unsupported_path_encoding") from None
     path = PurePosixPath(name)
+    folded = [folded_name(part) for part in path.parts]
     if (
         not name
         or path.is_absolute()
         or path.as_posix() != name
-        or any(
-            part in {".", "..", ".git", ".ssh", ".aws", ".claude", "secrets"} or part.startswith(".env")
-            for part in path.parts
-        )
+        or any(part in {".", ".."} for part in path.parts)
+        or any(part in {".git", ".ssh", ".aws", ".claude", "secrets"} or part.startswith(".env") for part in folded)
         or any(ord(character) < 32 for character in name)
         or "\\" in name
-        or path.name == ".mcp.json"
+        or (folded and folded[-1] == ".mcp.json")
     ):
         raise SnapshotRejected("unsafe_candidate_path")
     return name
