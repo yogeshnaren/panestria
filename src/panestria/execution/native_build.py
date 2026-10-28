@@ -26,6 +26,7 @@ from panestria.contracts.native_context import NativeContextManifest
 from panestria.contracts.native_model import NativeModel, validate_native_model
 from panestria.contracts.policy import Action, PolicyRequest
 from panestria.execution.scoped_bash import BuildReview, ScopedBashController
+from panestria.execution.source_digest import source_sha256
 from panestria.execution.worker_authority import worker_failure_code
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.invocations import InvocationService
@@ -45,14 +46,10 @@ from panestria.verification.registry import CommandRegistry
 
 def runtime_versions(native_model: NativeModel | None = None) -> dict[str, str]:
     validate_native_model(native_model)
-    source = Path(__file__).resolve().parents[1]
-    digest = hashlib.sha256()
-    for path in sorted(source.rglob("*.py")):
-        digest.update(str(path.relative_to(source)).encode() + b"\0" + path.read_bytes())
     return {
         "profile": PROFILE,
         "binary_sha256": PINNED_BINARY_SHA256,
-        "source_sha256": digest.hexdigest(),
+        "source_sha256": source_sha256(Path(__file__).resolve().parents[1]),
         "image": DEFAULT_IMAGE,
         **({"requested_model": native_model} if native_model is not None else {}),
     }
