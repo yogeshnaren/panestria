@@ -56,9 +56,11 @@ def workspace_usage(root: Path) -> int | None:
 class _WorkspaceWatch:
     """Poll a writable workspace's size off the output loop; flag once over quota.
 
-    The interval grows with scan cost. Between scans a writer can overshoot by
-    its throughput over one interval; the per-file size limit bounds any single
-    file, and the runner rescans once after the worker stops.
+    This is a watchdog, not a filesystem quota: a writer overshoots by its
+    throughput over one scan interval plus kill latency (hundreds of MiB on a
+    fast disk). The interval grows with scan cost; the per-file size limit
+    bounds any single file, and the runner rescans once after the worker stops.
+    A hard cap needs a quota-capable filesystem for the workspace root.
     """
 
     def __init__(self, root: Path, limit: int) -> None:

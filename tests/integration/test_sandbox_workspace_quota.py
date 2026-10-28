@@ -36,9 +36,10 @@ for index in itertools.count():
     receipt = DockerSandbox(root).run(worker, ("/usr/local/bin/python", "-u", "-c", program), _profile())
     assert receipt.reason == "workspace_quota_exceeded", receipt
     assert receipt.elapsed_seconds < 25
-    # Overshoot is bounded by writer throughput over one scan interval.
+    # Not a hard filesystem quota: overshoot is the writer's throughput over one
+    # scan interval plus kill latency (about 415 MiB on a CI runner's disk).
     usage = workspace_usage(worker)
-    assert usage is not None and QUOTA < usage < 64 * QUOTA
+    assert usage is not None and QUOTA < usage < 2 * 1024**3
     assert subprocess.run(["docker", "inspect", receipt.container_id], capture_output=True).returncode != 0
 
 
