@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import threading
 import time
 from pathlib import Path
@@ -24,10 +25,14 @@ def source_sha256(root: Path) -> str:
     without rehashing an unchanged tree on every observation.
     """
     paths = sorted(root.rglob("*.py"))
-    stats = [path.stat() for path in paths]
+    names = [str(path) for path in paths]
+    stats = [os.stat(name) for name in names]
+    # rglob yields root/<relative>; slicing the prefix matches relative_to()
+    # byte for byte at a fraction of its cost, which dominates the cached path.
+    prefix = len(os.path.join(str(root), ""))
     signature = tuple(
-        (str(path.relative_to(root)), s.st_size, s.st_mtime_ns, s.st_ctime_ns, s.st_ino, s.st_dev)
-        for path, s in zip(paths, stats, strict=True)
+        (name[prefix:], s.st_size, s.st_mtime_ns, s.st_ctime_ns, s.st_ino, s.st_dev)
+        for name, s in zip(names, stats, strict=True)
     )
     with _lock:
         cached = _cache.get(root)
