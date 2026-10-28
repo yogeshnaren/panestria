@@ -18,7 +18,7 @@ dependencies = [
   "psycopg[binary]>=3.3.6,<4",
   "pydantic>=2,<3",
   "pydantic-settings>=2,<3",
-  "pypdf==6.20.1",
+  "pypdf==6.21.2",
   "secretstorage==3.5.0 ; sys_platform == 'linux'",
   "sqlalchemy>=2.1.4,<3",
   "typer>=0.12,<1",
