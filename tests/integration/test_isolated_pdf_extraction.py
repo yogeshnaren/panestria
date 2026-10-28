@@ -10,7 +10,7 @@ from pypdf import PdfWriter
 from pypdf.generic import ArrayObject, DecodedStreamObject, DictionaryObject, NameObject, NumberObject, TextStringObject
 
 import panestria.brokers.research.reader as module
-from panestria.brokers.research.pdf_bundle import PYPDF_BUNDLE_SHA256
+from panestria.brokers.research.pdf_bundle import PDF_EXTRACTOR, PYPDF_BUNDLE_SHA256
 from panestria.brokers.research.reader import IsolatedTextReader
 from panestria.sandbox.profiles import SandboxProfile
 
@@ -77,7 +77,7 @@ def test_actual_pdf_static_text_has_exact_page_bytes_and_pinned_runtime(compress
     assert text == b"Hello static PDF\n\f\nSecond page"
     assert result.page_spans == ((0, 16), (19, 30))
     assert result.text_sha256 == hashlib.sha256(text).hexdigest()
-    assert result.extractor_version == "pypdf-6.20.1-text-v1"
+    assert result.extractor_version == PDF_EXTRACTOR
     assert result.pdf_bundle_sha256 == result.tokenizer_sha256 == PYPDF_BUNDLE_SHA256
     assert result.limitations == ("pdf-text-layer-only", "pdf-no-ocr", "pdf-layout-unverified")
     record_property(

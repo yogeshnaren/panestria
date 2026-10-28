@@ -11,8 +11,10 @@ from typing import Any
 
 from panestria.contracts.background import BackgroundBinding, BackgroundEnqueue
 from panestria.contracts.build import canonical_sha256
+from panestria.contracts.quota import QuotaObservation
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
+from panestria.kernel.pacing import BACKGROUND_MAX_OBSERVATION_AGE, paced_out, usage_rate
 from panestria.kernel.plan_scope import task_plan_scope
 from panestria.kernel.plan_store import PlanStore
 from panestria.kernel.quota import QuotaService
@@ -185,6 +187,29 @@ class BackgroundWorkService:
             raise KernelDenied("background_binding_changed")
         return self._conditions(uow, actor, binding)
 
+    @staticmethod
+    def _usage_rate(uow: UnitOfWork, actor: Actor, scope_sha256: str, latest: QuotaObservation) -> Decimal | None:
+        """Rate from the previous report in the same lane, unit and reset period."""
+        row = uow.execute(
+            "SELECT id::text FROM panestria.quota_observation WHERE owner_id=%s AND project_id=%s "
+            "AND scope_sha256=%s AND source=%s AND body->>'remaining' IS NOT NULL AND observed_at<%s "
+            "ORDER BY observed_at DESC,created_at DESC,id DESC LIMIT 1",
+            (actor.owner_id, actor.project_id, scope_sha256, latest.source, latest.observed_at),
+        ).fetchone()
+        if row is None:
+            return None
+        prior = QuotaService().read(uow, actor, row[0]).observation
+        if (
+            prior.unit != latest.unit
+            or prior.resets_at != latest.resets_at
+            or prior.remaining is None
+            or latest.remaining is None
+        ):
+            return None
+        return usage_rate(
+            (prior.observed_at, Decimal(prior.remaining)), (latest.observed_at, Decimal(latest.remaining))
+        )
+
     def _conditions(self, uow: UnitOfWork, actor: Actor, binding: BackgroundBinding) -> dict[str, Any]:
         """Current scheduling observations over a separately validated immutable binding."""
         clock = uow.execute("SELECT clock_timestamp()").fetchone()
@@ -260,7 +285,9 @@ class BackgroundWorkService:
                     and view.freshness != "RESET_PASSED"
                 ):
                     reasons.append("observed_exhaustion_wait_for_new_evidence_or_reset")
-                if view.freshness == "FRESH" and view.effective_remaining is not None:
+                if view.freshness == "FRESH" and now - o.observed_at > BACKGROUND_MAX_OBSERVATION_AGE:
+                    reasons.append("quota_observation_older_than_background_limit")
+                elif view.freshness == "FRESH" and view.effective_remaining is not None:
                     fresh_quantity |= (
                         o.source in {"OWNER_REPORTED", "PROVIDER_REPORTED"} or policy.allow_estimated_quota
                     )
@@ -272,7 +299,11 @@ class BackgroundWorkService:
                     if Decimal(view.effective_remaining) <= reserve:
                         reasons.append("regular_use_reserve")
                     if o.resets_at is not None and o.source in {"OWNER_REPORTED", "PROVIDER_REPORTED"}:
-                        resets.append(max(0, int((o.resets_at - now).total_seconds())))
+                        until_reset = max(0, int((o.resets_at - now).total_seconds()))
+                        resets.append(until_reset)
+                        rate = self._usage_rate(uow, actor, window.sha256(), o)
+                        if paced_out(Decimal(view.effective_remaining), Decimal(reserve), rate, until_reset):
+                            reasons.append("pacing_projected_regular_use_before_reset")
             if not fresh_quantity and not policy.allow_unknown_quota:
                 reasons.append("quota_unknown_requires_explicit_best_effort_policy")
         return {

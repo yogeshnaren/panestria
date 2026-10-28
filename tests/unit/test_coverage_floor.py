@@ -55,3 +55,18 @@ def test_floors_rise_one_point_below_measurement_and_never_fall() -> None:
         "kernel": {"line": 80.0, "branch": 49.0},
         "api": {"line": 0.0, "branch": 0.0},
     }
+
+
+def test_report_only_prints_violations_but_succeeds(tmp_path, monkeypatch, capsys) -> None:
+    floors = tmp_path / "floors.json"
+    floors.write_text('{"schema_version": 1, "floors": {"kernel": {"line": 90.0, "branch": 90.0}}}')
+    monkeypatch.setattr(coverage_floor, "FLOORS", floors)
+    monkeypatch.setattr(
+        coverage_floor, "combine", lambda _files: {"files": {"src/panestria/kernel/a.py": _file(10, 5)}}
+    )
+    monkeypatch.setattr("sys.argv", ["coverage_floor.py", "--report-only", "lane"])
+    assert coverage_floor.main() == 0
+    assert "coverage_below_floor_not_enforced: kernel: line 50.0% < floor 90.0%" in capsys.readouterr().out
+    monkeypatch.setattr("sys.argv", ["coverage_floor.py", "lane"])
+    assert coverage_floor.main() == 1
+    assert "coverage_floor_violation: kernel" in capsys.readouterr().out

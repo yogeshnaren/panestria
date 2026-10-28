@@ -305,9 +305,10 @@ def test_healthz_does_not_probe(tmp_path: Path) -> None:
         marker.write_text("called")
         raise AssertionError(f"liveness must not probe {deadline}")
 
-    with TestClient(create_app(_validated(), explode)) as client:
+    application = create_app(_validated(), explode)
+    with TestClient(application) as client:
         live = client.get("/healthz")
-        schema = client.get("/openapi.json")
+        assert client.get("/openapi.json").status_code == 404  # Published offline, never served.
     assert not marker.exists()
     assert live.status_code == 200
     assert live.json() == {
@@ -318,7 +319,7 @@ def test_healthz_does_not_probe(tmp_path: Path) -> None:
     }
     assert live.json()["version"] == version
     assert "access-control-allow-origin" not in {key.lower() for key in live.headers}
-    document = schema.json()
+    document = application.openapi()
     assert "/healthz" in document["paths"]
     assert "/readyz" in document["paths"]
     encoded = json.dumps(document)

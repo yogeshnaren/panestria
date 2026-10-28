@@ -10,8 +10,14 @@ from dataclasses import dataclass
 from importlib.metadata import distribution
 from pathlib import Path, PurePosixPath
 
-PYPDF_VERSION = "6.20.1"
-PYPDF_BUNDLE_SHA256 = "ee7677af7c459d97f4d1ee9a715e5b4d19fecb3295d2d596b6d4a6ac076b6c5a"
+PYPDF_VERSION = "6.21.2"
+PYPDF_BUNDLE_SHA256 = "d990ef5d2b271b795faa3c37345890cb9dfaa914d4532d7364f8825d021508a1"
+PDF_EXTRACTOR = f"pypdf-{PYPDF_VERSION}-text-v1"
+# Receipts retained under an earlier pinned extractor stay verifiable offline.
+PDF_EXTRACTOR_BUNDLES = {
+    PDF_EXTRACTOR: PYPDF_BUNDLE_SHA256,
+    "pypdf-6.20.1-text-v1": "ee7677af7c459d97f4d1ee9a715e5b4d19fecb3295d2d596b6d4a6ac076b6c5a",
+}
 
 
 class PdfBundleUnavailable(ValueError):
