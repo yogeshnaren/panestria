@@ -106,7 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [fast, kernel, platform, research]
+        suite: [fast, kernel, platform, research, boundary]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -192,7 +192,7 @@ jobs:
           path: evidence
           merge-multiple: true
       - name: Enforce coverage floors
-        run: uv run --frozen python tools/coverage_floor.py evidence/coverage-fast evidence/coverage-kernel evidence/coverage-platform evidence/coverage-research
+        run: uv run --frozen python tools/coverage_floor.py evidence/coverage-fast evidence/coverage-kernel evidence/coverage-platform evidence/coverage-research evidence/coverage-boundary
       - name: Retain combined coverage
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

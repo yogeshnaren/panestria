@@ -68,6 +68,7 @@ def test_attachment_eof_does_not_hide_a_running_worker(
     assert time.monotonic() - started < 3
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 @pytest.mark.parametrize("close_output", [False, True])
 def test_actual_worker_cancellation_stops_and_removes_only_its_container(
@@ -108,6 +109,7 @@ def test_actual_worker_cancellation_stops_and_removes_only_its_container(
     record_property("effective_config_sha256", receipt.effective_config_sha256)
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 def test_closed_output_still_enforces_wall_time(tmp_path: Path) -> None:
     root = tmp_path / "attempts"
@@ -124,6 +126,7 @@ def test_closed_output_still_enforces_wall_time(tmp_path: Path) -> None:
     assert subprocess.run(["docker", "inspect", receipt.container_id], capture_output=True).returncode != 0
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 def test_cancel_after_container_creation_never_starts_the_worker(tmp_path: Path) -> None:
     root = tmp_path / "attempts"

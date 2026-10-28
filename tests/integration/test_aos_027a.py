@@ -169,6 +169,7 @@ def test_merge_receipt_loss(
             )
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 @pytest.mark.parametrize("failure", ["none", "bad_test", "forbidden_diff", "tampered_bundle"])
 def test_worker_cannot_weaken_checks(build: BuildFixture, failure: str, record_property: pytest.RecordProperty) -> None:
