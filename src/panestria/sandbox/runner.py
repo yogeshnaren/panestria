@@ -20,9 +20,9 @@ from panestria.contracts.private_paths import folded_name
 from panestria.sandbox.native_tool_input import MAX_FRAME_BYTES
 from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile, SandboxRejected
 
-# Bounded wait for a late daemon OOM report after a SIGKILL exit (code 137).
-OOM_SETTLE_SECONDS = 3.0
-OOM_SETTLE_POLL_SECONDS = 0.1
+# A late daemon OOM report after a SIGKILL exit (code 137) is reread at most
+# four times, backing off so the reads span 1.3 s instead of a quarter second.
+OOM_SETTLE_DELAYS = (0.1, 0.2, 0.4, 0.6)
 # Entries a writable workspace may hold; also bounds the cost of one usage scan.
 MAX_WORKSPACE_ENTRIES = 500_000
 
@@ -401,14 +401,13 @@ class DockerSandbox:
         """
         if int(state["ExitCode"]) != 137 or state["OOMKilled"]:
             return state
-        # The daemon can record the OOM event after the exit event; poll it
-        # within a bounded window rather than for a fixed handful of reads.
-        deadline = time.monotonic() + OOM_SETTLE_SECONDS
-        for _ in range(int(OOM_SETTLE_SECONDS / OOM_SETTLE_POLL_SECONDS)):
+        # The daemon can record the OOM event after the exit event.
+        deadline = time.monotonic() + sum(OOM_SETTLE_DELAYS) + 0.2
+        for delay in OOM_SETTLE_DELAYS:
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 break
-            time.sleep(min(OOM_SETTLE_POLL_SECONDS, remaining))
+            time.sleep(min(delay, remaining))
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 break
