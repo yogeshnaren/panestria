@@ -2,5 +2,11 @@
   "schema_version": 1,
   "policy": "Intended surface changes since the recorded baseline. Each entry: match (prefix of a tools/compat.py difference line), reason, finding (review/plan id). Behavior-preserving PRs add nothing here.",
   "baseline": "evidence/regression-baseline-2026-10-28/snapshot.json",
-  "exceptions": []
+  "exceptions": [
+    {
+      "match": "added denial_codes[KernelDenied:curation_near_duplicate_input]",
+      "reason": "An export may not contain near-duplicate inputs (normalized or 3-shingle Jaccard >= 0.8), which could straddle the development/holdout folds.",
+      "finding": "R3-REMEDIATION-PLAN 1.9 / AI-P2d"
+    }
+  ]
 }
