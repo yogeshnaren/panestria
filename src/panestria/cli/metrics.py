@@ -162,3 +162,24 @@ def overview(
     except Exception:
         typer.echo('{"status":"UNAVAILABLE","reason":"metrics_overview_history_or_storage_invalid"}', err=True)
         raise typer.Exit(1) from None
+
+
+@metrics_app.command("ask-eval")
+def ask_eval(
+    golden: Annotated[Path, typer.Option()],
+    results: Annotated[Path, typer.Option(help="JSON Lines of recorded attempts")],
+    k: Annotated[int, typer.Option(min=1, max=100)] = 5,
+) -> None:
+    """Grade recorded Ask attempts: pass@1, pass^k and warm p95 TTFT. Runs no inference."""
+    from panestria.verification.ask_eval import AskAttempt, GoldenSet, evaluate
+
+    try:
+        cases = GoldenSet.model_validate_json(golden.read_bytes())
+        lines = results.read_text(encoding="utf-8").splitlines()
+        if len(lines) > 100 * len(cases.cases):
+            raise ValueError("ask_eval_results_limit")
+        attempts = tuple(AskAttempt.model_validate_json(line) for line in lines if line.strip())
+        typer.echo(evaluate(cases, attempts, k).model_dump_json(indent=2))
+    except Exception:
+        typer.echo('{"status":"UNAVAILABLE","reason":"ask_eval_input_invalid"}', err=True)
+        raise typer.Exit(1) from None

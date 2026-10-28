@@ -47,6 +47,16 @@
       "match": "added denial_codes[KernelDenied:curation_near_duplicate_input]",
       "reason": "An export may not contain near-duplicate inputs (normalized or 3-shingle Jaccard >= 0.8), which could straddle the development/holdout folds.",
       "finding": "R3-REMEDIATION-PLAN 1.9 / AI-P2d"
+    },
+    {
+      "match": "added cli/commands/metrics/commands/ask-eval/",
+      "reason": "New `panestria metrics ask-eval` grades recorded Ask attempts against a golden set; it runs no inference.",
+      "finding": "R3-REMEDIATION-PLAN 1.10 / AI-P2c"
+    },
+    {
+      "match": "added import_graph[cli -> verification]",
+      "reason": "The ask-eval command uses the deterministic grader in verification.ask_eval.",
+      "finding": "R3-REMEDIATION-PLAN 1.10 / AI-P2c"
     }
   ]
 }

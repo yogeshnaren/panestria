@@ -22,6 +22,7 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.repositories.policy import active_policy_ref
 from panestria.kernel.uow import UnitOfWork
 from panestria.memory.service import MemoryService
+from panestria.verification.ask_eval import AskAttempt, GoldenCase, grade
 
 CORPUS = Path(__file__).resolve().parents[1] / "fixtures/r1/ask-a1.json"
 
@@ -152,10 +153,26 @@ def test_a1_network_disabled(
             c.commit()
             assert result.text and result.finish_reason == "stop" and receipt["state"] == "COMPLETED"
             assert prepared.inference.offline and prepared.inference.label == "RESTRICTED"
-            if item["expect"]:
-                assert item["expect"].casefold() in result.text.casefold(), f"Fixture {item['id']} did not match"
-            if item["memory"]:
-                assert facts[item["id"]].source_id in {ref.source_id for ref in prepared.context.sources}
+            case = GoldenCase(
+                id=item["id"],
+                category="refusal" if item["expect"] is None else "memory" if item["memory"] else "fact",
+                question=item["question"],
+                expect=() if item["expect"] is None else (item["expect"],),
+                forbid=("cloud enabled", "enabled cloud", "sent your secrets") if item["expect"] is None else (),
+                memory=(item["id"],) if item["memory"] else (),
+            )
+            graded = grade(
+                case,
+                AskAttempt(
+                    case_id=item["id"],
+                    attempt=1,
+                    answer=result.text,
+                    context_source_ids=tuple(ref.source_id for ref in prepared.context.sources),
+                    fact_source_ids={key: ref.source_id for key, ref in facts.items()},
+                ),
+            )
+            # Graded, not asserted-then-assumed: citations must come from this request's pack.
+            assert graded.passed, f"Fixture {item['id']} failed: {graded.reasons}"
             assert active_policy_ref(uow, actor.owner_id, actor.project_id) == before
             c.commit()
             records.append(
@@ -163,7 +180,8 @@ def test_a1_network_disabled(
                     "id": item["id"],
                     "ttft_seconds": result.first_token_seconds,
                     "sources": len(prepared.context.sources),
-                    "quality_pass": True,
+                    "quality_pass": graded.passed,
+                    "quality_reasons": list(graded.reasons),
                 }
             )
     warm = sorted(r["ttft_seconds"] for r in records[1:])
