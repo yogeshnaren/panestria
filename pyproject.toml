@@ -61,6 +61,7 @@ markers = [
   "contract: toolchain and schema lane",
   "live: live lane; not part of the default synthetic run",
   "requires_nonroot: needs a non-root user; skipped locally as root, fails in CI",
+  "docker_boundary: real Docker OS-boundary test; runs only in the CI boundary lane",
 ]
 
 [tool.coverage.run]

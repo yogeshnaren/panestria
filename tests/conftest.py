@@ -37,7 +37,8 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
 
 def pytest_runtest_setup(item: pytest.Item) -> None:
     """Skip non-root-only tests locally as root; never let CI skip them silently."""
-    if item.get_closest_marker("requires_nonroot") and os.geteuid() == 0:
+    nonroot = item.get_closest_marker("requires_nonroot") or item.get_closest_marker("docker_boundary")
+    if nonroot and os.geteuid() == 0:
         if os.environ.get("CI"):
             pytest.fail("requires_nonroot test cannot run as root in CI", pytrace=False)
         pytest.skip("requires_nonroot: the product refuses euid 0; run as a normal user")

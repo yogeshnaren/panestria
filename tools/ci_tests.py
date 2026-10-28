@@ -22,6 +22,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUITES = ("fast", "kernel", "platform", "research")
+# A marker overlay, not a file partition: Docker OS-boundary nodes run here and
+# are excluded from every other lane, so each node still runs exactly once.
+BOUNDARY = "boundary"
+BOUNDARY_MARKER = "docker_boundary"
 # Keep durable Build/queue integration with kernel recovery, leaving physical
 # browser/profile/native checks in platform. All files still run exactly once.
 KERNEL = (
@@ -87,11 +91,27 @@ def partition() -> dict[str, list[str]]:
     return suites
 
 
+def boundary_files(suites: dict[str, list[str]]) -> list[str]:
+    """Return integration files that contain Docker OS-boundary tests."""
+    files = [
+        name
+        for name in sorted(n for lane in suites.values() for n in lane)
+        if f"pytest.mark.{BOUNDARY_MARKER}" in (ROOT / name).read_text(encoding="utf-8")
+    ]
+    if not files:
+        raise ValueError("Boundary lane is empty")
+    return files
+
+
 def deferred_nodes(profile: str, base: str | None) -> tuple[list[dict[str, str]], str, list[str] | None]:
     if profile == "full":
         return [], "explicit_full", None
     if base is None or re.fullmatch(r"[0-9a-f]{40}", base) is None:
         return [], "unknown_base_full_fallback", None
+    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, timeout=5).strip()
+    if base == head:
+        # An empty diff would defer every regression (e.g. workflow_dispatch passes github.sha).
+        return [], "base_is_head_full_fallback", None
     try:
         changed = (
             subprocess.check_output(
@@ -140,7 +160,7 @@ def deferred_nodes(profile: str, base: str | None) -> tuple[list[dict[str, str]]
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("suite", choices=SUITES)
+    parser.add_argument("suite", choices=(*SUITES, BOUNDARY))
     parser.add_argument("--list", action="store_true", help="Print the complete file partition without running tests")
     parser.add_argument("--collect-only", action="store_true", help="Collect this suite without setting up fixtures")
     parser.add_argument("--profile", choices=("required", "full"), default="full")
@@ -152,7 +172,12 @@ def main() -> int:
     if args.list:
         print(json.dumps(suites, indent=2))
         return 0
-    selected = suites[args.suite]
+    if args.suite == BOUNDARY:
+        selected = boundary_files(suites)
+        marker = BOUNDARY_MARKER
+    else:
+        selected = suites[args.suite]
+        marker = f"not live and not {BOUNDARY_MARKER}"
     deferred, reason, changed = deferred_nodes(args.profile, args.base)
     deferred = [d for d in deferred if d["node"].split("::")[0] in selected]
     suffix = ""
@@ -174,6 +199,7 @@ def main() -> int:
         "suite": args.suite,
         "files": selected,
         "deferred": deferred,
+        "marker": marker,
         "live": "EXCLUDED_SEPARATE_AUTHORIZED_VALIDATION",
         "release_gate": "NOT_EVALUATED",
     }
@@ -186,7 +212,7 @@ def main() -> int:
         "pytest",
         *selected,
         "-m",
-        "not live",
+        marker,
         "--durations=25",
         f"--junitxml=evidence/ci-{args.suite}{suffix}.xml",
     ]

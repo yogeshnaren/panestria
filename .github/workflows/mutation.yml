@@ -2,6 +2,9 @@ name: mutation pilot
 
 on:
   workflow_dispatch:
+  schedule:
+    # Nightly mutation score on the safety-critical modules.
+    - cron: "17 4 * * *"
 
 permissions:
   contents: read
