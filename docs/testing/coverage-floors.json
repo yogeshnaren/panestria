@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "policy": "Whole-suite (all non-live lanes) branch coverage per package. Floors only rise; update with tools/coverage_floor.py --write from a full CI run.",
+  "policy": "Whole-suite (all non-live lanes) branch coverage per package. Enforced on full-profile runs (push to main, nightly, full dispatch); pull-request runs report only, because the required profile selects tests by changed files. Floors only rise; update with tools/coverage_floor.py --write from a full run.",
   "floors": {
     "(top-level)": {
       "line": 75.6,
