@@ -27,3 +27,10 @@ apps/mission-control/test-results/
 # CI selection/proof documents are retained with run artifacts, not committed.
 evidence/ci-*-selection.json
 evidence/ci-merge-proof.json
+
+# Key material and tokens never belong in Git (TLS keys, phone/activity tokens).
+*.pem
+*.key
+*.token
+*.p12
+*.pfx
