@@ -342,8 +342,12 @@ class NativeToolGateway:
         else:
             outcome = "failed"
         diagnostic: UnconfirmedReason | None = (
-            "authority_watchdog_unconfirmed" if watchdog_unconfirmed else
-            "authority_observation_deadline" if unavailable.is_set() else
-            "sandbox_return_unconfirmed" if dispatched and sandbox is None else None
+            "authority_watchdog_unconfirmed"
+            if watchdog_unconfirmed
+            else "authority_observation_deadline"
+            if unavailable.is_set()
+            else "sandbox_return_unconfirmed"
+            if dispatched and sandbox is None
+            else None
         )
         return ToolReceipt(request_hash, permit.scope.sha256(), registry_hash, outcome, sandbox, diagnostic)

@@ -280,8 +280,7 @@ def _seed(connection: psycopg.Connection[tuple[object, ...]]) -> None:
         (CONTRACT, GOAL, "{}", DIGEST, OTHER_CONTRACT, OTHER_GOAL, "{}", DIGEST),
     )
     connection.execute(
-        "INSERT INTO panestria.task (id, goal_id, contract_id, name, state)"
-        " VALUES (%s, %s, %s, 'work', 'CREATED')",
+        "INSERT INTO panestria.task (id, goal_id, contract_id, name, state) VALUES (%s, %s, %s, 'work', 'CREATED')",
         (TASK, GOAL, CONTRACT),
     )
     connection.commit()

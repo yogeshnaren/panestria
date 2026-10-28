@@ -36,8 +36,12 @@ def guided(owner_question, tmp_path, monkeypatch, record_property):
     (cache / "blobs").mkdir()
     (cache / "manifests").mkdir()
     settings = SynthesisSettings(
-        schema_version=1, owner_id=UUID(q.f.actor.owner_id), project_id=UUID(q.f.actor.project_id),
-        root=q.root, model_cache=cache, runtime_directory=tmp_path / "guide-model-runtime",
+        schema_version=1,
+        owner_id=UUID(q.f.actor.owner_id),
+        project_id=UUID(q.f.actor.project_id),
+        root=q.root,
+        model_cache=cache,
+        runtime_directory=tmp_path / "guide-model-runtime",
     )
     config = q.root / "guide.json"
     config.write_text(settings.model_dump_json())
@@ -48,9 +52,11 @@ def guided(owner_question, tmp_path, monkeypatch, record_property):
     def generate(self, request):
         self.before_dispatch()
         calls.append(request)
-        body = {"queries": [QUERY]} if request.max_output_tokens == 512 else {
-            "claims": [{"text": "Synthetic unverified claim", "kind": "INTERPRETATION", "citations": ["p1"]}]
-        }
+        body = (
+            {"queries": [QUERY]}
+            if request.max_output_tokens == 512
+            else {"claims": [{"text": "Synthetic unverified claim", "kind": "INTERPRETATION", "citations": ["p1"]}]}
+        )
         return InferenceResult(MODEL, json.dumps(body), Usage(123, 42, 0), 0.2, 0.1)
 
     monkeypatch.setattr(LocalDraftModel, "generate", generate)
@@ -95,12 +101,19 @@ def test_same_request_guided_plan_disclosure_collection_draft_and_separate_revie
     draft = service.review.inspect(receipt.request_id)
     assert draft.semantic_support == "NOT_ASSESSED" and draft.task_completion_authority == "NONE"
     with service.review.connect() as c:
-        assert c.execute("SELECT id FROM panestria.research_request WHERE project_id=%s ORDER BY id",
-                         (q.f.actor.project_id,)).fetchall() == original_requests
-        assert c.execute("SELECT state,lease_epoch FROM panestria.task WHERE id=%s",
-                         (receipt.task_id,)).fetchone() == ("VERIFYING", 2)
-        assert c.execute("SELECT count(*) FROM panestria.check_run WHERE task_id=%s",
-                         (receipt.task_id,)).fetchone() == (0,)
+        assert (
+            c.execute(
+                "SELECT id FROM panestria.research_request WHERE project_id=%s ORDER BY id", (q.f.actor.project_id,)
+            ).fetchall()
+            == original_requests
+        )
+        assert c.execute("SELECT state,lease_epoch FROM panestria.task WHERE id=%s", (receipt.task_id,)).fetchone() == (
+            "VERIFYING",
+            2,
+        )
+        assert c.execute(
+            "SELECT count(*) FROM panestria.check_run WHERE task_id=%s", (receipt.task_id,)
+        ).fetchone() == (0,)
     assert not service.review.settings.runtime_directory.exists()  # Model fixture, no hidden local/provider call.
 
 
@@ -118,14 +131,17 @@ def test_locked_stage_rejects_changed_review_before_any_new_effect(guided, phase
         c.execute("UPDATE panestria.task SET row_version=row_version+1 WHERE id=%s", (receipt.task_id,))
     with pytest.raises(KernelDenied, match="review_changed"):
         if phase == "PLAN":
-            service.planner.plan(receipt.request_id, "stale", retain_local_plan=True,
-                                 expected_input_sha256=reviewed.input_sha256)
+            service.planner.plan(
+                receipt.request_id, "stale", retain_local_plan=True, expected_input_sha256=reviewed.input_sha256
+            )
         elif phase == "COLLECT":
-            service.collection.collect(receipt.request_id, reviewed.queries, public_web=True,
-                                       expected_review_sha256=reviewed.input_sha256)
+            service.collection.collect(
+                receipt.request_id, reviewed.queries, public_web=True, expected_review_sha256=reviewed.input_sha256
+            )
         else:
-            service.review.synthesize(receipt.request_id, "stale", retain_local_draft=True,
-                                      expected_input_sha256=reviewed.input_sha256)
+            service.review.synthesize(
+                receipt.request_id, "stale", retain_local_draft=True, expected_input_sha256=reviewed.input_sha256
+            )
     assert before == (len(calls), len(q.f.server["requests"]), len(q.calls))
     with pytest.raises(KernelDenied, match="research_guide_review_changed"):
         service.execute(receipt.request_id, reviewed)
@@ -149,8 +165,9 @@ def test_committed_plan_lost_reply_stops_same_view_and_resume_reads_original_rec
     assert len(calls) == 1 and not q.calls and not q.f.server["requests"]
     assert ResearchGuideTerminal(service, receipt.request_id).step.action == "COLLECT"
     with service.review.connect() as c:
-        assert c.execute("SELECT count(*) FROM panestria.task_event WHERE task_id=%s AND kind=%s",
-                         (receipt.task_id, STARTED)).fetchone() == (1,)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.task_event WHERE task_id=%s AND kind=%s", (receipt.task_id, STARTED)
+        ).fetchone() == (1,)
 
 
 @pytest.mark.parametrize("admitted_search", [JOINT], indirect=True)
@@ -164,8 +181,9 @@ def test_setup_scope_missing_collection_and_cancelled_request_never_infer_or_gra
     assert stopped.action == "STOP" and QUERY in "\n".join(stopped.lines)
     old = service.prepare(receipt.request_id)
     with service.review.connect() as c:
-        c.execute("UPDATE panestria.task SET state='CANCELLED',row_version=row_version+1 WHERE id=%s",
-                  (receipt.task_id,))
+        c.execute(
+            "UPDATE panestria.task SET state='CANCELLED',row_version=row_version+1 WHERE id=%s", (receipt.task_id,)
+        )
     with pytest.raises(KernelDenied, match="review_changed"):
         service.execute(receipt.request_id, old)
     assert service.prepare(receipt.request_id).action == "STOP"

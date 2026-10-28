@@ -59,8 +59,7 @@ def _seed_task(connection: psycopg.Connection[object], task_id: str, attempt_id:
         (goal_id, OWNER, PROJECT),
     )
     connection.execute(
-        "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256)"
-        " VALUES (%s, %s, 1, %s::jsonb, %s)",
+        "INSERT INTO panestria.goal_contract (id, goal_id, version, body, sha256) VALUES (%s, %s, 1, %s::jsonb, %s)",
         (contract_id, goal_id, '{"autonomy_profile_ref":"synthetic-approve-first-v1"}', SHA),
     )
     connection.execute(
@@ -77,7 +76,7 @@ def _seed_task(connection: psycopg.Connection[object], task_id: str, attempt_id:
         "INSERT INTO panestria.acceptance_check"
         " (id, contract_id, check_key, description, verifier_type, verifier_spec, required)"
         " VALUES (%s, %s, 'synthetic-required', 'required', 'trusted-command-ref',"
-        " '{\"type\":\"trusted-command-ref\"}'::jsonb, true)",
+        ' \'{"type":"trusted-command-ref"}\'::jsonb, true)',
         (check_id, contract_id),
     )
 
@@ -315,9 +314,7 @@ def _drive_until_checks(
     assert finished.continuation_kind != "MERGE"
 
 
-def test_newer_failure_hides_an_older_report_file(
-    record_property: pytest.RecordProperty, tmp_path: Path
-) -> None:
+def test_newer_failure_hides_an_older_report_file(record_property: pytest.RecordProperty, tmp_path: Path) -> None:
     record_property("gate_case_id", "AOS-005-TC02")
     _database()
     task_id = "00000000-0000-4000-8000-0000000000a6"

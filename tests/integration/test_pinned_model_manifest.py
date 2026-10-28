@@ -112,9 +112,15 @@ def test_private_setting_reaches_startup_provider_and_canonical_http_receipt(
         load_local_settings(path)
     selected = model_manifest()
     monkeypatch.setattr(ModelFixture, "describe_manifest", lambda self: selected, raising=False)
-    path.write_text(json.dumps({
-        **body, "pin_model_manifest": True, "runtime_directory": str(tmp_path_factory.mktemp("pin") / "r"),
-    }))
+    path.write_text(
+        json.dumps(
+            {
+                **body,
+                "pin_model_manifest": True,
+                "runtime_directory": str(tmp_path_factory.mktemp("pin") / "r"),
+            }
+        )
+    )
     config, _ = load_local_settings(path)
     app = local_server.build_local_app(config, settings, token)
     mock, calls = transport(valid_frames())
@@ -145,13 +151,18 @@ def test_restricted_profile_stays_encrypted_while_public_manifest_is_pinned(styl
     provider = LocalProvider(Path("/synthetic"), transport=mock)
     provider.bind_manifest(selected)
     root = Path(__file__).resolve().parents[2]
-    mount_ask_api(client.app, AskApi(
-        provider,
-        lambda: HardwareProbe(root / "docs/specification/attachments/agentos-skills-v0.1.0.zip").collect(
-            preset="omen-8gb"
+    mount_ask_api(
+        client.app,
+        AskApi(
+            provider,
+            lambda: HardwareProbe(root / "docs/specification/attachments/agentos-skills-v0.1.0.zip").collect(
+                preset="omen-8gb"
+            ),
+            pin_model_manifest=True,
+            include_charter=True,
+            lossless_presentation=True,
         ),
-        pin_model_manifest=True, include_charter=True, lossless_presentation=True,
-    ))
+    )
     mount_profile_api(client.app, ProfileApi(vault))
     headers = {"Authorization": "Bearer test-only-cli-token-at-least-16"}
     response = client.post("/v2/ask", json=request.model_dump(mode="json"), headers=headers)
@@ -174,9 +185,14 @@ def test_actual_cached_cpu_manifest_startup_ask_and_receipt(r1_database, tmp_pat
     root = tmp_path_factory.mktemp("manifest") / "owner-test"
     with first_run_files(root, Path(cache), 18762) as config:
         with psycopg.connect(r1_database) as c:
-            LocalSetupService().initialize(UnitOfWork(c), LocalSetupIntent(
-                owner_id=config.owner_id, project_id=config.project_id, intent="OFFLINE_ASK",
-            ))
+            LocalSetupService().initialize(
+                UnitOfWork(c),
+                LocalSetupIntent(
+                    owner_id=config.owner_id,
+                    project_id=config.project_id,
+                    intent="OFFLINE_ASK",
+                ),
+            )
     path = root / "local.json"
     path.write_text(json.dumps({**json.loads(path.read_text()), "pin_model_manifest": True}))
     config, token = load_local_settings(path)
@@ -191,12 +207,16 @@ def test_actual_cached_cpu_manifest_startup_ask_and_receipt(r1_database, tmp_pat
         headers = {"Authorization": "Bearer " + token.get_secret_value()}
         descriptor = client.get("/v1/local/status", headers=headers).json()["model_manifest"]
         assert descriptor["evaluation"] == "NOT_EVALUATED" and descriptor["tools"] == []
-        assert descriptor["quantization"] == "Q4_K_M" and descriptor["tokenizer_container_sha256"] == (
-            descriptor["weights_sha256"]
+        assert (
+            descriptor["quantization"] == "Q4_K_M"
+            and descriptor["tokenizer_container_sha256"] == (descriptor["weights_sha256"])
         )
         payload = {
-            "request_id": str(uuid4()), "project_id": str(config.project_id),
-            "question": "Reply with the word READY.", "max_output_tokens": 16, "deadline_seconds": 60.0,
+            "request_id": str(uuid4()),
+            "project_id": str(config.project_id),
+            "question": "Reply with the word READY.",
+            "max_output_tokens": 16,
+            "deadline_seconds": 60.0,
         }
         answer = client.post("/v1/ask", json=payload, headers=headers)
         assert answer.status_code == 200 and answer.json()["text"], answer.text

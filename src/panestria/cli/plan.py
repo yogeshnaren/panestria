@@ -627,18 +627,33 @@ def propose_local_repair(
 
     try:
         result = LocalBuildRepair(_service(build_config), load_plan_settings(model_config)).propose(
-            plan_id, parent_sha256, return_proof_sha256, output_directory,
-            maximum_versions=maximum_versions, local_model_run=local_model_run, idempotency_key=idempotency_key,
+            plan_id,
+            parent_sha256,
+            return_proof_sha256,
+            output_directory,
+            maximum_versions=maximum_versions,
+            local_model_run=local_model_run,
+            idempotency_key=idempotency_key,
         )
         typer.echo(json.dumps(result))
     except Exception as error:
-        safe = {"plan_previous_work_unconfirmed", "plan_repair_limit_exhausted", "plan_repair_budget_exhausted",
-                "local_repair_repeated_failure_owner_review_required", "plan_return_proof_unconfirmed",
-                "local_repair_parent_not_current_stopped_plan", "local_repair_source_changed",
-                "local_plan_remaining_budget_exceeded", "explicit_local_plan_model_intent_required",
-                "repair_draft_prior_unconfirmed", "repair_model_turn_limit_exhausted",
-                "repair_draft_replay_conflict", "repair_draft_files_unconfirmed",
-                "repair_turn_limit_change_requires_authorization", "repair_wall_reservation_exceeded"}
+        safe = {
+            "plan_previous_work_unconfirmed",
+            "plan_repair_limit_exhausted",
+            "plan_repair_budget_exhausted",
+            "local_repair_repeated_failure_owner_review_required",
+            "plan_return_proof_unconfirmed",
+            "local_repair_parent_not_current_stopped_plan",
+            "local_repair_source_changed",
+            "local_plan_remaining_budget_exceeded",
+            "explicit_local_plan_model_intent_required",
+            "repair_draft_prior_unconfirmed",
+            "repair_model_turn_limit_exhausted",
+            "repair_draft_replay_conflict",
+            "repair_draft_files_unconfirmed",
+            "repair_turn_limit_change_requires_authorization",
+            "repair_wall_reservation_exceeded",
+        }
         reason = error.code if isinstance(error, KernelDenied) and error.code in safe else "local_repair_not_published"
         typer.echo(json.dumps({"status": "STOPPED", "reason": reason, "execution_authority": "NONE"}), err=True)
         raise typer.Exit(1) from None
@@ -646,7 +661,8 @@ def propose_local_repair(
 
 @plan_app.command("repair-turns")
 def inspect_repair_turns(
-    goal_id: str, config: Annotated[Path, typer.Option("--config")],
+    goal_id: str,
+    config: Annotated[Path, typer.Option("--config")],
 ) -> None:
     """Show durable model intent/return metadata; never retry or clear an uncertain turn."""
     from panestria.cli.build import _finish, _service
@@ -660,14 +676,23 @@ def inspect_repair_turns(
             c.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
             PlanStore()._goal(UnitOfWork(c), owner.actor, goal_id, read_only=True)
             ledger = repair_ledger(UnitOfWork(c), owner.actor, goal_id)
-        return {"turns": [{"draft_id": i.draft_id, "parent_plan_id": i.parent_plan_id,
-                           "turn": i.turn, "maximum_turns": i.maximum_turns,
-                           "reserved_wall_seconds": i.reserved_wall_seconds,
-                           "status": (o.status if (o := ledger.outcome(i)) else "UNCONFIRMED"),
-                           "physical_return": o.physical_return if o else "UNCONFIRMED",
-                           "receipt_sha256": o.receipt_sha256 if o else None}
-                          for i in ledger.intents],
-                "charged_wall_seconds": ledger.charged_wall_seconds,
-                "unconfirmed_turns": ledger.unresolved, "execution_authority": "NONE"}
+        return {
+            "turns": [
+                {
+                    "draft_id": i.draft_id,
+                    "parent_plan_id": i.parent_plan_id,
+                    "turn": i.turn,
+                    "maximum_turns": i.maximum_turns,
+                    "reserved_wall_seconds": i.reserved_wall_seconds,
+                    "status": (o.status if (o := ledger.outcome(i)) else "UNCONFIRMED"),
+                    "physical_return": o.physical_return if o else "UNCONFIRMED",
+                    "receipt_sha256": o.receipt_sha256 if o else None,
+                }
+                for i in ledger.intents
+            ],
+            "charged_wall_seconds": ledger.charged_wall_seconds,
+            "unconfirmed_turns": ledger.unresolved,
+            "execution_authority": "NONE",
+        }
 
     _finish(inspect)

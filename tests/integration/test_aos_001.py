@@ -85,10 +85,7 @@ INVALID_URLS = (
 
 
 def _database_url(password: str) -> str:
-    return (
-        f"postgresql://{FIXTURE['database_user']}:{password}"
-        f"@127.0.0.1:5432/{FIXTURE['database_name']}"
-    )
+    return f"postgresql://{FIXTURE['database_user']}:{password}@127.0.0.1:5432/{FIXTURE['database_name']}"
 
 
 def _settings(**overrides: object) -> Settings:
@@ -111,9 +108,7 @@ def _validated(**overrides: object) -> ValidatedSettings:
 def _unavailable(reason: str) -> Callable[[datetime], ProbeObservation]:
     def probe(deadline: datetime) -> ProbeObservation:
         del deadline
-        return ProbeObservation(
-            checks=[ProbeCheck(name="database", status="unavailable", reason=reason)]
-        )
+        return ProbeObservation(checks=[ProbeCheck(name="database", status="unavailable", reason=reason)])
 
     return probe
 
@@ -363,9 +358,7 @@ def test_unavailable_database_is_not_ready(monkeypatch: pytest.MonkeyPatch) -> N
 def test_degraded_database_stays_unready_executor() -> None:
     def degraded(deadline: datetime) -> ProbeObservation:
         del deadline
-        return ProbeObservation(
-            checks=[ProbeCheck(name="database", status="degraded", reason="capacity_unknown")]
-        )
+        return ProbeObservation(checks=[ProbeCheck(name="database", status="degraded", reason="capacity_unknown")])
 
     with _service(degraded) as service:
         body = service.readiness(_future())
@@ -528,9 +521,7 @@ def test_encoded_and_arbitrary_probe_text_are_not_emitted() -> None:
 
     def leak(deadline: datetime) -> ProbeObservation:
         del deadline
-        return ProbeObservation(
-            checks=[ProbeCheck(name="database", status="unavailable", reason="syntheticsecret")]
-        )
+        return ProbeObservation(checks=[ProbeCheck(name="database", status="unavailable", reason="syntheticsecret")])
 
     with _service(leak, database_url=encoded) as service:
         body = service.readiness(_future())
@@ -541,9 +532,7 @@ def test_encoded_and_arbitrary_probe_text_are_not_emitted() -> None:
 
     def hyphen(deadline: datetime) -> ProbeObservation:
         del deadline
-        return ProbeObservation(
-            checks=[ProbeCheck(name="database", status="unavailable", reason=HYPHEN_SENTINEL)]
-        )
+        return ProbeObservation(checks=[ProbeCheck(name="database", status="unavailable", reason=HYPHEN_SENTINEL)])
 
     with _service(hyphen) as service:
         hidden = service.readiness(_future())

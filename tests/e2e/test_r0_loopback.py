@@ -313,9 +313,7 @@ def _evidence(goal_id: str) -> dict[str, object]:
     while time.monotonic() < deadline:
         events = _json(_cli("goal", "events", goal_id))
         recorded = [
-            item
-            for item in events["events"]
-            if isinstance(item, dict) and item.get("kind") == "evidence.recorded"
+            item for item in events["events"] if isinstance(item, dict) and item.get("kind") == "evidence.recorded"
         ]
         if recorded:
             payload = recorded[-1]["payload"]

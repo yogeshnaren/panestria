@@ -168,7 +168,7 @@ def test_unknown_work_overbudget_output_and_changed_source_stop_without_automati
         )
     assert not model.calls and not (tmp_path / "held").exists()
     proof = returned(owner, parent, claims[1:])
-    model.wall = 600  #1290 is valid under1800, but exceeds1170 after the360-second reservation.
+    model.wall = 600  # 1290 is valid under1800, but exceeds1170 after the360-second reservation.
     over = tmp_path / "over"
     with pytest.raises(KernelDenied, match="local_plan_remaining_budget_exceeded"):
         repair.propose(parent.proposal.plan_id, parent.proposal.sha256(), proof, over, local_model_run=True)

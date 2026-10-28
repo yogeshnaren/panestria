@@ -135,7 +135,9 @@ def test_actual_chromium_storage_notices_optout_and_revoke_clear_host_view(
     private.mkdir(mode=0o700)
     storage = tmp_path / "config/storage.json"
     settings = StorageSettings(
-        notifications_enabled=True, filesystem=private, minimum_free_bytes=2**63 - 1,
+        notifications_enabled=True,
+        filesystem=private,
+        minimum_free_bytes=2**63 - 1,
         history_directory=tmp_path / "retained-history",
     )
     storage.write_text(settings.model_dump_json())

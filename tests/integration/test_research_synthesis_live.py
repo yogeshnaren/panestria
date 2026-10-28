@@ -39,8 +39,12 @@ def test_actual_cpu_draft_uses_retained_sources_and_no_provider(synthesis_contex
     record_property("output_sha256", receipt.output_sha256)
     record_property("model_ref", draft.model_ref)
     record_property("model_digest", draft.model_digest)
-    record_property("runtime_bridge_sha256", hashlib.sha256(
-        (Path(__file__).resolve().parents[2] / "src/panestria/inference/runtime_bridge.py").read_bytes()).hexdigest())
+    record_property(
+        "runtime_bridge_sha256",
+        hashlib.sha256(
+            (Path(__file__).resolve().parents[2] / "src/panestria/inference/runtime_bridge.py").read_bytes()
+        ).hexdigest(),
+    )
     record_property("input_tokens", draft.input_tokens)
     record_property("output_tokens", draft.output_tokens)
     record_property("release_gate", "NOT_EVALUATED")

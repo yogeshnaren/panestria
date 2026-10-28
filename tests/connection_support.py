@@ -26,8 +26,6 @@ def manifest(owner, project, **changes):
 
 
 def proposal(policy, body=None, **changes):
-    value = dict(
-        proposal_id=str(uuid4()), policy_ref=policy, expected_version=0, operation="REPLACE", manifest=body
-    )
+    value = dict(proposal_id=str(uuid4()), policy_ref=policy, expected_version=0, operation="REPLACE", manifest=body)
     value.update(changes)
     return ConnectionReviewRequest(**value)

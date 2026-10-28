@@ -40,7 +40,10 @@ class PreparedAsk:
 
 class AskService:
     def __init__(
-        self, *, profile_context: ProfileContext | None = None, include_charter: bool = False,
+        self,
+        *,
+        profile_context: ProfileContext | None = None,
+        include_charter: bool = False,
         model_manifest: ModelManifest | None = None,
     ) -> None:
         self.compiler = ContextCompiler(include_charter=include_charter)
@@ -234,7 +237,8 @@ class AskService:
         if retained != prepared.model_manifest or prepared.inference.model_manifest_sha256 != expected:
             raise KernelDenied("model_manifest_mismatch")
         if (
-            retained is not None and self.model_manifest is not None
+            retained is not None
+            and self.model_manifest is not None
             and not retained.context_compatible(self.model_manifest)
         ):
             raise KernelDenied("model_manifest_incompatible")
