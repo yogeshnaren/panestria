@@ -25,16 +25,32 @@ from panestria.kernel.uow import UnitOfWork
 
 
 class BackgroundWorkService:
+    _QUEUED = (
+        "SELECT e.seq,e.payload,e.goal_id::text,e.task_id::text FROM panestria.task_event e "
+        "JOIN panestria.goal g ON g.id=e.goal_id WHERE g.owner_id=%s AND g.project_id=%s "
+        "AND e.kind='background.queued' "
+    )
+    _LIVE = (
+        "AND NOT EXISTS (SELECT 1 FROM panestria.task_event w WHERE w.goal_id=e.goal_id "
+        "AND w.kind='background.withdrawn' AND w.payload->>'item_id'=e.payload->'binding'->'request'->>'item_id') "
+    )
+
     def _rows(self, uow: UnitOfWork, actor: Actor) -> list[tuple[Any, ...]]:
+        """Live (unwithdrawn) queued items. Withdrawal frees capacity; history is retained."""
         rows = uow.execute(
-            "SELECT e.seq,e.payload,e.goal_id::text,e.task_id::text FROM panestria.task_event e "
-            "JOIN panestria.goal g ON g.id=e.goal_id WHERE g.owner_id=%s AND g.project_id=%s "
-            "AND e.kind='background.queued' ORDER BY e.seq LIMIT 257",
-            (actor.owner_id, actor.project_id),
+            self._QUEUED + self._LIVE + "ORDER BY e.seq LIMIT 257", (actor.owner_id, actor.project_id)
         ).fetchall()
         if len(rows) > 256:
+            # Wire code kept; it now counts live items only.
             raise KernelDenied("background_queue_history_limit")
         return rows
+
+    def _item(self, uow: UnitOfWork, actor: Actor, item_id: str) -> tuple[Any, ...] | None:
+        """One queued item in any state, by id."""
+        return uow.execute(
+            self._QUEUED + "AND e.payload->'binding'->'request'->>'item_id'=%s ORDER BY e.seq LIMIT 1",
+            (actor.owner_id, actor.project_id, item_id),
+        ).fetchone()
 
     def _binding(self, row: tuple[Any, ...], actor: Actor) -> BackgroundBinding:
         binding = BackgroundBinding.model_validate_json(json.dumps(row[1]["binding"]))
@@ -104,20 +120,22 @@ class BackgroundWorkService:
         binding = self.prepare(uow, actor, request)
         if accept_background_policy is not True or policy_sha256 != binding.policy_sha256:
             raise KernelDenied("background_exact_owner_policy_review_required")
+        prior = self._item(uow, actor, request.item_id)
+        if prior is not None:
+            old = self._binding(prior, actor)
+            if old != binding:
+                raise KernelDenied("background_item_replay_conflict")
+            return {
+                "status": "QUEUED",
+                "item_id": request.item_id,
+                "binding_sha256": old.sha256(),
+                "event_seq": prior[0],
+                "replayed": True,
+                "execution_authority": "NONE",
+            }
         rows = self._rows(uow, actor)
         for row in rows:
             old = self._binding(row, actor)
-            if old.request.item_id == request.item_id:
-                if old != binding:
-                    raise KernelDenied("background_item_replay_conflict")
-                return {
-                    "status": "QUEUED",
-                    "item_id": request.item_id,
-                    "binding_sha256": old.sha256(),
-                    "event_seq": row[0],
-                    "replayed": True,
-                    "execution_authority": "NONE",
-                }
             if old.request.plan_id == request.plan_id:
                 withdrawn = uow.execute(
                     "SELECT 1 FROM panestria.task_event WHERE goal_id=%s AND kind='background.withdrawn' "
@@ -310,9 +328,17 @@ class BackgroundWorkService:
         }
 
     def listing(self, uow: UnitOfWork, actor: Actor) -> dict[str, Any]:
-        rows = self._rows(uow, actor)
+        recent = uow.execute(
+            self._QUEUED + "ORDER BY e.seq DESC LIMIT 32", (actor.owner_id, actor.project_id)
+        ).fetchall()
+        total = uow.execute(
+            "SELECT count(*) FROM panestria.task_event e JOIN panestria.goal g ON g.id=e.goal_id "
+            "WHERE g.owner_id=%s AND g.project_id=%s AND e.kind='background.queued'",
+            (actor.owner_id, actor.project_id),
+        ).fetchone()
+        assert total is not None
         items: list[dict[str, Any]] = []
-        for row in rows[-32:]:
+        for row in reversed(recent):
             binding = self._binding(row, actor)
             withdrawn = uow.execute(
                 "SELECT 1 FROM panestria.task_event WHERE goal_id=%s "
@@ -333,46 +359,44 @@ class BackgroundWorkService:
                         "execution_authority": "NONE",
                     }
                 )
-        return {"items": items, "history_count": len(rows), "visible_limit": 32, "execution_authority": "NONE"}
+        return {"items": items, "history_count": int(total[0]), "visible_limit": 32, "execution_authority": "NONE"}
 
     def show(self, uow: UnitOfWork, actor: Actor, item_id: str) -> dict[str, Any]:
-        for row in self._rows(uow, actor):
-            binding = self._binding(row, actor)
-            if binding.request.item_id == item_id:
-                withdrawn = uow.execute(
-                    "SELECT 1 FROM panestria.task_event WHERE goal_id=%s "
-                    "AND kind='background.withdrawn' AND payload->>'item_id'=%s LIMIT 1",
-                    (binding.goal_id, item_id),
-                ).fetchone()
-                if withdrawn:
-                    return {"item_id": item_id, "status": "WITHDRAWN", "execution_authority": "NONE"}
-                return self.inspect(uow, actor, binding)
-        raise KernelDenied("not_found")
+        row = self._item(uow, actor, item_id)
+        if row is None:
+            raise KernelDenied("not_found")
+        binding = self._binding(row, actor)
+        withdrawn = uow.execute(
+            "SELECT 1 FROM panestria.task_event WHERE goal_id=%s "
+            "AND kind='background.withdrawn' AND payload->>'item_id'=%s LIMIT 1",
+            (binding.goal_id, item_id),
+        ).fetchone()
+        if withdrawn:
+            return {"item_id": item_id, "status": "WITHDRAWN", "execution_authority": "NONE"}
+        return self.inspect(uow, actor, binding)
 
     def withdraw(self, uow: UnitOfWork, actor: Actor, item_id: str, binding_sha256: str) -> dict[str, Any]:
         PlanStore()._transaction(uow)
         uow.execute("SELECT pg_advisory_xact_lock(%s,%s)", FLEET_LOCK)
-        rows = self._rows(uow, actor)
-        for row in rows:
-            binding = self._binding(row, actor)
-            if binding.request.item_id != item_id:
-                continue
-            if binding.sha256() != binding_sha256:
-                raise KernelDenied("background_item_changed")
-            old = uow.execute(
-                "SELECT seq FROM panestria.task_event WHERE goal_id=%s "
-                "AND kind='background.withdrawn' AND payload->>'item_id'=%s LIMIT 1",
-                (binding.goal_id, item_id),
-            ).fetchone()
-            if old:
-                return {"status": "WITHDRAWN", "event_seq": old[0], "execution_authority": "NONE"}
-            seq = append_event(
-                uow,
-                goal_id=binding.goal_id,
-                task_id=binding.task_id,
-                actor=actor.owner_id,
-                kind="background.withdrawn",
-                payload={"item_id": item_id, "binding_sha256": binding_sha256},
-            )
-            return {"status": "WITHDRAWN", "event_seq": seq, "execution_authority": "NONE"}
-        raise KernelDenied("not_found")
+        row = self._item(uow, actor, item_id)
+        if row is None:
+            raise KernelDenied("not_found")
+        binding = self._binding(row, actor)
+        if binding.sha256() != binding_sha256:
+            raise KernelDenied("background_item_changed")
+        old = uow.execute(
+            "SELECT seq FROM panestria.task_event WHERE goal_id=%s "
+            "AND kind='background.withdrawn' AND payload->>'item_id'=%s LIMIT 1",
+            (binding.goal_id, item_id),
+        ).fetchone()
+        if old:
+            return {"status": "WITHDRAWN", "event_seq": old[0], "execution_authority": "NONE"}
+        seq = append_event(
+            uow,
+            goal_id=binding.goal_id,
+            task_id=binding.task_id,
+            actor=actor.owner_id,
+            kind="background.withdrawn",
+            payload={"item_id": item_id, "binding_sha256": binding_sha256},
+        )
+        return {"status": "WITHDRAWN", "event_seq": seq, "execution_authority": "NONE"}

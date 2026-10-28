@@ -42,7 +42,7 @@ from panestria.kernel.uow import UnitOfWork
 from panestria.resources.admission import admit
 from panestria.resources.hardware import HardwareProbe, ProbeUnavailable
 
-SCHEMA_HEAD = "0041_memory_restricted_fts"
+SCHEMA_HEAD = "0042_task_event_kind_indexes"
 
 
 def require_setup(settings: ValidatedSettings, actor: Actor) -> str:

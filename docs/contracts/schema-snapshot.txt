@@ -1325,6 +1325,8 @@ index CREATE INDEX ix_learning_scope ON panestria.learning_record USING btree (o
 index CREATE INDEX ix_memory_fts ON panestria.memory_revision USING gin (search_document) WHERE (search_document IS NOT NULL)
 index CREATE INDEX ix_memory_scope ON panestria.memory_item USING btree (owner_id, project_id, status)
 index CREATE INDEX ix_outbox_due ON panestria.effect_outbox USING btree (due_at) WHERE (state = 'PENDING'::text)
+index CREATE INDEX ix_task_event_kind_goal ON panestria.task_event USING btree (kind, goal_id, seq)
+index CREATE INDEX ix_task_event_task_kind ON panestria.task_event USING btree (task_id, kind, seq)
 index CREATE INDEX ix_task_goal ON panestria.task USING btree (goal_id)
 index CREATE INDEX quota_scope_latest ON panestria.quota_observation USING btree (owner_id, project_id, scope_sha256, source, observed_at DESC, created_at DESC, id DESC)
 index CREATE UNIQUE INDEX acceptance_check_contract_id_check_key_key ON panestria.acceptance_check USING btree (contract_id, check_key)
