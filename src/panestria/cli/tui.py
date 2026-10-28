@@ -155,9 +155,11 @@ class AskTerminal:
                     v.timeline_scroll = 0
                 v.timeline = page
                 v.timeline_fresh, v.timeline_received_at = True, time.monotonic()
-                v.notice = ("History gap/future cursor: canonical snapshot restored; missing events are not invented."
-                            if page.resync else
-                            "Canonical snapshot plus event metadata; payloads and approvals are omitted.")
+                v.notice = (
+                    "History gap/future cursor: canonical snapshot restored; missing events are not invented."
+                    if page.resync
+                    else "Canonical snapshot plus event metadata; payloads and approvals are omitted."
+                )
                 continue
             if kind == "activity":
                 v.activity = ProjectActivity.model_validate_json(json.dumps(result))
@@ -270,37 +272,52 @@ class AskTerminal:
         if value is None:
             return ["Storage observation UNCONFIRMED. Refresh explicitly; no cleanup is available."]
         enabled = "UNKNOWN" if value.notifications_enabled is None else "ON" if value.notifications_enabled else "OFF"
-        lines = [f"State: {value.state} | notifications: {enabled} | {value.reason}",
-                 "Owner-wide host metadata; project ownership is unassessed.",
-                 "Observed: " + (value.observed_at.isoformat() if value.observed_at else "UNKNOWN")]
+        lines = [
+            f"State: {value.state} | notifications: {enabled} | {value.reason}",
+            "Owner-wide host metadata; project ownership is unassessed.",
+            "Observed: " + (value.observed_at.isoformat() if value.observed_at else "UNKNOWN"),
+        ]
         if value.observed_at is not None:
             age = (datetime.now(UTC) - value.observed_at).total_seconds()
             if age < -5 or age > value.sample_interval_seconds + 35 or value.state != "OBSERVED":
                 lines.append("UNCONFIRMED/STALE: values below are last observed, not current health.")
+
         def size(n: int | None) -> str:
             return "UNKNOWN" if n is None else f"{n / 1024**3:.2f} GiB"
+
         if value.capacity:
             disk = value.capacity
             percent = "UNKNOWN" if disk.used_percent is None else f"{disk.used_percent:.2f}%"
-            lines += [f"Capacity {disk.status}: last free {size(disk.available_bytes)} | used {percent}",
-                      f"Total {size(disk.total_bytes)} | reserved {size(disk.reserved_bytes)}"]
+            lines += [
+                f"Capacity {disk.status}: last free {size(disk.available_bytes)} | used {percent}",
+                f"Total {size(disk.total_bytes)} | reserved {size(disk.reserved_bytes)}",
+            ]
         for item in value.components:
             share = "UNKNOWN" if item.filesystem_share_percent is None else f"{item.filesystem_share_percent:.2f}%"
-            lines += [f"{item.label}: {item.status} {size(item.bytes)} | share estimate {share}",
-                      f"Basis: {item.basis}"]
+            lines += [
+                f"{item.label}: {item.status} {size(item.bytes)} | share estimate {share}",
+                f"Basis: {item.basis}",
+            ]
         lines += [f"Timeshift: {value.timeshift_status}; physical snapshot bytes UNKNOWN"]
         if value.timeshift_schedules:
-            schedules = [k + "=" + ("UNKNOWN" if choice is None else "ON" if choice else "OFF")
-                         for k, choice in value.timeshift_schedules.items()]
+            schedules = [
+                k + "=" + ("UNKNOWN" if choice is None else "ON" if choice else "OFF")
+                for k, choice in value.timeshift_schedules.items()
+            ]
             lines.append("Configured schedules: " + ", ".join(schedules))
         lines += ["Docker estimates can overlap and are daemon-wide; never sum them as physical totals."]
         for warning in value.warnings:
             lines += [f"{warning.severity} {warning.code}: {warning.recommendation}"]
         if not value.warnings:
-            lines.append("No storage warning in this sample." if value.state == "OBSERVED"
-                         else "Warning list unavailable; inspect the selected settings/source.")
-        lines += ["Owner options: keep/defer work, inspect usage, review backup/cache impact, or add/move capacity.",
-                  "No deletion, pruning, backup change, worker or model action is offered here."]
+            lines.append(
+                "No storage warning in this sample."
+                if value.state == "OBSERVED"
+                else "Warning list unavailable; inspect the selected settings/source."
+            )
+        lines += [
+            "Owner options: keep/defer work, inspect usage, review backup/cache impact, or add/move capacity.",
+            "No deletion, pruning, backup change, worker or model action is offered here.",
+        ]
         return [part for text in lines for part in wrapped(text, max(1, width - 3))]
 
     def run(self, screen: Any) -> None:
@@ -335,20 +352,28 @@ class AskTerminal:
                     self.start("storage", self.client.storage)
                 screen.erase()
                 rows, cols = screen.getmaxyx()
-                line(0, "Panestria | HOST STORAGE | read only" if v.storage_active
-                     else "Panestria | GOAL TIMELINE | read only" if v.timeline_goal and v.activity_active
-                     else "Panestria | PROJECT TASKS | read only" if v.activity_active
-                     else getattr(self.client, "view_title", "Panestria | OFFLINE ASK | terminal view"))
+                line(
+                    0,
+                    "Panestria | HOST STORAGE | read only"
+                    if v.storage_active
+                    else "Panestria | GOAL TIMELINE | read only"
+                    if v.timeline_goal and v.activity_active
+                    else "Panestria | PROJECT TASKS | read only"
+                    if v.activity_active
+                    else getattr(self.client, "view_title", "Panestria | OFFLINE ASK | terminal view"),
+                )
                 if rows < 18 or cols < 64:
                     line(2, "Resize to at least 64 columns x 18 rows. F10 quits.")
                 elif v.storage_active:
                     body = self.storage_lines(cols)
                     visible = max(1, rows - 7)
                     v.storage_scroll = min(v.storage_scroll, max(0, len(body) - visible))
-                    for row, text in enumerate(body[v.storage_scroll:v.storage_scroll + visible], 2):
+                    for row, text in enumerate(body[v.storage_scroll : v.storage_scroll + visible], 2):
                         line(row, text)
-                    line(rows - 4, f"Rows {v.storage_scroll + 1}-"
-                         f"{min(len(body), v.storage_scroll + visible)}/{len(body)}")
+                    line(
+                        rows - 4,
+                        f"Rows {v.storage_scroll + 1}-{min(len(body), v.storage_scroll + visible)}/{len(body)}",
+                    )
                     line(rows - 3, v.storage_notice)
                     line(rows - 2, "PgUp/PgDn Scroll | F5/r Read cache | o/b/Esc Back | q Quit")
                     line(rows - 1, "Samples are at least 60s apart. Owner review only; no storage changes are made.")
@@ -358,18 +383,27 @@ class AskTerminal:
                     line(1, "Goal: " + v.timeline_goal)
                     line(2, "Snapshot: " + ("FRESH" if fresh else "UNCONFIRMED/STALE"))
                     line(3, "Canonical goal: " + (timeline_page.snapshot.status if timeline_page else "unconfirmed"))
-                    line(4, "Cursor: " + (timeline_page.next_cursor if timeline_page else "0") +
-                         " | no acceptance authority")
+                    line(
+                        4,
+                        "Cursor: "
+                        + (timeline_page.next_cursor if timeline_page else "0")
+                        + " | no acceptance authority",
+                    )
                     if timeline_page:
                         visible = max(1, rows - 12)
-                        v.timeline_scroll = min(v.timeline_scroll, max(0, len(timeline_page.events)-visible))
-                        line(5, f"Events {v.timeline_scroll+1 if timeline_page.events else 0}-"
-                             f"{min(v.timeline_scroll+visible, len(timeline_page.events))}/{len(timeline_page.events)}")
+                        v.timeline_scroll = min(v.timeline_scroll, max(0, len(timeline_page.events) - visible))
+                        line(
+                            5,
+                            f"Events {v.timeline_scroll + 1 if timeline_page.events else 0}-"
+                            f"{min(v.timeline_scroll + visible, len(timeline_page.events))}/"
+                            f"{len(timeline_page.events)}",
+                        )
                         for row, event in enumerate(
-                            timeline_page.events[v.timeline_scroll:v.timeline_scroll+visible], 6
+                            timeline_page.events[v.timeline_scroll : v.timeline_scroll + visible], 6
                         ):
-                            line(row, f"{event.seq}  {event.kind}  "
-                                 f"[{event.privacy_label}; schema{event.schema_version}]")
+                            line(
+                                row, f"{event.seq}  {event.kind}  [{event.privacy_label}; schema{event.schema_version}]"
+                            )
                     else:
                         line(6, "No confirmed event page. F5 refreshes explicitly.")
                     line(rows - 4, "Event metadata never supplies a task/check PASS or merge permission.")
@@ -390,14 +424,20 @@ class AskTerminal:
                     else:
                         for offset, entry in enumerate(page.entries, 5):
                             held = "?" if entry.held_build_claims is None else str(entry.held_build_claims)
-                            line(offset, f"{offset-4} {'!' if entry.needs_attention else ' '} {entry.workflow:8} "
-                                 f"{str(entry.id)[:8]} {entry.canonical_state:18} "
-                                 f"A:{entry.active_tasks} R:{entry.waiting_reviews} H:{held}")
+                            line(
+                                offset,
+                                f"{offset - 4} {'!' if entry.needs_attention else ' '} {entry.workflow:8} "
+                                f"{str(entry.id)[:8]} {entry.canonical_state:18} "
+                                f"A:{entry.active_tasks} R:{entry.waiting_reviews} H:{held}",
+                            )
                     line(rows - 5, "n: next page available" if page and page.next_cursor else "No further page")
                     line(rows - 4, "! needs attention; held claims never imply free capacity")
                     line(rows - 3, v.notice)
-                    line(rows - 2, ("" if self.metadata_only else "F4/t Ask | ") +
-                         "1-8 Goal timeline | o Storage | F5/r Refresh | n Next | F10/q Quit")
+                    line(
+                        rows - 2,
+                        ("" if self.metadata_only else "F4/t Ask | ")
+                        + "1-8 Goal timeline | o Storage | F5/r Refresh | n Next | F10/q Quit",
+                    )
                     line(rows - 1, "States only; content and exact approvals stay in their separate review views.")
                 else:
                     line(
@@ -434,8 +474,9 @@ class AskTerminal:
                         if age < -5 or age > v.storage.sample_interval_seconds + 35:
                             attention = "STALE/UNCONFIRMED"
                         elif v.storage.warnings:
-                            warning = max(v.storage.warnings,
-                                          key=lambda w: {"INFO": 0, "WARNING": 1, "CRITICAL": 2}[w.severity])
+                            warning = max(
+                                v.storage.warnings, key=lambda w: {"INFO": 0, "WARNING": 1, "CRITICAL": 2}[w.severity]
+                            )
                             attention = warning.severity + " " + warning.code
                         else:
                             attention = "0 notices in last sample"
@@ -497,13 +538,13 @@ class AskTerminal:
                     elif key == "n":
                         self.refresh()
                     elif key == curses.KEY_NPAGE:
-                        v.timeline_scroll += max(1, rows-12)
+                        v.timeline_scroll += max(1, rows - 12)
                     elif key == curses.KEY_PPAGE:
-                        v.timeline_scroll = max(0, v.timeline_scroll-max(1, rows-12))
+                        v.timeline_scroll = max(0, v.timeline_scroll - max(1, rows - 12))
                     continue
                 if v.activity_active and key != "q":
                     if isinstance(key, str) and key in "12345678":
-                        self.select_timeline(int(key)-1)
+                        self.select_timeline(int(key) - 1)
                     elif key == "n" and v.activity and v.activity.next_cursor:
                         self.start("activity", partial(self.client.activity, v.activity.next_cursor))
                     elif key == "r":

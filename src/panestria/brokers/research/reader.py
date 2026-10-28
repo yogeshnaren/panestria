@@ -151,7 +151,8 @@ class IsolatedTextReader:
                         "TRUNCATED": {"text_byte_limit", "pdf_page_limit"} if is_pdf else "text_byte_limit",
                         "ERROR": {"decoder_error", "reader_error"},
                         "UNSUPPORTED": {"pdf_encrypted", "pdf_feature_unsupported", "pdf_no_text"}
-                        if is_pdf else "extractor_unsupported",
+                        if is_pdf
+                        else "extractor_unsupported",
                     }
                     outcome, reason = body.get("outcome"), body.get("reason")
                     if set(body) != {"outcome", "reason"} or outcome not in valid or not isinstance(reason, str):
@@ -184,7 +185,8 @@ class IsolatedTextReader:
                 text_bytes = base64.b64decode(body["text_b64"], validate=True)
                 text = text_bytes.decode("utf-8", errors="strict")
                 extractor = {
-                    "text/plain": "strict-utf8-v1", "text/html": "htmlparser-text-v1",
+                    "text/plain": "strict-utf8-v1",
+                    "text/html": "htmlparser-text-v1",
                     "application/pdf": PDF_EXTRACTOR,
                 }.get(content_type)
                 if extractor is None:
@@ -220,10 +222,7 @@ class IsolatedTextReader:
                     previous = -3
                     checked = []
                     for span in body["page_spans"]:
-                        if (
-                            type(span) is not list or len(span) != 2
-                            or any(type(value) is not int for value in span)
-                        ):
+                        if type(span) is not list or len(span) != 2 or any(type(value) is not int for value in span):
                             raise ValueError
                         start, end = span
                         if not (start == previous + 3 and start < end <= len(text_bytes)):

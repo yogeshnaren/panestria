@@ -24,7 +24,15 @@ there. The R0 commands and native proposal demo below remain separate.
 
 ## Requirements
 
-Python 3.12 or newer, and [uv](https://docs.astral.sh/uv/). The checked-out interpreter used for the hermetic lane was CPython 3.12.4. That observation is not a support-matrix certification.
+- Linux x86-64. Run Panestria as a normal (non-root) user; several runtimes refuse euid 0 by design.
+- Python 3.12 or newer, and [uv](https://docs.astral.sh/uv/) **0.12.3 exactly**. `pyproject.toml` pins `[tool.uv] required-version`; other uv versions refuse `uv run` and the Make targets.
+- Docker Engine with the Compose v2 plugin. It provides PostgreSQL and the worker/reader sandboxes; your user must be able to run `docker` without root.
+- Optional, per feature:
+  - Offline Ask: host Ollama (`/usr/local/bin/ollama`) and a dedicated model cache with `qwen2.5:1.5b-instruct`.
+  - Build: Claude Code 2.1.273.
+  - Mission Control from source: Node `^20.19.0 || >=22.12.0`.
+
+The checked-out interpreter used for the hermetic lane was CPython 3.12.4. That observation is not a support-matrix certification.
 
 ## Setup
 

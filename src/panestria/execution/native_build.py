@@ -434,7 +434,8 @@ class AdmittedNativeBuild:
             self._stop_attempt()
             return NativeBuildOutcome(
                 "CANCELLED" if cancelled else "UNAVAILABLE",
-                "native_build_cancelled" if cancel is not None and cancel.is_set()
+                "native_build_cancelled"
+                if cancel is not None and cancel.is_set()
                 else controller.last_failure_code or monitor_failure or worker_failure_code(error),
                 self.context_sha256,
                 digest,

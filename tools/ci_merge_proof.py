@@ -20,6 +20,7 @@ REQUIRED = {
     "behavioral (kernel)",
     "behavioral (platform)",
     "behavioral (research)",
+    "coverage",
     "test",
 }
 
@@ -87,7 +88,7 @@ def prove() -> dict[str, object]:
             continue
         jobs = api(f"actions/runs/{run_id}/jobs?filter=latest&per_page=100")["jobs"]
         if (
-            len(jobs) != 6
+            len(jobs) != len(REQUIRED)
             or {j["name"] for j in jobs} != REQUIRED
             or any(j.get("status") != "completed" or j.get("conclusion") != "success" for j in jobs)
         ):

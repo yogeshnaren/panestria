@@ -59,10 +59,16 @@ def model_manifest(
     except (OSError, ValueError):
         code = "model_manifest_export_unavailable"
     else:
-        typer.echo(json.dumps({
-            "status": "EXPECTED_MODEL_MANIFEST_WRITTEN", "sha256": descriptor.sha256(),
-            "qualification": "NOT_EVALUATED", "inference_started": False,
-        }))
+        typer.echo(
+            json.dumps(
+                {
+                    "status": "EXPECTED_MODEL_MANIFEST_WRITTEN",
+                    "sha256": descriptor.sha256(),
+                    "qualification": "NOT_EVALUATED",
+                    "inference_started": False,
+                }
+            )
+        )
         return
     typer.echo(json.dumps({"code": code, "existing_files_preserved": True}), err=True)
     raise typer.Exit(2)

@@ -15,9 +15,7 @@ from panestria.resources.primary import PrimaryLease
     [(1, b"", b""), (0, b"", b""), (0, b"CUDA_READY\n", b"synthetic-private-diagnostic")],
 )
 def test_failed_compute_probe_is_redacted(monkeypatch, code, out, err):
-    monkeypatch.setattr(
-        runtime.subprocess, "run", lambda *a, **kw: subprocess.CompletedProcess(a, code, out, err)
-    )
+    monkeypatch.setattr(runtime.subprocess, "run", lambda *a, **kw: subprocess.CompletedProcess(a, code, out, err))
     with pytest.raises(InferenceUnavailable, match="^gpu_initialization_unavailable$"):
         runtime.require_gpu_driver()
 
@@ -58,6 +56,7 @@ def test_probe_never_inherits_credentials_proxy_or_loader_environment(monkeypatc
     runtime.require_gpu_driver()
 
 
+@pytest.mark.requires_nonroot
 def test_gpu_denial_preserves_containers_and_releases_primary(tmp_path, monkeypatch):
     model = runtime.ModelRuntime(tmp_path / "cache", tmp_path / "socket", gpu=True)
     model.primary = PrimaryLease(tmp_path / "primary")
@@ -80,6 +79,7 @@ def test_gpu_denial_preserves_containers_and_releases_primary(tmp_path, monkeypa
     another.release()
 
 
+@pytest.mark.requires_nonroot
 def test_explicit_cpu_runtime_does_not_require_cuda(tmp_path: Path, monkeypatch):
     model = runtime.ModelRuntime(tmp_path / "cache", tmp_path / "socket", gpu=False)
     model.primary = PrimaryLease(tmp_path / "primary")

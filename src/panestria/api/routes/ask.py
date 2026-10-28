@@ -157,7 +157,8 @@ async def _execute_ask(request: Request, service: AskService, submission_type: t
             if ask.provider.model_manifest is None:
                 raise InferenceUnavailable("model_manifest_unavailable")
             service = AskService(
-                profile_context=service.profile_context, include_charter=service.compiler.include_charter,
+                profile_context=service.profile_context,
+                include_charter=service.compiler.include_charter,
                 model_manifest=ask.provider.model_manifest,
             )
         raw = await read_capped_body(request)

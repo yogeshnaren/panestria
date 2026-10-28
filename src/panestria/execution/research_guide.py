@@ -178,9 +178,7 @@ class OwnerResearchGuide:
                 request_id, current.queries, public_web=True, expected_review_sha256=current.input_sha256
             )
         elif current.action == "DRAFT":
-            self.review.synthesize(
-                request_id, key, retain_local_draft=True, expected_input_sha256=current.input_sha256
-            )
+            self.review.synthesize(request_id, key, retain_local_draft=True, expected_input_sha256=current.input_sha256)
         elif current.action == "STOP":
             raise KernelDenied("research_guide_no_safe_action")
         return current.action  # REVIEW opens the separate original judgment view in the CLI.

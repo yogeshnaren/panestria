@@ -328,16 +328,22 @@ def test_atomic_enqueue_and_duplicate(database_url: str, record_property: pytest
         assert receipt.replayed is False
         assert receipt.workflow_id == WORKFLOW
         with engine.connect() as connection:
-            assert _count(
-                connection,
-                "SELECT count(*) FROM dbos.workflow_status WHERE workflow_uuid = :workflow",
-                {"workflow": WORKFLOW},
-            ) == 1
+            assert (
+                _count(
+                    connection,
+                    "SELECT count(*) FROM dbos.workflow_status WHERE workflow_uuid = :workflow",
+                    {"workflow": WORKFLOW},
+                )
+                == 1
+            )
             assert _count(connection, "SELECT count(*) FROM panestria.workflow_link") == 1
-            assert _count(
-                connection,
-                "SELECT count(*) FROM panestria.task_event WHERE kind = 'task.admitted'",
-            ) == 1
+            assert (
+                _count(
+                    connection,
+                    "SELECT count(*) FROM panestria.task_event WHERE kind = 'task.admitted'",
+                )
+                == 1
+            )
             queued_inputs = connection.execute(
                 sa.text("SELECT inputs FROM dbos.workflow_input WHERE workflow_uuid = :workflow"),
                 {"workflow": WORKFLOW},
@@ -404,16 +410,22 @@ def test_atomic_enqueue_and_duplicate(database_url: str, record_property: pytest
         assert sorted(item.replayed for item in outcomes) == [False, True]
         assert {item.workflow_id for item in outcomes} == {WORKFLOW_B}
         with engine.connect() as connection:
-            assert _count(
-                connection,
-                "SELECT count(*) FROM dbos.workflow_status WHERE workflow_uuid = :workflow",
-                {"workflow": WORKFLOW_B},
-            ) == 1
-            assert _count(
-                connection,
-                "SELECT count(*) FROM panestria.workflow_link WHERE task_id = :task",
-                {"task": TASK_B},
-            ) == 1
+            assert (
+                _count(
+                    connection,
+                    "SELECT count(*) FROM dbos.workflow_status WHERE workflow_uuid = :workflow",
+                    {"workflow": WORKFLOW_B},
+                )
+                == 1
+            )
+            assert (
+                _count(
+                    connection,
+                    "SELECT count(*) FROM panestria.workflow_link WHERE task_id = :task",
+                    {"task": TASK_B},
+                )
+                == 1
+            )
         running_task = "00000000-0000-4000-8000-0000000000f1"
         running_attempt = "00000000-0000-4000-8000-0000000000f2"
         with engine.begin() as connection:
@@ -495,8 +507,7 @@ def _seed_replay_tasks(engine: sa.Engine) -> None:
         )
         connection.execute(
             sa.text(
-                "INSERT INTO panestria.project (id, owner_id) VALUES (:project, :owner)"
-                " ON CONFLICT (id) DO NOTHING"
+                "INSERT INTO panestria.project (id, owner_id) VALUES (:project, :owner) ON CONFLICT (id) DO NOTHING"
             ),
             {"project": PROJECT, "owner": OWNER},
         )
@@ -606,10 +617,7 @@ def _task_state(engine: sa.Engine, task_id: str) -> tuple[str, int, int]:
             {"task": task_id},
         ).one()
         events = connection.execute(
-            sa.text(
-                "SELECT count(*) FROM panestria.task_event"
-                " WHERE task_id = :task AND kind = 'task.transition'"
-            ),
+            sa.text("SELECT count(*) FROM panestria.task_event WHERE task_id = :task AND kind = 'task.transition'"),
             {"task": task_id},
         ).scalar_one()
     return str(row[0]), int(row[1]), int(events)
@@ -718,8 +726,7 @@ def _seed_task(engine: sa.Engine, task_id: str, attempt_id: str, name: str) -> N
         )
         connection.execute(
             sa.text(
-                "INSERT INTO panestria.project (id, owner_id) VALUES (:project, :owner)"
-                " ON CONFLICT (id) DO NOTHING"
+                "INSERT INTO panestria.project (id, owner_id) VALUES (:project, :owner) ON CONFLICT (id) DO NOTHING"
             ),
             {"project": PROJECT, "owner": OWNER},
         )
@@ -808,15 +815,12 @@ def _snapshot(engine: sa.Engine, task_id: str, workflow_id: str) -> tuple[object
             {"task": task_id},
         ).one()
         event = connection.execute(
-            sa.text(
-                "SELECT count(*), coalesce(max(seq), 0) FROM panestria.task_event WHERE task_id = :task"
-            ),
+            sa.text("SELECT count(*), coalesce(max(seq), 0) FROM panestria.task_event WHERE task_id = :task"),
             {"task": task_id},
         ).one()
         workflow = connection.execute(
             sa.text(
-                "SELECT workflow_uuid::text, status, name FROM dbos.workflow_status"
-                " WHERE workflow_uuid = :workflow"
+                "SELECT workflow_uuid::text, status, name FROM dbos.workflow_status WHERE workflow_uuid = :workflow"
             ),
             {"workflow": workflow_id},
         ).one()
@@ -1000,8 +1004,7 @@ def test_unfinished_workflow_names_goal_and_task(database_url: str, record_prope
             )
             connection.execute(
                 sa.text(
-                    "INSERT INTO panestria.project (id, owner_id) VALUES (:project, :owner)"
-                    " ON CONFLICT (id) DO NOTHING"
+                    "INSERT INTO panestria.project (id, owner_id) VALUES (:project, :owner) ON CONFLICT (id) DO NOTHING"
                 ),
                 {"project": PROJECT, "owner": OWNER},
             )
@@ -1069,9 +1072,7 @@ def _clock_in_the_body() -> str:
     return str(time.time())
 
 
-def test_stale_attempt_epoch_does_not_move_the_task(
-    database_url: str, record_property: pytest.RecordProperty
-) -> None:
+def test_stale_attempt_epoch_does_not_move_the_task(database_url: str, record_property: pytest.RecordProperty) -> None:
     _properties(record_property, "AOS-003-TC02")
     goal = "00000000-0000-4000-8000-0000000001a0"
     contract = "00000000-0000-4000-8000-0000000001a1"
@@ -1095,8 +1096,7 @@ def test_stale_attempt_epoch_does_not_move_the_task(
             )
             connection.execute(
                 sa.text(
-                    "INSERT INTO panestria.project (id, owner_id) VALUES (:project, :owner)"
-                    " ON CONFLICT (id) DO NOTHING"
+                    "INSERT INTO panestria.project (id, owner_id) VALUES (:project, :owner) ON CONFLICT (id) DO NOTHING"
                 ),
                 {"project": PROJECT, "owner": OWNER},
             )
@@ -1195,4 +1195,3 @@ def test_workflow_body_rejects_a_clock(record_property: pytest.RecordProperty) -
     assert workflow_body_violations(_clock_in_the_body) == ("time.time",)
     for workflow in (run_task_workflow, run_effect_workflow, run_failing_workflow):
         assert workflow_body_violations(workflow) == ()
-

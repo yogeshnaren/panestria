@@ -1,6 +1,6 @@
 # Operational implementation and release runbook
 
-Implement diagnostics/recovery with their owning slices. Commands are planned contracts, not currently available application operations.
+Implement diagnostics/recovery with their owning slices. The table below states the required behavior; it is not a list of available commands. Recovery today is through the per-feature CLI commands in the [testing runbooks](../testing/) (for example `build`, `plan`, `background reconcile-run`). Operator `backup`, `restore`, `upgrade`, `rollback` and service commands are planned in the [remediation plan](../project/R3-REMEDIATION-PLAN.md) and are not available yet.
 
 | Situation | Observe | Safe action | Prohibited shortcut |
 |---|---|---|---|
@@ -13,7 +13,7 @@ Implement diagnostics/recovery with their owning slices. Commands are planned co
 | Model OOM/pressure | actual model/resource snapshot | Stop admissions, unload/degrade, preserve state | Restricted cloud fallback |
 | Auth/quota/version | safe mode/manifest/error | Disable affected capability/cooldown; owner official repair | Credential extraction/account pooling/hot-loop |
 | Search/reader failure | query/redirect/source status | Incomplete/setup-required; retained denial | Guess missing evidence/silent provider switch |
-| Phoenix down | bounded export status | Turn off export, keep DB truth intact | Trace system deciding task state |
+| Trace export down (local OTel; Phoenix is not used, see ADR 0012 proposal) | bounded export status | Turn off export, keep DB truth intact | Trace system deciding task state |
 | Cancel | task/attempt/in-flight effect | Stop new actions now, terminate boundedly, reconcile | CANCELLED from signal request alone |
 | Upgrade/restore | consistent app+DBOS backup/manifests | Isolated restore; effects reviewed before launch | Blind remote replay or destructive downgrade |
 
@@ -21,7 +21,7 @@ Record commands/exit/reports/hashes/candidate/environment and mock-vs-live modes
 
 ## S3 local PostgreSQL scaffold
 
-This section is the current setup for the empty migration scaffold. It is not the later domain schema, backup drill, or fresh-host proof. AOS-001-TC04 stays `NOT_RUN` until a separate Ubuntu host is available.
+This section starts the local PostgreSQL service and applies all migrations. It is not a backup drill. AOS-001-TC04 (fresh host) passed in a fresh Ubuntu 22.04 VM; see [R0 technical completion](../reviews/R0-TECHNICAL-COMPLETION.md).
 
 Requires Docker and the Compose v2 plugin. This machine used Docker 29.1.3 and Compose v5.6.0. The image digest is pinned in `compose.yaml`. The published port is `127.0.0.1:55432` only.
 
@@ -32,7 +32,7 @@ uv run --frozen alembic -c migrations/alembic.ini upgrade head
 docker compose -f compose.yaml -p panestria-s3 down -v
 ```
 
-`upgrade head` applies `0001_scaffold`, `0002_kernel`, `0003_approval_preview`, and `0004_check_candidate`. `down -v` removes only the Compose project volume `panestria_s3_pgdata`. The reset helper refuses any other volume name and refuses a symlink data directory.
+`upgrade head` applies every migration in `migrations/versions` through the current head, `0040_phone_devices`; check with `uv run --frozen alembic -c migrations/alembic.ini heads`. Most downgrades refuse to discard data; take a backup before upgrading a database that holds real data. `down -v` removes only the Compose project volume `panestria_s3_pgdata`. The reset helper refuses any other volume name and refuses a symlink data directory.
 
 After `uv sync --frozen --group dev` has populated the cache, `UV_OFFLINE=1 uv sync --frozen --group dev` reinstalls without network. That check is not a fresh-machine bootstrap.
 

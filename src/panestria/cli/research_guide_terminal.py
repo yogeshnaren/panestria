@@ -81,7 +81,7 @@ class ResearchGuideTerminal:
                 self.end = self.offset + page >= len(content)
                 rows = [
                     "Panestria | GUIDED RESEARCH | same canonical request | manual decisions",
-                    *content[self.offset:self.offset + page],
+                    *content[self.offset : self.offset + page],
                     f"Rows {self.offset + 1}-{min(len(content), self.offset + page)}/{len(content)}",
                     self.notice,
                     "PgUp/PgDn j/k: scroll | v: review exact action | q/Esc: leave/cancel",
@@ -92,7 +92,7 @@ class ResearchGuideTerminal:
                         self.step.digest,
                         "This does not approve any later stage, policy change or task completion.",
                     ]
-            for n, value in enumerate(rows[:height - 1]):
+            for n, value in enumerate(rows[: height - 1]):
                 try:
                     screen.addnstr(n, 0, literal(value), width - 1)
                 except curses.error:

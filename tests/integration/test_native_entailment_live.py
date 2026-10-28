@@ -21,9 +21,7 @@ def test_actual_public_fixture_subscription_observation(fold, record_property):
         "candidate_commit", subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     )
     dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=root).strip())
-    record_property(
-        "worktree_state", "dirty" if dirty else "clean"
-    )
+    record_property("worktree_state", "dirty" if dirty else "clean")
     probe = NativeEntailmentProbe(
         BinaryPin(Path.home() / ".local/share/claude/versions/2.1.273", PINNED_BINARY_SHA256),
         Path.home() / ".panestria-native-claude",

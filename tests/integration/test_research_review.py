@@ -79,9 +79,7 @@ def test_actual_owner_review_cli_binds_claims_preserves_history_and_never_calls_
         ).fetchall() == [("RESTRICTED",)]
 
 
-def test_changed_claim_citation_or_cancelled_task_cannot_retain_owner_judgments(
-    synthesis_context, model_fixture
-):
+def test_changed_claim_citation_or_cancelled_task_cannot_retain_owner_judgments(synthesis_context, model_fixture):
     synthesis, request = synthesis_context
     synthesis.synthesize(request.request_id, "guarded-review", retain_local_draft=True)
     service = OwnerResearchReview(synthesis.dsn, synthesis.settings)

@@ -120,9 +120,7 @@ def test_oversized_header_is_rejected_without_echo(record_property: pytest.Recor
     oversized = _parse(b"GET /" + marker + b" HTTP/1.1\r\n\r\n")
     negative = _parse(b"POST /v1/goals HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Length: -1\r\n\r\n")
     chunked = _parse(b"POST /v1/goals HTTP/1.1\r\nHost: 127.0.0.1\r\nTransfer-Encoding: chunked\r\n\r\n")
-    repeated = _parse(
-        b"POST /v1/goals HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Length: 1\r\nContent-Length: 2\r\n\r\n"
-    )
+    repeated = _parse(b"POST /v1/goals HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Length: 1\r\nContent-Length: 2\r\n\r\n")
     healthy = _parse(b"GET /healthz HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n")
     assert isinstance(oversized, bytes)
     assert b"invalid_request" in oversized
