@@ -6,7 +6,6 @@ arbitrary repositories, private exports, native tools or the R1/G1 security gate
 
 from __future__ import annotations
 
-import hashlib
 import json
 from datetime import UTC, datetime
 from pathlib import Path
@@ -14,6 +13,7 @@ from pathlib import Path
 from panestria.brokers.harness.claude_proposal import PINNED_BINARY_SHA256
 from panestria.contracts.native_proposal import PROFILE, PROMPT_SHA256
 from panestria.contracts.policy import Action, TrustAxis
+from panestria.execution.source_digest import source_sha256
 from panestria.kernel.build import BuildEvidenceStore
 from panestria.policy.profiles import CertificateRejected, CertificateStore
 from panestria.sandbox.profiles import DEFAULT_IMAGE
@@ -26,15 +26,11 @@ CASES = {"public-native-proposal": "NATIVE_NO_TOOLS", "public-apply": "OS_BOUNDA
 def runtime_versions() -> dict[str, str]:
     # A code edit invalidates this narrow attestation, including changes to the
     # parser, policy, controller, gateway, verifier or its reviewed assets.
-    source = Path(__file__).resolve().parents[1]
-    digest = hashlib.sha256()
-    for path in sorted(source.rglob("*.py")):
-        digest.update(str(path.relative_to(source)).encode() + b"\0" + path.read_bytes())
     return {
         "profile": PROFILE,
         "prompt_sha256": PROMPT_SHA256,
         "binary_sha256": PINNED_BINARY_SHA256,
-        "source_sha256": digest.hexdigest(),
+        "source_sha256": source_sha256(Path(__file__).resolve().parents[1]),
         "image": DEFAULT_IMAGE,
     }
 
