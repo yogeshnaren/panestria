@@ -17,7 +17,12 @@ from typing import Literal
 from pydantic import SecretStr
 
 from panestria.brokers.research import pdf_worker, reader_worker
-from panestria.brokers.research.pdf_bundle import PYPDF_BUNDLE_SHA256, stage_pdf_bundle, verify_pdf_bundle
+from panestria.brokers.research.pdf_bundle import (
+    PDF_EXTRACTOR,
+    PYPDF_BUNDLE_SHA256,
+    stage_pdf_bundle,
+    verify_pdf_bundle,
+)
 from panestria.contracts.research import MAX_SOURCE_BYTES
 from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile
 from panestria.sandbox.runner import DockerSandbox
@@ -180,7 +185,7 @@ class IsolatedTextReader:
                 text = text_bytes.decode("utf-8", errors="strict")
                 extractor = {
                     "text/plain": "strict-utf8-v1", "text/html": "htmlparser-text-v1",
-                    "application/pdf": "pypdf-6.20.1-text-v1",
+                    "application/pdf": PDF_EXTRACTOR,
                 }.get(content_type)
                 if extractor is None:
                     raise ValueError

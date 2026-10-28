@@ -15,7 +15,7 @@ from pydantic import SecretStr
 
 from panestria.brokers.research import fetch, pdf_worker, reader_worker
 from panestria.brokers.research.fetch import FetchObservation, https_target
-from panestria.brokers.research.pdf_bundle import PYPDF_BUNDLE_SHA256
+from panestria.brokers.research.pdf_bundle import PDF_EXTRACTOR, PDF_EXTRACTOR_BUNDLES
 from panestria.brokers.research.reader import ReaderObservation
 from panestria.contracts.classification import CanonicalClass, derive_classification
 from panestria.contracts.research import (
@@ -80,8 +80,9 @@ def _validate_text(receipt: RetainedReaderReceipt, text: bytes) -> None:
         or unicodedata.normalize("NFC", decoded) != decoded
     ):
         raise ValueError("source_text_lineage")
-    if receipt.extractor_version == "pypdf-6.20.1-text-v1":
-        if receipt.pdf_bundle_sha256 != PYPDF_BUNDLE_SHA256 or receipt.tokenizer_sha256 != PYPDF_BUNDLE_SHA256:
+    if receipt.extractor_version in PDF_EXTRACTOR_BUNDLES:
+        bundle = PDF_EXTRACTOR_BUNDLES[receipt.extractor_version]
+        if receipt.pdf_bundle_sha256 != bundle or receipt.tokenizer_sha256 != bundle:
             raise ValueError("source_pdf_bundle")
         previous = -3
         for start, end in receipt.page_spans:
@@ -216,7 +217,7 @@ class SourceStore:
                 expected_extractor = {
                     "text/plain": "strict-utf8-v1",
                     "text/html": "htmlparser-text-v1",
-                    "application/pdf": "pypdf-6.20.1-text-v1",
+                    "application/pdf": PDF_EXTRACTOR,
                 }.get(fetched.content_type or "")
                 if (
                     extracted.reader_program_sha256 != program_sha

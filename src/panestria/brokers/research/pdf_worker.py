@@ -12,7 +12,7 @@ import unicodedata
 from pathlib import Path
 from typing import Any
 
-BUNDLE_SHA256 = "ee7677af7c459d97f4d1ee9a715e5b4d19fecb3295d2d596b6d4a6ac076b6c5a"
+BUNDLE_SHA256 = "d990ef5d2b271b795faa3c37345890cb9dfaa914d4532d7364f8825d021508a1"
 LIMITATIONS = ("pdf-text-layer-only", "pdf-no-ocr", "pdf-layout-unverified")
 SEPARATOR = b"\n\f\n"
 
@@ -68,7 +68,7 @@ def _extract(raw: bytes, maximum: int) -> tuple[bytes, list[list[int]]]:
     sys.path.insert(0, "/runtime/pdf-deps")
     import pypdf
 
-    if pypdf.__version__ != "6.20.1":
+    if pypdf.__version__ != "6.21.2":
         raise ValueError("pdf_version")
     manifest = Path("/runtime/pdf-deps/manifest.json").read_bytes()
     if hashlib.sha256(manifest).hexdigest() != BUNDLE_SHA256:
@@ -156,7 +156,7 @@ def main() -> None:
             "raw_sha256": digest, "raw_size": len(raw),
             "text_sha256": hashlib.sha256(canonical).hexdigest(), "text_size": len(canonical),
             "text_b64": base64.b64encode(canonical).decode("ascii"),
-            "extractor_version": "pypdf-6.20.1-text-v1",
+            "extractor_version": "pypdf-6.21.2-text-v1",
             "normalization_version": "nfc-utf8-v1", "unicode_version": unicodedata.unidata_version,
             "tokenizer_sha256": BUNDLE_SHA256, "pdf_bundle_sha256": BUNDLE_SHA256,
             "page_spans": spans, "limitations": LIMITATIONS,
