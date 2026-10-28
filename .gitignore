@@ -28,6 +28,13 @@ apps/mission-control/test-results/
 evidence/ci-*-selection.json
 evidence/ci-merge-proof.json
 
+# Key material and tokens never belong in Git (TLS keys, phone/activity tokens).
+*.pem
+*.key
+*.token
+*.p12
+*.pfx
+
 # Per-lane coverage data and combined reports are CI artifacts, not committed.
 evidence/coverage-*
 evidence/coverage.json

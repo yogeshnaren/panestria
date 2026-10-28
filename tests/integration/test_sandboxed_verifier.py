@@ -10,6 +10,7 @@ from panestria.verification.registry import CommandRegistry
 from panestria.verification.sandboxed import SandboxedCheckRunner
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 def test_verifier_os_boundary(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     workspace = tmp_path / "candidates" / "one"

@@ -5,6 +5,9 @@ on:
     branches-ignore:
       - "task/**"
   pull_request:
+  schedule:
+    # Nightly full regression on main: every lane, nothing deferred, deeper property tests.
+    - cron: "37 3 * * *"
   workflow_dispatch:
     inputs:
       profile:
@@ -31,6 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           # The license-preservation check compares against the original commit.
           fetch-depth: 0
       - name: Reuse only proven passing PR merge content
@@ -75,9 +79,16 @@ jobs:
       - name: Import boundaries
         if: steps.proof.outputs.already_tested != 'true'
         run: uv run --frozen lint-imports --config .importlinter
+      - name: Workflow lint
+        if: steps.proof.outputs.already_tested != 'true'
+        run: |
+          uv run --frozen --group audit actionlint .github/workflows/*.yml
+          uv run --frozen --group audit zizmor --offline .github/workflows/
       - name: Secret scan
         if: steps.proof.outputs.already_tested != 'true'
-        run: uv run --frozen python tools/secret_scan.py
+        run: |
+          uv run --frozen python tools/secret_scan.py
+          uv run --frozen python tools/secret_scan.py --history
       - name: Public surface compatibility
         if: steps.proof.outputs.already_tested != 'true'
         run: |
@@ -101,11 +112,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [fast, kernel, platform, research]
+        suite: [fast, kernel, platform, research, boundary]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: 0
       - name: Install pinned uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
@@ -148,7 +160,8 @@ jobs:
         run: uv run --frozen python -c 'from panestria.cli.review_demo import prepare_worker_image; prepare_worker_image()'
       - name: Tests
         env:
-          CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || github.event_name == 'push' && 'full' || 'required' }}
+          CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || (github.event_name == 'push' || github.event_name == 'schedule') && 'full' || 'required' }}
+          HYPOTHESIS_PROFILE: ${{ github.event_name == 'schedule' && 'nightly' || 'ci' }}
           CI_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
         run: uv run --frozen python tools/ci_tests.py ${{ matrix.suite }} --profile "$CI_PROFILE" --base "$CI_BASE" --coverage
       - name: Retain timings and failures
@@ -172,6 +185,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Install pinned uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
@@ -186,7 +201,7 @@ jobs:
           path: evidence
           merge-multiple: true
       - name: Enforce coverage floors
-        run: uv run --frozen python tools/coverage_floor.py evidence/coverage-fast evidence/coverage-kernel evidence/coverage-platform evidence/coverage-research
+        run: uv run --frozen python tools/coverage_floor.py evidence/coverage-fast evidence/coverage-kernel evidence/coverage-platform evidence/coverage-research evidence/coverage-boundary
       - name: Retain combined coverage
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

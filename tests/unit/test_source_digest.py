@@ -43,14 +43,15 @@ def test_unchanged_tree_is_not_reread(tree, monkeypatch):
     _later(monkeypatch)
     expected = _reference(tree)
     assert source_sha256(tree) == expected
-    reads: list[Path] = []
-    original = Path.read_bytes
-    monkeypatch.setattr(Path, "read_bytes", lambda self: reads.append(self) or original(self))
+    calls: list[str] = []
+    for name in ("read_bytes", "rglob"):
+        original = getattr(Path, name)
+        monkeypatch.setattr(Path, name, lambda self, *a, _o=original, _n=name: calls.append(_n) or _o(self, *a))
     assert source_sha256(tree) == expected
-    assert reads == []
+    assert calls == []  # A cache hit only re-stats the remembered entries.
 
 
-@pytest.mark.parametrize("change", ["same_size_edit", "added", "removed"])
+@pytest.mark.parametrize("change", ["same_size_edit", "added", "added_in_new_directory", "removed", "renamed"])
 def test_any_source_change_changes_the_digest(tree, change, monkeypatch):
     _later(monkeypatch)
     before = source_sha256(tree)
@@ -58,8 +59,13 @@ def test_any_source_change_changes_the_digest(tree, change, monkeypatch):
         (tree / "a.py").write_bytes(b"value = 9\n")
     elif change == "added":
         (tree / "pkg" / "c.py").write_bytes(b"")
-    else:
+    elif change == "added_in_new_directory":
+        (tree / "pkg" / "sub").mkdir()
+        (tree / "pkg" / "sub" / "d.py").write_bytes(b"")
+    elif change == "removed":
         (tree / "pkg" / "b.py").unlink()
+    else:
+        (tree / "pkg" / "b.py").rename(tree / "pkg" / "c.py")
     after = source_sha256(tree)
     assert after != before and after == _reference(tree)
 

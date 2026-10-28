@@ -49,6 +49,7 @@ def test_workspace_scope_and_executable(tmp_path: Path, record_property: pytest.
         runner.run(worker, ("docker", "run", "--privileged"), SandboxProfile())
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 def test_os_effective_uid_mounts_egress_and_limits(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, record_property: pytest.RecordProperty
@@ -114,6 +115,7 @@ print(json.dumps(checks))
     record_property("effective_config_sha256", receipt.effective_config_sha256)
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 @pytest.mark.parametrize(
     "pressure,expected",
@@ -180,6 +182,7 @@ def test_mount_symlink_proc_escape(tmp_path: Path, record_property: pytest.Recor
         runner.run(worker, ("/usr/local/bin/python", "-c", "pass"), SandboxProfile())
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 def test_readonly_profile_and_private_paths(tmp_path: Path, record_property: pytest.RecordProperty) -> None:
     record_property("gate_case_id", "AOS-008-TC01")
@@ -203,6 +206,7 @@ print('private-paths-denied')
     assert not (worker / "forbidden").exists()
 
 
+@pytest.mark.docker_boundary
 @pytest.mark.live
 def test_sandbox_failure_cleanup(tmp_path: Path, record_property: pytest.RecordProperty) -> None:
     record_property("gate_case_id", "AOS-008-TC04")

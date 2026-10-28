@@ -6,12 +6,15 @@ This is source-equivalence reuse, never a new test or release-gate result.
 
 from __future__ import annotations
 
+import io
 import json
 import os
 import re
 import signal
 import subprocess
+import urllib.error
 import urllib.request
+import zipfile
 from pathlib import Path
 
 REQUIRED = {
@@ -20,9 +23,33 @@ REQUIRED = {
     "behavioral (kernel)",
     "behavioral (platform)",
     "behavioral (research)",
+    "behavioral (boundary)",
     "coverage",
     "test",
 }
+
+
+SUITES = ("fast", "kernel", "platform", "research", "boundary")
+_ARTIFACT_LIMIT = 4 * 1024 * 1024
+
+
+def selection_permits_reuse(selection: dict[str, object]) -> bool:
+    """A PR lane may stand in for main only if it deferred nothing."""
+    return selection.get("profile") == "full" or selection.get("deferred") == []
+
+
+def selection_from_artifact(archive: bytes, suite: str) -> dict[str, object]:
+    """Return the lane's selection document from a downloaded artifact zip."""
+    with zipfile.ZipFile(io.BytesIO(archive)) as bundle:
+        names = [n for n in bundle.namelist() if n.rsplit("/", 1)[-1] == f"ci-{suite}-selection.json"]
+        if len(names) != 1:
+            raise ValueError("selection_missing")
+        return json.loads(bundle.read(names[0]))
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args: object, **kwargs: object) -> None:
+        return None
 
 
 def git(*args: str) -> str:
@@ -57,6 +84,25 @@ def prove() -> dict[str, object]:
         if len(raw) > 2 * 1024 * 1024:
             raise ValueError("metadata_size_limit")
         return json.loads(raw)
+
+    def download(artifact_id: int) -> bytes:
+        # The API answers with a redirect to signed storage; never forward the token there.
+        request = urllib.request.Request(
+            f"https://api.github.com/repos/{repository}/actions/artifacts/{artifact_id}/zip",
+            headers={"Authorization": "Bearer " + token, "X-GitHub-Api-Version": "2022-11-28"},
+        )
+        try:
+            urllib.request.build_opener(_NoRedirect).open(request, timeout=5)
+            raise ValueError("artifact_redirect_missing")
+        except urllib.error.HTTPError as redirect:
+            location = redirect.headers.get("Location", "")
+            if redirect.code not in (301, 302, 303, 307) or not location.startswith("https://"):
+                raise
+        with urllib.request.urlopen(location, timeout=5) as response:
+            raw = response.read(_ARTIFACT_LIMIT + 1)
+        if len(raw) > _ARTIFACT_LIMIT:
+            raise ValueError("artifact_size_limit")
+        return raw
 
     runs = api(f"actions/workflows/ci.yml/runs?head_sha={parents[1]}&per_page=100")
     entries = runs["workflow_runs"]
@@ -94,14 +140,18 @@ def prove() -> dict[str, object]:
         ):
             continue
         artifacts = api(f"actions/runs/{run_id}/artifacts?per_page=100")["artifacts"]
-        previews, suites = set(), set()
+        previews, suites, lane_artifacts = set(), set(), {}
         for artifact in artifacts:
-            match = re.fullmatch(r"ci-(fast|kernel|platform|research)-([0-9a-f]{40})", artifact["name"])
+            match = re.fullmatch(r"ci-(fast|kernel|platform|research|boundary)-([0-9a-f]{40})", artifact["name"])
             if match and not artifact.get("expired", True):
                 suites.add(match[1])
                 previews.add(match[2])
-        if len(previews) != 1 or suites != {"fast", "kernel", "platform", "research"}:
+                lane_artifacts[match[1]] = artifact["id"]
+        if len(previews) != 1 or suites != set(SUITES):
             continue
+        # A required-profile PR run may have deselected regressions; main then runs them.
+        if not all(selection_permits_reuse(selection_from_artifact(download(lane_artifacts[s]), s)) for s in SUITES):
+            return {"already_tested": False, "reason": "pr_evidence_deferred_regressions"}
         preview = previews.pop()
         tested = api("git/commits/" + preview)
         if (
