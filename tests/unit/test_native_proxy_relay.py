@@ -110,6 +110,7 @@ def test_non_loopback_listener_is_rejected_before_accepting_clients(tmp_path):
             RelayServer(("0.0.0.0", 0), SocketIdentity(endpoint, info.st_dev, info.st_ino))
 
 
+@pytest.mark.requires_nonroot
 def test_cli_cannot_fall_back_to_a_host_with_external_network_interfaces():
     if {name for _index, name in socket.if_nameindex()} == {"lo"}:
         pytest.skip("already loopback-only namespace; host-interface refusal not exercised")

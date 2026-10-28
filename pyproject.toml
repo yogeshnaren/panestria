@@ -55,6 +55,7 @@ markers = [
   "unit: hermetic unit lane",
   "contract: toolchain and schema lane",
   "live: live lane; not part of the default synthetic run",
+  "requires_nonroot: needs a non-root user; skipped locally as root, fails in CI",
 ]
 
 [tool.ruff]
