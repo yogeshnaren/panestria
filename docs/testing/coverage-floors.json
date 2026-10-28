@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "policy": "Whole-suite (all non-live lanes) branch coverage per package. Floors only rise; update with tools/coverage_floor.py --write from a full CI run.",
+  "floors": {}
+}

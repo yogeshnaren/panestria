@@ -35,9 +35,12 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
   "httpx2",
+  "hypothesis>=6.100",
   "import-linter>=2.15",
   "mypy>=2.4.0",
   "pytest",
+  "pytest-cov>=6",
+  "pytest-timeout>=2.3",
   "ruff>=0.17.0",
 ]
 mutation = [
@@ -51,12 +54,22 @@ required-version = "0.12.3"
 addopts = "--strict-markers"
 junit_family = "xunit1"
 testpaths = ["tests"]
+# A hung test fails instead of consuming the whole CI job budget.
+timeout = 600
 markers = [
   "unit: hermetic unit lane",
   "contract: toolchain and schema lane",
   "live: live lane; not part of the default synthetic run",
   "requires_nonroot: needs a non-root user; skipped locally as root, fails in CI",
 ]
+
+[tool.coverage.run]
+branch = true
+source = ["panestria"]
+relative_files = true
+
+[tool.coverage.report]
+skip_empty = true
 
 [tool.ruff]
 target-version = "py312"

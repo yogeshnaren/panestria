@@ -13,6 +13,7 @@ import ast
 import fnmatch
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -145,6 +146,7 @@ def main() -> int:
     parser.add_argument("--profile", choices=("required", "full"), default="full")
     parser.add_argument("--base", help="Exact comparison commit for required profile; unknown base runs full")
     parser.add_argument("--critical", action="store_true", help="Fast mutation-witness subset; never a full CI pass")
+    parser.add_argument("--coverage", action="store_true", help="Record branch coverage to evidence/coverage-SUITE")
     args = parser.parse_args()
     suites = partition()
     if args.list:
@@ -190,9 +192,18 @@ def main() -> int:
     ]
     if args.collect_only:
         command.append("--collect-only")
+    env = None
+    if args.coverage and not args.collect_only:
+        # Data only; tools/coverage_floor.py combines lanes and enforces floors.
+        command += ["--cov=panestria", "--cov-branch", "--cov-report="]
+        env = {
+            **os.environ,
+            "COVERAGE_FILE": str(ROOT / f"evidence/coverage-{args.suite}{suffix}"),
+            "COVERAGE_CORE": "sysmon",
+        }
     for item in deferred:
         command += ["--deselect", item["node"]]
-    return subprocess.run(command, cwd=ROOT, check=False).returncode
+    return subprocess.run(command, cwd=ROOT, env=env, check=False).returncode
 
 
 if __name__ == "__main__":
