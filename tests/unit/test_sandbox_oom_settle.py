@@ -19,7 +19,7 @@ def stopped(oom: bool, code: int = 137) -> dict:
 
 
 def reports(monkeypatch, states):
-    calls = []
+    calls, sleeps = [], []
 
     def fake(self, args, *, timeout=30):
         calls.append(args)
@@ -27,25 +27,25 @@ def reports(monkeypatch, states):
         return subprocess.CompletedProcess(args, 0, json.dumps([{"Id": CID, "State": state}]), "")
 
     monkeypatch.setattr(DockerSandbox, "_docker", fake)
-    monkeypatch.setattr(runner, "OOM_SETTLE_POLL_SECONDS", 0.01)
-    return calls
+    monkeypatch.setattr(runner.time, "sleep", sleeps.append)
+    return calls, sleeps
 
 
-def test_oom_reported_after_several_reads_is_still_observed(tmp_path, monkeypatch):
-    calls = reports(monkeypatch, [stopped(False)] * 8 + [stopped(True)])
+def test_reads_back_off_across_more_than_a_second_and_stay_bounded(tmp_path, monkeypatch):
+    calls, sleeps = reports(monkeypatch, [stopped(False)])
     settled = DockerSandbox(tmp_path)._settle_killed_state(CID, stopped(False))
-    assert settled["OOMKilled"] is True and len(calls) == 9
+    assert settled["OOMKilled"] is False
+    assert len(calls) == 4 and sum(sleeps) >= 1.2 and sleeps == sorted(sleeps)
 
 
-def test_no_oom_report_keeps_the_plain_kill_within_the_bound(tmp_path, monkeypatch):
-    calls = reports(monkeypatch, [stopped(False)])
-    monkeypatch.setattr(runner, "OOM_SETTLE_SECONDS", 0.2)
-    settled = DockerSandbox(tmp_path)._settle_killed_state(CID, stopped(False))
-    assert settled["OOMKilled"] is False and 1 <= len(calls) <= 20
+def test_oom_reported_on_the_last_read_is_still_observed(tmp_path, monkeypatch):
+    calls, _ = reports(monkeypatch, [stopped(False)] * 3 + [stopped(True)])
+    assert DockerSandbox(tmp_path)._settle_killed_state(CID, stopped(False))["OOMKilled"] is True
+    assert len(calls) == 4
 
 
 def test_non_kill_exit_and_known_oom_do_not_poll(tmp_path, monkeypatch):
-    calls = reports(monkeypatch, [stopped(True)])
+    calls, _ = reports(monkeypatch, [stopped(True)])
     sandbox = DockerSandbox(tmp_path)
     assert sandbox._settle_killed_state(CID, stopped(False, code=1))["ExitCode"] == 1
     assert sandbox._settle_killed_state(CID, stopped(True))["OOMKilled"] is True
