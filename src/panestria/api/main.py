@@ -7,11 +7,12 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from panestria import package_version
-from panestria.api.auth import GoalApi
+from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body
 from panestria.api.health import (
     ErrorBody,
     HealthService,
@@ -52,11 +53,27 @@ def create_app(settings: Settings | ValidatedSettings, readiness_probe: Readines
         debug=False,
         docs_url=None,
         redoc_url=None,
+        # The schema is published as docs/api/openapi.json; serving it would
+        # describe every route to any local caller before authentication.
+        openapi_url=None,
         lifespan=lifespan,
     )
     app.state.settings = validated
     app.state.health = service
     app.state.goal_api = None
+
+    @app.exception_handler(RequestValidationError)
+    def invalid_request(request: Request, exc: RequestValidationError) -> JSONResponse:
+        # Authenticate before describing the rejected input. Field-level
+        # validation detail is never returned; it would map the API surface.
+        del exc
+        api = getattr(request.app.state, "goal_api", None)
+        if isinstance(api, GoalApi):
+            try:
+                authorize(request, api)
+            except LoopbackDenied as denied:
+                return JSONResponse(status_code=denied.status_code, content=error_body(denied.code))
+        return JSONResponse(status_code=422, content=error_body("invalid_request"))
 
     @app.get("/healthz", response_model=Liveness)
     def healthz() -> Liveness:

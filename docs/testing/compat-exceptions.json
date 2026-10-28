@@ -4,6 +4,46 @@
   "baseline": "evidence/regression-baseline-2026-10-28/snapshot.json",
   "exceptions": [
     {
+      "match": "added denial_codes[PreviewRejected:invalid_preview_destination]",
+      "reason": "Approval requests now bound preview destination to printable ASCII and expiry to 366 days; new deny code, existing codes unchanged.",
+      "finding": "R3-REMEDIATION-PLAN 1.5 / SEC-L1"
+    },
+    {
+      "match": "added denial_codes[PreviewRejected:invalid_preview_expiry]",
+      "reason": "Approval requests now bound preview destination to printable ASCII and expiry to 366 days; new deny code, existing codes unchanged.",
+      "finding": "R3-REMEDIATION-PLAN 1.5 / SEC-L1"
+    },
+    {
+      "match": "added denial_codes[SandboxRejected:invalid_workspace_cap]",
+      "reason": "SandboxProfile.workspace_bytes is validated to 1 MiB..16 GiB; new deny code.",
+      "finding": "R3-REMEDIATION-PLAN 1.4 / SEC-M1"
+    },
+    {
+      "match": "added denial_codes[SandboxRejected:workspace_quota_exceeded]",
+      "reason": "A workspace already over its quota is refused before launch; the same reason names a receipt stopped by the quota watchdog.",
+      "finding": "R3-REMEDIATION-PLAN 1.4 / SEC-M1"
+    },
+    {
+      "match": "changed schema_fingerprint_sha256",
+      "reason": "Migration 0041 makes ix_memory_fts partial (search_document IS NOT NULL); restricted memory revisions carry no search document. Migration 0042 adds task_event (kind,goal_id,seq) and (task_id,kind,seq) indexes (plan 1.6 / ARCH-P1-4).",
+      "finding": "R3-REMEDIATION-PLAN 1.2 / F-AI2 (MVP-X07)"
+    },
+    {
+      "match": "changed schema_snapshot_sha256",
+      "reason": "Migration 0041 makes ix_memory_fts partial (search_document IS NOT NULL); restricted memory revisions carry no search document. Migration 0042 adds task_event (kind,goal_id,seq) and (task_id,kind,seq) indexes (plan 1.6 / ARCH-P1-4).",
+      "finding": "R3-REMEDIATION-PLAN 1.2 / F-AI2 (MVP-X07)"
+    },
+    {
+      "match": "added denial_codes[KernelDenied:memory_suppressed]",
+      "reason": "Correcting a suppressed memory item is refused; the owner must unsuppress explicitly.",
+      "finding": "R3-REMEDIATION-PLAN 1.2 / AI-P2b"
+    },
+    {
+      "match": "added denial_codes[KernelDenied:pinned_memory_conflict]",
+      "reason": "A pinned memory item superseded by a newer item with the same conflict_key is surfaced as a conflict instead of being dropped.",
+      "finding": "R3-REMEDIATION-PLAN 1.2 / AI-P2b"
+    },
+    {
       "match": "added denial_codes[KernelDenied:curation_near_duplicate_input]",
       "reason": "An export may not contain near-duplicate inputs (normalized or 3-shingle Jaccard >= 0.8), which could straddle the development/holdout folds.",
       "finding": "R3-REMEDIATION-PLAN 1.9 / AI-P2d"

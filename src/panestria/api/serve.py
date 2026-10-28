@@ -25,6 +25,9 @@ from panestria.api.main import create_app, mount_goal_api
 from panestria.config import ProfileRejected, load_settings
 from panestria.kernel.goals import Actor
 
+# A peer must deliver the whole request within this bound; a slow or stalled
+# sender cannot hold one of the loopback connections open indefinitely.
+REQUEST_DEADLINE_SECONDS = 10
 SYNTHETIC_OWNER = "00000000-0000-4000-8000-000000000002"
 SYNTHETIC_PROJECT = "00000000-0000-4000-8000-000000000003"
 
@@ -166,7 +169,7 @@ async def _read_request(reader: asyncio.StreamReader) -> tuple[str, str, list[tu
 
 def _plain(status: int, code: str) -> bytes:
     payload = json.dumps(error_body(code), separators=(",", ":")).encode()
-    reason = {400: "Bad Request", 413: "Payload Too Large"}.get(status, "Error")
+    reason = {400: "Bad Request", 408: "Request Timeout", 413: "Payload Too Large"}.get(status, "Error")
     header = (
         f"HTTP/1.1 {status} {reason}\r\nContent-Type: application/json\r\n"
         f"Content-Length: {len(payload)}\r\nConnection: close\r\n\r\n"
@@ -235,7 +238,12 @@ async def _handle(
     writer: asyncio.StreamWriter,
 ) -> None:
     try:
-        parsed = await _read_request(reader)
+        try:
+            parsed = await asyncio.wait_for(_read_request(reader), REQUEST_DEADLINE_SECONDS)
+        except TimeoutError:
+            parsed = _plain(408, "request_deadline_exceeded")
+        except asyncio.IncompleteReadError:
+            return  # The peer closed before sending the declared body.
         if isinstance(parsed, bytes):
             if parsed:
                 writer.write(parsed)

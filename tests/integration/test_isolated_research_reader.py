@@ -4,11 +4,13 @@ import hashlib
 import json
 import threading
 from dataclasses import replace
+from pathlib import Path
 
 import pytest
 
 import panestria.brokers.research.reader as module
 from panestria.brokers.research.reader import IsolatedTextReader
+from panestria.brokers.research.reader_worker import HTML_EXTRACTOR
 from panestria.sandbox.profiles import SandboxProfile
 
 
@@ -61,7 +63,17 @@ def test_actual_html_tokenizer_ignores_active_markup_attributes_and_comments():
     text = result.text.get_secret_value()
     assert "Hello & world." in text
     assert all(term not in text for term in ("hidden", "__import__", "https://", "private comment"))
-    assert result.extractor_version == "htmlparser-text-v1"
+    assert result.extractor_version == HTML_EXTRACTOR
+    assert result.hidden_bytes_dropped is not None and result.hidden_bytes_dropped > 0
+
+
+def test_actual_container_reader_drops_hidden_html_and_reports_the_dropped_bytes():
+    raw = (Path(__file__).resolve().parents[1] / "fixtures/reader/hidden-styles.html").read_bytes()
+    result = read(raw, "text/html")
+    assert result.outcome == "COMPLETE" and result.extractor_version == HTML_EXTRACTOR
+    text = result.text.get_secret_value()
+    assert "VISIBLE-5 end" in text and "SECRET" not in text
+    assert result.hidden_bytes_dropped is not None and result.hidden_bytes_dropped > 0
 
 
 def test_actual_external_entity_is_not_resolved_and_source_instructions_remain_data(tmp_path):
@@ -81,10 +93,12 @@ def test_actual_external_entity_is_not_resolved_and_source_instructions_remain_d
 
 
 def test_html_is_tokenized_not_browser_rendered_and_private_repr_is_masked():
-    result = read(b'<p style="display:none">PRIVATE_MARKER</p>', "text/html")
-    assert result.outcome == "COMPLETE" and "PRIVATE_MARKER" in result.text.get_secret_value()
+    result = read(b'<p style="display:none">HIDDEN_MARKER</p><p>PRIVATE_MARKER</p>', "text/html")
+    text = result.text.get_secret_value()
+    assert result.outcome == "COMPLETE" and "PRIVATE_MARKER" in text
     assert "PRIVATE_MARKER" not in repr(result)
-    # CSS layout/visibility is deliberately not a browser interpretation.
+    # Inline visibility is honoured (plan 1.3); stylesheets are still never rendered or fetched.
+    assert "HIDDEN_MARKER" not in text and result.hidden_bytes_dropped == len("HIDDEN_MARKER")
 
 
 @pytest.mark.parametrize(

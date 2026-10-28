@@ -34,3 +34,13 @@ pacing (drift D5, finding AI-P2e).
 - Property tests: UNKNOWN never enables unbounded work, and eligibility is monotone in
   time-to-reset.
 - The owner can see why a job waits, with no hidden spillover into paid usage.
+
+## Implementation notes (2026-10-28, plan item 1.8)
+
+Recorded where the first implementation narrows this proposal; the decision text above is unchanged.
+
+- **Fixed bounds, not policy fields.** `kernel/pacing.py` sets the 6-hour age cap, a one-hour urgency window and a 10-minute minimum interval for rate evidence. Adding fields to `BackgroundWorkPolicy` would change the digest of every stored policy. Making these owner-configurable needs a new policy schema version.
+- **Projected regular use.** The rate comes from the two latest numeric reports in the same lane, window, unit and reset period. With no such pair, nothing is projected and the static reserve still applies. There is no owner-configured estimate yet.
+- **No clock-skew tolerance.** The quota ledger requires `observed_at <= created_at`, so a future-dated report is refused at recording. An existing invariant (`test_a_server_clock_rollback_does_not_make_an_observation_new_again`) deliberately treats a server clock rollback as STALE. The proposed ±5 s tolerance would weaken that, so it is not applied.
+- **Confidence values unchanged.** `QuotaView.confidence` keeps `REPORTED`. Each observation's `source` already separates `OWNER_REPORTED` from `PROVIDER_REPORTED`, and renaming the view value would break existing readers.
+- **New waiting reasons:** `pacing_projected_regular_use_before_reset` and `quota_observation_older_than_background_limit`.
