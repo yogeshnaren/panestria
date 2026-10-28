@@ -59,7 +59,7 @@ def test_pins_and_rules_never_silently_dropped(r1_task: dict[str, str]) -> None:
     actor, service, compiler = Actor(r1_task["owner"], r1_task["project"]), MemoryService(), ContextCompiler()
     with psycopg.connect(r1_task["dsn"]) as c:
         uow = UnitOfWork(c)
-        ref = service.add(uow, actor, MemorySubmission(body="PostgreSQL " * 200, label="PRIVATE"))
+        ref = service.add(uow, actor, MemorySubmission(body="PostgreSQL " * 200, label="CONFIDENTIAL"))
         c.commit()
         pack = compiler.compose(uow, actor, str(uuid4()), "PostgreSQL", "PUBLIC", token_budget=512)
         c.commit()
@@ -68,7 +68,7 @@ def test_pins_and_rules_never_silently_dropped(r1_task: dict[str, str]) -> None:
             "SELECT stage FROM panestria.memory_use_event WHERE context_pack_id=%s", (pack.id,)
         ).fetchall() == [("retrieved",)]
         service.correct(
-            uow, actor, ref.item_id, 0, MemorySubmission(body="PostgreSQL " * 200, label="PRIVATE", pinned=True)
+            uow, actor, ref.item_id, 0, MemorySubmission(body="PostgreSQL " * 200, label="CONFIDENTIAL", pinned=True)
         )
         c.commit()
         with pytest.raises(KernelDenied, match="pinned_context_budget_exceeded"), c.transaction():
