@@ -34,6 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           # The license-preservation check compares against the original commit.
           fetch-depth: 0
       - name: Reuse only proven passing PR merge content
@@ -78,6 +79,11 @@ jobs:
       - name: Import boundaries
         if: steps.proof.outputs.already_tested != 'true'
         run: uv run --frozen lint-imports --config .importlinter
+      - name: Workflow lint
+        if: steps.proof.outputs.already_tested != 'true'
+        run: |
+          uv run --frozen --group audit actionlint .github/workflows/*.yml
+          uv run --frozen --group audit zizmor --offline .github/workflows/
       - name: Secret scan
         if: steps.proof.outputs.already_tested != 'true'
         run: uv run --frozen python tools/secret_scan.py
@@ -104,6 +110,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: 0
       - name: Install pinned uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
@@ -171,6 +178,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Install pinned uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
