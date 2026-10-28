@@ -42,7 +42,7 @@ from panestria.kernel.uow import UnitOfWork
 from panestria.resources.admission import admit
 from panestria.resources.hardware import HardwareProbe, ProbeUnavailable
 
-SCHEMA_HEAD = "0040_phone_devices"
+SCHEMA_HEAD = "0041_memory_restricted_fts"
 
 
 def require_setup(settings: ValidatedSettings, actor: Actor) -> str:

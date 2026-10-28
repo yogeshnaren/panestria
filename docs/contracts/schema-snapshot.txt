@@ -1322,7 +1322,7 @@ index CREATE INDEX ix_approvals_owner_pending ON panestria.approval_request USIN
 index CREATE INDEX ix_attempt_expiry ON panestria.task_attempt USING btree (lease_expires_at) WHERE (status = ANY (ARRAY['PENDING'::text, 'RUNNING'::text]))
 index CREATE INDEX ix_event_goal_seq ON panestria.task_event USING btree (goal_id, seq)
 index CREATE INDEX ix_learning_scope ON panestria.learning_record USING btree (owner_id, project_id, request_id)
-index CREATE INDEX ix_memory_fts ON panestria.memory_revision USING gin (search_document)
+index CREATE INDEX ix_memory_fts ON panestria.memory_revision USING gin (search_document) WHERE (search_document IS NOT NULL)
 index CREATE INDEX ix_memory_scope ON panestria.memory_item USING btree (owner_id, project_id, status)
 index CREATE INDEX ix_outbox_due ON panestria.effect_outbox USING btree (due_at) WHERE (state = 'PENDING'::text)
 index CREATE INDEX ix_task_goal ON panestria.task USING btree (goal_id)
