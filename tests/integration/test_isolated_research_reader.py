@@ -93,10 +93,12 @@ def test_actual_external_entity_is_not_resolved_and_source_instructions_remain_d
 
 
 def test_html_is_tokenized_not_browser_rendered_and_private_repr_is_masked():
-    result = read(b'<p style="display:none">PRIVATE_MARKER</p>', "text/html")
-    assert result.outcome == "COMPLETE" and "PRIVATE_MARKER" in result.text.get_secret_value()
+    result = read(b'<p style="display:none">HIDDEN_MARKER</p><p>PRIVATE_MARKER</p>', "text/html")
+    text = result.text.get_secret_value()
+    assert result.outcome == "COMPLETE" and "PRIVATE_MARKER" in text
     assert "PRIVATE_MARKER" not in repr(result)
-    # CSS layout/visibility is deliberately not a browser interpretation.
+    # Inline visibility is honoured (plan 1.3); stylesheets are still never rendered or fetched.
+    assert "HIDDEN_MARKER" not in text and result.hidden_bytes_dropped == len("HIDDEN_MARKER")
 
 
 @pytest.mark.parametrize(
