@@ -45,6 +45,7 @@ class RetainedReaderReceipt(ResearchContract):
         "htmlparser-visible-text-v2",
         "pypdf-6.20.1-text-v1",
         "pypdf-6.21.2-text-v1",
+        "pypdf-6.21.4-text-v1",
     ]
     tokenizer_sha256: Sha256
     program_sha256: Sha256
