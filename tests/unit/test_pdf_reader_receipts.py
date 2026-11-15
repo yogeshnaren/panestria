@@ -114,6 +114,9 @@ def test_in_container_worker_pins_match_the_host_bundle() -> None:
 def test_receipts_from_the_previous_pinned_extractor_stay_verifiable() -> None:
     from panestria.brokers.research.pdf_bundle import PDF_EXTRACTOR_BUNDLES
 
+    assert PDF_EXTRACTOR_BUNDLES["pypdf-6.21.2-text-v1"] == (
+        "d990ef5d2b271b795faa3c37345890cb9dfaa914d4532d7364f8825d021508a1"
+    )
     assert PDF_EXTRACTOR_BUNDLES["pypdf-6.20.1-text-v1"] == (
         "ee7677af7c459d97f4d1ee9a715e5b4d19fecb3295d2d596b6d4a6ac076b6c5a"
     )
