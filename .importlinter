@@ -113,3 +113,52 @@ source_modules =
 forbidden_modules =
     panestria.memory.keys
     panestria.memory.vault
+
+[importlinter:contract:product-not-demo]
+name = Product code does not import the proposal demo
+type = forbidden
+source_modules =
+    panestria.api
+    panestria.brokers
+    panestria.cli
+    panestria.contracts
+    panestria.execution
+    panestria.fsutil
+    panestria.inference
+    panestria.kernel
+    panestria.learning
+    panestria.memory
+    panestria.ops
+    panestria.policy
+    panestria.resources
+    panestria.sandbox
+    panestria.telemetry
+    panestria.verification
+forbidden_modules =
+    panestria.execution.proposal_demo
+# The two demo front-ends leave the wheel with the demo itself (plan 1.8).
+ignore_imports =
+    panestria.api.proposal_demo -> panestria.execution.proposal_demo
+    panestria.cli.review_demo -> panestria.execution.proposal_demo
+
+[importlinter:contract:fsutil-leaf]
+name = Shared private-state helpers import only the standard library
+type = forbidden
+source_modules =
+    panestria.fsutil
+forbidden_modules =
+    panestria.api
+    panestria.brokers
+    panestria.cli
+    panestria.contracts
+    panestria.execution
+    panestria.inference
+    panestria.kernel
+    panestria.learning
+    panestria.memory
+    panestria.ops
+    panestria.policy
+    panestria.resources
+    panestria.sandbox
+    panestria.telemetry
+    panestria.verification
