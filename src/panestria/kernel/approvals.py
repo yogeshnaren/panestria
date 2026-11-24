@@ -23,6 +23,7 @@ from panestria.kernel.plan_scope import require_final_task
 from panestria.kernel.repositories.approvals import (
     bump_version,
     consumption,
+    deny_pending,
     effect_count,
     insert_consumption,
     insert_effect,
@@ -31,6 +32,7 @@ from panestria.kernel.repositories.approvals import (
     lock_idempotency,
     lock_request,
     lock_task_row,
+    lock_wait_requests,
     mark_decision,
     mark_expired,
     mark_wait,
@@ -115,6 +117,9 @@ class ApprovalService:
         continuation, phase = _WAIT[preview.action_kind]
         if (state, "WAITING_APPROVAL") not in ALLOWED_TRANSITIONS:
             raise KernelDenied("illegal_transition")
+        expired: list[tuple[str, str]] = []
+        if state == "WAITING_APPROVAL":
+            expired = self._renew(uow, preview.task_id, preview.action_kind, continuation)
         digest = effect_digest(preview)
         updated = mark_wait(uow, preview.task_id, row_version, "WAITING_APPROVAL", continuation, phase)
         if updated is None:
@@ -135,6 +140,8 @@ class ApprovalService:
             preview.expires_at,
             preview_json(body),
         )
+        for stale_id, stale_digest in expired:
+            _expired_event(uow, actor, goal_id, preview.task_id, stale_id, stale_digest)
         append_event(
             uow,
             goal_id=goal_id,
@@ -166,8 +173,10 @@ class ApprovalService:
             " approval_request.expires_at, task.row_version"
             " FROM panestria.approval_request AS approval_request"
             " JOIN panestria.task AS task ON task.id = approval_request.task_id"
+            " JOIN panestria.goal AS goal ON goal.id = approval_request.goal_id"
             " WHERE approval_request.owner_id = %s AND approval_request.project_id = %s"
-            " AND approval_request.state = 'PENDING' AND approval_request.expires_at > now()"
+            " AND goal.status IN ('CREATED', 'ACTIVE')"
+            " AND approval_request.state = 'PENDING' AND approval_request.expires_at > clock_timestamp()"
             " ORDER BY approval_request.expires_at LIMIT %s",
             (actor.owner_id, actor.project_id, limit),
         ).fetchall()
@@ -195,6 +204,11 @@ class ApprovalService:
         decision: str,
         idempotency_key: str,
     ) -> DecisionReceipt:
+        """Record one decision. An expired request is committed as EXPIRED before the denial.
+
+        Callers roll back a denial, so the expiry commits the caller's transaction itself.
+        Do not call this inside an explicit ``connection.transaction()`` block.
+        """
         if decision not in {"approve", "deny"}:
             raise KernelDenied("invalid_decision")
         task_id = peek_request_task(uow, actor.owner_id, actor.project_id, request_id)
@@ -232,17 +246,10 @@ class ApprovalService:
         if request_expired(uow, request_id):
             if mark_expired(uow, request_id) != 1:
                 raise KernelDenied("decision_conflict")
-            bumped = bump_version(uow, task_id, row_version)
-            if bumped is None:
+            if bump_version(uow, task_id, row_version) is None:
                 raise KernelDenied("version_conflict")
-            append_event(
-                uow,
-                goal_id=goal_id,
-                task_id=task_id,
-                kind="approval.expired",
-                actor=actor.owner_id,
-                payload={"approval_id": request_id, "effect_digest": str(digest)},
-            )
+            _expired_event(uow, actor, goal_id, task_id, request_id, str(digest))
+            uow.connection.commit()
             raise KernelDenied("expired")
         if mark_decision(uow, request_id, target, actor.owner_id) != 1:
             raise KernelDenied("decision_conflict")
@@ -347,6 +354,24 @@ class ApprovalService:
     def effects(self, uow: UnitOfWork, task_id: str) -> int:
         return effect_count(uow, task_id)
 
+    def _renew(self, uow: UnitOfWork, task_id: str, action_kind: str, continuation: str) -> list[tuple[str, str]]:
+        """Re-request the same wait only once every earlier request for it has closed.
+
+        Marks a PENDING request past its expiry EXPIRED and returns it for the caller's event.
+        """
+        current = uow.execute("SELECT continuation_kind FROM panestria.task WHERE id = %s", (task_id,)).fetchone()
+        if current is None or current[0] != continuation:
+            raise KernelDenied("illegal_transition")
+        expired: list[tuple[str, str]] = []
+        for request_id, state, unexpired, digest, consumed in lock_wait_requests(uow, task_id, action_kind):
+            if unexpired and (state == "PENDING" or (state == "APPROVED" and not consumed)):
+                raise KernelDenied("illegal_transition")
+            if state == "PENDING":
+                if mark_expired(uow, request_id) != 1:
+                    raise KernelDenied("decision_conflict")
+                expired.append((request_id, digest))
+        return expired
+
     def _bound_contract(self, uow: UnitOfWork, contract_id: str, preview: ActionPreview) -> None:
         stored = uow.execute(
             "SELECT sha256, version FROM panestria.goal_contract WHERE id = %s",
@@ -380,6 +405,38 @@ class ApprovalService:
         keys = [key for key, _verdict in verdicts]
         if keys != preview["required_checks"] or any(verdict != "PASS" for _key, verdict in verdicts):
             raise KernelDenied("unknown_check")
+
+
+ClosedApprovals = list[tuple[str, str | None, str]]
+
+
+def close_pending_approvals(uow: UnitOfWork, actor: Actor, goal_id: str) -> ClosedApprovals:
+    """Deny every PENDING approval of a goal the owner is cancelling. Writes only, no event."""
+    return deny_pending(uow, goal_id, actor.owner_id)
+
+
+def append_closed_events(uow: UnitOfWork, actor: Actor, goal_id: str, closed: ClosedApprovals, cause: str) -> None:
+    """Record the approvals close_pending_approvals denied, after the caller's last write."""
+    for approval_id, task_id, digest in closed:
+        append_event(
+            uow,
+            goal_id=goal_id,
+            task_id=task_id,
+            kind="approval.closed",
+            actor=actor.owner_id,
+            payload={"approval_id": approval_id, "effect_digest": digest, "state": "DENIED", "cause": cause},
+        )
+
+
+def _expired_event(uow: UnitOfWork, actor: Actor, goal_id: str, task_id: str, request_id: str, digest: str) -> None:
+    append_event(
+        uow,
+        goal_id=goal_id,
+        task_id=task_id,
+        kind="approval.expired",
+        actor=actor.owner_id,
+        payload={"approval_id": request_id, "effect_digest": digest},
+    )
 
 
 def _decision_hash(request_id: str, digest: str, expected_version: int, decision: str) -> str:

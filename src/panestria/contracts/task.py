@@ -52,6 +52,8 @@ ALLOWED_TRANSITIONS: frozenset[tuple[str, str]] = frozenset(
         ("RECONCILING", "VERIFYING"),
         ("VERIFYING", "RETRY_WAIT"),
         ("WAITING_APPROVAL", "READY"),
+        # A re-request renews a wait whose approval expired, was denied or was revoked.
+        ("WAITING_APPROVAL", "WAITING_APPROVAL"),
         ("WAITING_APPROVAL", "VERIFYING"),
         ("RETRY_WAIT", "READY"),
         ("CANCELLING", "CANCELLED"),

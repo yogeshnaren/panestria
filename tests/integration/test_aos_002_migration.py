@@ -172,6 +172,21 @@ def test_kernel_migration_rejects_bad_scope_and_reapplies() -> None:
                 connection.execute("ALTER TABLE panestria.goal DROP COLUMN drift_probe")
             assert _schema_fingerprint(connection) == expected
             _assert_lookup_plans(connection)
+        # ADR 0016: a populated downgrade refuses and changes nothing.
+        refused = _run(
+            ["uv", "run", "--frozen", "alembic", "-c", "migrations/alembic.ini", "downgrade", "0001_scaffold"], env=env
+        )
+        assert refused.returncode != 0 and "forward-only (ADR 0016)" in refused.stderr
+        with psycopg.connect(DATABASE_URL) as connection:
+            assert connection.execute("SELECT version_num FROM alembic_version").fetchone() == (version[0],)
+            assert _schema_fingerprint(connection) == expected
+            # Empty this disposable copy so the schema roundtrip below can run.
+            tables = connection.execute(
+                "SELECT string_agg(format('%I.%I', schemaname, tablename), ',')"
+                " FROM pg_tables WHERE schemaname = 'panestria'"
+            ).fetchone()
+            assert tables is not None
+            connection.execute(f"TRUNCATE {tables[0]}")
         _alembic("downgrade 0001_scaffold", env)
         with psycopg.connect(DATABASE_URL) as connection:
             gone = connection.execute("SELECT to_regclass('panestria.goal')").fetchone()

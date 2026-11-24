@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from panestria.contracts.build import canonical_sha256
 from panestria.contracts.plan import StoredPlan
 from panestria.contracts.task import ALLOWED_TRANSITIONS
+from panestria.kernel.approvals import append_closed_events, close_pending_approvals
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.effects import DispatchClaim
 from panestria.kernel.errors import KernelDenied
@@ -170,6 +171,7 @@ class PlanLifecycle:
                         "dispatched_effects": 0,
                     }
                     releases.append(self._release(uow, attempt, "NO_DISPATCH", proof))
+        closed = close_pending_approvals(uow, actor, plan.proposal.goal_id)
         current = uow.execute("SELECT state FROM panestria.task WHERE goal_id=%s", (plan.proposal.goal_id,)).fetchall()
         held = uow.execute(
             "SELECT count(*) FROM panestria.build_active_worker_claim c "
@@ -197,6 +199,7 @@ class PlanLifecycle:
                     "held_claims": held[0],
                 },
             )
+        append_closed_events(uow, actor, plan.proposal.goal_id, closed, "owner-cancel")
         return PlanCancellation(
             "CANCELLED" if stopped else "CANCEL_REQUESTED",
             plan_id,

@@ -7,13 +7,13 @@ import json
 import os
 from collections.abc import Callable
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
 import psycopg
 from pydantic import SecretStr
 
+from panestria.assets import skills_archive
 from panestria.config_model import expected_json_manifest
 from panestria.config_synthesis import SynthesisSettings
 from panestria.contracts.inference import InferenceRequest, InferenceResult, InferenceUnavailable
@@ -157,7 +157,7 @@ class LocalDraftModel:
             self.manifest.sha256() if self.manifest is not None else None
         ):
             raise InferenceUnavailable("model_manifest_mismatch")
-        archive = Path(__file__).resolve().parents[3] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
+        archive = skills_archive()
         decision = admit(HardwareProbe(archive).collect_cpu(), gpu=False)
         if decision.decision != "PERMIT":
             raise InferenceUnavailable(decision.reasons[0])

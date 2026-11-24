@@ -1,6 +1,7 @@
 """Exact, one-use owner review for memory reclassification."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0014_memory_review"
 down_revision = "0013_event_audit"
@@ -47,6 +48,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(revision, tables=("memory_review",), columns={"memory_source": ("review_id",)})
     op.execute("ALTER TABLE panestria.memory_source DROP CONSTRAINT memory_source_review_scope, DROP COLUMN review_id")
     op.execute("DROP TABLE panestria.memory_review")
     op.execute("DROP FUNCTION panestria.guard_memory_review()")

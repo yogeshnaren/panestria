@@ -8,6 +8,7 @@ policy, budget, and fleet tables are not created here.
 from __future__ import annotations
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0002_kernel"
 down_revision = "0001_scaffold"
@@ -267,5 +268,26 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(
+        revision,
+        tables=(
+            "principal",
+            "project",
+            "goal",
+            "goal_contract",
+            "task",
+            "task_dependency",
+            "task_attempt",
+            "workflow_link",
+            "acceptance_check",
+            "artifact",
+            "check_run",
+            "approval_request",
+            "task_event",
+            "side_effect",
+            "approval_consumption",
+            "idempotency_record",
+        ),
+    )
     for statement in _DOWNGRADE:
         op.execute(statement)
