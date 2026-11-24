@@ -49,6 +49,16 @@
       "finding": "R3-REMEDIATION-PLAN 1.9 / AI-P2d"
     },
     {
+      "match": "added denial_codes[KernelDenied:memory_pin_budget_exceeded]",
+      "reason": "Adding, correcting or unsuppressing a pinned memory item is refused when the project's pins would not fit the default Ask; previously every Ask then failed with pinned_context_budget_exceeded.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.23"
+    },
+    {
+      "match": "added denial_codes[KernelDenied:memory_pin_limit_exceeded]",
+      "reason": "A project holds at most 10 active pinned memory items (the default search page), checked when a pin is written.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.23"
+    },
+    {
       "match": "added cli/commands/metrics/commands/ask-eval/",
       "reason": "New `panestria metrics ask-eval` grades recorded Ask attempts against a golden set; it runs no inference.",
       "finding": "R3-REMEDIATION-PLAN 1.10 / AI-P2c"
