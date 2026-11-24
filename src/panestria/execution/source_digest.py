@@ -12,7 +12,7 @@ from pathlib import Path
 # Git's racy-clean rule: a file changed this close to the read can be rewritten
 # again within one filesystem timestamp tick without a visible stat change.
 _RACY_NANOSECONDS = 2_000_000_000
-_StatKey = tuple[int, int, int, int, int]
+_StatKey = tuple[int, int, int, int, int, int]
 
 
 @dataclass(frozen=True)
@@ -27,12 +27,14 @@ _cache: dict[Path, _Snapshot] = {}
 
 
 def _key(info: os.stat_result) -> _StatKey:
-    return (info.st_size, info.st_mtime_ns, info.st_ctime_ns, info.st_ino, info.st_dev)
+    return (info.st_size, info.st_mtime_ns, info.st_ctime_ns, info.st_ino, info.st_dev, info.st_nlink)
 
 
 def _unchanged(snapshot: _Snapshot) -> bool:
     # An added, removed or renamed entry changes its directory's mtime/ctime;
     # an edit changes the file's own stat. Either one forces a full rescan.
+    # A new or removed subdirectory also changes its parent's link count, which
+    # is visible even within one coarse filesystem timestamp tick.
     try:
         return all(_key(os.stat(name)) == key for name, key in snapshot.directories) and all(
             _key(os.stat(name)) == key for name, _, key in snapshot.files

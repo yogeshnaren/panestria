@@ -1,6 +1,7 @@
 """Cached source digest keeps the attestation bytes and still sees every edit."""
 
 import hashlib
+import os
 import time
 from pathlib import Path
 from types import SimpleNamespace
@@ -23,6 +24,28 @@ def _later(monkeypatch: pytest.MonkeyPatch) -> None:
     # ctime cannot be backdated, so the helper reads after the racy window.
     offset = 10 * source_digest._RACY_NANOSECONDS
     monkeypatch.setattr(source_digest, "time", SimpleNamespace(time_ns=lambda: time.time_ns() + offset))
+
+
+def _next_timestamp_tick(tree: Path) -> None:
+    # Faking the read clock lets a just-written tree be cached. In real use a
+    # cached tree is at least the racy window old, so any later change lands in
+    # a newer filesystem timestamp tick. Wait for that tick here instead of
+    # editing within the same coarse tick, which no stat signature can see.
+    # The probe lives beside the tree on the same filesystem so it never
+    # invalidates the cached snapshot itself.
+    probe = tree.parent / f"{tree.name}-tick-probe"
+    probe.write_bytes(b"")
+    before = probe.stat().st_mtime_ns
+    deadline = time.monotonic() + 1.0
+    try:
+        while time.monotonic() < deadline:
+            time.sleep(0.001)
+            os.utime(probe)  # Current filesystem (coarse) time, as a real write would get.
+            if probe.stat().st_mtime_ns != before:
+                return
+        raise AssertionError("filesystem timestamp did not advance within one second")
+    finally:
+        probe.unlink()
 
 
 @pytest.fixture
@@ -55,6 +78,8 @@ def test_unchanged_tree_is_not_reread(tree, monkeypatch):
 def test_any_source_change_changes_the_digest(tree, change, monkeypatch):
     _later(monkeypatch)
     before = source_sha256(tree)
+    assert tree in source_digest._cache
+    _next_timestamp_tick(tree)
     if change == "same_size_edit":
         (tree / "a.py").write_bytes(b"value = 9\n")
     elif change == "added":
