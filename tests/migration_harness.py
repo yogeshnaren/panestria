@@ -50,6 +50,7 @@ import sys
 from collections.abc import Callable, Collection, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -124,12 +125,18 @@ ORDER BY 1, 2
 
 def revisions() -> list[str]:
     """Every revision from the first migration to head, oldest first."""
+    return list(_revisions())
+
+
+@cache
+def _revisions() -> tuple[str, ...]:
+    # Loading the script directory imports every migration; do it once per session.
     script = ScriptDirectory.from_config(Config(str(ALEMBIC_INI)))
-    ordered = [rev.revision for rev in script.walk_revisions("base", "heads")]
-    ordered.reverse()
     if len(script.get_heads()) != 1:
         raise AssertionError("single_migration_head_required")
-    return ordered
+    ordered = [rev.revision for rev in script.walk_revisions("base", "heads")]
+    ordered.reverse()
+    return tuple(ordered)
 
 
 def current_head() -> str:
