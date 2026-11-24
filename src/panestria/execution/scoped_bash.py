@@ -40,7 +40,14 @@ from panestria.kernel.repositories.policy import require_current_policy
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.engine import PolicyEngine
 from panestria.policy.profiles import CertificateStore
-from panestria.sandbox.native_tool_gateway import NativeCommandRegistry, NativeToolGateway, ReviewedCommand, ToolPermit
+from panestria.sandbox.native_tool_gateway import (
+    SCOPED_BASH_SCRIPT,
+    SCOPED_BASH_SHA256,
+    NativeCommandRegistry,
+    NativeToolGateway,
+    ReviewedCommand,
+    ToolPermit,
+)
 from panestria.sandbox.profiles import SandboxProfile
 from panestria.verification.build import verify_build
 from panestria.verification.candidate import capture_candidate
@@ -147,10 +154,9 @@ class ScopedBashController:
                     target.chmod(0o700 if mode == "100755" else 0o600)
             if not workspace.is_dir() or workspace.stat().st_uid != os.getuid() or workspace.stat().st_mode & 0o077:
                 raise ValueError
-            script = Path(__file__).resolve().parents[1] / "sandbox/scoped_bash.py"
-            self.command = ReviewedCommand(
-                "scoped-bash", script, hashlib.sha256(script.read_bytes()).hexdigest(), "edit"
-            )
+            # Bound to the digest pinned in code, never to whatever bytes are
+            # installed now; the gateway refuses any other content at dispatch.
+            self.command = ReviewedCommand("scoped-bash", SCOPED_BASH_SCRIPT, SCOPED_BASH_SHA256, "edit")
             self.registry = NativeCommandRegistry((self.command,))
             self.workspace, self.snapshot, self.session_id = workspace, snapshot, session_id
             self.actor, self.dsn, self.certificates, self.reports = actor, dsn, certificates, reports

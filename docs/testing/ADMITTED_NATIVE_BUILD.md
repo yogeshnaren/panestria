@@ -38,9 +38,13 @@ uv run --frozen pytest tests/unit/test_native_mcp_profile.py \
 ```
 
 This uses real disposable PostgreSQL/Docker/Git and explicitly labeled native
-transport and certificate fixtures. The source checkout and trusted runtime
-scripts must not be group-writable; use a private checkout/install. Do not weaken
-the gateway checks if an unsafe checkout is refused. The R1 test DB uses port
+transport and certificate fixtures. The packaged scoped-bash script is trusted
+by the sha256 pinned in `native_tool_gateway.py`, so a umask 0002 checkout or
+install works; edits to it must update the pin. Owner-registered command scripts
+must still be private (not group- or world-writable, one link, owned by you or
+root). Do not weaken the gateway checks if such a script is refused. The mounted
+runtime helpers are not mode-checked; install-permission integrity is a later
+`doctor` check. The R1 test DB uses port
 55439 and is removed by its fixture; preserve owner services and databases.
 
 The changed-path integration check uses one actual subscription call:

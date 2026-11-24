@@ -129,6 +129,16 @@ def _runner(root: Path, mounts: tuple[ReadOnlyMount, ...]) -> DockerSandbox:
     return DockerSandbox(root, runtime_mounts=mounts)
 
 
+# Scripts shipped inside this package are reviewed as source, so their exact
+# bytes are pinned here rather than trusted by install mode, owner or link
+# count: a umask 0002 checkout or a hard-linked install leaves those loose.
+# Only these bytes are read, digested and framed in memory for the sandbox.
+# Change the digest only with a reviewed change to the script itself.
+SCOPED_BASH_SCRIPT = Path(__file__).resolve().with_name("scoped_bash.py")
+SCOPED_BASH_SHA256 = "e94696749062c84b1cd7f36d4ea7faf995cfc0281895de9160bba1f5e37bb06b"
+_PACKAGED_SCRIPTS: dict[Path, str] = {SCOPED_BASH_SCRIPT: SCOPED_BASH_SHA256}
+
+
 def _script_bytes(command: ReviewedCommand, workspace_root: Path) -> bytes:
     path = command.script
     try:
@@ -137,16 +147,17 @@ def _script_bytes(command: ReviewedCommand, workspace_root: Path) -> bytes:
         safe_path = False
     if not safe_path:
         raise GatewayRejected("unreviewed_script_path")
+    # Trust by pin needs both the packaged path and its pinned digest. Other
+    # scripts, including owner-registered checks, keep every file check.
+    pinned = _PACKAGED_SCRIPTS.get(path) == command.sha256
     fd = -1
     try:
         fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
         info = os.fstat(fd)
         if (
             not stat.S_ISREG(info.st_mode)
-            or info.st_nlink != 1
-            or info.st_uid not in {0, os.getuid()}
-            or info.st_mode & 0o022
             or not 1 <= info.st_size <= 256 * 1024
+            or (not pinned and (info.st_nlink != 1 or info.st_uid not in {0, os.getuid()} or info.st_mode & 0o022))
         ):
             raise GatewayRejected("unsafe_command_script")
         with os.fdopen(fd, "rb", closefd=False) as source:
