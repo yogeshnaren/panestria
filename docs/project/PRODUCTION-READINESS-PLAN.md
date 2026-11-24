@@ -269,12 +269,17 @@ An adversarial review on 2026-11-23 of `main` at `29c2092` found:
 
 ## Execution status
 
-| Item | Branch | State (2026-11-23) |
+| Item | Branch | State (2026-11-24) |
 |---|---|---|
-| 0.1 | `task/production-readiness-plan` | This plan and ADR 0016 (proposed); awaiting owner review |
-| 1.1 | `task/scoped-bash-digest-pin` | In progress |
-| 1.2 | `task/source-digest-nlink` | In review |
-| 1.3 | `task/browser-test-node-gate` | In progress |
-| 1.4 | `task/ci-gaps` | In progress |
+| 0.1 | `task/production-readiness-plan` | Merged (#243); ADR 0016 is still proposed |
+| 1.1 | `task/scoped-bash-digest-pin` | Merged (#245) |
+| 1.2 | `task/source-digest-nlink` | Merged (#244) |
+| 1.3 | `task/browser-test-node-gate` | Merged (#246) |
+| 1.4 | `task/ci-gaps` | Merged (#247) |
+| 1.5 | `task/hermeticity-matrix` | In review |
+| 1.6 | `task/fsutil-module` | In progress |
+| 1.16, 1.17 | `task/kernel-liveness-xfails`, `task/approval-expiry` | In progress |
+| 1.19 | `task/migration-safety` | In progress |
+| 1.23 | `task/memory-limits-query` | In progress |
 
 Every other item is NOT_STARTED.
