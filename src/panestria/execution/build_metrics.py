@@ -13,7 +13,7 @@ from typing import Any
 import psycopg
 
 from panestria.contracts.invocation import InvocationBinding
-from panestria.execution.proposal_demo import _lock, _private
+from panestria.fsutil import exclusive_lock, private_dir
 from panestria.kernel.build import BuildEvidenceService, BuildEvidenceStore
 from panestria.kernel.build_progress import BuildProgressService
 from panestria.kernel.errors import KernelDenied
@@ -101,12 +101,12 @@ def capture_build_metrics(
     ).encode()
     if len(raw) > 32 * 1024:
         raise ValueError("runtime_metrics_source_limit")
-    directory = _private(directory)
-    sources = BuildEvidenceStore(_private(directory / "sources"))
+    directory = private_dir(directory)
+    sources = BuildEvidenceStore(private_dir(directory / "sources"))
     lock = directory / "capture.lock"
     fd = os.open(lock, os.O_WRONLY | os.O_CREAT | os.O_NOFOLLOW, 0o600)
     os.close(fd)
-    with _lock(lock):
+    with exclusive_lock(lock):
         files, source_files = list(directory.iterdir()), list(sources.root.iterdir())
         if sum(p.suffix == ".json" for p in files) >= 4096 or len(source_files) >= 4096:
             raise ValueError("runtime_metrics_history_count_limit")

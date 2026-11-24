@@ -23,7 +23,7 @@ from uuid import uuid4
 from panestria.contracts.native_model import NativeModel, validate_native_model
 from panestria.contracts.policy import Action, TrustAxis
 from panestria.execution.native_build import runtime_versions
-from panestria.execution.proposal_demo import DemoUnavailable, _atomic, _lock, _private
+from panestria.fsutil import LocalStateUnavailable, atomic_write_json, exclusive_lock, private_dir
 from panestria.kernel.build import BuildEvidenceStore
 from panestria.policy.profiles import CertificateStore
 
@@ -148,7 +148,7 @@ def qualify(
 ) -> dict[str, object]:
     try:
         return _qualify(directory, public_subscription_smoke=public_subscription_smoke, native_model=native_model)
-    except DemoUnavailable:
+    except LocalStateUnavailable:
         raise QualificationUnavailable("private_qualification_directory_unavailable") from None
 
 
@@ -166,11 +166,11 @@ def _qualify(
     uv = shutil.which("uv")
     if uv is None:
         raise QualificationUnavailable("frozen_qualification_runtime_required")
-    destination = _private(directory)
-    with _lock(destination / "qualification.lock"):
-        run = _private(destination / ("run-" + uuid4().hex))
+    destination = private_dir(directory)
+    with exclusive_lock(destination / "qualification.lock"):
+        run = private_dir(destination / ("run-" + uuid4().hex))
         journal = run / "result.json"
-        _atomic(journal, {"status": "STARTED", "candidate_commit": candidate, "runtime_versions": versions})
+        atomic_write_json(journal, {"status": "STARTED", "candidate_commit": candidate, "runtime_versions": versions})
         log, xml = run / "pytest.log", run / "raw.xml"
         env = {
             "PATH": str(Path(uv).parent) + ":/usr/local/bin:/usr/bin:/bin",
@@ -262,8 +262,8 @@ def _qualify(
                 "cases": len(observations),
                 "release_gate": "NOT_EVALUATED",
             }
-            _atomic(journal, result)
-            _atomic(destination / "latest.json", {**result, "run": run.name})
+            atomic_write_json(journal, result)
+            atomic_write_json(destination / "latest.json", {**result, "run": run.name})
             return result
         except (Exception, KeyboardInterrupt) as error:
             reason = (
@@ -283,6 +283,6 @@ def _qualify(
                 "release_gate": "NOT_EVALUATED",
                 "run": run.name,
             }
-            _atomic(journal, result)
-            _atomic(destination / "latest.json", result)
+            atomic_write_json(journal, result)
+            atomic_write_json(destination / "latest.json", result)
             return result

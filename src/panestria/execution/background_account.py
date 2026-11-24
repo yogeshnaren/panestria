@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from panestria.brokers.harness.account_profile import NativeAccountProbe
 from panestria.brokers.harness.claude_proposal import PINNED_BINARY_SHA256
 from panestria.brokers.harness.cli_profile import BinaryPin, NativeProbeUnavailable
-from panestria.execution.proposal_demo import _lock, _private
+from panestria.fsutil import exclusive_lock, private_dir
 from panestria.kernel.background_account import BackgroundAccountService
 from panestria.kernel.build import BuildEvidenceStore
 from panestria.kernel.errors import KernelDenied
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 def account_reports(owner: "OwnerBuild") -> BuildEvidenceStore:
-    _private(owner.settings.root)
+    private_dir(owner.settings.root)
     return BuildEvidenceStore(owner.settings.root / "account-observations")
 
 
@@ -58,7 +58,7 @@ def collect_account(owner: "OwnerBuild", account_ref: str) -> str:
     raw = json.dumps(
         observed.model_dump(mode="json"), sort_keys=True, separators=(",", ":"), ensure_ascii=False
     ).encode()
-    with _lock(owner.settings.root / "account-observations.lock"):
+    with exclusive_lock(owner.settings.root / "account-observations.lock"):
         entries = list(reports.root.iterdir())
         if len(entries) >= 512 or any(
             re.fullmatch(r"[0-9a-f]{64}", p.name) is None or p.is_symlink() or not p.is_file() for p in entries

@@ -23,8 +23,8 @@ from panestria.execution.build_merge import VerifiedGitTarget, prepare_merge
 from panestria.execution.native_build import AdmittedNativeBuild, runtime_versions
 from panestria.execution.native_connection import preflight_connection, selected_authority
 from panestria.execution.outbox import EffectExecutor
-from panestria.execution.proposal_demo import _lock, _private
 from panestria.execution.scoped_bash import ScopedBashController
+from panestria.fsutil import exclusive_lock, private_dir
 from panestria.kernel.approvals import ApprovalService
 from panestria.kernel.build import BuildEvidenceService, BuildEvidenceStore
 from panestria.kernel.cancellation import CancellationService
@@ -57,7 +57,7 @@ class OwnerBuild:
     def prepare_policy(self) -> dict[str, Any]:
         """Prepare a separate administrative review, never apply it implicitly."""
         s = self.settings
-        with _lock(s.root / "operation.lock"), self.connect() as c:
+        with exclusive_lock(s.root / "operation.lock"), self.connect() as c:
             actor, uow = self.actor, UnitOfWork(c)
             if (
                 c.execute(
@@ -161,7 +161,7 @@ class OwnerBuild:
             }
 
     def confirm_policy(self, review_id: str, digest: str) -> dict[str, Any]:
-        with _lock(self.settings.root / "operation.lock"), self.connect() as c:
+        with exclusive_lock(self.settings.root / "operation.lock"), self.connect() as c:
             service, uow = PolicyService(self.certificates), UnitOfWork(c)
             service.decide(uow, self.actor, review_id, digest, "approve")
             policy = service.apply(uow, self.actor, review_id, digest)
@@ -200,7 +200,7 @@ class OwnerBuild:
             raise KernelDenied("owner_build_required_checks_incomplete")
         task = str(UUID(bytes=uuid5(UUID(contract.goal_id), "owner-native-build").bytes, version=4))
         s = self.settings
-        with _lock(s.root / "operation.lock"):
+        with exclusive_lock(s.root / "operation.lock"):
             preflight_connection(self)
             if s.repository.is_symlink() or s.repository.resolve() != s.repository:
                 raise KernelDenied("build_repository_scope_mismatch")
@@ -256,7 +256,7 @@ class OwnerBuild:
                 contract_sha256=contract_sha256(contract),
                 policy_ref=contract.autonomy_profile_ref,
             )
-            parent = _private(s.root / "attempts")
+            parent = private_dir(s.root / "attempts")
             try:
                 return self._run(contract, selected, base, task, lease, scope, parent)
             except (Exception, KeyboardInterrupt):
@@ -460,7 +460,7 @@ class OwnerBuild:
             return vars(receipt)
 
     def approve(self, approval_id: str, digest: str, version: int, key: str) -> dict[str, Any]:
-        with _lock(self.settings.root / "operation.lock"):
+        with exclusive_lock(self.settings.root / "operation.lock"):
             with self.connect() as c:
                 preview = ApprovalService().preview(UnitOfWork(c), self.actor, approval_id)
                 ApprovalService().decide(UnitOfWork(c), self.actor, approval_id, digest, version, "approve", key)

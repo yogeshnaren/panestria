@@ -29,9 +29,9 @@ from panestria.execution.build_storage import build_storage_admission
 from panestria.execution.native_build import AdmittedNativeBuild, NativeBuildOutcome, runtime_versions
 from panestria.execution.native_connection import preflight_connection, selected_authority
 from panestria.execution.owner_build import OwnerBuild
-from panestria.execution.proposal_demo import _lock, _private
 from panestria.execution.scoped_bash import ScopedBashController
 from panestria.execution.worker_authority import WorkerAuthority, intersect_authorities, worker_failure_code
+from panestria.fsutil import exclusive_lock, private_dir
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.plan_lifecycle import PlanLifecycle
@@ -84,7 +84,7 @@ class NativePlanRunner:
         self.cancel = threading.Event()
 
     def _operation_lock(self) -> Any:
-        return _lock(self.owner.settings.root / "operation.lock")
+        return exclusive_lock(self.owner.settings.root / "operation.lock")
 
     def _claim(self, plan: StoredPlan, capacity: Any) -> Any:
         with self.owner.connect() as c:
@@ -148,7 +148,7 @@ class NativePlanRunner:
         if not self._storage_allows_new_work():
             assert self.storage_observation is not None
             raise KernelDenied(str(self.storage_observation["reason"]))
-        parent = _private(s.root / "plan-inventory")
+        parent = private_dir(s.root / "plan-inventory")
         snapshot = materialize(s.repository, base, base, parent / str(uuid4()))
         return ProjectInventory(
             owner_id=self.owner.actor.owner_id,
@@ -249,7 +249,7 @@ class NativePlanRunner:
             contract_sha256=contract_sha256(contract),
             policy_ref=contract.autonomy_profile_ref,
         )
-        parent = _private(s.root / "plan-attempts")
+        parent = private_dir(s.root / "plan-attempts")
         source = materialize(
             s.repository,
             plan.inventory.base_commit,
@@ -363,7 +363,7 @@ class NativePlanRunner:
                                 break
                             node = next(n for n in plan.proposal.nodes if n.task_id == job.lease.task_id)
                             if node.worker_ref == "trusted-integrator":
-                                parent = _private(owner.settings.root / "plan-integration")
+                                parent = private_dir(owner.settings.root / "plan-integration")
                                 outcome = BuildIntegrator(
                                     owner.connect,
                                     owner.actor,

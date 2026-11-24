@@ -62,6 +62,36 @@
       "match": "added denial_codes[AssetUnavailable:packaged_asset_missing]",
       "reason": "panestria.assets locates the pinned skills archive in an installed wheel (panestria/_assets/) or a source checkout; neither present is a new, explicit refusal instead of a FileNotFoundError at first use.",
       "finding": "PRODUCTION-READINESS-PLAN 1.7 / R3-REMEDIATION-PLAN 2.2"
+    },
+    {
+      "match": "removed denial_codes[DemoUnavailable:demo_operation_running]",
+      "reason": "The shared private-directory, atomic-write and run-lock helpers moved from the proposal demo to panestria.fsutil and raise LocalStateUnavailable, the base class of DemoUnavailable. The three codes are unchanged and every former DemoUnavailable handler for them now catches the base class.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.6 / R3-REMEDIATION-PLAN 2.1"
+    },
+    {
+      "match": "removed denial_codes[DemoUnavailable:private_demo_root_required]",
+      "reason": "The shared private-directory, atomic-write and run-lock helpers moved from the proposal demo to panestria.fsutil and raise LocalStateUnavailable, the base class of DemoUnavailable. The three codes are unchanged and every former DemoUnavailable handler for them now catches the base class.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.6 / R3-REMEDIATION-PLAN 2.1"
+    },
+    {
+      "match": "removed denial_codes[DemoUnavailable:unsafe_demo_root]",
+      "reason": "The shared private-directory, atomic-write and run-lock helpers moved from the proposal demo to panestria.fsutil and raise LocalStateUnavailable, the base class of DemoUnavailable. The three codes are unchanged and every former DemoUnavailable handler for them now catches the base class.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.6 / R3-REMEDIATION-PLAN 2.1"
+    },
+    {
+      "match": "added denial_codes[LocalStateUnavailable:demo_operation_running]",
+      "reason": "The shared private-directory, atomic-write and run-lock helpers moved from the proposal demo to panestria.fsutil and raise LocalStateUnavailable, the base class of DemoUnavailable. The three codes are unchanged and every former DemoUnavailable handler for them now catches the base class.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.6 / R3-REMEDIATION-PLAN 2.1"
+    },
+    {
+      "match": "added denial_codes[LocalStateUnavailable:private_demo_root_required]",
+      "reason": "The shared private-directory, atomic-write and run-lock helpers moved from the proposal demo to panestria.fsutil and raise LocalStateUnavailable, the base class of DemoUnavailable. The three codes are unchanged and every former DemoUnavailable handler for them now catches the base class.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.6 / R3-REMEDIATION-PLAN 2.1"
+    },
+    {
+      "match": "added denial_codes[LocalStateUnavailable:unsafe_demo_root]",
+      "reason": "The shared private-directory, atomic-write and run-lock helpers moved from the proposal demo to panestria.fsutil and raise LocalStateUnavailable, the base class of DemoUnavailable. The three codes are unchanged and every former DemoUnavailable handler for them now catches the base class.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.6 / R3-REMEDIATION-PLAN 2.1"
     }
   ]
 }
