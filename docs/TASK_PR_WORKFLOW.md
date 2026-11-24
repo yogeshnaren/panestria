@@ -28,7 +28,8 @@ ancestry. Do not automatically merge or rewrite branches.
 Task branches run CI on `pull_request` events. Other branches retain push CI.
 This avoids duplicate push and PR runs for each task. CI checks the full
 candidate tree, including prerequisites: one quality job (including dependency
-audits), five isolated behavioral lanes and a coverage-floor job run
+audits), five isolated behavioral lanes, two hermeticity lanes (kernel and
+platform under umask 0002 and the oldest supported Node) and a coverage-floor job run
 [required coverage plus relevant regressions](testing/CI_REQUIRED_COVERAGE.md).
 CI-policy/migration/common changes use full coverage; local/full/manual release
 regressions remain available. The aggregate `test` check requires every PR job;
