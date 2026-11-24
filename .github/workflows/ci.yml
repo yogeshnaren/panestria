@@ -202,15 +202,17 @@ jobs:
           pattern: ci-*-${{ github.sha }}
           path: evidence
           merge-multiple: true
-      - name: Enforce coverage floors on full-profile runs
-        # Floors describe the whole suite; a pull request's required profile
-        # selects tests by changed files, so its measurement is reported only.
-        env:
-          CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || (github.event_name == 'push' || github.event_name == 'schedule') && 'full' || 'required' }}
+      - name: Enforce coverage floors
+        # Exact when no lane deferred a reviewed regression; a pull request that
+        # deferred some gets the documented tolerance in coverage-floors.json.
         run: |
-          mode=()
-          if [ "$CI_PROFILE" != full ]; then mode=(--report-only); fi
-          uv run --frozen python tools/coverage_floor.py "${mode[@]}" evidence/coverage-fast evidence/coverage-kernel evidence/coverage-platform evidence/coverage-research evidence/coverage-boundary
+          selections=()
+          data=()
+          for lane in fast kernel platform research boundary; do
+            selections+=(--selection "evidence/ci-$lane-selection.json")
+            data+=("evidence/coverage-$lane")
+          done
+          uv run --frozen python tools/coverage_floor.py "${selections[@]}" "${data[@]}"
       - name: Retain combined coverage
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
