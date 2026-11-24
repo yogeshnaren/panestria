@@ -6,6 +6,8 @@ R0 is COMPLETE/G0 PASS for its recorded accepted candidate. R1 is IN_PROGRESS/G1
 
 Read the phased plan and [active personal-platform specification](specification/architecture/05-PERSONAL-PLATFORM-REVISION-3.md), then the relevant design files, item plan and one selected manifest slice. The original 38 AOS specs and 31 MVP items remain; eight additional MVP obligations add 21 slice envelopes and 33 cases. Current planning coverage is **114 slices / 157 G3 scenarios**, not a claim those tests or features exist.
 
+**Proposed (2026-11-23):** a [self-hosted Release 1 production-readiness plan](project/PRODUCTION-READINESS-PLAN.md) and [ADR 0016](../adr/0016-self-hosted-release-1-scope.md), based on a 2026-11-23 production-readiness review whose detailed record the owner keeps private until its security items are fixed. They change nothing above until the owner accepts the ADR.
+
 ## Build navigation
 
 For the supported offline Ask application, use [owner setup](testing/LOCAL_ASK_SETUP.md),
