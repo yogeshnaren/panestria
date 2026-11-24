@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Protocol
 from uuid import uuid4
 
+from panestria.assets import skills_archive
 from panestria.config_plan import PlanModelSettings, expected_plan_manifest
 from panestria.contracts.goal import GoalContract, contract_sha256, load_contract
 from panestria.contracts.inference import InferenceRequest, InferenceResult, InferenceUnavailable
@@ -46,7 +47,7 @@ class LocalPlanModel:
     def generate(self, request: InferenceRequest) -> InferenceResult:
         if request.model_manifest_sha256 != (self.manifest.sha256() if self.manifest is not None else None):
             raise InferenceUnavailable("model_manifest_mismatch")
-        archive = Path(__file__).resolve().parents[3] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
+        archive = skills_archive()
         decision = admit(HardwareProbe(archive).collect_cpu(), gpu=False)
         if decision.decision != "PERMIT":
             raise InferenceUnavailable(decision.reasons[0])

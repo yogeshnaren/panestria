@@ -1,0 +1,30 @@
+Panestria
+Copyright (c) 2026 Yogesh Naren Bundey. Licensed under the MIT License (see LICENSE).
+
+This distribution also contains third-party material under its own terms.
+
+Bundled in the wheel
+--------------------
+
+panestria/_assets/agentos-skills-v0.1.0.zip
+    agentos-skills v0.1.0 (seven Agent Skills and the hardware probe
+    skills/hardware-probe/scripts/hwprobe.py), author "agentos". Each skill
+    declares "license: Apache-2.0" in its SKILL.md front matter. The archive
+    is shipped unmodified; its SHA-256 is pinned in the code that reads it
+    (bf9178cbd7800852e0167452900659f5a8238eb71754aa3b7944117ef35ceba6).
+    Apache License 2.0: third_party/agentos-skills/LICENSE (in the wheel,
+    under the .dist-info/licenses/ directory).
+
+Runtime dependencies (installed separately, not bundled)
+-------------------------------------------------------
+
+Every dependency keeps its own licence. Two have terms beyond permissive
+notice requirements:
+
+psycopg and psycopg-binary
+    LGPL-3.0-only. Installed as separate distributions and used unmodified
+    through their public API. psycopg-binary also carries its own bundled
+    libraries under their licences.
+
+certifi
+    MPL-2.0. Installed as a separate distribution and used unmodified.

@@ -57,6 +57,11 @@
       "match": "added import_graph[cli -> verification]",
       "reason": "The ask-eval command uses the deterministic grader in verification.ask_eval.",
       "finding": "R3-REMEDIATION-PLAN 1.10 / AI-P2c"
+    },
+    {
+      "match": "added denial_codes[AssetUnavailable:packaged_asset_missing]",
+      "reason": "panestria.assets locates the pinned skills archive in an installed wheel (panestria/_assets/) or a source checkout; neither present is a new, explicit refusal instead of a FileNotFoundError at first use.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.7 / R3-REMEDIATION-PLAN 2.2"
     }
   ]
 }

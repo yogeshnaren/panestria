@@ -27,6 +27,7 @@ from panestria.api.main import create_app, mount_activity_api, mount_ask_api, mo
 from panestria.api.routes.ask import AskApi
 from panestria.api.routes.profiles import ProfileApi
 from panestria.api.sessions import BrowserAccess
+from panestria.assets import skills_archive
 from panestria.config import Settings, ValidatedSettings
 from panestria.config_activity import ActivitySettings
 from panestria.config_local import LocalApplicationRejected, LocalApplicationSettings, load_local_settings
@@ -89,7 +90,7 @@ def build_local_app(
     actor = Actor(str(config.owner_id), str(config.project_id))
     model = ModelRuntime(config.model_cache, config.runtime_directory / "model", preserve_existing=True)
     provider = LocalProvider(model.socket_path)
-    archive = Path(__file__).resolve().parents[3] / "docs/specification/attachments/agentos-skills-v0.1.0.zip"
+    archive = skills_archive()
     probe = HardwareProbe(archive)
     ask = AskApi(
         provider,
