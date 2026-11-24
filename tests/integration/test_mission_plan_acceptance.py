@@ -18,6 +18,7 @@ from test_mission_build_intake import application, bundle, counts, fresh
 from test_mission_control_browser import ASSETS
 from test_public_plan_submission import submission as submission  # noqa: F401
 
+from browser_support import browser_node
 from panestria.api.activity_server import build_activity_app
 from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.api.mission_web import mount_mission_control
@@ -134,6 +135,7 @@ def test_exact_plan_acceptance_session_rollback_expiry_and_no_dispatch(submissio
             )
 
 
+@pytest.mark.requires_browser
 @pytest.mark.parametrize("build", [PATHS], indirect=True)
 def test_browser_exact_plan_acceptance_and_lost_commit_reply(submission, tmp_path, monkeypatch, record_property):
     b = submission[0]
@@ -188,7 +190,7 @@ def test_browser_exact_plan_acceptance_and_lost_commit_reply(submission, tmp_pat
         )
         fixture.chmod(0o600)
         result = subprocess.run(
-            [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/plan-acceptance.mjs"],
+            [browser_node(), "tests/plan-acceptance.mjs"],
             cwd=ROOT / "apps/mission-control",
             env={
                 **os.environ,

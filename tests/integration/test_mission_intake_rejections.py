@@ -19,6 +19,7 @@ from plan_support import r1_task as r1_task  # noqa: F401
 from test_mission_build_intake import application, bundle, counts
 from test_public_plan_submission import submission as submission  # noqa: F401
 
+from browser_support import browser_node
 from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.api.routes import build_intake
 
@@ -62,6 +63,7 @@ def test_precommit_denials_have_marker_but_lost_commit_acknowledgment_never_does
         assert client.post(route, json=request, headers=headers).json() == view.json()
 
 
+@pytest.mark.requires_browser
 @pytest.mark.parametrize("build", [PATHS], indirect=True)
 def test_browser_corrects_rejected_bundle_with_same_plan_id_without_unknown_retry(
     submission, tmp_path, record_property
@@ -105,7 +107,7 @@ def test_browser_corrects_rejected_bundle_with_same_plan_id_without_unknown_retr
         )
         fixture.chmod(0o600)
         result = subprocess.run(
-            [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/intake-rejections.mjs"],
+            [browser_node(), "tests/intake-rejections.mjs"],
             cwd=ROOT / "apps/mission-control",
             env={
                 **os.environ,

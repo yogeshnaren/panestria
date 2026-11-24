@@ -19,6 +19,7 @@ from plan_support import r1_task as r1_task  # noqa: F401
 from test_mission_control_browser import ASSETS, configure
 from test_public_plan_submission import submission as submission  # noqa: F401
 
+from browser_support import browser_node
 from panestria.api.activity_server import build_activity_app
 from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.api.mission_web import mount_mission_control
@@ -160,6 +161,7 @@ def test_plan_intake_atomic_scope_replay_and_separate_acceptance(submission, tmp
         mount_mission_control(default, config, token, ASSETS, build_intake=True, build_review_root=tmp_path)
 
 
+@pytest.mark.requires_browser
 @pytest.mark.parametrize("build", [PATHS], indirect=True)
 def test_browser_plan_intake_lost_reply_and_reload_recovery(submission, tmp_path, monkeypatch, record_property):
     b = submission[0]
@@ -216,7 +218,7 @@ def test_browser_plan_intake_lost_reply_and_reload_recovery(submission, tmp_path
         )
         fixture.chmod(0o600)
         result = subprocess.run(
-            [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/build-intake.mjs"],
+            [browser_node(), "tests/build-intake.mjs"],
             cwd=ROOT / "apps/mission-control",
             env={
                 **os.environ,

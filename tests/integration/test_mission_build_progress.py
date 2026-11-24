@@ -17,6 +17,7 @@ from test_native_plan_execution import native_plan as native_plan  # noqa: F401
 from test_native_plan_execution import owner_cli as owner_cli  # noqa: F401
 from test_native_plan_execution import prepared_plan as prepared_plan  # noqa: F401
 
+from browser_support import browser_node
 from panestria.api.activity_server import build_activity_app
 from panestria.api.mission_web import mount_mission_control
 from panestria.config import Settings
@@ -29,6 +30,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ASSETS = ROOT / "apps/mission-control/dist"
 
 
+@pytest.mark.requires_browser
 def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_acceptance(
     native_plan, tmp_path, record_property
 ):
@@ -147,7 +149,7 @@ def test_actual_browser_checks_require_current_protected_bytes_and_never_grant_a
             fixture.chmod(0o600)
             screenshot = tmp_path / "build-progress.png"
             browser = subprocess.Popen(
-                [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/build-progress.mjs"],
+                [browser_node(), "tests/build-progress.mjs"],
                 cwd=ROOT / "apps/mission-control",
                 env={
                     **os.environ,

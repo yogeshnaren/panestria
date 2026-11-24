@@ -16,6 +16,7 @@ from test_mission_control_browser import ASSETS, configure
 from test_research_submission import QUESTION  # noqa: F401
 from test_research_submission import staged as staged
 
+from browser_support import browser_node
 from panestria.api.activity_server import build_activity_app
 from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.api.mission_web import mount_mission_control
@@ -145,6 +146,7 @@ def test_public_staging_replay_scope_and_final_session_fence(staged, tmp_path, m
         mount_mission_control(no_intake, config, token, ASSETS, research_intake=intake, build_review_root=tmp_path)
 
 
+@pytest.mark.requires_browser
 def test_browser_public_question_and_committed_response_recovery(staged, tmp_path, monkeypatch, record_property):
     app, path, config, token, _ = application(staged, tmp_path)
     record_property("mode", "ACTUAL_CHROMIUM_HTTP_PG_CAS_CLI_PAIRING__NO_MODEL_OR_SEARCH__EXPLICIT_LOST_ACK_INJECTION")
@@ -195,7 +197,7 @@ def test_browser_public_question_and_committed_response_recovery(staged, tmp_pat
         fixture.chmod(0o600)
         screenshot = tmp_path / "research-intake.png"
         browser = subprocess.run(
-            [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/research-intake.mjs"],
+            [browser_node(), "tests/research-intake.mjs"],
             cwd=ROOT / "apps/mission-control",
             env={
                 **os.environ,

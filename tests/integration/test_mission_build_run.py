@@ -19,6 +19,7 @@ from test_native_plan_execution import native_plan as native_plan  # noqa: F401
 from test_native_plan_execution import prepared_plan as prepared_plan  # noqa: F401
 from test_owner_build_cli import owner_cli as owner_cli  # noqa: F401
 
+from browser_support import browser_node
 from panestria.api.activity_server import build_activity_app
 from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.api.mission_web import mount_mission_control
@@ -209,6 +210,7 @@ def test_lost_commit_ack_never_dispatches_or_adopts_a_claim(native_plan, owner_c
             ).fetchone() == (0,)
 
 
+@pytest.mark.requires_browser
 def test_browser_finite_two_worker_run_recovers_lost_reply_and_reaches_review(
     native_plan, owner_cli, tmp_path, monkeypatch, record_property
 ):
@@ -267,7 +269,7 @@ def test_browser_finite_two_worker_run_recovers_lost_reply_and_reaches_review(
         )
         fixture.chmod(0o600)
         result = subprocess.run(
-            [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/build-run.mjs"],
+            [browser_node(), "tests/build-run.mjs"],
             cwd=ROOT / "apps/mission-control",
             capture_output=True,
             text=True,

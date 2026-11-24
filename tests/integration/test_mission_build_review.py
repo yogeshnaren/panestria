@@ -18,6 +18,7 @@ from test_native_plan_execution import owner_cli as owner_cli  # noqa: F401
 from test_native_plan_execution import prepared_plan as prepared_plan  # noqa: F401
 from test_registered_check_authority import git
 
+from browser_support import browser_node
 from panestria.api.activity_server import build_activity_app
 from panestria.api.mission_web import mount_mission_control
 from panestria.config import Settings
@@ -154,6 +155,7 @@ def test_scoped_exact_preview_fences_and_denial_have_no_dispatch(native_plan, tm
 @pytest.mark.parametrize(
     "owner_cli", [{"baseline_suffix": "# <img src=x onerror=\"document.title='unsafe'\">\n"}], indirect=True
 )
+@pytest.mark.requires_browser
 def test_physical_browser_review_offline_consent_and_existing_exact_merge(native_plan, tmp_path, record_property):
     owner, plan, path, config, token = evidence_case(native_plan, tmp_path)
     record_property(
@@ -207,7 +209,7 @@ def test_physical_browser_review_offline_consent_and_existing_exact_merge(native
             fixture.chmod(0o600)
             screenshot = tmp_path / "exact-review.png"
             browser = subprocess.Popen(
-                [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/build-review.mjs"],
+                [browser_node(), "tests/build-review.mjs"],
                 cwd=ROOT / "apps/mission-control",
                 env={
                     **os.environ,

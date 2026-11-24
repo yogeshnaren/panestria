@@ -16,6 +16,7 @@ import uvicorn
 from fastapi.testclient import TestClient
 from test_local_server import ModelFixture, configuration
 
+from browser_support import browser_node
 from panestria.api import local_server
 from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.api.mission_web import mount_mission_control
@@ -141,6 +142,7 @@ def test_mission_ask_scope_and_session_purpose(ask_application):
         observer.state.health.shutdown()
 
 
+@pytest.mark.requires_browser
 def test_browser_offline_ask_answer_cancel_recovery_and_refusal(ask_application, tmp_path, record_property):
     path, config, token, settings, app, calls = ask_application
     record_property("mode", "ACTUAL_CHROMIUM_HTTP_PG__TEST_FIXTURE_NOT_LIVE_MODEL_PROCESS_HARDWARE")
@@ -167,7 +169,7 @@ def test_browser_offline_ask_answer_cancel_recovery_and_refusal(ask_application,
         fixture.chmod(0o600)
         screenshot = tmp_path / "offline-ask.png"
         result = subprocess.run(
-            [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/offline-ask.mjs"],
+            [browser_node(), "tests/offline-ask.mjs"],
             cwd=ROOT / "apps/mission-control",
             env={
                 **os.environ,
