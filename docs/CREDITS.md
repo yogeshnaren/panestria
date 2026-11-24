@@ -9,6 +9,10 @@ has been copied into this repository. Ideas are re-implemented independently. If
 code is ever copied, its license text goes under `third_party/` and an entry in a
 `NOTICE` file in the same pull request, and its row below changes to "code reused".
 
+The wheel also ships the pinned agentos-skills v0.1.0 attachment unmodified
+(hardware probe and worker skills, Apache-2.0 per each skill's front matter).
+[NOTICE](../NOTICE) and `third_party/agentos-skills/LICENSE` cover it.
+
 | Project | Author / steward | License | What Panestria takes | Status |
 |---|---|---|---|---|
 | [Firstmate](https://github.com/kunchenguid/firstmate) | Kun Chen (kunchenguid) | MIT | Supervision patterns: a zero-token watcher that wakes the supervisor only on actionable events; busy/idle/unknown/dead worker classification from harness lifecycle signals; `ship` versus `scout` task types; merge bound to the live head; teardown that refuses dirty or unlanded worktrees; pooled worktrees; recording the owner's away-mode words verbatim with only mechanical limits enforced by code. | Idea only; planned for R3. |
