@@ -27,10 +27,22 @@ REQUIRED = {
     "coverage",
     "test",
 }
+# Jobs that run only on the nightly schedule; a pull request run shows them skipped.
+SCHEDULE_ONLY = {"nightly-failure-issue"}
 
 
 SUITES = ("fast", "kernel", "platform", "research", "boundary")
 _ARTIFACT_LIMIT = 4 * 1024 * 1024
+
+
+def required_jobs_passed(jobs: list[dict[str, object]]) -> bool:
+    """Exactly the required jobs succeeded; a schedule-only job may appear only as skipped."""
+    relevant = [j for j in jobs if not (j.get("name") in SCHEDULE_ONLY and j.get("conclusion") == "skipped")]
+    return (
+        len(relevant) == len(REQUIRED)
+        and {j.get("name") for j in relevant} == REQUIRED
+        and all(j.get("status") == "completed" and j.get("conclusion") == "success" for j in relevant)
+    )
 
 
 def selection_permits_reuse(selection: dict[str, object]) -> bool:
@@ -132,12 +144,7 @@ def prove() -> dict[str, object]:
         run_id = run["id"]
         if type(run_id) is not int or run_id < 1:
             continue
-        jobs = api(f"actions/runs/{run_id}/jobs?filter=latest&per_page=100")["jobs"]
-        if (
-            len(jobs) != len(REQUIRED)
-            or {j["name"] for j in jobs} != REQUIRED
-            or any(j.get("status") != "completed" or j.get("conclusion") != "success" for j in jobs)
-        ):
+        if not required_jobs_passed(api(f"actions/runs/{run_id}/jobs?filter=latest&per_page=100")["jobs"]):
             continue
         artifacts = api(f"actions/runs/{run_id}/artifacts?per_page=100")["artifacts"]
         previews, suites, lane_artifacts = set(), set(), {}
