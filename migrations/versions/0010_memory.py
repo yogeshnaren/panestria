@@ -1,6 +1,7 @@
 """Normalized consented memory with immutable source/revision and scoped FTS."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0010_memory"
 down_revision = "0009_browser_sessions"
@@ -75,6 +76,9 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(
+        revision, tables=("memory_source", "memory_item", "memory_revision", "context_pack", "memory_use_event")
+    )
     op.execute("ALTER TABLE panestria.memory_item DROP CONSTRAINT current_memory_revision")
     op.execute(
         "DROP TABLE panestria.memory_use_event,panestria.context_pack,panestria.memory_revision,"

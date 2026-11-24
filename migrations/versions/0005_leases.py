@@ -1,6 +1,7 @@
 """R1 DB-clock leases and stale attempt publication guards."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0005_leases"
 down_revision = "0004_check_candidate"
@@ -42,6 +43,9 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(
+        revision, columns={"task": ("max_attempts", "retry_at"), "task_attempt": ("lease_expires_at",)}
+    )
     for table in ("artifact", "check_run"):
         op.execute(f"DROP TRIGGER leased_publication ON panestria.{table}")
     op.execute("DROP FUNCTION panestria.fence_leased_publication()")

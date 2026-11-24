@@ -1,6 +1,7 @@
 """One-use external invocation claims on the application's existing database."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0017_worker_invocation"
 down_revision = "0016_approval_revocation"
@@ -39,5 +40,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(revision, tables=("worker_invocation",))
     op.execute("DROP TABLE panestria.worker_invocation")
     op.execute("DROP FUNCTION panestria.guard_worker_invocation()")

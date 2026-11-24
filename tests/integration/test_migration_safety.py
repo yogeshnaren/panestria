@@ -60,7 +60,7 @@ def test_populated_downgrade_refuses_at_the_newest_populated_revision(r1_databas
 
         assert refused.returncode != 0
         assert "downgrade of 0003_approval_preview refused" in refused.stderr
-        assert "panestria.approval_request.preview (1 rows with non-default values)" in refused.stderr
+        assert "panestria.approval_request.preview (1 row differs from the default)" in refused.stderr
         assert db.revision() == current_head()
 
 
@@ -100,13 +100,13 @@ def test_dropped_columns_holding_defaults_do_not_block_downgrade(r1_database: st
             "0005_leases",
             "0004_check_candidate",
             "UPDATE panestria.task SET max_attempts = 5",
-            "panestria.task.max_attempts (2 rows with non-default values)",
+            "panestria.task.max_attempts (2 rows differ from the default)",
         ),
         (
             "0008_policy",
             "0007_budgets",
             "UPDATE panestria.project SET policy_version = 1",
-            "panestria.project.policy_version (1 rows with non-default values)",
+            "panestria.project.policy_version (1 row differs from the default)",
         ),
     ],
 )

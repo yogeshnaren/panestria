@@ -1,6 +1,7 @@
 """Forward-only, immutable evidence for an exact leased Build candidate."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0015_build_evidence"
 down_revision = "0014_memory_review"
@@ -32,5 +33,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(revision, tables=("build_evidence",))
     op.execute("DROP TABLE panestria.build_evidence")
     op.execute("DROP FUNCTION panestria.immutable_build_evidence()")

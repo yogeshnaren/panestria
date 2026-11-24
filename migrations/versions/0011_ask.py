@@ -1,6 +1,7 @@
 """Offline request identity/receipts without retaining question or response text."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0011_ask"
 down_revision = "0010_memory"
@@ -41,5 +42,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(revision, tables=("ask_request",))
     op.execute("DROP TABLE panestria.ask_request")
     op.execute("DROP FUNCTION panestria.guard_ask_request()")

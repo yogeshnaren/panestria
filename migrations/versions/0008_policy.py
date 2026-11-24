@@ -1,6 +1,7 @@
 """Immutable policy revisions and owner-reviewed project changes."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0008_policy"
 down_revision = "0007_budgets"
@@ -60,6 +61,9 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(
+        revision, tables=("policy_review", "project_policy_revision"), columns={"project": ("policy_version",)}
+    )
     op.execute("DROP TABLE panestria.policy_review,panestria.project_policy_revision")
     op.execute("DROP FUNCTION panestria.immutable_policy_revision(),panestria.immutable_policy_review()")
     op.execute("ALTER TABLE panestria.project DROP COLUMN policy_version")
