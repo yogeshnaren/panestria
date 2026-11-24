@@ -184,12 +184,13 @@ def test_scoped_search_uses_the_fts_index(r1_task: dict[str, str]) -> None:
     with psycopg.connect(r1_task["dsn"]) as c:
         uow = _ExplainingUnitOfWork(c)
         target = service.add(uow, actor, MemorySubmission(body="Prefer PostgreSQL for storage", label="INTERNAL"))
-        for index in range(40):
+        for index in range(250):
             service.add(uow, actor, MemorySubmission(body=f"Unrelated note {index}", label="INTERNAL"))
         c.commit()
-        c.execute("ANALYZE panestria.memory_revision")
-        # Small tables favour sequential scans; disabling them asks only whether the
-        # FTS predicate can reach ix_memory_fts at all.
+        c.execute("ANALYZE panestria.memory_item, panestria.memory_revision, panestria.memory_source")
+        # Sequential scans stay cheaper until about 20,000 revisions. Disabling them
+        # asks only whether the FTS predicate can reach ix_memory_fts; the previous
+        # query filtered a materialized CTE, so no plan could use the index.
         c.execute("SET LOCAL enable_seqscan=off")
         assert [hit.ref for hit in service.search(uow, actor, "PostgreSQL storage")] == [target]
         assert len(uow.plans) == 1 and '"Index Name": "ix_memory_fts"' in uow.plans[0], uow.plans
