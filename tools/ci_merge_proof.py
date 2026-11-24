@@ -24,6 +24,8 @@ REQUIRED = {
     "behavioral (platform)",
     "behavioral (research)",
     "behavioral (boundary)",
+    "hermeticity (kernel)",
+    "hermeticity (platform)",
     "coverage",
     "test",
 }

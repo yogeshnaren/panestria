@@ -1,6 +1,7 @@
 """Hash-only one-use pairing challenges and revocable scoped browser sessions."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0009_browser_sessions"
 down_revision = "0008_policy"
@@ -24,4 +25,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(revision, tables=("browser_session", "pairing_challenge"))
     op.execute("DROP TABLE panestria.browser_session,panestria.pairing_challenge")

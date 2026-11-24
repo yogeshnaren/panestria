@@ -1,6 +1,7 @@
 """Versioned route/exposure/outcome evidence and consented owner corrections."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0012_learning"
 down_revision = "0011_ask"
@@ -42,4 +43,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(revision, tables=("learning_record", "user_correction"))
     op.execute("DROP TABLE panestria.user_correction,panestria.learning_record")

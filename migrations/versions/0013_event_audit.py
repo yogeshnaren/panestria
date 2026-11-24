@@ -1,6 +1,7 @@
 """Immutable event digests and explicit logical replay-retention floors."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0013_event_audit"
 down_revision = "0012_learning"
@@ -38,6 +39,9 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(
+        revision, tables=("event_retention",), columns={"task_event": ("schema_version", "privacy_label")}
+    )
     op.execute("DROP TABLE panestria.event_retention")
     op.execute("DROP TRIGGER immutable_event ON panestria.task_event")
     op.execute(

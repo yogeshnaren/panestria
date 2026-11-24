@@ -188,6 +188,92 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  # The kernel and platform lanes again on a tree like a stock developer
+  # checkout: group-writable files from umask 0002, and the oldest Node that
+  # Mission Control's engines range accepts. Catches tests and packaged files
+  # that only pass on the runner's 0022 umask or its newer Node.
+  hermeticity:
+    needs: quality
+    if: needs.quality.outputs.already_tested != 'true'
+    name: hermeticity (${{ matrix.suite }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [kernel, platform]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Group-writable tree, as a umask 0002 checkout leaves it
+        run: chmod -R g+w .
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.12.3"
+          python-version: "3.12"
+      - name: Install frozen dependencies
+        run: |
+          umask 0002
+          uv sync --frozen --group dev
+      - name: Oldest supported Node for physical dashboard checks
+        if: matrix.suite == 'platform'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          # The floor of engines.node in apps/mission-control/package.json.
+          node-version: "20.19.0"
+      - name: Prefer official HTTPS Ubuntu archive for browser dependencies
+        if: matrix.suite == 'platform'
+        run: |
+          sudo python3 - <<'PYCODE'
+          from pathlib import Path
+          mirrors = Path('/etc/apt/apt-mirrors.txt')
+          if not mirrors.is_file():
+              raise SystemExit('Expected Ubuntu hosted-runner mirror list is missing')
+          original = mirrors.read_text()
+          slow = 'http://azure.archive.ubuntu.com/ubuntu'
+          if slow in original:
+              mirrors.write_text(original.replace(slow, 'https://archive.ubuntu.com/ubuntu'))
+              print('Replaced the slow Azure HTTP endpoint with the official Ubuntu HTTPS archive')
+          else:
+              print('No Azure HTTP endpoint present; original signed package sources preserved')
+          PYCODE
+      - name: Build dashboard and prepare Chromium
+        if: matrix.suite == 'platform'
+        working-directory: apps/mission-control
+        run: |
+          umask 0002
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+          npx --no-install playwright install --with-deps chromium
+      - name: Prepare pinned worker image
+        run: |
+          umask 0002
+          uv run --frozen python -c 'from panestria.cli.review_demo import prepare_worker_image; prepare_worker_image()'
+      - name: Tests
+        env:
+          CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || (github.event_name == 'push' || github.event_name == 'schedule') && 'full' || 'required' }}
+          HYPOTHESIS_PROFILE: ${{ github.event_name == 'schedule' && 'nightly' || 'ci' }}
+          CI_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+        run: |
+          umask 0002
+          test "$(stat -c %a src/panestria/execution/scoped_bash.py)" = 664
+          uv run --frozen python tools/ci_tests.py ${{ matrix.suite }} --profile "$CI_PROFILE" --base "$CI_BASE"
+      - name: Retain failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          # Not ci-*: the coverage job and the merge proof read only the main lanes.
+          name: hermeticity-${{ matrix.suite }}-${{ github.sha }}
+          path: |
+            evidence/ci-${{ matrix.suite }}.xml
+            evidence/ci-${{ matrix.suite }}-selection.json
+          if-no-files-found: error
+          retention-days: 7
+
   # Whole-suite coverage across every lane; per-package floors only rise.
   coverage:
     needs: [quality, behavioral]
@@ -235,7 +321,7 @@ jobs:
   # Preserve the existing required check name: partial matrix success is not green.
   test:
     if: always()
-    needs: [quality, behavioral, coverage]
+    needs: [quality, behavioral, hermeticity, coverage]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
@@ -243,15 +329,18 @@ jobs:
         env:
           QUALITY_RESULT: ${{ needs.quality.result }}
           BEHAVIORAL_RESULT: ${{ needs.behavioral.result }}
+          HERMETICITY_RESULT: ${{ needs.hermeticity.result }}
           COVERAGE_RESULT: ${{ needs.coverage.result }}
           ALREADY_TESTED: ${{ needs.quality.outputs.already_tested }}
         run: |
           test "$QUALITY_RESULT" = success
           if test "$ALREADY_TESTED" = true; then
             test "$BEHAVIORAL_RESULT" = skipped
+            test "$HERMETICITY_RESULT" = skipped
             test "$COVERAGE_RESULT" = skipped
           else
             test "$BEHAVIORAL_RESULT" = success
+            test "$HERMETICITY_RESULT" = success
             test "$COVERAGE_RESULT" = success
           fi
 

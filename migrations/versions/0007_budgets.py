@@ -1,6 +1,7 @@
 """Goal-wide cash reservations; unknown exposure remains reserved."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0007_budgets"
 down_revision = "0006_effect_outbox"
@@ -29,4 +30,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(revision, tables=("budget_reservation", "goal_budget"))
     op.execute("DROP TABLE panestria.budget_reservation,panestria.goal_budget")

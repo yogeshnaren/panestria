@@ -10,8 +10,9 @@ each lane's `ci-SUITE-selection.json` with `--selection`: when no lane deferred 
 reviewed regression (every full-profile run, and any required-profile run that
 deferred nothing) the floors are exact. When a required-profile pull request
 deferred some regressions, a measurement may sit up to `deferred_tolerance_points`
-(from the floors file) below a floor; the nightly full run still enforces it
-exactly. `--report-only` prints the measurement without enforcing anything.
+(from the floors file) below a floor, or a package's measured entry in
+`deferred_tolerance_overrides` where deferral costs it more; the nightly full run
+still enforces every floor exactly. `--report-only` prints the measurement without enforcing anything.
 """
 
 from __future__ import annotations
@@ -55,19 +56,37 @@ def measure(report: dict[str, object]) -> dict[str, dict[str, float]]:
 
 
 def violations(
-    measured: dict[str, dict[str, float]], floors: dict[str, dict[str, float]], tolerance: float = 0.0
+    measured: dict[str, dict[str, float]],
+    floors: dict[str, dict[str, float]],
+    tolerance: float = 0.0,
+    overrides: dict[str, float] | None = None,
 ) -> list[str]:
-    """Return a message for every package more than `tolerance` points below its floor."""
+    """Return a message for every package more than its tolerance below its floor.
+
+    `overrides` replaces `tolerance` for the packages it names.
+    """
     problems = []
     for name, floor in sorted(floors.items()):
         actual = measured.get(name)
         if actual is None:
             problems.append(f"{name}: no coverage data")
             continue
+        allowed = (overrides or {}).get(name, tolerance)
         for kind in ("line", "branch"):
-            if actual[kind] < round(floor[kind] - tolerance, 1):
+            if actual[kind] < round(floor[kind] - allowed, 1):
                 problems.append(f"{name}: {kind} {actual[kind]}% < floor {floor[kind]}%")
     return problems
+
+
+def tolerance_overrides(document: dict[str, object]) -> dict[str, float]:
+    """Return the per-package deferral tolerances; each must name a floored package."""
+    raw = document.get("deferred_tolerance_overrides", {})
+    floors = document["floors"]
+    assert isinstance(raw, dict) and isinstance(floors, dict)
+    unknown = sorted(set(raw) - set(floors))
+    if unknown:
+        raise ValueError(f"deferred_tolerance_overrides names packages without floors: {unknown}")
+    return {name: float(points) for name, points in raw.items()}
 
 
 def deferred_count(selections: list[Path]) -> int:
@@ -130,12 +149,14 @@ def main() -> int:
         FLOORS.write_text(json.dumps(document, indent=2) + "\n")
         return 0
     tolerance = float(document["deferred_tolerance_points"]) if deferred else 0.0
+    overrides = tolerance_overrides(document) if deferred else {}
     print(
         f"coverage_floor_mode: {deferred} deferred regressions, tolerance {tolerance} points"
+        + "".join(f", {name} {points} points" for name, points in sorted(overrides.items()))
         if deferred
         else "coverage_floor_mode: nothing deferred, exact floors"
     )
-    problems = violations(measured, floors, tolerance)
+    problems = violations(measured, floors, tolerance, overrides)
     for problem in problems:
         print(f"{'coverage_below_floor_not_enforced' if args.report_only else 'coverage_floor_violation'}: {problem}")
     for problem in sorted(set(violations(measured, floors)) - set(problems)):

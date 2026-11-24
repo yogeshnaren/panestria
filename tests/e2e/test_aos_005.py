@@ -10,6 +10,7 @@ import json
 import os
 import subprocess
 import threading
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -396,6 +397,16 @@ def _continue(approval_id: str, digest: str, version: int) -> object:
         return receipt
 
 
+def _wait_expired(approval_id: str) -> None:
+    deadline = time.monotonic() + 10
+    with psycopg.connect(DATABASE_URL, autocommit=True) as connection:
+        while connection.execute(
+            "SELECT expires_at > clock_timestamp() FROM panestria.approval_request WHERE id = %s", (approval_id,)
+        ).fetchone() != (False,):
+            assert time.monotonic() < deadline, "approval fixture did not expire"
+            time.sleep(0.05)
+
+
 def _effect_count(task_id: str) -> int:
     with psycopg.connect(DATABASE_URL) as connection:
         row = connection.execute("SELECT count(*) FROM panestria.side_effect WHERE task_id = %s", (task_id,)).fetchone()
@@ -417,10 +428,11 @@ def test_approval_digest_actor_expiry(record_property: pytest.RecordProperty) ->
     try:
         _seed_approvals()
         later = _stamp(timedelta(hours=1))
-        earlier = _stamp(timedelta(hours=-1))
+        # A request may not already be expired; this one expires before its decision below.
+        soon = _stamp(timedelta(seconds=2))
         merge = _open(Actor(OWNER, PROJECT), _preview(MERGE, "merge", later))
         denied = _open(Actor(OWNER, PROJECT), _preview(DENY, "merge", later))
-        expired = _open(Actor(OWNER, PROJECT), _preview(EXPIRE, "merge", earlier))
+        expired = _open(Actor(OWNER, PROJECT), _preview(EXPIRE, "merge", soon))
         consent = _open(Actor(OWNER, PROJECT), _preview(CONSENT, "contract_consent", later))
         mismatched_actor = _open(Actor(OWNER, PROJECT), _preview(ACTOR, "merge", later, OTHER))
         foreign_preview = _preview(FOREIGN_TASK, "merge", later, OTHER)
@@ -462,6 +474,7 @@ def test_approval_digest_actor_expiry(record_property: pytest.RecordProperty) ->
             )
             assert actor.status_code == 403
             assert actor.json()["code"] == "actor_mismatch"
+            _wait_expired(expired.approval_id)
             stale = client.post(
                 f"/v1/approvals/{expired.approval_id}/decision",
                 json={
