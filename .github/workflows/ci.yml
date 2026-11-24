@@ -86,6 +86,16 @@ jobs:
         run: |
           uv run --frozen --group audit actionlint .github/workflows/*.yml
           uv run --frozen --group audit zizmor --offline .github/workflows/
+      # Same locked-runtime audit as the nightly supply-chain run, now on every PR.
+      - name: Python dependency audit
+        if: steps.proof.outputs.already_tested != 'true'
+        run: |
+          uv export --frozen --no-dev --no-emit-project --format requirements-txt > "$RUNNER_TEMP/requirements-runtime.txt"
+          uv run --frozen --group audit pip-audit --strict --require-hashes --disable-pip -r "$RUNNER_TEMP/requirements-runtime.txt"
+      - name: Dashboard dependency audit
+        if: steps.proof.outputs.already_tested != 'true'
+        working-directory: apps/mission-control
+        run: npm audit --audit-level=high
       - name: Secret scan
         if: steps.proof.outputs.already_tested != 'true'
         run: |
