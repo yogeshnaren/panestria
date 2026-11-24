@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 from hypothesis import HealthCheck, settings
 
+from browser_support import browser_node
 from stack_support import COMPOSE, DATABASE_URL, TEST_DATABASE_PORT
 
 # Importing from this directory also makes stack_support available when pytest
@@ -36,12 +37,15 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
 
 
 def pytest_runtest_setup(item: pytest.Item) -> None:
-    """Skip non-root-only tests locally as root; never let CI skip them silently."""
+    """Skip tests whose host prerequisite is missing locally; never let CI skip them silently."""
     nonroot = item.get_closest_marker("requires_nonroot") or item.get_closest_marker("docker_boundary")
     if nonroot and os.geteuid() == 0:
         if os.environ.get("CI"):
             pytest.fail("requires_nonroot test cannot run as root in CI", pytrace=False)
         pytest.skip("requires_nonroot: the product refuses euid 0; run as a normal user")
+    if item.get_closest_marker("requires_browser"):
+        # Before database, plan and server fixtures start; skips locally, fails in CI.
+        browser_node()
 
 
 @pytest.fixture(scope="session", autouse=True)
