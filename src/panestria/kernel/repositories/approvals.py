@@ -106,7 +106,7 @@ def mark_wait(
 ) -> int | None:
     row = uow.execute(
         "UPDATE panestria.task SET state = %s, continuation_kind = %s, resume_phase = %s,"
-        " row_version = row_version + 1, updated_at = now()"
+        " row_version = row_version + 1, updated_at = clock_timestamp()"
         " WHERE id = %s AND row_version = %s RETURNING row_version",
         (state, continuation_kind, resume_phase, task_id, expected_version),
     ).fetchone()
@@ -118,7 +118,7 @@ def mark_wait(
 def mark_decision(uow: UnitOfWork, request_id: str, state: str, actor_id: str) -> int:
     return uow.execute(
         "UPDATE panestria.approval_request"
-        " SET state = %s, decided_at = now(), decided_by = %s"
+        " SET state = %s, decided_at = clock_timestamp(), decided_by = %s"
         " WHERE id = %s AND state = 'PENDING'",
         (state, actor_id, request_id),
     ).rowcount
@@ -131,9 +131,35 @@ def mark_expired(uow: UnitOfWork, request_id: str) -> int:
     ).rowcount
 
 
+def lock_wait_requests(uow: UnitOfWork, task_id: str, action_kind: str) -> list[tuple[str, str, bool, str, bool]]:
+    """Earlier requests for one task wait: (id, state, unexpired, effect digest, consumed)."""
+    rows = uow.execute(
+        "SELECT request.id::text, request.state, request.expires_at > clock_timestamp(),"
+        " request.effect_digest, used.approval_request_id IS NOT NULL"
+        " FROM panestria.approval_request AS request"
+        " LEFT JOIN panestria.approval_consumption AS used ON used.approval_request_id = request.id"
+        " WHERE request.task_id = %s AND request.action_kind = %s"
+        " ORDER BY request.id FOR UPDATE OF request",
+        (task_id, action_kind),
+    ).fetchall()
+    return [(str(a), str(b), bool(c), str(d).strip(), bool(e)) for a, b, c, d, e in rows]
+
+
+def deny_pending(uow: UnitOfWork, goal_id: str, actor_id: str) -> list[tuple[str, str | None, str]]:
+    """Close every PENDING request of a goal as DENIED by the owner: (id, task id, effect digest)."""
+    rows = uow.execute(
+        "UPDATE panestria.approval_request"
+        " SET state = 'DENIED', decided_at = clock_timestamp(), decided_by = %s"
+        " WHERE goal_id = %s AND state = 'PENDING'"
+        " RETURNING id::text, task_id::text, effect_digest",
+        (actor_id, goal_id),
+    ).fetchall()
+    return sorted((str(a), None if b is None else str(b), str(c).strip()) for a, b, c in rows)
+
+
 def bump_version(uow: UnitOfWork, task_id: str, expected_version: int) -> int | None:
     row = uow.execute(
-        "UPDATE panestria.task SET row_version = row_version + 1, updated_at = now()"
+        "UPDATE panestria.task SET row_version = row_version + 1, updated_at = clock_timestamp()"
         " WHERE id = %s AND row_version = %s RETURNING row_version",
         (task_id, expected_version),
     ).fetchone()
@@ -143,7 +169,9 @@ def bump_version(uow: UnitOfWork, task_id: str, expected_version: int) -> int | 
 
 
 def database_now(uow: UnitOfWork) -> str:
-    row = uow.execute("SELECT to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"+00:00')").fetchone()
+    row = uow.execute(
+        "SELECT to_char(clock_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"+00:00')"
+    ).fetchone()
     if row is None:
         raise RuntimeError("database clock missing")
     return str(row[0])
@@ -151,7 +179,7 @@ def database_now(uow: UnitOfWork) -> str:
 
 def request_expired(uow: UnitOfWork, request_id: str) -> bool:
     row = uow.execute(
-        "SELECT expires_at <= now() FROM panestria.approval_request WHERE id = %s",
+        "SELECT expires_at <= clock_timestamp() FROM panestria.approval_request WHERE id = %s",
         (request_id,),
     ).fetchone()
     return row is not None and bool(row[0])
@@ -276,8 +304,8 @@ def insert_consumption(
 ) -> None:
     uow.execute(
         "INSERT INTO panestria.approval_consumption"
-        " (approval_request_id, side_effect_id, consumed_by, effect_digest)"
-        " VALUES (%s, %s, %s, %s)",
+        " (approval_request_id, side_effect_id, consumed_by, effect_digest, consumed_at)"
+        " VALUES (%s, %s, %s, %s, clock_timestamp())",
         (request_id, effect_id, actor_id, digest),
     )
 
