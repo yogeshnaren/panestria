@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from panestria.contracts.classification import classification_rank
 from panestria.contracts.memory import MemoryObservation, MemorySubmission
@@ -15,6 +15,43 @@ from panestria.kernel.uow import UnitOfWork
 from panestria.memory.reclassification import consume_review, guard_review_policy
 
 _LABELS = ("PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED", "PRIVATE")
+# The default memory search page. Ask reads 20 hits, so pins written within this
+# limit never make either refuse with pinned_memory_limit.
+PINNED_MEMORY_LIMIT = 10
+# Fixed-width stand-in for the ids a new pin has not been given yet.
+_PLACEHOLDER_ID = str(UUID(int=0))
+_SCOPED = (
+    "SELECT i.id,r.id revision_id,i.current_revision,i.row_version,r.source_id,r.sha256,r.body,"
+    "s.privacy_label,i.pinned,r.search_document,i.conflict_key,s.source_uri"
+    " FROM panestria.memory_item i JOIN panestria.memory_revision r"
+    " ON r.item_id=i.id AND r.version=i.current_revision"
+    " JOIN panestria.memory_source s ON s.id=r.source_id"
+    " WHERE i.owner_id=%s AND i.project_id=%s AND i.status='ACTIVE'"
+    " AND i.valid_from<=clock_timestamp() AND (i.valid_until IS NULL OR i.valid_until>clock_timestamp())"
+    " AND (i.retain_until IS NULL OR i.retain_until>clock_timestamp()) AND s.privacy_label=ANY(%s)"
+)
+# Pins and FTS matches are separate branches, so the FTS predicate reaches
+# ix_memory_fts instead of filtering every scoped row after the fact. The tsquery
+# is a bound constant, not a subquery, so the planner can estimate its matches.
+_SEARCH = (
+    "SELECT id::text,revision_id::text,current_revision,row_version,source_id::text,sha256,body,"
+    " privacy_label,pinned,COALESCE(ts_rank_cd(search_document,%s::tsquery),0),"
+    " conflict_key,source_uri,count(*) FILTER (WHERE pinned) OVER ()"
+    f" FROM ({_SCOPED} AND i.pinned"
+    f" UNION ALL {_SCOPED} AND NOT i.pinned AND r.owner_id=%s AND r.project_id=%s"
+    " AND r.search_document @@ %s::tsquery) scoped"
+    " ORDER BY pinned DESC,10 DESC,id LIMIT %s"
+)
+
+
+def lexeme_query(lexemes: list[str]) -> str | None:
+    """OR together lexemes as quoted tsquery literals; None when there are none.
+
+    User text only contributes lexemes, so operator syntax ("-5", "OR", quotes)
+    stays plain text, and lexemes are not stemmed a second time.
+    """
+    quoted = ["'" + lexeme.replace("\\", "\\\\").replace("'", "''") + "'" for lexeme in lexemes]
+    return " | ".join(quoted) or None
 
 
 @dataclass(frozen=True)
@@ -90,9 +127,42 @@ class MemoryService:
         )
         return MemoryRef(item_id, revision_id, version, version - 1, source_id, digest)
 
+    def _guard_pins(self, uow: UnitOfWork, actor: Actor, item_id: str, body: str, conflict_key: str | None) -> None:
+        """Refuse a pin set that the default Ask could not hold, before anything is written.
+
+        Every pin reaches every Ask, so an oversize set would fail them all with
+        pinned_context_budget_exceeded or pinned_memory_limit.
+        """
+        from panestria.memory import context  # context imports this module
+
+        # Serialize pin-set changes per project; taken after any item row lock.
+        uow.execute(
+            "SELECT pg_advisory_xact_lock(hashtextextended(%s,0))",
+            (f"memory-pins:{actor.owner_id}:{actor.project_id}",),
+        )
+        # Pins not valid yet will reach Ask later, so they count now.
+        rows = uow.execute(
+            "SELECT r.source_id::text,r.id::text,r.sha256,r.body,i.conflict_key"
+            " FROM panestria.memory_item i JOIN panestria.memory_revision r"
+            " ON r.item_id=i.id AND r.version=i.current_revision"
+            " WHERE i.owner_id=%s AND i.project_id=%s AND i.pinned AND i.status='ACTIVE' AND i.id<>%s"
+            " AND (i.valid_until IS NULL OR i.valid_until>clock_timestamp())"
+            " AND (i.retain_until IS NULL OR i.retain_until>clock_timestamp()) ORDER BY i.id",
+            (actor.owner_id, actor.project_id, item_id),
+        ).fetchall()
+        if len(rows) >= PINNED_MEMORY_LIMIT:
+            raise KernelDenied("memory_pin_limit_exceeded")
+        pins = [context.reference_entry(str(r[0]), str(r[1]), str(r[2]).strip(), str(r[3]), r[4]) for r in rows]
+        digest = hashlib.sha256(body.encode()).hexdigest()
+        pins.append(context.reference_entry(_PLACEHOLDER_ID, _PLACEHOLDER_ID, digest, body, conflict_key))
+        if context.pinned_context_bytes(pins) > context.PINNED_CONTEXT_BUDGET:
+            raise KernelDenied("memory_pin_budget_exceeded")
+
     def add(self, uow: UnitOfWork, actor: Actor, document: MemorySubmission) -> MemoryRef:
         self._project(uow, actor)
         item_id = str(uuid4())
+        if document.pinned:
+            self._guard_pins(uow, actor, item_id, document.body, document.conflict_key)
         uow.execute(
             "INSERT INTO panestria.memory_item"
             " (id,owner_id,project_id,kind,pinned,conflict_key,valid_from,valid_until,retain_until)"
@@ -146,6 +216,8 @@ class MemoryService:
             raise KernelDenied("privacy_review_not_required")
         if document.kind != row[3]:
             raise KernelDenied("memory_kind_conflict")
+        if document.pinned:
+            self._guard_pins(uow, actor, item_id, document.body, document.conflict_key)
         ref = self._revision(uow, actor, item_id, int(row[0]) + 1, document, review_id)
         uow.execute(
             "UPDATE panestria.memory_item SET current_revision=%s,row_version=row_version+1,"
@@ -172,8 +244,9 @@ class MemoryService:
 
     def _set_status(self, uow: UnitOfWork, actor: Actor, item_id: str, expected_version: int, status: str) -> int:
         row = uow.execute(
-            "SELECT row_version,status FROM panestria.memory_item"
-            " WHERE id=%s AND owner_id=%s AND project_id=%s FOR UPDATE",
+            "SELECT i.row_version,i.status,i.pinned,r.body,i.conflict_key FROM panestria.memory_item i"
+            " JOIN panestria.memory_revision r ON r.item_id=i.id AND r.version=i.current_revision"
+            " WHERE i.id=%s AND i.owner_id=%s AND i.project_id=%s FOR UPDATE OF i",
             (item_id, actor.owner_id, actor.project_id),
         ).fetchone()
         if row is None:
@@ -182,6 +255,8 @@ class MemoryService:
             raise KernelDenied("version_conflict")
         if row[1] == status:
             return int(row[0])
+        if status == "ACTIVE" and row[2]:
+            self._guard_pins(uow, actor, item_id, str(row[3]), row[4])
         uow.execute(
             "UPDATE panestria.memory_item SET status=%s,row_version=row_version+1 WHERE id=%s", (status, item_id)
         )
@@ -201,23 +276,11 @@ class MemoryService:
             raise KernelDenied("invalid_memory_query")
         if any(label not in _LABELS for label in allowed_labels):
             raise KernelDenied("invalid_classification")
+        lexemes = uow.execute("SELECT tsvector_to_array(to_tsvector('english',%s))", (query,)).fetchone()
+        tsquery = lexeme_query(list(lexemes[0]) if lexemes else [])
+        owner, project, labels = actor.owner_id, actor.project_id, list(allowed_labels)
         rows = uow.execute(
-            "WITH scoped AS MATERIALIZED ("
-            " SELECT i.*,r.id revision_id,r.body,r.sha256,r.source_id,r.search_document,s.privacy_label,s.source_uri"
-            " FROM panestria.memory_item i JOIN panestria.memory_revision r"
-            " ON r.item_id=i.id AND r.version=i.current_revision"
-            " JOIN panestria.memory_source s ON s.id=r.source_id"
-            " WHERE i.owner_id=%s AND i.project_id=%s AND i.status='ACTIVE'"
-            " AND i.valid_from<=clock_timestamp() AND (i.valid_until IS NULL OR i.valid_until>clock_timestamp())"
-            " AND (i.retain_until IS NULL OR i.retain_until>clock_timestamp()) AND s.privacy_label=ANY(%s))"
-            " SELECT id::text,revision_id::text,current_revision,row_version,source_id::text,sha256,body,"
-            " privacy_label,pinned,COALESCE(ts_rank_cd(search_document,websearch_to_tsquery('english',"
-            " array_to_string(tsvector_to_array(to_tsvector('english',%s)),' OR '))),0),"
-            " conflict_key,source_uri,count(*) FILTER (WHERE pinned) OVER ()"
-            " FROM scoped WHERE pinned OR search_document @@ websearch_to_tsquery('english',"
-            " array_to_string(tsvector_to_array(to_tsvector('english',%s)),' OR '))"
-            " ORDER BY pinned DESC,10 DESC,id LIMIT %s",
-            (actor.owner_id, actor.project_id, list(allowed_labels), query, query, limit),
+            _SEARCH, (tsquery, owner, project, labels, owner, project, labels, owner, project, tsquery, limit)
         ).fetchall()
         if rows and int(rows[0][12]) > limit:
             raise KernelDenied("pinned_memory_limit")
