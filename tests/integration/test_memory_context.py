@@ -67,8 +67,18 @@ def test_pins_and_rules_never_silently_dropped(r1_task: dict[str, str]) -> None:
         assert c.execute(
             "SELECT stage FROM panestria.memory_use_event WHERE context_pack_id=%s", (pack.id,)
         ).fetchall() == [("retrieved",)]
+        # A pin that cannot fit the default Ask is refused when pinned (memory_pin_budget_exceeded).
+        with pytest.raises(KernelDenied, match="^memory_pin_budget_exceeded$"), c.transaction():
+            service.correct(
+                uow,
+                actor,
+                ref.item_id,
+                0,
+                MemorySubmission(body="PostgreSQL " * 200, label="CONFIDENTIAL", pinned=True),
+            )
+        # A pin that fits the default Ask still never disappears from a smaller one.
         service.correct(
-            uow, actor, ref.item_id, 0, MemorySubmission(body="PostgreSQL " * 200, label="CONFIDENTIAL", pinned=True)
+            uow, actor, ref.item_id, 0, MemorySubmission(body="PostgreSQL " * 30, label="CONFIDENTIAL", pinned=True)
         )
         c.commit()
         with pytest.raises(KernelDenied, match="pinned_context_budget_exceeded"), c.transaction():
