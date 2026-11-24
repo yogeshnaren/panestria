@@ -112,6 +112,51 @@ def test_deferred_regressions_enable_the_tolerance_and_exact_runs_do_not(tmp_pat
     assert "coverage_floor_violation: kernel: line 50.0% < floor 51.0%" in out
 
 
+def test_a_package_override_replaces_the_tolerance_only_for_that_package() -> None:
+    floors = {"execution": {"line": 85.0, "branch": 67.3}, "kernel": {"line": 88.1, "branch": 73.2}}
+    measured = {"execution": {"line": 83.4, "branch": 64.4}, "kernel": {"line": 88.1, "branch": 70.3}}
+    assert coverage_floor.violations(measured, floors, 2.0) == [
+        "execution: branch 64.4% < floor 67.3%",
+        "kernel: branch 70.3% < floor 73.2%",
+    ]
+    assert coverage_floor.violations(measured, floors, 2.0, {"execution": 4.0}) == [
+        "kernel: branch 70.3% < floor 73.2%"
+    ]
+    assert coverage_floor.violations(
+        {**measured, "execution": {"line": 83.4, "branch": 63.2}}, floors, 2.0, {"execution": 4.0}
+    ) == [
+        "execution: branch 63.2% < floor 67.3%",
+        "kernel: branch 70.3% < floor 73.2%",
+    ]
+
+
+def test_overrides_apply_only_when_a_lane_deferred_and_must_name_a_floor(tmp_path, monkeypatch, capsys) -> None:
+    floors = tmp_path / "floors.json"
+    document = {
+        "schema_version": 1,
+        "deferred_tolerance_points": 2.0,
+        "deferred_tolerance_overrides": {"kernel": 4.0},
+        "floors": {"kernel": {"line": 53.0, "branch": 0.0}},
+    }
+    floors.write_text(json.dumps(document))
+    monkeypatch.setattr(coverage_floor, "FLOORS", floors)
+    monkeypatch.setattr(
+        coverage_floor, "combine", lambda _files: {"files": {"src/panestria/kernel/a.py": _file(10, 5)}}
+    )
+    deferring = _selection(tmp_path, "kernel", [{"node": "tests/x.py::test_a"}])
+    exact = _selection(tmp_path, "fast", [])
+    monkeypatch.setattr("sys.argv", ["coverage_floor.py", "--selection", deferring, "lane"])
+    assert coverage_floor.main() == 0
+    assert "tolerance 2.0 points, kernel 4.0 points" in capsys.readouterr().out
+    monkeypatch.setattr("sys.argv", ["coverage_floor.py", "--selection", exact, "lane"])
+    assert coverage_floor.main() == 1
+    assert "coverage_floor_violation: kernel: line 50.0% < floor 53.0%" in capsys.readouterr().out
+    floors.write_text(json.dumps({**document, "deferred_tolerance_overrides": {"kernal": 4.0}}))
+    monkeypatch.setattr("sys.argv", ["coverage_floor.py", "--selection", deferring, "lane"])
+    with pytest.raises(ValueError, match=r"packages without floors: \['kernal'\]"):
+        coverage_floor.main()
+
+
 def test_unreadable_selection_fails_instead_of_relaxing(tmp_path) -> None:
     with pytest.raises(ValueError, match="no deferred list"):
         coverage_floor.deferred_count([Path(_selection(tmp_path, "kernel", None))])
