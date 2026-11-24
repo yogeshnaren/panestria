@@ -58,6 +58,9 @@ def test_sec_l1_destination_must_be_printable_ascii(destination):
     [
         (NOW + MAX_REQUEST_TTL + timedelta(seconds=1)).isoformat(),
         "9999-12-31T23:59:59+00:00",
+        NOW.isoformat(),
+        (NOW - timedelta(microseconds=1)).isoformat(),
+        (NOW - timedelta(days=1)).isoformat(),
         "2026-02-30T00:00:00+00:00",
         "2026-10-28T25:00:00+00:00",
     ],

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from panestria.contracts.task import ALLOWED_TRANSITIONS
+from panestria.kernel.approvals import append_closed_events, close_pending_approvals
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.repositories.tasks import append_event
@@ -59,7 +60,9 @@ class CancellationService:
         if not tasks:
             if expected_version != 0:
                 raise KernelDenied("version_conflict")
+            closed = close_pending_approvals(uow, actor, goal_id)
             self._finish_goal(uow, actor, goal_id)
+            append_closed_events(uow, actor, goal_id, closed, "owner-cancel")
             return CancelReceipt(goal_id, "CANCELLED", None, 0)
         task_id, state, row_version, epoch = tasks[0]
         state = str(state)
@@ -67,11 +70,13 @@ class CancellationService:
         epoch = int(epoch)
         if state in _TERMINAL:
             raise KernelDenied("illegal_transition")
+        if row_version != expected_version:
+            raise KernelDenied("version_conflict")
+        if state != "CANCELLING" and (state, "CANCELLING") not in ALLOWED_TRANSITIONS:
+            raise KernelDenied("illegal_transition")
+        # An accepted cancel closes every pending approval of the goal: denied now, recorded last.
+        closed = close_pending_approvals(uow, actor, goal_id)
         if state != "CANCELLING":
-            if row_version != expected_version:
-                raise KernelDenied("version_conflict")
-            if (state, "CANCELLING") not in ALLOWED_TRANSITIONS:
-                raise KernelDenied("illegal_transition")
             policy = self._policy(uow, str(task_id))
             moved = self.tasks.transition(
                 uow,
@@ -86,13 +91,12 @@ class CancellationService:
             )
             row_version = moved.row_version
             state = "CANCELLING"
-        elif row_version != expected_version:
-            raise KernelDenied("version_conflict")
         outstanding = uow.execute(
             "SELECT state FROM panestria.side_effect WHERE task_id = %s",
             (task_id,),
         ).fetchall()
         if any(str(item[0]) in _OUTSTANDING for item in outstanding):
+            append_closed_events(uow, actor, goal_id, closed, "owner-cancel")
             return CancelReceipt(goal_id, "CREATED", "CANCELLING", row_version)
         policy = self._policy(uow, str(task_id))
         finished = self.tasks.transition(
@@ -107,6 +111,7 @@ class CancellationService:
             correlation_id=correlation,
         )
         self._finish_goal(uow, actor, goal_id)
+        append_closed_events(uow, actor, goal_id, closed, "owner-cancel")
         return CancelReceipt(goal_id, "CANCELLED", "CANCELLED", finished.row_version)
 
     def _policy(self, uow: UnitOfWork, task_id: str) -> str:

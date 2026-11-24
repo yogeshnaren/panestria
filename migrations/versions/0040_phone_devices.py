@@ -32,6 +32,8 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    # Lock before checking: no phone row can commit between the check and the drop.
+    op.execute("LOCK TABLE panestria.phone_device,panestria.pairing_challenge IN ACCESS EXCLUSIVE MODE")
     op.execute("""DO $$ BEGIN IF EXISTS(SELECT 1 FROM panestria.phone_device)
         OR EXISTS(SELECT 1 FROM panestria.pairing_challenge WHERE scope_ref IS NOT NULL)
         THEN RAISE EXCEPTION 'phone audit prevents downgrade'; END IF; END $$""")

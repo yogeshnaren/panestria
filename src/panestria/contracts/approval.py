@@ -68,7 +68,7 @@ def require_request_bounds(preview: ActionPreview, now: datetime) -> None:
 
     The owner reviews ``destination`` verbatim, so it must be printable ASCII with
     no whitespace (no homoglyphs, line breaks or trailing spaces). ``expires_at``
-    must be a real instant no more than ``MAX_REQUEST_TTL`` ahead.
+    must be a real instant after ``now`` and no more than ``MAX_REQUEST_TTL`` ahead.
     """
     if re.fullmatch(r"[\x21-\x7e]+", preview.destination) is None:
         raise PreviewRejected("invalid_preview_destination")
@@ -76,7 +76,7 @@ def require_request_bounds(preview: ActionPreview, now: datetime) -> None:
         expires = datetime.fromisoformat(preview.expires_at)
     except ValueError:
         raise PreviewRejected("invalid_preview_expiry") from None
-    if expires > now + MAX_REQUEST_TTL:
+    if not now < expires <= now + MAX_REQUEST_TTL:
         raise PreviewRejected("invalid_preview_expiry")
 
 

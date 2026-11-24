@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0003_approval_preview"
 down_revision = "0002_kernel"
@@ -52,5 +53,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(revision, columns={"approval_request": ("preview",)})
     for statement in _DOWNGRADE:
         op.execute(statement)

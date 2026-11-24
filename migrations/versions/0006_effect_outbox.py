@@ -1,6 +1,7 @@
 """Transactional dispatch intents; ambiguous effects require reconciliation."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0006_effect_outbox"
 down_revision = "0005_leases"
@@ -32,6 +33,11 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(
+        revision,
+        tables=("effect_outbox",),
+        columns={"side_effect": ("classification", "request_ref", "dispatch_epoch", "dispatch_attempts")},
+    )
     op.execute("DROP TABLE panestria.effect_outbox")
     op.execute(
         "ALTER TABLE panestria.side_effect DROP CONSTRAINT side_effect_id_task_unique,"
