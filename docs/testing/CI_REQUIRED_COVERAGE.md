@@ -2,8 +2,9 @@
 
 The owner requested fewer low-value/repeated checks. Preserve the highest-value
 functional and security checks, rather than optimizing the number of assertions
-deleted. All six existing required check names remain: quality, four behavioral
-lanes and the aggregate test. Live/owner acceptance is separate.
+deleted. All eight required check names remain: quality, five behavioral lanes
+(fast, kernel, platform, research, boundary), coverage and the aggregate test
+(the set `tools/ci_merge_proof.py` requires). Live/owner acceptance is separate.
 
 | Event | What runs |
 | --- | --- |
@@ -14,8 +15,10 @@ lanes and the aggregate test. Live/owner acceptance is separate.
 | Manual workflow | Full by default; required is an explicit option |
 | Local `make test` / lane command without profile | Full, as before |
 
-Quality runs first; failures stop expensive behavioral work. The four isolated
-behavioral runners then run concurrently. No shared-database pytest parallelism,
+Quality runs first; failures stop expensive behavioral work. Quality includes
+the locked-runtime `pip-audit` (audit group, as in the nightly supply-chain run)
+and `npm audit --audit-level=high` for the dashboard, so a known advisory fails
+the pull request. The five isolated behavioral runners then run concurrently. No shared-database pytest parallelism,
 new worker image, provider credentials or live calls are introduced. Browser
 approval/recovery and current Ask/Build/Delegate/queue/profile flows remain.
 
@@ -70,14 +73,33 @@ gh workflow run ci.yml --ref YOUR_CANDIDATE_BRANCH --field profile=full
 Check the actual run SHA; pin the intended candidate before release validation.
 Live checks are still excluded and need their existing separate authorization.
 
+## Coverage floors, cancellation and nightly failures
+
+[Coverage floors](coverage-floors.json) are enforced on every run, pull requests
+included. `tools/coverage_floor.py` reads each lane's selection: when no lane
+deferred a reviewed regression (every full run, and any required run that
+deferred nothing) the floors are exact. When a required pull request deferred
+some of the at most 46 reviewed nodes, each package may sit up to
+`deferred_tolerance_points` (2.0) below its floor. The largest effect observed
+from deferral was 1.8 points (learning branch coverage), and floors sit one point
+below a full measurement. The nightly full run still enforces every floor exactly.
+
+Only pull request runs cancel an older run for the same pull request. Pushes, the
+nightly and manual runs each get their own concurrency group, so a main merge
+never cancels another merge or the nightly. When the nightly full run fails, the
+`nightly-failure-issue` job opens a "Nightly full regression failed" issue or
+comments on the open one. That job alone has `issues: write`; every other job
+keeps read-only contents/actions access.
+
 ## Why a verified main merge can avoid duplicate work
 
 Main currently permits direct pushes, so a merge-looking commit message is
 insufficient. The optional proof reads existing GitHub metadata only. It requires
 an actual two-parent main merge, a completed successful PR run on that exact
-second parent, all six successful jobs, four nonexpired artifacts sharing one
-tested preview SHA, and that preview's exact parent list and full tree matching
-the pushed merge. Any failed/pending run on that head, failed manual full run or incomplete history
+second parent, all eight successful jobs (the schedule-only nightly issue job may
+appear only as skipped), five nonexpired lane artifacts sharing one tested preview
+SHA whose selections deferred nothing, and that preview's exact parent list and
+full tree matching the pushed merge. Any failed/pending run on that head, failed manual full run or incomplete history
 also prevents reuse; it never searches backward for an older green.
 Metadata access, parsing, job/artifact, parent or tree uncertainty
 runs full checks. The GitHub token has repository contents/actions read scope;
