@@ -13,7 +13,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from panestria.execution.native_qualification import QualificationUnavailable, _state, _stop
-from panestria.execution.proposal_demo import _atomic, _lock, _private
+from panestria.fsutil import atomic_write_json, exclusive_lock, private_dir
 from panestria.kernel.build import BuildEvidenceStore
 from panestria.memory.keys import KeyStoreUnavailable
 from panestria.memory.profile_runtime import NODES, SCOPE, ProfileQualification, runtime_inputs, validate_junit
@@ -54,11 +54,11 @@ def qualify_profiles(directory: Path, cache: Path, *, synthetic_local_smoke: boo
     if any(shutil.which(name, path=search_path) != path for name, path in selected.items()):
         raise QualificationUnavailable("profile_qualification_tools_ambiguous")
     inputs = runtime_inputs()
-    destination = _private(directory)
-    with _lock(destination / "qualification.lock"):
-        run = _private(destination / ("run-" + uuid4().hex))
+    destination = private_dir(directory)
+    with exclusive_lock(destination / "qualification.lock"):
+        run = private_dir(destination / ("run-" + uuid4().hex))
         journal, xml, log = run / "result.json", run / "raw.xml", run / "pytest.log"
-        _atomic(journal, {"status": "STARTED", "candidate_commit": candidate, "runtime_inputs": inputs})
+        atomic_write_json(journal, {"status": "STARTED", "candidate_commit": candidate, "runtime_inputs": inputs})
         env = {
             "PATH": search_path,
             "HOME": str(Path.home()),
@@ -132,6 +132,6 @@ def qualify_profiles(directory: Path, cache: Path, *, synthetic_local_smoke: boo
                 "candidate_commit": candidate,
                 "release_gate": "NOT_EVALUATED",
             }
-        _atomic(journal, result)
-        _atomic(destination / "latest.json", {**result, "run": run.name})
+        atomic_write_json(journal, result)
+        atomic_write_json(destination / "latest.json", {**result, "run": run.name})
         return result

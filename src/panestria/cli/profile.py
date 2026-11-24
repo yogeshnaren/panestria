@@ -113,7 +113,7 @@ def qualify_runtime(
     """Explicit actual isolated OS-key and existing CPU model checks; no owner data."""
     from panestria.execution.native_qualification import QualificationUnavailable
     from panestria.execution.profile_qualification import qualify_profiles
-    from panestria.execution.proposal_demo import DemoUnavailable
+    from panestria.fsutil import LocalStateUnavailable
     from panestria.kernel.errors import KernelDenied
 
     try:
@@ -124,7 +124,7 @@ def qualify_runtime(
     except QualificationUnavailable as error:
         typer.echo(json.dumps({"code": str(error)}), err=True)
         raise typer.Exit(2) from None
-    except DemoUnavailable:
+    except LocalStateUnavailable:
         typer.echo(json.dumps({"code": "private_profile_qualification_directory_unavailable"}), err=True)
         raise typer.Exit(2) from None
     except (KeyStoreUnavailable, KernelDenied) as error:

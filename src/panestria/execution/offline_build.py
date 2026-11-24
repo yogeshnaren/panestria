@@ -17,7 +17,7 @@ from panestria.contracts.goal import load_contract
 from panestria.contracts.invocation import InvocationBinding
 from panestria.contracts.offline_result import InvocationProvenance, OfflineBuildReference, RetainedPart
 from panestria.execution.offline_context import context_parts, reconstruct_context, verify_context
-from panestria.execution.proposal_demo import _lock, _private
+from panestria.fsutil import exclusive_lock, private_dir
 from panestria.kernel.build import BuildEvidenceService, BuildEvidenceStore
 from panestria.kernel.build_progress import BuildProgressService
 from panestria.kernel.errors import KernelDenied
@@ -197,12 +197,12 @@ def capture_reference(owner: "OwnerBuild", goal: str) -> dict[str, Any]:
     raw_manifest = manifest.model_dump_json().encode()
     if len(raw_manifest) > 32768:
         raise KernelDenied("offline_reference_manifest_limit")
-    directory = _private(owner.settings.root / "offline-results")
-    store = BuildEvidenceStore(_private(directory / "blobs"))
+    directory = private_dir(owner.settings.root / "offline-results")
+    store = BuildEvidenceStore(private_dir(directory / "blobs"))
     lock = directory / "capture.lock"
     fd = os.open(lock, os.O_WRONLY | os.O_CREAT | os.O_NOFOLLOW, 0o600)
     os.close(fd)
-    with _lock(lock):
+    with exclusive_lock(lock):
         existing = list(store.root.iterdir())
         new_chunks = {sha: raw for sha, raw in chunks.items() if not (store.root / sha).exists()}
         new_manifest = not (store.root / hashlib.sha256(raw_manifest).hexdigest()).exists()

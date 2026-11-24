@@ -24,7 +24,7 @@ from panestria.contracts.model_manifest import ModelManifest
 from panestria.contracts.native_tools import canonical_payload
 from panestria.contracts.plan import PlanNode, PlanProposal, ProjectInventory, ValidatedDAG
 from panestria.contracts.plan_draft import ModelPlanDraft, RepairDraftContext
-from panestria.execution.proposal_demo import _atomic, _private
+from panestria.fsutil import atomic_write_json, private_dir
 from panestria.inference.local import LocalProvider
 from panestria.inference.runtime import MODEL, MODEL_DIGEST, ModelRuntime
 from panestria.kernel.errors import KernelDenied
@@ -50,7 +50,7 @@ class LocalPlanModel:
         decision = admit(HardwareProbe(archive).collect_cpu(), gpu=False)
         if decision.decision != "PERMIT":
             raise InferenceUnavailable(decision.reasons[0])
-        runtime = _private(self.settings.runtime_directory)
+        runtime = private_dir(self.settings.runtime_directory)
         model = ModelRuntime(self.settings.model_cache, runtime / "model", preserve_existing=True)
         try:
             model.start()
@@ -278,7 +278,7 @@ class LocalBuildPlanner:
             journal["repair_context_sha256"] = repair.sha256()
         if manifest is not None:
             journal["model_manifest"] = manifest.model_dump(mode="json")
-        _atomic(directory / "result.json", journal)
+        atomic_write_json(directory / "result.json", journal)
         try:
             if before_dispatch is not None:
                 before_dispatch(request)
@@ -325,10 +325,10 @@ class LocalBuildPlanner:
                 "canonical_plan_state": "NOT_STAGED",
                 "execution_authority": "NONE",
             }
-            _atomic(directory / "result.json", receipt)
+            atomic_write_json(directory / "result.json", receipt)
             return receipt
         except BaseException:
-            _atomic(
+            atomic_write_json(
                 directory / "result.json",
                 {
                     **journal,

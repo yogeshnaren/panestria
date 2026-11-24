@@ -30,7 +30,7 @@ from panestria.contracts.repair_intent import (
 )
 from panestria.execution.local_plan import LocalBuildPlanner, PlanGenerator
 from panestria.execution.owner_build import OwnerBuild
-from panestria.execution.proposal_demo import _atomic
+from panestria.fsutil import atomic_write_json
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.build_progress import BuildProgressService
 from panestria.kernel.errors import KernelDenied
@@ -328,7 +328,7 @@ class LocalBuildRepair:
         # proof that it never ran. Charges are never refunded.
         returned = (directory / "response.txt").is_file()
         over = time.monotonic() - started_at > TURN_WALL_SECONDS
-        _atomic(
+        atomic_write_json(
             directory / "result.json",
             {
                 "status": "UNAVAILABLE",

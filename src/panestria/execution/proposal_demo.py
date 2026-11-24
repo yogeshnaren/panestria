@@ -7,7 +7,6 @@ call or a container write. Only explicit owner decisions dispatch protected CAS.
 from __future__ import annotations
 
 import difflib
-import fcntl
 import hashlib
 import json
 import os
@@ -16,11 +15,10 @@ import tempfile
 import threading
 import time
 from collections.abc import Callable
-from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 from uuid import UUID, uuid4
 
 import psycopg
@@ -44,6 +42,7 @@ from panestria.execution.build_merge import VerifiedGitTarget, prepare_merge
 from panestria.execution.outbox import EffectExecutor
 from panestria.execution.proposal_certificate import ACTIONS, ASSETS, CASES, ProposalCertificateStore, runtime_versions
 from panestria.execution.tool_authority import DurableToolAuthority, tool_binding
+from panestria.fsutil import LocalStateUnavailable, atomic_write_json, exclusive_lock, private_dir
 from panestria.kernel.approvals import ApprovalService
 from panestria.kernel.build import BuildEvidenceService, BuildEvidenceStore
 from panestria.kernel.cancellation import CancellationService
@@ -65,8 +64,8 @@ from panestria.verification.registry import CommandRegistry
 from panestria.verification.sandboxed import SandboxedCheckRunner
 
 
-class DemoUnavailable(Exception):
-    pass
+class DemoUnavailable(LocalStateUnavailable):
+    """A demo refusal; callers catch the base class to include shared private-state errors."""
 
 
 def _git(path: Path, *args: str) -> str:
@@ -79,37 +78,6 @@ def _git(path: Path, *args: str) -> str:
         env={"PATH": "/usr/bin:/bin", "HOME": "/nonexistent", "GIT_CONFIG_NOSYSTEM": "1"},
     )
     return result.stdout.strip()
-
-
-def _private(path: Path) -> Path:
-    if path.is_symlink():
-        raise DemoUnavailable("unsafe_demo_root")
-    path.mkdir(parents=True, exist_ok=True, mode=0o700)
-    if path.resolve() != path or path.stat().st_uid != os.getuid() or path.stat().st_mode & 0o077:
-        raise DemoUnavailable("private_demo_root_required")
-    return path
-
-
-def _atomic(path: Path, body: object) -> None:
-    fd, name = tempfile.mkstemp(dir=path.parent)
-    try:
-        with os.fdopen(fd, "w") as stream:
-            json.dump(body, stream, sort_keys=True)
-            stream.flush()
-            os.fsync(stream.fileno())
-        os.replace(name, path)
-    finally:
-        Path(name).unlink(missing_ok=True)
-
-
-@contextmanager
-def _lock(path: Path) -> Iterator[None]:
-    with path.open("a") as stream:
-        try:
-            fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            raise DemoUnavailable("demo_operation_running") from None
-        yield
 
 
 def contract_document(actor: Actor, goal: str, policy: PolicyContext) -> dict[str, Any]:
@@ -174,17 +142,17 @@ def contract_document(actor: Actor, goal: str, policy: PolicyContext) -> dict[st
 
 class ProposalDemo:
     def __init__(self, root: Path, dsn: str, adapter: ClaudeProposalAdapter) -> None:
-        self.root, self.dsn, self.adapter = _private(root), dsn, adapter
-        self.store = BuildEvidenceStore(_private(root / "evidence"))
+        self.root, self.dsn, self.adapter = private_dir(root), dsn, adapter
+        self.store = BuildEvidenceStore(private_dir(root / "evidence"))
         self.evidence = BuildEvidenceService(self.store)
-        self.certificates = ProposalCertificateStore(_private(root / "certificates"))
+        self.certificates = ProposalCertificateStore(private_dir(root / "certificates"))
         assets_sha = canonical_sha256(
             {
                 name: hashlib.sha256((ASSETS / name).read_bytes()).hexdigest()
                 for name in ("apply.py", "required_check.py")
             }
         )
-        self.assets = _private(_private(root / "reviewed-assets") / assets_sha)
+        self.assets = private_dir(private_dir(root / "reviewed-assets") / assets_sha)
         for name in ("apply.py", "required_check.py"):
             target, raw = self.assets / name, (ASSETS / name).read_bytes()
             if target.exists() or target.is_symlink():
@@ -207,7 +175,7 @@ class ProposalDemo:
         self._mutex = threading.Lock()
         identity = root / "identity.json"
         if not identity.exists():
-            _atomic(
+            atomic_write_json(
                 identity,
                 {
                     "owner": str(uuid4()),
@@ -221,15 +189,15 @@ class ProposalDemo:
             raise DemoUnavailable("private_demo_identity_required")
         self.identity = json.loads(identity.read_bytes())
         self.actor = Actor(self.identity["owner"], self.identity["project"])
-        self.protected = _private(root / "protected")
-        scope = _private(_private(self.protected / self.actor.owner_id) / self.actor.project_id)
+        self.protected = private_dir(root / "protected")
+        scope = private_dir(private_dir(self.protected / self.actor.owner_id) / self.actor.project_id)
         self.bare = scope / "destination.git"
 
     def connect(self) -> psycopg.Connection[Any]:
         return psycopg.connect(self.dsn, connect_timeout=1, options="-c statement_timeout=3000")
 
     def initialize(self) -> None:
-        with _lock(self.root / "operation.lock"):
+        with exclusive_lock(self.root / "operation.lock"):
             with self.connect() as c:
                 exists = c.execute(
                     "SELECT 1 FROM panestria.project WHERE id=%s AND owner_id=%s",
@@ -362,7 +330,7 @@ class ProposalDemo:
     def qualify(self) -> dict[str, Any]:
         # Explicit operator diagnostic, before task cloud permissions exist.
         # No arbitrary input, project context or automatic retry is supported.
-        with _lock(self.root / "operation.lock"):
+        with exclusive_lock(self.root / "operation.lock"):
             with self.connect() as c:
                 active = c.execute(
                     "SELECT 1 FROM panestria.goal WHERE project_id=%s AND id!=%s "
@@ -376,14 +344,14 @@ class ProposalDemo:
                 raise DemoUnavailable("qualification_outcome_unknown_owner_resolution_required")
             if not self._runtime_ready():
                 outcome = {"status": "UNAVAILABLE", "reason": "container_runtime_not_prepared"}
-                _atomic(journal, outcome)
+                atomic_write_json(journal, outcome)
                 return outcome
             versions = runtime_versions()
             if versions != self.certificates.runtime_versions:
                 outcome = {"status": "UNAVAILABLE", "reason": "runtime_changed_restart_required"}
-                _atomic(journal, outcome)
+                atomic_write_json(journal, outcome)
                 return outcome
-            _atomic(
+            atomic_write_json(
                 journal,
                 {"status": "STARTED", "reason": "operator_requested", "started_at": datetime.now(UTC).isoformat()},
             )
@@ -453,13 +421,13 @@ class ProposalDemo:
                     "expires_at": (datetime.now(UTC) + timedelta(hours=24)).isoformat(),
                 }
                 digest = self.certificates.blobs.write_report(json.dumps(certificate, sort_keys=True).encode())
-                _atomic(self.root / "certificate.json", {"sha256": digest})
+                atomic_write_json(self.root / "certificate.json", {"sha256": digest})
                 outcome = {"status": "PASS", "reason": "fixed_public_profile_only", "certificate_sha256": digest}
-            except (DemoUnavailable, ProposalUnavailable) as exc:
+            except (LocalStateUnavailable, ProposalUnavailable) as exc:
                 outcome = {"status": "UNAVAILABLE", "reason": str(exc)}
             except Exception:
                 outcome = {"status": "UNAVAILABLE", "reason": "qualification_failed"}
-            _atomic(journal, outcome)
+            atomic_write_json(journal, outcome)
             return outcome
 
     def _tool(
@@ -495,7 +463,7 @@ class ProposalDemo:
                 raise ValueError
         except ValueError:
             raise DemoUnavailable("invalid_goal_id") from None
-        with _lock(self.root / "operation.lock"):
+        with exclusive_lock(self.root / "operation.lock"):
             if not self._runtime_ready():
                 raise DemoUnavailable("container_runtime_not_prepared")
             ready = self.readiness()
@@ -664,7 +632,7 @@ class ProposalDemo:
             pending = None
             if native.status != "CANDIDATE" or native.proposal is None:
                 raise DemoUnavailable(native.reason)
-            work_root = _private(self.root / "attempts")
+            work_root = private_dir(self.root / "attempts")
             workspace = work_root / lease.attempt_id
             workspace.mkdir(mode=0o700)
             (workspace / "calculator.py").write_text(BASE_SOURCE)
@@ -760,7 +728,7 @@ class ProposalDemo:
                     pass  # PREPARED/CLAIMED stays fenced after any unknown failure.
             reason = (
                 str(exc)
-                if isinstance(exc, (DemoUnavailable, ProposalUnavailable, KernelDenied))
+                if isinstance(exc, (LocalStateUnavailable, ProposalUnavailable, KernelDenied))
                 else "demo_execution_failed"
             )
             self._failed(goal, task, reason)

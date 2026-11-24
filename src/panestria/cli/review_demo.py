@@ -16,7 +16,8 @@ import uvicorn
 from panestria.api.proposal_demo import create_demo_app
 from panestria.brokers.harness.claude_proposal import ClaudeProposalAdapter
 from panestria.brokers.harness.cli_profile import BinaryPin
-from panestria.execution.proposal_demo import DemoUnavailable, ProposalDemo, _lock
+from panestria.execution.proposal_demo import ProposalDemo
+from panestria.fsutil import LocalStateUnavailable, exclusive_lock
 from panestria.kernel.sessions import SessionService
 from panestria.kernel.uow import UnitOfWork
 from panestria.sandbox.profiles import DEFAULT_IMAGE
@@ -114,7 +115,7 @@ def main() -> None:
         demo.initialize()
         print("Isolated native demo initialized. No inference was requested.")
     elif args.command == "serve":
-        with _lock(demo.root / "server.lock"):
+        with exclusive_lock(demo.root / "server.lock"):
             demo.recover()
             uvicorn.run(
                 create_demo_app(demo, f"http://127.0.0.1:{args.port}"),
@@ -145,5 +146,5 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-    except DemoUnavailable as exc:
+    except LocalStateUnavailable as exc:
         raise SystemExit(str(exc)) from None

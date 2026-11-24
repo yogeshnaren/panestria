@@ -16,7 +16,8 @@ from panestria.api.auth import GoalApi
 from panestria.api.routes.sessions import logout, pair
 from panestria.api.security import BrowserSecurity
 from panestria.api.sessions import BrowserAccess
-from panestria.execution.proposal_demo import DemoUnavailable, ProposalDemo
+from panestria.execution.proposal_demo import ProposalDemo
+from panestria.fsutil import LocalStateUnavailable
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.sessions import SessionService
 
@@ -63,8 +64,9 @@ def create_demo_app(demo: ProposalDemo, origin: str) -> FastAPI:
     app.add_api_route("/v1/session/logout", logout, methods=["POST"])
     app.add_middleware(BrowserSecurity, access=access)
 
-    @app.exception_handler(DemoUnavailable)
-    async def unavailable(request: Request, exc: DemoUnavailable) -> JSONResponse:
+    # DemoUnavailable and the shared private-state errors both subclass this.
+    @app.exception_handler(LocalStateUnavailable)
+    async def unavailable(request: Request, exc: LocalStateUnavailable) -> JSONResponse:
         return JSONResponse({"code": str(exc)}, status_code=409)
 
     @app.exception_handler(KernelDenied)

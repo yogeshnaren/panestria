@@ -12,8 +12,8 @@ from panestria.contracts.plan import StoredPlan
 from panestria.execution.background_account import account_reports, collect_account
 from panestria.execution.native_plan import NativePlanRunner
 from panestria.execution.owner_build import OwnerBuild
-from panestria.execution.proposal_demo import _lock
 from panestria.execution.worker_authority import WorkerAuthority, intersect_authorities
+from panestria.fsutil import exclusive_lock
 from panestria.kernel.background_run import BACKGROUND_SESSION_LOCK, BackgroundRunService
 from panestria.kernel.build import BuildEvidenceService
 from panestria.kernel.errors import KernelDenied
@@ -33,7 +33,7 @@ class BackgroundPlanRunner(NativePlanRunner):
 
     def _operation_lock(self) -> Any:
         # Do not hold the foreground operation lock for a background job.
-        return _lock(self.owner.settings.root / "background-operation.lock")
+        return exclusive_lock(self.owner.settings.root / "background-operation.lock")
 
     def _preflight(self, plan_id: str) -> StoredPlan:
         self._require_model()
