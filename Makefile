@@ -28,10 +28,10 @@ test:
 test-critical:
 	uv run --frozen python tools/ci_tests.py fast --critical
 
-# The no-breaking-change check: every non-live lane in the full profile, then
-# the public-surface diff against the recorded baseline.
+# The no-breaking-change check: every non-live lane CI runs, in the full profile
+# (boundary needs Docker), then the public-surface diff against the recorded baseline.
 ci-full:
-	set -e; for suite in fast kernel platform research; do uv run --frozen python tools/ci_tests.py $$suite --profile full; done
+	set -e; for suite in fast kernel platform research boundary; do uv run --frozen python tools/ci_tests.py $$suite --profile full; done
 	$(MAKE) compat
 
 compat:
