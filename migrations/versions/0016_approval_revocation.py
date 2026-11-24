@@ -1,6 +1,7 @@
 """R1 revocation is separate metadata; an original approval decision stays immutable."""
 
 from alembic import op
+from downgrade_guard import refuse_populated_drop
 
 revision = "0016_approval_revocation"
 down_revision = "0015_build_evidence"
@@ -52,6 +53,9 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    refuse_populated_drop(
+        revision, columns={"approval_request": ("revoked_at", "revoked_by", "revocation_policy_version")}
+    )
     op.execute("""CREATE OR REPLACE FUNCTION panestria.forbid_approval_rebinding() RETURNS trigger
         LANGUAGE plpgsql AS $fn$
         BEGIN
