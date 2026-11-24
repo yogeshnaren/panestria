@@ -20,6 +20,7 @@ from test_mission_build_intake import bundle, fresh
 from test_mission_plan_acceptance import review_application
 from test_public_plan_submission import submission as submission  # noqa: F401
 
+from browser_support import browser_node
 from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.contracts.goal import contract_sha256
 from panestria.contracts.plan import PlanProposal, ProjectInventory
@@ -143,6 +144,7 @@ def test_inbox_scope_paging_resolution_read_only_and_task_lock(submission, tmp_p
             review_inbox(UnitOfWork(db), foreign, after="PLAN:" + plans[0].plan_id)
 
 
+@pytest.mark.requires_browser
 @pytest.mark.parametrize("build", [PATHS], indirect=True)
 def test_actual_browser_discovers_plan_accepts_separately_and_refreshes_canonical_inbox(
     submission, tmp_path, monkeypatch, record_property
@@ -207,7 +209,7 @@ def test_actual_browser_discovers_plan_accepts_separately_and_refreshes_canonica
         )
         fixture.chmod(0o600)
         result = subprocess.run(
-            [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/review-inbox.mjs"],
+            [browser_node(), "tests/review-inbox.mjs"],
             cwd=ROOT / "apps/mission-control",
             env={
                 **os.environ,

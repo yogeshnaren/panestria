@@ -13,11 +13,13 @@ from pathlib import Path
 from uuid import uuid4
 
 import httpx2 as httpx
+import pytest
 from test_native_plan_execution import native_plan as native_plan  # noqa: F401
 from test_native_plan_execution import owner_cli as owner_cli  # noqa: F401
 from test_native_plan_execution import prepared_plan as prepared_plan  # noqa: F401
 from test_private_phone import cli, configuration
 
+from browser_support import browser_node
 from panestria.config_phone import load_phone_settings
 from panestria.kernel.goals import GoalService
 from panestria.kernel.uow import UnitOfWork
@@ -26,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ASSETS = ROOT / "apps/mission-control/dist"
 
 
+@pytest.mark.requires_browser
 def test_mobile_observer_build_attention_stop_restart_offline_background_and_revocation(
     native_plan, tmp_path, monkeypatch, record_property
 ):
@@ -142,7 +145,7 @@ def test_mobile_observer_build_attention_stop_restart_offline_background_and_rev
         assert token.encode() not in competing.stdout + competing.stderr
         screenshot = tmp_path / "phone-observer.png"
         browser = subprocess.Popen(
-            [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/phone-observer.mjs"],
+            [browser_node(), "tests/phone-observer.mjs"],
             cwd=ROOT / "apps/mission-control",
             env={**env, "PANESTRIA_BROWSER_FIXTURE": str(fixture), "PANESTRIA_BROWSER_SCREENSHOT": str(screenshot)},
             stdin=subprocess.PIPE,

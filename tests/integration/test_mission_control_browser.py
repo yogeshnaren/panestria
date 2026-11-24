@@ -15,6 +15,7 @@ import pytest
 from fastapi.testclient import TestClient
 from typer.testing import CliRunner
 
+from browser_support import browser_node
 from panestria.api.activity_server import build_activity_app
 from panestria.api.mission_web import mount_mission_control
 from panestria.cli.main import app as cli
@@ -115,6 +116,7 @@ def test_dashboard_namespace_read_only_routes_and_envelope(r1_task, tmp_path):
         other.state.health.shutdown()
 
 
+@pytest.mark.requires_browser
 def test_actual_chromium_pair_reconnect_large_cursor_resync_and_revoke(r1_migration_task, tmp_path, record_property):
     f = r1_migration_task
     candidate = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
@@ -192,7 +194,7 @@ def test_actual_chromium_pair_reconnect_large_cursor_resync_and_revoke(r1_migrat
         fixture.chmod(0o600)
         screenshot = tmp_path / "mission-control.png"
         browser = subprocess.Popen(
-            [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/journey.mjs"],
+            [browser_node(), "tests/journey.mjs"],
             cwd=ROOT / "apps/mission-control",
             env={
                 **os.environ,

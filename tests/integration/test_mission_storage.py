@@ -7,6 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 from test_mission_control_browser import ASSETS, configure
 
+from browser_support import browser_node
 from panestria.api.activity_server import build_activity_app
 from panestria.api.mission_web import mount_mission_control
 from panestria.config import Settings
@@ -114,6 +115,7 @@ def test_explicit_host_storage_mode_requires_fresh_pairing_and_preserves_owner_d
         app.state.health.shutdown()
 
 
+@pytest.mark.requires_browser
 def test_actual_chromium_storage_notices_optout_and_revoke_clear_host_view(
     r1_migration_task, tmp_path, record_property
 ):
@@ -167,7 +169,7 @@ def test_actual_chromium_storage_notices_optout_and_revoke_clear_host_view(
         fixture.chmod(0o600)
         screenshot = tmp_path / "storage.png"
         browser = subprocess.Popen(
-            [os.environ.get("PANESTRIA_TEST_NODE", "node"), "tests/storage.mjs"],
+            [browser_node(), "tests/storage.mjs"],
             cwd=ASSETS.parent,
             env={
                 **os.environ,

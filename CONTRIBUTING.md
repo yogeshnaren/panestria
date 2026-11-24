@@ -24,6 +24,21 @@ make test
 
 `make test` runs `pytest -m "not live"`. That command deselects live checks, including `AOS-001-TC04`. A failed, missing or deselected live check is not a pass; collect the exact required host/provider evidence separately.
 
+### Browser tests
+
+The physical Mission Control journeys are marked `requires_browser`. They run `apps/mission-control/tests/*.mjs` under Node with `@playwright/test` and Playwright's Chromium. They need a Node that satisfies `engines.node` in `apps/mission-control/package.json` (currently `^20.19.0 || >=22.12.0`). Prepare the frontend with that Node first on `PATH`:
+
+```bash
+cd apps/mission-control
+npm ci --ignore-scripts --no-audit --no-fund
+npm run build
+npx --no-install playwright install chromium
+```
+
+The tests use `PANESTRIA_TEST_NODE` when it is set, as an absolute path or a command looked up on `PATH`. Otherwise they use the first `node` on `PATH`. Set it when an older Node comes first, for example `PANESTRIA_TEST_NODE="$(nvm which 22)" make test`. `PLAYWRIGHT_BROWSERS_PATH` selects a task-owned browser directory.
+
+If the Node version, `@playwright/test` or Chromium is missing, these tests skip locally with the reason; `pytest -rs` prints it. When `CI` is set they fail instead. CI installs Node and Chromium for the platform lane and does not set `PANESTRIA_TEST_NODE`.
+
 `make db-up`, `make db-migrate`, and `make reset-synthetic-data` act only on the `panestria-s3` Compose project. Reset removes that named volume and accepts no filesystem path.
 
 ## Changes
