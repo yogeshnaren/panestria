@@ -189,3 +189,26 @@ def test_unknown_native_invocation_retains_its_capacity_while_other_tasks_are_fe
         assert c.execute(
             "SELECT count(*) FROM panestria.task_event WHERE kind='build.plan.cancel_requested'"
         ).fetchone() == (1,)
+
+
+@pytest.mark.parametrize("build", [PATHS], indirect=True)
+def test_plan_cancellation_closes_pending_approvals(build):
+    plan = accepted(build)
+    final, approval = plan.nodes[-1].task_id, str(uuid4())
+    owner = build.actor.owner_id
+    with psycopg.connect(build.task["dsn"]) as c:
+        c.execute(
+            "INSERT INTO panestria.approval_request(id,goal_id,task_id,owner_id,project_id,minimum_actor_id,"
+            "action_kind,effect_digest,policy_version,state,expires_at,preview) VALUES"
+            " (%s,%s,%s,%s,%s,%s,'merge',%s,'synthetic','PENDING',clock_timestamp()+interval '10 minutes','{}')",
+            (approval, plan.goal_id, final, owner, build.actor.project_id, owner, "ab" * 32),
+        )
+    assert cancel(build, plan).status == "CANCELLED"
+    with psycopg.connect(build.task["dsn"]) as c:
+        assert c.execute(
+            "SELECT state,decided_by::text FROM panestria.approval_request WHERE id=%s", (approval,)
+        ).fetchone() == ("DENIED", owner)
+        assert c.execute(
+            "SELECT count(*) FROM panestria.task_event WHERE kind='approval.closed' AND payload->>'approval_id'=%s",
+            (approval,),
+        ).fetchone() == (1,)
