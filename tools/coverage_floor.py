@@ -5,9 +5,13 @@ recorded line and branch percentages. Floors only move up; `--write` proposes
 new floors from a measured run (measured minus one point, never below the old
 floor). Lanes record data with `tools/ci_tests.py SUITE --coverage`.
 
-Floors describe the whole non-live suite, so they are enforced only on full-profile
-runs (pushes to main, nightly, full dispatch). A pull request's required profile
-selects tests by the changed files; `--report-only` prints its measurement.
+Floors describe the whole non-live suite and are enforced on every CI run. Pass
+each lane's `ci-SUITE-selection.json` with `--selection`: when no lane deferred a
+reviewed regression (every full-profile run, and any required-profile run that
+deferred nothing) the floors are exact. When a required-profile pull request
+deferred some regressions, a measurement may sit up to `deferred_tolerance_points`
+(from the floors file) below a floor; the nightly full run still enforces it
+exactly. `--report-only` prints the measurement without enforcing anything.
 """
 
 from __future__ import annotations
@@ -50,8 +54,10 @@ def measure(report: dict[str, object]) -> dict[str, dict[str, float]]:
     }
 
 
-def violations(measured: dict[str, dict[str, float]], floors: dict[str, dict[str, float]]) -> list[str]:
-    """Return a message for every package whose measured coverage is below its floor."""
+def violations(
+    measured: dict[str, dict[str, float]], floors: dict[str, dict[str, float]], tolerance: float = 0.0
+) -> list[str]:
+    """Return a message for every package more than `tolerance` points below its floor."""
     problems = []
     for name, floor in sorted(floors.items()):
         actual = measured.get(name)
@@ -59,9 +65,20 @@ def violations(measured: dict[str, dict[str, float]], floors: dict[str, dict[str
             problems.append(f"{name}: no coverage data")
             continue
         for kind in ("line", "branch"):
-            if actual[kind] < floor[kind]:
+            if actual[kind] < round(floor[kind] - tolerance, 1):
                 problems.append(f"{name}: {kind} {actual[kind]}% < floor {floor[kind]}%")
     return problems
+
+
+def deferred_count(selections: list[Path]) -> int:
+    """Count the regressions every lane deselected; an unreadable selection fails the run."""
+    total = 0
+    for path in selections:
+        deferred = json.loads(path.read_text()).get("deferred")
+        if not isinstance(deferred, list):
+            raise ValueError(f"{path}: selection has no deferred list")
+        total += len(deferred)
+    return total
 
 
 def raised(measured: dict[str, dict[str, float]], floors: dict[str, dict[str, float]]) -> dict[str, dict[str, float]]:
@@ -90,21 +107,39 @@ def combine(data_files: list[Path]) -> dict[str, object]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("data", nargs="+", type=Path, help="coverage data files from each lane")
+    parser.add_argument(
+        "--selection",
+        action="append",
+        default=[],
+        type=Path,
+        help="a lane's ci-SUITE-selection.json; any deferred regression allows the documented tolerance",
+    )
     parser.add_argument("--write", action="store_true", help="raise floors from this measurement")
     parser.add_argument("--report-only", action="store_true", help="print the measurement without enforcing floors")
     args = parser.parse_args()
+    deferred = deferred_count(args.selection)
     measured = measure(combine(args.data))
     document = json.loads(FLOORS.read_text())
     floors = document["floors"]
     for name, value in measured.items():
         print(f"{name:14} line {value['line']:5.1f}%  branch {value['branch']:5.1f}%")
     if args.write:
+        if deferred:
+            parser.error("--write needs a run that deferred nothing")
         document["floors"] = raised(measured, floors)
         FLOORS.write_text(json.dumps(document, indent=2) + "\n")
         return 0
-    problems = violations(measured, floors)
+    tolerance = float(document["deferred_tolerance_points"]) if deferred else 0.0
+    print(
+        f"coverage_floor_mode: {deferred} deferred regressions, tolerance {tolerance} points"
+        if deferred
+        else "coverage_floor_mode: nothing deferred, exact floors"
+    )
+    problems = violations(measured, floors, tolerance)
     for problem in problems:
         print(f"{'coverage_below_floor_not_enforced' if args.report_only else 'coverage_floor_violation'}: {problem}")
+    for problem in sorted(set(violations(measured, floors)) - set(problems)):
+        print(f"coverage_below_floor_within_deferral_tolerance: {problem}")
     return 1 if problems and not args.report_only else 0
 
 

@@ -20,9 +20,11 @@ permissions:
   contents: read
   actions: read
 
+# A newer PR push supersedes its older run. Pushes, the nightly and manual runs
+# each get their own group, so a main merge never cancels another or the nightly.
 concurrency:
-  group: ci-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('{0}-{1}', github.event_name, github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   quality:
@@ -84,6 +86,16 @@ jobs:
         run: |
           uv run --frozen --group audit actionlint .github/workflows/*.yml
           uv run --frozen --group audit zizmor --offline .github/workflows/
+      # Same locked-runtime audit as the nightly supply-chain run, now on every PR.
+      - name: Python dependency audit
+        if: steps.proof.outputs.already_tested != 'true'
+        run: |
+          uv export --frozen --no-dev --no-emit-project --format requirements-txt > "$RUNNER_TEMP/requirements-runtime.txt"
+          uv run --frozen --group audit pip-audit --strict --require-hashes --disable-pip -r "$RUNNER_TEMP/requirements-runtime.txt"
+      - name: Dashboard dependency audit
+        if: steps.proof.outputs.already_tested != 'true'
+        working-directory: apps/mission-control
+        run: npm audit --audit-level=high
       - name: Secret scan
         if: steps.proof.outputs.already_tested != 'true'
         run: |
@@ -200,15 +212,17 @@ jobs:
           pattern: ci-*-${{ github.sha }}
           path: evidence
           merge-multiple: true
-      - name: Enforce coverage floors on full-profile runs
-        # Floors describe the whole suite; a pull request's required profile
-        # selects tests by changed files, so its measurement is reported only.
-        env:
-          CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || (github.event_name == 'push' || github.event_name == 'schedule') && 'full' || 'required' }}
+      - name: Enforce coverage floors
+        # Exact when no lane deferred a reviewed regression; a pull request that
+        # deferred some gets the documented tolerance in coverage-floors.json.
         run: |
-          mode=()
-          if [ "$CI_PROFILE" != full ]; then mode=(--report-only); fi
-          uv run --frozen python tools/coverage_floor.py "${mode[@]}" evidence/coverage-fast evidence/coverage-kernel evidence/coverage-platform evidence/coverage-research evidence/coverage-boundary
+          selections=()
+          data=()
+          for lane in fast kernel platform research boundary; do
+            selections+=(--selection "evidence/ci-$lane-selection.json")
+            data+=("evidence/coverage-$lane")
+          done
+          uv run --frozen python tools/coverage_floor.py "${selections[@]}" "${data[@]}"
       - name: Retain combined coverage
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -239,4 +253,31 @@ jobs:
           else
             test "$BEHAVIORAL_RESULT" = success
             test "$COVERAGE_RESULT" = success
+          fi
+
+  # A failed nightly opens one tracking issue, or comments on the open one,
+  # instead of failing silently. Only this job may write issues.
+  nightly-failure-issue:
+    needs: [test]
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Open or update the nightly failure issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_SHA: ${{ github.sha }}
+          TITLE: Nightly full regression failed
+        run: |
+          body="The scheduled full regression failed on main at $RUN_SHA: $RUN_URL"
+          number=$(gh issue list --state open --limit 1000 --json number,title \
+            | jq -r --arg title "$TITLE" 'map(select(.title == $title)) | sort_by(.number) | .[0].number // empty')
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body "$body"
+          else
+            gh issue create --title "$TITLE" --body "$body"
           fi

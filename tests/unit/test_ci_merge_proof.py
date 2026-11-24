@@ -64,3 +64,24 @@ def test_missing_or_ambiguous_selection_is_rejected(files: dict[str, object]) ->
 def test_required_profile_with_base_equal_to_head_runs_everything() -> None:
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     assert ci_tests.deferred_nodes("required", head) == ([], "base_is_head_full_fallback", None)
+
+
+def _jobs(*extra: dict[str, object]) -> list[dict[str, object]]:
+    passed = [{"name": name, "status": "completed", "conclusion": "success"} for name in sorted(proof.REQUIRED)]
+    return [*passed, *extra]
+
+
+@pytest.mark.parametrize(
+    ("jobs", "passed"),
+    [
+        (_jobs(), True),
+        (_jobs({"name": "nightly-failure-issue", "status": "completed", "conclusion": "skipped"}), True),
+        # A schedule-only job that ran is not PR evidence; nor is any extra or missing job.
+        (_jobs({"name": "nightly-failure-issue", "status": "completed", "conclusion": "success"}), False),
+        (_jobs({"name": "unknown", "status": "completed", "conclusion": "skipped"}), False),
+        (_jobs()[1:], False),
+        ([{**_jobs()[0], "conclusion": "skipped"}, *_jobs()[1:]], False),
+    ],
+)
+def test_only_the_exact_required_jobs_passing_permit_reuse(jobs: list[dict[str, object]], passed: bool) -> None:
+    assert proof.required_jobs_passed(jobs) is passed

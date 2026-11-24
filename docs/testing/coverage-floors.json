@@ -1,6 +1,8 @@
 {
   "schema_version": 1,
-  "policy": "Whole-suite (all non-live lanes) branch coverage per package. Enforced on full-profile runs (push to main, nightly, full dispatch); pull-request runs report only, because the required profile selects tests by changed files. Floors only rise; update with tools/coverage_floor.py --write from a full run.",
+  "policy": "Whole-suite (all non-live lanes) line and branch coverage per package, enforced on every CI run. Exact when no lane deferred a reviewed regression (push to main, nightly, full dispatch, and any pull request whose required profile deferred nothing). A required-profile pull request that deferred regressions may sit up to deferred_tolerance_points below a floor; the nightly full run still enforces it exactly. Floors only rise; update with tools/coverage_floor.py --write from a full run.",
+  "deferred_tolerance_points": 2.0,
+  "deferred_tolerance_basis": "Largest observed deferral effect was 1.8 points (learning branch: PR run 40739549419 required profile 71.6% vs nightly run 45185381699 full profile 73.4%); floors sit one point below a full run.",
   "floors": {
     "(top-level)": {
       "line": 75.6,
