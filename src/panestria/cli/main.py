@@ -33,6 +33,7 @@ from panestria.cli.plan import plan_app
 from panestria.cli.profile import profile_app
 from panestria.cli.quota import quota_app
 from panestria.cli.research import research_app
+from panestria.cli.sandbox import sandbox_app
 from panestria.cli.storage import storage_app
 from panestria.cli.tui import tui_command
 from panestria.config import ProfileRejected, load_settings
@@ -52,6 +53,7 @@ app.add_typer(plan_app, name="plan")
 app.add_typer(phone_app, name="phone")
 app.add_typer(quota_app, name="quota")
 app.add_typer(research_app, name="research")
+app.add_typer(sandbox_app, name="sandbox")
 app.add_typer(local_app, name="local")
 app.add_typer(activity_app, name="activity")
 app.add_typer(mission_app, name="mission-control")

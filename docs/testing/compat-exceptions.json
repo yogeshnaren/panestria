@@ -69,6 +69,26 @@
       "finding": "R3-REMEDIATION-PLAN 1.10 / AI-P2c"
     },
     {
+      "match": "added cli/commands/sandbox/",
+      "reason": "New `panestria sandbox prepare-image` replaces the demo helper CI called to pull the pinned worker image (workers keep pull=never). It reports docker_unavailable, worker_image_timeout or worker_image_pull_failed.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.8 / R3-REMEDIATION-PLAN 2.3"
+    },
+    {
+      "match": "added denial_codes[ImageUnavailable:docker_unavailable]",
+      "reason": "New `panestria sandbox prepare-image` replaces the demo helper CI called to pull the pinned worker image (workers keep pull=never). It reports docker_unavailable, worker_image_timeout or worker_image_pull_failed.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.8 / R3-REMEDIATION-PLAN 2.3"
+    },
+    {
+      "match": "added denial_codes[ImageUnavailable:worker_image_pull_failed]",
+      "reason": "New `panestria sandbox prepare-image` replaces the demo helper CI called to pull the pinned worker image (workers keep pull=never). It reports docker_unavailable, worker_image_timeout or worker_image_pull_failed.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.8 / R3-REMEDIATION-PLAN 2.3"
+    },
+    {
+      "match": "added denial_codes[ImageUnavailable:worker_image_timeout]",
+      "reason": "New `panestria sandbox prepare-image` replaces the demo helper CI called to pull the pinned worker image (workers keep pull=never). It reports docker_unavailable, worker_image_timeout or worker_image_pull_failed.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.8 / R3-REMEDIATION-PLAN 2.3"
+    },
+    {
       "match": "added denial_codes[AssetUnavailable:packaged_asset_missing]",
       "reason": "panestria.assets locates the pinned skills archive in an installed wheel (panestria/_assets/) or a source checkout; neither present is a new, explicit refusal instead of a FileNotFoundError at first use.",
       "finding": "PRODUCTION-READINESS-PLAN 1.7 / R3-REMEDIATION-PLAN 2.2"
