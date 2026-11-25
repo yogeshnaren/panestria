@@ -2,9 +2,9 @@
 
 The owner requested fewer low-value/repeated checks. Preserve the highest-value
 functional and security checks, rather than optimizing the number of assertions
-deleted. All ten required check names remain: quality, five behavioral lanes
+deleted. All twelve required check names remain: quality, five behavioral lanes
 (fast, kernel, platform, research, boundary), two hermeticity lanes (kernel,
-platform), coverage and the aggregate test
+platform), two wheel-install lanes (umask 0022, 0002), coverage and the aggregate test
 (the set `tools/ci_merge_proof.py` requires). Live/owner acceptance is separate.
 
 | Event | What runs |
@@ -17,7 +17,8 @@ platform), coverage and the aggregate test
 | Local `make test` / lane command without profile | Full, as before |
 
 Quality runs first; failures stop expensive behavioral work. Quality includes
-the locked-runtime `pip-audit` (audit group, as in the nightly supply-chain run)
+a check that `constraints/runtime.txt` is exactly `uv export` of the lock, the
+locked-runtime `pip-audit` over that file (audit group, as in the nightly supply-chain run)
 and `npm audit --audit-level=high` for the dashboard, so a known advisory fails
 the pull request. The five isolated behavioral runners then run concurrently,
 alongside two hermeticity runners that repeat the kernel and platform lanes on a
@@ -25,7 +26,13 @@ group-writable tree under umask 0002 with Node 20.19.0, the floor of the
 dashboard's `engines.node`. They catch tests and packaged files that pass only on
 the runner's 0022 umask or its newer Node; they collect no coverage and their
 artifacts are named `hermeticity-*`, so neither the coverage job nor the merge
-proof reads them. No shared-database pytest parallelism,
+proof reads them. Two wheel-install runners build the dashboard, then the sdist
+and a wheel from it with `WHEEL_REQUIRE_DASHBOARD=1`, and run `tools/wheel_smoke.py`
+under umask 0022 and 0002: a fresh venv installs `constraints/runtime.txt` with
+`--require-hashes`, then the wheel; the packaged assets must resolve inside
+site-packages; `panestria db upgrade` migrates a disposable PostgreSQL service
+container to head; and the API server must answer `/healthz` and refuse an
+unauthenticated scoped read. No shared-database pytest parallelism,
 new worker image, provider credentials or live calls are introduced. Browser
 approval/recovery and current Ask/Build/Delegate/queue/profile flows remain.
 
@@ -109,7 +116,7 @@ keeps read-only contents/actions access.
 Main currently permits direct pushes, so a merge-looking commit message is
 insufficient. The optional proof reads existing GitHub metadata only. It requires
 an actual two-parent main merge, a completed successful PR run on that exact
-second parent, all ten successful jobs (the schedule-only nightly issue job may
+second parent, all twelve successful jobs (the schedule-only nightly issue job may
 appear only as skipped), five nonexpired lane artifacts sharing one tested preview
 SHA whose selections deferred nothing, and that preview's exact parent list and
 full tree matching the pushed merge. Any failed/pending run on that head, failed manual full run or incomplete history

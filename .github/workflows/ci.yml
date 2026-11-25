@@ -86,12 +86,17 @@ jobs:
         run: |
           uv run --frozen --group audit actionlint .github/workflows/*.yml
           uv run --frozen --group audit zizmor --offline .github/workflows/
-      # Same locked-runtime audit as the nightly supply-chain run, now on every PR.
-      - name: Python dependency audit
+      # The hash-pinned runtime constraints an owner installs with must be the lock.
+      - name: Runtime constraints match the lock
         if: steps.proof.outputs.already_tested != 'true'
         run: |
-          uv export --frozen --no-dev --no-emit-project --format requirements-txt > "$RUNNER_TEMP/requirements-runtime.txt"
-          uv run --frozen --group audit pip-audit --strict --require-hashes --disable-pip -r "$RUNNER_TEMP/requirements-runtime.txt"
+          uv export --frozen --no-dev --no-emit-project --no-emit-workspace --format requirements-txt -o constraints/runtime.txt
+          git diff --exit-code -- constraints/runtime.txt
+      # Same locked-runtime audit as the nightly supply-chain run, now on every PR,
+      # over exactly the constraints an install uses.
+      - name: Python dependency audit
+        if: steps.proof.outputs.already_tested != 'true'
+        run: uv run --frozen --group audit pip-audit --strict --require-hashes --disable-pip -r constraints/runtime.txt
       - name: Dashboard dependency audit
         if: steps.proof.outputs.already_tested != 'true'
         working-directory: apps/mission-control
@@ -274,6 +279,61 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  # Build the wheel with the dashboard, then install it the way an owner would:
+  # hash-pinned constraints, a fresh venv, both umasks. It must migrate a
+  # disposable database and serve. tools/wheel_smoke.py runs the same steps locally.
+  wheel-install:
+    needs: quality
+    if: needs.quality.outputs.already_tested != 'true'
+    name: wheel-install (umask ${{ matrix.umask }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        umask: ["0022", "0002"]
+    services:
+      postgres:
+        # The pinned test image (tests/integration/conftest.py); disposable per job.
+        image: postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d
+        env:
+          POSTGRES_USER: panestria_synthetic
+          POSTGRES_PASSWORD: placeholder-not-a-secret
+          POSTGRES_DB: panestria_synthetic
+        ports:
+          - 127.0.0.1:5432:5432
+        options: >-
+          --health-cmd "pg_isready -U panestria_synthetic -h 127.0.0.1"
+          --health-interval 2s --health-timeout 5s --health-retries 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.12.3"
+          python-version: "3.12"
+      - name: Node for Mission Control
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24.19.0"
+      - name: Build the dashboard
+        working-directory: apps/mission-control
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+      - name: Build the sdist and a wheel from it, dashboard required
+        env:
+          WHEEL_REQUIRE_DASHBOARD: "1"
+        run: uv build --out-dir "$RUNNER_TEMP/dist"
+      - name: Install and run the wheel
+        env:
+          PANESTRIA_DATABASE_URL: postgresql://panestria_synthetic:placeholder-not-a-secret@127.0.0.1:5432/panestria_synthetic
+          SMOKE_UMASK: ${{ matrix.umask }}
+        run: python3 tools/wheel_smoke.py "$RUNNER_TEMP"/dist/panestria-*.whl --umask "$SMOKE_UMASK" --require-dashboard
+
   # Whole-suite coverage across every lane; per-package floors only rise.
   coverage:
     needs: [quality, behavioral]
@@ -321,7 +381,7 @@ jobs:
   # Preserve the existing required check name: partial matrix success is not green.
   test:
     if: always()
-    needs: [quality, behavioral, hermeticity, coverage]
+    needs: [quality, behavioral, hermeticity, wheel-install, coverage]
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
@@ -330,6 +390,7 @@ jobs:
           QUALITY_RESULT: ${{ needs.quality.result }}
           BEHAVIORAL_RESULT: ${{ needs.behavioral.result }}
           HERMETICITY_RESULT: ${{ needs.hermeticity.result }}
+          WHEEL_INSTALL_RESULT: ${{ needs.wheel-install.result }}
           COVERAGE_RESULT: ${{ needs.coverage.result }}
           ALREADY_TESTED: ${{ needs.quality.outputs.already_tested }}
         run: |
@@ -337,10 +398,12 @@ jobs:
           if test "$ALREADY_TESTED" = true; then
             test "$BEHAVIORAL_RESULT" = skipped
             test "$HERMETICITY_RESULT" = skipped
+            test "$WHEEL_INSTALL_RESULT" = skipped
             test "$COVERAGE_RESULT" = skipped
           else
             test "$BEHAVIORAL_RESULT" = success
             test "$HERMETICITY_RESULT" = success
+            test "$WHEEL_INSTALL_RESULT" = success
             test "$COVERAGE_RESULT" = success
           fi
 

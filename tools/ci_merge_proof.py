@@ -26,6 +26,8 @@ REQUIRED = {
     "behavioral (boundary)",
     "hermeticity (kernel)",
     "hermeticity (platform)",
+    "wheel-install (umask 0022)",
+    "wheel-install (umask 0002)",
     "coverage",
     "test",
 }
