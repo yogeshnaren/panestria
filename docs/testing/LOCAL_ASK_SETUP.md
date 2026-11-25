@@ -10,7 +10,9 @@ and demo databases when testing.
 
 Use an already configured, dedicated PostgreSQL database and an existing
 dedicated model cache containing only `blobs` and `manifests`. Export its
-`PANESTRIA_DATABASE_URL` privately, then run:
+`PANESTRIA_DATABASE_URL` privately, then run the commands below from a source
+checkout. From an installed wheel, run `panestria db upgrade` in place of the
+`alembic` line, then the same `panestria local init`:
 
 ```sh
 uv run --frozen alembic -c migrations/alembic.ini upgrade head

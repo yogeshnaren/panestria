@@ -46,6 +46,20 @@ def test_the_wheel_ships_the_pinned_skills_archive_and_notices(built: tuple[Path
     assert "Classifier: Operating System :: POSIX :: Linux" in text
 
 
+def test_the_wheel_ships_every_migration_and_the_downgrade_guard(built: tuple[Path, Path]) -> None:
+    with zipfile.ZipFile(built[0]) as wheel:
+        shipped = {
+            n.removeprefix("panestria/_migrations/") for n in wheel.namelist() if n.startswith("panestria/_migrations/")
+        }
+    tracked = {
+        str(path.relative_to(ROOT / "migrations"))
+        for path in (ROOT / "migrations").rglob("*")
+        if path.is_file() and "__pycache__" not in path.parts
+    }
+    assert {"env.py", "downgrade_guard.py", "alembic.ini"} <= shipped
+    assert shipped == tracked
+
+
 def test_the_wheel_holds_only_the_package_and_its_metadata(built: tuple[Path, Path]) -> None:
     with zipfile.ZipFile(built[0]) as wheel:
         names = wheel.namelist()
@@ -69,6 +83,13 @@ def test_the_sdist_carries_sources_and_assets_but_not_docs_tests_or_evidence(bui
     with tarfile.open(built[1]) as sdist:
         members = {member.name.split("/", 1)[1] for member in sdist.getmembers() if "/" in member.name}
     assert f"docs/specification/attachments/{SKILLS_ARCHIVE}" in members
-    assert {"LICENSE", "NOTICE", "README.md", "pyproject.toml", "src/panestria/assets.py"} <= members
+    assert {
+        "LICENSE",
+        "NOTICE",
+        "README.md",
+        "pyproject.toml",
+        "src/panestria/assets.py",
+        "migrations/env.py",
+    } <= members
     excluded = ("tests/", "evidence/", "apps/", "docs/project/", "devkit/")
     assert not [name for name in members if name.startswith(excluded)]
