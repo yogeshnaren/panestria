@@ -36,6 +36,26 @@ From an installed wheel, `panestria db upgrade` does the same with the migration
 
 After `uv sync --frozen --group dev` has populated the cache, `UV_OFFLINE=1 uv sync --frozen --group dev` reinstalls without network. That check is not a fresh-machine bootstrap.
 
+## Install from a wheel
+
+A wheel built with `WHEEL_REQUIRE_DASHBOARD=1 uv build` after `npm run build` in
+`apps/mission-control` carries the migrations, the pinned skills archive and the
+Mission Control dashboard. Install it into its own environment, dependencies first
+with their pinned hashes, then the wheel without resolving anything else:
+
+```bash
+uv venv ~/.local/share/panestria/venv --python 3.12
+uv pip install --python ~/.local/share/panestria/venv/bin/python --no-deps --require-hashes -r constraints/runtime.txt
+uv pip install --python ~/.local/share/panestria/venv/bin/python --no-deps panestria-*.whl
+```
+
+Then, with `PANESTRIA_DATABASE_URL` exported for a dedicated database, run
+`panestria db upgrade` and the owner setup in [local Ask setup](../testing/LOCAL_ASK_SETUP.md).
+`constraints/runtime.txt` is `uv export` of `uv.lock` (see [its README](../../constraints/README.md)).
+`python3 tools/wheel_smoke.py <wheel> --umask 0002 --require-dashboard`, with a
+disposable `PANESTRIA_DATABASE_URL`, repeats CI's install check locally. Release
+signing, provenance and `setup`/`service` commands are later plan items (4.4, 3.2, 3.4).
+
 ## Trial record
 
 Fourteen-day trial records date/candidate/task kind/verified result/human acceptance/corrections/approval burden/resources/egress/refusals/incidents. Scope is explicit; no unapproved employer/private data. Candidate-changing fixes revalidate tests and extend/restart relevant observation. Owner accepts/rejects exact candidate/evidence; separate record authorizes SOTA implementation. Maintain accepted MVP and rollback while deciding advanced work.

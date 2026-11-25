@@ -269,7 +269,7 @@ An adversarial review on 2026-11-23 of `main` at `29c2092` found:
 
 ## Execution status
 
-| Item | Branch | State (2026-11-24) |
+| Item | Branch | State (2026-11-25) |
 |---|---|---|
 | 0.1 | `task/production-readiness-plan` | Merged (#243); ADR 0016 is still proposed |
 | 1.1 | `task/scoped-bash-digest-pin` | Merged (#245) |
@@ -278,15 +278,20 @@ An adversarial review on 2026-11-23 of `main` at `29c2092` found:
 | 1.4 | `task/ci-gaps`, `task/coverage-deferral-tolerance` | Merged (#247); the PR deferral tolerance gained a measured `execution` override in #254 |
 | 1.5 | `task/hermeticity-matrix` | Merged (#248) |
 | 1.6 | `task/fsutil-module` | Merged (#249) |
-| 1.7 | `task/packaged-assets` | Part a merged (#255): skills archive, NOTICE and licence texts in the wheel. Part b (packaged migrations, `panestria db upgrade`) and part c (dashboard `dist/`, constraints file, CI install smoke) NOT_STARTED |
+| 1.7 | `task/packaged-assets`, `task/packaged-migrations`, `task/db-cli-coverage`, `task/wheel-install-smoke` | Part a merged (#255): skills archive, NOTICE and licence texts in the wheel. Part b merged (#257, in-process tests #260): migrations in the wheel, `panestria db status` and `panestria db upgrade`. Part c in review: dashboard in the wheel, hash-pinned `constraints/runtime.txt`, and the required `wheel-install` CI lanes |
+| 1.8 | `task/sandbox-prepare-image`, `task/devkit-split` | Merged (#258, #259): `panestria sandbox prepare-image`; the R0 demo, synthetic journey and proposal demo moved to the dev-only `devkit/`. `api/serve.py` stays until 1.9 |
 | 1.16 | `task/kernel-liveness-xfails` | Merged (#252): K1, K2 and K4 reproduced as 10 strict xfails for 2.1/2.2 |
 | 1.17 | `task/approval-expiry` | Merged (#253) |
 | 1.19 | `task/migration-safety` | Merged (#251); later migration PRs reuse `tests/migration_harness.py` |
 | 1.23 | `task/memory-limits-query` | Merged (#250) |
 
-Known CI flakes, not yet fixed: `test_aos_008.py::test_resource_pressure_is_contained[memory-memory_limit]`
-(an OOM kill reported as `process_failed`) and
-`test_offline_native_bootstrap.py::test_real_container_failures_do_not_become_metadata_success[fail-failed]`
-(`deadline_exceeded` under host load).
+Known CI flakes, not yet fixed:
+
+- `test_aos_008.py::test_resource_pressure_is_contained[memory-memory_limit]`: an OOM kill reported as `process_failed`.
+- `test_offline_native_bootstrap.py::test_real_container_failures_do_not_become_metadata_success[fail-failed]`: `deadline_exceeded` under host load.
+- Build plan runs ending `STOPPED` in `hermeticity (kernel)` only, seen twice
+  (`test_build_storage_admission.py::test_actual_pressure_after_workers…`,
+  `test_build_progress.py::test_failed_final_check…`). Possibly a umask 0002
+  issue rather than noise; not yet investigated.
 
 Every other item is NOT_STARTED.

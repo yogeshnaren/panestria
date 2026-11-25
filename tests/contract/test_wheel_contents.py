@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import shutil
 import subprocess
 import tarfile
 import zipfile
@@ -15,6 +16,7 @@ from panestria.assets import SKILLS_ARCHIVE
 from panestria.resources.hardware import ZIP_SHA256
 
 ROOT = Path(__file__).resolve().parents[2]
+DASHBOARD = "apps/mission-control/dist"
 
 
 @pytest.fixture(scope="module")
@@ -90,6 +92,51 @@ def test_the_sdist_carries_sources_and_assets_but_not_docs_tests_or_evidence(bui
         "pyproject.toml",
         "src/panestria/assets.py",
         "migrations/env.py",
+        "hatch_build.py",
     } <= members
     excluded = ("tests/", "evidence/", "apps/", "docs/project/", "devkit/")
-    assert not [name for name in members if name.startswith(excluded)]
+    # The only build output an sdist may carry is a built dashboard (hatch_build.py).
+    assert not [name for name in members if name.startswith(excluded) and not name.startswith(DASHBOARD + "/")]
+
+
+def _wheel_from(sdist_root: Path, out: Path, *, require: bool = False) -> subprocess.CompletedProcess[str]:
+    uv = Path(os.environ["UV"]) if "UV" in os.environ else Path("uv")
+    env = {key: value for key, value in os.environ.items() if key != "WHEEL_REQUIRE_DASHBOARD"}
+    if require:
+        env["WHEEL_REQUIRE_DASHBOARD"] = "1"
+    return subprocess.run(
+        [str(uv), "build", "--wheel", "--out-dir", str(out)],
+        cwd=sdist_root,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=300,
+        check=False,
+    )
+
+
+def _dashboard_files(out: Path) -> list[str]:
+    (wheel,) = out.glob("panestria-*.whl")
+    with zipfile.ZipFile(wheel) as archive:
+        return sorted(n for n in archive.namelist() if n.startswith("panestria/_assets/mission-control/"))
+
+
+def test_a_built_dashboard_ships_and_a_release_build_requires_it(built: tuple[Path, Path], tmp_path: Path) -> None:
+    with tarfile.open(built[1]) as sdist:
+        sdist.extractall(tmp_path / "src", filter="data")
+    (root,) = (tmp_path / "src").iterdir()
+    shutil.rmtree(root / DASHBOARD, ignore_errors=True)
+
+    missing = _wheel_from(root, tmp_path / "required", require=True)
+    assert missing.returncode != 0 and "WHEEL_REQUIRE_DASHBOARD=1" in missing.stderr
+    assert _wheel_from(root, tmp_path / "optional").returncode == 0
+    assert _dashboard_files(tmp_path / "optional") == []
+
+    (root / DASHBOARD / "assets").mkdir(parents=True)
+    (root / DASHBOARD / "index.html").write_text("<!doctype html><title>Mission Control</title>\n")
+    (root / DASHBOARD / "assets" / "app.js").write_text("export {};\n")
+    assert _wheel_from(root, tmp_path / "with", require=True).returncode == 0
+    assert _dashboard_files(tmp_path / "with") == [
+        "panestria/_assets/mission-control/assets/app.js",
+        "panestria/_assets/mission-control/index.html",
+    ]

@@ -52,3 +52,18 @@ def test_migrations_resolve_from_the_checkout_and_prefer_a_packaged_copy(
     monkeypatch.setattr(assets, "_CHECKOUT_MIGRATIONS", tmp_path / "also-missing")
     with pytest.raises(assets.AssetUnavailable, match="^packaged_asset_missing$"):
         assets.migrations()
+
+
+def test_the_dashboard_resolves_only_when_built(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    packaged, checkout = tmp_path / "wheel", tmp_path / "checkout"
+    monkeypatch.setattr(assets, "_PACKAGED_DASHBOARD", packaged)
+    monkeypatch.setattr(assets, "_CHECKOUT_DASHBOARD", checkout)
+    with pytest.raises(assets.AssetUnavailable, match="^packaged_asset_missing$"):
+        assets.mission_control()
+    checkout.mkdir()
+    (checkout / "index.html").write_text("")
+    assert assets.mission_control() == checkout
+    packaged.mkdir()
+    assert assets.mission_control() == checkout  # A directory without index.html is not a build.
+    (packaged / "index.html").write_text("")
+    assert assets.mission_control() == packaged

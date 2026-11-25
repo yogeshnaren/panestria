@@ -47,6 +47,11 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/panestria"]
 
+# hatch_build.py adds the built Mission Control dashboard when it exists:
+# panestria/_assets/mission-control in the wheel, apps/mission-control/dist in
+# the sdist. WHEEL_REQUIRE_DASHBOARD=1 makes a missing build an error.
+[tool.hatch.build.hooks.custom]
+
 # Assets panestria.assets finds under panestria/_assets/ in an installed wheel.
 # The originals stay where the repository keeps them.
 [tool.hatch.build.targets.wheel.force-include]
@@ -58,6 +63,7 @@ packages = ["src/panestria"]
 only-include = [
   "src/panestria",
   "migrations",
+  "hatch_build.py",
   "docs/specification/attachments/agentos-skills-v0.1.0.zip",
   "LICENSE",
   "NOTICE",
