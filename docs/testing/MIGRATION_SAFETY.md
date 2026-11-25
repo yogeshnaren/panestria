@@ -29,6 +29,31 @@ a migration run and what every later migration PR must prove.
   command or option. No product module calls an alembic downgrade.
   `tests/contract/test_forward_only_migrations.py` enforces both.
 
+## Installed package: `panestria db`
+
+An installed wheel carries the migrations under `panestria/_migrations` and
+runs them with `panestria db`. It reads `PANESTRIA_DATABASE_URL`, as the other
+commands do, and prints JSON. A source checkout uses the `migrations/`
+directory it already has.
+
+- `panestria db status` prints `current` (null for an empty database), the
+  `head` this package ships and `current_is_head`.
+- `panestria db upgrade` applies every packaged migration through head and
+  prints `UPGRADED` with `from` and `to`, or `CURRENT` when nothing was needed.
+  `--lock-timeout` and `--statement-timeout` raise the defaults for one run.
+- Refusals print `{"code": …}` on stderr and exit 2:
+
+| Code | Meaning |
+|---|---|
+| `invalid_database_url` | `PANESTRIA_DATABASE_URL` is missing or not a PostgreSQL URL. |
+| `invalid_migration_timeout` | A timeout is not a PostgreSQL duration such as `5s` or `10min`. Nothing connected. |
+| `database_unavailable` | The database could not be reached. |
+| `database_schema_newer_than_package` | A newer release migrated this database. Install that release, or restore the backup taken before it. |
+| `migration_lock_timeout` | Live traffic held a lock past the lock timeout. Nothing changed; retry while the server is idle. |
+| `migration_statement_timeout` | One statement ran past the statement timeout. Nothing changed. |
+| `migration_failed`, `migration_incomplete` | The run failed or stopped short of head. The run is one transaction, so nothing changed. |
+| `packaged_asset_missing` | The installed package has no migrations. Reinstall it. |
+
 ## What a migration PR adds
 
 1. **A guarded downgrade.** Call
