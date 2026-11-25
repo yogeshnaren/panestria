@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from panestria.execution.proposal_demo import DemoUnavailable
 from panestria.fsutil import LocalStateUnavailable, atomic_write_json, exclusive_lock, private_dir
+from panestria_devkit.execution.proposal_demo import DemoUnavailable
 
 
 def test_private_dir_creates_an_owner_only_directory(tmp_path: Path) -> None:

@@ -13,10 +13,10 @@ import psycopg
 import pytest
 
 from panestria.execution.dbos_runtime import QUEUE_NAME
-from panestria.execution.synthetic_journey import SyntheticJourney
 from panestria.kernel.approvals import ApprovalService
 from panestria.kernel.goals import Actor, GoalService
 from panestria.kernel.uow import UnitOfWork
+from panestria_devkit.execution.synthetic_journey import SyntheticJourney
 from stack_support import COMPOSE, DATABASE_URL
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -63,7 +63,7 @@ def _spawn(workflow_id: str, crash_at: str | None, ready: Path | None) -> subpro
         env["PANESTRIA_CRASH_AT"] = crash_at
         env["PANESTRIA_READY_FILE"] = str(ready)
     return subprocess.Popen(
-        ["uv", "run", "--frozen", "python", "-m", "panestria.execution.task_workflow"],
+        ["uv", "run", "--frozen", "python", "-m", "panestria_devkit.execution.task_worker"],
         cwd=ROOT,
         env=env,
         start_new_session=True,

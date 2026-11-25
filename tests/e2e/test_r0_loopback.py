@@ -80,7 +80,7 @@ def _server(sandbox: Path) -> subprocess.Popen[str]:
     )
     log = (sandbox / "server.log").open("a")
     process = subprocess.Popen(
-        [sys.executable, "-m", "panestria.api.serve"],
+        [sys.executable, "-m", "panestria_devkit.api.serve"],
         cwd=ROOT,
         env=env,
         stdout=log,

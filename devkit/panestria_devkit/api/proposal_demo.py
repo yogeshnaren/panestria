@@ -16,10 +16,10 @@ from panestria.api.auth import GoalApi
 from panestria.api.routes.sessions import logout, pair
 from panestria.api.security import BrowserSecurity
 from panestria.api.sessions import BrowserAccess
-from panestria.execution.proposal_demo import ProposalDemo
 from panestria.fsutil import LocalStateUnavailable
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.sessions import SessionService
+from panestria_devkit.execution.proposal_demo import ProposalDemo
 
 ASSETS = Path(__file__).with_name("demo_assets")
 UUID_PATTERN = r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"

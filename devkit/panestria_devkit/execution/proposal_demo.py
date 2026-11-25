@@ -40,7 +40,6 @@ from panestria.contracts.policy import (
 )
 from panestria.execution.build_merge import VerifiedGitTarget, prepare_merge
 from panestria.execution.outbox import EffectExecutor
-from panestria.execution.proposal_certificate import ACTIONS, ASSETS, CASES, ProposalCertificateStore, runtime_versions
 from panestria.execution.tool_authority import DurableToolAuthority, tool_binding
 from panestria.fsutil import LocalStateUnavailable, atomic_write_json, exclusive_lock, private_dir
 from panestria.kernel.approvals import ApprovalService
@@ -62,6 +61,13 @@ from panestria.verification.build import verify_build
 from panestria.verification.git_snapshot import materialize
 from panestria.verification.registry import CommandRegistry
 from panestria.verification.sandboxed import SandboxedCheckRunner
+from panestria_devkit.execution.proposal_certificate import (
+    ACTIONS,
+    ASSETS,
+    CASES,
+    ProposalCertificateStore,
+    runtime_versions,
+)
 
 
 class DemoUnavailable(LocalStateUnavailable):

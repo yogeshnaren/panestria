@@ -15,7 +15,6 @@ from uuid import uuid4
 import psycopg
 from psycopg.errors import UniqueViolation
 
-from panestria.brokers.harness.mock import Candidate, MockWorkerAdapter
 from panestria.contracts.acceptance import GitDiffPathCheck
 from panestria.contracts.approval import load_preview
 from panestria.contracts.goal import load_contract
@@ -36,6 +35,7 @@ from panestria.verification.nodes import NodeReport, evaluate_checks, report_out
 from panestria.verification.policy import decide_action
 from panestria.verification.registry import CommandRegistry
 from panestria.verification.runner import TrustedCheckRunner
+from panestria_devkit.brokers.harness.mock import Candidate, MockWorkerAdapter
 
 Conn = psycopg.Connection[Any]
 _EDIT = "tests/synthetic.txt"
@@ -200,7 +200,7 @@ class SyntheticJourney:
         env.pop("PANESTRIA_READY_FILE", None)
         root = Path(__file__).resolve().parents[3]
         completed = subprocess.run(
-            [sys.executable, "-m", "panestria.execution.task_workflow"],
+            [sys.executable, "-m", "panestria_devkit.execution.task_worker"],
             cwd=root,
             env=env,
             text=True,

@@ -30,8 +30,8 @@ git fetch origin
 git worktree add ../panestria-native-review task/r1-native-review-demo
 cd ../panestria-native-review
 uv sync --frozen --group dev
-uv run python -m panestria.cli.review_demo init
-uv run python -m panestria.cli.review_demo serve
+uv run python -m panestria_devkit.cli.review_demo init
+uv run python -m panestria_devkit.cli.review_demo serve
 ```
 
 If the branch is available only on the remote, use
@@ -44,8 +44,8 @@ server: leave its terminal running while reviewing, and stop it with Ctrl+C.
 Use another terminal in the same checkout for these commands:
 
 ```sh
-uv run python -m panestria.cli.review_demo pair
-uv run python -m panestria.cli.review_demo status
+uv run python -m panestria_devkit.cli.review_demo pair
+uv run python -m panestria_devkit.cli.review_demo status
 ```
 
 Enter the one-use pairing code on the page within five minutes. Codes, session
@@ -93,7 +93,7 @@ are copied to the repo, browser or tool containers.
 Run **one explicit compatibility check**, only when usage is available:
 
 ```sh
-uv run python -m panestria.cli.review_demo qualify
+uv run python -m panestria_devkit.cli.review_demo qualify
 ```
 
 It sends only the fixed public synthetic prompt through the dedicated Claude
@@ -147,7 +147,7 @@ An interruption during merge may leave an unknown effect. Query and reconcile
 that **existing** effect, without starting another worker:
 
 ```sh
-uv run python -m panestria.cli.review_demo reconcile --goal GOAL_UUID
+uv run python -m panestria_devkit.cli.review_demo reconcile --goal GOAL_UUID
 ```
 
 A definitive Git receipt is required for completion. An absent or uncertain effect
@@ -164,7 +164,7 @@ records. No public API accepts a worker-supplied PASS report or approval flag.
 
 ```sh
 uv run ruff check .
-uv run mypy src
+uv run mypy
 uv run lint-imports
 uv run pytest tests/integration/test_proposal_demo.py -q
 uv run pytest -m 'not live'

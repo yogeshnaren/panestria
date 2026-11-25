@@ -15,8 +15,8 @@ from typing import Any
 
 import pytest
 
-from panestria.demo import _running_api
-from panestria.review import render_report, review_server
+from panestria_devkit.demo import _running_api
+from panestria_devkit.review import render_report, review_server
 
 ROOT = Path(__file__).resolve().parents[2]
 TOKEN = "synthetic-loopback-token"

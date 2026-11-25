@@ -11,7 +11,6 @@ from pathlib import Path
 
 import pytest
 
-from panestria.brokers.harness.mock import MockWorkerAdapter
 from panestria.contracts.goal import GoalContract, contract_sha256, load_contract
 from panestria.sandbox.gitcmd import allow_git
 from panestria.sandbox.worktree import WorktreeManager
@@ -25,6 +24,7 @@ from panestria.verification.nodes import (
 )
 from panestria.verification.registry import CommandRegistry, RegisteredCommand
 from panestria.verification.runner import OUTPUT_LIMIT, TrustedCheckRunner
+from panestria_devkit.brokers.harness.mock import MockWorkerAdapter
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "docs" / "fixtures" / "synthetic-goal-contract.json"

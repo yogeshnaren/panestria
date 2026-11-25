@@ -8,7 +8,7 @@ import time
 import uuid
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any, NoReturn, TypeVar
+from typing import TYPE_CHECKING, Any, NoReturn, TypeVar
 
 import sqlalchemy as sa
 from dbos import DBOS, DBOSConfig, SetWorkflowID, SQLAlchemyDatasource
@@ -27,6 +27,11 @@ from panestria.execution.recovery import RecoveryService, format_recovery_audit,
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.repositories.events import append_domain_event
 from panestria.kernel.transition import transition_payload
+
+if TYPE_CHECKING:
+    import psycopg
+
+    from panestria.kernel.goals import Actor
 
 CHECKPOINT_SCHEMA = "panestria_checkpoint"
 SERIALIZATION_ATTEMPT_LIMIT = 5
@@ -343,12 +348,25 @@ def lease_attempt_tx(task_id: str, contract_sha256: str, attempt_number: int) ->
     return _serializable("lease_attempt_tx", _lease_body, task_id, contract_sha256, attempt_number)
 
 
+# Adapter name -> the step that finishes an admitted attempt of that adapter.
+# Product code registers none; the dev-only synthetic journey registers "mock"
+# in its own worker process (panestria_devkit.execution.task_worker).
+AttemptExecutor = Callable[["psycopg.Connection[Any]", "Actor", str, Path], None]
+_attempt_executors: dict[str, AttemptExecutor] = {}
+
+
+def register_attempt_executor(adapter: str, executor: AttemptExecutor) -> None:
+    """Install the executor for one adapter. A different executor cannot replace it."""
+    current = _attempt_executors.setdefault(adapter, executor)
+    if current is not executor:
+        raise ValueError(f"attempt executor already registered: {adapter}")
+
+
 @DBOS.step(name="execute_admitted_attempt", retries_allowed=False)
 def execute_admitted_attempt(task_id: str, attempt_number: int) -> str:
-    """Run the mock worker for an admitted attempt. A non-mock attempt is skipped."""
+    """Run the registered executor for an admitted attempt. Any other attempt is skipped."""
     import psycopg
 
-    from panestria.execution.synthetic_journey import SyntheticJourney
     from panestria.kernel.goals import Actor
 
     with psycopg.connect(os.environ["PANESTRIA_DATABASE_URL"]) as connection:
@@ -363,14 +381,10 @@ def execute_admitted_attempt(task_id: str, attempt_number: int) -> str:
             " WHERE task.id = %s",
             (attempt_number, task_id),
         ).fetchone()
-        if row is None or str(row[4]) != "mock" or row[3] is None:
+        executor = None if row is None else _attempt_executors.get(str(row[4]))
+        if row is None or executor is None or row[3] is None:
             return "skipped"
-        SyntheticJourney()._finish_dispatch(
-            connection,
-            Actor(str(row[1]), str(row[2])),
-            str(row[0]),
-            Path(str(row[3])),
-        )
+        executor(connection, Actor(str(row[1]), str(row[2])), str(row[0]), Path(str(row[3])))
     return "done"
 
 

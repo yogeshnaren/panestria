@@ -31,11 +31,11 @@ from panestria.cli.goals import read_events, read_status, submit_contract
 from panestria.cli.main import app as cli_app
 from panestria.config import Settings
 from panestria.contracts.approval import effect_digest, load_preview
-from panestria.execution.synthetic_journey import SyntheticJourney
 from panestria.kernel.approvals import ApprovalService, ApprovalView
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.uow import UnitOfWork
+from panestria_devkit.execution.synthetic_journey import SyntheticJourney
 from stack_support import COMPOSE, DATABASE_URL
 
 ROOT = Path(__file__).resolve().parents[2]

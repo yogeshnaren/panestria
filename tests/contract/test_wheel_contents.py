@@ -68,6 +68,17 @@ def test_the_wheel_holds_only_the_package_and_its_metadata(built: tuple[Path, Pa
     assert not [name for name in names if name.endswith((".pyc", ".pyo")) or "/__pycache__/" in name]
 
 
+def test_the_wheel_contains_no_demo_or_synthetic_journey_code(built: tuple[Path, Path]) -> None:
+    # The R0 demo, synthetic journey and proposal demo live in devkit/ (plan 1.8).
+    with zipfile.ZipFile(built[0]) as wheel:
+        names = wheel.namelist()
+    markers = ("demo", "synthetic_journey")
+    found = [name for name in names if any(marker in part for part in name.split("/") for marker in markers)]
+    assert found == []
+    assert not {"panestria/review.py", "panestria/brokers/harness/mock.py"} & set(names)
+    assert not [name for name in names if "panestria_devkit" in name]
+
+
 def test_the_sdist_carries_sources_and_assets_but_not_docs_tests_or_evidence(built: tuple[Path, Path]) -> None:
     with tarfile.open(built[1]) as sdist:
         members = {member.name.split("/", 1)[1] for member in sdist.getmembers() if "/" in member.name}
@@ -80,4 +91,5 @@ def test_the_sdist_carries_sources_and_assets_but_not_docs_tests_or_evidence(bui
         "src/panestria/assets.py",
         "migrations/env.py",
     } <= members
-    assert not [name for name in members if name.startswith(("tests/", "evidence/", "apps/", "docs/project/"))]
+    excluded = ("tests/", "evidence/", "apps/", "docs/project/", "devkit/")
+    assert not [name for name in members if name.startswith(excluded)]

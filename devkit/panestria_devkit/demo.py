@@ -32,7 +32,7 @@ from pydantic import ValidationError
 from panestria.api.health import Liveness
 from panestria.api.views import ApprovalList
 from panestria.config import ProfileRejected, load_settings
-from panestria.review import serve_report
+from panestria_devkit.review import serve_report
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "docs" / "fixtures" / "synthetic-goal-contract.json"
@@ -153,7 +153,7 @@ def run_demo() -> dict[str, object]:
         None
         if reused
         else subprocess.Popen(
-            [sys.executable, "-m", "panestria.api.serve"],
+            [sys.executable, "-m", "panestria_devkit.api.serve"],
             cwd=ROOT,
             env=env,
         )

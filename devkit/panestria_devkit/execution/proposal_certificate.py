@@ -10,6 +10,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+import panestria
 from panestria.brokers.harness.claude_proposal import PINNED_BINARY_SHA256
 from panestria.contracts.native_proposal import PROFILE, PROMPT_SHA256
 from panestria.contracts.policy import Action, TrustAxis
@@ -30,7 +31,9 @@ def runtime_versions() -> dict[str, str]:
         "profile": PROFILE,
         "prompt_sha256": PROMPT_SHA256,
         "binary_sha256": PINNED_BINARY_SHA256,
-        "source_sha256": source_sha256(Path(__file__).resolve().parents[1]),
+        "source_sha256": source_sha256(Path(panestria.__file__).resolve().parent),
+        # The controller and its reviewed assets live in the devkit, outside the wheel.
+        "devkit_source_sha256": source_sha256(Path(__file__).resolve().parents[1]),
         "image": DEFAULT_IMAGE,
     }
 

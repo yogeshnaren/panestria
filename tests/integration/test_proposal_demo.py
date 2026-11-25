@@ -12,17 +12,17 @@ import psycopg
 import pytest
 from fastapi.testclient import TestClient
 
-from panestria.api.proposal_demo import create_demo_app
 from panestria.brokers.harness.claude_proposal import ClaudeProposalAdapter, ProposalReceipt
 from panestria.brokers.harness.process_runner import ProcessReceipt
 from panestria.contracts.native_proposal import CodeProposal
 from panestria.contracts.policy import TrustAxis
-from panestria.execution.proposal_certificate import ACTIONS
-from panestria.execution.proposal_demo import DemoUnavailable, ProposalDemo, _git
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.sessions import SessionService
 from panestria.kernel.uow import UnitOfWork
 from panestria.policy.profiles import CertificateRejected, CertificateStore
+from panestria_devkit.api.proposal_demo import create_demo_app
+from panestria_devkit.execution.proposal_certificate import ACTIONS
+from panestria_devkit.execution.proposal_demo import DemoUnavailable, ProposalDemo, _git
 
 
 class ProviderFixture(ClaudeProposalAdapter):
@@ -156,7 +156,9 @@ def test_attestation_is_demo_only_and_changed_runtime_is_denied(
     )
     with pytest.raises(CertificateRejected):
         CertificateStore(demo.certificates.root, demo.certificates.runtime_versions).validate(trust)
-    monkeypatch.setattr("panestria.execution.proposal_certificate.runtime_versions", lambda: {"changed": "runtime"})
+    monkeypatch.setattr(
+        "panestria_devkit.execution.proposal_certificate.runtime_versions", lambda: {"changed": "runtime"}
+    )
     assert not demo.readiness()["ready"]
 
 
@@ -394,7 +396,7 @@ def test_missing_container_runtime_is_refused_before_claude(
 def test_loaded_runtime_change_requires_restart_before_qualification(
     demo: ProposalDemo, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr("panestria.execution.proposal_demo.runtime_versions", lambda: {"changed": "runtime"})
+    monkeypatch.setattr("panestria_devkit.execution.proposal_demo.runtime_versions", lambda: {"changed": "runtime"})
     assert demo.qualify() == {"status": "UNAVAILABLE", "reason": "runtime_changed_restart_required"}
     assert demo.adapter.calls == 0
     assert not (demo.root / "certificate.json").exists()
