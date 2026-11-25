@@ -13,6 +13,7 @@ import json
 import os
 import sys
 from collections.abc import Callable
+from pathlib import Path
 from typing import Protocol
 from urllib.parse import urlsplit
 
@@ -40,9 +41,10 @@ class Journey(Protocol):
     def stop(self) -> None: ...
 
 
-# (database_url, owner_id, project_id) -> journey. The product server registers
-# none; the dev-only R0 server (panestria_devkit.api.serve) passes the synthetic one.
-JourneyFactory = Callable[[str, str, str], Journey]
+# (database_url, owner_id, project_id, sandbox) -> journey. The product server
+# registers none; the dev-only R0 server (panestria_devkit.api.serve) passes the
+# synthetic one.
+JourneyFactory = Callable[[str, str, str, Path], Journey]
 
 
 def _seed(database_url: str, owner_id: str, project_id: str) -> None:
@@ -231,6 +233,7 @@ def main(journey: JourneyFactory | None = None) -> None:
     token = os.environ.pop("PANESTRIA_TOKEN", "")
     owner = os.environ.pop("PANESTRIA_OWNER_ID", SYNTHETIC_OWNER)
     project = os.environ.pop("PANESTRIA_PROJECT_ID", SYNTHETIC_PROJECT)
+    sandbox = Path(os.environ.pop("PANESTRIA_SANDBOX", "/tmp/panestria-r0")).resolve()
     try:
         settings = load_settings()
     except ProfileRejected as exc:
@@ -239,6 +242,7 @@ def main(journey: JourneyFactory | None = None) -> None:
     if len(token) < 16:
         sys.stderr.write("missing_token\n")
         raise SystemExit(2)
+    sandbox.mkdir(parents=True, exist_ok=True)
     database_url = settings.database_url.get_secret_value()
     try:
         _seed(database_url, owner, project)
@@ -247,7 +251,9 @@ def main(journey: JourneyFactory | None = None) -> None:
         raise SystemExit(2) from None
     application = create_app(settings, default_readiness_probe)
     mount_goal_api(application, GoalApi(token, owner, project, database_url))
-    driver = None if journey is None else journey(database_url, owner, project)
+    # The artifact route reads evidence from this root, with or without a journey.
+    application.state.sandbox = sandbox
+    driver = None if journey is None else journey(database_url, owner, project, sandbox)
     application.state.journey = driver
     if driver is not None:
         driver.start()

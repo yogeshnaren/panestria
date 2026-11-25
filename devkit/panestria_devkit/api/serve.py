@@ -1,14 +1,12 @@
 """Dev-only R0 loopback server: the product goal API plus the synthetic journey driver.
 
 Start with ``python -m panestria_devkit.api.serve`` and the environment of
-``python -m panestria.api.serve``, plus an optional ``PANESTRIA_SANDBOX``
-(default ``/tmp/panestria-r0``). An accepted goal is continued through the same
-admission path the tests use.
+``python -m panestria.api.serve``. An accepted goal is continued under
+``PANESTRIA_SANDBOX`` through the same admission path the tests use.
 """
 
 from __future__ import annotations
 
-import os
 import queue
 import sys
 import threading
@@ -86,9 +84,7 @@ class JourneyDriver:
 
 
 def main() -> None:
-    sandbox = Path(os.environ.pop("PANESTRIA_SANDBOX", "/tmp/panestria-r0")).resolve()
-    sandbox.mkdir(parents=True, exist_ok=True)
-    serve.main(journey=lambda database_url, owner, project: JourneyDriver(database_url, owner, project, sandbox))
+    serve.main(journey=JourneyDriver)
 
 
 if __name__ == "__main__":
