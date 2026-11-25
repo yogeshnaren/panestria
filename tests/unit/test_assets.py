@@ -37,3 +37,18 @@ def test_a_missing_asset_is_refused(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     monkeypatch.setattr(assets, "_CHECKOUT", tmp_path / "checkout")
     with pytest.raises(assets.AssetUnavailable, match="^packaged_asset_missing$"):
         assets.skills_archive()
+
+
+def test_migrations_resolve_from_the_checkout_and_prefer_a_packaged_copy(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    assert assets.migrations() == ROOT / "migrations"
+    packaged = tmp_path / "_migrations"
+    (packaged / "versions").mkdir(parents=True)
+    (packaged / "env.py").write_text("")
+    monkeypatch.setattr(assets, "_PACKAGED_MIGRATIONS", packaged)
+    assert assets.migrations() == packaged
+    monkeypatch.setattr(assets, "_PACKAGED_MIGRATIONS", tmp_path / "missing")
+    monkeypatch.setattr(assets, "_CHECKOUT_MIGRATIONS", tmp_path / "also-missing")
+    with pytest.raises(assets.AssetUnavailable, match="^packaged_asset_missing$"):
+        assets.migrations()
