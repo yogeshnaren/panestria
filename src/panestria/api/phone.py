@@ -18,9 +18,9 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from panestria.api.activity_server import build_activity_app
 from panestria.api.auth import error_body
-from panestria.api.local_server import server_config
 from panestria.api.mission_web import mount_mission_control
 from panestria.api.security import _SECURITY_HEADERS, RequestLimits
+from panestria.api.serving import server_config
 from panestria.api.sessions import BrowserAccess
 from panestria.config import Settings, ValidatedSettings
 from panestria.config_local import LocalApplicationRejected, read_private

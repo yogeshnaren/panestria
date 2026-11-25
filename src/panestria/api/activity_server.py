@@ -11,8 +11,8 @@ from fastapi import FastAPI
 
 from panestria.api.auth import GoalApi
 from panestria.api.health import default_readiness_probe
-from panestria.api.local_server import server_config
 from panestria.api.main import create_app, mount_activity_api
+from panestria.api.serving import server_config
 from panestria.config import Settings, ValidatedSettings
 from panestria.config_activity import ActivitySettings, load_activity_settings
 from panestria.config_local import LocalApplicationRejected

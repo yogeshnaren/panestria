@@ -25,7 +25,8 @@ from panestria.api.local_web import mount_local_web
 from panestria.api.main import create_app, mount_activity_api, mount_ask_api, mount_browser_api
 from panestria.api.routes.ask import AskApi
 from panestria.api.routes.profiles import ProfileApi
-from panestria.api.serving import owned_socket, server_config  # noqa: F401  (re-exported)
+from panestria.api.serving import owned_socket
+from panestria.api.serving import server_config as server_config  # Re-exported for existing callers.
 from panestria.api.sessions import BrowserAccess
 from panestria.assets import skills_archive
 from panestria.config import Settings, ValidatedSettings
