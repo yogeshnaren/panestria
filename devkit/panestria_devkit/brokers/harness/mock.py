@@ -134,7 +134,7 @@ class MockWorkerAdapter:
         env["PANESTRIA_SANDBOX_ROOT"] = self.manifest.root
         env["PANESTRIA_WORKER_RELATIVE"] = self.relative
         self._process = subprocess.Popen(
-            [sys.executable, "-m", "panestria.brokers.harness.mock"],
+            [sys.executable, "-m", "panestria_devkit.brokers.harness.mock"],
             cwd=self.manifest.worktree,
             env=env,
             start_new_session=True,

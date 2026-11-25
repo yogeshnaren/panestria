@@ -8,6 +8,12 @@ resolution-markers = [
     "python_full_version < '3.13'",
 ]
 
+[manifest]
+members = [
+    "panestria",
+    "panestria-devkit",
+]
+
 [[package]]
 name = "actionlint-py"
 version = "1.7.12.25"
@@ -1763,6 +1769,7 @@ dev = [
     { name = "hypothesis" },
     { name = "import-linter" },
     { name = "mypy" },
+    { name = "panestria-devkit" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-timeout" },
@@ -1804,12 +1811,24 @@ dev = [
     { name = "hypothesis", specifier = ">=6.100" },
     { name = "import-linter", specifier = ">=2.15" },
     { name = "mypy", specifier = ">=2.4.0" },
+    { name = "panestria-devkit", editable = "devkit" },
     { name = "pytest" },
     { name = "pytest-cov", specifier = ">=6" },
     { name = "pytest-timeout", specifier = ">=2.3" },
     { name = "ruff", specifier = ">=0.17.0" },
 ]
 mutation = [{ name = "mutmut", specifier = "==3.8.0" }]
+
+[[package]]
+name = "panestria-devkit"
+version = "0.0.0"
+source = { editable = "devkit" }
+dependencies = [
+    { name = "panestria" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "panestria", editable = "." }]
 
 [[package]]
 name = "pathspec"

@@ -13,10 +13,10 @@ from pathlib import Path
 import psycopg
 import pytest
 
-from panestria.execution.synthetic_journey import SyntheticJourney
 from panestria.kernel.approvals import ApprovalService
 from panestria.kernel.goals import Actor, GoalService
 from panestria.kernel.uow import UnitOfWork
+from panestria_devkit.execution.synthetic_journey import SyntheticJourney
 from stack_support import COMPOSE, DATABASE_URL
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -29,7 +29,7 @@ _RESUME = """
 import os
 from pathlib import Path
 import psycopg
-from panestria.execution.synthetic_journey import SyntheticJourney
+from panestria_devkit.execution.synthetic_journey import SyntheticJourney
 from panestria.kernel.goals import Actor
 with psycopg.connect(os.environ["PANESTRIA_DATABASE_URL"]) as connection:
     SyntheticJourney().resume(

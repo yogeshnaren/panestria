@@ -13,21 +13,23 @@ from urllib.parse import urlsplit
 import psycopg
 import uvicorn
 
-from panestria.api.proposal_demo import create_demo_app
 from panestria.brokers.harness.claude_proposal import ClaudeProposalAdapter
 from panestria.brokers.harness.cli_profile import BinaryPin
-from panestria.execution.proposal_demo import ProposalDemo
+from panestria.brokers.harness.event_parser import CLAUDE_VERSION
 from panestria.fsutil import LocalStateUnavailable, exclusive_lock
 from panestria.kernel.sessions import SessionService
 from panestria.kernel.uow import UnitOfWork
 from panestria.sandbox.images import prepare_worker_image
+from panestria_devkit.api.proposal_demo import create_demo_app
+from panestria_devkit.execution.proposal_demo import ProposalDemo
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_DSN = "postgresql://panestria_demo:placeholder-not-a-secret@127.0.0.1:55438/panestria_native_demo"
 IMAGE = "postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d"
 CONTAINER = "panestria-native-review-demo-db"
 VOLUME = "panestria_native_review_demo_pgdata"
-BINARY = Path("/home/yogesh/.local/share/claude/versions/2.1.273")
+# The pinned Claude Code release where its installer puts it; --claude-binary overrides.
+BINARY = Path.home() / ".local/share/claude/versions" / CLAUDE_VERSION
 
 
 def main() -> None:

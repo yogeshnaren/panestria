@@ -12,12 +12,12 @@ from pathlib import Path
 import psycopg
 import pytest
 
-from panestria.execution.synthetic_journey import SyntheticJourney, _evidence_files_match
 from panestria.kernel.approvals import ApprovalService
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor, GoalService
 from panestria.kernel.repositories.approvals import required_verdicts
 from panestria.kernel.uow import UnitOfWork
+from panestria_devkit.execution.synthetic_journey import SyntheticJourney, _evidence_files_match
 from stack_support import COMPOSE, DATABASE_URL
 
 ROOT = Path(__file__).resolve().parents[2]

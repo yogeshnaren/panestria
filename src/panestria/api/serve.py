@@ -1,9 +1,9 @@
-"""Loopback HTTP server and the admitted-goal continuation thread.
+"""Loopback HTTP server for the scoped goal API.
 
 Start with ``python -m panestria.api.serve``. The process binds the configured
-loopback address, probes PostgreSQL from ``/readyz``, and continues an accepted
-goal through the same admission path the tests use. It does not listen on any
-other interface.
+loopback address and probes PostgreSQL from ``/readyz``. It does not listen on
+any other interface. Accepted goals are continued only by a journey passed to
+``main``; ``python -m panestria_devkit.api.serve`` passes the synthetic R0 one.
 """
 
 from __future__ import annotations
@@ -11,10 +11,9 @@ from __future__ import annotations
 import asyncio
 import json
 import os
-import queue
 import sys
-import threading
-from pathlib import Path
+from collections.abc import Callable
+from typing import Protocol
 from urllib.parse import urlsplit
 
 import psycopg
@@ -23,7 +22,6 @@ from panestria.api.auth import MAX_BODY_BYTES, MAX_HEADER_BYTES, MAX_HEADER_LINE
 from panestria.api.health import default_readiness_probe
 from panestria.api.main import create_app, mount_goal_api
 from panestria.config import ProfileRejected, load_settings
-from panestria.kernel.goals import Actor
 
 # A peer must deliver the whole request within this bound; a slow or stalled
 # sender cannot hold one of the loopback connections open indefinitely.
@@ -32,70 +30,19 @@ SYNTHETIC_OWNER = "00000000-0000-4000-8000-000000000002"
 SYNTHETIC_PROJECT = "00000000-0000-4000-8000-000000000003"
 
 
-class JourneyDriver:
-    """Continue one goal at a time. HTTP handlers only enqueue the goal id."""
+class Journey(Protocol):
+    """Continues accepted goals off the request path. HTTP handlers only submit the goal id."""
 
-    def __init__(self, database_url: str, owner_id: str, project_id: str, sandbox: Path) -> None:
-        self._database_url = database_url
-        self._actor = Actor(owner_id, project_id)
-        self._sandbox = sandbox
-        self._queue: queue.Queue[str | None] = queue.Queue()
-        self._thread = threading.Thread(target=self._run, name="panestria-journey", daemon=True)
+    def start(self) -> None: ...
 
-    def start(self) -> None:
-        self._thread.start()
+    def submit(self, goal_id: str) -> None: ...
 
-    def submit(self, goal_id: str) -> None:
-        self._queue.put(goal_id)
+    def stop(self) -> None: ...
 
-    def stop(self) -> None:
-        self._queue.put(None)
-        self._thread.join(timeout=2)
 
-    def _run(self) -> None:
-        while True:
-            goal_id = self._queue.get()
-            if goal_id is None:
-                return
-            pending = [goal_id]
-            while True:
-                try:
-                    nxt = self._queue.get_nowait()
-                except queue.Empty:
-                    break
-                if nxt is None:
-                    return
-                pending.append(nxt)
-            for item in dict.fromkeys(pending):
-                self._once(item)
-
-    def _once(self, goal_id: str) -> None:
-        from panestria.execution.synthetic_journey import SyntheticJourney
-
-        sandbox = self._sandbox / goal_id
-        sandbox.mkdir(parents=True, exist_ok=True)
-        try:
-            with psycopg.connect(self._database_url) as connection:
-                goal = connection.execute(
-                    "SELECT status FROM panestria.goal WHERE id = %s AND owner_id = %s AND project_id = %s",
-                    (goal_id, self._actor.owner_id, self._actor.project_id),
-                ).fetchone()
-                if goal is None or str(goal[0]) in {"CANCELLED", "COMPLETED", "FAILED"}:
-                    connection.rollback()
-                    return
-                count = connection.execute(
-                    "SELECT count(*) FROM panestria.task WHERE goal_id = %s",
-                    (goal_id,),
-                ).fetchone()
-                connection.commit()
-                journey = SyntheticJourney()
-                if count is not None and int(count[0]) == 0:
-                    journey.open_contract_wait(connection, self._actor, goal_id, sandbox)
-                else:
-                    journey.resume(connection, self._actor, goal_id, sandbox)
-                connection.commit()
-        except Exception:
-            sys.stderr.write("journey continuation failed\n")
+# (database_url, owner_id, project_id) -> journey. The product server registers
+# none; the dev-only R0 server (panestria_devkit.api.serve) passes the synthetic one.
+JourneyFactory = Callable[[str, str, str], Journey]
 
 
 def _seed(database_url: str, owner_id: str, project_id: str) -> None:
@@ -280,11 +227,10 @@ async def _listen(app: object, host: str, port: int) -> None:
             await tcp.serve_forever()
 
 
-def main() -> None:
+def main(journey: JourneyFactory | None = None) -> None:
     token = os.environ.pop("PANESTRIA_TOKEN", "")
     owner = os.environ.pop("PANESTRIA_OWNER_ID", SYNTHETIC_OWNER)
     project = os.environ.pop("PANESTRIA_PROJECT_ID", SYNTHETIC_PROJECT)
-    sandbox = Path(os.environ.pop("PANESTRIA_SANDBOX", "/tmp/panestria-r0")).resolve()
     try:
         settings = load_settings()
     except ProfileRejected as exc:
@@ -293,7 +239,6 @@ def main() -> None:
     if len(token) < 16:
         sys.stderr.write("missing_token\n")
         raise SystemExit(2)
-    sandbox.mkdir(parents=True, exist_ok=True)
     database_url = settings.database_url.get_secret_value()
     try:
         _seed(database_url, owner, project)
@@ -302,14 +247,15 @@ def main() -> None:
         raise SystemExit(2) from None
     application = create_app(settings, default_readiness_probe)
     mount_goal_api(application, GoalApi(token, owner, project, database_url))
-    application.state.sandbox = sandbox
-    driver = JourneyDriver(database_url, owner, project, sandbox)
+    driver = None if journey is None else journey(database_url, owner, project)
     application.state.journey = driver
-    driver.start()
+    if driver is not None:
+        driver.start()
     try:
         asyncio.run(_listen(application, settings.bind_host, settings.bind_port))
     finally:
-        driver.stop()
+        if driver is not None:
+            driver.stop()
 
 
 if __name__ == "__main__":

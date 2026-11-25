@@ -15,9 +15,9 @@ import pytest
 from panestria.brokers.harness.claude_proposal import PINNED_BINARY_SHA256, ClaudeProposalAdapter, ProposalReceipt
 from panestria.brokers.harness.cli_profile import BinaryPin
 from panestria.contracts.native_proposal import PROMPT_SHA256
-from panestria.execution.proposal_demo import ProposalDemo, _git
 from panestria.kernel.errors import KernelDenied
 from panestria.sandbox.profiles import DEFAULT_IMAGE
+from panestria_devkit.execution.proposal_demo import ProposalDemo, _git
 
 ROOT = Path(__file__).resolve().parents[2]
 
