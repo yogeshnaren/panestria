@@ -1636,6 +1636,39 @@
         }
       }
     },
+    "db": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "status": {
+          "hidden": false,
+          "params": []
+        },
+        "upgrade": {
+          "hidden": false,
+          "params": [
+            {
+              "name": "lock_timeout",
+              "opts": [
+                "--lock-timeout"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            },
+            {
+              "name": "statement_timeout",
+              "opts": [
+                "--statement-timeout"
+              ],
+              "kind": "option",
+              "required": false,
+              "type": "str"
+            }
+          ]
+        }
+      }
+    },
     "deny": {
       "hidden": false,
       "params": [
