@@ -89,6 +89,26 @@
       "finding": "PRODUCTION-READINESS-PLAN 1.8 / R3-REMEDIATION-PLAN 2.3"
     },
     {
+      "match": "removed denial_codes[DemoUnavailable:",
+      "reason": "The fixed proposal demo (execution/proposal_demo.py) moved to the dev-only devkit/panestria_devkit package outside the wheel. Its codes are unchanged there; tools/compat.py scans src/ only.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.8 / R3-REMEDIATION-PLAN 2.3"
+    },
+    {
+      "match": "removed denial_codes[CertificateRejected:demo_",
+      "reason": "The proposal-demo attestation store (execution/proposal_certificate.py) moved to devkit/panestria_devkit with the demo it validates. Its codes are unchanged there; tools/compat.py scans src/ only.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.8 / R3-REMEDIATION-PLAN 2.3"
+    },
+    {
+      "match": "removed denial_codes[KernelDenied:candidate_rejected]",
+      "reason": "Only the synthetic R0 journey raised candidate_rejected; it moved to devkit/panestria_devkit/execution/synthetic_journey.py unchanged. No product path raised it.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.8 / R3-REMEDIATION-PLAN 2.3"
+    },
+    {
+      "match": "removed import_graph[(top-level) -> api]",
+      "reason": "panestria/demo.py was the only top-level module importing panestria.api; it moved to devkit/panestria_devkit/demo.py.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.8 / R3-REMEDIATION-PLAN 2.3"
+    },
+    {
       "match": "added denial_codes[AssetUnavailable:packaged_asset_missing]",
       "reason": "panestria.assets locates the pinned skills archive in an installed wheel (panestria/_assets/) or a source checkout; neither present is a new, explicit refusal instead of a FileNotFoundError at first use.",
       "finding": "PRODUCTION-READINESS-PLAN 1.7 / R3-REMEDIATION-PLAN 2.2"

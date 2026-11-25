@@ -3,10 +3,8 @@
   "policy": "Whole-suite (all non-live lanes) line and branch coverage per package, enforced on every CI run. Exact when no lane deferred a reviewed regression (push to main, nightly, full dispatch, and any pull request whose required profile deferred nothing). A required-profile pull request that deferred regressions may sit up to deferred_tolerance_points below a floor; the nightly full run still enforces it exactly. Floors only rise; update with tools/coverage_floor.py --write from a full run.",
   "deferred_tolerance_points": 2.0,
   "deferred_tolerance_basis": "Largest observed deferral effect outside execution was 1.8 points (learning branch: PR run 40739549419 required profile 71.6% vs nightly run 45185381699 full profile 73.4%); floors sit one point below a full run.",
-  "deferred_tolerance_overrides": {
-    "execution": 4.0
-  },
-  "deferred_tolerance_overrides_basis": "execution: deferring the 21 legacy synthetic-journey functions, which drive execution/synthetic_journey.py, cost 3.9 branch and 2.6 line points (PR run 45346056878 ran them, 68.3% branch / 86.0% line; PR run 45359015858 deferred them, 64.4% / 83.4%); 70 of the 72 branches lost are in synthetic_journey.py. That sits 2.9 branch points below the floor; 4.0 leaves a 1.1 point margin.",
+  "deferred_tolerance_overrides": {},
+  "deferred_tolerance_overrides_basis": "No package has an override. execution had 4.0 because deferring the 21 legacy synthetic-journey functions cost it 3.9 branch and 2.6 line points, 70 of the 72 lost branches in execution/synthetic_journey.py (PR runs 45346056878 vs 45359015858). Plan 1.8 moved synthetic_journey.py, proposal_demo.py and proposal_certificate.py to devkit/, outside the measured src/panestria. The other 2 lost branches are 0.14 points of the 1464 execution branches left (main run 45469683932), so the 2.0 default covers the deferral; the full run still enforces the floor exactly.",
   "floors": {
     "(top-level)": {
       "line": 75.6,

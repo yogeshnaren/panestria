@@ -89,11 +89,13 @@ deferred nothing) the floors are exact. When a required pull request deferred
 some of the at most 46 reviewed nodes, each package may sit up to
 `deferred_tolerance_points` (2.0) below its floor. The largest effect observed
 from deferral outside `execution` was 1.8 points (learning branch coverage), and
-floors sit one point below a full measurement. `execution` has a measured
-override of 4.0 points in `deferred_tolerance_overrides`: deferring the 21 legacy
-synthetic journeys, which drive `execution/synthetic_journey.py`, cost it 3.9
-branch points. An override must name a package that has a floor. The nightly full
-run still enforces every floor exactly.
+floors sit one point below a full measurement. A package whose deferral costs
+more can get a measured override in `deferred_tolerance_overrides`; none is set.
+`execution` had 4.0 points while the 21 legacy synthetic journeys drove
+`execution/synthetic_journey.py` inside the measured package; plan 1.8 moved that
+module to the dev-only `devkit/`, leaving a 0.14 point effect. An override must
+name a package that has a floor. The nightly full run still enforces every floor
+exactly.
 
 Only pull request runs cancel an older run for the same pull request. Pushes, the
 nightly and manual runs each get their own concurrency group, so a main merge
