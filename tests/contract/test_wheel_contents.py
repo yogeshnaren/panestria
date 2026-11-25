@@ -70,4 +70,5 @@ def test_the_sdist_carries_sources_and_assets_but_not_docs_tests_or_evidence(bui
         members = {member.name.split("/", 1)[1] for member in sdist.getmembers() if "/" in member.name}
     assert f"docs/specification/attachments/{SKILLS_ARCHIVE}" in members
     assert {"LICENSE", "NOTICE", "README.md", "pyproject.toml", "src/panestria/assets.py"} <= members
-    assert not [name for name in members if name.startswith(("tests/", "evidence/", "apps/", "docs/project/", "devkit/"))]
+    excluded = ("tests/", "evidence/", "apps/", "docs/project/", "devkit/")
+    assert not [name for name in members if name.startswith(excluded)]
