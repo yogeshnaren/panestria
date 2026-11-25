@@ -27,7 +27,7 @@ before import; the importer never runs worker Git hooks, filters or tests.
 ## Run the qualification
 
 Use a disposable checkout with frozen dev dependencies and the existing pinned
-worker image prepared by `panestria.cli.review_demo.prepare_worker_image`.
+worker image prepared by `panestria sandbox prepare-image`.
 The database fixture owns only its temporary container on port 55439; keep that
 port available and do not run another R1 database suite concurrently.
 

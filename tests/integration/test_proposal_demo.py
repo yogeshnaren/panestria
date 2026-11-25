@@ -59,7 +59,7 @@ class ProviderFixture(ClaudeProposalAdapter):
 
 @pytest.fixture(scope="session")
 def demo_image() -> None:
-    from panestria.cli.review_demo import prepare_worker_image
+    from panestria.sandbox.images import prepare_worker_image
 
     prepare_worker_image()
 

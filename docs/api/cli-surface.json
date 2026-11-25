@@ -4810,6 +4810,16 @@
         }
       }
     },
+    "sandbox": {
+      "hidden": false,
+      "params": [],
+      "commands": {
+        "prepare-image": {
+          "hidden": false,
+          "params": []
+        }
+      }
+    },
     "storage": {
       "hidden": false,
       "params": [],

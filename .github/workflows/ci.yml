@@ -169,7 +169,7 @@ jobs:
       - name: Prepare pinned worker image
         # Trusted setup runs before any actual sandbox test. Workers keep pull=never.
         if: matrix.suite != 'fast'
-        run: uv run --frozen python -c 'from panestria.cli.review_demo import prepare_worker_image; prepare_worker_image()'
+        run: uv run --frozen panestria sandbox prepare-image
       - name: Tests
         env:
           CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || (github.event_name == 'push' || github.event_name == 'schedule') && 'full' || 'required' }}
@@ -252,7 +252,7 @@ jobs:
       - name: Prepare pinned worker image
         run: |
           umask 0002
-          uv run --frozen python -c 'from panestria.cli.review_demo import prepare_worker_image; prepare_worker_image()'
+          uv run --frozen panestria sandbox prepare-image
       - name: Tests
         env:
           CI_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile || (github.event_name == 'push' || github.event_name == 'schedule') && 'full' || 'required' }}
