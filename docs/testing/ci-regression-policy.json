@@ -20,8 +20,10 @@
       "id": "legacy-synthetic-journeys",
       "reason": "Compatibility of accepted R0 scripted demo/worker paths. Current native Build/final-tree/cancellation/approval and direct kernel/verifier regressions remain required.",
       "watch": [
-        "src/panestria/execution/synthetic*",
-        "src/panestria/brokers/harness/mock.py",
+        "devkit/panestria_devkit/execution/synthetic*",
+        "devkit/panestria_devkit/execution/task_worker.py",
+        "devkit/panestria_devkit/brokers/harness/mock.py",
+        "src/panestria/execution/task_workflow.py",
         "src/panestria/sandbox/**",
         "src/panestria/verification/**",
         "src/panestria/kernel/repositories/**",
@@ -46,7 +48,8 @@
         "src/panestria/api/routes/goals.py",
         "src/panestria/api/routes/approvals.py",
         "src/panestria/api/serve.py",
-        "src/panestria/demo.py"
+        "devkit/panestria_devkit/api/serve.py",
+        "devkit/panestria_devkit/demo.py"
       ],
       "tests": [
         "tests/integration/test_aos_004.py::test_scripted_events_name_the_attempt_and_stay_unaccepted",

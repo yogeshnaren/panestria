@@ -74,10 +74,10 @@ jobs:
         run: uv run --frozen ruff check .
       - name: Ruff format
         if: steps.proof.outputs.already_tested != 'true'
-        run: uv run --frozen ruff format --check src tests tools migrations
+        run: uv run --frozen ruff format --check src devkit tests tools migrations
       - name: Mypy
         if: steps.proof.outputs.already_tested != 'true'
-        run: uv run --frozen mypy src/panestria
+        run: uv run --frozen mypy src/panestria devkit/panestria_devkit
       - name: Import boundaries
         if: steps.proof.outputs.already_tested != 'true'
         run: uv run --frozen lint-imports --config .importlinter

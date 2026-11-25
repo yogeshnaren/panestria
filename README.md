@@ -56,7 +56,7 @@ set +a
 uv lock --check
 uv sync --frozen --group dev
 uv run --frozen ruff check .
-uv run --frozen mypy src/panestria
+uv run --frozen mypy src/panestria devkit/panestria_devkit
 uv run --frozen lint-imports --config .importlinter
 uv run --frozen pytest -m "not live"
 uv run --frozen python tools/secret_scan.py
@@ -67,7 +67,7 @@ uv run --frozen panestria health
 
 `version` exits 0. `health` exits 1 when the process is not ready and 2 when settings are rejected. A timed-out readiness probe is killed, and shutdown is bounded to one second.
 
-The same commands are available as `make bootstrap`, `make lint`, `make typecheck`, and `make test`. `make test` excludes the live fresh-host case. `make db-up`, `make db-down`, and `make db-migrate` use only the `panestria-s3` Compose project. `make db-down` leaves the named volume in place. `make reset-synthetic-data` removes that volume and accepts no filesystem path. `make dev-api` is `python -m panestria.api.serve` on `127.0.0.1`. A non-loopback bind is rejected. `make r0-demo` reuses an authenticated running API or starts a temporary one, then drives submit, approval, evidence, and completion with the `panestria` CLI. `make r0-review` also opens a read-only snapshot at `http://127.0.0.1:8870/` and stays running until Ctrl+C. It needs the migrated database from the runbook. It is not the fresh-host case. `make` with no target prints the command list and does not start the demo.
+The same commands are available as `make bootstrap`, `make lint`, `make typecheck`, and `make test`. `make test` excludes the live fresh-host case. `make db-up`, `make db-down`, and `make db-migrate` use only the `panestria-s3` Compose project. `make db-down` leaves the named volume in place. `make reset-synthetic-data` removes that volume and accepts no filesystem path. `make dev-api` is `python -m panestria_devkit.api.serve`, the goal API plus the synthetic journey driver, on `127.0.0.1`. A non-loopback bind is rejected. `make r0-demo` reuses an authenticated running API or starts a temporary one, then drives submit, approval, evidence, and completion with the `panestria` CLI. `make r0-review` also opens a read-only snapshot at `http://127.0.0.1:8870/` and stays running until Ctrl+C. It needs the migrated database from the runbook. It is not the fresh-host case. `make` with no target prints the command list and does not start the demo. The R0 demo, synthetic journey and proposal demo live in the dev-only `devkit/` workspace package, which `uv sync --group dev` installs; the panestria wheel does not contain them.
 
 Provider credentials are not required for these commands. CI uses the same frozen commands and does not inject provider keys.
 

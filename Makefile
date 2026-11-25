@@ -17,7 +17,7 @@ bootstrap:
 
 lint:
 	uv run --frozen ruff check .
-	uv run --frozen ruff format --check src tests tools migrations
+	uv run --frozen ruff format --check src devkit tests tools migrations
 
 typecheck:
 	uv run --frozen mypy
@@ -53,14 +53,14 @@ dev-api:
 	PANESTRIA_TOKEN="$${PANESTRIA_TOKEN:-synthetic-loopback-token}" \
 	PANESTRIA_BIND_HOST="$${PANESTRIA_BIND_HOST:-127.0.0.1}" \
 	PANESTRIA_BIND_PORT="$${PANESTRIA_BIND_PORT:-8765}" \
-	uv run --frozen python -m panestria.api.serve
+	uv run --frozen python -m panestria_devkit.api.serve
 
 r0-demo r0-review:
 	@PANESTRIA_DATABASE_URL="$(or $(PANESTRIA_DATABASE_URL),$(SYNTHETIC_URL))" \
 	PANESTRIA_TOKEN="$${PANESTRIA_TOKEN:-synthetic-loopback-token}" \
 	PANESTRIA_BIND_HOST="$${PANESTRIA_BIND_HOST:-127.0.0.1}" \
 	PANESTRIA_BIND_PORT="$${PANESTRIA_BIND_PORT:-8765}" \
-	uv run --frozen python -m panestria.demo $(if $(filter r0-review,$@),--review,)
+	uv run --frozen python -m panestria_devkit.demo $(if $(filter r0-review,$@),--review,)
 
 reset-synthetic-data:
 	$(COMPOSE) down -v

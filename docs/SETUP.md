@@ -39,7 +39,7 @@ For a browser review of a completed walkthrough:
 make r0-review
 ```
 
-Open **http://127.0.0.1:8870/** when the review link is printed. The page shows the observed goal, check verdicts, evidence hash, synthetic CLI approval receipts, and event history. It is a read-only snapshot; it does not perform new work or record owner acceptance. `make r0-review` stays in the foreground until Ctrl+C. An occupied review port is reported clearly; `python -m panestria.demo --review --review-port 8871` selects another port with the same environment configuration.
+Open **http://127.0.0.1:8870/** when the review link is printed. The page shows the observed goal, check verdicts, evidence hash, synthetic CLI approval receipts, and event history. It is a read-only snapshot; it does not perform new work or record owner acceptance. `make r0-review` stays in the foreground until Ctrl+C. An occupied review port is reported clearly; `python -m panestria_devkit.demo --review --review-port 8871` selects another port with the same environment configuration.
 
 Both walkthrough commands need the migrated database. They authenticate and reuse an API already running on port 8765, or start a temporary API when that port is free. They stop only the API they started. An unrelated listener or a different bearer token is refused before a goal is submitted. Each run has a fresh goal and idempotency keys. These commands are not `AOS-001-TC04`.
 
