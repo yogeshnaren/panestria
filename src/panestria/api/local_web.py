@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from importlib.resources import files
 
 from fastapi import FastAPI
@@ -22,3 +23,11 @@ def mount_local_web(app: FastAPI) -> None:
     @app.get("/ui/ask.css")
     def stylesheet() -> Response:
         return Response(assets.joinpath("ask.css").read_bytes(), media_type="text/css")
+
+
+@dataclass(frozen=True)
+class LocalWeb:
+    """The packaged local Ask page."""
+
+    def mount(self, app: FastAPI) -> None:
+        mount_local_web(app)

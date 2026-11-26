@@ -9,6 +9,7 @@ import resource
 import socket
 import ssl
 import stat
+from dataclasses import replace
 from pathlib import Path
 
 import uvicorn
@@ -16,9 +17,10 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from panestria.api.activity_server import build_activity_app
+from panestria.api.activity_server import activity_profile
+from panestria.api.app import AppProfile, Middleware, State, build_app
 from panestria.api.auth import error_body
-from panestria.api.mission_web import mount_mission_control
+from panestria.api.mission_web import MissionControl
 from panestria.api.security import _SECURITY_HEADERS, RequestLimits
 from panestria.api.serving import server_config
 from panestria.api.sessions import BrowserAccess
@@ -105,24 +107,30 @@ class PhoneBoundary:
         await self.app(scope, receive, send)
 
 
-def build_phone_app(config: PhoneSettings, settings: ValidatedSettings, token: str, assets: Path) -> FastAPI:
+def phone_profile(config: PhoneSettings, settings: ValidatedSettings, token: str, assets: Path) -> AppProfile:
+    """The read-only metadata observer for a paired phone on the private network."""
     certificate_hash = hashlib.sha256(read_private(config.certificate_file, 65536)).hexdigest()
     service = _phone_service(config, token, certificate_hash)
-    app = build_activity_app(config, settings, token)
     access = PhoneBrowserAccess(
         config.origin, service, settings.database_url.get_secret_value(), namespace="mission-phone"
     )
     access.session_seconds = 3600
-    try:
-        mount_mission_control(
-            app, config, token, assets, phone_access=access, build_evidence_store=config.build_evidence_store
-        )
-        app.add_middleware(PhoneBoundary, clients=config.allowed_clients)
-        app.state.phone_certificate_sha256 = certificate_hash
-        return app
-    except BaseException:
-        app.state.health.shutdown()
-        raise
+    observer = activity_profile(config, settings, token)
+    return replace(
+        observer,
+        features=(
+            *observer.features,
+            MissionControl(
+                config, token, assets, phone_access=access, build_evidence_store=config.build_evidence_store
+            ),
+            Middleware(PhoneBoundary, {"clients": config.allowed_clients}),
+            State("phone_certificate_sha256", certificate_hash),
+        ),
+    )
+
+
+def build_phone_app(config: PhoneSettings, settings: ValidatedSettings, token: str, assets: Path) -> FastAPI:
+    return build_app(phone_profile(config, settings, token, assets))
 
 
 def tls_server_config(app: FastAPI, config: PhoneSettings) -> uvicorn.Config:

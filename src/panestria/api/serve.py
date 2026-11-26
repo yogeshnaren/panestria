@@ -20,11 +20,10 @@ from typing import Protocol
 import psycopg
 import uvicorn
 
+from panestria.api.app import Activity, AppProfile, GoalRoutes, Middleware, State, build_app
 from panestria.api.auth import GoalApi
-from panestria.api.health import default_readiness_probe
-from panestria.api.main import create_app, mount_goal_api
 from panestria.api.serving import GOAL_API_PROTOCOL, TransportLimits, owned_socket, server_config
-from panestria.config import ProfileRejected, load_settings
+from panestria.config import ProfileRejected, ValidatedSettings, load_settings
 from panestria.config_local import LocalApplicationRejected
 
 SYNTHETIC_OWNER = "00000000-0000-4000-8000-000000000002"
@@ -61,6 +60,21 @@ def _seed(database_url: str, owner_id: str, project_id: str) -> None:
         connection.commit()
 
 
+def goal_profile(settings: ValidatedSettings, scope: GoalApi, sandbox: Path) -> AppProfile:
+    """The scoped goal API, under the request bounds it has always enforced."""
+    return AppProfile(
+        settings,
+        scope,
+        (
+            GoalRoutes(),
+            Activity(),
+            # The artifact route reads evidence from this root, with or without a journey.
+            State("sandbox", sandbox),
+            Middleware(TransportLimits),
+        ),
+    )
+
+
 def main(journey: JourneyFactory | None = None) -> None:
     token = os.environ.pop("PANESTRIA_TOKEN", "")
     owner = os.environ.pop("PANESTRIA_OWNER_ID", SYNTHETIC_OWNER)
@@ -81,11 +95,7 @@ def main(journey: JourneyFactory | None = None) -> None:
     except psycopg.Error:
         sys.stderr.write("database_unavailable\n")
         raise SystemExit(2) from None
-    application = create_app(settings, default_readiness_probe)
-    mount_goal_api(application, GoalApi(token, owner, project, database_url))
-    # The artifact route reads evidence from this root, with or without a journey.
-    application.state.sandbox = sandbox
-    application.add_middleware(TransportLimits)
+    application = build_app(goal_profile(settings, GoalApi(token, owner, project, database_url), sandbox))
     try:
         listener = owned_socket(settings.bind_host, settings.bind_port)
     except LocalApplicationRejected as exc:

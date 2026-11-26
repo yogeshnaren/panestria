@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import hashlib
-from typing import Any, Literal
+from typing import Any, Literal, get_args
 from urllib.parse import urlsplit
 
 import psycopg
@@ -16,6 +16,18 @@ from panestria.kernel.sessions import SessionService
 from panestria.kernel.uow import UnitOfWork
 
 COOKIE_NAME = "panestria_session"
+BrowserNamespace = Literal[
+    "default",
+    "mission",
+    "mission-review",
+    "mission-ask",
+    "mission-research",
+    "mission-build-intake",
+    "mission-plan-review",
+    "mission-build-run",
+    "mission-storage",
+    "mission-phone",
+]
 
 
 class BrowserAccess:
@@ -25,18 +37,7 @@ class BrowserAccess:
         service: SessionService,
         database_url: str,
         *,
-        namespace: Literal[
-            "default",
-            "mission",
-            "mission-review",
-            "mission-ask",
-            "mission-research",
-            "mission-build-intake",
-            "mission-plan-review",
-            "mission-build-run",
-            "mission-storage",
-            "mission-phone",
-        ] = "default",
+        namespace: BrowserNamespace = "default",
     ) -> None:
         parts = urlsplit(origin)
         if (
@@ -49,18 +50,7 @@ class BrowserAccess:
             or parts.username is not None
         ):
             raise ValueError("invalid_browser_origin")
-        if namespace not in {
-            "default",
-            "mission",
-            "mission-review",
-            "mission-ask",
-            "mission-research",
-            "mission-build-intake",
-            "mission-plan-review",
-            "mission-build-run",
-            "mission-storage",
-            "mission-phone",
-        }:
+        if namespace not in get_args(BrowserNamespace):
             raise ValueError("invalid_browser_namespace")
         self.cookie_name = (
             COOKIE_NAME
