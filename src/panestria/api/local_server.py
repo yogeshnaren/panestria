@@ -21,11 +21,12 @@ from fastapi.responses import JSONResponse
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body
 from panestria.api.db import DatabaseUnavailable, open_database
 from panestria.api.health import default_readiness_probe
-from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.api.local_web import mount_local_web
 from panestria.api.main import create_app, mount_activity_api, mount_ask_api, mount_browser_api
 from panestria.api.routes.ask import AskApi
 from panestria.api.routes.profiles import ProfileApi
+from panestria.api.serving import owned_socket
+from panestria.api.serving import server_config as server_config  # Re-exported for existing callers.
 from panestria.api.sessions import BrowserAccess
 from panestria.assets import skills_archive
 from panestria.config import Settings, ValidatedSettings
@@ -61,20 +62,7 @@ def require_setup(settings: ValidatedSettings, actor: Actor) -> str:
 
 
 def owned_listener(config: LocalApplicationSettings) -> socket.socket:
-    listener = socket.socket(socket.AF_INET6 if config.bind_host == "::1" else socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        if config.bind_host == "::1":
-            listener.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 1)
-        listener.bind((config.bind_host, config.bind_port))
-        # Reserve the port exclusively throughout startup. Two SO_REUSEADDR
-        # sockets may otherwise bind the same address before either listens.
-        listener.listen(16)
-        listener.setblocking(False)
-        return listener
-    except OSError:
-        listener.close()
-        raise LocalApplicationRejected("local_bind_unavailable") from None
+    return owned_socket(config.bind_host, config.bind_port)
 
 
 def build_local_app(
@@ -203,40 +191,6 @@ def build_local_app(
             return JSONResponse(status_code=503, content=error_body("database_unavailable"))
 
     return app
-
-
-def server_config(app: FastAPI) -> uvicorn.Config:
-    # Installed source confirms TRACE wraps ASGI messages and access logs include
-    # query strings. Fixed NullHandlers prevent accidental exception/body output.
-    logging = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "handlers": {"discard": {"class": "logging.NullHandler"}},
-        "loggers": {
-            name: {"handlers": ["discard"], "level": "CRITICAL", "propagate": False}
-            for name in ("uvicorn", "uvicorn.error", "uvicorn.access", "uvicorn.asgi")
-        },
-    }
-    return uvicorn.Config(
-        app,
-        host="127.0.0.1",
-        workers=1,
-        reload=False,
-        proxy_headers=False,
-        http=LocalHttpProtocol,
-        ws="none",
-        interface="asgi3",
-        lifespan="on",
-        access_log=False,
-        log_config=logging,
-        log_level="critical",
-        server_header=False,
-        limit_concurrency=16,
-        backlog=16,
-        timeout_keep_alive=2,
-        timeout_graceful_shutdown=5,
-        h11_max_incomplete_event_size=32768,
-    )
 
 
 def serve_local(path: Path, *, profiles: ProfileApi | None = None, mission_assets: Path | None = None) -> None:
