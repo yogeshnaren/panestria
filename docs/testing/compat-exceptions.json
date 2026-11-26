@@ -152,6 +152,16 @@
       "match": "added denial_codes[LoopbackDenied:session_scope_denied]",
       "reason": "On the owner app, a request that carries a browser session only for scopes the route does not accept (for example an Ask session on a Build route) is refused with 403 session_scope_denied instead of falling through to the bearer check. Single-mode servers have no session scopes and never return it.",
       "finding": "PRODUCTION-READINESS-PLAN 1.9 / R3-REMEDIATION-PLAN 2.9"
+    },
+    {
+      "match": "added cli/commands/serve/",
+      "reason": "New `panestria serve` runs the owner app: Ask with its owned model, Mission Control and, with --build-config, Build review, plan acceptance and runs on the one port and token of the local Ask configuration, each behind its own browser session scope. The single-mode `local serve` and `mission-control serve` commands are unchanged.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.9 / R3-REMEDIATION-PLAN 2.9"
+    },
+    {
+      "match": "added cli/commands/pair-code/",
+      "reason": "New `panestria pair-code --scope activity|ask|build` issues a one-use browser pairing code for one owner-app session scope from /v1/session/{scope}/code, using the local bearer token without printing it.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.9 / R3-REMEDIATION-PLAN 2.9"
     }
   ]
 }

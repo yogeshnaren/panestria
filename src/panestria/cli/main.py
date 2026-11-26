@@ -28,6 +28,7 @@ from panestria.cli.local import local_app
 from panestria.cli.metrics import metrics_app
 from panestria.cli.mission import mission_app
 from panestria.cli.native import native_app
+from panestria.cli.owner import pair_code_command, serve_command
 from panestria.cli.phone import phone_app
 from panestria.cli.plan import plan_app
 from panestria.cli.profile import profile_app
@@ -64,6 +65,8 @@ app.command("deny")(deny_command)
 app.command("approvals")(list_command)
 app.command("ask")(ask_command)
 app.command("tui")(tui_command)
+app.command("serve")(serve_command)
+app.command("pair-code")(pair_code_command)
 
 
 @artifact_app.command("show")
