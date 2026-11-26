@@ -20,7 +20,7 @@ from panestria.kernel.repositories.tasks import append_event
 from panestria.kernel.uow import UnitOfWork
 from serving_support import served
 
-TOKEN = "synthetic-stream-token-0123456789"
+TOKEN = "synthetic-loopback-token"
 
 
 def _app(task: dict[str, str]):  # type: ignore[no-untyped-def]
