@@ -8,7 +8,9 @@ nesting, and ``tests/unit/test_app_profiles.py`` pins it for every mode.
 
 A feature is anything with ``mount(app)``. The general ones are here; the
 Mission Control parts are in ``mission_web.py`` and the local Ask runtime is in
-``local_server.py``.
+``local_server.py``. A feature with routes takes ``scope``: on an app with
+browser session scopes (``ScopedBrowser``), its routes accept only sessions
+paired for those scopes. Single-mode servers leave it empty.
 """
 
 from __future__ import annotations
@@ -18,7 +20,7 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, Depends, FastAPI
 
 from panestria.api.auth import GoalApi
 from panestria.api.health import ReadinessProbe, default_readiness_probe
@@ -27,9 +29,11 @@ from panestria.api.main import (
     mount_activity_api,
     mount_ask_api,
     mount_browser_api,
+    mount_browser_scopes,
     mount_goal_routes,
     mount_profile_api,
 )
+from panestria.api.sessions import AcceptScopes, BrowserScopes, SessionScope
 from panestria.config import ValidatedSettings
 
 
@@ -62,6 +66,11 @@ def mount(app: FastAPI, features: Iterable[Feature]) -> None:
         feature.mount(app)
 
 
+def scope_dependencies(scope: tuple[SessionScope, ...]) -> list[Any]:
+    """The route dependency that admits only sessions for ``scope``; none when unscoped."""
+    return [Depends(AcceptScopes(*scope))] if scope else []
+
+
 @dataclass(frozen=True)
 class GoalRoutes:
     """The scoped goal, event, approval, artifact, quota, connection and Build review routes."""
@@ -74,16 +83,19 @@ class GoalRoutes:
 class Activity:
     """Content-free observations only: no goal, merge or tool endpoints."""
 
+    scope: tuple[SessionScope, ...] = ()
+
     def mount(self, app: FastAPI) -> None:
-        mount_activity_api(app)
+        mount_activity_api(app, dependencies=scope_dependencies(self.scope))
 
 
 @dataclass(frozen=True)
 class Ask:
     api: Any  # AskApi; imported lazily by main.mount_ask_api
+    scope: tuple[SessionScope, ...] = ()
 
     def mount(self, app: FastAPI) -> None:
-        mount_ask_api(app, self.api)
+        mount_ask_api(app, self.api, dependencies=scope_dependencies(self.scope))
 
 
 @dataclass(frozen=True)
@@ -102,6 +114,16 @@ class Browser:
 
     def mount(self, app: FastAPI) -> None:
         mount_browser_api(app, self.access)
+
+
+@dataclass(frozen=True)
+class ScopedBrowser:
+    """One cookie session per scope on one origin, behind the same-origin envelope."""
+
+    scopes: BrowserScopes
+
+    def mount(self, app: FastAPI) -> None:
+        mount_browser_scopes(app, self.scopes)
 
 
 @dataclass(frozen=True)

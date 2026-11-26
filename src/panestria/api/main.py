@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Sequence
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
+from typing import Any
 from uuid import uuid4
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -119,17 +120,17 @@ def mount_goal_routes(app: FastAPI) -> None:
     app.include_router(mission_review_router)
 
 
-def mount_activity_api(app: FastAPI) -> None:
+def mount_activity_api(app: FastAPI, *, dependencies: Sequence[Any] = ()) -> None:
     """Mount only content-free observations, without goal/merge/tool endpoints."""
     if not isinstance(app.state.goal_api, GoalApi):
         raise TypeError("activity API requires configured actor scope")
     from panestria.api.routes.build_observation import router as build_observation_router
 
-    app.include_router(activity_router)
-    app.include_router(build_observation_router)
+    app.include_router(activity_router, dependencies=list(dependencies))
+    app.include_router(build_observation_router, dependencies=list(dependencies))
     from panestria.api.routes.mission_review import capabilities
 
-    app.include_router(capabilities)
+    app.include_router(capabilities, dependencies=list(dependencies))
 
 
 def mount_browser_api(app: FastAPI, access: object) -> None:
@@ -146,7 +147,26 @@ def mount_browser_api(app: FastAPI, access: object) -> None:
     app.include_router(router)
 
 
-def mount_ask_api(app: FastAPI, ask: object) -> None:
+def mount_browser_scopes(app: FastAPI, scopes: object) -> None:
+    """Several browser session scopes on one origin; pairing and logout under /v1/session/{scope}."""
+    from panestria.api.routes.sessions import scoped_router
+    from panestria.api.security import BrowserSecurity
+    from panestria.api.sessions import SESSION_SCOPES, AcceptScopes, BrowserScopes
+
+    if not isinstance(scopes, BrowserScopes) or not isinstance(app.state.goal_api, GoalApi):
+        raise TypeError("browser scopes require configured actor scope")
+    if scopes.database_url != app.state.goal_api.database_url:
+        raise ValueError("browser_database_scope_mismatch")
+    if getattr(app.state, "browser_access", None) is not None:
+        raise ValueError("browser_scope_conflict")
+    app.state.browser_scopes = scopes
+    # Every scope shares the origin, so one envelope checks host, origin and limits for all.
+    app.add_middleware(BrowserSecurity, access=scopes["activity"])
+    for scope in SESSION_SCOPES:
+        app.include_router(scoped_router, prefix=f"/v1/session/{scope}", dependencies=[Depends(AcceptScopes(scope))])
+
+
+def mount_ask_api(app: FastAPI, ask: object, *, dependencies: Sequence[Any] = ()) -> None:
     from panestria.api.routes.ask import AskApi, router
     from panestria.api.routes.learning import router as learning_router
     from panestria.api.routes.memory import router as memory_router
@@ -155,10 +175,8 @@ def mount_ask_api(app: FastAPI, ask: object) -> None:
     if not isinstance(ask, AskApi) or not isinstance(app.state.goal_api, GoalApi):
         raise TypeError("Ask requires configured scope and a local provider")
     app.state.ask_api = ask
-    app.include_router(router)
-    app.include_router(learning_router)
-    app.include_router(memory_router)
-    app.include_router(memory_v2_router)
+    for included in (router, learning_router, memory_router, memory_v2_router):
+        app.include_router(included, dependencies=list(dependencies))
 
 
 def mount_profile_api(app: FastAPI, profiles: object) -> None:

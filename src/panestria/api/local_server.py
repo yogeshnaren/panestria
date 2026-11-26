@@ -19,7 +19,7 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from panestria.api.app import Activity, AppProfile, Ask, Browser, Feature, Profiles, build_app
+from panestria.api.app import Activity, AppProfile, Ask, Browser, Feature, Profiles, build_app, scope_dependencies
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body
 from panestria.api.db import DatabaseUnavailable, open_database
 from panestria.api.local_web import LocalWeb
@@ -27,7 +27,7 @@ from panestria.api.routes.ask import AskApi
 from panestria.api.routes.profiles import ProfileApi
 from panestria.api.serving import owned_socket
 from panestria.api.serving import server_config as server_config  # Re-exported for existing callers.
-from panestria.api.sessions import BrowserAccess
+from panestria.api.sessions import BrowserAccess, SessionScope
 from panestria.assets import skills_archive
 from panestria.config import Settings, ValidatedSettings
 from panestria.config_activity import ActivitySettings
@@ -65,6 +65,53 @@ def owned_listener(config: LocalApplicationSettings) -> socket.socket:
     return owned_socket(config.bind_host, config.bind_port)
 
 
+@dataclass(frozen=True)
+class AskRuntime:
+    """The owned model, its provider and the Ask API for one local configuration."""
+
+    actor: Actor
+    model: ModelRuntime
+    provider: LocalProvider
+    probe: HardwareProbe
+    ask: AskApi
+
+    @classmethod
+    def create(cls, config: LocalApplicationSettings) -> AskRuntime:
+        model = ModelRuntime(config.model_cache, config.runtime_directory / "model", preserve_existing=True)
+        provider = LocalProvider(model.socket_path)
+        probe = HardwareProbe(skills_archive())
+        ask = AskApi(
+            provider,
+            probe.collect_cpu,
+            include_charter=config.assistant_charter,
+            lossless_presentation=config.lossless_presentation,
+            pin_model_manifest=config.pin_model_manifest,
+        )
+        return cls(Actor(str(config.owner_id), str(config.project_id)), model, provider, probe, ask)
+
+    def lifecycle(
+        self,
+        config: LocalApplicationSettings,
+        settings: ValidatedSettings,
+        api: GoalApi,
+        *,
+        profiles_enabled: bool = False,
+        scope: tuple[SessionScope, ...] = (),
+    ) -> LocalAskRuntime:
+        return LocalAskRuntime(
+            config,
+            settings,
+            self.actor,
+            api,
+            self.model,
+            self.provider,
+            self.probe,
+            self.ask,
+            profiles_enabled=profiles_enabled,
+            scope=scope,
+        )
+
+
 def local_profile(
     config: LocalApplicationSettings,
     settings: ValidatedSettings,
@@ -76,28 +123,17 @@ def local_profile(
     """Offline Ask with its owned model; the Ask page or Mission Control, never both."""
     if mission_assets is not None and (profiles is not None or config.bind_host != "127.0.0.1"):
         raise LocalApplicationRejected("mission_ask_scope_unavailable")
-    actor = Actor(str(config.owner_id), str(config.project_id))
-    model = ModelRuntime(config.model_cache, config.runtime_directory / "model", preserve_existing=True)
-    provider = LocalProvider(model.socket_path)
-    probe = HardwareProbe(skills_archive())
-    ask = AskApi(
-        provider,
-        probe.collect_cpu,
-        include_charter=config.assistant_charter,
-        lossless_presentation=config.lossless_presentation,
-        pin_model_manifest=config.pin_model_manifest,
-    )
+    runtime = AskRuntime.create(config)
+    actor = runtime.actor
     # Scope without exposing unrelated synthetic goal/merge/tool routes.
     api = GoalApi(token, actor.owner_id, actor.project_id, settings.database_url.get_secret_value())
-    features: list[Feature] = [Activity(), Ask(ask)]
+    features: list[Feature] = [Activity(), Ask(runtime.ask)]
     if profiles is not None:
         features.append(Profiles(profiles))
     if mission_assets is None:
         session_secret = hmac.digest(token.encode(), b"panestria.local-browser-session.v1", hashlib.sha256)
-        features += [
-            Browser(BrowserAccess(config.origin, SessionService(session_secret), api.database_url)),
-            LocalWeb(),
-        ]
+        access = BrowserAccess(config.origin, SessionService(session_secret), api.database_url)
+        features += [Browser(access), LocalWeb()]
     else:
         from panestria.api.mission_web import MissionControl
 
@@ -109,11 +145,7 @@ def local_profile(
             token_file=config.token_file,
         )
         features.append(MissionControl(observation, token, mission_assets, offline_ask=True))
-    features.append(
-        LocalAskRuntime(
-            config, settings, actor, api, model, provider, probe, ask, profiles_enabled=profiles is not None
-        )
-    )
+    features.append(runtime.lifecycle(config, settings, api, profiles_enabled=profiles is not None))
     return AppProfile(settings, api, tuple(features))
 
 
@@ -141,6 +173,7 @@ class LocalAskRuntime:
     probe: HardwareProbe
     ask: AskApi
     profiles_enabled: bool = False
+    scope: tuple[SessionScope, ...] = ()
 
     def mount(self, app: FastAPI) -> None:
         config, settings, actor, api = self.config, self.settings, self.actor, self.api
@@ -190,7 +223,7 @@ class LocalAskRuntime:
 
         app.router.lifespan_context = lifespan
 
-        @app.get("/v1/local/status")
+        @app.get("/v1/local/status", dependencies=scope_dependencies(self.scope))
         async def status(request: Request) -> JSONResponse:
             try:
                 authorize(request, api)

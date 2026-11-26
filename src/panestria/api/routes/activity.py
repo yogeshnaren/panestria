@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from panestria.api.auth import LoopbackDenied, authorize, error_body
 from panestria.api.db import open_database, run_database
 from panestria.api.routes.goals import _api
+from panestria.api.sessions import selected_access
 from panestria.contracts.activity import ActivityTimeline, ProjectActivity
 from panestria.contracts.review_inbox import ReviewInbox
 from panestria.contracts.storage_status import StorageStatus
@@ -90,7 +91,7 @@ async def storage_status(request: Request) -> JSONResponse:
     try:
         api = _api(request)
         actor = authorize(request, api)
-        browser = getattr(request.app.state, "browser_access", None)
+        browser = selected_access(request)
         if browser is not None and not (
             getattr(request.app.state, "mission_storage_mode", False) is True
             and getattr(browser, "namespace", None) == "mission-storage"
