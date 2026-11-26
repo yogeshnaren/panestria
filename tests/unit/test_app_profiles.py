@@ -148,7 +148,7 @@ def _goal_api(env: Env) -> FastAPI:
 
 
 def _mission(**modes: Any) -> Callable[[Env], FastAPI]:
-    """As ``panestria mission serve`` assembles it; a callable mode value takes the env."""
+    """As ``panestria mission-control serve`` assembles it; a callable mode value takes the env."""
 
     def build(env: Env) -> FastAPI:
         storage = FIXED / "storage.json" if modes.get("storage_mode") else None
