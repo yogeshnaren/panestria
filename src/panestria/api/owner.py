@@ -11,7 +11,9 @@ splits browser authority by scope (``sessions.BrowserScopes``):
 - ``build``: Build review and decisions, plan staging and acceptance, runs.
 
 Each scope is paired separately under ``/v1/session/{scope}``, and its session
-key is derived for that scope alone. A stolen Ask or activity session
+key is derived for that scope alone. The dashboard page names the mounted scopes
+(``data-session-scopes``), so Mission Control offers one pairing, CSRF token and
+logout per scope; ``/v1/mission/capabilities`` reports the same scopes. A stolen Ask or activity session
 therefore cannot read a Build diff, approve a Build or start a run. A Build
 session lasts an hour, the others eight. The loopback bearer (CLI) is unchanged
 and may use every route.
@@ -36,7 +38,7 @@ from panestria.api.local_protocol import AnsweringHttpProtocol
 from panestria.api.local_server import AskRuntime, owned_listener, run_owned
 from panestria.api.mission_web import BuildIntake, BuildReview, BuildRun, MissionAssets, load_mission_assets
 from panestria.api.serving import TransportLimits
-from panestria.api.sessions import SESSION_SCOPES, BrowserScopes
+from panestria.api.sessions import SESSION_SCOPES, BrowserScopes, SessionScope
 from panestria.assets import AssetUnavailable, mission_control
 from panestria.config import Settings, ValidatedSettings
 from panestria.config_local import LocalApplicationRejected, LocalApplicationSettings, load_local_settings
@@ -65,18 +67,25 @@ def owner_profile(
             BuildIntake(allow_acceptance=True, scope=("build",)),
             BuildRun(run, scope=("build",)),
         ]
+    scopes = mounted_scopes(build_run)
     features += [
         # Capabilities report what is mounted; the dashboard reads these.
         State("mission_offline_ask", True),
         State("mission_storage_mode", False),
         State("private_phone_enabled", False),
+        State("owner_session_scopes", scopes),
         ScopedBrowser(BrowserScopes(config.origin, token, database_url)),
-        MissionAssets(load_mission_assets(assets)),
+        MissionAssets(load_mission_assets(assets, session_scopes=scopes)),
         # The request bounds every product server shares; outermost, so it sees every request first.
         Middleware(TransportLimits),
         runtime.lifecycle(config, settings, api, scope=("ask",), accept_successor_policy=True),
     ]
     return AppProfile(settings, api, tuple(features))
+
+
+def mounted_scopes(build_run: Path | None) -> tuple[SessionScope, ...]:
+    """The session scopes that reach something: Build only with a Build configuration."""
+    return tuple(scope for scope in SESSION_SCOPES if scope != "build" or build_run is not None)
 
 
 def serve_owner(path: Path, *, build_run: Path | None = None, assets: Path | None = None) -> None:
@@ -98,8 +107,12 @@ def serve_owner(path: Path, *, build_run: Path | None = None, assets: Path | Non
     app = None
     try:
         app = build_app(owner_profile(config, settings, token.get_secret_value(), assets, build_run=build_run))
-        scopes = [scope for scope in SESSION_SCOPES if scope != "build" or build_run is not None]
-        announcement = {"schema_version": 1, "status": "STARTING", "origin": config.origin, "session_scopes": scopes}
+        announcement = {
+            "schema_version": 1,
+            "status": "STARTING",
+            "origin": config.origin,
+            "session_scopes": list(mounted_scopes(build_run)),
+        }
         # One header-deadline behaviour for the whole app: a stalled header block gets 408.
         run_owned(app, listener, announcement, http=AnsweringHttpProtocol)
     finally:

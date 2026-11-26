@@ -13,6 +13,7 @@ import socket
 import threading
 import time
 from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -32,6 +33,7 @@ from typer.testing import CliRunner
 from panestria.api import local_server, owner
 from panestria.api.app import build_app
 from panestria.api.local_protocol import AnsweringHttpProtocol
+from panestria.api.mission_web import load_mission_assets
 from panestria.api.owner import owner_profile, serve_owner
 from panestria.assets import AssetUnavailable
 from panestria.cli.main import app as cli
@@ -122,6 +124,25 @@ def test_ask_still_starts_after_build_setup_applies_its_policy(owner_setup: Owne
         assert _ask(client, owner_setup).json()["text"] == "READY"
 
 
+@pytest.mark.parametrize("build", [False, True])
+def test_the_page_and_capabilities_name_the_mounted_session_scopes(owner_setup: Owner, build: bool) -> None:
+    scopes = ["activity", "ask", "build"] if build else ["activity", "ask"]
+    with TestClient(owner_setup.app(build=build), base_url=owner_setup.config.origin) as client:
+        page = client.get("/").text
+        assert page == f'<div id="root" data-session-scopes="{" ".join(scopes)}"></div>'
+        bearer = {"Authorization": "Bearer " + owner_setup.token}
+        capabilities = client.get("/v1/mission/capabilities", headers=bearer).json()
+        assert capabilities["session_scopes"] == scopes and capabilities["offline_ask_enabled"] is True
+        assert capabilities["build_run_enabled"] is build and capabilities["build_review_enabled"] is build
+
+
+def test_a_dashboard_build_without_its_root_element_is_refused(owner_setup: Owner) -> None:
+    (owner_setup.assets / "index.html").write_bytes(b'<div id="app"></div>')
+    assert load_mission_assets(owner_setup.assets)["index.html"] == b'<div id="app"></div>'
+    with pytest.raises(LocalApplicationRejected, match="^mission_build_required$"):
+        load_mission_assets(owner_setup.assets, session_scopes=("activity", "ask"))
+
+
 class _Recorded(uvicorn.Server):
     """The real server; records each instance so the test can stop it."""
 
@@ -139,10 +160,10 @@ class Served:
     announced: dict[str, Any]
 
 
-@pytest.fixture
-def served(owner_setup: Owner, monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]) -> Iterator[Served]:
+@contextmanager
+def running(owner_setup: Owner, monkeypatch: pytest.MonkeyPatch) -> Iterator[uvicorn.Server]:
+    """``serve_owner`` on its owned port in a thread, with Build; on exit its model is stopped and the port released."""
     monkeypatch.setenv("PANESTRIA_DATABASE_URL", owner_setup.task["dsn"])
-    monkeypatch.setattr(AnsweringHttpProtocol, "header_deadline_seconds", 0.2)
     monkeypatch.setattr(uvicorn, "Server", _Recorded)
     _Recorded.instances = []
     failures: list[BaseException] = []
@@ -150,7 +171,7 @@ def served(owner_setup: Owner, monkeypatch: pytest.MonkeyPatch, capfd: pytest.Ca
     def run() -> None:
         try:
             serve_owner(owner_setup.path, build_run=owner_setup.build, assets=owner_setup.assets)
-        except BaseException as exc:  # Reported by the test below.
+        except BaseException as exc:  # Reported below.
             failures.append(exc)
 
     worker = threading.Thread(target=run)
@@ -160,9 +181,8 @@ def served(owner_setup: Owner, monkeypatch: pytest.MonkeyPatch, capfd: pytest.Ca
         assert worker.is_alive() and time.monotonic() < deadline, failures or "owner_server_not_started"
         time.sleep(0.02)
     server = _Recorded.instances[0]
-    announced = json.loads(capfd.readouterr().out.strip().splitlines()[-1])
     try:
-        yield Served(owner_setup, server, announced)
+        yield server
     finally:
         server.should_exit = True
         worker.join(timeout=10)
@@ -170,6 +190,14 @@ def served(owner_setup: Owner, monkeypatch: pytest.MonkeyPatch, capfd: pytest.Ca
     app = server.config.app
     assert app.state.local_model.stopped_fixture and not app.state.local_model.socket_path.exists()
     released(owner_setup.config.bind_port)
+
+
+@pytest.fixture
+def served(owner_setup: Owner, monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]) -> Iterator[Served]:
+    monkeypatch.setattr(AnsweringHttpProtocol, "header_deadline_seconds", 0.2)
+    with running(owner_setup, monkeypatch) as server:
+        announced = json.loads(capfd.readouterr().out.strip().splitlines()[-1])
+        yield Served(owner_setup, server, announced)
 
 
 def released(port: int) -> None:
@@ -203,7 +231,8 @@ def test_serve_runs_the_owner_app_on_its_port_with_one_transport_behaviour(serve
     }
     with httpx.Client(base_url=owner_setup.config.origin, trust_env=False, timeout=5) as client:
         assert client.get("/healthz").status_code == 200
-        assert client.get("/").text == '<div id="root"></div>'
+        # The page names the mounted session scopes, so the dashboard pairs per scope before reading anything.
+        assert client.get("/").text == '<div id="root" data-session-scopes="activity ask build"></div>'
     # An oversized declared body is refused before any body byte is read.
     oversized = raw(port, f"POST /v1/ask HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\nContent-Length: 65537\r\n\r\n")
     assert oversized.startswith(b"HTTP/1.1 413 ") and b'"code":"body_too_large"' in oversized

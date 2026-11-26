@@ -2500,7 +2500,12 @@
           "dispatch_authority": "EXPLICIT_FOREGROUND_BUILD",
           "offline_ask_enabled": true,
           "plan_acceptance_enabled": true,
-          "research_intake_enabled": false
+          "research_intake_enabled": false,
+          "session_scopes": [
+            "activity",
+            "ask",
+            "build"
+          ]
         }
       },
       "routes": [
@@ -2570,6 +2575,7 @@
         "mission_offline_ask": "True",
         "mission_run": "_StubRun",
         "mission_storage_mode": "False",
+        "owner_session_scopes": "tuple",
         "private_phone_enabled": "False",
         "settings": "ValidatedSettings"
       }
@@ -2745,7 +2751,7 @@
     "HTTPValidationError": "7373c21f13893123",
     "JsonValue": "44136fa355b3678a",
     "Liveness": "fad90796b00c2948",
-    "MissionCapabilities": "3a3f39a653247301",
+    "MissionCapabilities": "5ec3af45195bc0c4",
     "ModelManifest": "281f7a65fd6d53c3",
     "PendingApproval": "30eacef116310f5f",
     "PlanConsent": "91a1f663025443b9",

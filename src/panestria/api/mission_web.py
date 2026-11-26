@@ -30,8 +30,15 @@ _ASSET_LIMITS = (("index.html", 16384), ("mission.js", 1048576), ("mission.css",
 _ROOT_MARKER = b'<div id="root"></div>'
 
 
-def load_mission_assets(directory: Path, *, phone_observer: bool = False) -> dict[str, bytes]:
-    """Read a deliberate, local production build; never run a dev server or fetch assets."""
+def load_mission_assets(
+    directory: Path, *, phone_observer: bool = False, session_scopes: tuple[SessionScope, ...] = ()
+) -> dict[str, bytes]:
+    """Read a deliberate, local production build; never run a dev server or fetch assets.
+
+    The page's root element names a fixed server mode: the phone observer, or
+    the owner app's session scopes. The dashboard pairs by it before it can read
+    capabilities, and the authenticated capabilities must then agree.
+    """
     try:
         if not directory.is_absolute() or directory.resolve() != directory or not directory.is_dir():
             raise LocalApplicationRejected("mission_build_required")
@@ -52,6 +59,11 @@ def load_mission_assets(directory: Path, *, phone_observer: bool = False) -> dic
             assets["index.html"] = assets["index.html"].replace(
                 _ROOT_MARKER, b'<div id="root" data-phone-observer="true"></div>'
             )
+        elif session_scopes:
+            if assets["index.html"].count(_ROOT_MARKER) != 1:
+                raise LocalApplicationRejected("mission_build_required")
+            marker = b'<div id="root" data-session-scopes="' + " ".join(session_scopes).encode() + b'"></div>'
+            assets["index.html"] = assets["index.html"].replace(_ROOT_MARKER, marker)
     except OSError:
         raise LocalApplicationRejected("mission_build_required") from None
     return assets

@@ -1399,6 +1399,11 @@ export interface components {
              */
             research_intake_enabled: boolean;
             /**
+             * Session Scopes
+             * @default []
+             */
+            session_scopes: ("activity" | "ask" | "build")[];
+            /**
              * Storage Status Enabled
              * @default false
              */
