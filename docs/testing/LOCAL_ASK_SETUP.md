@@ -37,6 +37,8 @@ For the optional production Mission Control page, use the same local settings
 with explicit `--mission-assets` as described in the
 [offline Ask browser guide](MISSION_OFFLINE_ASK.md). The default page and TUI
 remain available; the separate metadata observer cannot submit questions.
+To run Ask, Mission Control and Build together on this one port, use
+`panestria serve --config ...` instead; see [the owner app](OWNER_APP.md).
 
 An identical `init` retry keeps the same file bytes and identities; completed
 setup returns `replayed: true`. A database error retains the settings for retry
