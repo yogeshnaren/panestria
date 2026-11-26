@@ -1,0 +1,2514 @@
+{
+  "profiles": {
+    "activity": {
+      "browser": null,
+      "middleware": [],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "Liveness",
+          "MissionCapabilities",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "cache-control": "no-store",
+            "content-type": "application/json"
+          },
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities"
+      ],
+      "state": {
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "activity-storage": {
+      "browser": null,
+      "middleware": [],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "Liveness",
+          "MissionCapabilities",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "cache-control": "no-store",
+            "content-type": "application/json"
+          },
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities"
+      ],
+      "state": {
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "settings": "ValidatedSettings",
+        "storage_observer": "StorageObserver"
+      }
+    },
+    "ask-mission": {
+      "browser": {
+        "cookie_name": "panestria_mission_ask_68ee74ba248e",
+        "key_fingerprint": "3a870a8d28b3cd0b",
+        "namespace": "mission-ask",
+        "secure": false,
+        "session_seconds": 28800
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/ask/{request_id}": "ask_receipt_v1_ask__request_id__get -> 200,422",
+          "GET /v1/ask/{request_id}/ledger": "request_ledger_v1_ask__request_id__ledger_get -> 200,422",
+          "GET /v1/local/status": "status_v1_local_status_get -> 200",
+          "GET /v1/memory/search": "search_memory_v1_memory_search_get -> 200,422",
+          "GET /v1/memory/{item_id}": "memory_history_v1_memory__item_id__get -> 200,422",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "GET /v2/ask/status": "profile_ask_status_v2_ask_status_get -> 200",
+          "GET /v2/memory/search": "search_memory_v2_memory_search_get -> 200,422",
+          "GET /v2/memory/{item_id}": "memory_history_v2_memory__item_id__get -> 200,422",
+          "POST /v1/ask": "ask_question_v1_ask_post -> 200",
+          "POST /v1/ask/{request_id}/cancel": "cancel_ask_v1_ask__request_id__cancel_post -> 200,422",
+          "POST /v1/corrections": "capture_correction_v1_corrections_post -> 200",
+          "POST /v1/memory": "add_memory_v1_memory_post -> 200",
+          "POST /v1/memory-reviews/{review_id}/decision": "decide_privacy_review_v1_memory_reviews__review_id__decision_post -> 200,422",
+          "POST /v1/memory/{item_id}/correct": "correct_memory_v1_memory__item_id__correct_post -> 200,422",
+          "POST /v1/memory/{item_id}/privacy-review": "propose_privacy_review_v1_memory__item_id__privacy_review_post -> 200,422",
+          "POST /v1/memory/{item_id}/suppress": "suppress_memory_v1_memory__item_id__suppress_post -> 200,422",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200",
+          "POST /v2/ask": "profile_ask_question_v2_ask_post -> 200",
+          "POST /v2/memory": "add_memory_v2_memory_post -> 200",
+          "POST /v2/memory-reviews/{review_id}/decision": "decide_review_v2_memory_reviews__review_id__decision_post -> 200,422",
+          "POST /v2/memory/{item_id}/correct": "correct_memory_v2_memory__item_id__correct_post -> 200,422",
+          "POST /v2/memory/{item_id}/privacy-review": "propose_review_v2_memory__item_id__privacy_review_post -> 200,422",
+          "POST /v2/memory/{item_id}/suppress": "suppress_memory_v2_memory__item_id__suppress_post -> 200,422",
+          "POST /v2/memory/{item_id}/unsuppress": "unsuppress_memory_v2_memory__item_id__unsuppress_post -> 200,422"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "AskAnswer",
+          "AskCancellation",
+          "AskReceipt",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "JsonValue",
+          "Liveness",
+          "MissionCapabilities",
+          "ModelManifest",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": true,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "POST /v1/ask",
+        "GET /v2/ask/status",
+        "POST /v2/ask",
+        "GET /v1/ask/{request_id}",
+        "POST /v1/ask/{request_id}/cancel",
+        "GET /v1/ask/{request_id}/ledger",
+        "POST /v1/corrections",
+        "POST /v1/memory",
+        "GET /v1/memory/search",
+        "POST /v1/memory/{item_id}/correct",
+        "POST /v1/memory/{item_id}/suppress",
+        "POST /v1/memory/{item_id}/privacy-review",
+        "POST /v1/memory-reviews/{review_id}/decision",
+        "GET /v1/memory/{item_id}",
+        "POST /v2/memory",
+        "GET /v2/memory/search",
+        "GET /v2/memory/{item_id}",
+        "POST /v2/memory/{item_id}/correct",
+        "POST /v2/memory/{item_id}/privacy-review",
+        "POST /v2/memory-reviews/{review_id}/decision",
+        "POST /v2/memory/{item_id}/suppress",
+        "POST /v2/memory/{item_id}/unsuppress",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET / [hidden]",
+        "GET /ui/mission.js [hidden]",
+        "GET /ui/mission.css [hidden]",
+        "GET /v1/local/status"
+      ],
+      "state": {
+        "ask_api": "AskApi",
+        "browser_access": "BrowserAccess",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "local_failure": "None",
+        "local_model": "ModelRuntime",
+        "mission_build_sha256": "str",
+        "mission_offline_ask": "True",
+        "mission_storage_mode": "False",
+        "private_phone_enabled": "False",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "ask-profiles": {
+      "browser": {
+        "cookie_name": "panestria_session",
+        "key_fingerprint": "5d4debbd1fb3e8fd",
+        "namespace": "default",
+        "secure": false,
+        "session_seconds": 28800
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /": "index__get -> 200",
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /ui/ask.css": "stylesheet_ui_ask_css_get -> 200",
+          "GET /ui/ask.js": "script_ui_ask_js_get -> 200",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/ask/{request_id}": "ask_receipt_v1_ask__request_id__get -> 200,422",
+          "GET /v1/ask/{request_id}/ledger": "request_ledger_v1_ask__request_id__ledger_get -> 200,422",
+          "GET /v1/local/status": "status_v1_local_status_get -> 200",
+          "GET /v1/memory/search": "search_memory_v1_memory_search_get -> 200,422",
+          "GET /v1/memory/{item_id}": "memory_history_v1_memory__item_id__get -> 200,422",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "GET /v2/ask/status": "profile_ask_status_v2_ask_status_get -> 200",
+          "GET /v2/memory/search": "search_memory_v2_memory_search_get -> 200,422",
+          "GET /v2/memory/{item_id}": "memory_history_v2_memory__item_id__get -> 200,422",
+          "POST /v1/ask": "ask_question_v1_ask_post -> 200",
+          "POST /v1/ask/{request_id}/cancel": "cancel_ask_v1_ask__request_id__cancel_post -> 200,422",
+          "POST /v1/corrections": "capture_correction_v1_corrections_post -> 200",
+          "POST /v1/memory": "add_memory_v1_memory_post -> 200",
+          "POST /v1/memory-reviews/{review_id}/decision": "decide_privacy_review_v1_memory_reviews__review_id__decision_post -> 200,422",
+          "POST /v1/memory/{item_id}/correct": "correct_memory_v1_memory__item_id__correct_post -> 200,422",
+          "POST /v1/memory/{item_id}/privacy-review": "propose_privacy_review_v1_memory__item_id__privacy_review_post -> 200,422",
+          "POST /v1/memory/{item_id}/suppress": "suppress_memory_v1_memory__item_id__suppress_post -> 200,422",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200",
+          "POST /v2/ask": "profile_ask_question_v2_ask_post -> 200",
+          "POST /v2/memory": "add_memory_v2_memory_post -> 200",
+          "POST /v2/memory-reviews/{review_id}/decision": "decide_review_v2_memory_reviews__review_id__decision_post -> 200,422",
+          "POST /v2/memory/{item_id}/correct": "correct_memory_v2_memory__item_id__correct_post -> 200,422",
+          "POST /v2/memory/{item_id}/privacy-review": "propose_review_v2_memory__item_id__privacy_review_post -> 200,422",
+          "POST /v2/memory/{item_id}/suppress": "suppress_memory_v2_memory__item_id__suppress_post -> 200,422",
+          "POST /v2/memory/{item_id}/unsuppress": "unsuppress_memory_v2_memory__item_id__unsuppress_post -> 200,422",
+          "POST /v2/profiles": "create_profile_v2_profiles_post -> 200",
+          "POST /v2/profiles/{profile_id}/correct": "correct_profile_v2_profiles__profile_id__correct_post -> 200,422",
+          "POST /v2/profiles/{profile_id}/suppress": "suppress_profile_v2_profiles__profile_id__suppress_post -> 200,422",
+          "POST /v2/profiles/{profile_id}/view": "view_profile_v2_profiles__profile_id__view_post -> 200,422"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "AskAnswer",
+          "AskCancellation",
+          "AskReceipt",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "JsonValue",
+          "Liveness",
+          "MissionCapabilities",
+          "ModelManifest",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "POST /v1/ask",
+        "GET /v2/ask/status",
+        "POST /v2/ask",
+        "GET /v1/ask/{request_id}",
+        "POST /v1/ask/{request_id}/cancel",
+        "GET /v1/ask/{request_id}/ledger",
+        "POST /v1/corrections",
+        "POST /v1/memory",
+        "GET /v1/memory/search",
+        "POST /v1/memory/{item_id}/correct",
+        "POST /v1/memory/{item_id}/suppress",
+        "POST /v1/memory/{item_id}/privacy-review",
+        "POST /v1/memory-reviews/{review_id}/decision",
+        "GET /v1/memory/{item_id}",
+        "POST /v2/memory",
+        "GET /v2/memory/search",
+        "GET /v2/memory/{item_id}",
+        "POST /v2/memory/{item_id}/correct",
+        "POST /v2/memory/{item_id}/privacy-review",
+        "POST /v2/memory-reviews/{review_id}/decision",
+        "POST /v2/memory/{item_id}/suppress",
+        "POST /v2/memory/{item_id}/unsuppress",
+        "POST /v2/profiles",
+        "POST /v2/profiles/{profile_id}/correct",
+        "POST /v2/profiles/{profile_id}/view",
+        "POST /v2/profiles/{profile_id}/suppress",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET /",
+        "GET /ui/ask.js",
+        "GET /ui/ask.css",
+        "GET /v1/local/status"
+      ],
+      "state": {
+        "ask_api": "AskApi",
+        "browser_access": "BrowserAccess",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "local_failure": "None",
+        "local_model": "ModelRuntime",
+        "profile_api": "ProfileApi",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "ask-web": {
+      "browser": {
+        "cookie_name": "panestria_session",
+        "key_fingerprint": "5d4debbd1fb3e8fd",
+        "namespace": "default",
+        "secure": false,
+        "session_seconds": 28800
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /": "index__get -> 200",
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /ui/ask.css": "stylesheet_ui_ask_css_get -> 200",
+          "GET /ui/ask.js": "script_ui_ask_js_get -> 200",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/ask/{request_id}": "ask_receipt_v1_ask__request_id__get -> 200,422",
+          "GET /v1/ask/{request_id}/ledger": "request_ledger_v1_ask__request_id__ledger_get -> 200,422",
+          "GET /v1/local/status": "status_v1_local_status_get -> 200",
+          "GET /v1/memory/search": "search_memory_v1_memory_search_get -> 200,422",
+          "GET /v1/memory/{item_id}": "memory_history_v1_memory__item_id__get -> 200,422",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "GET /v2/ask/status": "profile_ask_status_v2_ask_status_get -> 200",
+          "GET /v2/memory/search": "search_memory_v2_memory_search_get -> 200,422",
+          "GET /v2/memory/{item_id}": "memory_history_v2_memory__item_id__get -> 200,422",
+          "POST /v1/ask": "ask_question_v1_ask_post -> 200",
+          "POST /v1/ask/{request_id}/cancel": "cancel_ask_v1_ask__request_id__cancel_post -> 200,422",
+          "POST /v1/corrections": "capture_correction_v1_corrections_post -> 200",
+          "POST /v1/memory": "add_memory_v1_memory_post -> 200",
+          "POST /v1/memory-reviews/{review_id}/decision": "decide_privacy_review_v1_memory_reviews__review_id__decision_post -> 200,422",
+          "POST /v1/memory/{item_id}/correct": "correct_memory_v1_memory__item_id__correct_post -> 200,422",
+          "POST /v1/memory/{item_id}/privacy-review": "propose_privacy_review_v1_memory__item_id__privacy_review_post -> 200,422",
+          "POST /v1/memory/{item_id}/suppress": "suppress_memory_v1_memory__item_id__suppress_post -> 200,422",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200",
+          "POST /v2/ask": "profile_ask_question_v2_ask_post -> 200",
+          "POST /v2/memory": "add_memory_v2_memory_post -> 200",
+          "POST /v2/memory-reviews/{review_id}/decision": "decide_review_v2_memory_reviews__review_id__decision_post -> 200,422",
+          "POST /v2/memory/{item_id}/correct": "correct_memory_v2_memory__item_id__correct_post -> 200,422",
+          "POST /v2/memory/{item_id}/privacy-review": "propose_review_v2_memory__item_id__privacy_review_post -> 200,422",
+          "POST /v2/memory/{item_id}/suppress": "suppress_memory_v2_memory__item_id__suppress_post -> 200,422",
+          "POST /v2/memory/{item_id}/unsuppress": "unsuppress_memory_v2_memory__item_id__unsuppress_post -> 200,422"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "AskAnswer",
+          "AskCancellation",
+          "AskReceipt",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "JsonValue",
+          "Liveness",
+          "MissionCapabilities",
+          "ModelManifest",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "POST /v1/ask",
+        "GET /v2/ask/status",
+        "POST /v2/ask",
+        "GET /v1/ask/{request_id}",
+        "POST /v1/ask/{request_id}/cancel",
+        "GET /v1/ask/{request_id}/ledger",
+        "POST /v1/corrections",
+        "POST /v1/memory",
+        "GET /v1/memory/search",
+        "POST /v1/memory/{item_id}/correct",
+        "POST /v1/memory/{item_id}/suppress",
+        "POST /v1/memory/{item_id}/privacy-review",
+        "POST /v1/memory-reviews/{review_id}/decision",
+        "GET /v1/memory/{item_id}",
+        "POST /v2/memory",
+        "GET /v2/memory/search",
+        "GET /v2/memory/{item_id}",
+        "POST /v2/memory/{item_id}/correct",
+        "POST /v2/memory/{item_id}/privacy-review",
+        "POST /v2/memory-reviews/{review_id}/decision",
+        "POST /v2/memory/{item_id}/suppress",
+        "POST /v2/memory/{item_id}/unsuppress",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET /",
+        "GET /ui/ask.js",
+        "GET /ui/ask.css",
+        "GET /v1/local/status"
+      ],
+      "state": {
+        "ask_api": "AskApi",
+        "browser_access": "BrowserAccess",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "local_failure": "None",
+        "local_model": "ModelRuntime",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "connection-reviews": {
+      "browser": null,
+      "middleware": [],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "GET /v2/connections/grants/{grant_id}": "read_connection_v2_connections_grants__grant_id__get -> 200,422",
+          "GET /v2/connections/reviews/{proposal_id}": "preview_connection_v2_connections_reviews__proposal_id__get -> 200,422",
+          "GET /v2/connections/scope": "connection_scope_v2_connections_scope_get -> 200",
+          "POST /v2/connections/reviews": "propose_connection_v2_connections_reviews_post -> 200",
+          "POST /v2/connections/reviews/{proposal_id}/decision": "decide_connection_v2_connections_reviews__proposal_id__decision_post -> 200,422"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "ConnectionScopeView",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "Liveness",
+          "MissionCapabilities",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "cache-control": "no-store",
+            "content-type": "application/json"
+          },
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "GET /v2/connections/scope",
+        "POST /v2/connections/reviews",
+        "GET /v2/connections/reviews/{proposal_id}",
+        "POST /v2/connections/reviews/{proposal_id}/decision",
+        "GET /v2/connections/grants/{grant_id}"
+      ],
+      "state": {
+        "connection_terminal_only": "True",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "goal-api": {
+      "browser": null,
+      "middleware": [
+        "TransportLimits"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/approvals": "list_approvals_v1_approvals_get -> 200,422",
+          "GET /v1/approvals/{approval_id}": "read_approval_v1_approvals__approval_id__get -> 200,422",
+          "GET /v1/artifacts/{artifact_id}": "read_artifact_v1_artifacts__artifact_id__get -> 200,422",
+          "GET /v1/goals/{goal_id}": "read_goal_v1_goals__goal_id__get -> 200,422",
+          "GET /v1/goals/{goal_id}/events": "read_events_v1_goals__goal_id__events_get -> 200,422",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "GET /v1/mission/goals/{goal_id}/build-review": "read_review_v1_mission_goals__goal_id__build_review_get -> 200,422",
+          "GET /v2/connections/grants/{grant_id}": "read_connection_v2_connections_grants__grant_id__get -> 200,422",
+          "GET /v2/connections/reviews/{proposal_id}": "preview_connection_v2_connections_reviews__proposal_id__get -> 200,422",
+          "GET /v2/connections/scope": "connection_scope_v2_connections_scope_get -> 200",
+          "GET /v2/quota/observations/{observation_id}": "read_observation_v2_quota_observations__observation_id__get -> 200,422",
+          "POST /v1/approvals/{approval_id}/decision": "decide_approval_v1_approvals__approval_id__decision_post -> 200,422",
+          "POST /v1/goals": "submit_goal_v1_goals_post -> 200,202",
+          "POST /v1/goals/{goal_id}/cancel": "cancel_goal_v1_goals__goal_id__cancel_post -> 200,422",
+          "POST /v1/mission/goals/{goal_id}/build-review/decision": "decide_review_v1_mission_goals__goal_id__build_review_decision_post -> 200,422",
+          "POST /v2/connections/reviews": "propose_connection_v2_connections_reviews_post -> 200",
+          "POST /v2/connections/reviews/{proposal_id}/decision": "decide_connection_v2_connections_reviews__proposal_id__decision_post -> 200,422",
+          "POST /v2/quota/current": "current_quota_v2_quota_current_post -> 200",
+          "POST /v2/quota/observations": "submit_observation_v2_quota_observations_post -> 200"
+        },
+        "schemas": [
+          "ActionPreview",
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "ApprovalList",
+          "ApprovalPreviewBody",
+          "ArtifactBody",
+          "ArtifactVerdict",
+          "BuildCheck",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "BuildReview",
+          "BuildReviewReceipt",
+          "CancelResult",
+          "ConnectionScopeView",
+          "DecisionReceipt",
+          "DependencyCheck",
+          "ErrorBody",
+          "EventPage",
+          "EventRow",
+          "GoalStatus",
+          "GoalSubmission",
+          "HTTPValidationError",
+          "Liveness",
+          "MissionCapabilities",
+          "PendingApproval",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewCheck",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 401
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "cache-control": "no-store",
+            "content-type": "application/json"
+          },
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "status": 404
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "POST /v1/goals",
+        "GET /v1/goals/{goal_id}",
+        "POST /v1/goals/{goal_id}/cancel",
+        "GET /v1/goals/{goal_id}/events",
+        "GET /v1/approvals",
+        "GET /v1/approvals/{approval_id}",
+        "POST /v1/approvals/{approval_id}/decision",
+        "GET /v1/artifacts/{artifact_id}",
+        "POST /v2/quota/observations",
+        "GET /v2/quota/observations/{observation_id}",
+        "POST /v2/quota/current",
+        "GET /v2/connections/scope",
+        "POST /v2/connections/reviews",
+        "GET /v2/connections/reviews/{proposal_id}",
+        "POST /v2/connections/reviews/{proposal_id}/decision",
+        "GET /v2/connections/grants/{grant_id}",
+        "GET /v1/mission/goals/{goal_id}/build-review",
+        "POST /v1/mission/goals/{goal_id}/build-review/decision",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities"
+      ],
+      "state": {
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "sandbox": "PosixPath",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "mission": {
+      "browser": {
+        "cookie_name": "panestria_mission_ce32a9853aeb",
+        "key_fingerprint": "638e74e3b9c6d33a",
+        "namespace": "mission",
+        "secure": false,
+        "session_seconds": 28800
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "Liveness",
+          "MissionCapabilities",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET / [hidden]",
+        "GET /ui/mission.js [hidden]",
+        "GET /ui/mission.css [hidden]"
+      ],
+      "state": {
+        "browser_access": "BrowserAccess",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "mission_build_sha256": "str",
+        "mission_offline_ask": "False",
+        "mission_storage_mode": "False",
+        "private_phone_enabled": "False",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "mission-build-intake": {
+      "browser": {
+        "cookie_name": "panestria_mission_build_intake_ce32a9853aeb",
+        "key_fingerprint": "eb794b5701aa20ae",
+        "namespace": "mission-build-intake",
+        "secure": false,
+        "session_seconds": 28800
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/build/plans/{plan_id}": "inspect_plan_v1_mission_build_plans__plan_id__get -> 200,422",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "POST /v1/mission/build/plans": "stage_plan_v1_mission_build_plans_post -> 200,409,422",
+          "POST /v1/mission/build/plans/{plan_id}/accept": "accept_plan_v1_mission_build_plans__plan_id__accept_post -> 200,409,422",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "BuildPlanStagingView",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "JsonValue",
+          "Liveness",
+          "MissionCapabilities",
+          "PlanConsent",
+          "PlanNode",
+          "PlanProposal",
+          "PlanRevisionConsent",
+          "ProjectActivity",
+          "ProjectInventory",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "StoredPlan",
+          "ValidatedDAG",
+          "ValidationError",
+          "WorkerInventory"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": true,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "POST /v1/mission/build/plans",
+        "GET /v1/mission/build/plans/{plan_id}",
+        "POST /v1/mission/build/plans/{plan_id}/accept",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET / [hidden]",
+        "GET /ui/mission.js [hidden]",
+        "GET /ui/mission.css [hidden]"
+      ],
+      "state": {
+        "browser_access": "BrowserAccess",
+        "build_intake": "BuildIntakeService",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "mission_build_sha256": "str",
+        "mission_offline_ask": "False",
+        "mission_storage_mode": "False",
+        "private_phone_enabled": "False",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "mission-build-run": {
+      "browser": {
+        "cookie_name": "panestria_mission_build_run_ce32a9853aeb",
+        "key_fingerprint": "efd84621a17e52e4",
+        "namespace": "mission-build-run",
+        "secure": false,
+        "session_seconds": 28800
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/build/plans/{plan_id}": "inspect_plan_v1_mission_build_plans__plan_id__get -> 200,422",
+          "GET /v1/mission/build/plans/{plan_id}/run": "inspect_run_v1_mission_build_plans__plan_id__run_get -> 200,422",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "GET /v1/mission/goals/{goal_id}/build-review": "read_review_v1_mission_goals__goal_id__build_review_get -> 200,422",
+          "POST /v1/mission/build/plans": "stage_plan_v1_mission_build_plans_post -> 200,409,422",
+          "POST /v1/mission/build/plans/{plan_id}/accept": "accept_plan_v1_mission_build_plans__plan_id__accept_post -> 200,409,422",
+          "POST /v1/mission/build/plans/{plan_id}/run": "start_run_v1_mission_build_plans__plan_id__run_post -> 200,422",
+          "POST /v1/mission/build/plans/{plan_id}/run/cancel": "cancel_run_v1_mission_build_plans__plan_id__run_cancel_post -> 200,422",
+          "POST /v1/mission/goals/{goal_id}/build-review/decision": "decide_review_v1_mission_goals__goal_id__build_review_decision_post -> 200,422",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200"
+        },
+        "schemas": [
+          "ActionPreview",
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheck",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "BuildPlanStagingView",
+          "BuildReview",
+          "BuildReviewReceipt",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "JsonValue",
+          "Liveness",
+          "MissionCapabilities",
+          "PlanConsent",
+          "PlanNode",
+          "PlanProposal",
+          "PlanRevisionConsent",
+          "PlanRunIntent",
+          "PlanRunRecord",
+          "PlanRunReturn",
+          "PlanRunStorage",
+          "PlanRunView",
+          "ProjectActivity",
+          "ProjectInventory",
+          "Readiness",
+          "ReviewCheck",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "StoredPlan",
+          "ValidatedDAG",
+          "ValidationError",
+          "WorkerInventory"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": true,
+          "build_review_enabled": true,
+          "build_run_enabled": true,
+          "dispatch_authority": "EXPLICIT_FOREGROUND_BUILD",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": true,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "GET /v1/mission/goals/{goal_id}/build-review",
+        "POST /v1/mission/goals/{goal_id}/build-review/decision",
+        "POST /v1/mission/build/plans",
+        "GET /v1/mission/build/plans/{plan_id}",
+        "POST /v1/mission/build/plans/{plan_id}/accept",
+        "GET /v1/mission/build/plans/{plan_id}/run",
+        "POST /v1/mission/build/plans/{plan_id}/run",
+        "POST /v1/mission/build/plans/{plan_id}/run/cancel",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET / [hidden]",
+        "GET /ui/mission.js [hidden]",
+        "GET /ui/mission.css [hidden]"
+      ],
+      "state": {
+        "browser_access": "BrowserAccess",
+        "build_evidence_reader": "BuildEvidenceService",
+        "build_intake": "BuildIntakeService",
+        "build_review": "BuildReviewService",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "mission_build_sha256": "str",
+        "mission_offline_ask": "False",
+        "mission_run": "_StubRun",
+        "mission_storage_mode": "False",
+        "private_phone_enabled": "False",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "mission-evidence": {
+      "browser": {
+        "cookie_name": "panestria_mission_ce32a9853aeb",
+        "key_fingerprint": "638e74e3b9c6d33a",
+        "namespace": "mission",
+        "secure": false,
+        "session_seconds": 28800
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "Liveness",
+          "MissionCapabilities",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET / [hidden]",
+        "GET /ui/mission.js [hidden]",
+        "GET /ui/mission.css [hidden]"
+      ],
+      "state": {
+        "browser_access": "BrowserAccess",
+        "build_evidence_reader": "BuildEvidenceService",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "mission_build_sha256": "str",
+        "mission_offline_ask": "False",
+        "mission_storage_mode": "False",
+        "private_phone_enabled": "False",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "mission-plan-review": {
+      "browser": {
+        "cookie_name": "panestria_mission_plan_review_ce32a9853aeb",
+        "key_fingerprint": "8d8a852b5ad94b0c",
+        "namespace": "mission-plan-review",
+        "secure": false,
+        "session_seconds": 28800
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/build/plans/{plan_id}": "inspect_plan_v1_mission_build_plans__plan_id__get -> 200,422",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "POST /v1/mission/build/plans": "stage_plan_v1_mission_build_plans_post -> 200,409,422",
+          "POST /v1/mission/build/plans/{plan_id}/accept": "accept_plan_v1_mission_build_plans__plan_id__accept_post -> 200,409,422",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "BuildPlanStagingView",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "JsonValue",
+          "Liveness",
+          "MissionCapabilities",
+          "PlanConsent",
+          "PlanNode",
+          "PlanProposal",
+          "PlanRevisionConsent",
+          "ProjectActivity",
+          "ProjectInventory",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "StoredPlan",
+          "ValidatedDAG",
+          "ValidationError",
+          "WorkerInventory"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": true,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": true,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "POST /v1/mission/build/plans",
+        "GET /v1/mission/build/plans/{plan_id}",
+        "POST /v1/mission/build/plans/{plan_id}/accept",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET / [hidden]",
+        "GET /ui/mission.js [hidden]",
+        "GET /ui/mission.css [hidden]"
+      ],
+      "state": {
+        "browser_access": "BrowserAccess",
+        "build_intake": "BuildIntakeService",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "mission_build_sha256": "str",
+        "mission_offline_ask": "False",
+        "mission_storage_mode": "False",
+        "private_phone_enabled": "False",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "mission-research": {
+      "browser": {
+        "cookie_name": "panestria_mission_research_ce32a9853aeb",
+        "key_fingerprint": "f7ca9e98ca8c59d4",
+        "namespace": "mission-research",
+        "secure": false,
+        "session_seconds": 28800
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "GET /v1/mission/research/intake": "intake_v1_mission_research_intake_get -> 200",
+          "GET /v1/mission/research/questions/{goal_id}": "inspect_v1_mission_research_questions__goal_id__get -> 200,422",
+          "POST /v1/mission/research/questions": "stage_v1_mission_research_questions_post -> 200",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "JsonValue",
+          "Liveness",
+          "MissionCapabilities",
+          "ProjectActivity",
+          "Readiness",
+          "ResearchIntakeView",
+          "ResearchLimits",
+          "ResearchStagingView",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": true
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "GET /v1/mission/research/intake",
+        "POST /v1/mission/research/questions",
+        "GET /v1/mission/research/questions/{goal_id}",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET / [hidden]",
+        "GET /ui/mission.js [hidden]",
+        "GET /ui/mission.css [hidden]"
+      ],
+      "state": {
+        "browser_access": "BrowserAccess",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "mission_build_sha256": "str",
+        "mission_offline_ask": "False",
+        "mission_storage_mode": "False",
+        "private_phone_enabled": "False",
+        "research_intake": "_StubResearch",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "mission-review": {
+      "browser": {
+        "cookie_name": "panestria_mission_review_ce32a9853aeb",
+        "key_fingerprint": "9c71108bab8fed86",
+        "namespace": "mission-review",
+        "secure": false,
+        "session_seconds": 28800
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "GET /v1/mission/goals/{goal_id}/build-review": "read_review_v1_mission_goals__goal_id__build_review_get -> 200,422",
+          "POST /v1/mission/goals/{goal_id}/build-review/decision": "decide_review_v1_mission_goals__goal_id__build_review_decision_post -> 200,422",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200"
+        },
+        "schemas": [
+          "ActionPreview",
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheck",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "BuildReview",
+          "BuildReviewReceipt",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "Liveness",
+          "MissionCapabilities",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewCheck",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": true,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "GET /v1/mission/goals/{goal_id}/build-review",
+        "POST /v1/mission/goals/{goal_id}/build-review/decision",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET / [hidden]",
+        "GET /ui/mission.js [hidden]",
+        "GET /ui/mission.css [hidden]"
+      ],
+      "state": {
+        "browser_access": "BrowserAccess",
+        "build_evidence_reader": "BuildEvidenceService",
+        "build_review": "BuildReviewService",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "mission_build_sha256": "str",
+        "mission_offline_ask": "False",
+        "mission_storage_mode": "False",
+        "private_phone_enabled": "False",
+        "settings": "ValidatedSettings"
+      }
+    },
+    "mission-storage": {
+      "browser": {
+        "cookie_name": "panestria_mission_storage_ce32a9853aeb",
+        "key_fingerprint": "6ae62e90a816faa6",
+        "namespace": "mission-storage",
+        "secure": false,
+        "session_seconds": 28800
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "Liveness",
+          "MissionCapabilities",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": false,
+          "build_review_enabled": false,
+          "build_run_enabled": false,
+          "dispatch_authority": "NONE",
+          "offline_ask_enabled": false,
+          "plan_acceptance_enabled": false,
+          "research_intake_enabled": false,
+          "storage_status_enabled": true
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET / [hidden]",
+        "GET /ui/mission.js [hidden]",
+        "GET /ui/mission.css [hidden]"
+      ],
+      "state": {
+        "browser_access": "BrowserAccess",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "mission_build_sha256": "str",
+        "mission_offline_ask": "False",
+        "mission_storage_mode": "True",
+        "private_phone_enabled": "False",
+        "settings": "ValidatedSettings",
+        "storage_observer": "StorageObserver"
+      }
+    },
+    "phone": {
+      "browser": {
+        "cookie_name": "panestria_mission_phone_10e73f971e71",
+        "key_fingerprint": "27ef8adca15ca34e",
+        "namespace": "mission-phone",
+        "secure": true,
+        "session_seconds": 3600
+      },
+      "middleware": [
+        "PhoneBoundary",
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "POST /v1/session/code": "issue_code_v1_session_code_post -> 200",
+          "POST /v1/session/logout": "logout_v1_session_logout_post -> 200",
+          "POST /v1/session/pair": "pair_v1_session_pair_post -> 200"
+        },
+        "schemas": [
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "Liveness",
+          "MissionCapabilities",
+          "ProjectActivity",
+          "Readiness",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "ValidationError"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "code": "phone_read_only",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "code": "phone_read_only",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "GET /v1/local/status (anonymous)": {
+          "code": "phone_read_only",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews",
+        "GET /v1/activity",
+        "GET /v1/activity/storage",
+        "GET /v1/activity/goals/{goal_id}/events",
+        "GET /v1/activity/goals/{goal_id}/build-progress",
+        "GET /v1/mission/capabilities",
+        "POST /v1/session/code",
+        "POST /v1/session/pair",
+        "POST /v1/session/logout",
+        "GET / [hidden]",
+        "GET /ui/mission.js [hidden]",
+        "GET /ui/mission.css [hidden]"
+      ],
+      "state": {
+        "browser_access": "PhoneBrowserAccess",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "mission_build_sha256": "str",
+        "mission_offline_ask": "False",
+        "mission_storage_mode": "False",
+        "phone_certificate_sha256": "str",
+        "private_phone_enabled": "True",
+        "settings": "ValidatedSettings"
+      }
+    }
+  },
+  "schema_version": 1,
+  "schemas": {
+    "ActionPreview": "f8dda759e4bed25f",
+    "ActivityEntry": "f855ec0dcdbf4cb3",
+    "ActivityEvent": "4969f37bc9b1fce5",
+    "ActivityGoalSnapshot": "5e589862f42080de",
+    "ActivityTask": "38c87ad18c40c736",
+    "ActivityTimeline": "615f72938f2fc270",
+    "ApprovalList": "ee9a13d3e0285e09",
+    "ApprovalPreviewBody": "5309e9b53269e26b",
+    "ArtifactBody": "a37c405944319055",
+    "ArtifactVerdict": "386905dc053747f5",
+    "AskAnswer": "ea5c9f78546caa8d",
+    "AskCancellation": "c41bcd720b81e134",
+    "AskReceipt": "bb9f97c7c7fe560e",
+    "BuildCheck": "f689bec63b4a0090",
+    "BuildCheckObservation": "b1479d117bf9d2f7",
+    "BuildMilestoneObservation": "2c594bc134dd4a18",
+    "BuildObservation": "40e61145bb79a41d",
+    "BuildPlanStagingView": "9d38957001368aa2",
+    "BuildReview": "877f843bce2cb62f",
+    "BuildReviewReceipt": "0fb812adfdc4fc8a",
+    "CancelResult": "4129924f0dc3ea21",
+    "ConnectionScopeView": "81897d715b01df4c",
+    "DecisionReceipt": "b32cb0c59f51c3a7",
+    "DependencyCheck": "77dbad9e8ba7e353",
+    "ErrorBody": "cb32166b3519c9b2",
+    "EventPage": "4436936129b833fb",
+    "EventRow": "81485fdecb14c4a6",
+    "GoalStatus": "bda64fac65e1db81",
+    "GoalSubmission": "4b9753276a0db6e7",
+    "HTTPValidationError": "7373c21f13893123",
+    "JsonValue": "44136fa355b3678a",
+    "Liveness": "fad90796b00c2948",
+    "MissionCapabilities": "3a3f39a653247301",
+    "ModelManifest": "281f7a65fd6d53c3",
+    "PendingApproval": "30eacef116310f5f",
+    "PlanConsent": "91a1f663025443b9",
+    "PlanNode": "2f7ed2e715c2349f",
+    "PlanProposal": "22a9f4ca568d281c",
+    "PlanRevisionConsent": "d805243e44852818",
+    "PlanRunIntent": "83c57a09960c7338",
+    "PlanRunRecord": "8cc7d951c78cf0a4",
+    "PlanRunReturn": "7124c638cfbb957c",
+    "PlanRunStorage": "44f7a33b1f368ba8",
+    "PlanRunView": "5ee9f1b9da5edef2",
+    "ProjectActivity": "c28073481085d246",
+    "ProjectInventory": "90bee7053697c98f",
+    "Readiness": "9a1855cee04cdd60",
+    "ResearchIntakeView": "ba5acf771139d581",
+    "ResearchLimits": "06aefc35d65c2659",
+    "ResearchStagingView": "fd02c912cf98d148",
+    "ReviewCheck": "f5b2f7175a9e9174",
+    "ReviewInbox": "ecfeeb12a23f7eda",
+    "ReviewInboxEntry": "209ab817848b1ed1",
+    "StorageCapacity": "ec9c256d2000ddc0",
+    "StorageComponentStatus": "3584f549f6823050",
+    "StorageNotice": "08dfefce381c6b7e",
+    "StorageStatus": "28d7a7cda5b21222",
+    "StoredPlan": "25be7c95afacfcdb",
+    "ValidatedDAG": "7bbda8ccd8dc85e3",
+    "ValidationError": "ca285d0c0e64c428",
+    "WorkerInventory": "6a211107e545af8a"
+  }
+}
