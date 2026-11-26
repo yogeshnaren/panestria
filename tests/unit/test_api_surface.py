@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from panestria.api.auth import GoalApi
 from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.api.main import create_app, mount_goal_api
-from panestria.api.serving import TransportLimits
+from panestria.api.serving import GOAL_API_PROTOCOL, TransportLimits
 from panestria.config import Settings
 from serving_support import exchange, served
 
@@ -58,15 +58,22 @@ def _served_app(deadline_seconds: float = 10.0):  # type: ignore[no-untyped-def]
 
 def test_stalled_headers_are_answered_with_a_deadline_error(monkeypatch):
     monkeypatch.setattr(LocalHttpProtocol, "header_deadline_seconds", 0.2)
-    with served(_served_app()) as port:
+    with served(_served_app(), http=GOAL_API_PROTOCOL) as port:
         response = exchange(port, b"GET /healthz HTTP/1.1\r\nHost: 127.0.0.1\r\n", timeout=3)
     assert response.startswith(b"HTTP/1.1 408 Request Timeout") and b"request_deadline_exceeded" in response
 
 
 def test_an_idle_connection_is_closed_without_a_reply(monkeypatch):
     monkeypatch.setattr(LocalHttpProtocol, "header_deadline_seconds", 0.2)
-    with served(_served_app()) as port:
+    with served(_served_app(), http=GOAL_API_PROTOCOL) as port:
         assert exchange(port, b"", timeout=3) == b""
+
+
+def test_other_servers_close_stalled_headers_without_a_reply(monkeypatch):
+    # The Ask and Mission Control servers keep their silent close (test_local_server).
+    monkeypatch.setattr(LocalHttpProtocol, "header_deadline_seconds", 0.2)
+    with served(_served_app()) as port:
+        assert exchange(port, b"GET /healthz HTTP/1.1\r\nHost: 127.0.0.1\r\n", timeout=3) == b""
 
 
 def test_a_stalled_body_is_answered_with_a_deadline_error():

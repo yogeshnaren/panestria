@@ -15,8 +15,9 @@ app can keep them under uvicorn:
   body is complete, so a long-lived response such as an event stream, which
   waits on ``receive`` for a disconnect, is not cut short.
 
-Header-phase stalls and malformed HTTP are answered by the protocol itself; see
-``local_protocol.py``.
+Header-phase stalls and malformed HTTP are handled by the protocol itself; see
+``local_protocol.py``. ``GOAL_API_PROTOCOL`` is the one that answers a stalled
+header block with 408, as the goal API always has.
 """
 
 from __future__ import annotations
@@ -30,10 +31,11 @@ from typing import Any
 import uvicorn
 
 from panestria.api.auth import MAX_BODY_BYTES, MAX_HEADER_BYTES, MAX_HEADER_LINE_BYTES, error_body
-from panestria.api.local_protocol import LocalHttpProtocol
+from panestria.api.local_protocol import AnsweringHttpProtocol, LocalHttpProtocol
 from panestria.config_local import LocalApplicationRejected
 
 REQUEST_DEADLINE_SECONDS = 10.0
+GOAL_API_PROTOCOL = AnsweringHttpProtocol
 
 Scope = MutableMapping[str, Any]
 Message = MutableMapping[str, Any]
@@ -60,7 +62,7 @@ def owned_socket(host: str, port: int) -> socket.socket:
         raise LocalApplicationRejected("local_bind_unavailable") from None
 
 
-def server_config(app: Any) -> uvicorn.Config:
+def server_config(app: Any, *, http: type[LocalHttpProtocol] = LocalHttpProtocol) -> uvicorn.Config:
     # Installed source confirms TRACE wraps ASGI messages and access logs include
     # query strings. Fixed NullHandlers prevent accidental exception/body output.
     logging = {
@@ -78,7 +80,7 @@ def server_config(app: Any) -> uvicorn.Config:
         workers=1,
         reload=False,
         proxy_headers=False,
-        http=LocalHttpProtocol,
+        http=http,
         ws="none",
         interface="asgi3",
         lifespan="on",

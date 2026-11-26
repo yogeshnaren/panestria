@@ -14,7 +14,7 @@ from fastapi.testclient import TestClient
 from panestria.api.auth import MAX_BODY_BYTES, MAX_HEADER_LINE_BYTES, GoalApi
 from panestria.api.db import DatabaseUnavailable
 from panestria.api.main import create_app, mount_goal_api
-from panestria.api.serving import TransportLimits
+from panestria.api.serving import GOAL_API_PROTOCOL, TransportLimits
 from panestria.config import Settings
 from serving_support import exchange, served
 
@@ -69,7 +69,7 @@ def _r0_app(database_url: str):  # type: ignore[no-untyped-def]
 
 
 def _health_during_submit(entered: threading.Event) -> tuple[float, bytes, bytes]:
-    with served(_r0_app(CLOSED)) as port:
+    with served(_r0_app(CLOSED), http=GOAL_API_PROTOCOL) as port:
         return _exchange(port, entered)
 
 
@@ -101,7 +101,7 @@ def test_oversized_header_is_rejected_without_echo(record_property: pytest.Recor
     record_property("gate_case_id", "AOS-001-TC01")
     marker = b"A" * (MAX_HEADER_LINE_BYTES + 1)
     host = b"Host: 127.0.0.1\r\nConnection: close\r\n"
-    with served(_r0_app(CLOSED)) as port:
+    with served(_r0_app(CLOSED), http=GOAL_API_PROTOCOL) as port:
         oversized = exchange(port, b"GET /" + marker + b" HTTP/1.1\r\n" + host + b"\r\n")
         header = exchange(port, b"GET /healthz HTTP/1.1\r\n" + host + b"X-Pad: " + marker + b"\r\n\r\n")
         negative = exchange(port, b"POST /v1/goals HTTP/1.1\r\n" + host + b"Content-Length: -1\r\n\r\n")

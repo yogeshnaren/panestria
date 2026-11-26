@@ -16,15 +16,16 @@ from typing import Any
 
 import uvicorn
 
+from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.api.serving import owned_socket, server_config
 
 
 @contextmanager
-def served(app: Any) -> Iterator[int]:
+def served(app: Any, *, http: type[LocalHttpProtocol] = LocalHttpProtocol) -> Iterator[int]:
     """Serve ``app`` on 127.0.0.1 with an ephemeral port; yield the port."""
     listener = owned_socket("127.0.0.1", 0)
     port = int(listener.getsockname()[1])
-    server = uvicorn.Server(server_config(app))
+    server = uvicorn.Server(server_config(app, http=http))
     thread = threading.Thread(target=server.run, kwargs={"sockets": [listener]}, daemon=True)
     thread.start()
     try:

@@ -1,8 +1,10 @@
 """Deadline and refusal extensions for the pinned HTTP parser, without parsing HTTP ourselves.
 
-A request whose headers do not arrive within ``header_deadline_seconds`` gets
-``408 request_deadline_exceeded``; an idle keep-alive connection is closed
-without a reply. Malformed HTTP (a bad request line, a negative or conflicting
+A connection whose request headers do not arrive within
+``header_deadline_seconds`` is closed without a reply. ``AnsweringHttpProtocol``
+instead answers a partly received header block with ``408
+request_deadline_exceeded``, as the goal API always has, and still closes an
+idle keep-alive connection silently. Malformed HTTP (a bad request line, a negative or conflicting
 ``Content-Length``, an oversized incomplete event) gets the shared JSON
 ``400 invalid_request`` envelope instead of the parser's plain-text message, and
 nothing from the request is echoed.
@@ -22,6 +24,7 @@ _REASONS = {400: "Bad Request", 408: "Request Timeout"}
 
 class LocalHttpProtocol(H11Protocol):
     header_deadline_seconds = 5.0
+    answer_header_deadline = False
     header_timer: asyncio.TimerHandle | None = None
 
     def _cancel_header_timer(self) -> None:
@@ -35,7 +38,7 @@ class LocalHttpProtocol(H11Protocol):
 
     def _header_deadline(self) -> None:
         # Bytes of a new request arrived but never formed a complete header block.
-        if self.conn.trailing_data[0]:
+        if self.answer_header_deadline and self.conn.trailing_data[0]:
             self._refuse(408, "request_deadline_exceeded")
         else:
             self.transport.close()
@@ -74,3 +77,9 @@ class LocalHttpProtocol(H11Protocol):
     def connection_lost(self, exc: Exception | None) -> None:
         self._cancel_header_timer()
         super().connection_lost(exc)
+
+
+class AnsweringHttpProtocol(LocalHttpProtocol):
+    """Answer a stalled, partly received header block with 408 instead of closing silently."""
+
+    answer_header_deadline = True

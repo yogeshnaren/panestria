@@ -23,7 +23,7 @@ import uvicorn
 from panestria.api.auth import GoalApi
 from panestria.api.health import default_readiness_probe
 from panestria.api.main import create_app, mount_goal_api
-from panestria.api.serving import TransportLimits, owned_socket, server_config
+from panestria.api.serving import GOAL_API_PROTOCOL, TransportLimits, owned_socket, server_config
 from panestria.config import ProfileRejected, load_settings
 from panestria.config_local import LocalApplicationRejected
 
@@ -96,7 +96,7 @@ def main(journey: JourneyFactory | None = None) -> None:
     if driver is not None:
         driver.start()
     try:
-        uvicorn.Server(server_config(application)).run(sockets=[listener])
+        uvicorn.Server(server_config(application, http=GOAL_API_PROTOCOL)).run(sockets=[listener])
     finally:
         listener.close()
         if driver is not None:
