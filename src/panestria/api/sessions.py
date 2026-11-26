@@ -161,6 +161,12 @@ class AcceptScopes:
         request.state.accepted_scopes = tuple(owner[s] for s in self.scopes) if isinstance(owner, BrowserScopes) else ()
 
 
+def browser_wired(request: Request) -> bool:
+    """Whether the app serves browsers at all: any browser access or session scopes, of any kind."""
+    state = request.app.state
+    return getattr(state, "browser_access", None) is not None or getattr(state, "browser_scopes", None) is not None
+
+
 def selected_access(request: Request) -> BrowserAccess | None:
     """The browser session this request may use, if any."""
     accepted: tuple[BrowserAccess, ...] | None = getattr(request.state, "accepted_scopes", None)

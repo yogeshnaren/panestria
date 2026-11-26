@@ -197,3 +197,10 @@ def test_logging_out_one_scope_leaves_the_others_paired(owner: Owner) -> None:
 def test_pairing_attempts_share_one_budget_across_scopes(owner: Owner) -> None:
     statuses = [_pair(owner, SESSION_SCOPES[i % 3], "0" * 8).status_code for i in range(6)]
     assert statuses[:5] == [401] * 5 and statuses[5] == 429
+
+
+def test_host_storage_metadata_stays_terminal_only_on_the_owner_app(owner: Owner) -> None:
+    # The owner app serves browsers, so even the bearer may not read host storage metadata here.
+    bearer = {"Authorization": f"Bearer {owner.token}"}
+    response = owner.client().get("/v1/activity/storage", headers=bearer)
+    assert (response.status_code, response.json()["code"]) == (403, "storage_terminal_mode_only")

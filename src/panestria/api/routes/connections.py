@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body, read_capped_body
 from panestria.api.db import DatabaseUnavailable
 from panestria.api.routes.ask import _transaction
-from panestria.api.sessions import selected_access
+from panestria.api.sessions import browser_wired
 from panestria.contracts.connections import ConnectionScopeView, DecideReview, SubmitReview
 from panestria.contracts.connections import parse_connection_contract as _parse
 from panestria.kernel.connections import ConnectionReview, ConnectionReviewService
@@ -24,7 +24,7 @@ _HEADERS = {"Cache-Control": "no-store", "Referrer-Policy": "no-referrer", "X-Co
 
 
 def _api(request: Request) -> GoalApi:
-    if getattr(request.app.state, "connection_terminal_only", False) and selected_access(request) is not None:
+    if getattr(request.app.state, "connection_terminal_only", False) and browser_wired(request):
         raise LoopbackDenied("connection_terminal_mode_only", 403)
     value = getattr(request.app.state, "goal_api", None)
     if not isinstance(value, GoalApi):
