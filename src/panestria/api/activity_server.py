@@ -9,13 +9,36 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 
+from panestria.api.app import Activity, AppProfile, ConnectionReviews, Feature, Storage, build_app
 from panestria.api.auth import GoalApi
-from panestria.api.health import default_readiness_probe
-from panestria.api.main import create_app, mount_activity_api
 from panestria.api.serving import server_config
 from panestria.config import Settings, ValidatedSettings
 from panestria.config_activity import ActivitySettings, load_activity_settings
 from panestria.config_local import LocalApplicationRejected
+
+
+def activity_profile(
+    config: ActivitySettings,
+    settings: ValidatedSettings,
+    token: str,
+    *,
+    storage_config: Path | None = None,
+    connection_reviews: bool = False,
+) -> AppProfile:
+    """The read-only project server; storage notices or connection review only when selected."""
+    if connection_reviews and storage_config is not None:
+        raise LocalApplicationRejected("connection_terminal_mode_only")
+    scope = GoalApi(token, str(config.owner_id), str(config.project_id), settings.database_url.get_secret_value())
+    features: list[Feature] = []
+    if storage_config is not None:
+        from panestria.kernel.goals import Actor
+        from panestria.resources.storage_status import StorageObserver
+
+        features.append(Storage(StorageObserver(Actor(str(config.owner_id), str(config.project_id)), storage_config)))
+    features.append(Activity())
+    if connection_reviews:
+        features.append(ConnectionReviews())
+    return AppProfile(settings, scope, tuple(features))
 
 
 def build_activity_app(
@@ -26,39 +49,9 @@ def build_activity_app(
     storage_config: Path | None = None,
     connection_reviews: bool = False,
 ) -> FastAPI:
-    if connection_reviews and storage_config is not None:
-        raise LocalApplicationRejected("connection_terminal_mode_only")
-    app = create_app(settings, default_readiness_probe)
-    app.state.goal_api = GoalApi(
-        token, str(config.owner_id), str(config.project_id), settings.database_url.get_secret_value()
+    return build_app(
+        activity_profile(config, settings, token, storage_config=storage_config, connection_reviews=connection_reviews)
     )
-    if storage_config is not None:
-        from collections.abc import AsyncIterator
-        from contextlib import asynccontextmanager
-
-        from fastapi import APIRouter
-
-        from panestria.kernel.goals import Actor
-        from panestria.resources.storage_status import StorageObserver
-
-        observer = StorageObserver(Actor(str(config.owner_id), str(config.project_id)), storage_config)
-        app.state.storage_observer = observer
-
-        @asynccontextmanager
-        async def storage_lifecycle(_: FastAPI) -> AsyncIterator[None]:
-            try:
-                yield
-            finally:
-                observer.close()
-
-        app.include_router(APIRouter(lifespan=storage_lifecycle))
-    mount_activity_api(app)
-    if connection_reviews:
-        from panestria.api.routes.connections import router as connection_router
-
-        app.state.connection_terminal_only = True
-        app.include_router(connection_router)
-    return app
 
 
 def serve_activity(

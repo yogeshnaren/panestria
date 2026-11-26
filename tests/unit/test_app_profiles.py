@@ -34,14 +34,13 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from panestria.api.activity_server import build_activity_app
+from panestria.api.app import build_app
 from panestria.api.auth import GoalApi
-from panestria.api.health import default_readiness_probe
 from panestria.api.local_server import build_local_app
-from panestria.api.main import create_app, mount_goal_api
 from panestria.api.mission_web import mount_mission_control
 from panestria.api.routes.profiles import ProfileApi
 from panestria.api.security import _SECURITY_HEADERS
-from panestria.api.serving import TransportLimits
+from panestria.api.serve import goal_profile
 from panestria.api.sessions import BrowserAccess
 from panestria.config import Settings
 from panestria.config_activity import ActivitySettings
@@ -145,11 +144,7 @@ def _settings() -> Any:
 
 def _goal_api(env: Env) -> FastAPI:
     # As ``python -m panestria.api.serve`` assembles it.
-    app = create_app(_settings(), default_readiness_probe)
-    mount_goal_api(app, GoalApi(TOKEN, OWNER, PROJECT, DSN))
-    app.state.sandbox = FIXED / "sandbox"
-    app.add_middleware(TransportLimits)
-    return app
+    return build_app(goal_profile(_settings(), GoalApi(TOKEN, OWNER, PROJECT, DSN), FIXED / "sandbox"))
 
 
 def _mission(**modes: Any) -> Callable[[Env], FastAPI]:

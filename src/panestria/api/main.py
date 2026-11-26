@@ -100,6 +100,14 @@ def create_app(settings: Settings | ValidatedSettings, readiness_probe: Readines
 def mount_goal_api(app: FastAPI, goal_api: GoalApi) -> None:
     """Attach scoped goal routes. Health-only apps leave them unmounted."""
     app.state.goal_api = goal_api
+    mount_goal_routes(app)
+    mount_activity_api(app)
+
+
+def mount_goal_routes(app: FastAPI) -> None:
+    """The goal, event, approval, artifact, quota, connection and Build review routes."""
+    if not isinstance(app.state.goal_api, GoalApi):
+        raise TypeError("goal routes require configured actor scope")
     app.include_router(goals_router)
     app.include_router(events_router)
     app.include_router(approvals_router)
@@ -109,7 +117,6 @@ def mount_goal_api(app: FastAPI, goal_api: GoalApi) -> None:
     from panestria.api.routes.mission_review import router as mission_review_router
 
     app.include_router(mission_review_router)
-    mount_activity_api(app)
 
 
 def mount_activity_api(app: FastAPI) -> None:
