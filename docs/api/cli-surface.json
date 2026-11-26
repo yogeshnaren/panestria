@@ -2672,6 +2672,29 @@
         }
       }
     },
+    "pair-code": {
+      "hidden": false,
+      "params": [
+        {
+          "name": "config",
+          "opts": [
+            "--config"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "path"
+        },
+        {
+          "name": "scope",
+          "opts": [
+            "--scope"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "choice"
+        }
+      ]
+    },
     "phone": {
       "hidden": false,
       "params": [],
@@ -4852,6 +4875,38 @@
           "params": []
         }
       }
+    },
+    "serve": {
+      "hidden": false,
+      "params": [
+        {
+          "name": "config",
+          "opts": [
+            "--config"
+          ],
+          "kind": "option",
+          "required": true,
+          "type": "path"
+        },
+        {
+          "name": "build_config",
+          "opts": [
+            "--build-config"
+          ],
+          "kind": "option",
+          "required": false,
+          "type": "path"
+        },
+        {
+          "name": "assets",
+          "opts": [
+            "--assets"
+          ],
+          "kind": "option",
+          "required": false,
+          "type": "path"
+        }
+      ]
     },
     "storage": {
       "hidden": false,

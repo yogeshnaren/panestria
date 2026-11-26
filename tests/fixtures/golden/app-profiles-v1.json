@@ -2332,11 +2332,12 @@
             "key_fingerprint": "f31d4eb29f81cf60",
             "namespace": "owner-build",
             "secure": false,
-            "session_seconds": 28800
+            "session_seconds": 3600
           }
         ]
       },
       "middleware": [
+        "TransportLimits",
         "BrowserSecurity"
       ],
       "openapi": {
