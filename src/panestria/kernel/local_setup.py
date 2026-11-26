@@ -49,6 +49,41 @@ def offline_policy(actor: Actor) -> PolicyContext:
     )
 
 
+def ask_policy(uow: UnitOfWork, actor: Actor, *, accept_successor: bool = False) -> PolicyContext:
+    """The project policy local Ask runs under; otherwise ``local_setup_policy_conflict``.
+
+    By default this is exactly the offline-Ask setup policy. Setting up Build
+    later applies a broader policy to the same project, and Ask itself stays
+    unchanged: it reads, and it has no cloud route. With ``accept_successor``
+    (the owner app), Ask also runs under a later policy, but only if:
+
+    - the project has its offline-Ask setup receipt, which setup writes only
+      together with the first policy revision (revisions are immutable);
+    - the current revision was applied through an approved policy review, the
+      only path that writes a revision after setup;
+    - ``read`` still acts and reports.
+    """
+    policy = current_policy(uow, actor)
+    expected = offline_policy(actor)
+    receipt = uow.execute(
+        "SELECT policy_sha256 FROM panestria.local_project_setup WHERE owner_id=%s AND project_id=%s",
+        (actor.owner_id, actor.project_id),
+    ).fetchone()
+    if receipt is None or str(receipt[0]).strip() != expected.sha256():
+        raise KernelDenied("local_setup_policy_conflict")
+    if policy == expected:
+        return policy
+    if not accept_successor or policy.autonomy.actions.get("read") != "act-and-report":
+        raise KernelDenied("local_setup_policy_conflict")
+    applied = uow.execute(
+        "SELECT proposed_body FROM panestria.policy_review WHERE project_id=%s AND owner_id=%s AND state='APPLIED'",
+        (actor.project_id, actor.owner_id),
+    ).fetchall()
+    if not any(PolicyContext.model_validate(body).sha256() == policy.sha256() for (body,) in applied):
+        raise KernelDenied("local_setup_policy_conflict")
+    return policy
+
+
 class LocalSetupService:
     def initialize(self, uow: UnitOfWork, intent: LocalSetupIntent) -> LocalSetupReceipt:
         actor = intent.actor()
