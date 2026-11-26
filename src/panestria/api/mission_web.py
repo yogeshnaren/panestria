@@ -20,8 +20,8 @@ from typing import Any
 from fastapi import APIRouter, FastAPI
 from fastapi.responses import Response
 
-from panestria.api.app import Browser
-from panestria.api.sessions import BrowserAccess, BrowserNamespace
+from panestria.api.app import Browser, scope_dependencies
+from panestria.api.sessions import BrowserAccess, BrowserNamespace, SessionScope
 from panestria.config_activity import ActivitySettings
 from panestria.config_local import LocalApplicationRejected
 from panestria.kernel.sessions import SessionService
@@ -85,6 +85,7 @@ class BuildReview:
     """PUBLIC diff and report review with consent recording; no merge dispatch."""
 
     root: Path
+    scope: tuple[SessionScope, ...] = ()
 
     def mount(self, app: FastAPI) -> None:
         from panestria.api.routes.mission_review import router
@@ -92,7 +93,7 @@ class BuildReview:
 
         app.state.build_review = BuildReviewService(self.root)
         app.state.build_evidence_reader = app.state.build_review.evidence
-        app.include_router(router)
+        app.include_router(router, dependencies=scope_dependencies(self.scope))
 
 
 @dataclass(frozen=True)
@@ -125,13 +126,14 @@ class BuildIntake:
     """PUBLIC zero-cash plan staging; with acceptance, also plan review and acceptance."""
 
     allow_acceptance: bool = False
+    scope: tuple[SessionScope, ...] = ()
 
     def mount(self, app: FastAPI) -> None:
         from panestria.api.routes.build_intake import router
         from panestria.execution.build_intake import BuildIntakeService
 
         app.state.build_intake = BuildIntakeService(allow_acceptance=self.allow_acceptance)
-        app.include_router(router)
+        app.include_router(router, dependencies=scope_dependencies(self.scope))
 
 
 @dataclass(frozen=True)
@@ -139,13 +141,14 @@ class BuildRun:
     """Explicit finite foreground Build runs; the service is closed with the app."""
 
     service: Any  # MissionRunService
+    scope: tuple[SessionScope, ...] = ()
 
     def mount(self, app: FastAPI) -> None:
         from panestria.api.routes.mission_run import router
 
         service = self.service
         app.state.mission_run = service
-        app.include_router(router)
+        app.include_router(router, dependencies=scope_dependencies(self.scope))
 
         @asynccontextmanager
         async def run_lifecycle(_: FastAPI) -> AsyncIterator[None]:

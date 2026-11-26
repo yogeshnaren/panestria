@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from panestria.api.auth import LoopbackDenied, authorize, error_body, read_capped_body
 from panestria.api.db import DatabaseUnavailable, open_database, run_database
 from panestria.api.routes.goals import _api
-from panestria.api.sessions import BrowserAccess
+from panestria.api.sessions import BrowserAccess, selected_access
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 from panestria.kernel.uow import UnitOfWork
@@ -26,7 +26,7 @@ class PairBody(BaseModel):
 
 
 def _access(request: Request) -> BrowserAccess:
-    access = getattr(request.app.state, "browser_access", None)
+    access = selected_access(request)
     if not isinstance(access, BrowserAccess):
         raise LoopbackDenied("not_configured", 503)
     return access
@@ -119,3 +119,11 @@ def logout(request: Request) -> JSONResponse:
     response.delete_cookie(access.cookie_name, path="/", httponly=True, secure=access.secure, samesite="strict")
     response.delete_cookie(access.cookie_name, path="/v1", httponly=True, secure=access.secure, samesite="strict")
     return response
+
+
+# The same three routes under /v1/session/{scope} on an app with several session
+# scopes; each copy is mounted with that scope's AcceptScopes dependency.
+scoped_router = APIRouter()
+scoped_router.add_api_route("/code", issue_code, methods=["POST"])
+scoped_router.add_api_route("/pair", pair, methods=["POST"])
+scoped_router.add_api_route("/logout", logout, methods=["POST"])

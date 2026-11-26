@@ -13,7 +13,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from panestria.api.db import DatabaseUnavailable
-from panestria.api.sessions import BrowserAccess
+from panestria.api.sessions import BrowserAccess, holds_other_scope, selected_access
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
 
@@ -47,7 +47,7 @@ def authorize(request: Request, api: GoalApi) -> Actor:
         host = urlsplit("http://" + request.headers.get("host", "")).hostname
     except ValueError:
         raise LoopbackDenied("invalid_host", 403) from None
-    access = getattr(request.app.state, "browser_access", None)
+    access = selected_access(request)
     phone = isinstance(access, BrowserAccess) and access.private_read_only
     if phone:
         assert isinstance(access, BrowserAccess)
@@ -66,6 +66,9 @@ def authorize(request: Request, api: GoalApi) -> Actor:
         return actor
     if phone:
         raise LoopbackDenied("unauthorized", 401)
+    if holds_other_scope(request):
+        # Paired, but for another scope: a stolen Ask or activity session cannot act on a Build.
+        raise LoopbackDenied("session_scope_denied", 403)
     if "origin" in request.headers:
         raise LoopbackDenied("origin_denied", 403)
     header = request.headers.get("authorization", "")
@@ -98,6 +101,6 @@ async def read_capped_body(request: Request) -> bytes | JSONResponse:
 
 
 def reauthorize_mutation(request: Request, api: GoalApi, connection: psycopg.Connection[Any]) -> None:
-    access = getattr(request.app.state, "browser_access", None)
+    access = selected_access(request)
     if isinstance(access, BrowserAccess) and request.cookies.get(access.cookie_name):
         access.authenticate(request, Actor(api.owner_id, api.project_id), connection)

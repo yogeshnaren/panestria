@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from panestria.api.auth import MAX_BODY_BYTES, MAX_HEADER_BYTES, MAX_HEADER_LINE_BYTES, error_body
-from panestria.api.sessions import BrowserAccess
+from panestria.api.sessions import SESSION_SCOPES, BrowserAccess
 
 _SECURITY_HEADERS = {
     "cache-control": "no-store",
@@ -23,6 +23,9 @@ _SECURITY_HEADERS = {
     "content-security-policy": "default-src 'self'; connect-src 'self'; frame-ancestors 'none'; "
     "base-uri 'none'; object-src 'none'; form-action 'self'",
 }
+
+
+_PAIRING_PATHS = frozenset({"/v1/session/pair", *(f"/v1/session/{scope}/pair" for scope in SESSION_SCOPES)})
 
 
 class RequestLimits:
@@ -101,7 +104,8 @@ class BrowserSecurity:
             return
         client = str(scope.get("client", ("local",))[0])
         path = str(scope.get("path", ""))
-        pairing = path == "/v1/session/pair"
+        # One pairing budget per client across every scope's pair route.
+        pairing = path in _PAIRING_PATHS
         if not self.limits.admit(f"{client}:{'pair' if pairing else 'api'}", 5 if pairing else 120):
             await deny("rate_limited", 429)
             return

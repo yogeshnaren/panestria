@@ -2310,6 +2310,269 @@
         "storage_observer": "StorageObserver"
       }
     },
+    "owner": {
+      "browser": {
+        "scopes": [
+          {
+            "cookie_name": "panestria_owner_activity_68ee74ba248e",
+            "key_fingerprint": "bdc1bd7c52217a3f",
+            "namespace": "owner-activity",
+            "secure": false,
+            "session_seconds": 28800
+          },
+          {
+            "cookie_name": "panestria_owner_ask_68ee74ba248e",
+            "key_fingerprint": "53d3a6471a310032",
+            "namespace": "owner-ask",
+            "secure": false,
+            "session_seconds": 28800
+          },
+          {
+            "cookie_name": "panestria_owner_build_68ee74ba248e",
+            "key_fingerprint": "f31d4eb29f81cf60",
+            "namespace": "owner-build",
+            "secure": false,
+            "session_seconds": 28800
+          }
+        ]
+      },
+      "middleware": [
+        "BrowserSecurity"
+      ],
+      "openapi": {
+        "operations": {
+          "GET /healthz": "healthz_healthz_get -> 200",
+          "GET /readyz": "readyz_readyz_get -> 200,500,503",
+          "GET /v1/activity": "activity_v1_activity_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/build-progress": "build_progress_v1_activity_goals__goal_id__build_progress_get -> 200,422",
+          "GET /v1/activity/goals/{goal_id}/events": "timeline_v1_activity_goals__goal_id__events_get -> 200,422",
+          "GET /v1/activity/reviews": "reviews_v1_activity_reviews_get -> 200,422",
+          "GET /v1/activity/storage": "storage_status_v1_activity_storage_get -> 200",
+          "GET /v1/ask/{request_id}": "ask_receipt_v1_ask__request_id__get -> 200,422",
+          "GET /v1/ask/{request_id}/ledger": "request_ledger_v1_ask__request_id__ledger_get -> 200,422",
+          "GET /v1/local/status": "status_v1_local_status_get -> 200",
+          "GET /v1/memory/search": "search_memory_v1_memory_search_get -> 200,422",
+          "GET /v1/memory/{item_id}": "memory_history_v1_memory__item_id__get -> 200,422",
+          "GET /v1/mission/build/plans/{plan_id}": "inspect_plan_v1_mission_build_plans__plan_id__get -> 200,422",
+          "GET /v1/mission/build/plans/{plan_id}/run": "inspect_run_v1_mission_build_plans__plan_id__run_get -> 200,422",
+          "GET /v1/mission/capabilities": "capability_v1_mission_capabilities_get -> 200",
+          "GET /v1/mission/goals/{goal_id}/build-review": "read_review_v1_mission_goals__goal_id__build_review_get -> 200,422",
+          "GET /v2/ask/status": "profile_ask_status_v2_ask_status_get -> 200",
+          "GET /v2/memory/search": "search_memory_v2_memory_search_get -> 200,422",
+          "GET /v2/memory/{item_id}": "memory_history_v2_memory__item_id__get -> 200,422",
+          "POST /v1/ask": "ask_question_v1_ask_post -> 200",
+          "POST /v1/ask/{request_id}/cancel": "cancel_ask_v1_ask__request_id__cancel_post -> 200,422",
+          "POST /v1/corrections": "capture_correction_v1_corrections_post -> 200",
+          "POST /v1/memory": "add_memory_v1_memory_post -> 200",
+          "POST /v1/memory-reviews/{review_id}/decision": "decide_privacy_review_v1_memory_reviews__review_id__decision_post -> 200,422",
+          "POST /v1/memory/{item_id}/correct": "correct_memory_v1_memory__item_id__correct_post -> 200,422",
+          "POST /v1/memory/{item_id}/privacy-review": "propose_privacy_review_v1_memory__item_id__privacy_review_post -> 200,422",
+          "POST /v1/memory/{item_id}/suppress": "suppress_memory_v1_memory__item_id__suppress_post -> 200,422",
+          "POST /v1/mission/build/plans": "stage_plan_v1_mission_build_plans_post -> 200,409,422",
+          "POST /v1/mission/build/plans/{plan_id}/accept": "accept_plan_v1_mission_build_plans__plan_id__accept_post -> 200,409,422",
+          "POST /v1/mission/build/plans/{plan_id}/run": "start_run_v1_mission_build_plans__plan_id__run_post -> 200,422",
+          "POST /v1/mission/build/plans/{plan_id}/run/cancel": "cancel_run_v1_mission_build_plans__plan_id__run_cancel_post -> 200,422",
+          "POST /v1/mission/goals/{goal_id}/build-review/decision": "decide_review_v1_mission_goals__goal_id__build_review_decision_post -> 200,422",
+          "POST /v1/session/activity/code": "issue_code_v1_session_activity_code_post -> 200",
+          "POST /v1/session/activity/logout": "logout_v1_session_activity_logout_post -> 200",
+          "POST /v1/session/activity/pair": "pair_v1_session_activity_pair_post -> 200",
+          "POST /v1/session/ask/code": "issue_code_v1_session_ask_code_post -> 200",
+          "POST /v1/session/ask/logout": "logout_v1_session_ask_logout_post -> 200",
+          "POST /v1/session/ask/pair": "pair_v1_session_ask_pair_post -> 200",
+          "POST /v1/session/build/code": "issue_code_v1_session_build_code_post -> 200",
+          "POST /v1/session/build/logout": "logout_v1_session_build_logout_post -> 200",
+          "POST /v1/session/build/pair": "pair_v1_session_build_pair_post -> 200",
+          "POST /v2/ask": "profile_ask_question_v2_ask_post -> 200",
+          "POST /v2/memory": "add_memory_v2_memory_post -> 200",
+          "POST /v2/memory-reviews/{review_id}/decision": "decide_review_v2_memory_reviews__review_id__decision_post -> 200,422",
+          "POST /v2/memory/{item_id}/correct": "correct_memory_v2_memory__item_id__correct_post -> 200,422",
+          "POST /v2/memory/{item_id}/privacy-review": "propose_review_v2_memory__item_id__privacy_review_post -> 200,422",
+          "POST /v2/memory/{item_id}/suppress": "suppress_memory_v2_memory__item_id__suppress_post -> 200,422",
+          "POST /v2/memory/{item_id}/unsuppress": "unsuppress_memory_v2_memory__item_id__unsuppress_post -> 200,422"
+        },
+        "schemas": [
+          "ActionPreview",
+          "ActivityEntry",
+          "ActivityEvent",
+          "ActivityGoalSnapshot",
+          "ActivityTask",
+          "ActivityTimeline",
+          "AskAnswer",
+          "AskCancellation",
+          "AskReceipt",
+          "BuildCheck",
+          "BuildCheckObservation",
+          "BuildMilestoneObservation",
+          "BuildObservation",
+          "BuildPlanStagingView",
+          "BuildReview",
+          "BuildReviewReceipt",
+          "DependencyCheck",
+          "ErrorBody",
+          "HTTPValidationError",
+          "JsonValue",
+          "Liveness",
+          "MissionCapabilities",
+          "ModelManifest",
+          "PlanConsent",
+          "PlanNode",
+          "PlanProposal",
+          "PlanRevisionConsent",
+          "PlanRunIntent",
+          "PlanRunRecord",
+          "PlanRunReturn",
+          "PlanRunStorage",
+          "PlanRunView",
+          "ProjectActivity",
+          "ProjectInventory",
+          "Readiness",
+          "ReviewCheck",
+          "ReviewInbox",
+          "ReviewInboxEntry",
+          "StorageCapacity",
+          "StorageComponentStatus",
+          "StorageNotice",
+          "StorageStatus",
+          "StoredPlan",
+          "ValidatedDAG",
+          "ValidationError",
+          "WorkerInventory"
+        ]
+      },
+      "probes": {
+        "GET /": {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /healthz": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "GET /v1/activity (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/goals/{id} (anonymous)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 404
+        },
+        "GET /v1/local/status (anonymous)": {
+          "code": "unauthorized",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 401
+        },
+        "GET /v1/mission/capabilities (bearer)": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 200
+        },
+        "POST /v1/session/pair (foreign origin)": {
+          "code": "origin_denied",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "security_headers": "standard",
+          "status": 403
+        },
+        "capabilities": {
+          "build_intake_enabled": true,
+          "build_review_enabled": true,
+          "build_run_enabled": true,
+          "dispatch_authority": "EXPLICIT_FOREGROUND_BUILD",
+          "offline_ask_enabled": true,
+          "plan_acceptance_enabled": true,
+          "research_intake_enabled": false
+        }
+      },
+      "routes": [
+        "GET /healthz",
+        "GET /readyz",
+        "GET /v1/activity/reviews {activity,ask,build}",
+        "GET /v1/activity {activity,ask,build}",
+        "GET /v1/activity/storage {activity,ask,build}",
+        "GET /v1/activity/goals/{goal_id}/events {activity,ask,build}",
+        "GET /v1/activity/goals/{goal_id}/build-progress {activity,ask,build}",
+        "GET /v1/mission/capabilities {activity,ask,build}",
+        "POST /v1/ask {ask}",
+        "GET /v2/ask/status {ask}",
+        "POST /v2/ask {ask}",
+        "GET /v1/ask/{request_id} {ask}",
+        "POST /v1/ask/{request_id}/cancel {ask}",
+        "GET /v1/ask/{request_id}/ledger {ask}",
+        "POST /v1/corrections {ask}",
+        "POST /v1/memory {ask}",
+        "GET /v1/memory/search {ask}",
+        "POST /v1/memory/{item_id}/correct {ask}",
+        "POST /v1/memory/{item_id}/suppress {ask}",
+        "POST /v1/memory/{item_id}/privacy-review {ask}",
+        "POST /v1/memory-reviews/{review_id}/decision {ask}",
+        "GET /v1/memory/{item_id} {ask}",
+        "POST /v2/memory {ask}",
+        "GET /v2/memory/search {ask}",
+        "GET /v2/memory/{item_id} {ask}",
+        "POST /v2/memory/{item_id}/correct {ask}",
+        "POST /v2/memory/{item_id}/privacy-review {ask}",
+        "POST /v2/memory-reviews/{review_id}/decision {ask}",
+        "POST /v2/memory/{item_id}/suppress {ask}",
+        "POST /v2/memory/{item_id}/unsuppress {ask}",
+        "GET /v1/mission/goals/{goal_id}/build-review {build}",
+        "POST /v1/mission/goals/{goal_id}/build-review/decision {build}",
+        "POST /v1/mission/build/plans {build}",
+        "GET /v1/mission/build/plans/{plan_id} {build}",
+        "POST /v1/mission/build/plans/{plan_id}/accept {build}",
+        "GET /v1/mission/build/plans/{plan_id}/run {build}",
+        "POST /v1/mission/build/plans/{plan_id}/run {build}",
+        "POST /v1/mission/build/plans/{plan_id}/run/cancel {build}",
+        "POST /v1/session/activity/code {activity}",
+        "POST /v1/session/activity/pair {activity}",
+        "POST /v1/session/activity/logout {activity}",
+        "POST /v1/session/ask/code {ask}",
+        "POST /v1/session/ask/pair {ask}",
+        "POST /v1/session/ask/logout {ask}",
+        "POST /v1/session/build/code {build}",
+        "POST /v1/session/build/pair {build}",
+        "POST /v1/session/build/logout {build}",
+        "GET / [hidden]",
+        "GET /ui/mission.js [hidden]",
+        "GET /ui/mission.css [hidden]",
+        "GET /v1/local/status {ask}"
+      ],
+      "state": {
+        "ask_api": "AskApi",
+        "browser_scopes": "BrowserScopes",
+        "build_evidence_reader": "BuildEvidenceService",
+        "build_intake": "BuildIntakeService",
+        "build_review": "BuildReviewService",
+        "goal_api": "GoalApi",
+        "health": "HealthService",
+        "local_failure": "None",
+        "local_model": "ModelRuntime",
+        "mission_build_sha256": "str",
+        "mission_offline_ask": "True",
+        "mission_run": "_StubRun",
+        "mission_storage_mode": "False",
+        "private_phone_enabled": "False",
+        "settings": "ValidatedSettings"
+      }
+    },
     "phone": {
       "browser": {
         "cookie_name": "panestria_mission_phone_10e73f971e71",

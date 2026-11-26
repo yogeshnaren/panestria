@@ -147,6 +147,11 @@
       "match": "added cli/commands/db/",
       "reason": "New `panestria db status` and `panestria db upgrade` run the migrations packaged in the wheel (panestria/_migrations) forward only; there is no command that moves a schema back (ADR 0016).",
       "finding": "PRODUCTION-READINESS-PLAN 1.7 / R3-REMEDIATION-PLAN 2.2"
+    },
+    {
+      "match": "added denial_codes[LoopbackDenied:session_scope_denied]",
+      "reason": "On the owner app, a request that carries a browser session only for scopes the route does not accept (for example an Ask session on a Build route) is refused with 403 session_scope_denied instead of falling through to the bearer check. Single-mode servers have no session scopes and never return it.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.9 / R3-REMEDIATION-PLAN 2.9"
     }
   ]
 }

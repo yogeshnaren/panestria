@@ -22,6 +22,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
@@ -38,10 +39,11 @@ from panestria.api.app import build_app
 from panestria.api.auth import GoalApi
 from panestria.api.local_server import build_local_app
 from panestria.api.mission_web import mount_mission_control
+from panestria.api.owner import owner_profile
 from panestria.api.routes.profiles import ProfileApi
 from panestria.api.security import _SECURITY_HEADERS
 from panestria.api.serve import goal_profile
-from panestria.api.sessions import BrowserAccess
+from panestria.api.sessions import SESSION_SCOPES, AcceptScopes, BrowserAccess, BrowserScopes
 from panestria.config import Settings
 from panestria.config_activity import ActivitySettings
 from panestria.config_local import LocalApplicationSettings
@@ -189,11 +191,23 @@ PROFILES: dict[str, Callable[[Env], FastAPI]] = {
     "mission-build-run": _mission(build_run=FIXED / "build.json"),
     "mission-storage": _mission(storage_mode=True),
     "phone": _phone,
+    "owner": lambda env: build_app(
+        owner_profile(env.local, _settings(), TOKEN, env.assets, build_run=FIXED / "build.json")
+    ),
 }
 
 
-def _routes(routes: list[Any], prefix: str = "") -> list[str]:
-    """Flatten included routers (FastAPI keeps them nested) in matching order."""
+def _accepted(dependencies: list[Any] | None) -> tuple[str, ...]:
+    return tuple(
+        scope
+        for dependency in dependencies or []
+        if isinstance(getattr(dependency, "dependency", None), AcceptScopes)
+        for scope in dependency.dependency.scopes
+    )
+
+
+def _routes(routes: list[Any], prefix: str = "", scopes: tuple[str, ...] = ()) -> list[str]:
+    """Flatten included routers (FastAPI keeps them nested) in matching order, with accepted session scopes."""
     found = []
     for route in routes:
         original = getattr(route, "original_router", None)
@@ -201,12 +215,14 @@ def _routes(routes: list[Any], prefix: str = "") -> list[str]:
             context = route.include_context
             found += [
                 f"{entry} [router-hidden]" if not context.include_in_schema else entry
-                for entry in _routes(original.routes, prefix + context.prefix)
+                for entry in _routes(original.routes, prefix + context.prefix, scopes + _accepted(context.dependencies))
             ]
             continue
         methods = ",".join(sorted(getattr(route, "methods", None) or [])) or "-"
         hidden = "" if getattr(route, "include_in_schema", True) else " [hidden]"
-        found.append(f"{methods} {prefix}{getattr(route, 'path', type(route).__name__)}{hidden}")
+        accepted = scopes + _accepted(getattr(route, "dependencies", None))
+        scoped = " {" + ",".join(accepted) + "}" if accepted else ""
+        found.append(f"{methods} {prefix}{getattr(route, 'path', type(route).__name__)}{scoped}{hidden}")
     return found
 
 
@@ -221,9 +237,16 @@ def _state(app: FastAPI) -> dict[str, str]:
 
 
 def _browser(app: FastAPI) -> dict[str, Any] | None:
+    scopes = getattr(app.state, "browser_scopes", None)
+    if isinstance(scopes, BrowserScopes):
+        return {"scopes": [_session(access) for access in scopes]}
     access = getattr(app.state, "browser_access", None)
     if not isinstance(access, BrowserAccess):
         return None
+    return _session(access)
+
+
+def _session(access: BrowserAccess) -> dict[str, Any]:
     return {
         "namespace": access.namespace,
         "cookie_name": access.cookie_name,
@@ -289,7 +312,7 @@ def _openapi(app: FastAPI, schemas: dict[str, str]) -> dict[str, Any]:
 def _origin(name: str, env: Env) -> str:
     if name == "phone":
         return env.phone.origin
-    if name.startswith("ask-"):
+    if name.startswith("ask-") or name == "owner":
         return env.local.origin
     return env.activity.origin
 
@@ -331,8 +354,32 @@ def test_modes_with_different_session_namespaces_never_share_a_session_key() -> 
     golden = json.loads(GOLDEN.read_text(encoding="utf-8"))["profiles"]
     namespaces_by_key: dict[str, set[str]] = {}
     for profile in golden.values():
-        if profile["browser"] is not None:
-            browser = profile["browser"]
-            namespaces_by_key.setdefault(browser["key_fingerprint"], set()).add(browser["namespace"])
+        browser = profile["browser"]
+        for session in [] if browser is None else browser.get("scopes", [browser]):
+            namespaces_by_key.setdefault(session["key_fingerprint"], set()).add(session["namespace"])
     assert len(namespaces_by_key) > 1
     assert all(len(namespaces) == 1 for namespaces in namespaces_by_key.values()), namespaces_by_key
+
+
+_ASSETS = ("/", "/ui/mission.js", "/ui/mission.css")
+_PUBLIC = {"GET /healthz", "GET /readyz"} | {f"GET {path} [hidden]" for path in _ASSETS}
+
+
+def test_every_owner_route_accepts_only_its_own_session_scope() -> None:
+    # Checked on the golden itself, so regenerating it cannot quietly widen a scope.
+    routes = json.loads(GOLDEN.read_text(encoding="utf-8"))["profiles"]["owner"]["routes"]
+    every = set(SESSION_SCOPES)
+    for entry in routes:
+        if entry in _PUBLIC:
+            continue
+        match = re.fullmatch(r"\S+ (\S+) \{([a-z,]+)\}", entry)
+        assert match is not None, f"owner route without a session scope: {entry}"
+        path, scopes = match[1], set(match[2].split(","))
+        if path.startswith(("/v1/mission/goals/", "/v1/mission/build/")):
+            assert scopes == {"build"}, entry
+        elif path.startswith(("/v1/ask", "/v2/ask", "/v1/memory", "/v2/memory", "/v1/corrections", "/v1/local/")):
+            assert scopes == {"ask"}, entry
+        elif path.startswith("/v1/session/"):
+            assert scopes == {path.split("/")[3]}, entry
+        else:
+            assert path.startswith(("/v1/activity", "/v1/mission/capabilities")) and scopes == every, entry
