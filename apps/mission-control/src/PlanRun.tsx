@@ -5,7 +5,7 @@ type View=components['schemas']['PlanRunView'];
 type Intent=operations['start_run_v1_mission_build_plans__plan_id__run_post']['requestBody']['content']['application/json'];
 type Cancellation=operations['cancel_run_v1_mission_build_plans__plan_id__run_cancel_post']['requestBody']['content']['application/json'];
 
-export function PlanRun({owner,project,plan,sha,csrf,deny}:{owner:string,project:string,plan:string,sha:string,csrf:string|null,deny:()=>void}) {
+export function PlanRun({owner,project,plan,sha,csrf,deny}:{owner:string,project:string,plan:string,sha:string,csrf:string|null,deny:(reason:Denied)=>void}) {
   const [view,setView]=useState<View|null>(null),[notice,setNotice]=useState('Reading the canonical run request…');
   const [startAck,setStartAck]=useState(false),[cancelAck,setCancelAck]=useState(false),[pending,setPending]=useState(false);
   const [fresh,setFresh]=useState(false),[now,setNow]=useState(Date.now()),[at,setAt]=useState(0);
@@ -27,7 +27,7 @@ export function PlanRun({owner,project,plan,sha,csrf,deny}:{owner:string,project
     try{const value=validate(await json<View>(path,controller.current.signal));if(controller.current.signal.aborted)return;
       retain(value);setNotice('Canonical request observed. Controller return and goal completion are separate facts.');
     }catch(error){if(controller.current.signal.aborted)return;setFresh(false);setView(null);
-      if(error instanceof Denied)denyRef.current();else setNotice('DISCONNECTED / UNCONFIRMED. The original request is retained. No automatic POST was sent.');}
+      if(error instanceof Denied)denyRef.current(error);else setNotice('DISCONNECTED / UNCONFIRMED. The original request is retained. No automatic POST was sent.');}
   }
   useEffect(()=>{const current=controller.current;void inspect();const poll=setInterval(()=>void inspect(),2000),clock=setInterval(()=>setNow(Date.now()),1000);
     return()=>{current.abort();clearInterval(poll);clearInterval(clock);};},[owner,project,plan,sha]);
@@ -42,7 +42,7 @@ export function PlanRun({owner,project,plan,sha,csrf,deny}:{owner:string,project
     try{const value=validate(await json<View>(path+(cancel?'/cancel':''),controller.current.signal,body,csrf));
       if(controller.current.signal.aborted)return;retain(value);setNotice(cancel?'Canonical cancellation inspected. Check goal/tasks and held claims below.':'Run request inspected. No automatic resume or final merge is enabled.');
     }catch(error){if(controller.current.signal.aborted)return;setView(null);
-      if(error instanceof Denied)denyRef.current();else setNotice('UNCONFIRMED mutation. Inspect this same plan; no automatic POST retry was sent.');}
+      if(error instanceof Denied)denyRef.current(error);else setNotice('UNCONFIRMED mutation. Inspect this same plan; no automatic POST retry was sent.');}
     finally{busy.current=false;setPending(false);}
   }
   const current=fresh && now-at<15000;

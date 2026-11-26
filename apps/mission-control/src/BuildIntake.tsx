@@ -8,7 +8,7 @@ type Submission=operations['stage_plan_v1_mission_build_plans_post']['requestBod
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const bytes=(value:string)=>new TextEncoder().encode(value).length;
 
-export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false,allowRun=false,selection=null}:{owner:string,project:string,csrf:string|null,deny:()=>void,allowAcceptance?:boolean,allowRun?:boolean,selection?:{id:string,version:number}|null}) {
+export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false,allowRun=false,selection=null}:{owner:string,project:string,csrf:string|null,deny:(reason:Denied)=>void,allowAcceptance?:boolean,allowRun?:boolean,selection?:{id:string,version:number}|null}) {
   const [raw,setRaw]=useState(''),[confirmed,setConfirmed]=useState(false),[lookup,setLookup]=useState('');
   const [plan,setPlan]=useState(''),[receipt,setReceipt]=useState<Receipt|null>(null),[pending,setPending]=useState(false),[uncertain,setUncertain]=useState(false);
   const [notice,setNotice]=useState('Load an existing PUBLIC contract, proposal and inventory bundle. Review it before staging.');
@@ -49,7 +49,7 @@ export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false,allow
     try {
       const value=validate(await json<Receipt>('/v1/mission/build/plans',controller.current.signal,body,csrf),id);
       if(controller.current.signal.aborted)return;setReceipt(value);setUncertain(false);setNotice('STAGED_NO_EXECUTION. Inspect the canonical contract, proposal, validation and consent below.');
-    }catch(error){if(controller.current.signal.aborted)return;if(error instanceof Denied)denyRef.current();
+    }catch(error){if(controller.current.signal.aborted)return;if(error instanceof Denied)denyRef.current(error);
       else if(error instanceof NotCommitted){setUncertain(false);setConfirmed(false);setNotice('REJECTED BEFORE COMMIT. This request created no change. Correct and review the bundle, then explicitly submit again. No automatic retry was sent.');}
       else setNotice('UNCONFIRMED. Inspect this plan ID before another submission. No automatic POST retry was sent.');}
     finally{busy.current=false;setPending(false);}
@@ -59,7 +59,7 @@ export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false,allow
     busy.current=true;setPending(true);setReceipt(null);setAcceptConfirmed(false);
     try{const value=validate(await json<Receipt>(`/v1/mission/build/plans/${id}`,controller.current.signal),id);
       if(controller.current.signal.aborted)return;setReceipt(value);setPlan(id);setLookup(id);setRaw('');setConfirmed(false);setUncertain(false);setNotice('Canonical plan inspected. No resubmission, acceptance or execution.');
-    }catch(error){if(controller.current.signal.aborted)return;if(error instanceof Denied)denyRef.current();else setNotice('Plan unavailable or unconfirmed in this project. No action was sent.');}
+    }catch(error){if(controller.current.signal.aborted)return;if(error instanceof Denied)denyRef.current(error);else setNotice('Plan unavailable or unconfirmed in this project. No action was sent.');}
     finally{busy.current=false;setPending(false);}
   }
   async function accept(event:FormEvent) {
@@ -70,7 +70,7 @@ export function BuildIntake({owner,project,csrf,deny,allowAcceptance=false,allow
     try{const value=validate(await json<Receipt>(`/v1/mission/build/plans/${id}/accept`,controller.current.signal,body,csrf),id);
       if(value.plan.state!=='ACCEPTED' || value.operation!=='PLAN_ACCEPTED_NO_EXECUTION' || value.plan.effect_digest!==body.effect_digest)throw new Error('Unconfirmed acceptance');
       if(controller.current.signal.aborted)return;setReceipt(value);setUncertain(false);setNotice('Plan ACCEPTED. Canonical tasks created; no attempt, worker or merge started.');
-    }catch(error){if(controller.current.signal.aborted)return;if(error instanceof Denied)denyRef.current();
+    }catch(error){if(controller.current.signal.aborted)return;if(error instanceof Denied)denyRef.current(error);
       else if(error instanceof NotCommitted){setUncertain(false);setNotice('ACCEPTANCE REJECTED BEFORE COMMIT. Inspect the same plan for a fresh review before deciding again. No automatic retry was sent.');}
       else setNotice('UNCONFIRMED acceptance. Inspect the same plan ID. No automatic acceptance retry was sent.');}
     finally{busy.current=false;setPending(false);}

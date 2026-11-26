@@ -15,7 +15,7 @@ function validate(value: Receipt, id: string): Receipt {
   return value;
 }
 
-export function OfflineAsk({project, csrf, deny}: {project:string, csrf:string|null, deny:()=>void}) {
+export function OfflineAsk({project, csrf, deny}: {project:string, csrf:string|null, deny:(reason:Denied)=>void}) {
   const [question,setQuestion] = useState('');
   const [id,setId] = useState('');
   const [lookup,setLookup] = useState('');
@@ -56,7 +56,7 @@ export function OfflineAsk({project, csrf, deny}: {project:string, csrf:string|n
     } catch(error) {
       if(generation !== epoch.current) return;
       setAnswer(null);
-      if(error instanceof Denied) {denyRef.current();return;}
+      if(error instanceof Denied) {denyRef.current(error);return;}
       setPhase('UNKNOWN');setNotice('UNCONFIRMED. Inspect this request ID before starting another question. No automatic retry was sent.');
     } finally {if(generation===epoch.current) post.current=null;}
   }
@@ -79,7 +79,7 @@ export function OfflineAsk({project, csrf, deny}: {project:string, csrf:string|n
       setNotice(terminal(value.state)?'Canonical terminal receipt. Reloaded receipts cannot recover answer text.':'Canonical request is active. Inspect again or cancel; no new inference was submitted.');
     } catch(error) {
       if(generation!==epoch.current) return;
-      if(error instanceof Denied) {denyRef.current();return;}
+      if(error instanceof Denied) {denyRef.current(error);return;}
       setNotice('Receipt unconfirmed or unavailable in this project. No request was submitted or retried.');
     } finally {commands.current=false;setReading(false);}
   }
@@ -96,7 +96,7 @@ export function OfflineAsk({project, csrf, deny}: {project:string, csrf:string|n
       } else {setPhase('ACTIVE');setNotice('Cancellation has not reached a terminal state. Inspect the same request.');}
     } catch(error) {
       if(generation!==epoch.current) return;
-      if(error instanceof Denied) {denyRef.current();return;}
+      if(error instanceof Denied) {denyRef.current(error);return;}
       setNotice('Cancellation UNCONFIRMED. Inspect this request; cancellation was not assumed.');
     } finally {commands.current=false;setReading(false);}
   }

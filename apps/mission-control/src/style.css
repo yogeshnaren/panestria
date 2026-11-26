@@ -12,3 +12,6 @@ input[type=file] { display: block; max-width: 100%; width: 100%; margin: 8px 0 1
 input.phone-code { width: 100%; max-width: 24em; min-width: 0; }
 .phone-observer { overflow-wrap: anywhere; }
 @media(max-width:600px) { .phone-observer .scroll table { min-width: 36rem; } }
+.scopes { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 16px; margin: 12px 0; }
+.scopes section { margin: 0; padding: 16px; background: #13202a; }
+.scopes h2 { font-size: 1.1rem; }
