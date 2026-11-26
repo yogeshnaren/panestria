@@ -125,12 +125,14 @@ class BrowserScopes:
             purpose = b"panestria.owner-session.v1\0" + scope.encode() + b"\0" + origin.encode()
             # A code issued for one scope never invalidates another scope's outstanding code.
             challenge = hashlib.sha256(b"panestria.owner-pairing.v1\0" + scope.encode()).hexdigest()
-            self._scopes[scope] = BrowserAccess(
+            access = BrowserAccess(
                 origin,
                 SessionService(hmac.digest(token.encode(), purpose, "sha256"), challenge_scope=challenge),
                 database_url,
                 namespace=_OWNER_NAMESPACES[scope],
             )
+            access.session_seconds = SESSION_SECONDS[scope]
+            self._scopes[scope] = access
         self.origin, self.database_url = origin, database_url
 
     def __getitem__(self, scope: SessionScope) -> BrowserAccess:
@@ -139,6 +141,10 @@ class BrowserScopes:
     def __iter__(self) -> Iterator[BrowserAccess]:
         return iter(self._scopes.values())
 
+
+# A Build session can read diffs, approve and start runs, so it lasts an hour;
+# re-pairing takes one CLI code. Observation and Ask sessions last a working day.
+SESSION_SECONDS: dict[SessionScope, int] = {"activity": 8 * 3600, "ask": 8 * 3600, "build": 3600}
 
 _OWNER_NAMESPACES: dict[SessionScope, BrowserNamespace] = {
     "activity": "owner-activity",

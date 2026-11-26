@@ -13,6 +13,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import psycopg
 import uvicorn
@@ -22,6 +23,7 @@ from fastapi.responses import JSONResponse
 from panestria.api.app import Activity, AppProfile, Ask, Browser, Feature, Profiles, build_app, scope_dependencies
 from panestria.api.auth import GoalApi, LoopbackDenied, authorize, error_body
 from panestria.api.db import DatabaseUnavailable, open_database
+from panestria.api.local_protocol import LocalHttpProtocol
 from panestria.api.local_web import LocalWeb
 from panestria.api.routes.ask import AskApi
 from panestria.api.routes.profiles import ProfileApi
@@ -33,12 +35,12 @@ from panestria.config import Settings, ValidatedSettings
 from panestria.config_activity import ActivitySettings
 from panestria.config_local import LocalApplicationRejected, LocalApplicationSettings, load_local_settings
 from panestria.contracts.inference import InferenceUnavailable
+from panestria.contracts.policy import PolicyContext
 from panestria.inference.local import LocalProvider
 from panestria.inference.runtime import ModelRuntime
 from panestria.kernel.errors import KernelDenied
 from panestria.kernel.goals import Actor
-from panestria.kernel.local_setup import offline_policy
-from panestria.kernel.repositories.policy import current_policy
+from panestria.kernel.local_setup import ask_policy
 from panestria.kernel.sessions import SessionService
 from panestria.kernel.uow import UnitOfWork
 from panestria.resources.admission import admit
@@ -47,18 +49,12 @@ from panestria.resources.hardware import HardwareProbe, ProbeUnavailable
 SCHEMA_HEAD = "0042_task_event_kind_indexes"
 
 
-def require_setup(settings: ValidatedSettings, actor: Actor) -> str:
+def require_setup(settings: ValidatedSettings, actor: Actor, *, accept_successor: bool = False) -> PolicyContext:
+    """The current schema and the policy Ask runs under (``local_setup.ask_policy``)."""
     with open_database(settings.database_url.get_secret_value()) as c:
         if c.execute("SELECT version_num FROM alembic_version").fetchall() != [(SCHEMA_HEAD,)]:
             raise KernelDenied("local_schema_migration_required")
-        policy = current_policy(UnitOfWork(c), actor)
-        receipt = c.execute(
-            "SELECT policy_sha256 FROM panestria.local_project_setup WHERE owner_id=%s AND project_id=%s",
-            (actor.owner_id, actor.project_id),
-        ).fetchone()
-        if receipt is None or policy != offline_policy(actor) or str(receipt[0]).strip() != policy.sha256():
-            raise KernelDenied("local_setup_policy_conflict")
-        return f"project-policy:{policy.version}:{policy.sha256()}"
+        return ask_policy(UnitOfWork(c), actor, accept_successor=accept_successor)
 
 
 def owned_listener(config: LocalApplicationSettings) -> socket.socket:
@@ -97,6 +93,7 @@ class AskRuntime:
         *,
         profiles_enabled: bool = False,
         scope: tuple[SessionScope, ...] = (),
+        accept_successor_policy: bool = False,
     ) -> LocalAskRuntime:
         return LocalAskRuntime(
             config,
@@ -109,6 +106,7 @@ class AskRuntime:
             self.ask,
             profiles_enabled=profiles_enabled,
             scope=scope,
+            accept_successor_policy=accept_successor_policy,
         )
 
 
@@ -174,11 +172,13 @@ class LocalAskRuntime:
     ask: AskApi
     profiles_enabled: bool = False
     scope: tuple[SessionScope, ...] = ()
+    # The owner app: Ask also runs under an owner-applied successor policy (``local_setup.ask_policy``).
+    accept_successor_policy: bool = False
 
     def mount(self, app: FastAPI) -> None:
         config, settings, actor, api = self.config, self.settings, self.actor, self.api
         model, provider, probe, ask = self.model, self.provider, self.probe, self.ask
-        profiles_enabled = self.profiles_enabled
+        profiles_enabled, successor = self.profiles_enabled, self.accept_successor_policy
         app.state.local_model = model
         app.state.local_failure = None
         base_lifespan = app.router.lifespan_context
@@ -186,7 +186,7 @@ class LocalAskRuntime:
         @asynccontextmanager
         async def lifespan(application: FastAPI) -> AsyncIterator[None]:
             try:
-                await asyncio.to_thread(require_setup, settings, actor)
+                await asyncio.to_thread(require_setup, settings, actor, accept_successor=successor)
                 config.runtime_directory.mkdir(mode=0o700, parents=True, exist_ok=True)
                 info = config.runtime_directory.stat()
                 if config.runtime_directory.is_symlink() or info.st_uid != os.getuid() or info.st_mode & 0o077:
@@ -227,14 +227,14 @@ class LocalAskRuntime:
         async def status(request: Request) -> JSONResponse:
             try:
                 authorize(request, api)
-                ref = await asyncio.to_thread(require_setup, settings, actor)
+                policy = await asyncio.to_thread(require_setup, settings, actor, accept_successor=successor)
                 return JSONResponse(
                     content={
                         "schema_version": 1,
                         "owner_id": actor.owner_id,
                         "project_id": actor.project_id,
-                        "policy_ref": ref,
-                        "trust_profile": "SYNTHETIC_DEV",
+                        "policy_ref": f"project-policy:{policy.version}:{policy.sha256()}",
+                        "trust_profile": policy.trust.profile,
                         "runtime_certified": False,
                         "model_socket_present": model.socket_path.is_socket(),
                         "model_catalog": "checked_per_inference",
@@ -275,17 +275,31 @@ def serve_local(path: Path, *, profiles: ProfileApi | None = None, mission_asset
         app = build_local_app(
             config, settings, token.get_secret_value(), profiles=profiles, mission_assets=mission_assets
         )
-        server = uvicorn.Server(server_config(app))
-        print(json.dumps({"schema_version": 1, "status": "STARTING", "origin": config.origin}), flush=True)
-        try:
-            server.run(sockets=[listener])
-        except SystemExit:
-            raise LocalApplicationRejected(app.state.local_failure or "local_startup_failed") from None
-        if app.state.local_failure:
-            raise LocalApplicationRejected(app.state.local_failure)
-        if not server.started:
-            raise LocalApplicationRejected("local_startup_failed")
+        run_owned(app, listener, {"schema_version": 1, "status": "STARTING", "origin": config.origin})
     finally:
         listener.close()
         if app is not None:
             app.state.health.shutdown()
+
+
+def run_owned(
+    app: FastAPI,
+    listener: socket.socket,
+    announcement: dict[str, Any],
+    *,
+    http: type[LocalHttpProtocol] = LocalHttpProtocol,
+) -> None:
+    """Serve an app with a ``LocalAskRuntime`` on its owned listener until stopped.
+
+    A startup or shutdown failure raises with the runtime's fixed reason.
+    """
+    server = uvicorn.Server(server_config(app, http=http))
+    print(json.dumps(announcement), flush=True)
+    try:
+        server.run(sockets=[listener])
+    except SystemExit:
+        raise LocalApplicationRejected(app.state.local_failure or "local_startup_failed") from None
+    if app.state.local_failure:
+        raise LocalApplicationRejected(app.state.local_failure)
+    if not server.started:
+        raise LocalApplicationRejected("local_startup_failed")
