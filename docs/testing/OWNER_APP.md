@@ -3,8 +3,7 @@
 `panestria serve` runs Ask, Mission Control and, optionally, Build in one
 foreground process on one loopback port. It replaces running `local serve` and
 one `mission-control serve` per mode in separate processes. Those single-mode
-commands still work unchanged. This is Release 1 plan item 1.9; the dashboard's
-per-scope pairing is part c3 and not done yet (see below).
+commands still work unchanged. This is Release 1 plan item 1.9.
 
 ## Start it
 
@@ -48,12 +47,33 @@ panestria pair-code --config "$HOME/panestria-local-ask/local.json" --scope ask
 ```
 
 The code expires after 120 seconds and is paired at `/v1/session/{scope}/pair`.
-The command never prints the bearer token.
+The command never prints the bearer token. A new code for a scope replaces that
+scope's earlier unused code.
 
-**Not yet:** the Mission Control dashboard still pairs one session at
-`/v1/session/pair`, which the owner app does not mount. Until part c3 updates
-the dashboard, use the CLI against the owner app, or the single-mode
-`mission-control serve` commands for the browser.
+## The dashboard
+
+Open the origin from the `STARTING` line. The page lists one session per
+mounted scope (Build only with `--build-config`), each with its own pairing
+form and **Log out** button:
+
+1. Run `panestria pair-code --scope ask` and enter the code under **Ask
+   session**. The project activity and Offline Ask appear.
+2. To review, accept or run a Build, pair **Build session** the same way. It
+   shows when it expires, one hour later.
+3. Pair **Activity session** only for a tab that should observe without Ask or
+   Build authority.
+
+Each scope keeps its own CSRF token in the page's memory, and each logout
+revokes only that scope's session. If an Ask or Build view is refused, only that
+scope is marked unpaired, with the reason: `Build session required` when the
+browser holds no Build session (for example, after the hour), or `Build session
+ended or was refused` otherwise. The other sessions stay paired.
+
+CSRF tokens are never stored, so after a reload every scope shows **Not paired
+in this tab**. A session cookie that is still valid keeps reading activity and
+receipts; pair the scope again to submit, decide or log out. A page that names
+different scopes from the server's capabilities shows nothing and asks to be
+reloaded.
 
 ## Ask after Build setup
 
