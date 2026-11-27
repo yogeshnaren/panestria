@@ -306,7 +306,7 @@ class AdmittedNativeBuild:
                     try:
                         if time.monotonic() >= deadline or (cancel is not None and cancel.is_set()):
                             raise KernelDenied("native_build_cancelled_or_deadline")
-                        with controller.connect() as connection:
+                        with controller.observation_connect() as connection:
                             connection.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
                             self.authorize(connection, observation=True)
                             assert binding is not None and identity is not None

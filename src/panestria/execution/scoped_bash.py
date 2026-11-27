@@ -54,6 +54,9 @@ from panestria.verification.candidate import capture_candidate
 from panestria.verification.git_snapshot import GitSnapshot, materialize, protected_git, verify_snapshot
 from panestria.verification.registry import CommandRegistry
 
+# Gateway outcomes that stopped a dispatched tool, named in the stop reason.
+_GATEWAY_STOPS = frozenset({"deadline_exceeded", "authority_revoked", "cancelled"})
+
 
 class ScopedBashUnavailable(ValueError):
     pass
@@ -84,7 +87,8 @@ class _EditAuthority(DurableToolAuthority):
 
     def _operation(self, permit: ToolPermit, operation: Literal["claim", "check", "observe"]) -> None:
         try:
-            with self.connect() as connection:
+            connect = self.controller.observation_connect if operation == "observe" else self.connect
+            with connect() as connection:
                 if operation == "observe":
                     connection.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
                 self.controller.authorize(connection, observation=operation == "observe")
@@ -179,6 +183,15 @@ class ScopedBashController:
             raise ScopedBashUnavailable("invalid_scoped_bash_binding") from None
 
     def connect(self) -> psycopg.Connection[Any]:
+        # Locked claim, launch, receipt and publication transactions. Each task
+        # event takes one database-wide sequence lock until its transaction
+        # commits, so these wait behind other commits, the owner's included.
+        # They share the owner Build bounds: 300 ms stopped workers on ordinary
+        # contention, as if their authority had been lost.
+        return psycopg.connect(self.dsn, connect_timeout=1, options="-c statement_timeout=2000 -c lock_timeout=1000")
+
+    def observation_connect(self) -> psycopg.Connection[Any]:
+        # Read-only monitor snapshots take no locks; keep them quick to bound.
         return psycopg.connect(self.dsn, connect_timeout=1, options="-c statement_timeout=300 -c lock_timeout=300")
 
     def authorize(self, connection: psycopg.Connection[Any], *, observation: bool = False) -> None:
@@ -399,8 +412,11 @@ class ScopedBashController:
                 or cancel.is_set()
                 or len(sandbox.output) > 8192
             ):
+                # Name the gateway's stop so a worker that ran out of its wall
+                # budget is not reported like one whose authority was revoked.
+                stopped = result.outcome if result.outcome in _GATEWAY_STOPS else None
                 self.last_failure_code = self.last_failure_code or "scoped_gateway_" + (
-                    result.unconfirmed_reason or "receipt_unconfirmed"
+                    result.unconfirmed_reason or stopped or "receipt_unconfirmed"
                 )
                 raise ScopedBashUnavailable("unconfirmed_bash_execution")
             report = json.dumps(

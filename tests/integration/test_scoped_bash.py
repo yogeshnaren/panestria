@@ -23,6 +23,7 @@ from panestria.kernel.errors import KernelDenied
 from panestria.kernel.leases import LeaseService
 from panestria.kernel.policy import PolicyService
 from panestria.kernel.uow import UnitOfWork
+from panestria.sandbox.native_tool_gateway import NativeToolGateway, ToolReceipt
 from panestria.verification.candidate import capture_candidate
 from panestria.verification.git_snapshot import SnapshotRejected
 from panestria.verification.registry import CommandRegistry, RegisteredCommand
@@ -226,6 +227,34 @@ def test_independent_check_uses_remaining_wall_budget_before_publication(build):
         assert c.execute(
             "SELECT count(*) FROM panestria.approval_request WHERE task_id=%s", (task["task"],)
         ).fetchone() == (0,)
+
+
+def test_script_that_outruns_its_wall_budget_is_stopped_and_named_a_deadline(build):
+    task, args, _cid, _policy = build
+    controller = ScopedBashController(*args)
+    # The per-script budget is 30 s; 10 s keeps the stop quick while leaving
+    # container creation well inside it, so the deadline lands on the script.
+    controller.wall_seconds = 10
+    started = time.monotonic()
+    assert execute(controller, "sleep 60; printf 'value = 44\\n' > calculator.py").outcome == "UNKNOWN"
+    assert time.monotonic() - started < 40
+    # A budget overrun, not a revoked lease, policy or invocation.
+    assert controller.last_failure_code == "scoped_gateway_deadline_exceeded"
+    assert rows(task) == [("UNKNOWN", None)]
+    assert (controller.workspace / "calculator.py").read_text() == "value = 42\n"
+
+
+@pytest.mark.parametrize("outcome", ["authority_revoked", "cancelled"])
+def test_gateway_stop_is_named_in_the_stop_reason(build, monkeypatch, outcome):
+    task, args, _cid, _policy = build
+    controller = ScopedBashController(*args)
+
+    def stopped(gateway, request, permit, *, cancel=None):
+        return ToolReceipt(request.sha256(), permit.scope.sha256(), gateway.registry.sha256(), outcome, None)
+
+    monkeypatch.setattr(NativeToolGateway, "execute", stopped)
+    assert execute(controller, "true").outcome == "UNKNOWN"
+    assert controller.last_failure_code == "scoped_gateway_" + outcome
 
 
 @pytest.mark.parametrize("revoke", ["lease", "policy", "cancel"])

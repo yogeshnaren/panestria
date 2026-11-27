@@ -45,3 +45,40 @@ uncertainty using existing state flags. The same bounds/outcomes remain. The
 shared fixture records complete results across native-plan journeys. Its57
 focused checks and10 excluded live cases remain a separate source cohort.
 Root-cause investigation is still open; no changed timeout or retry is introduced.
+
+## Gateway stop causes (November 2026)
+
+Three later CI Build runs ended `STOPPED`: two in `hermeticity (kernel)` and one
+in `behavioral (platform)`. Each failing test took 30–32 s, against 2–5 s when
+it passed. That matches one scoped Bash call using its whole 30 s script
+budget. The exact phase is in each run's JUnit `native_plan_result` property;
+those artifacts were not downloaded for this note. On a heavily loaded local
+host, the Docker part of one scoped Bash call grew from about 1.2 s to 14–45 s.
+Calls then overran the 30 s script budget and the 35 s invocation TTL, and
+final checks overran the fixture's 10 s check budget, so final nodes ended
+`FAILED`. Stopping is the intended fail-closed result in each case.
+
+Most of those overruns were reported as revocations. After stopping a worker,
+the gateway kept probing authority while the worker was reaped. The
+invocation's TTL then lapsed, and `invocation_inactive` outranked the
+deadline. Now the first stop names the outcome, and no authority probe starts
+after a stop. A worker's reason names the gateway outcome:
+`scoped_gateway_deadline_exceeded`, `scoped_gateway_authority_revoked` or
+`scoped_gateway_cancelled`. Budgets, retries, claims and acceptance are
+unchanged.
+
+A separate cause also showed up at low host load. A worker's locked claim and
+launch transactions had a 300 ms limit. Each task event takes one
+database-wide sequence lock until its transaction commits, and a worker
+waiting behind another commit hit that limit. The worker stopped with
+`database_statement_timeout`. Its partner then broke the fixture barrier 10 s
+later. That was 1 STOPPED run in 59. Those gate transactions now use the owner
+Build bounds: a 2 s statement timeout and a 1 s lock timeout. Read-only monitor
+snapshots keep 300 ms. That cause produces an 11 s failure, not the 30 s seen
+in CI.
+
+Runtime versions include a digest of every `src/panestria/**/*.py`. Editing
+those files in a checkout while its tests run is a runtime change. Preflight
+then refuses with `public_native_plan_not_eligible`, running workers stop with
+`native_build_runtime_changed`, and certificate checks report
+`certificate_mismatch`. That is the intended refusal, not a load symptom.
