@@ -71,9 +71,10 @@ ended or was refused` otherwise. The other sessions stay paired.
 
 CSRF tokens are never stored, so after a reload every scope shows **Not paired
 in this tab**. A session cookie that is still valid keeps reading activity and
-receipts; pair the scope again to submit, decide or log out. A page that names
-different scopes from the server's capabilities shows nothing and asks to be
-reloaded.
+receipts; pair the scope again to submit, decide or log out. The page shows
+nothing and asks to be reloaded if it names different scopes from the server's
+capabilities, or if the server reports Build features that differ from whether
+the `build` scope is named.
 
 ## Ask after Build setup
 

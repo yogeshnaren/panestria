@@ -128,3 +128,15 @@ def test_browser_refuses_a_page_whose_scopes_differ_from_the_server(
 
     monkeypatch.setattr(owner, "load_mission_assets", without)
     assert _journey(owner_setup, monkeypatch, tmp_path, mismatch=left_out) == {"mismatch": left_out}
+
+
+@pytest.mark.requires_browser
+def test_browser_refuses_a_server_whose_build_features_differ_from_its_scopes(
+    owner_setup: Owner,  # noqa: F811
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    # The page and capabilities agree on "activity ask", but Build is mounted and
+    # reports its features: the dashboard trusts neither and shows nothing.
+    monkeypatch.setattr(owner, "mounted_scopes", lambda build_run: ("activity", "ask"))
+    assert _journey(owner_setup, monkeypatch, tmp_path, mismatch="build") == {"mismatch": "build"}
