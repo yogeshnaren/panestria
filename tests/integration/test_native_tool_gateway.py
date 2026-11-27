@@ -378,6 +378,57 @@ def test_authority_changes_during_claim_never_start_the_worker(tmp_path: Path, c
     )
 
 
+@pytest.mark.parametrize("first", ["expired", "cancelled"])
+def test_slowly_reaped_stop_keeps_its_first_cause_and_stops_observing(tmp_path: Path, first: str) -> None:
+    # Under host load a stopped container can take seconds to kill and remove,
+    # and the durable invocation's TTL can lapse meanwhile. Nothing can
+    # authorize that result any more, so the gateway neither keeps probing nor
+    # lets a later probe failure relabel the deadline or cancellation as a
+    # revocation.
+    registry, request, permit, _ = setup(tmp_path, seconds=0.4 if first == "expired" else 15)
+    cancel = threading.Event()
+    reaping = threading.Event()
+    probes_while_reaping: list[float] = []
+
+    class LapsingAuthority(SyntheticAuthority):
+        def check(self, permit: ToolPermit) -> None:
+            super().check(permit)
+            if reaping.is_set():
+                probes_while_reaping.append(time.monotonic())
+                raise ValueError("synthetic invocation TTL lapsed while the worker is reaped")
+
+    class SlowlyReapedRunner(FakeRunner):
+        def run(
+            self,
+            workspace: Path,
+            argv: tuple[str, ...],
+            profile: SandboxProfile,
+            *,
+            attempt_id: str | None = None,
+            cancel: threading.Event | None = None,
+            input_frame: bytes | None = None,
+        ) -> SandboxReceipt:
+            self.started = True
+            assert cancel is not None and cancel.wait(timeout=5)  # The gateway's own stop.
+            reaping.set()
+            time.sleep(0.6)  # A loaded host's docker kill, inspect and rm.
+            return SandboxReceipt("ef" * 32, profile.sha256(), "cd" * 32, 137, "cancelled", b"", 0.6, False)
+
+    if first == "cancelled":
+        timer = threading.Timer(0.2, cancel.set)
+        timer.start()
+    receipt = NativeToolGateway(
+        permit.workspace.parent, registry, LapsingAuthority(permit), runner_factory=SlowlyReapedRunner
+    ).execute(request, permit, cancel=cancel)
+    if first == "cancelled":
+        timer.join()
+    assert receipt.outcome == {"expired": "deadline_exceeded", "cancelled": "cancelled"}[first]
+    assert receipt.unconfirmed_reason is None and receipt.sandbox is not None
+    # At most one probe already in flight when the stop was requested; the
+    # monitor previously probed about every 0.1 s until the runner returned.
+    assert len(probes_while_reaping) <= 1
+
+
 @pytest.mark.docker_boundary
 @pytest.mark.live
 @pytest.mark.parametrize("edit", [False, True])

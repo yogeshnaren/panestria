@@ -260,17 +260,31 @@ class NativeToolGateway:
     ) -> ToolReceipt:
         stop = threading.Event()
         done = threading.Event()
+        cancelled = threading.Event()
         revoked = threading.Event()
         expired = threading.Event()
         unavailable = threading.Event()
+        # The first stop names the outcome. Reaping a stopped worker can take
+        # seconds on a loaded host, and its invocation's TTL may lapse in that
+        # time. Nothing can authorize a stopped worker's result, so authority
+        # is no longer probed, and a probe already in flight cannot relabel a
+        # deadline or cancellation as a revocation.
+        causes: list[threading.Event] = []
+        causes_lock = threading.Lock()
+
+        def halt(cause: threading.Event) -> None:
+            with causes_lock:
+                cause.set()
+                if not causes:
+                    causes.append(cause)
+                stop.set()
 
         def check() -> None:
             if cancel is not None and cancel.is_set():
-                stop.set()
+                halt(cancelled)
             if time.monotonic() >= permit.deadline_monotonic:
-                expired.set()
-                stop.set()
-            if unavailable.is_set():
+                halt(expired)
+            if unavailable.is_set() or stop.is_set():
                 return
             checked = threading.Event()
 
@@ -281,8 +295,7 @@ class NativeToolGateway:
                     else:
                         self.authority.check(permit)
                 except Exception:
-                    revoked.set()
-                    stop.set()
+                    halt(revoked)
                 finally:
                     checked.set()
 
@@ -292,8 +305,7 @@ class NativeToolGateway:
             probe = threading.Thread(target=inspect_authority, daemon=True, name="panestria-tool-check")
             probe.start()
             if not checked.wait(timeout=0.5):
-                unavailable.set()
-                stop.set()
+                halt(unavailable)
 
         def monitor() -> None:
             while not done.wait(0.1):
@@ -336,13 +348,15 @@ class NativeToolGateway:
             check()
         outcome: ToolOutcome
         watchdog_unconfirmed = watchdog.is_alive()
+        with causes_lock:
+            first = causes[0] if causes else None
         if watchdog_unconfirmed or unavailable.is_set() or (dispatched and sandbox is None):
             outcome = "unknown"
-        elif revoked.is_set():
+        elif first is revoked:
             outcome = "authority_revoked"
-        elif expired.is_set():
+        elif first is expired:
             outcome = "deadline_exceeded"
-        elif cancel is not None and cancel.is_set():
+        elif first is cancelled or (cancel is not None and cancel.is_set()):
             outcome = "cancelled"
         elif sandbox is None:
             outcome = "unknown"
