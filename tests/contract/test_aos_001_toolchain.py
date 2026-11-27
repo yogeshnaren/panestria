@@ -25,6 +25,18 @@ PROVIDER_NAMES = (
 )
 
 
+def _bind_env(host: str) -> dict[str, str]:
+    """This environment without the caller's PANESTRIA_* settings, plus one bind host.
+
+    Settings refuses unknown PANESTRIA_* variables, so a developer's own setting
+    (for example PANESTRIA_TEST_NODE for the browser tests) would fail these
+    checks with invalid_settings before the bind host is ever validated.
+    """
+    env = {key: value for key, value in os.environ.items() if not key.startswith("PANESTRIA_")}
+    env["PANESTRIA_BIND_HOST"] = host
+    return env
+
+
 def _run(argv: list[str], *, cwd: Path = ROOT, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         argv,
@@ -71,8 +83,7 @@ def test_reset_rejects_an_extra_path() -> None:
 
 
 def test_r0_demo_rejects_a_non_loopback_bind() -> None:
-    env = os.environ.copy()
-    env["PANESTRIA_BIND_HOST"] = "0.0.0.0"
+    env = _bind_env("0.0.0.0")
     completed = _run(["make", "r0-demo"], env=env)
     text = completed.stdout + completed.stderr
     assert completed.returncode != 0
@@ -82,8 +93,7 @@ def test_r0_demo_rejects_a_non_loopback_bind() -> None:
 
 
 def test_dev_api_rejects_a_non_loopback_bind() -> None:
-    env = os.environ.copy()
-    env["PANESTRIA_BIND_HOST"] = "0.0.0.0"
+    env = _bind_env("0.0.0.0")
     completed = _run(["make", "dev-api"], env=env)
     text = completed.stdout + completed.stderr
     assert completed.returncode == 2
