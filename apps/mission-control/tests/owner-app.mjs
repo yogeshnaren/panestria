@@ -1,6 +1,9 @@
 // The owner app (`panestria serve`) on physical loopback HTTP and PostgreSQL, with
 // production assets. Only the model, hardware and Build run service are Python
 // fixtures. Each pairing code comes from `panestria pair-code`, as in the terminal.
+// Response bodies the page has already consumed are never read back through the
+// DevTools protocol: Chromium does not always keep them. Session lifetimes and
+// revocations are checked in the database by the Python test instead.
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import assert from 'node:assert/strict';
@@ -13,7 +16,6 @@ function code(scope) {
   assert.equal(issued.scope,scope);
   return issued.code;
 }
-const hours = iso => (Date.parse(iso)-Date.now())/3600000;
 const browser = await chromium.launch({headless:true});
 try {
   const context = await browser.newContext();
@@ -41,14 +43,11 @@ try {
   const row = scope => page.getByRole('region',{name:`${name[scope]} session`,exact:true});
   const state = scope => row(scope).getByTestId(`session-${scope}`);
   const notice = scope => row(scope).getByTestId(`session-${scope}-notice`);
-  const sessions = {};
   async function pair(scope, value) {
     const reply = page.waitForResponse(r => new URL(r.url()).pathname===`/v1/session/${scope}/pair`);
     await row(scope).getByRole('textbox').fill(value);
     await row(scope).getByRole('button',{name:`Pair ${name[scope]}`,exact:true}).click();
-    const response = await reply;
-    if (response.ok()) (sessions[scope] ??= []).push(await response.json());
-    return response;
+    return reply;
   }
   const activity = page.getByRole('region',{name:'Project activity'});
   const ask = page.getByRole('region',{name:'Offline Ask'});
@@ -76,11 +75,9 @@ try {
   for (const scope of ['activity','ask','build']) await expect(state(scope)).toHaveText('Not paired in this tab.');
   await expect(activity).toHaveCount(0);
 
-  // An Ask session reaches Ask and activity, and lasts a working day.
+  // An Ask session reaches Ask and activity.
   assert.ok((await pair('ask',code('ask'))).ok());
   await expect(state('ask')).toContainText('Paired in this tab until');
-  const askHours = hours(sessions.ask[0].expires_at);
-  assert.ok(askHours > 7.9 && askHours <= 8, String(askHours));
   await expect(activity).toBeVisible();
   await ask.getByLabel('Question',{exact:true}).fill('Say READY');
   await ask.getByRole('button',{name:'Ask offline',exact:true}).click();
@@ -94,12 +91,10 @@ try {
   await expect(state('ask')).toContainText('Paired in this tab until');
   await expect(ask.getByTestId('ask-answer')).toHaveText('READY');
 
-  // A Build code from the CLI pairs Build for one hour. (The five pairings in this
-  // journey are the whole per-minute pairing budget, shared by every scope.)
+  // A Build code from the CLI pairs Build. (The five pairings in this journey are
+  // the whole per-minute pairing budget, shared by every scope.)
   assert.ok((await pair('build',code('build'))).ok());
   await expect(state('build')).toContainText('Paired in this tab until');
-  const buildHours = hours(sessions.build[0].expires_at);
-  assert.ok(buildHours > 0.95 && buildHours <= 1, String(buildHours));
   await inspectPlan();
   await expect(intake.getByTestId('build-intake-notice')).toHaveText('Plan unavailable or unconfirmed in this project. No action was sent.');
   await expect(notice('build')).toHaveText('Build paired in this tab.');
@@ -154,6 +149,6 @@ try {
   await expect(ask).toHaveCount(0);
   await expect(page.getByText('Project unconfirmed. Pair or retry when the server is available.',{exact:true})).toBeVisible();
   assert.equal(await page.evaluate(()=>localStorage.length+sessionStorage.length),0);
-  console.log(JSON.stringify({asked, sessions:Object.fromEntries(Object.entries(sessions).map(([k,v])=>[k,v.map(s=>s.session_id)]))}));
+  console.log(JSON.stringify({asked}));
   await context.close();
 } finally {await browser.close();}

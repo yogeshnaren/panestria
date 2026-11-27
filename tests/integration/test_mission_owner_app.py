@@ -24,7 +24,7 @@ from test_owner_serve import owner_setup as owner_setup  # noqa: F401
 
 from browser_support import browser_node
 from panestria.api import owner
-from panestria.api.sessions import SessionScope
+from panestria.api.sessions import SESSION_SECONDS, SessionScope
 
 ROOT = Path(__file__).resolve().parents[2]
 ASSETS = ROOT / "apps/mission-control/dist"
@@ -87,26 +87,25 @@ def test_browser_pairs_uses_and_logs_out_each_scope_alone(
             "SELECT state FROM panestria.ask_request WHERE id=%s AND project_id=%s",
             (outcome["asked"], str(owner_setup.config.project_id)),
         ).fetchone()
-        revoked = dict(
-            db.execute(
-                "SELECT id::text, revoked_at IS NOT NULL FROM panestria.browser_session WHERE project_id=%s",
-                (str(owner_setup.config.project_id),),
-            ).fetchall()
-        )
+        # The journey pairs one session at a time: Ask, Build, Build again, Activity, Ask again.
+        sessions = db.execute(
+            "SELECT extract(epoch FROM expires_at - created_at)::int, revoked_at IS NOT NULL"
+            " FROM panestria.browser_session WHERE project_id=%s ORDER BY created_at",
+            (str(owner_setup.config.project_id),),
+        ).fetchall()
     assert asked == ("COMPLETED",)
-    (first_ask, second_ask), (build, dropped), [activity] = (
-        outcome["sessions"][s] for s in ("ask", "build", "activity")
-    )
-    # Each logout revoked its own session on the server. The first Ask session lost
-    # its CSRF token on reload and the second Build session its cookie; neither was
-    # logged out, and each expires on its own.
-    assert {key: revoked[key] for key in (first_ask, second_ask, build, dropped, activity)} == {
-        first_ask: False,
-        second_ask: True,
-        build: True,
-        dropped: False,
-        activity: True,
-    }
+    # Each scope's session lasts its own lifetime: a working day for Activity and Ask,
+    # an hour for Build. Each logout revoked its own session on the server. The first
+    # Ask session lost its CSRF token on reload and the second Build session its
+    # cookie; neither was logged out, and each expires on its own.
+    assert sessions == [
+        (SESSION_SECONDS["ask"], False),
+        (SESSION_SECONDS["build"], True),
+        (SESSION_SECONDS["build"], False),
+        (SESSION_SECONDS["activity"], True),
+        (SESSION_SECONDS["ask"], True),
+    ]
+    assert SESSION_SECONDS == {"activity": 8 * 3600, "ask": 8 * 3600, "build": 3600}
     target = os.environ.get("PANESTRIA_MISSION_SCREENSHOT")
     if target:
         import shutil
