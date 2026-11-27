@@ -162,6 +162,11 @@
       "match": "added cli/commands/pair-code/",
       "reason": "New `panestria pair-code --scope activity|ask|build` issues a one-use browser pairing code for one owner-app session scope from /v1/session/{scope}/code, using the local bearer token without printing it.",
       "finding": "PRODUCTION-READINESS-PLAN 1.9 / R3-REMEDIATION-PLAN 2.9"
+    },
+    {
+      "match": "changed openapi_sha256",
+      "reason": "MissionCapabilities gains optional session_scopes: the owner app reports its mounted browser session scopes (activity, ask and, with a Build configuration, build) so Mission Control pairs, keeps a CSRF token and logs out per scope. The field is omitted when empty, so single-mode servers return the same capabilities as before.",
+      "finding": "PRODUCTION-READINESS-PLAN 1.9 / R3-REMEDIATION-PLAN 2.9"
     }
   ]
 }

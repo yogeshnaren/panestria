@@ -72,3 +72,7 @@ class MissionCapabilities(BaseModel):
     storage_status_enabled: bool = Field(default=False, exclude_if=lambda value: not value)
     private_phone_enabled: bool = Field(default=False, exclude_if=lambda value: not value)
     dispatch_authority: Literal["NONE", "EXPLICIT_FOREGROUND_BUILD"] = "NONE"
+    # The owner app's browser session scopes, each paired separately; absent on a single-mode server.
+    session_scopes: tuple[Literal["activity", "ask", "build"], ...] = Field(
+        default=(), exclude_if=lambda value: not value
+    )

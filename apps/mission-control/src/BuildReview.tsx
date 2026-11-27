@@ -4,7 +4,7 @@ import {Denied,json} from './client';
 type Review = components['schemas']['BuildReview'];
 type Receipt = components['schemas']['BuildReviewReceipt'];
 type Decision = operations['decide_review_v1_mission_goals__goal_id__build_review_decision_post']['requestBody']['content']['application/json'];
-export function BuildReview({goal,owner,project,csrf,deny}:{goal:string,owner:string,project:string,csrf:string|null,deny:()=>void}) {
+export function BuildReview({goal,owner,project,csrf,deny}:{goal:string,owner:string,project:string,csrf:string|null,deny:(reason:Denied)=>void}) {
   const [open,setOpen]=useState(false), [view,setView]=useState<Review|null>(null);
   const [digest,setDigest]=useState(''), [confirm,setConfirm]=useState(false), [busy,setBusy]=useState(false);
   const [notice,setNotice]=useState(''), [at,setAt]=useState(0), [now,setNow]=useState(Date.now());
@@ -32,7 +32,7 @@ export function BuildReview({goal,owner,project,csrf,deny}:{goal:string,owner:st
         if(stop.signal.aborted)return;
         setView(null);setDigest('');setConfirm(false);
         setNotice('Review UNCONFIRMED. Protected content unavailable or changed; no decision submitted.');
-        if(error instanceof Denied){deny();return;}
+        if(error instanceof Denied){deny(error);return;}
       }
       if(!stop.signal.aborted)timer=setTimeout(()=>void read(),10000);
     }
@@ -60,7 +60,7 @@ export function BuildReview({goal,owner,project,csrf,deny}:{goal:string,owner:st
       if(lifetime.current!.signal.aborted)return;
       setView(null);setOpen(false);
       setNotice('Decision UNCONFIRMED. Inspect canonical approval state before any further action. No automatic retry.');
-      if(error instanceof Denied)deny();
+      if(error instanceof Denied)deny(error);
     } finally {if(!lifetime.current!.signal.aborted){setBusy(false);setDigest('');}}
   }
   return <section aria-label="Exact Build review" aria-busy={busy}><h2>Exact Build review and consent</h2>

@@ -37,6 +37,7 @@ def capability(request: Request) -> JSONResponse:
             dispatch_authority="EXPLICIT_FOREGROUND_BUILD"
             if getattr(request.app.state, "mission_run", None) is not None
             else "NONE",
+            session_scopes=tuple(getattr(request.app.state, "owner_session_scopes", ())),
         )
         return JSONResponse(body.model_dump(mode="json"), headers={"Cache-Control": "no-store"})
     except LoopbackDenied as exc:
