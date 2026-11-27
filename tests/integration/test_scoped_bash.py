@@ -228,6 +228,19 @@ def test_independent_check_uses_remaining_wall_budget_before_publication(build):
         ).fetchone() == (0,)
 
 
+def test_script_that_outruns_its_wall_budget_is_stopped_and_named_a_deadline(build):
+    task, args, _cid, _policy = build
+    controller = ScopedBashController(*args)
+    controller.wall_seconds = 2  # The per-script budget (30 s), shortened so the stop is quick.
+    started = time.monotonic()
+    assert execute(controller, "sleep 20; printf 'value = 44\\n' > calculator.py").outcome == "UNKNOWN"
+    assert time.monotonic() - started < 15
+    # A budget overrun, not a revoked lease, policy or invocation.
+    assert controller.last_failure_code == "scoped_gateway_deadline_exceeded"
+    assert rows(task) == [("UNKNOWN", None)]
+    assert (controller.workspace / "calculator.py").read_text() == "value = 42\n"
+
+
 @pytest.mark.parametrize("revoke", ["lease", "policy", "cancel"])
 def test_revocation_after_report_cannot_publish_success_or_replay(build, monkeypatch, revoke):
     task, args, _cid, _policy = build

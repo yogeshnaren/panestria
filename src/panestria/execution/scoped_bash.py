@@ -54,6 +54,9 @@ from panestria.verification.candidate import capture_candidate
 from panestria.verification.git_snapshot import GitSnapshot, materialize, protected_git, verify_snapshot
 from panestria.verification.registry import CommandRegistry
 
+# Gateway outcomes that stopped a dispatched tool, named in the stop reason.
+_GATEWAY_STOPS = frozenset({"deadline_exceeded", "authority_revoked", "cancelled"})
+
 
 class ScopedBashUnavailable(ValueError):
     pass
@@ -399,8 +402,11 @@ class ScopedBashController:
                 or cancel.is_set()
                 or len(sandbox.output) > 8192
             ):
+                # Name the gateway's stop so a worker that ran out of its wall
+                # budget is not reported like one whose authority was revoked.
+                stopped = result.outcome if result.outcome in _GATEWAY_STOPS else None
                 self.last_failure_code = self.last_failure_code or "scoped_gateway_" + (
-                    result.unconfirmed_reason or "receipt_unconfirmed"
+                    result.unconfirmed_reason or stopped or "receipt_unconfirmed"
                 )
                 raise ScopedBashUnavailable("unconfirmed_bash_execution")
             report = json.dumps(
