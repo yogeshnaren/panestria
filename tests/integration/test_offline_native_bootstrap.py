@@ -5,6 +5,7 @@ import json
 import subprocess
 import threading
 import time
+from dataclasses import replace
 
 import pytest
 
@@ -32,6 +33,28 @@ def test_synthetic_metadata_observes_actual_offline_secret_free_envelope_and_cle
     )
 
 
+# The last receipt each synthetic behavior must produce: the container's own
+# outcome as the runner observed it. An exit code of None is not checked: the
+# runner killed that container, so its exit code is Docker's, not the worker's.
+OWN_OUTCOMES = {
+    "wrong-version": ("completed", 0),
+    "missing-controls": ("completed", 0),
+    "invalid-utf8": ("completed", 0),
+    "fail": ("process_failed", 7),
+    "pressure": ("output_limit", None),
+    "timeout": ("deadline_exceeded", None),
+    "closed-output": ("deadline_exceeded", None),
+}
+# The runner's wall deadline starts before `docker start`, so container start-up
+# and a CPU-starved interpreter count against it. Under host load, start-up alone
+# took 2.7 s and one synthetic run took 32 s, beyond any budget inspect() accepts
+# (at most 15 s). A case that ends on its own therefore runs with a budget no
+# host approaches, still under pytest's 600 s timeout so a hang fails and is
+# cleaned up. Only the deadline cases (a 5 s sleep against inspect()'s real
+# 0.2 s budget) can reach a deadline first.
+DEADLINE_CASE_SECONDS, OWN_OUTCOME_SECONDS = 0.2, 300
+
+
 @pytest.mark.parametrize(
     "behavior,reason",
     [
@@ -46,11 +69,30 @@ def test_synthetic_metadata_observes_actual_offline_secret_free_envelope_and_cle
 )
 def test_real_container_failures_do_not_become_metadata_success(tmp_path, monkeypatch, behavior, reason):
     pin = synthetic_pin(tmp_path, monkeypatch, behavior=behavior)
+    expected_reason, expected_exit = OWN_OUTCOMES[behavior]
+    deadline_case = expected_reason == "deadline_exceeded"
+    if not deadline_case:
+        original = bootstrap.DockerSandbox.run
+
+        def unhurried(self, workspace, argv, profile, **kwargs):
+            # Only the wall budget changes; the offline envelope the fixture
+            # asserts inside the container (memory, caps, seccomp) is the same.
+            return original(self, workspace, argv, replace(profile, wall_seconds=OWN_OUTCOME_SECONDS), **kwargs)
+
+        monkeypatch.setattr(bootstrap.DockerSandbox, "run", unhurried)
     runs, roots = record_sandbox_runs(monkeypatch)
     with pytest.raises(bootstrap.NativeBootstrapUnavailable, match="native_bootstrap_" + reason):
-        bootstrap.NativeBootstrap().inspect(
-            pin, wall_seconds=0.2 if "timeout" in behavior or behavior == "closed-output" else 3
-        )
+        if deadline_case:
+            bootstrap.NativeBootstrap().inspect(pin, wall_seconds=DEADLINE_CASE_SECONDS)
+        else:
+            bootstrap.NativeBootstrap().inspect(pin)
+    # The runner saw the container's own outcome, not a deadline kill, and
+    # every earlier probe (version before help) completed cleanly.
+    assert len(runs) == (2 if behavior == "missing-controls" else 1)
+    assert all(run.reason == "completed" and run.exit_code == 0 for run in runs[:-1])
+    assert runs[-1].reason == expected_reason and not runs[-1].oom_killed
+    if expected_exit is not None:
+        assert runs[-1].exit_code == expected_exit
     assert_owned_cleanup(runs, roots)
 
 

@@ -12,6 +12,7 @@ import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID, uuid4
@@ -25,6 +26,10 @@ from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile, SandboxRej
 OOM_SETTLE_DELAYS = (0.1, 0.2, 0.4, 0.6)
 # Entries a writable workspace may hold; also bounds the cost of one usage scan.
 MAX_WORKSPACE_ENTRIES = 500_000
+# After the deadline, how long the runner still reads a worker that the daemon
+# reports exited within its budget; under host load the attach EOF trailed the
+# exit by up to 2.4 s. Output still open after this ends as deadline_exceeded.
+LATE_OUTPUT_SECONDS = 5.0
 
 
 def workspace_usage(root: Path) -> int | None:
@@ -500,6 +505,26 @@ class DockerSandbox:
         if any(entry["Type"] == "volume" for entry in actual["Mounts"]):
             raise SandboxRejected("implicit_volume_denied")
 
+    def _exited_within(self, container_id: str, start: float, end: float) -> bool:
+        """Whether the daemon reports this worker exited by itself inside [start, end].
+
+        Read once when the deadline passes, before any kill. FinishedAt is taken
+        when the worker's process is reaped, so it can be late but never early;
+        the local daemon and this runner share the host's wall clock. A running,
+        unreadable or later exit keeps the deadline.
+        """
+        try:
+            state = self._inspect(container_id)["State"]
+            finished = datetime.fromisoformat(state["FinishedAt"])
+        except (SandboxRejected, KeyError, TypeError, ValueError):
+            return False
+        return (
+            state.get("Running") is False
+            and state.get("Status") == "exited"
+            and finished.tzinfo is not None
+            and start <= finished.timestamp() <= end
+        )
+
     def _execute(
         self,
         container_id: str,
@@ -511,6 +536,9 @@ class DockerSandbox:
         workspace: Path | None = None,
     ) -> SandboxReceipt:
         started = time.monotonic()
+        # The daemon timestamps exits in wall-clock time; keep the budget's span in it too.
+        budget_start = time.time()
+        budget_end = budget_start + profile.wall_seconds
         if cancel is not None and cancel.is_set():
             return SandboxReceipt(
                 container_id,
@@ -538,6 +566,7 @@ class DockerSandbox:
         pending = memoryview(input_frame if input_frame is not None else b"")
         input_open = process.stdin is not None
         output_open = True
+        late_output_until: float | None = None
         watch = _WorkspaceWatch(workspace, profile.workspace_bytes) if workspace is not None else None
 
         def close_input() -> None:
@@ -567,9 +596,19 @@ class DockerSandbox:
                     reason = "workspace_quota_exceeded"
                     break
                 remaining = profile.wall_seconds - (time.monotonic() - started)
-                if remaining <= 0:
-                    reason = "deadline_exceeded"
-                    break
+                if remaining <= 0 and late_output_until is None:
+                    if not self._exited_within(container_id, budget_start, budget_end):
+                        reason = "deadline_exceeded"
+                        break
+                    # The worker exited on its own within its budget; only its
+                    # attach EOF is late. Read the rest of its output, bounded,
+                    # so its own exit decides the receipt, not an unenforced deadline.
+                    late_output_until = time.monotonic() + LATE_OUTPUT_SECONDS
+                if late_output_until is not None:
+                    remaining = late_output_until - time.monotonic()
+                    if remaining <= 0:
+                        reason = "deadline_exceeded"
+                        break
                 events = selector.select(min(0.1, remaining))
                 for key, _ in events:
                     if key.data == "input":
