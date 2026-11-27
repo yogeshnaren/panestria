@@ -67,6 +67,16 @@ after a stop. A worker's reason names the gateway outcome:
 `scoped_gateway_cancelled`. Budgets, retries, claims and acceptance are
 unchanged.
 
+A separate cause also showed up at low host load. A worker's locked claim and
+launch transactions had a 300 ms limit. Each task event takes one
+database-wide sequence lock until its transaction commits, and a worker
+waiting behind another commit hit that limit. The worker stopped with
+`database_statement_timeout`. Its partner then broke the fixture barrier 10 s
+later. That was 1 STOPPED run in 59. Those gate transactions now use the owner
+Build bounds: a 2 s statement timeout and a 1 s lock timeout. Read-only monitor
+snapshots keep 300 ms. That cause produces an 11 s failure, not the 30 s seen
+in CI.
+
 Runtime versions include a digest of every `src/panestria/**/*.py`. Editing
 those files in a checkout while its tests run is a runtime change. Preflight
 then refuses with `public_native_plan_not_eligible`, running workers stop with
