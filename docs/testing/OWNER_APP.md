@@ -26,8 +26,18 @@ then starts the model, as `local serve` does. Ctrl+C stops the server and its
 model. A startup failure prints one fixed code, such as
 `local_setup_policy_conflict` or `mission_build_required`, and exits 2.
 
-`panestria ask` and `panestria tui` work against it with the same `--config`;
-they use the bearer token.
+`panestria tui --config` works against it with the same `local.json`.
+`panestria ask` takes the project, the token file and the origin instead of
+`--config`; both use the bearer token:
+
+```sh
+panestria ask "Name three prime numbers below 10." \
+  --project PROJECT_UUID --token-file "$HOME/panestria-local-ask/local.token" \
+  --base-url http://127.0.0.1:8768
+```
+
+`PROJECT_UUID` is the `project_id` in `local.json`, and the origin is the one on
+the `STARTING` line. Add `--json` for the receipt and usage.
 
 ## Browser sessions
 
