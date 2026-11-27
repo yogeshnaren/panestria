@@ -37,19 +37,23 @@ def tool_binding(permit: ToolPermit) -> InvocationBinding:
 
 
 class DurableToolAuthority:
+    # Each transaction below is bounded at 2 s, as owner Build transactions
+    # are. Claims and launch records append task events, which wait for the
+    # database-wide event-sequence lock held by other transactions until they
+    # commit; 300 ms turned that ordinary wait into an unconfirmed launch.
     def __init__(self, connect: Callable[[], psycopg.Connection[Any]], actor: Actor, invocation_id: str) -> None:
         self.connect, self.actor, self.identity = connect, actor, invocation_id
         self.service = InvocationService()
 
     def claim(self, permit: ToolPermit) -> None:
         with self.connect() as c:
-            c.execute("SET LOCAL statement_timeout='300ms'")
+            c.execute("SET LOCAL statement_timeout='2000ms'")
             self.service.claim(UnitOfWork(c), self.actor, tool_binding(permit), self.identity)
         # Connection context has committed the one-use claim before returning.
 
     def check(self, permit: ToolPermit) -> None:
         with self.connect() as c:
-            c.execute("SET LOCAL statement_timeout='300ms'")
+            c.execute("SET LOCAL statement_timeout='2000ms'")
             self.service.check(UnitOfWork(c), self.actor, tool_binding(permit), self.identity)
 
     def _authorize_launch(self, connection: psycopg.Connection[Any], permit: ToolPermit) -> None:
@@ -78,7 +82,7 @@ class DurableToolAuthority:
             image_id=reference.image_id,
         )
         with self.connect() as connection:
-            connection.execute("SET LOCAL statement_timeout='300ms'")
+            connection.execute("SET LOCAL statement_timeout='2000ms'")
             self._authorize_launch(connection, permit)
             SandboxLaunchService().record(UnitOfWork(connection), self.actor, binding, self.identity, intent)
         # Only an acknowledged committed intent permits the later Docker create.
@@ -97,7 +101,7 @@ class DurableToolAuthority:
         service = SandboxLaunchService()
         try:
             with self.connect() as connection:
-                connection.execute("SET LOCAL statement_timeout='300ms'")
+                connection.execute("SET LOCAL statement_timeout='2000ms'")
                 intent = service.read(UnitOfWork(connection), self.actor, binding, self.identity)
         except psycopg.Error:
             raise KernelDenied("sandbox_launch_recovery_unavailable") from None
@@ -115,7 +119,7 @@ class DurableToolAuthority:
         )
         try:
             with self.connect() as connection:
-                connection.execute("SET LOCAL statement_timeout='300ms'")
+                connection.execute("SET LOCAL statement_timeout='2000ms'")
                 service.observe(UnitOfWork(connection), self.actor, binding, self.identity, observation)
         except psycopg.Error:
             raise KernelDenied("sandbox_launch_observation_unconfirmed") from None

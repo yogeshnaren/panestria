@@ -6,6 +6,7 @@ transport drives the actual MCP/gateway and independent verification boundaries.
 
 import json
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from uuid import uuid4
@@ -28,8 +29,10 @@ from panestria.contracts.plan import PlanNode, PlanProposal
 from panestria.execution.native_plan import NativePlanRunner
 from panestria.execution.owner_build import OwnerBuild
 from panestria.kernel.errors import KernelDenied
+from panestria.kernel.invocations import InvocationService
 from panestria.kernel.plan_store import PlanStore
 from panestria.kernel.plan_submission import PlanSubmissionService
+from panestria.kernel.repositories.events import EVENT_LOCK
 from panestria.kernel.uow import UnitOfWork
 from panestria.resources.hardware import PROBE_SHA256, HardwareProbe
 
@@ -228,6 +231,45 @@ def test_two_scoped_workers_and_create_only_node_reach_exact_owner_review(native
             "SELECT count(*) FROM panestria.build_handoff WHERE plan_id=%s", (plan.plan_id,)
         ).fetchone() == (2,)
         assert c.execute("SELECT status FROM panestria.goal WHERE id=%s", (plan.goal_id,)).fetchone() == ("ACTIVE",)
+
+
+def test_worker_claim_waits_for_another_commit_on_the_event_sequence_lock(native_plan, monkeypatch):
+    # Every task event takes one database-wide lock until its transaction
+    # commits. A worker's invocation claim queued behind another transaction's
+    # 0.6 s event commit is ordinary contention, not lost authority. It once
+    # hit the worker's 300 ms statement timeout and stopped the plan (seen at
+    # low host load as database_statement_timeout).
+    owner, runner, plan, state = native_plan
+    original = InvocationService.claim
+    holders: list[threading.Thread] = []
+    guard = threading.Lock()
+
+    def claim_behind_slow_event_commit(service, uow, actor, binding, identity):
+        if binding.kind == "native-proposal":
+            with guard:
+                first = not holders
+                if first:
+                    held = threading.Event()
+
+                    def hold():
+                        with psycopg.connect(owner.dsn) as other:
+                            other.execute("SELECT pg_advisory_xact_lock(%s, %s)", EVENT_LOCK)
+                            held.set()
+                            time.sleep(0.6)
+
+                    holders.append(threading.Thread(target=hold))
+                    holders[0].start()
+            if first:
+                assert held.wait(5)
+        return original(service, uow, actor, binding, identity)
+
+    monkeypatch.setattr(InvocationService, "claim", claim_behind_slow_event_commit)
+    result = runner.run(plan.plan_id, public_subscription_run=True)
+    for holder in holders:
+        holder.join()
+    assert len(holders) == 1
+    assert result["status"] == "WAITING_APPROVAL", result
+    assert state["launches"] == state["peak"] == 2
 
 
 @pytest.mark.parametrize(
