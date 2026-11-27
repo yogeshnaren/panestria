@@ -152,6 +152,8 @@ finally:
 """,
     }
     receipt = DockerSandbox(root).run(worker, ("/usr/local/bin/python", "-u", "-c", programs[pressure]), profile)
+    # Which source saw a kill: Docker's OOMKilled, the kernel's cgroup count, or both.
+    record_property("oom_sources", json.dumps([receipt.oom_killed, receipt.cgroup_oom_kills]))
     assert receipt.reason == expected, receipt
     assert len(receipt.output) <= profile.output_bytes and receipt.elapsed_seconds < profile.wall_seconds + 10
     if pressure == "pids":

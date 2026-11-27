@@ -193,17 +193,21 @@ def test_actual_input_adverse_cases_terminate_and_remove(tmp_path, case, expecte
     record_property("exit_metadata", json.dumps(runner.exit_metadata, sort_keys=True))
     if case == "memory-pressure":
         # Exit137 proves SIGKILL, not its cause. Hosted Docker can keep
-        # OOMKilled=false even after the bounded read-only settlement window.
-        # Require fail-closed cleanup and truthful classification in either case;
-        # the separate live AOS-008-TC03 still requires confirmed memory_limit.
+        # OOMKilled=false even after the bounded read-only settlement window;
+        # the kernel's own cgroup oom_kill count, read while the worker ran,
+        # then confirms the kill. Require fail-closed cleanup and truthful
+        # classification from either source; the separate live AOS-008-TC03
+        # still requires confirmed memory_limit.
         assert receipt.exit_code == 137
-        assert receipt.reason == ("memory_limit" if receipt.oom_killed else "process_failed")
+        confirmed = receipt.oom_killed or bool(receipt.cgroup_oom_kills)
+        assert receipt.reason == ("memory_limit" if confirmed else "process_failed")
         assert runner.exit_metadata["after"] == {
             "ExitCode": 137,
             "OOMKilled": receipt.oom_killed,
             "Running": False,
         }
         record_property("oom_observation", "CONFIRMED" if receipt.oom_killed else "NOT_CONFIRMED")
+        record_property("cgroup_oom_kills", json.dumps(receipt.cgroup_oom_kills))
     elif expected == "failed":
         assert receipt.reason in ("process_failed", "input_incomplete")
     else:

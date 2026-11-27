@@ -1,0 +1,651 @@
+{
+  "schema_version": 1,
+  "outcome": "LOCAL_DIAGNOSTIC_OOM_SOURCE_OBSERVATION_NOT_HOSTED_CI_OR_LIVE_GATE",
+  "source_commit": "376cb6f7a4951a698bd7823f232a2a563593c81d",
+  "source_tree": "48946119ffb3e90eca247d970a833ca80429fb29",
+  "worktree": "src, tests and both scripts unmodified from source_commit; only the new section of docs/testing/SANDBOX_EXIT_METADATA.md was an uncommitted edit during part of the runs",
+  "runner_code_commit": "e107d12",
+  "hosted_failure": {
+    "run_id": 45953363336,
+    "job": "behavioral (boundary)",
+    "case": "tests/integration/test_aos_008.py::test_resource_pressure_is_contained[memory-memory_limit]",
+    "observed": {
+      "exit_code": 137,
+      "oom_killed": false,
+      "reason": "process_failed",
+      "elapsed_seconds": 1.74
+    },
+    "note": "One of the hosted failures named in the task; its JUnit is not copied here."
+  },
+  "environment": {
+    "host": "owner workstation shared with other concurrent agent jobs",
+    "docker_engine": "29.1.3",
+    "containerd": "2.2.1",
+    "runc": "1.3.4-0ubuntu1~22.04.1",
+    "docker_init": "0.19.0",
+    "kernel": "6.8.0-149-generic",
+    "os": "Ubuntu 22.04.5 LTS",
+    "cgroup": "v2 (cgroup2fs), Docker cgroup driver systemd",
+    "cpus": 24,
+    "load_average_samples_between_batches": [
+      "7.10, 37.48, 53.95",
+      "7.33, 31.23, 50.58",
+      "7.36, 28.61, 48.98",
+      "7.80, 26.06, 47.27",
+      "7.26, 24.19, 45.97"
+    ],
+    "image": "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9"
+  },
+  "docker_vs_cgroup": {
+    "script": "docker_vs_cgroup.py 30",
+    "summary": {
+      "runs": 30,
+      "exit_137": 30,
+      "docker_oom_killed": 30,
+      "docker_oom_event": 30,
+      "cgroup_oom_kill_counted": 30,
+      "docker_lost_but_cgroup_counted": 0,
+      "cgroup_removed_before_attach_returned": 30
+    },
+    "kill_counted_to_cgroup_removed_ms": {
+      "min": 3.7,
+      "median": 5.6,
+      "max": 51.9
+    },
+    "runs": [
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 7.7,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.6,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.9,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "18",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.3,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.4,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 4.8,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.8,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.0,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.9,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 51.9,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "53",
+          "oom": "2",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 3.7,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 4.5,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 6.0,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 4.9,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "18",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 4.4,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.9,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.3,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 4.8,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 4.8,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 7.8,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "37",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 7.8,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "18",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 4.1,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 4.8,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "39",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.7,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 16.2,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 6.4,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.4,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 6.1,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "35",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 5.8,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      },
+      {
+        "exit_code": 137,
+        "docker_oom_killed_at_return": true,
+        "docker_oom_killed_1_5s_later": true,
+        "cgroup_memory_events_last": {
+          "low": "0",
+          "high": "0",
+          "max": "18",
+          "oom": "1",
+          "oom_kill": "1",
+          "oom_group_kill": "0"
+        },
+        "kill_counted_to_cgroup_removed_ms": 3.7,
+        "cgroup_removed_before_attach_returned": true,
+        "docker_oom_event": true
+      }
+    ]
+  },
+  "runner_classification": {
+    "with_cgroup_count": {
+      "script": "runner_classification.py 40 memory",
+      "tally": [
+        {
+          "case": "memory",
+          "reason": "memory_limit",
+          "exit_code": 137,
+          "docker_oom_killed": true,
+          "cgroup_oom_kills": 1,
+          "runs": 40
+        }
+      ]
+    },
+    "cgroup_count_disabled": {
+      "script": "NO_CGROUP_WATCH=1 runner_classification.py 40 memory",
+      "tally": [
+        {
+          "case": "memory",
+          "reason": "memory_limit",
+          "exit_code": 137,
+          "docker_oom_killed": true,
+          "cgroup_oom_kills": null,
+          "runs": 40
+        }
+      ]
+    },
+    "runner_kills": {
+      "script": "runner_classification.py 5 deadline,cancel,selfkill",
+      "tally": [
+        {
+          "case": "cancel",
+          "reason": "cancelled",
+          "exit_code": 137,
+          "docker_oom_killed": false,
+          "cgroup_oom_kills": 0,
+          "runs": 5
+        },
+        {
+          "case": "deadline",
+          "reason": "deadline_exceeded",
+          "exit_code": 137,
+          "docker_oom_killed": false,
+          "cgroup_oom_kills": 0,
+          "runs": 5
+        },
+        {
+          "case": "selfkill",
+          "reason": "process_failed",
+          "exit_code": 137,
+          "docker_oom_killed": false,
+          "cgroup_oom_kills": 0,
+          "runs": 5
+        }
+      ]
+    },
+    "concurrent": {
+      "script": "four runner_classification.py 15 memory processes with the count and four with NO_CGROUP_WATCH=1, all at once (up to eight sandboxes running together)",
+      "load_average_samples": [
+        "7.17, 22.54, 44.73",
+        "8.51, 21.46, 43.66",
+        "8.51, 21.46, 43.66"
+      ],
+      "with_cgroup_count": [
+        {
+          "case": "memory",
+          "reason": "memory_limit",
+          "exit_code": 137,
+          "docker_oom_killed": false,
+          "cgroup_oom_kills": 1,
+          "runs": 1
+        },
+        {
+          "case": "memory",
+          "reason": "memory_limit",
+          "exit_code": 137,
+          "docker_oom_killed": true,
+          "cgroup_oom_kills": 1,
+          "runs": 59
+        }
+      ],
+      "cgroup_count_disabled": [
+        {
+          "case": "memory",
+          "reason": "memory_limit",
+          "exit_code": 137,
+          "docker_oom_killed": true,
+          "cgroup_oom_kills": null,
+          "runs": 60
+        }
+      ]
+    }
+  },
+  "exploratory_before_commit": {
+    "note": "Earlier runs of the same probes from uncommitted working trees while the fix was developed; the runner differed from e107d12 only in comments and one unused attribute. Not source-bound.",
+    "docker_only_probe": "30 kills: Docker OOMKilled false and no oom event in 6, unchanged 2 s later.",
+    "docker_vs_cgroup_probe": "30 kills: Docker missed 4; cgroup oom_kill 1 read in 30 of 30, incl. those 4; count to removal about 10 ms (3-111 ms); cgroup removed before attach returned in 30 of 30.",
+    "runner_with_count": "100 memory kills at load averages up to about 90: 97 both sources, 2 cgroup only (Docker missed), 1 Docker only (cgroup read 0, missed); all memory_limit.",
+    "runner_count_disabled": "40 memory kills: 3 process_failed with Docker OOMKilled false.",
+    "runner_kills": "5 each: deadline_exceeded, cancelled, process_failed (self-SIGKILL), cgroup count 0; a child OOM with exit 0 gave memory_limit with both sources.",
+    "pollpri_probe": "4 kills: poll(POLLPRI) woke on the first memory.events change (oom_kill still 0); no later wake arrived for memory.events or cgroup.events before the cgroup was removed."
+  },
+  "mechanism": [
+    "Kernel: mm/oom_kill.c increments the memcg oom_kill event before sending SIGKILL, and only the OOM killer does; cgroup_file_notify limits notifications to one per file per 10 ms and cancels a pending one when the file is removed.",
+    "containerd 2.2.1 (code reading, not instrumented): pkg/oom/v2 publishes TaskOOM only from readings of memory.events taken by cgroups/v3 Manager.EventChan on inotify IN_MODIFY of memory.events or cgroup.events. Its forwarding goroutine selects between the event and error channels; after the final reading, EventChan returns and closes the error channel, so that last buffered reading can be dropped.",
+    "Docker sets State.OOMKilled only from TaskOOM; when containerd never publishes it, no later inspect can show it."
+  ],
+  "limits": [
+    "Local workstation observations, not hosted CI. GitHub ubuntu-24.04 runners also use cgroup v2 with the systemd driver, but their timing differs.",
+    "The host read is best effort: the controller thread must run between the count and the cgroup removal (about 10 ms). A run where both Docker and the read miss is still reported process_failed, never guessed.",
+    "cgroup_oom_kills is None without a host view of cgroup v2 at /sys/fs/cgroup or with another layout (custom cgroup parent, rootless Docker); classification then uses Docker's flag alone.",
+    "No live AOS-008 gate, release gate or R1/G1 evidence is claimed. Historical failures are not relabelled."
+  ]
+}

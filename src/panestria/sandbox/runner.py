@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import re
+import select
 import selectors
 import subprocess
 import threading
@@ -25,6 +26,8 @@ from panestria.sandbox.profiles import ReadOnlyMount, SandboxProfile, SandboxRej
 OOM_SETTLE_DELAYS = (0.1, 0.2, 0.4, 0.6)
 # Entries a writable workspace may hold; also bounds the cost of one usage scan.
 MAX_WORKSPACE_ENTRIES = 500_000
+# The host's cgroup v2 mount, where the kernel counts each worker's OOM kills.
+CGROUP_ROOT = Path("/sys/fs/cgroup")
 
 
 def workspace_usage(root: Path) -> int | None:
@@ -90,6 +93,87 @@ class _WorkspaceWatch:
         self._thread.join(timeout=30)
 
 
+class _CgroupOomWatch:
+    """Read the kernel's OOM-kill count from this container's own cgroup v2.
+
+    Docker sets ``State.OOMKilled`` from an asynchronous containerd event.
+    containerd's cgroup v2 watcher reads ``memory.events`` only on rate-limited
+    inotify notifications and can drop its last reading when the cgroup
+    empties right after the kill, so a real memory-limit kill can stop with
+    OOMKilled false, and Docker never corrects it. The kernel's ``oom_kill``
+    counter is incremented before the victim is signalled and only by the OOM
+    killer: never by docker kill, a deadline, a cancel or any other SIGKILL.
+    The host reads it while the cgroup exists, quickly while the file changes;
+    the cgroup is removed before Docker reports the exit.
+
+    ``kills`` is the latest count read, or None when no reading was made (no
+    host view of cgroup v2, another cgroup layout, or the cgroup was removed
+    before it was found).
+    """
+
+    # Sample every millisecond this long after a change, the first read included.
+    _PRESSURE_SECONDS = 0.25
+
+    def __init__(self, container_id: str) -> None:
+        self._paths = (
+            CGROUP_ROOT / "system.slice" / f"docker-{container_id}.scope" / "memory.events",  # systemd driver
+            CGROUP_ROOT / "docker" / container_id / "memory.events",  # cgroupfs driver
+        )
+        self.kills: int | None = None
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._run, name="panestria-oom-watch", daemon=True)
+        self._thread.start()
+
+    def _open(self) -> int | None:
+        delay = 0.001
+        while not self._stop.is_set():
+            for path in self._paths:
+                try:
+                    descriptor = os.open(path, os.O_RDONLY | os.O_CLOEXEC)
+                except OSError:
+                    continue
+                return descriptor
+            self._stop.wait(delay)
+            delay = min(2 * delay, 0.02)
+        return None
+
+    @staticmethod
+    def _read(descriptor: int) -> bytes | None:
+        try:
+            os.lseek(descriptor, 0, os.SEEK_SET)
+            return os.read(descriptor, 4096)
+        except OSError:
+            return None  # The cgroup was removed.
+
+    def _run(self) -> None:
+        descriptor = self._open()
+        if descriptor is None:
+            return
+        try:
+            # A cgroup file signals a change as POLLPRI; the kernel defers
+            # repeat signals by 10 ms, so sample quickly while it is changing.
+            poller = select.poll()
+            poller.register(descriptor, select.POLLPRI | select.POLLERR)
+            last, pressure_until = None, 0.0
+            while not self._stop.is_set():
+                content = self._read(descriptor)
+                if content is None:
+                    return
+                if content != last:
+                    last, pressure_until = content, time.monotonic() + self._PRESSURE_SECONDS
+                    for line in content.decode("ascii", "replace").splitlines():
+                        key, _, value = line.partition(" ")
+                        if key == "oom_kill" and value.isdigit():
+                            self.kills = max(int(value), self.kills or 0)
+                poller.poll(1 if time.monotonic() < pressure_until else 20)
+        finally:
+            os.close(descriptor)
+
+    def stop(self) -> None:
+        self._stop.set()
+        self._thread.join(timeout=5)
+
+
 @dataclass(frozen=True)
 class SandboxReceipt:
     container_id: str
@@ -99,7 +183,10 @@ class SandboxReceipt:
     reason: str
     output: bytes
     elapsed_seconds: float
-    oom_killed: bool
+    oom_killed: bool  # Docker's State.OOMKilled, as Docker reported it.
+    # The kernel's oom_kill count in this container's cgroup v2 memory.events,
+    # read by the host while the cgroup existed; None when it was not read.
+    cgroup_oom_kills: int | None = None
 
 
 @dataclass(frozen=True)
@@ -539,6 +626,7 @@ class DockerSandbox:
         input_open = process.stdin is not None
         output_open = True
         watch = _WorkspaceWatch(workspace, profile.workspace_bytes) if workspace is not None else None
+        oom_watch = _CgroupOomWatch(container_id)
 
         def close_input() -> None:
             nonlocal input_open
@@ -640,6 +728,8 @@ class DockerSandbox:
             state = self._inspect(container_id)["State"]
             if state["Running"]:
                 raise SandboxRejected("termination_unconfirmed")
+            # The worker is stopped, so its cgroup and final count are settled.
+            oom_watch.stop()
             if reason == "completed":
                 state = self._settle_killed_state(container_id, state)
             exit_code = int(state["ExitCode"])
@@ -648,7 +738,9 @@ class DockerSandbox:
                 if watch.exceeded.is_set() or watch.over():
                     # A stopped worker's final tree decides; never report it completed.
                     reason = "workspace_quota_exceeded"
-            if state["OOMKilled"]:
+            # Either source is the kernel OOM killer acting in this container:
+            # Docker relays the same counter, but can lose it on a fast exit.
+            if state["OOMKilled"] or oom_watch.kills:
                 reason = "memory_limit"
             elif reason == "completed" and exit_code != 0:
                 reason = "process_failed"
@@ -665,10 +757,12 @@ class DockerSandbox:
                 bytes(output),
                 time.monotonic() - started,
                 bool(state["OOMKilled"]),
+                oom_watch.kills,
             )
         finally:
             if watch is not None:
                 watch.stop()
+            oom_watch.stop()
             close_input()
             selector.close()
             process.stdout.close()
